@@ -1,0 +1,287 @@
+/**
+ * Add or remove a class from a classlist, based on a boolean test.
+ * @param obj - A page element, or id of an element
+ * @param cls - A class name to toggle
+ * @param bool - If omitted, cls is toggled in the classList; if true, cls is added; if false, cls is removed
+ */
+export function toggleClass(obj: Node|string, 
+                            cls: string, 
+                            bool: boolean = undefined) {
+  let elmt: Element;
+  if ('string' === typeof obj) {
+    elmt = document.getElementById(obj as string);
+  }
+  else {
+    elmt = obj as Element;
+  }
+  if (elmt !== null && elmt.classList !== null) {
+    if (bool === undefined) {
+      bool = !elmt.classList.contains(cls);
+    }
+    if (bool) {
+      elmt.classList.add(cls);
+    }
+    else {
+      elmt.classList.remove(cls);
+    }
+  }
+}
+
+/**
+ * Check if an HTML element is tagged with a given CSS class
+ * @param obj - A page element, or id of an element
+ * @param cls - A class name to test
+ * @returns true iff the class is in the classList
+ */
+export function hasClass( obj: Node|string, 
+                          cls: string) 
+                          : boolean {
+  let elmt: Element;
+  if ('string' === typeof obj) {
+    elmt = document.getElementById(obj as string);
+  }
+  else {
+    elmt = obj as Element;
+  }
+  return elmt !== null 
+      && elmt.classList !== null
+      && elmt.classList.contains(cls);
+}
+
+/**
+ * Apply all classes in a list of classes.
+ * @param obj - A page element, or id of an element
+ * @param classes - A list of class names, delimited by spaces
+ */
+export function applyAllClasses(obj: Node|string, 
+                                classes:string) {
+  var list = classes.split(' ');
+  for (let cls of list) {
+    toggleClass(obj, cls, true);
+  }
+}
+
+/**
+ * Given one element, find the next one in the document that matches the desired class
+ * @param current - An existing element
+ * @param matchClass - A class that this element has
+ * @param skipClass - [optional] A class of siblings to be skipped
+ * @param dir - 1 (default) finds the next sibling, else -1 finds the previous
+ * @returns A sibling element, or null if none is found
+ */
+export function findNextOfClass(current: Element, 
+                                matchClass: string, 
+                                skipClass: string = null, 
+                                dir: number = 1)
+                                : Element {
+  skipClass = skipClass || null;
+  var inputs = document.getElementsByClassName(matchClass);
+  var found = false;
+  for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
+      if (skipClass != null && hasClass(inputs[i], skipClass)) {
+          continue;
+      }
+      if (found) {
+          return inputs[i];
+      }
+      found = inputs[i] == current;
+  }
+  return null;
+}
+
+/**
+ * Find the index of the current element among the siblings under its parent
+ * @param current - An existing element
+ * @param parentObj - A parent element (or the class of a parent)
+ * @param sibClass - A class name shared by current and siblings
+ * @returns - The index, or -1 if current is not found in the specified parent
+ */
+export function indexInContainer( current: Element, 
+                                  parentObj: Element|string, 
+                                  sibClass: string) {
+  let parent: Element;
+  if (typeof(parent) == 'string') {
+      parent = findParentOfClass(current, parentObj as string);
+  }
+  else {
+    parent = parentObj as Element;
+  }
+  var sibs = parent.getElementsByClassName(sibClass);
+  for (var i = 0; i < sibs.length; i++) {
+      if (sibs[i] === current) {
+          return i;
+      }
+  }
+  return -1;
+}
+
+/**
+ * Get the index'ed child element within this parent
+ * @param parent - An existing element
+ * @param childClass - A class of children under parent
+ * @param index - The index of the desired child. A negative value counts back from the end
+ * @returns The child element, or null if no children
+ */
+export function childAtIndex( parent: Element, 
+                              childClass: string, 
+                              index: number)
+                              : Element {
+  var sibs = parent.getElementsByClassName(childClass);
+  if (index < 0) {
+      index = sibs.length + index;
+  }
+  else if (index >= sibs.length) {
+      index = sibs.length - 1;
+  }
+  if (index < 0) {
+    return null;
+  }
+  return sibs[index];
+}
+
+/**
+ * Given an input in one container, find an input in the next container
+* @param current - the reference element
+* @param matchClass - the class we're looking for
+* @param skipClass - a class we're avoiding
+* @param containerClass - the parent level to go up to, before coming back down
+* @param dir - 1 (default) to go forward, -1 to go back
+*/
+export function findInNextContainer(current: Element, 
+                                    matchClass: string, 
+                                    skipClass: string, 
+                                    containerClass: string, 
+                                    dir: number = 1)
+                                    : Element {
+  var container = findParentOfClass(current, containerClass);
+  if (container == null) {
+      return null;
+  }
+  var nextContainer = findNextOfClass(container, containerClass, null, dir);
+  while (nextContainer != null) {
+      var child = findFirstChildOfClass(nextContainer, matchClass, skipClass);
+      if (child != null) {
+          return child;
+      }
+      // Look further ahead
+      nextContainer = findNextOfClass(nextContainer, containerClass, null, dir);
+  }
+  return null;
+}
+
+/**
+ * Find either the first or last sibling element under a parent
+* @param current - the reference element
+* @param matchClass - the class we're looking for
+* @param skipClass - a class we're avoiding
+* @param containerClass - the parent level to go up to, before coming back down
+* @param dir - 1 (default) to go forward, -1 to go back
+* @returns The first or last sibling element, or null if no matches
+ */
+export function findEndInContainer( current: Element, 
+                                    matchClass: string, 
+                                    skipClass: string = null, 
+                                    containerClass: string, 
+                                    dir: number = 1) {
+  var container = findParentOfClass(current, containerClass);
+  if (container == null) {
+      return null;
+  }
+  return findFirstChildOfClass(container, matchClass, skipClass, dir);
+}
+
+/**
+ * Find the nearest containing node that contains the desired class.
+ * @param elmt - An existing element
+ * @param parentClass - A class name of a parent element
+ * @returns The nearest matching parent element, up to but not including the body
+ */
+export function findParentOfClass(elmt: Element, 
+                                  parentClass: string)
+                                  : Element {
+  if (parentClass == null || parentClass == undefined) {
+      return null;
+  }
+  while (elmt !== null && elmt.tagName !== 'body') {
+      if (hasClass(elmt, parentClass)) {
+          return elmt;
+      }
+      elmt = elmt.parentNode as Element;
+  }
+  return null;
+}
+
+/**
+ * Find the first child/descendent of the current element which matches a desired class
+ * @param elmt - A parent element
+ * @param childClass - A class name of the desired child
+ * @param skipClass - [optional] A class name to avoid
+ * @param dir - If positive (default), search forward; else search backward
+ * @returns A child element, if a match is found, else null
+ */
+export function findFirstChildOfClass( elmt: Element, 
+                                childClass: string, 
+                                skipClass: string = null, 
+                                dir: number = 1)
+                                : Element {
+  var children = elmt.getElementsByClassName(childClass);
+  for (var i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
+      if (skipClass !== null && hasClass(children[i], skipClass)) {
+          continue;
+      }
+      return children[i];
+  }
+  return null;
+}
+
+/**
+ * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
+ * @param elmt - A page element
+ * @param attrName - An attribute name
+ * @param defaultStyle - (optional) The default value, if no tag is found with the attribute. Null if omitted.
+ * @param prefix - (optional) - A prefix to apply to the answer
+ * @returns The found or default style, optional with prefix added
+ */
+export function getOptionalStyle( elmt: Element, 
+                                  attrName: string, 
+                                  defaultStyle: string = null, 
+                                  prefix :string = '')
+                                  : string {
+  var val = elmt.getAttribute(attrName);
+  while (val === null) {
+    elmt = elmt.parentNode as Element;
+    if (elmt === null || elmt.tagName === 'BODY') {
+      val = defaultStyle;
+      break;
+    }
+    else {
+      val = elmt.getAttribute(attrName);
+    }
+  }
+  return (val === null || prefix === null) ? val : (prefix + val);
+}
+
+/**
+ * Move focus to the given input (if not null), and select the entire contents.
+ * If input is of type number, do nothing.
+ * @param input - A text input element
+ * @param caret - The character index where the caret should go
+ * @returns true if the input element and caret position are valid, else false
+ */
+export function moveFocus(input: HTMLInputElement, 
+                          caret: number|undefined = undefined)
+                          : boolean {
+  if (input !== null) {
+      input.focus();
+      if (input.type !== 'number') {
+          if (caret === undefined) {
+              input.setSelectionRange(0, input.value.length);
+          }
+          else {
+              input.setSelectionRange(caret, caret);
+          }
+      }
+      return true;
+  }
+  return false;
+}
