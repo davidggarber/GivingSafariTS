@@ -1,6 +1,6 @@
-import { hasClass, toggleClass, applyAllClasses, getOptionalStyle } from "./classUtil";
-import { onLetterKeyDown, onLetterKey, onLetterChange, onWordKey, onWordChange } from "./textInput";
-import { indexAllInputFields } from "./storage"
+import { hasClass, toggleClass, applyAllClasses, getOptionalStyle } from "./_classUtil";
+import { onLetterKeyDown, onLetterKey, onLetterChange, onWordKey, onWordChange } from "./_textInput";
+import { indexAllInputFields } from "./_storage"
 
 /**
  * On page load, look for any instances of elements tag with class names we respond to.

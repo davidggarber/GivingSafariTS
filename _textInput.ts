@@ -1,10 +1,10 @@
 import { hasClass, getOptionalStyle,
   findParentOfClass, findFirstChildOfClass, findNextOfClass, 
   findInNextContainer, findEndInContainer,
-  indexInContainer, childAtIndex, moveFocus } from "./classUtil";
-import { toggleHighlight } from "./notes";
-import { isDebug } from "./boilerplate";
-import { saveLetterLocally, saveWordLocally } from "./storage";
+  indexInContainer, childAtIndex, moveFocus } from "./_classUtil";
+import { toggleHighlight } from "./_notes";
+import { isDebug } from "./_boilerplate";
+import { saveLetterLocally, saveWordLocally } from "./_storage";
 
 /**
  * Any event stemming from key in this list should be ignored

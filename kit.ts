@@ -1,7 +1,7 @@
 
 
 /*-----------------------------------------------------------
- * classUtil.ts
+ * _classUtil.ts
  *-----------------------------------------------------------*/
 
 /**
@@ -294,7 +294,7 @@ export function moveFocus(input: HTMLInputElement,
 
 
 /*-----------------------------------------------------------
- * notes.ts
+ * _notes.ts
  *-----------------------------------------------------------*/
 
 export function toggleHighlight(elmt) {
@@ -302,7 +302,7 @@ export function toggleHighlight(elmt) {
 
 
 /*-----------------------------------------------------------
- * storage.ts
+ * _storage.ts
  *-----------------------------------------------------------*/
 
 export function saveLetterLocally(input: HTMLInputElement) {
@@ -315,7 +315,7 @@ export function indexAllInputFields() {
 }
 
 /*-----------------------------------------------------------
- * textInput.ts
+ * _textInput.ts
  *-----------------------------------------------------------*/
 
 
@@ -1039,7 +1039,7 @@ function findNextByPosition(root: Element,
 
 
 /*-----------------------------------------------------------
- * textSetup.ts
+ * _textSetup.ts
  *-----------------------------------------------------------*/
 
 
@@ -1520,7 +1520,7 @@ function hasProgress(event: Event): boolean {
 
 
 /*-----------------------------------------------------------
- * boilerplate.ts
+ * _boilerplate.ts
  *-----------------------------------------------------------*/
 
 

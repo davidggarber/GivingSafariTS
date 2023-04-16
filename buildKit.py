@@ -1,21 +1,17 @@
 import os
 
 kitFiles = [
-    'classUtil.ts',
-    'notes.ts',
-    'storage.ts',
-    'textInput.ts',
-    'textSetup.ts',
-    'boilerplate.ts'
+    '_classUtil.ts',
+    '_notes.ts',
+    '_storage.ts',
+    '_textInput.ts',
+    '_textSetup.ts',
+    '_boilerplate.ts'
 ]
 
 merged = []
 cwd = os.getcwd()
 print('Running in ' + cwd)
-if not cwd.endswith('kit'):
-  os.chdir('./kit')
-  cwd = os.getcwd()
-  print('chdir to ' + cwd)
 
 for srcFile in kitFiles:
   file = open(srcFile, "r")

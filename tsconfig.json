@@ -2,8 +2,9 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "outDir": "js",
+    "outDir": "./js",
     "sourceMap": true,
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
-  }
+  },
+  "exclude": ["**/_*.ts"]
 }

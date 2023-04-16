@@ -1,0 +1,19 @@
+{
+  "name": "givingsafarits",
+  "version": "1.0.0",
+  "description": "Giving Safari built on TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidggarber/GivingSafariTS.git"
+  },
+  "author": "David Garber",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davidggarber/GivingSafariTS/issues"
+  },
+  "homepage": "https://github.com/davidggarber/GivingSafariTS#readme"
+}

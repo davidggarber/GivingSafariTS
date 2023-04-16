@@ -22,8 +22,8 @@
       "type": "python",
       "request": "launch",
       "console": "integratedTerminal",
-      "program": "${workspaceFolder}/kit/buildKit.py",
-      "cwd": "${workspaceFolder}/kit"
+      "program": "${workspaceFolder}/buildKit.py",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }

@@ -1,5 +1,5 @@
-import { textSetup } from "./textSetup"
-import { toggleClass } from "./classUtil"
+import { textSetup } from "./_textSetup"
+import { toggleClass } from "./_classUtil"
 
 
 const urlArgs = {};

@@ -6,7 +6,7 @@
       {
           "label": "merge_kit_ts",
           "type": "shell",
-          "command": "python kit/buildKit.py",
+          "command": "python buildKit.py",
       },
       {
           "type": "typescript",
