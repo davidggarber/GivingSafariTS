@@ -5,7 +5,7 @@ import { hasClass, getOptionalStyle,
 import { toggleHighlight } from "./notes";
 import { isDebug } from "./boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./storage";
-  
+
 /**
  * Any event stemming from key in this list should be ignored
  */

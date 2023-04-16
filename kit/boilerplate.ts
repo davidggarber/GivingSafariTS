@@ -1,4 +1,41 @@
 import { textSetup } from "./textSetup"
+import { toggleClass } from "./classUtil"
+
+
+const urlArgs = {};
+
+function debugSetup() {
+    var search = window.location.search;
+    if (search !== '') {
+        search = search.substring(1);  // trim leading ?
+        var args = search.split('&');
+        for (var i = 0; i < args.length; i++) {
+            var toks = args[i].split('=');
+            if (toks.length > 1) {
+                urlArgs[toks[0].toLowerCase()] = toks[1];
+            }
+            else {
+                urlArgs[toks[0].toLowerCase()] = true;  // e.g. present
+            }
+        }
+    }
+}
+
+export function isDebug() {
+  return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
+}
+
+export function isIFrame() {
+  return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
+}
+
+function preSetup() {
+  debugSetup();
+  if (isIFrame()) {
+      var bodies = document.getElementsByTagName('body');
+      bodies[0].classList.add('iframe');
+  }
+}
 
 type BoilerPlateData = {
   title: string;
@@ -65,8 +102,8 @@ function boilerplate(bp: BoilerPlateData) {
 
   document.title = bp['title'];
   
-  body.classList.add(bp['paperSize'] === null ? 'letter' : bp['paperSize']);
-  body.classList.add(bp['orientation'] === null ? 'portrait' : bp['orientation']);
+  toggleClass(body, bp['paperSize'] || 'letter');
+  toggleClass(body, bp['orientation'] || 'portrait');
 
   const page: HTMLDivElement = createSimpleDiv({id:'page', cls:'printedPage'});
   const margins: HTMLDivElement = createSimpleDiv({cls:'pageWithinMargins'});
@@ -93,42 +130,6 @@ function boilerplate(bp: BoilerPlateData) {
   //setTimeout(checkLocalStorage, 100);
 
 }
-
-const urlArgs = {};
-
-function debugSetup() {
-    var search = window.location.search;
-    if (search !== '') {
-        search = search.substring(1);  // trim leading ?
-        var args = search.split('&');
-        for (var i = 0; i < args.length; i++) {
-            var toks = args[i].split('=');
-            if (toks.length > 1) {
-                urlArgs[toks[0].toLowerCase()] = toks[1];
-            }
-            else {
-                urlArgs[toks[0].toLowerCase()] = true;  // e.g. present
-            }
-        }
-    }
-}
-
-export function isDebug() {
-  return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
-}
-
-export function isIFrame() {
-  return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
-}
-
-function preSetup() {
-  debugSetup();
-  if (isIFrame()) {
-      var bodies = document.getElementsByTagName('body');
-      bodies[0].classList.add('iframe');
-  }
-}
-
 
 declare let boiler: any;
 window.onload = function(){boilerplate(boiler as BoilerPlateData)};
