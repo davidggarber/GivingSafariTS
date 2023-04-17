@@ -1,15 +1,18 @@
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
- * @param cls - A class name to toggle
+ * @param cls - A class name to toggle (unless null)
  * @param bool - If omitted, cls is toggled in the classList; if true, cls is added; if false, cls is removed
  */
-export function toggleClass(obj: Node|string, 
-                            cls: string, 
-                            bool: boolean = undefined) {
+export function toggleClass(obj: Node|string|null, 
+                            cls: string|null, 
+                            bool?: boolean) {
+  if (obj === null || cls === null || cls === undefined) {
+    return;
+  }
   let elmt: Element;
   if ('string' === typeof obj) {
-    elmt = document.getElementById(obj as string);
+    elmt = document.getElementById(obj as string) as Element;
   }
   else {
     elmt = obj as Element;
@@ -33,12 +36,15 @@ export function toggleClass(obj: Node|string,
  * @param cls - A class name to test
  * @returns true iff the class is in the classList
  */
-export function hasClass( obj: Node|string, 
-                          cls: string) 
+export function hasClass( obj: Node|string|null, 
+                          cls: string|undefined) 
                           : boolean {
+  if (obj === null || cls === undefined) {
+    return false;
+  }
   let elmt: Element;
   if ('string' === typeof obj) {
-    elmt = document.getElementById(obj as string);
+    elmt = document.getElementById(obj as string) as Element;
   }
   else {
     elmt = obj as Element;
@@ -71,14 +77,13 @@ export function applyAllClasses(obj: Node|string,
  */
 export function findNextOfClass(current: Element, 
                                 matchClass: string, 
-                                skipClass: string = null, 
+                                skipClass?: string, 
                                 dir: number = 1)
-                                : Element {
-  skipClass = skipClass || null;
+                                : Element|null {
   var inputs = document.getElementsByClassName(matchClass);
   var found = false;
   for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
-      if (skipClass != null && hasClass(inputs[i], skipClass)) {
+      if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
           continue;
       }
       if (found) {
@@ -100,8 +105,8 @@ export function indexInContainer( current: Element,
                                   parentObj: Element|string, 
                                   sibClass: string) {
   let parent: Element;
-  if (typeof(parent) == 'string') {
-      parent = findParentOfClass(current, parentObj as string);
+  if (typeof(parentObj) == 'string') {
+      parent = findParentOfClass(current, parentObj as string) as Element;
   }
   else {
     parent = parentObj as Element;
@@ -125,7 +130,7 @@ export function indexInContainer( current: Element,
 export function childAtIndex( parent: Element, 
                               childClass: string, 
                               index: number)
-                              : Element {
+                              : Element|null {
   var sibs = parent.getElementsByClassName(childClass);
   if (index < 0) {
       index = sibs.length + index;
@@ -149,22 +154,22 @@ export function childAtIndex( parent: Element,
 */
 export function findInNextContainer(current: Element, 
                                     matchClass: string, 
-                                    skipClass: string, 
+                                    skipClass: string|undefined, 
                                     containerClass: string, 
                                     dir: number = 1)
-                                    : Element {
+                                    : Element|null {
   var container = findParentOfClass(current, containerClass);
   if (container == null) {
       return null;
   }
-  var nextContainer = findNextOfClass(container, containerClass, null, dir);
+  var nextContainer = findNextOfClass(container, containerClass, undefined, dir);
   while (nextContainer != null) {
       var child = findFirstChildOfClass(nextContainer, matchClass, skipClass);
       if (child != null) {
           return child;
       }
       // Look further ahead
-      nextContainer = findNextOfClass(nextContainer, containerClass, null, dir);
+      nextContainer = findNextOfClass(nextContainer, containerClass, undefined, dir);
   }
   return null;
 }
@@ -180,7 +185,7 @@ export function findInNextContainer(current: Element,
  */
 export function findEndInContainer( current: Element, 
                                     matchClass: string, 
-                                    skipClass: string = null, 
+                                    skipClass: string|undefined, 
                                     containerClass: string, 
                                     dir: number = 1) {
   var container = findParentOfClass(current, containerClass);
@@ -198,7 +203,7 @@ export function findEndInContainer( current: Element,
  */
 export function findParentOfClass(elmt: Element, 
                                   parentClass: string)
-                                  : Element {
+                                  : Element|null {
   if (parentClass == null || parentClass == undefined) {
       return null;
   }
@@ -221,9 +226,9 @@ export function findParentOfClass(elmt: Element,
  */
 export function findFirstChildOfClass( elmt: Element, 
                                 childClass: string, 
-                                skipClass: string = null, 
+                                skipClass: string|undefined = undefined,
                                 dir: number = 1)
-                                : Element {
+                                : Element|null {
   var children = elmt.getElementsByClassName(childClass);
   for (var i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
       if (skipClass !== null && hasClass(children[i], skipClass)) {
@@ -244,21 +249,21 @@ export function findFirstChildOfClass( elmt: Element,
  */
 export function getOptionalStyle( elmt: Element, 
                                   attrName: string, 
-                                  defaultStyle: string = null, 
-                                  prefix :string = '')
-                                  : string {
+                                  defaultStyle?: string, 
+                                  prefix?: string)
+                                  : string|null {
   var val = elmt.getAttribute(attrName);
   while (val === null) {
     elmt = elmt.parentNode as Element;
     if (elmt === null || elmt.tagName === 'BODY') {
-      val = defaultStyle;
+      val = defaultStyle || null;
       break;
     }
     else {
       val = elmt.getAttribute(attrName);
     }
   }
-  return (val === null || prefix === null) ? val : (prefix + val);
+  return (val === null || prefix === undefined) ? val : (prefix + val);
 }
 
 /**
@@ -269,7 +274,7 @@ export function getOptionalStyle( elmt: Element,
  * @returns true if the input element and caret position are valid, else false
  */
 export function moveFocus(input: HTMLInputElement, 
-                          caret: number|undefined = undefined)
+                          caret?: number)
                           : boolean {
   if (input !== null) {
       input.focus();

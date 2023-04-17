@@ -7,12 +7,12 @@ import { indexAllInputFields } from "./_storage"
  * When found, expand those elements appropriately.
  */
 export function textSetup() {
-  setupLetterPatterns();
-  setupExtractPattern();
-  setupLetterCells();
-  setupLetterInputs();
-  setupWordCells();
-  indexAllInputFields();
+    setupLetterPatterns();
+    setupExtractPattern();
+    setupLetterCells();
+    setupLetterInputs();
+    setupWordCells();
+    indexAllInputFields();
 }
 
 /**
@@ -46,67 +46,68 @@ export function textSetup() {
  *   NOTE: the -style and -image fields can be placed on the affected pattern tag, or on any parent below the <BODY>.
  */
 function setupLetterPatterns() {
-  var patterns:HTMLCollectionOf<Element> = document.getElementsByClassName('create-from-pattern');
-  for (let i = 0; i < patterns.length; i++) {
-      var parent = patterns[i];
-      var pattern = parseNumberPattern(parent, 'data-letter-pattern');
-      var extractPattern = parsePattern(parent, 'data-extract-indeces');
-      var numberedPattern = parsePattern2(parent, 'data-number-assignments');
-      var vertical = hasClass(parent, 'vertical');
-      var numeric = hasClass(parent, 'numeric');
-      var styles = getLetterStyles(parent, 'underline', null, numberedPattern == null ? 'box' : 'numbered');
+    var patterns:HTMLCollectionOf<Element> = document.getElementsByClassName('create-from-pattern');
+    for (let i = 0; i < patterns.length; i++) {
+        var parent = patterns[i];
+        var pattern = parseNumberPattern(parent, 'data-letter-pattern');
+        var extractPattern = parsePattern(parent, 'data-extract-indeces');
+        var numberedPattern = parsePattern2(parent, 'data-number-assignments');
+        var vertical = hasClass(parent, 'vertical');
+        var numeric = hasClass(parent, 'numeric');
+        var styles = getLetterStyles(parent, 'underline', '', numberedPattern == null ? 'box' : 'numbered');
 
-      if (pattern != null) { //if (parent.classList.contains('letter-cell-block')) {
-          var prevCount = 0;
-          for (var pi = 0; pi < pattern.length; pi++) {
-              if (pattern[pi]['type'] == 'number') {
-                  var count = pattern[pi]['count'];
-                  for (var ci = 1; ci <= count; ci++) {
-                      var span = document.createElement('span');
-                      toggleClass(span, 'letter-cell', true);
-                      applyAllClasses(span, styles.letter);
-                      toggleClass(span, 'numeric', numeric);
-  
-                      var index = prevCount + ci;
-                      //Highlight and Extract patterns MUST be in ascending order
-                      if (extractPattern.indexOf(index) >= 0) {
-                          toggleClass(span, 'extract', true);
-                          applyAllClasses(span, styles.extract);
-                      }
-                      if (numberedPattern[index] !== undefined) {
-                          toggleClass(span, 'extract', true);
-                          toggleClass(span, 'numbered', true);  // indicates numbers used in extraction
-                          applyAllClasses(span, styles.extract);  // 'extract-numbered' indicates the visual appearance
-                          var number = document.createElement('span');
-                          toggleClass(number, 'under-number');
-                          number.innerText = numberedPattern[index];
-                          span.setAttribute('data-number', numberedPattern[index]);
-                          span.appendChild(number);
-                      }
-                      parent.appendChild(span);
-                      if (vertical && (ci < count || pi < pattern.length - 1)) {
-                          parent.appendChild(document.createElement('br'));
-                      }
-                  }
-                  prevCount += count;
-              }
-              else if (pattern[pi]['type'] == 'text') {
-                  var span = createLetterLiteral(pattern[pi]['char']);
-                  span.classList.add(styles.literal);
-                  parent.appendChild(span);
-                  if (vertical && (pi < pattern.length - 1)) {
-                      parent.appendChild(document.createElement('br'));
-                  }
-              }
-          }
-      }
-  }
+        if (pattern != null) { //if (parent.classList.contains('letter-cell-block')) {
+            var prevCount = 0;
+            for (var pi = 0; pi < pattern.length; pi++) {
+                if (pattern[pi]['count']) {
+                    var count:number = pattern[pi]['count'] as number;
+                    for (var ci = 1; ci <= count; ci++) {
+                        var span = document.createElement('span');
+                        toggleClass(span, 'letter-cell', true);
+                        applyAllClasses(span, styles.letter);
+                        toggleClass(span, 'numeric', numeric);
+    
+                        var index = prevCount + ci;
+                        //Highlight and Extract patterns MUST be in ascending order
+                        if (extractPattern.indexOf(index) >= 0) {
+                            toggleClass(span, 'extract', true);
+                            applyAllClasses(span, styles.extract);
+                        }
+                        if (numberedPattern[index] !== undefined) {
+                            toggleClass(span, 'extract', true);
+                            toggleClass(span, 'numbered', true);  // indicates numbers used in extraction
+                            applyAllClasses(span, styles.extract);  // 'extract-numbered' indicates the visual appearance
+                            var number = document.createElement('span');
+                            toggleClass(number, 'under-number');
+                            number.innerText = numberedPattern[index];
+                            span.setAttribute('data-number', numberedPattern[index]);
+                            span.appendChild(number);
+                        }
+                        parent.appendChild(span);
+                        if (vertical && (ci < count || pi < pattern.length - 1)) {
+                            parent.appendChild(document.createElement('br'));
+                        }
+                    }
+                    prevCount += count;
+                }
+                else if (pattern[pi]['char'] !== null) {
+                    const lit = pattern[pi]['char'] as string
+                    var span = createLetterLiteral(lit);
+                    toggleClass(span, styles.literal, true);
+                    parent.appendChild(span);
+                    if (vertical && (pi < pattern.length - 1)) {
+                        parent.appendChild(document.createElement('br'));
+                    }
+                }
+            }
+        }
+    }
 }
 
 interface LetterStyles {
-  letter: string;
-  literal: string;
-  extract: string;
+    letter: string;
+    literal: string;
+    extract: string;
 }
 
 /**
@@ -117,21 +118,21 @@ interface LetterStyles {
  * @param defExtract - A default extraction style
  * @returns An object with a style name for each role
  */
-function getLetterStyles( elmt: Element, 
-                          defLetter: string, 
-                          defLiteral: string, 
-                          defExtract: string)
-                          : LetterStyles {
-  var letter = getOptionalStyle(elmt, 'data-input-style', defLetter, 'letter-');
-  var literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
-  literal = (literal != null) ? ('literal-' + literal) : letter;
-  var extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
+function getLetterStyles(   elmt: Element, 
+                            defLetter: string, 
+                            defLiteral: string|undefined, 
+                            defExtract: string)
+                            : LetterStyles {
+    var letter = getOptionalStyle(elmt, 'data-input-style', defLetter, 'letter-');
+    var literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
+    literal = (literal != null) ? ('literal-' + literal) : letter;
+    var extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
 
-  return {
-      'letter' : letter,
-      'extract' : extract,
-      'literal' : literal
-  };
+    return {
+        'letter' : letter as string,
+        'extract' : extract as string,
+        'literal' : literal as string
+    };
 }
 
 /**
@@ -143,19 +144,19 @@ function getLetterStyles( elmt: Element,
  */
 function createLetterLiteral(char: string)
                             : HTMLElement {
-  if (char == '¶') {
-      // Paragraph markers could be formatting, but just as likely are really spaces
-      var br = document.createElement('br');
-      br.classList.add('letter-input');
-      br.classList.add('letter-non-input');
-      br.setAttributeNS(null, 'data-literal', '¶');
-      return br;
-  }
-  var span = document.createElement('span');
-  span.classList.add('letter-cell');
-  span.classList.add('literal');
-  initLiteralLetter(span, char);
-  return span;
+    if (char == '¶') {
+        // Paragraph markers could be formatting, but just as likely are really spaces
+        var br = document.createElement('br');
+        br.classList.add('letter-input');
+        br.classList.add('letter-non-input');
+        br.setAttributeNS(null, 'data-literal', '¶');
+        return br;
+    }
+    var span = document.createElement('span');
+    span.classList.add('letter-cell');
+    span.classList.add('literal');
+    initLiteralLetter(span, char);
+    return span;
 }
 
 /**
@@ -165,24 +166,24 @@ function createLetterLiteral(char: string)
  */
 function initLiteralLetter( span: HTMLElement, 
                             char: string) {
-  if (char == ' ') {
-      span.innerText = '\xa0';
-  }
-  else if (char == '¤') {
-      span.innerText = '\xa0';
-      span.classList.add('block');
-  }
-  else {
-      span.innerText = char;
-  }
+    if (char == ' ') {
+        span.innerText = '\xa0';
+    }
+    else if (char == '¤') {
+        span.innerText = '\xa0';
+        span.classList.add('block');
+    }
+    else {
+        span.innerText = char;
+    }
 }
 
 /**
  * A token in a pattern of text input
  */
 interface NumberPatternToken {
-  char?: string;
-  count?: number;
+    char?: string;
+    count?: number;
 }
 
 /**
@@ -200,25 +201,25 @@ interface NumberPatternToken {
 function parseNumberPattern(elmt: Element, 
                             patternAttr: string)
                             : NumberPatternToken[] {
-  var pattern = elmt.getAttributeNS('', patternAttr);
-  if (pattern == null) {
-      return null;
-  }
-  var list:NumberPatternToken[] = [];
-  for (var pi = 0; pi < pattern.length; pi++) {
-      var count = 0;
-      while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
-          count = count * 10 + (pattern.charCodeAt(pi) - 48);
-          pi++;
-      }
-      if (count > 0) {
-          list.push({count: count as number});
-      }
-      if (pi < pattern.length) {
-          list.push({char: pattern[pi]});
-      }
-  }
-  return list;
+    var list:NumberPatternToken[] = [];
+    var pattern = elmt.getAttributeNS('', patternAttr);
+    if (pattern == null) {
+        return list;
+    }
+    for (var pi = 0; pi < pattern.length; pi++) {
+        var count = 0;
+        while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
+            count = count * 10 + (pattern.charCodeAt(pi) - 48);
+            pi++;
+        }
+        if (count > 0) {
+            list.push({count: count as number});
+        }
+        if (pi < pattern.length) {
+            list.push({char: pattern[pi]});
+        }
+    }
+    return list;
 }
 
 /**
@@ -231,21 +232,21 @@ function parseNumberPattern(elmt: Element,
  * @param offset - (optional) An offset to apply to each number
  * @returns An array of numbers
  */
-function parsePattern(elmt: Element, 
-                      patternAttr: string, 
-                      offset: number = 0)
-                      : number[] {
-  var pattern = elmt.getAttributeNS('', patternAttr);
-  offset = offset || 0;
-  const set:number[] = [];
-  if (pattern != null)
-  {
-      var array = pattern.split(' ');
-      for(let i:number = 0; i < array.length; i++){
-          set.push(parseInt(array[i]) + offset);
-      }
-  }
-  return set;
+function parsePattern(  elmt: Element, 
+                        patternAttr: string, 
+                        offset: number = 0)
+                        : number[] {
+    var pattern = elmt.getAttributeNS('', patternAttr);
+    offset = offset || 0;
+    const set:number[] = [];
+    if (pattern != null)
+    {
+        var array = pattern.split(' ');
+        for(let i:number = 0; i < array.length; i++){
+            set.push(parseInt(array[i]) + offset);
+        }
+    }
+    return set;
 }
 
 /**
@@ -263,18 +264,18 @@ function parsePattern2( elmt: Element,
                         patternAttr: string, 
                         offset: number = 0)
                         : object {
-  var pattern = elmt.getAttributeNS('', patternAttr);
-  offset = offset || 0;
-  var set = {};
-  if (pattern != null)
-  {
-      var array = pattern.split(' ');
-      for(let i:number = 0; i < array.length; i++){
-          var equals = array[i].split('=');
-          set[parseInt(equals[0]) + offset] = equals[1];
-      }
-  }
-  return set;
+    var pattern = elmt.getAttributeNS('', patternAttr);
+    offset = offset || 0;
+    var set = {};
+    if (pattern != null)
+    {
+        var array = pattern.split(' ');
+        for(let i:number = 0; i < array.length; i++){
+            var equals = array[i].split('=');
+            set[parseInt(equals[0]) + offset] = equals[1];
+        }
+    }
+    return set;
 }
 
 /**
@@ -294,57 +295,60 @@ function parsePattern2( elmt: Element,
  *   "literal" - format that cell as read-only, and overlay the literal text or whitespace
  */
 function setupLetterCells() {
-  var cells = document.getElementsByClassName('letter-cell');
-  let extracteeIndex:number = 1;
-  let extractorIndex:number = 1;
-  for (var i = 0; i < cells.length; i++) {
-      const cell:HTMLElement = cells[i] as HTMLElement;
+    var cells = document.getElementsByClassName('letter-cell');
+    let extracteeIndex:number = 1;
+    let extractorIndex:number = 1;
+    for (var i = 0; i < cells.length; i++) {
+        const cell:HTMLElement = cells[i] as HTMLElement;
 
-      // Place a small text input field in each cell
-      const inp:HTMLInputElement = document.createElement('input');
-      inp.type = 'text';
-      if (hasClass(cell, 'numeric')) {
-          // We never submit, so this doesn't have to be exact. But it should trigger the mobile numeric keyboard
-          inp.pattern = '[0-9]*';  // iOS
-          inp.inputMode = 'numeric';  // Android
-      }
-      toggleClass(inp, 'letter-input');
-      if (hasClass(cell, 'extract')) {
-        toggleClass(inp, 'extract-input');
-          var extractImg = getOptionalStyle(cell, 'data-extract-image', null);
-          if (extractImg != null) {
-              var img = document.createElement('img');
-              img.src = extractImg;
-              img.classList.add('extract-image');
-              cell.appendChild(img);
-          }
-      
-          if (hasClass(cell, 'numbered')) {
-              toggleClass(inp, 'numbered-input');
-              inp.setAttribute('data-number', cell.getAttribute('data-number'));
-          }
-          else {
-              // Implicit number based on reading order
-              inp.setAttribute('data-number', "" + extracteeIndex++);
-          }
-      }
-      if (hasClass(cell, 'extractor')) {
-          toggleClass(inp, 'extractor-input');
-          inp.id = 'extractor-' + extractorIndex++;
-      }
+        // Place a small text input field in each cell
+        const inp:HTMLInputElement = document.createElement('input');
+        inp.type = 'text';
+        if (hasClass(cell, 'numeric')) {
+            // We never submit, so this doesn't have to be exact. But it should trigger the mobile numeric keyboard
+            inp.pattern = '[0-9]*';  // iOS
+            inp.inputMode = 'numeric';  // Android
+        }
+        toggleClass(inp, 'letter-input');
+        if (hasClass(cell, 'extract')) {
+            toggleClass(inp, 'extract-input');
+            var extractImg = getOptionalStyle(cell, 'data-extract-image');
+            if (extractImg != null) {
+                var img = document.createElement('img');
+                img.src = extractImg;
+                img.classList.add('extract-image');
+                cell.appendChild(img);
+            }
+        
+            if (hasClass(cell, 'numbered')) {
+                toggleClass(inp, 'numbered-input');
+                const dataNumber = cell.getAttribute('data-number');
+                if (dataNumber != null) {
+                    inp.setAttribute('data-number', dataNumber);
+                }
+            }
+            else {
+                // Implicit number based on reading order
+                inp.setAttribute('data-number', "" + extracteeIndex++);
+            }
+        }
+        if (hasClass(cell, 'extractor')) {
+            toggleClass(inp, 'extractor-input');
+            inp.id = 'extractor-' + extractorIndex++;
+        }
 
-      if (hasClass(cell, 'literal')) {
-          inp.setAttribute('disabled', '');
-          toggleClass(inp, 'letter-non-input');
-          inp.setAttribute('data-literal', cell.innerText == '\xa0' ? ' ' : cell.innerText);
-          var span = document.createElement('span');
-          toggleClass(span, 'letter-literal');
-          span.innerText = cell.innerText;
-          cell.innerHTML = '';
-          cell.appendChild(span);
-      }
-      cell.appendChild(inp);
-  }
+        if (hasClass(cell, 'literal')) {
+            inp.setAttribute('disabled', '');
+            toggleClass(inp, 'letter-non-input');
+            inp.setAttribute('data-literal', cell.innerText == '\xa0' ? ' ' : cell.innerText);
+            var span = document.createElement('span');
+            toggleClass(span, 'letter-literal');
+            span.innerText = cell.innerText;
+            cell.innerHTML = '';
+            cell.appendChild(span);
+        }
+        cell.appendChild(inp);
+    }
 }
 
 /**
@@ -353,13 +357,13 @@ function setupLetterCells() {
  *   has keyup/down/change event handlers added.
  */
 function setupLetterInputs() {
-  var inputs = document.getElementsByClassName('letter-input');
-  for (var i = 0; i < inputs.length; i++) {
-      const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
-      inp.onkeydown=function(e){onLetterKeyDown(e)};
-      inp.onkeyup=function(e){onLetterKey(e)};
-      inp.onchange=function(e){onLetterChange(e as KeyboardEvent)};
-  }
+    var inputs = document.getElementsByClassName('letter-input');
+    for (var i = 0; i < inputs.length; i++) {
+        const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
+        inp.onkeydown=function(e){onLetterKeyDown(e)};
+        inp.onkeyup=function(e){onLetterKey(e)};
+        inp.onchange=function(e){onLetterChange(e as KeyboardEvent)};
+    }
 }
 
 /**
@@ -368,36 +372,36 @@ function setupLetterInputs() {
  *   <div><input type='text' class="word-input" /></div>  // for simple multi-letter text input
  */
 function setupWordCells() {
-  var cells = document.getElementsByClassName('word-cell');
-  for (var i = 0; i < cells.length; i++) {
-      const cell:HTMLElement = cells[i] as HTMLElement;
-      var inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
+    var cells = document.getElementsByClassName('word-cell');
+    for (var i = 0; i < cells.length; i++) {
+        const cell:HTMLElement = cells[i] as HTMLElement;
+        var inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
 
-      // Place a small text input field in each cell
-      const inp:HTMLInputElement = document.createElement('input');
-      inp.type = 'text';
-      toggleClass(inp, 'word-input');
+        // Place a small text input field in each cell
+        const inp:HTMLInputElement = document.createElement('input');
+        inp.type = 'text';
+        toggleClass(inp, 'word-input');
 
-      if (inpStyle != null) {
-        toggleClass(inp, inpStyle);
-      }
+        if (inpStyle != null) {
+            toggleClass(inp, inpStyle);
+        }
 
-      if (hasClass(cell, 'literal')) {
-          inp.setAttribute('disabled', '');
-          toggleClass(inp, 'word-non-input');
-          var span:HTMLElement = document.createElement('span');
-          toggleClass(span, 'word-literal');
-          span.innerText = cell.innerText;
-          cell.innerHTML = '';
-          cell.appendChild(span);
-      }
-      else {
-          inp.onkeydown=function(e){onLetterKeyDown(e)};
-          inp.onkeyup=function(e){onWordKey(e)};
-          inp.onchange=function(e){onWordChange(e as KeyboardEvent)};
-      }
-      cell.appendChild(inp);
-  }
+        if (hasClass(cell, 'literal')) {
+            inp.setAttribute('disabled', '');
+            toggleClass(inp, 'word-non-input');
+            var span:HTMLElement = document.createElement('span');
+            toggleClass(span, 'word-literal');
+            span.innerText = cell.innerText;
+            cell.innerHTML = '';
+            cell.appendChild(span);
+        }
+        else {
+            inp.onkeydown=function(e){onLetterKeyDown(e)};
+            inp.onkeyup=function(e){onWordKey(e)};
+            inp.onchange=function(e){onWordChange(e as KeyboardEvent)};
+        }
+        cell.appendChild(inp);
+    }
 }
 
 /**
@@ -408,50 +412,50 @@ function setupWordCells() {
  * @todo: clarify the difference between "extracted" and "extractor"
  */
 function setupExtractPattern() {
-  const extracted = document.getElementById('extracted');
-  if (extracted === null) {
-      return;
-  }
-  let numbered:boolean = true;
-  // Special case: if extracted root is tagged data-indexed-by-letter, 
-  // then the indeces that lead here are letters rather than the usual numbers.
-  const lettered:boolean = extracted.getAttributeNS('', 'data-indexed-by-letter') != null;
-  // Get the style to use for each extracted value. Default: "letter-underline"
-  var extractorStyle = getOptionalStyle(extracted, 'data-extractor-style', 'underline', 'letter-');
+    const extracted = document.getElementById('extracted');
+    if (extracted === null) {
+        return;
+    }
+    let numbered:boolean = true;
+    // Special case: if extracted root is tagged data-indexed-by-letter, 
+    // then the indeces that lead here are letters rather than the usual numbers.
+    const lettered:boolean = extracted.getAttributeNS('', 'data-indexed-by-letter') != null;
+    // Get the style to use for each extracted value. Default: "letter-underline"
+    var extractorStyle = getOptionalStyle(extracted, 'data-extractor-style', 'underline', 'letter-');
 
-  let numPattern = parseNumberPattern(extracted, 'data-number-pattern');
-  if (numPattern === null) {
-      numbered = false;
-      numPattern = parseNumberPattern(extracted, 'data-letter-pattern');
-  }
-  if (numPattern != null) {
-      var nextNumber = 1;
-      for (var pi = 0; pi < numPattern.length; pi++) {
-          if (numPattern[pi]['count'] !== null) {
-              var count = numPattern[pi]['count'];
-              for (var ci = 1; ci <= count; ci++) {
-                  const span:HTMLSpanElement = document.createElement('span');
-                  toggleClass(span, 'letter-cell');
-                  toggleClass(span, 'extractor');
-                  toggleClass(span, extractorStyle);
-                  extracted.appendChild(span);
-                  if (numbered) {
-                      toggleClass(span, 'numbered');
-                      const number:HTMLSpanElement = document.createElement('span');
-                      toggleClass(number, 'under-number');
-                      number.innerText = lettered ? String.fromCharCode(64 + nextNumber) : ("" + nextNumber);
-                      span.setAttribute('data-number', "" + nextNumber);
-                      span.appendChild(number);
-                      nextNumber++;
-                  }
-              }
-          }
-          else if (numPattern[pi]['char'] !== null) {
-              var span = createLetterLiteral(numPattern[pi]['char']);
-              extracted.appendChild(span);
-          }
-      }
-  }
+    let numPattern = parseNumberPattern(extracted, 'data-number-pattern');
+    if (numPattern === null) {
+        numbered = false;
+        numPattern = parseNumberPattern(extracted, 'data-letter-pattern');
+    }
+    if (numPattern != null) {
+        var nextNumber = 1;
+        for (var pi = 0; pi < numPattern.length; pi++) {
+            if (numPattern[pi]['count'] !== null) {
+                var count = numPattern[pi]['count'] as number;
+                for (var ci = 1; ci <= count; ci++) {
+                    const span:HTMLSpanElement = document.createElement('span');
+                    toggleClass(span, 'letter-cell', true);
+                    toggleClass(span, 'extractor', true);
+                    toggleClass(span, extractorStyle, true);
+                    extracted.appendChild(span);
+                    if (numbered) {
+                        toggleClass(span, 'numbered');
+                        const number:HTMLSpanElement = document.createElement('span');
+                        toggleClass(number, 'under-number');
+                        number.innerText = lettered ? String.fromCharCode(64 + nextNumber) : ("" + nextNumber);
+                        span.setAttribute('data-number', "" + nextNumber);
+                        span.appendChild(number);
+                        nextNumber++;
+                    }
+                }
+            }
+            else if (numPattern[pi]['char'] !== null) {
+                var span = createLetterLiteral(numPattern[pi]['char'] as string);
+                extracted.appendChild(span);
+            }
+        }
+    }
 }
 
 /**
@@ -460,19 +464,19 @@ function setupExtractPattern() {
  * @returns true if any letter-input or word-input fields have user values
  */
 function hasProgress(event: Event): boolean {
-  let inputs = document.getElementsByClassName('letter-input');
-  for (var i = 0; i < inputs.length; i++) {
-      const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
-      if (inp.value != '') {
-          return true;
-      }
-  }
-  inputs = document.getElementsByClassName('word-input');
-  for (var i = 0; i < inputs.length; i++) {
-      const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
-      if (inp.value != '') {
-          return true;
-      }
-  }
-  return false;
+    let inputs = document.getElementsByClassName('letter-input');
+    for (var i = 0; i < inputs.length; i++) {
+        const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
+        if (inp.value != '') {
+            return true;
+        }
+    }
+    inputs = document.getElementsByClassName('word-input');
+    for (var i = 0; i < inputs.length; i++) {
+        const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
+        if (inp.value != '') {
+            return true;
+        }
+    }
+    return false;
 }

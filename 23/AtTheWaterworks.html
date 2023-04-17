@@ -1,9 +1,12 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
     <script src="../js/kit.js"></script>
     <link href="23.css" rel="Stylesheet" type="text/css"></link>
-    <link href="pageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="TextInput.css" rel="Stylesheet" type="text/css"></link>
     <link rel="shortcut icon" type="image/png" href="Images/Beaker_icon.png">
     <script>
       const boiler = {
@@ -22,6 +25,14 @@
       .hint {
         position: absolute;
       }
+      .hint svg {
+        position: absolute;
+      }
+      .arrow {
+        stroke-width: 3;
+        fill: none;
+        stroke: black;
+      }
     </style>
   </head>
   <body class="debugx">
@@ -30,13 +41,35 @@
         In the first Magic School Bus book, Ms. Frizzle&rsquo;s class visits the waterworks and learns about the water cycle.  
         Looks like this cycle is missing all the labels. To <i>compound</i> the problem, the pictures look mixed <br>up as well. 
         Can you help the students find the missing <i>nouns</i> and reorder the cycle?
+      </p>
+      <svg >
+        <defs>
+          <marker id='head' orient="auto"
+            markerWidth='3' markerHeight='4'
+            refX='0.5' refY='1.5'>
+            <path d='M0,0 V3 L3,1.5 Z' fill="black"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="hint" style="left: 3in; top: 1in;">
+        <p class="letter-cell-block create-from-pattern" data-letter-pattern="WATER" data-literal-style="underline"></p>
+        <img src="Images/Wworks/spoon.jpg" style="height:1in; position:absolute; top:0.5in; left:-0.3in;" alt="an eating utensil">
+        <svg style="left: 1in; top:0.3in;">
+          <path class="arrow" marker-end='url(#head)' d='M10,10, L50,30'/>
+        </svg>
+      </div>
+      <div class="hint" style="left: 4.8in; top: 1.7in;">
+        <p class="letter-cell-block create-from-pattern" data-letter-pattern="3" data-number-assignments="3=3"></p>
+        <img src="Images/Wworks/box.jpg" style="height:1in; position:absolute; top:-.34in; left: .6in;" alt="a cardboard container">
+        <svg style="left: 0.5in; top:0.5in;">
+          <path class="arrow" marker-end='url(#head)' d='M10,10, L40,50'/>
+        </svg>
+      </div>
 
-        <div class="hint" style="left: 3in; top: 0.1in;">
-          <p class="letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="5=10"></p>
-          <img src="Images/Wworks/spoon.jpg" style="height:1in; position:absolute; top:0.5in" >
-
-        </div>
-      </p>      
+      <div class="hint" style="left: 5.75in; top: 3in;">
+        <p class="letter-cell-block create-from-pattern" data-letter-pattern="4" data-number-assignments="1=4"></p>
+        <img src="Images/Wworks/beat.png" style="height:1.2in; position:absolute; top:-.2in; left: -1.5in;" alt="a pattern from a heart monitor">
+      </div>
     </div>
   </body>
 </html>

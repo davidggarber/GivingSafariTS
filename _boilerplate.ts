@@ -42,6 +42,7 @@ type BoilerPlateData = {
   author: string;
   copyright: string;
   type: string;  // todo: enum
+  lang?: string;  // en-us by default
   paperSize?: string;  // letter by default
   orientation?: string;  // portrait by default
   textInput?: boolean;  // false by default
@@ -88,7 +89,7 @@ function createSimpleA({id, cls, friendly, href, target}: CreateSimpleAArgs) : H
   }
   a.innerHTML = friendly;
   a.href = href;
-  a.target = target !== null ? target : '_blank';
+  a.target = target || '_blank';
   return a;
 }
 
@@ -97,11 +98,21 @@ function boilerplate(bp: BoilerPlateData) {
     return;
   }
 
-  const body:HTMLElement = document.getElementsByTagName('body')[0];
-  const pageBody:HTMLElement = document.getElementById('pageBody');
+  const html:HTMLHtmlElement = document.getElementsByTagName('html')[0] as HTMLHtmlElement;
+  const head:HTMLHeadElement = document.getElementsByTagName('head')[0] as HTMLHeadElement;
+  const body:HTMLBodyElement = document.getElementsByTagName('body')[0] as HTMLBodyElement;
+  const pageBody:HTMLDivElement = document.getElementById('pageBody') as HTMLDivElement;
 
   document.title = bp['title'];
   
+  html.lang = bp['lang'] || 'en-us';
+
+  const viewport = document.createElement('meta') as HTMLMetaElement;
+  viewport.name = 'viewport';
+  viewport.content = 'width=device-width, initial-scale=1'
+  head.appendChild(viewport);
+
+
   toggleClass(body, bp['paperSize'] || 'letter');
   toggleClass(body, bp['orientation'] || 'portrait');
 

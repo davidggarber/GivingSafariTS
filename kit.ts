@@ -7,15 +7,18 @@
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
- * @param cls - A class name to toggle
+ * @param cls - A class name to toggle (unless null)
  * @param bool - If omitted, cls is toggled in the classList; if true, cls is added; if false, cls is removed
  */
-export function toggleClass(obj: Node|string, 
-                            cls: string, 
-                            bool: boolean = undefined) {
+export function toggleClass(obj: Node|string|null, 
+                            cls: string|null, 
+                            bool?: boolean) {
+  if (obj === null || cls === null || cls === undefined) {
+    return;
+  }
   let elmt: Element;
   if ('string' === typeof obj) {
-    elmt = document.getElementById(obj as string);
+    elmt = document.getElementById(obj as string) as Element;
   }
   else {
     elmt = obj as Element;
@@ -39,12 +42,15 @@ export function toggleClass(obj: Node|string,
  * @param cls - A class name to test
  * @returns true iff the class is in the classList
  */
-export function hasClass( obj: Node|string, 
-                          cls: string) 
+export function hasClass( obj: Node|string|null, 
+                          cls: string|undefined) 
                           : boolean {
+  if (obj === null || cls === undefined) {
+    return false;
+  }
   let elmt: Element;
   if ('string' === typeof obj) {
-    elmt = document.getElementById(obj as string);
+    elmt = document.getElementById(obj as string) as Element;
   }
   else {
     elmt = obj as Element;
@@ -77,14 +83,13 @@ export function applyAllClasses(obj: Node|string,
  */
 export function findNextOfClass(current: Element, 
                                 matchClass: string, 
-                                skipClass: string = null, 
+                                skipClass?: string, 
                                 dir: number = 1)
-                                : Element {
-  skipClass = skipClass || null;
+                                : Element|null {
   var inputs = document.getElementsByClassName(matchClass);
   var found = false;
   for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
-      if (skipClass != null && hasClass(inputs[i], skipClass)) {
+      if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
           continue;
       }
       if (found) {
@@ -106,8 +111,8 @@ export function indexInContainer( current: Element,
                                   parentObj: Element|string, 
                                   sibClass: string) {
   let parent: Element;
-  if (typeof(parent) == 'string') {
-      parent = findParentOfClass(current, parentObj as string);
+  if (typeof(parentObj) == 'string') {
+      parent = findParentOfClass(current, parentObj as string) as Element;
   }
   else {
     parent = parentObj as Element;
@@ -131,7 +136,7 @@ export function indexInContainer( current: Element,
 export function childAtIndex( parent: Element, 
                               childClass: string, 
                               index: number)
-                              : Element {
+                              : Element|null {
   var sibs = parent.getElementsByClassName(childClass);
   if (index < 0) {
       index = sibs.length + index;
@@ -155,22 +160,22 @@ export function childAtIndex( parent: Element,
 */
 export function findInNextContainer(current: Element, 
                                     matchClass: string, 
-                                    skipClass: string, 
+                                    skipClass: string|undefined, 
                                     containerClass: string, 
                                     dir: number = 1)
-                                    : Element {
+                                    : Element|null {
   var container = findParentOfClass(current, containerClass);
   if (container == null) {
       return null;
   }
-  var nextContainer = findNextOfClass(container, containerClass, null, dir);
+  var nextContainer = findNextOfClass(container, containerClass, undefined, dir);
   while (nextContainer != null) {
       var child = findFirstChildOfClass(nextContainer, matchClass, skipClass);
       if (child != null) {
           return child;
       }
       // Look further ahead
-      nextContainer = findNextOfClass(nextContainer, containerClass, null, dir);
+      nextContainer = findNextOfClass(nextContainer, containerClass, undefined, dir);
   }
   return null;
 }
@@ -186,7 +191,7 @@ export function findInNextContainer(current: Element,
  */
 export function findEndInContainer( current: Element, 
                                     matchClass: string, 
-                                    skipClass: string = null, 
+                                    skipClass: string|undefined, 
                                     containerClass: string, 
                                     dir: number = 1) {
   var container = findParentOfClass(current, containerClass);
@@ -204,7 +209,7 @@ export function findEndInContainer( current: Element,
  */
 export function findParentOfClass(elmt: Element, 
                                   parentClass: string)
-                                  : Element {
+                                  : Element|null {
   if (parentClass == null || parentClass == undefined) {
       return null;
   }
@@ -227,9 +232,9 @@ export function findParentOfClass(elmt: Element,
  */
 export function findFirstChildOfClass( elmt: Element, 
                                 childClass: string, 
-                                skipClass: string = null, 
+                                skipClass: string|undefined = undefined,
                                 dir: number = 1)
-                                : Element {
+                                : Element|null {
   var children = elmt.getElementsByClassName(childClass);
   for (var i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
       if (skipClass !== null && hasClass(children[i], skipClass)) {
@@ -250,21 +255,21 @@ export function findFirstChildOfClass( elmt: Element,
  */
 export function getOptionalStyle( elmt: Element, 
                                   attrName: string, 
-                                  defaultStyle: string = null, 
-                                  prefix :string = '')
-                                  : string {
+                                  defaultStyle?: string, 
+                                  prefix?: string)
+                                  : string|null {
   var val = elmt.getAttribute(attrName);
   while (val === null) {
     elmt = elmt.parentNode as Element;
     if (elmt === null || elmt.tagName === 'BODY') {
-      val = defaultStyle;
+      val = defaultStyle || null;
       break;
     }
     else {
       val = elmt.getAttribute(attrName);
     }
   }
-  return (val === null || prefix === null) ? val : (prefix + val);
+  return (val === null || prefix === undefined) ? val : (prefix + val);
 }
 
 /**
@@ -275,7 +280,7 @@ export function getOptionalStyle( elmt: Element,
  * @returns true if the input element and caret position are valid, else false
  */
 export function moveFocus(input: HTMLInputElement, 
-                          caret: number|undefined = undefined)
+                          caret?: number)
                           : boolean {
   if (input !== null) {
       input.focus();
@@ -323,8 +328,8 @@ export function indexAllInputFields() {
  * Any event stemming from key in this list should be ignored
  */
 const ignoreKeys:string[] = [
-  'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'OptionLeft', 'OptionRight', 'CapsLock', 'Backspace', 'Escape', 'Delete', 'Insert', 'NumLock', 'ScrollLock', 'Pause', 'PrintScreen',
-  'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16',
+    'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'OptionLeft', 'OptionRight', 'CapsLock', 'Backspace', 'Escape', 'Delete', 'Insert', 'NumLock', 'ScrollLock', 'Pause', 'PrintScreen',
+    'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16',
 ]
 
 /**
@@ -346,152 +351,154 @@ var priorInputValue = '';
 /**
  * The input 
  */
-let keyDownTarget:HTMLInputElement = null;
+let keyDownTarget:HTMLInputElement|null = null;
 
 /**
  * Callback when a user pressed a keyboard key from any letter-input or word-input text field
  * @param event - A keyboard event
  */
 export function onLetterKeyDown(event: KeyboardEvent) {
-  var input = event.currentTarget as HTMLInputElement;
-  keyDownTarget = input;
-  priorInputValue = input.value;
+    var input = event.currentTarget as HTMLInputElement;
+    keyDownTarget = input;
+    priorInputValue = input.value;
 
-  var code = event.code;
-  if (code == undefined || code == '') {
-      code = event.key;  // Mobile doesn't use code
-  }
+    var code = event.code;
+    if (code == undefined || code == '') {
+        code = event.key;  // Mobile doesn't use code
+    }
 
-  var inpClass = hasClass(input, 'word-input') ? 'word-input' : 'letter-input';
-  var skipClass = hasClass(input, 'word-input') ? 'word-non-input' : 'letter-non-input';
+    var inpClass = hasClass(input, 'word-input') ? 'word-input' : 'letter-input';
+    var skipClass = hasClass(input, 'word-input') ? 'word-non-input' : 'letter-non-input';
 
-  let prior:HTMLInputElement = null;
+    let prior:HTMLInputElement|null = null;
 
-  if (hasClass(input.parentNode as Element, 'multiple-letter') || hasClass(input, 'word-input')) {
-      // Multi-character fields still want the ability to arrow between cells.
-      // We need to look at the selection prior to the arrow's effect, 
-      // to see if we're already at the edge.
-      if (code == ArrowNext || code == 'Enter') {
-          var s = input.selectionStart;
-          var e = input.selectionEnd;
-          if (s == e && e == input.value.length) {
-              var next = findNextInput(input, plusX, 0, inpClass, skipClass);
-              if (next != null) {
-                  moveFocus(next, 0);
-              }
-              event.preventDefault();
-          }
-      }
-      else if (code == ArrowPrior) {
-          var s = input.selectionStart;
-          var e = input.selectionEnd;
-          if (s == e && e == 0) {
-              const prior:HTMLInputElement = findNextInput(input, -plusX, 0, inpClass, skipClass);
-              if (prior != null) {
-                  moveFocus(prior, prior.value.length);
-              }
-              event.preventDefault();
-          }
-      }
-  }
-  else {
-      if (code == 'Backspace' || code == 'Space') {
-          if (code == 'Space') {
-              // Make sure user isn't just typing a space between words
-              prior = findNextOfClass(input, 'letter-input', null, -1) as HTMLInputElement;
-              if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
-                  var lit = prior.getAttribute('data-literal');
-                  if (lit == ' ' || lit == '¶') {  // match any space-like things  (lit == '¤'?)
-                      prior = findNextOfClass(prior, 'letter-input', 'literal', -1) as HTMLInputElement;
-                      if (prior != null && prior.value != '') {
-                          // This looks much more like a simple space between words
-                          event.preventDefault();
-                          return;    
-                      }
-                  }
-              }
-          }
-          
-          // Delete only deletes the current cell
-          // Space deletes and moves forward
-          prior = null;
-          var dxDel = code == 'Backspace' ? -plusX : plusX;
-          var dyDel = code == 'Backspace' ? -1 : 1;
-          if (priorInputValue.length == 0) {
-              var discoverRoot = findParentOfClass(input, 'letter-grid-discover');
-              if (discoverRoot != null) {
-                  prior = findParentOfClass(input, 'vertical')
-                      ? findNextByPosition(discoverRoot, input, 0, dyDel, 'letter-input', 'letter-non-input')
-                      : findNextByPosition(discoverRoot, input, dxDel, 0, 'letter-input', 'letter-non-input');
-              }
-              else {
-                  prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel) as HTMLInputElement;
-              }
-              ExtractFromInput(input);
-              moveFocus(prior);
-              input = prior;  // fall through
-          }
-          if (input != null && input.value.length > 0) {
-              if (!hasClass(input.parentNode, 'multiple-letter')) {
-                  // Backspace should clear most cells
-                  input.value = '';
-              }
-              else if (prior != null) {
-                  // If backspacing across cells, into a multiple-letter cell, just remove the last character
-                  // REVIEW: should this behavior also apply when starting in multi-letter cells?
-                  if (dyDel < 0) {
-                      input.value = input.value.substring(0, input.value.length - 1);
-                  }
-                  else {
-                      input.value = input.value.substring(1);
-                  }
-              }
-          }
-          afterInputUpdate(input);
-          event.preventDefault();
-          return;
-      }
+    if (hasClass(input.parentNode as Element, 'multiple-letter') || hasClass(input, 'word-input')) {
+        // Multi-character fields still want the ability to arrow between cells.
+        // We need to look at the selection prior to the arrow's effect, 
+        // to see if we're already at the edge.
+        if (code == ArrowNext || code == 'Enter') {
+            var s = input.selectionStart;
+            var e = input.selectionEnd;
+            if (s == e && e == input.value.length) {
+                var next = findNextInput(input, plusX, 0, inpClass, skipClass);
+                if (next != null) {
+                    moveFocus(next, 0);
+                }
+                event.preventDefault();
+            }
+        }
+        else if (code == ArrowPrior) {
+            var s = input.selectionStart;
+            var e = input.selectionEnd;
+            if (s == e && e == 0) {
+                const prior:HTMLInputElement = findNextInput(input, -plusX, 0, inpClass, skipClass);
+                if (prior != null) {
+                    moveFocus(prior, prior.value.length);
+                }
+                event.preventDefault();
+            }
+        }
+    }
+    else {
+        if (code == 'Backspace' || code == 'Space') {
+            if (code == 'Space') {
+                // Make sure user isn't just typing a space between words
+                prior = findNextOfClass(input, 'letter-input', undefined, -1) as HTMLInputElement;
+                if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
+                    var lit = prior.getAttribute('data-literal');
+                    if (lit == ' ' || lit == '¶') {  // match any space-like things  (lit == '¤'?)
+                        prior = findNextOfClass(prior, 'letter-input', 'literal', -1) as HTMLInputElement;
+                        if (prior != null && prior.value != '') {
+                            // This looks much more like a simple space between words
+                            event.preventDefault();
+                            return;    
+                        }
+                    }
+                }
+            }
+            
+            // Delete only deletes the current cell
+            // Space deletes and moves forward
+            prior = null;
+            var dxDel = code == 'Backspace' ? -plusX : plusX;
+            var dyDel = code == 'Backspace' ? -1 : 1;
+            if (priorInputValue.length == 0) {
+                var discoverRoot = findParentOfClass(input, 'letter-grid-discover');
+                if (discoverRoot != null) {
+                    prior = findParentOfClass(input, 'vertical')
+                        ? findNextByPosition(discoverRoot, input, 0, dyDel, 'letter-input', 'letter-non-input')
+                        : findNextByPosition(discoverRoot, input, dxDel, 0, 'letter-input', 'letter-non-input');
+                }
+                else {
+                    prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel) as HTMLInputElement;
+                }
+                ExtractFromInput(input);
+                if (prior !== null) {
+                    moveFocus(prior);
+                    input = prior;  // fall through
+                }
+            }
+            if (input != null && input.value.length > 0) {
+                if (!hasClass(input.parentNode as Element, 'multiple-letter')) {
+                    // Backspace should clear most cells
+                    input.value = '';
+                }
+                else if (prior != null) {
+                    // If backspacing across cells, into a multiple-letter cell, just remove the last character
+                    // REVIEW: should this behavior also apply when starting in multi-letter cells?
+                    if (dyDel < 0) {
+                        input.value = input.value.substring(0, input.value.length - 1);
+                    }
+                    else {
+                        input.value = input.value.substring(1);
+                    }
+                }
+            }
+            afterInputUpdate(input);
+            event.preventDefault();
+            return;
+        }
 
-      if (event.key.length == 1) {
-          if (event.key == '`') {
-              toggleHighlight(input);
-          }
-          if (!event.ctrlKey && !event.altKey && event.key.match(/[a-z0-9]/i)) {
-              input.value = event.key;
-              afterInputUpdate(input);
-          }
-          event.preventDefault();
-          return;
-      }
+        if (event.key.length == 1) {
+            if (event.key == '`') {
+                toggleHighlight(input);
+            }
+            if (!event.ctrlKey && !event.altKey && event.key.match(/[a-z0-9]/i)) {
+                input.value = event.key;
+                afterInputUpdate(input);
+            }
+            event.preventDefault();
+            return;
+        }
 
-      // Single-character fields always go to the next field
-      if (code == ArrowNext) {
-          moveFocus(findNextInput(input, plusX, 0, inpClass, skipClass));
-          event.preventDefault();
-      }
-      else if (code == ArrowPrior) {
-          moveFocus(findNextInput(input, -plusX, 0, inpClass, skipClass));
-          event.preventDefault();
-      }
-  }
+        // Single-character fields always go to the next field
+        if (code == ArrowNext) {
+            moveFocus(findNextInput(input, plusX, 0, inpClass, skipClass));
+            event.preventDefault();
+        }
+        else if (code == ArrowPrior) {
+            moveFocus(findNextInput(input, -plusX, 0, inpClass, skipClass));
+            event.preventDefault();
+        }
+    }
 
-  if (code == 'ArrowUp' || code == 'PageUp') {
-      moveFocus(findNextInput(input, 0, -1, inpClass, skipClass));
-      event.preventDefault();
-      return;
-  }
-  else if (code == 'ArrowDown' || code == 'PageDown') {
-      moveFocus(findNextInput(input, 0, 1, inpClass, skipClass));
-      event.preventDefault();
-      return;
-  }
+    if (code == 'ArrowUp' || code == 'PageUp') {
+        moveFocus(findNextInput(input, 0, -1, inpClass, skipClass));
+        event.preventDefault();
+        return;
+    }
+    else if (code == 'ArrowDown' || code == 'PageDown') {
+        moveFocus(findNextInput(input, 0, 1, inpClass, skipClass));
+        event.preventDefault();
+        return;
+    }
 
-  if (findParentOfClass(input, 'digit-only')) {
-      if (event.key.length == 1 && (event.key >= 'A' && event.key < 'Z' || event.key > 'a' && event.key < 'z')) {
-          // Completely disallow (English) alpha characters. Punctuation still ok.
-          event.preventDefault();
-      }
-  }
+    if (findParentOfClass(input, 'digit-only')) {
+        if (event.key.length == 1 && (event.key >= 'A' && event.key < 'Z' || event.key > 'a' && event.key < 'z')) {
+            // Completely disallow (English) alpha characters. Punctuation still ok.
+            event.preventDefault();
+        }
+    }
 }
 
 /**
@@ -499,61 +506,61 @@ export function onLetterKeyDown(event: KeyboardEvent) {
  * @param event - A keyboard event
  */
 export function onLetterKey(event:KeyboardEvent) {
-  if (event.isComposing) {
-      return;  // Don't interfere with IMEs
-  }
+    if (event.isComposing) {
+        return;  // Don't interfere with IMEs
+    }
 
-  if (isDebug()) {
-      alert('code:' + event.code + ', key:' + event.key);
-  }
+    if (isDebug()) {
+        alert('code:' + event.code + ', key:' + event.key);
+    }
 
-  var input:HTMLInputElement = event.currentTarget as HTMLInputElement;
-  if (input != keyDownTarget) {
-      keyDownTarget = null;
-      // key-down likely caused a navigation
-      return;
-  }
-  keyDownTarget = null;
+    var input:HTMLInputElement = event.currentTarget as HTMLInputElement;
+    if (input != keyDownTarget) {
+        keyDownTarget = null;
+        // key-down likely caused a navigation
+        return;
+    }
+    keyDownTarget = null;
 
-  var code = event.code;
-  if (code == undefined || code == '') {
-      code = event.key;  // Mobile doesn't use code
-  }
-  if (code == 'Enter') {
-      code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
-  }
-  if (code == 'Tab') { // includes shift-Tab
-      // Do nothing. User is just passing through
-      // TODO: Add special-case exception to wrap around from end back to start
-      return;
-  }
-  else if (code == 'Home') {
-      moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 0) as HTMLInputElement);
-      return;
-  }
-  else if (code == 'End') {
-      moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', -1) as HTMLInputElement);
-      return;
-  }
-  else if (code == 'Backquote') {
-      return;  // Highlight already handled in key down
-  }
-  if (input.value.length == 0 || ignoreKeys.indexOf(code) >= 0) {
-      // Don't move focus if nothing was typed
-      return;
-  }
-  if (input.value.length === 1 && !input.value.match(/[a-z0-9]/i)) {
-      // Spaces and punctuation might be intentional, but if they follow a matching literal, they probably aren't.
-      // NOTE: this tends to fail when the punctuation is stylized like smart quotes or minus instead of dash.
-      var prior = findNextOfClass(input, 'letter-input', null, -1);
-      if (hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
-          if (prior.getAttribute('data-literal') == input.value) {
-              input.value = '';  // abort this space
-              return;
-          }
-      }
-  }
-  afterInputUpdate(input);
+    var code = event.code;
+    if (code == undefined || code == '') {
+        code = event.key;  // Mobile doesn't use code
+    }
+    if (code == 'Enter') {
+        code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
+    }
+    if (code == 'Tab') { // includes shift-Tab
+        // Do nothing. User is just passing through
+        // TODO: Add special-case exception to wrap around from end back to start
+        return;
+    }
+    else if (code == 'Home') {
+        moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 0) as HTMLInputElement);
+        return;
+    }
+    else if (code == 'End') {
+        moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', -1) as HTMLInputElement);
+        return;
+    }
+    else if (code == 'Backquote') {
+        return;  // Highlight already handled in key down
+    }
+    if (input.value.length == 0 || ignoreKeys.indexOf(code) >= 0) {
+        // Don't move focus if nothing was typed
+        return;
+    }
+    if (input.value.length === 1 && !input.value.match(/[a-z0-9]/i)) {
+        // Spaces and punctuation might be intentional, but if they follow a matching literal, they probably aren't.
+        // NOTE: this tends to fail when the punctuation is stylized like smart quotes or minus instead of dash.
+        var prior = findNextOfClass(input, 'letter-input', undefined, -1);
+        if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
+            if (prior.getAttribute('data-literal') == input.value) {
+                input.value = '';  // abort this space
+                return;
+            }
+        }
+    }
+    afterInputUpdate(input);
 }
 
 /**
@@ -561,50 +568,50 @@ export function onLetterKey(event:KeyboardEvent) {
  * @param input The input which just changed
  */
 function afterInputUpdate(input:HTMLInputElement) {
-  var text = input.value;
-  if (hasClass(input.parentNode, 'lower-case')) {
-      text = text.toLocaleLowerCase();
-  }
-  else if (!hasClass(input.parentNode, 'any-case')) {
-      text = text.toUpperCase();
-  }
-  var overflow = '';
-  var nextInput = findParentOfClass(input, 'vertical')
-      ? findNextInput(input, 0, 1, 'letter-input', 'letter-non-input')
-      : findNextInput(input, plusX, 0, 'letter-input', 'letter-non-input');
+    var text = input.value;
+    if (hasClass(input.parentNode, 'lower-case')) {
+        text = text.toLocaleLowerCase();
+    }
+    else if (!hasClass(input.parentNode, 'any-case')) {
+        text = text.toUpperCase();
+    }
+    var overflow = '';
+    var nextInput = findParentOfClass(input, 'vertical')
+        ? findNextInput(input, 0, 1, 'letter-input', 'letter-non-input')
+        : findNextInput(input, plusX, 0, 'letter-input', 'letter-non-input');
 
-  var multiLetter = hasClass(input.parentNode, 'multiple-letter');
-  if (!multiLetter && text.length > 1) {
-      overflow = text.substring(1);
-      text = text.substring(0, 1);
-  }
-  input.value = text;
-  
-  ExtractFromInput(input);
+    var multiLetter = hasClass(input.parentNode, 'multiple-letter');
+    if (!multiLetter && text.length > 1) {
+        overflow = text.substring(1);
+        text = text.substring(0, 1);
+    }
+    input.value = text;
+    
+    ExtractFromInput(input);
 
-  if (!multiLetter) {
-      if (nextInput != null) {
-          if (overflow.length > 0 && nextInput.value.length == 0) {
-              // Insert our overflow into the next cell
-              nextInput.value = overflow;
-              moveFocus(nextInput);
-              // Then do the same post-processing as this cell
-              afterInputUpdate(nextInput);
-          }
-          else if (text.length > 0) {
-              // Just move the focus
-              moveFocus(nextInput);
-          }
-      }
-  }
-  else {
-      var spacing = (text.length - 1) * 0.05;
-      input.style.letterSpacing = -spacing + 'em';
-      input.style.paddingRight = (2 * spacing) + 'em';
-      //var rotate = text.length <= 2 ? 0 : (text.length * 5);
-      //input.style.transform = 'rotate(' + rotate + 'deg)';
-  }
-  saveLetterLocally(input);
+    if (!multiLetter) {
+        if (nextInput != null) {
+            if (overflow.length > 0 && nextInput.value.length == 0) {
+                // Insert our overflow into the next cell
+                nextInput.value = overflow;
+                moveFocus(nextInput);
+                // Then do the same post-processing as this cell
+                afterInputUpdate(nextInput);
+            }
+            else if (text.length > 0) {
+                // Just move the focus
+                moveFocus(nextInput);
+            }
+        }
+    }
+    else {
+        var spacing = (text.length - 1) * 0.05;
+        input.style.letterSpacing = -spacing + 'em';
+        input.style.paddingRight = (2 * spacing) + 'em';
+        //var rotate = text.length <= 2 ? 0 : (text.length * 5);
+        //input.style.transform = 'rotate(' + rotate + 'deg)';
+    }
+    saveLetterLocally(input);
 }
 
 /**
@@ -612,52 +619,52 @@ function afterInputUpdate(input:HTMLInputElement) {
  * @param input an input field
  */
 function ExtractFromInput(input:HTMLInputElement) {
-  var extractedId = getOptionalStyle(input, 'data-extracted-id', null, 'extracted-');
-  if (hasClass(input.parentNode, 'extract')) {
-      UpdateExtraction(extractedId);
-  }
-  else if (hasClass(input.parentNode, 'extractor')) {  // can also be numbered
-      UpdateExtractionSource(input);
-  }
-  else if (hasClass(input.parentNode, 'numbered')) {
-      UpdateNumbered(extractedId);
-  }
+    var extractedId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
+    if (hasClass(input.parentNode, 'extract')) {
+        UpdateExtraction(extractedId);
+    }
+    else if (hasClass(input.parentNode, 'extractor')) {  // can also be numbered
+        UpdateExtractionSource(input);
+    }
+    else if (hasClass(input.parentNode, 'numbered')) {
+        UpdateNumbered(extractedId);
+    }
 }
 
 /**
  * Update an extraction destination
  * @param extractedId The id of an element that collects extractions
  */
-function UpdateExtraction(extractedId:string) {
-  var extracted = document.getElementById(extractedId || 'extracted');
+function UpdateExtraction(extractedId:string|null) {
+    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
 
-  if (extracted == null) {
-      return;
-  }
-  
-  if (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null) {
-      UpdateNumbered(extractedId);
-      return;
-  }
-  
-  var inputs = document.getElementsByClassName('extract-input');
-  var extraction = '';
-  for (var i = 0; i < inputs.length; i++) {
-      if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', null, 'extracted-') != extractedId) {
-          continue;
-      }
-      const inp = inputs[i] as HTMLInputElement;
-      var letter = inp.value || '';
-      letter = letter.trim();
-      if (letter.length == 0) {
-          extraction += '_';
-      }
-      else {
-          extraction += letter;
-      }
-  }
+    if (extracted == null) {
+        return;
+    }
+    
+    if (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null) {
+        UpdateNumbered(extractedId);
+        return;
+    }
+    
+    var inputs = document.getElementsByClassName('extract-input');
+    var extraction = '';
+    for (var i = 0; i < inputs.length; i++) {
+        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            continue;
+        }
+        const inp = inputs[i] as HTMLInputElement;
+        var letter = inp.value || '';
+        letter = letter.trim();
+        if (letter.length == 0) {
+            extraction += '_';
+        }
+        else {
+            extraction += letter;
+        }
+    }
 
-  ApplyExtraction(extraction, extracted);
+    ApplyExtraction(extraction, extracted);
 }
 
 /**
@@ -666,7 +673,7 @@ function UpdateExtraction(extractedId:string) {
  * @returns true if text contains anything other than spaces and underlines
  */
 function ExtractionIsInteresting(text:string): boolean {
-  return text.length > 0 && text.match(/[^_]/) != null;
+    return text.length > 0 && text.match(/[^_]/) != null;
 }
 
 /**
@@ -674,47 +681,47 @@ function ExtractionIsInteresting(text:string): boolean {
  * @param text The current extraction
  * @param dest The container for the extraction. Can be a div or an input
  */
-function ApplyExtraction( text:string, 
-                          dest:HTMLElement) {
-  if (hasClass(dest, 'lower-case')) {
-      text = text.toLocaleLowerCase();
-  }
-  else if (hasClass(dest, 'all-caps')) {
-      text = text.toLocaleUpperCase();
-  }
+function ApplyExtraction(   text:string, 
+                            dest:HTMLElement) {
+    if (hasClass(dest, 'lower-case')) {
+        text = text.toLocaleLowerCase();
+    }
+    else if (hasClass(dest, 'all-caps')) {
+        text = text.toLocaleUpperCase();
+    }
 
-  const destInp:HTMLInputElement = dest as HTMLInputElement;
-  var current = (destInp === null) ? dest.innerText : destInp.value;
-  if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
-      return;
-  }
-  if (!ExtractionIsInteresting(text) && ExtractionIsInteresting(current)) {
-      text = '';
-  }
-  if (dest.tagName != 'INPUT') {
-      dest.innerText = text;
-  }
-  else {
-    destInp.value = text;    
-  }
+    const destInp:HTMLInputElement = dest as HTMLInputElement;
+    var current = (destInp === null) ? dest.innerText : destInp.value;
+    if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
+        return;
+    }
+    if (!ExtractionIsInteresting(text) && ExtractionIsInteresting(current)) {
+        text = '';
+    }
+    if (dest.tagName != 'INPUT') {
+        dest.innerText = text;
+    }
+    else {
+        destInp.value = text;    
+    }
 }
 
 /**
  * Update an extraction that uses numbered indicators
  * @param extractedId The id of an extraction area
  */
-function UpdateNumbered(extractedId:string) {
-  var inputs = document.getElementsByClassName('extract-input');
-  for (var i = 0; i < inputs.length; i++) {
-      const inp = inputs[i] as HTMLInputElement
-      const index = inputs[i].getAttribute('data-number');
-      const extractCell = document.getElementById('extractor-' + index) as HTMLInputElement;
-      let letter = inp.value || '';
-      letter = letter.trim();
-      if (letter.length > 0 || extractCell.value.length > 0) {
-          extractCell.value = letter;
-      }
-  }
+function UpdateNumbered(extractedId:string|null) {
+    var inputs = document.getElementsByClassName('extract-input');
+    for (var i = 0; i < inputs.length; i++) {
+        const inp = inputs[i] as HTMLInputElement
+        const index = inputs[i].getAttribute('data-number');
+        const extractCell = document.getElementById('extractor-' + index) as HTMLInputElement;
+        let letter = inp.value || '';
+        letter = letter.trim();
+        if (letter.length > 0 || extractCell.value.length > 0) {
+            extractCell.value = letter;
+        }
+    }
 }
 
 /**
@@ -723,29 +730,29 @@ function UpdateNumbered(extractedId:string) {
  * @returns 
  */
 function UpdateExtractionSource(input:HTMLInputElement) {
-  //var extractedId = getOptionalStyle(input, 'data-extracted-id', null, 'extracted-');
-  var extractors = document.getElementsByClassName('extractor-input');
-  var index = getOptionalStyle(input.parentNode as Element, 'data-number');
-  if (index === null) {
-      for (var i = 0; i < extractors.length; i++) {
-          if (extractors[i] == input) {
-              index = "" + (i + 1);  // start at 1
-              break;
-          }
-      }
-  }
-  if (index === null) {
-      return;
-  }
-  var sources = document.getElementsByClassName('extract-input');
-  for (var i = 0; i < sources.length; i++) {
-      var src = sources[i] as HTMLInputElement;
-      var dataNumber = getOptionalStyle(src, 'data-number');
-      if (dataNumber != null && dataNumber == index) {
-          src.value = input.value;
-          return;
-      }
-  }
+    //var extractedId = getOptionalStyle(input, 'data-extracted-id', null, 'extracted-');
+    var extractors = document.getElementsByClassName('extractor-input');
+    var index = getOptionalStyle(input.parentNode as Element, 'data-number');
+    if (index === null) {
+        for (var i = 0; i < extractors.length; i++) {
+            if (extractors[i] == input) {
+                index = "" + (i + 1);  // start at 1
+                break;
+            }
+        }
+    }
+    if (index === null) {
+        return;
+    }
+    var sources = document.getElementsByClassName('extract-input');
+    for (var i = 0; i < sources.length; i++) {
+        var src = sources[i] as HTMLInputElement;
+        var dataNumber = getOptionalStyle(src, 'data-number');
+        if (dataNumber != null && dataNumber == index) {
+            src.value = input.value;
+            return;
+        }
+    }
 }
 
 /**
@@ -753,62 +760,62 @@ function UpdateExtractionSource(input:HTMLInputElement) {
  * @param event A Keyboard event
  */
 export function onWordKey(event:KeyboardEvent) {
-  if (event.isComposing) {
-      return;  // Don't interfere with IMEs
-  }
+    if (event.isComposing) {
+        return;  // Don't interfere with IMEs
+    }
 
-  const input = event.currentTarget as HTMLInputElement;
-  if (getOptionalStyle(input, 'data-extract-index') != null) {
-      var extractId = getOptionalStyle(input, 'data-extracted-id', null, 'extracted-');
-      UpdateWordExtraction(extractId);
-  }
+    const input = event.currentTarget as HTMLInputElement;
+    if (getOptionalStyle(input, 'data-extract-index') != null) {
+        var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
+        UpdateWordExtraction(extractId);
+    }
 
-  var code = event.code;
-  if (code == 'Enter') {
-      code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
-  }
-  if (code == 'PageUp') {
-      moveFocus(findNextOfClass(input, 'word-input', null, -1) as HTMLInputElement);
-      return;
-  }
-  else if (code == 'Enter' || code == 'PageDown') {
-      moveFocus(findNextOfClass(input, 'word-input', null) as HTMLInputElement);
-      return;
-  }
+    var code = event.code;
+    if (code == 'Enter') {
+        code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
+    }
+    if (code == 'PageUp') {
+        moveFocus(findNextOfClass(input, 'word-input', undefined, -1) as HTMLInputElement);
+        return;
+    }
+    else if (code == 'Enter' || code == 'PageDown') {
+        moveFocus(findNextOfClass(input, 'word-input') as HTMLInputElement);
+        return;
+    }
 }
 
 /**
  * Update extractions that come from word input
  * @param extractedId The ID of an extraction area
  */
-function UpdateWordExtraction(extractedId:string) {
-  var extracted = document.getElementById(extractedId || 'extracted');
+function UpdateWordExtraction(extractedId:string|null) {
+    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
 
-  if (extracted == null) {
-      return;
-  }
-  
-  var inputs = document.getElementsByClassName('word-input');
-  var extraction = '';
-  var partial = false;
-  for (var i = 0; i < inputs.length; i++) {
-      if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', null, 'extracted-') != extractedId) {
-          continue;
-      }
-      var index = getOptionalStyle(inputs[i], 'data-extract-index', '');
-      const indeces = index.split(' ');
-      for (var j = 0; j < indeces.length; j++) {
-          var extractIndex = parseInt(indeces[j]);
-          if (extractIndex > 0) {  // indeces start at 1
-            const inp = inputs[i] as HTMLInputElement;  
-            var letter = inp.value.length >= extractIndex ? inp.value[extractIndex - 1] : '_';
-              extraction += letter;
-              partial = partial || (letter != '_');
-          }
-      }
-  }
+    if (extracted == null) {
+        return;
+    }
+    
+    var inputs = document.getElementsByClassName('word-input');
+    var extraction = '';
+    var partial = false;
+    for (var i = 0; i < inputs.length; i++) {
+        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            continue;
+        }
+        var index = getOptionalStyle(inputs[i], 'data-extract-index', '') as string;
+        const indeces = index.split(' ');
+        for (var j = 0; j < indeces.length; j++) {
+            var extractIndex = parseInt(indeces[j]);
+            if (extractIndex > 0) {  // indeces start at 1
+                const inp = inputs[i] as HTMLInputElement;  
+                var letter = inp.value.length >= extractIndex ? inp.value[extractIndex - 1] : '_';
+                extraction += letter;
+                partial = partial || (letter != '_');
+            }
+        }
+    }
 
-  ApplyExtraction(extraction, extracted);
+    ApplyExtraction(extraction, extracted);
 }
 
 /**
@@ -816,12 +823,12 @@ function UpdateWordExtraction(extractedId:string) {
  * @param event A keyboard event
  */
 export function onLetterChange(event:KeyboardEvent) {
-  if (event.isComposing) {
-      return;  // Don't interfere with IMEs
-  }
+    if (event.isComposing) {
+        return;  // Don't interfere with IMEs
+    }
 
-  const input = findParentOfClass(event.currentTarget as Element, 'letter-input') as HTMLInputElement;
-  saveLetterLocally(input);
+    const input = findParentOfClass(event.currentTarget as Element, 'letter-input') as HTMLInputElement;
+    saveLetterLocally(input);
 }
 
 /**
@@ -829,12 +836,12 @@ export function onLetterChange(event:KeyboardEvent) {
  * @param event A keyboard event
  */
 export function onWordChange(event:KeyboardEvent) {
-  if (event.isComposing) {
-      return;  // Don't interfere with IMEs
-  }
+    if (event.isComposing) {
+        return;  // Don't interfere with IMEs
+    }
 
-  const input = findParentOfClass(event.currentTarget as Element, 'word-input') as HTMLInputElement;
-  saveWordLocally(input);
+    const input = findParentOfClass(event.currentTarget as Element, 'word-input') as HTMLInputElement;
+    saveWordLocally(input);
 }
 
 /**
@@ -852,35 +859,35 @@ function findNextInput( start: Element,
                         cls: string, 
                         clsSkip: string)
                         : HTMLInputElement {
-  var root2d = findParentOfClass(start, 'letter-grid-2d');
-  let find:HTMLInputElement = null;
-  if (root2d != null) {
-      find = findNext2dInput(root2d, start, dx, dy, cls, clsSkip);
-      if (find != null) {
-          return find;
-      }
-  }
-  var discoverRoot = findParentOfClass(start, 'letter-grid-discover');
-  if (discoverRoot != null) {
-      find = findNextByPosition(discoverRoot, start, dx, dy, cls, clsSkip);
-      if (find != null) {
-          return find;
-      }
-  }
-  if (dy < 0) {
-      find = findInNextContainer(start, cls, clsSkip, 'letter-cell-block', -1) as HTMLInputElement;
-      if (find != null) {
-          return find;
-      }
-  }
-  if (dy > 0) {
-      find = findInNextContainer(start, cls, clsSkip, 'letter-cell-block') as HTMLInputElement;
-      if (find != null) {
-          return find;
-      }
-  }
-  var back = dx == -plusX || dy < 0;
-  return findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1) as HTMLInputElement;
+    var root2d = findParentOfClass(start, 'letter-grid-2d');
+    let find:HTMLInputElement|null = null;
+    if (root2d != null) {
+        find = findNext2dInput(root2d, start, dx, dy, cls, clsSkip);
+        if (find != null) {
+            return find;
+        }
+    }
+    var discoverRoot = findParentOfClass(start, 'letter-grid-discover');
+    if (discoverRoot != null) {
+        find = findNextByPosition(discoverRoot, start, dx, dy, cls, clsSkip);
+        if (find != null) {
+            return find;
+        }
+    }
+    if (dy < 0) {
+        find = findInNextContainer(start, cls, clsSkip, 'letter-cell-block', -1) as HTMLInputElement;
+        if (find != null) {
+            return find;
+        }
+    }
+    if (dy > 0) {
+        find = findInNextContainer(start, cls, clsSkip, 'letter-cell-block') as HTMLInputElement;
+        if (find != null) {
+            return find;
+        }
+    }
+    var back = dx == -plusX || dy < 0;
+    return findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1) as HTMLInputElement;
 }
 
 /**
@@ -892,18 +899,18 @@ function findNextInput( start: Element,
  * @param dir - 1 (default) to look forward, or -1 to look backward
  * @returns Another element, or null if none
  */
-function findNextOfClassGroup(start: Element,
-                              cls: string, 
-                              clsSkip: string, 
-                              clsGroup: string, 
-                              dir:number = 1)
-                              : Element {
-  var group = findParentOfClass(start, clsGroup);
-  var next = findNextOfClass(start, cls, clsSkip, dir);
-  if (group != null && (next == null || findParentOfClass(next, clsGroup) != group)) {
-      next = findFirstChildOfClass(group, cls, clsSkip, dir);
-  }
-  return next;
+function findNextOfClassGroup(  start: Element,
+                                cls: string, 
+                                clsSkip: string, 
+                                clsGroup: string, 
+                                dir:number = 1)
+                                : Element|null {
+    var group = findParentOfClass(start, clsGroup);
+    var next = findNextOfClass(start, cls, clsSkip, dir);
+    if (group != null && (next == null || findParentOfClass(next, clsGroup) != group)) {
+        next = findFirstChildOfClass(group, cls, clsSkip, dir);
+    }
+    return next;
 }
 
 /**
@@ -916,29 +923,29 @@ function findNextOfClassGroup(start: Element,
  * @param clsSkip - a class to skip
  * @returns Another input within the grid
  */
-function findNext2dInput( root: Element, 
-                          start: Element, 
-                          dx: number, 
-                          dy: number, 
-                          cls: string, 
-                          clsSkip: string)
-                          : HTMLInputElement {
+function findNext2dInput(   root: Element, 
+                            start: Element, 
+                            dx: number, 
+                            dy: number, 
+                            cls: string, 
+                            clsSkip: string)
+                            : HTMLInputElement {
   // TODO: root
-  if (dy != 0) {
-      // In a 2D grid, up/down keep their relative horizontal positions
-      var parent = findParentOfClass(start, 'letter-cell-block');
-      var index = indexInContainer(start, parent, cls);
-      var nextParent = findNextOfClass(parent, 'letter-cell-block', 'letter-grid-2d', dy);
-      while (nextParent != null) {
-          var dest:HTMLInputElement = childAtIndex(nextParent, cls, index) as HTMLInputElement;
-          if (dest != null && !hasClass(dest, 'letter-non-input')) {
-              return dest;
-          }
-          nextParent = findNextOfClass(nextParent, 'letter-cell-block', 'letter-grid-2d', dy);
-      }
-      dx = dy;
-  }        
-  return findNextOfClass(start, cls, clsSkip, dx) as HTMLInputElement;
+    if (dy != 0) {
+        // In a 2D grid, up/down keep their relative horizontal positions
+        var parent = findParentOfClass(start, 'letter-cell-block');
+        var index = indexInContainer(start, parent as Element, cls);
+        var nextParent = findNextOfClass(parent as Element, 'letter-cell-block', 'letter-grid-2d', dy);
+        while (nextParent != null) {
+            var dest:HTMLInputElement = childAtIndex(nextParent, cls, index) as HTMLInputElement;
+            if (dest != null && !hasClass(dest, 'letter-non-input')) {
+                return dest;
+            }
+            nextParent = findNextOfClass(nextParent, 'letter-cell-block', 'letter-grid-2d', dy);
+        }
+        dx = dy;
+    }        
+    return findNextOfClass(start, cls, clsSkip, dx) as HTMLInputElement;
 }
 
 /**
@@ -957,84 +964,84 @@ function findNextByPosition(root: Element,
                             dy: number, 
                             cls: string, 
                             clsSkip: string)
-                            : HTMLInputElement {
-  var rect = start.getBoundingClientRect();
-  var pos = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
-  var elements = document.getElementsByClassName(cls);
-  var distance = 0;
-  var nearest = null;
-  for (var i = 0; i < elements.length; i++) {
-      var elmt = elements[i];
-      if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
-          continue;
-      }
-      if (root != null && root != findParentOfClass(elmt, 'letter-grid-discover')) {
-          continue;
-      }
-      rect = elmt.getBoundingClientRect();
-      if (dx != 0) {
-          // Look for inputs in the same row
-          if (pos.y >= rect.y && pos.y < rect.y + rect.height) {
-              // Measure distance in the dx direction
-              var d = (rect.x + rect.width / 2 - pos.x) / dx;
-              // Keep the nearest
-              if (d > 0 && (nearest == null || d < distance)) {
-                  distance = d;
-                  nearest = elmt;
-              }
-          }
-      }
-      else if (dy != 0) {
-          // Look for inputs in the same column
-          if (pos.x >= rect.x && pos.x < rect.x + rect.width) {
-              // Measure distance in the dy direction
-              var d = (rect.y + rect.height / 2 - pos.y) / dy;
-              if (d > 0 && (nearest == null || d < distance)) {
-                  // Keep the nearest
-                  distance = d;
-                  nearest = elmt;
-              }
-          }
-      }
-  }
-  if (nearest != null) {
-      return nearest;
-  }
+                            : HTMLInputElement|null {
+    var rect = start.getBoundingClientRect();
+    var pos = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+    var elements = document.getElementsByClassName(cls);
+    var distance = 0;
+    let nearest:HTMLInputElement|null = null;
+    for (var i = 0; i < elements.length; i++) {
+        var elmt = elements[i];
+        if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
+            continue;
+        }
+        if (root != null && root != findParentOfClass(elmt, 'letter-grid-discover')) {
+            continue;
+        }
+        rect = elmt.getBoundingClientRect();
+        if (dx != 0) {
+            // Look for inputs in the same row
+            if (pos.y >= rect.y && pos.y < rect.y + rect.height) {
+                // Measure distance in the dx direction
+                var d = (rect.x + rect.width / 2 - pos.x) / dx;
+                // Keep the nearest
+                if (d > 0 && (nearest == null || d < distance)) {
+                    distance = d;
+                    nearest = elmt as HTMLInputElement;
+                }
+            }
+        }
+        else if (dy != 0) {
+            // Look for inputs in the same column
+            if (pos.x >= rect.x && pos.x < rect.x + rect.width) {
+                // Measure distance in the dy direction
+                var d = (rect.y + rect.height / 2 - pos.y) / dy;
+                if (d > 0 && (nearest == null || d < distance)) {
+                    // Keep the nearest
+                    distance = d;
+                    nearest = elmt as HTMLInputElement;
+                }
+            }
+        }
+    }
+    if (nearest != null) {
+        return nearest;
+    }
 
-  // Try again, but look in the next row/column
-  var distance2 = 0;
-  var wrap = null;
-  for (var i = 0; i < elements.length; i++) {
-      var elmt = elements[i];
-      if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
-          continue;
-      }
-      if (root != null && root != findParentOfClass(elmt, 'letter-grid-discover')) {
-          continue;
-      }
-      // Remember the first element (if dx/dy is positive), or else the last
-      if (wrap == null || (dx < 0 || dy < 0)) {
-          wrap = elmt;
-      }
-      rect = elmt.getBoundingClientRect();
-      var d = 0, d2 = 0;
-      if (dx != 0) {
-          // Look for inputs in the next row, using dx as a dy
-          d = (rect.y + rect.height / 2 - pos.y) / dx;
-          d2 = rect.x / dx;
-      }
-      else if (dy != 0) {
-          // Look for inputs in the next row, using dx as a dy
-          d = (rect.x + rect.width / 2 - pos.x) / dy;
-          d2 = rect.y / dy;
-      }
-      if (d > 0 && (nearest == null || d < distance || (d == distance && d2 < distance2))) {
-          distance = d;
-          distance2 = d2;
-          nearest = elmt;
-      }
-  }
-  return nearest != null ? nearest : wrap;
+    // Try again, but look in the next row/column
+    var distance2 = 0;
+    let wrap:HTMLInputElement|null = null;
+    for (var i = 0; i < elements.length; i++) {
+        var elmt = elements[i];
+        if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
+            continue;
+        }
+        if (root != null && root != findParentOfClass(elmt, 'letter-grid-discover')) {
+            continue;
+        }
+        // Remember the first element (if dx/dy is positive), or else the last
+        if (wrap == null || (dx < 0 || dy < 0)) {
+            wrap = elmt as HTMLInputElement;
+        }
+        rect = elmt.getBoundingClientRect();
+        var d = 0, d2 = 0;
+        if (dx != 0) {
+            // Look for inputs in the next row, using dx as a dy
+            d = (rect.y + rect.height / 2 - pos.y) / dx;
+            d2 = rect.x / dx;
+        }
+        else if (dy != 0) {
+            // Look for inputs in the next row, using dx as a dy
+            d = (rect.x + rect.width / 2 - pos.x) / dy;
+            d2 = rect.y / dy;
+        }
+        if (d > 0 && (nearest == null || d < distance || (d == distance && d2 < distance2))) {
+            distance = d;
+            distance2 = d2;
+            nearest = elmt as HTMLInputElement;
+        }
+    }
+    return nearest != null ? nearest : wrap;
 }
 
 
@@ -1048,12 +1055,12 @@ function findNextByPosition(root: Element,
  * When found, expand those elements appropriately.
  */
 export function textSetup() {
-  setupLetterPatterns();
-  setupExtractPattern();
-  setupLetterCells();
-  setupLetterInputs();
-  setupWordCells();
-  indexAllInputFields();
+    setupLetterPatterns();
+    setupExtractPattern();
+    setupLetterCells();
+    setupLetterInputs();
+    setupWordCells();
+    indexAllInputFields();
 }
 
 /**
@@ -1087,67 +1094,68 @@ export function textSetup() {
  *   NOTE: the -style and -image fields can be placed on the affected pattern tag, or on any parent below the <BODY>.
  */
 function setupLetterPatterns() {
-  var patterns:HTMLCollectionOf<Element> = document.getElementsByClassName('create-from-pattern');
-  for (let i = 0; i < patterns.length; i++) {
-      var parent = patterns[i];
-      var pattern = parseNumberPattern(parent, 'data-letter-pattern');
-      var extractPattern = parsePattern(parent, 'data-extract-indeces');
-      var numberedPattern = parsePattern2(parent, 'data-number-assignments');
-      var vertical = hasClass(parent, 'vertical');
-      var numeric = hasClass(parent, 'numeric');
-      var styles = getLetterStyles(parent, 'underline', null, numberedPattern == null ? 'box' : 'numbered');
+    var patterns:HTMLCollectionOf<Element> = document.getElementsByClassName('create-from-pattern');
+    for (let i = 0; i < patterns.length; i++) {
+        var parent = patterns[i];
+        var pattern = parseNumberPattern(parent, 'data-letter-pattern');
+        var extractPattern = parsePattern(parent, 'data-extract-indeces');
+        var numberedPattern = parsePattern2(parent, 'data-number-assignments');
+        var vertical = hasClass(parent, 'vertical');
+        var numeric = hasClass(parent, 'numeric');
+        var styles = getLetterStyles(parent, 'underline', '', numberedPattern == null ? 'box' : 'numbered');
 
-      if (pattern != null) { //if (parent.classList.contains('letter-cell-block')) {
-          var prevCount = 0;
-          for (var pi = 0; pi < pattern.length; pi++) {
-              if (pattern[pi]['type'] == 'number') {
-                  var count = pattern[pi]['count'];
-                  for (var ci = 1; ci <= count; ci++) {
-                      var span = document.createElement('span');
-                      toggleClass(span, 'letter-cell', true);
-                      applyAllClasses(span, styles.letter);
-                      toggleClass(span, 'numeric', numeric);
-  
-                      var index = prevCount + ci;
-                      //Highlight and Extract patterns MUST be in ascending order
-                      if (extractPattern.indexOf(index) >= 0) {
-                          toggleClass(span, 'extract', true);
-                          applyAllClasses(span, styles.extract);
-                      }
-                      if (numberedPattern[index] !== undefined) {
-                          toggleClass(span, 'extract', true);
-                          toggleClass(span, 'numbered', true);  // indicates numbers used in extraction
-                          applyAllClasses(span, styles.extract);  // 'extract-numbered' indicates the visual appearance
-                          var number = document.createElement('span');
-                          toggleClass(number, 'under-number');
-                          number.innerText = numberedPattern[index];
-                          span.setAttribute('data-number', numberedPattern[index]);
-                          span.appendChild(number);
-                      }
-                      parent.appendChild(span);
-                      if (vertical && (ci < count || pi < pattern.length - 1)) {
-                          parent.appendChild(document.createElement('br'));
-                      }
-                  }
-                  prevCount += count;
-              }
-              else if (pattern[pi]['type'] == 'text') {
-                  var span = createLetterLiteral(pattern[pi]['char']);
-                  span.classList.add(styles.literal);
-                  parent.appendChild(span);
-                  if (vertical && (pi < pattern.length - 1)) {
-                      parent.appendChild(document.createElement('br'));
-                  }
-              }
-          }
-      }
-  }
+        if (pattern != null) { //if (parent.classList.contains('letter-cell-block')) {
+            var prevCount = 0;
+            for (var pi = 0; pi < pattern.length; pi++) {
+                if (pattern[pi]['count']) {
+                    var count:number = pattern[pi]['count'] as number;
+                    for (var ci = 1; ci <= count; ci++) {
+                        var span = document.createElement('span');
+                        toggleClass(span, 'letter-cell', true);
+                        applyAllClasses(span, styles.letter);
+                        toggleClass(span, 'numeric', numeric);
+    
+                        var index = prevCount + ci;
+                        //Highlight and Extract patterns MUST be in ascending order
+                        if (extractPattern.indexOf(index) >= 0) {
+                            toggleClass(span, 'extract', true);
+                            applyAllClasses(span, styles.extract);
+                        }
+                        if (numberedPattern[index] !== undefined) {
+                            toggleClass(span, 'extract', true);
+                            toggleClass(span, 'numbered', true);  // indicates numbers used in extraction
+                            applyAllClasses(span, styles.extract);  // 'extract-numbered' indicates the visual appearance
+                            var number = document.createElement('span');
+                            toggleClass(number, 'under-number');
+                            number.innerText = numberedPattern[index];
+                            span.setAttribute('data-number', numberedPattern[index]);
+                            span.appendChild(number);
+                        }
+                        parent.appendChild(span);
+                        if (vertical && (ci < count || pi < pattern.length - 1)) {
+                            parent.appendChild(document.createElement('br'));
+                        }
+                    }
+                    prevCount += count;
+                }
+                else if (pattern[pi]['char'] !== null) {
+                    const lit = pattern[pi]['char'] as string
+                    var span = createLetterLiteral(lit);
+                    toggleClass(span, styles.literal, true);
+                    parent.appendChild(span);
+                    if (vertical && (pi < pattern.length - 1)) {
+                        parent.appendChild(document.createElement('br'));
+                    }
+                }
+            }
+        }
+    }
 }
 
 interface LetterStyles {
-  letter: string;
-  literal: string;
-  extract: string;
+    letter: string;
+    literal: string;
+    extract: string;
 }
 
 /**
@@ -1158,21 +1166,21 @@ interface LetterStyles {
  * @param defExtract - A default extraction style
  * @returns An object with a style name for each role
  */
-function getLetterStyles( elmt: Element, 
-                          defLetter: string, 
-                          defLiteral: string, 
-                          defExtract: string)
-                          : LetterStyles {
-  var letter = getOptionalStyle(elmt, 'data-input-style', defLetter, 'letter-');
-  var literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
-  literal = (literal != null) ? ('literal-' + literal) : letter;
-  var extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
+function getLetterStyles(   elmt: Element, 
+                            defLetter: string, 
+                            defLiteral: string|undefined, 
+                            defExtract: string)
+                            : LetterStyles {
+    var letter = getOptionalStyle(elmt, 'data-input-style', defLetter, 'letter-');
+    var literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
+    literal = (literal != null) ? ('literal-' + literal) : letter;
+    var extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
 
-  return {
-      'letter' : letter,
-      'extract' : extract,
-      'literal' : literal
-  };
+    return {
+        'letter' : letter as string,
+        'extract' : extract as string,
+        'literal' : literal as string
+    };
 }
 
 /**
@@ -1184,19 +1192,19 @@ function getLetterStyles( elmt: Element,
  */
 function createLetterLiteral(char: string)
                             : HTMLElement {
-  if (char == '¶') {
-      // Paragraph markers could be formatting, but just as likely are really spaces
-      var br = document.createElement('br');
-      br.classList.add('letter-input');
-      br.classList.add('letter-non-input');
-      br.setAttributeNS(null, 'data-literal', '¶');
-      return br;
-  }
-  var span = document.createElement('span');
-  span.classList.add('letter-cell');
-  span.classList.add('literal');
-  initLiteralLetter(span, char);
-  return span;
+    if (char == '¶') {
+        // Paragraph markers could be formatting, but just as likely are really spaces
+        var br = document.createElement('br');
+        br.classList.add('letter-input');
+        br.classList.add('letter-non-input');
+        br.setAttributeNS(null, 'data-literal', '¶');
+        return br;
+    }
+    var span = document.createElement('span');
+    span.classList.add('letter-cell');
+    span.classList.add('literal');
+    initLiteralLetter(span, char);
+    return span;
 }
 
 /**
@@ -1206,24 +1214,24 @@ function createLetterLiteral(char: string)
  */
 function initLiteralLetter( span: HTMLElement, 
                             char: string) {
-  if (char == ' ') {
-      span.innerText = '\xa0';
-  }
-  else if (char == '¤') {
-      span.innerText = '\xa0';
-      span.classList.add('block');
-  }
-  else {
-      span.innerText = char;
-  }
+    if (char == ' ') {
+        span.innerText = '\xa0';
+    }
+    else if (char == '¤') {
+        span.innerText = '\xa0';
+        span.classList.add('block');
+    }
+    else {
+        span.innerText = char;
+    }
 }
 
 /**
  * A token in a pattern of text input
  */
 interface NumberPatternToken {
-  char?: string;
-  count?: number;
+    char?: string;
+    count?: number;
 }
 
 /**
@@ -1241,25 +1249,25 @@ interface NumberPatternToken {
 function parseNumberPattern(elmt: Element, 
                             patternAttr: string)
                             : NumberPatternToken[] {
-  var pattern = elmt.getAttributeNS('', patternAttr);
-  if (pattern == null) {
-      return null;
-  }
-  var list:NumberPatternToken[] = [];
-  for (var pi = 0; pi < pattern.length; pi++) {
-      var count = 0;
-      while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
-          count = count * 10 + (pattern.charCodeAt(pi) - 48);
-          pi++;
-      }
-      if (count > 0) {
-          list.push({count: count as number});
-      }
-      if (pi < pattern.length) {
-          list.push({char: pattern[pi]});
-      }
-  }
-  return list;
+    var list:NumberPatternToken[] = [];
+    var pattern = elmt.getAttributeNS('', patternAttr);
+    if (pattern == null) {
+        return list;
+    }
+    for (var pi = 0; pi < pattern.length; pi++) {
+        var count = 0;
+        while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
+            count = count * 10 + (pattern.charCodeAt(pi) - 48);
+            pi++;
+        }
+        if (count > 0) {
+            list.push({count: count as number});
+        }
+        if (pi < pattern.length) {
+            list.push({char: pattern[pi]});
+        }
+    }
+    return list;
 }
 
 /**
@@ -1272,21 +1280,21 @@ function parseNumberPattern(elmt: Element,
  * @param offset - (optional) An offset to apply to each number
  * @returns An array of numbers
  */
-function parsePattern(elmt: Element, 
-                      patternAttr: string, 
-                      offset: number = 0)
-                      : number[] {
-  var pattern = elmt.getAttributeNS('', patternAttr);
-  offset = offset || 0;
-  const set:number[] = [];
-  if (pattern != null)
-  {
-      var array = pattern.split(' ');
-      for(let i:number = 0; i < array.length; i++){
-          set.push(parseInt(array[i]) + offset);
-      }
-  }
-  return set;
+function parsePattern(  elmt: Element, 
+                        patternAttr: string, 
+                        offset: number = 0)
+                        : number[] {
+    var pattern = elmt.getAttributeNS('', patternAttr);
+    offset = offset || 0;
+    const set:number[] = [];
+    if (pattern != null)
+    {
+        var array = pattern.split(' ');
+        for(let i:number = 0; i < array.length; i++){
+            set.push(parseInt(array[i]) + offset);
+        }
+    }
+    return set;
 }
 
 /**
@@ -1304,18 +1312,18 @@ function parsePattern2( elmt: Element,
                         patternAttr: string, 
                         offset: number = 0)
                         : object {
-  var pattern = elmt.getAttributeNS('', patternAttr);
-  offset = offset || 0;
-  var set = {};
-  if (pattern != null)
-  {
-      var array = pattern.split(' ');
-      for(let i:number = 0; i < array.length; i++){
-          var equals = array[i].split('=');
-          set[parseInt(equals[0]) + offset] = equals[1];
-      }
-  }
-  return set;
+    var pattern = elmt.getAttributeNS('', patternAttr);
+    offset = offset || 0;
+    var set = {};
+    if (pattern != null)
+    {
+        var array = pattern.split(' ');
+        for(let i:number = 0; i < array.length; i++){
+            var equals = array[i].split('=');
+            set[parseInt(equals[0]) + offset] = equals[1];
+        }
+    }
+    return set;
 }
 
 /**
@@ -1335,57 +1343,60 @@ function parsePattern2( elmt: Element,
  *   "literal" - format that cell as read-only, and overlay the literal text or whitespace
  */
 function setupLetterCells() {
-  var cells = document.getElementsByClassName('letter-cell');
-  let extracteeIndex:number = 1;
-  let extractorIndex:number = 1;
-  for (var i = 0; i < cells.length; i++) {
-      const cell:HTMLElement = cells[i] as HTMLElement;
+    var cells = document.getElementsByClassName('letter-cell');
+    let extracteeIndex:number = 1;
+    let extractorIndex:number = 1;
+    for (var i = 0; i < cells.length; i++) {
+        const cell:HTMLElement = cells[i] as HTMLElement;
 
-      // Place a small text input field in each cell
-      const inp:HTMLInputElement = document.createElement('input');
-      inp.type = 'text';
-      if (hasClass(cell, 'numeric')) {
-          // We never submit, so this doesn't have to be exact. But it should trigger the mobile numeric keyboard
-          inp.pattern = '[0-9]*';  // iOS
-          inp.inputMode = 'numeric';  // Android
-      }
-      toggleClass(inp, 'letter-input');
-      if (hasClass(cell, 'extract')) {
-        toggleClass(inp, 'extract-input');
-          var extractImg = getOptionalStyle(cell, 'data-extract-image', null);
-          if (extractImg != null) {
-              var img = document.createElement('img');
-              img.src = extractImg;
-              img.classList.add('extract-image');
-              cell.appendChild(img);
-          }
-      
-          if (hasClass(cell, 'numbered')) {
-              toggleClass(inp, 'numbered-input');
-              inp.setAttribute('data-number', cell.getAttribute('data-number'));
-          }
-          else {
-              // Implicit number based on reading order
-              inp.setAttribute('data-number', "" + extracteeIndex++);
-          }
-      }
-      if (hasClass(cell, 'extractor')) {
-          toggleClass(inp, 'extractor-input');
-          inp.id = 'extractor-' + extractorIndex++;
-      }
+        // Place a small text input field in each cell
+        const inp:HTMLInputElement = document.createElement('input');
+        inp.type = 'text';
+        if (hasClass(cell, 'numeric')) {
+            // We never submit, so this doesn't have to be exact. But it should trigger the mobile numeric keyboard
+            inp.pattern = '[0-9]*';  // iOS
+            inp.inputMode = 'numeric';  // Android
+        }
+        toggleClass(inp, 'letter-input');
+        if (hasClass(cell, 'extract')) {
+            toggleClass(inp, 'extract-input');
+            var extractImg = getOptionalStyle(cell, 'data-extract-image');
+            if (extractImg != null) {
+                var img = document.createElement('img');
+                img.src = extractImg;
+                img.classList.add('extract-image');
+                cell.appendChild(img);
+            }
+        
+            if (hasClass(cell, 'numbered')) {
+                toggleClass(inp, 'numbered-input');
+                const dataNumber = cell.getAttribute('data-number');
+                if (dataNumber != null) {
+                    inp.setAttribute('data-number', dataNumber);
+                }
+            }
+            else {
+                // Implicit number based on reading order
+                inp.setAttribute('data-number', "" + extracteeIndex++);
+            }
+        }
+        if (hasClass(cell, 'extractor')) {
+            toggleClass(inp, 'extractor-input');
+            inp.id = 'extractor-' + extractorIndex++;
+        }
 
-      if (hasClass(cell, 'literal')) {
-          inp.setAttribute('disabled', '');
-          toggleClass(inp, 'letter-non-input');
-          inp.setAttribute('data-literal', cell.innerText == '\xa0' ? ' ' : cell.innerText);
-          var span = document.createElement('span');
-          toggleClass(span, 'letter-literal');
-          span.innerText = cell.innerText;
-          cell.innerHTML = '';
-          cell.appendChild(span);
-      }
-      cell.appendChild(inp);
-  }
+        if (hasClass(cell, 'literal')) {
+            inp.setAttribute('disabled', '');
+            toggleClass(inp, 'letter-non-input');
+            inp.setAttribute('data-literal', cell.innerText == '\xa0' ? ' ' : cell.innerText);
+            var span = document.createElement('span');
+            toggleClass(span, 'letter-literal');
+            span.innerText = cell.innerText;
+            cell.innerHTML = '';
+            cell.appendChild(span);
+        }
+        cell.appendChild(inp);
+    }
 }
 
 /**
@@ -1394,13 +1405,13 @@ function setupLetterCells() {
  *   has keyup/down/change event handlers added.
  */
 function setupLetterInputs() {
-  var inputs = document.getElementsByClassName('letter-input');
-  for (var i = 0; i < inputs.length; i++) {
-      const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
-      inp.onkeydown=function(e){onLetterKeyDown(e)};
-      inp.onkeyup=function(e){onLetterKey(e)};
-      inp.onchange=function(e){onLetterChange(e as KeyboardEvent)};
-  }
+    var inputs = document.getElementsByClassName('letter-input');
+    for (var i = 0; i < inputs.length; i++) {
+        const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
+        inp.onkeydown=function(e){onLetterKeyDown(e)};
+        inp.onkeyup=function(e){onLetterKey(e)};
+        inp.onchange=function(e){onLetterChange(e as KeyboardEvent)};
+    }
 }
 
 /**
@@ -1409,36 +1420,36 @@ function setupLetterInputs() {
  *   <div><input type='text' class="word-input" /></div>  // for simple multi-letter text input
  */
 function setupWordCells() {
-  var cells = document.getElementsByClassName('word-cell');
-  for (var i = 0; i < cells.length; i++) {
-      const cell:HTMLElement = cells[i] as HTMLElement;
-      var inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
+    var cells = document.getElementsByClassName('word-cell');
+    for (var i = 0; i < cells.length; i++) {
+        const cell:HTMLElement = cells[i] as HTMLElement;
+        var inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
 
-      // Place a small text input field in each cell
-      const inp:HTMLInputElement = document.createElement('input');
-      inp.type = 'text';
-      toggleClass(inp, 'word-input');
+        // Place a small text input field in each cell
+        const inp:HTMLInputElement = document.createElement('input');
+        inp.type = 'text';
+        toggleClass(inp, 'word-input');
 
-      if (inpStyle != null) {
-        toggleClass(inp, inpStyle);
-      }
+        if (inpStyle != null) {
+            toggleClass(inp, inpStyle);
+        }
 
-      if (hasClass(cell, 'literal')) {
-          inp.setAttribute('disabled', '');
-          toggleClass(inp, 'word-non-input');
-          var span:HTMLElement = document.createElement('span');
-          toggleClass(span, 'word-literal');
-          span.innerText = cell.innerText;
-          cell.innerHTML = '';
-          cell.appendChild(span);
-      }
-      else {
-          inp.onkeydown=function(e){onLetterKeyDown(e)};
-          inp.onkeyup=function(e){onWordKey(e)};
-          inp.onchange=function(e){onWordChange(e as KeyboardEvent)};
-      }
-      cell.appendChild(inp);
-  }
+        if (hasClass(cell, 'literal')) {
+            inp.setAttribute('disabled', '');
+            toggleClass(inp, 'word-non-input');
+            var span:HTMLElement = document.createElement('span');
+            toggleClass(span, 'word-literal');
+            span.innerText = cell.innerText;
+            cell.innerHTML = '';
+            cell.appendChild(span);
+        }
+        else {
+            inp.onkeydown=function(e){onLetterKeyDown(e)};
+            inp.onkeyup=function(e){onWordKey(e)};
+            inp.onchange=function(e){onWordChange(e as KeyboardEvent)};
+        }
+        cell.appendChild(inp);
+    }
 }
 
 /**
@@ -1449,50 +1460,50 @@ function setupWordCells() {
  * @todo: clarify the difference between "extracted" and "extractor"
  */
 function setupExtractPattern() {
-  const extracted = document.getElementById('extracted');
-  if (extracted === null) {
-      return;
-  }
-  let numbered:boolean = true;
-  // Special case: if extracted root is tagged data-indexed-by-letter, 
-  // then the indeces that lead here are letters rather than the usual numbers.
-  const lettered:boolean = extracted.getAttributeNS('', 'data-indexed-by-letter') != null;
-  // Get the style to use for each extracted value. Default: "letter-underline"
-  var extractorStyle = getOptionalStyle(extracted, 'data-extractor-style', 'underline', 'letter-');
+    const extracted = document.getElementById('extracted');
+    if (extracted === null) {
+        return;
+    }
+    let numbered:boolean = true;
+    // Special case: if extracted root is tagged data-indexed-by-letter, 
+    // then the indeces that lead here are letters rather than the usual numbers.
+    const lettered:boolean = extracted.getAttributeNS('', 'data-indexed-by-letter') != null;
+    // Get the style to use for each extracted value. Default: "letter-underline"
+    var extractorStyle = getOptionalStyle(extracted, 'data-extractor-style', 'underline', 'letter-');
 
-  let numPattern = parseNumberPattern(extracted, 'data-number-pattern');
-  if (numPattern === null) {
-      numbered = false;
-      numPattern = parseNumberPattern(extracted, 'data-letter-pattern');
-  }
-  if (numPattern != null) {
-      var nextNumber = 1;
-      for (var pi = 0; pi < numPattern.length; pi++) {
-          if (numPattern[pi]['count'] !== null) {
-              var count = numPattern[pi]['count'];
-              for (var ci = 1; ci <= count; ci++) {
-                  const span:HTMLSpanElement = document.createElement('span');
-                  toggleClass(span, 'letter-cell');
-                  toggleClass(span, 'extractor');
-                  toggleClass(span, extractorStyle);
-                  extracted.appendChild(span);
-                  if (numbered) {
-                      toggleClass(span, 'numbered');
-                      const number:HTMLSpanElement = document.createElement('span');
-                      toggleClass(number, 'under-number');
-                      number.innerText = lettered ? String.fromCharCode(64 + nextNumber) : ("" + nextNumber);
-                      span.setAttribute('data-number', "" + nextNumber);
-                      span.appendChild(number);
-                      nextNumber++;
-                  }
-              }
-          }
-          else if (numPattern[pi]['char'] !== null) {
-              var span = createLetterLiteral(numPattern[pi]['char']);
-              extracted.appendChild(span);
-          }
-      }
-  }
+    let numPattern = parseNumberPattern(extracted, 'data-number-pattern');
+    if (numPattern === null) {
+        numbered = false;
+        numPattern = parseNumberPattern(extracted, 'data-letter-pattern');
+    }
+    if (numPattern != null) {
+        var nextNumber = 1;
+        for (var pi = 0; pi < numPattern.length; pi++) {
+            if (numPattern[pi]['count'] !== null) {
+                var count = numPattern[pi]['count'] as number;
+                for (var ci = 1; ci <= count; ci++) {
+                    const span:HTMLSpanElement = document.createElement('span');
+                    toggleClass(span, 'letter-cell', true);
+                    toggleClass(span, 'extractor', true);
+                    toggleClass(span, extractorStyle, true);
+                    extracted.appendChild(span);
+                    if (numbered) {
+                        toggleClass(span, 'numbered');
+                        const number:HTMLSpanElement = document.createElement('span');
+                        toggleClass(number, 'under-number');
+                        number.innerText = lettered ? String.fromCharCode(64 + nextNumber) : ("" + nextNumber);
+                        span.setAttribute('data-number', "" + nextNumber);
+                        span.appendChild(number);
+                        nextNumber++;
+                    }
+                }
+            }
+            else if (numPattern[pi]['char'] !== null) {
+                var span = createLetterLiteral(numPattern[pi]['char'] as string);
+                extracted.appendChild(span);
+            }
+        }
+    }
 }
 
 /**
@@ -1501,21 +1512,21 @@ function setupExtractPattern() {
  * @returns true if any letter-input or word-input fields have user values
  */
 function hasProgress(event: Event): boolean {
-  let inputs = document.getElementsByClassName('letter-input');
-  for (var i = 0; i < inputs.length; i++) {
-      const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
-      if (inp.value != '') {
-          return true;
-      }
-  }
-  inputs = document.getElementsByClassName('word-input');
-  for (var i = 0; i < inputs.length; i++) {
-      const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
-      if (inp.value != '') {
-          return true;
-      }
-  }
-  return false;
+    let inputs = document.getElementsByClassName('letter-input');
+    for (var i = 0; i < inputs.length; i++) {
+        const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
+        if (inp.value != '') {
+            return true;
+        }
+    }
+    inputs = document.getElementsByClassName('word-input');
+    for (var i = 0; i < inputs.length; i++) {
+        const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
+        if (inp.value != '') {
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -1565,6 +1576,7 @@ type BoilerPlateData = {
   author: string;
   copyright: string;
   type: string;  // todo: enum
+  lang?: string;  // en-us by default
   paperSize?: string;  // letter by default
   orientation?: string;  // portrait by default
   textInput?: boolean;  // false by default
@@ -1611,7 +1623,7 @@ function createSimpleA({id, cls, friendly, href, target}: CreateSimpleAArgs) : H
   }
   a.innerHTML = friendly;
   a.href = href;
-  a.target = target !== null ? target : '_blank';
+  a.target = target || '_blank';
   return a;
 }
 
@@ -1620,11 +1632,21 @@ function boilerplate(bp: BoilerPlateData) {
     return;
   }
 
-  const body:HTMLElement = document.getElementsByTagName('body')[0];
-  const pageBody:HTMLElement = document.getElementById('pageBody');
+  const html:HTMLHtmlElement = document.getElementsByTagName('html')[0] as HTMLHtmlElement;
+  const head:HTMLHeadElement = document.getElementsByTagName('head')[0] as HTMLHeadElement;
+  const body:HTMLBodyElement = document.getElementsByTagName('body')[0] as HTMLBodyElement;
+  const pageBody:HTMLDivElement = document.getElementById('pageBody') as HTMLDivElement;
 
   document.title = bp['title'];
   
+  html.lang = bp['lang'] || 'en-us';
+
+  const viewport = document.createElement('meta') as HTMLMetaElement;
+  viewport.name = 'viewport';
+  viewport.content = 'width=device-width, initial-scale=1'
+  head.appendChild(viewport);
+
+
   toggleClass(body, bp['paperSize'] || 'letter');
   toggleClass(body, bp['orientation'] || 'portrait');
 

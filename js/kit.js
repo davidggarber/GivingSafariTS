@@ -7,11 +7,13 @@ exports.isIFrame = exports.isDebug = exports.textSetup = exports.onWordChange = 
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
- * @param cls - A class name to toggle
+ * @param cls - A class name to toggle (unless null)
  * @param bool - If omitted, cls is toggled in the classList; if true, cls is added; if false, cls is removed
  */
 function toggleClass(obj, cls, bool) {
-    if (bool === void 0) { bool = undefined; }
+    if (obj === null || cls === null || cls === undefined) {
+        return;
+    }
     var elmt;
     if ('string' === typeof obj) {
         elmt = document.getElementById(obj);
@@ -39,6 +41,9 @@ exports.toggleClass = toggleClass;
  * @returns true iff the class is in the classList
  */
 function hasClass(obj, cls) {
+    if (obj === null || cls === undefined) {
+        return false;
+    }
     var elmt;
     if ('string' === typeof obj) {
         elmt = document.getElementById(obj);
@@ -73,13 +78,11 @@ exports.applyAllClasses = applyAllClasses;
  * @returns A sibling element, or null if none is found
  */
 function findNextOfClass(current, matchClass, skipClass, dir) {
-    if (skipClass === void 0) { skipClass = null; }
     if (dir === void 0) { dir = 1; }
-    skipClass = skipClass || null;
     var inputs = document.getElementsByClassName(matchClass);
     var found = false;
     for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
-        if (skipClass != null && hasClass(inputs[i], skipClass)) {
+        if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
             continue;
         }
         if (found) {
@@ -99,7 +102,7 @@ exports.findNextOfClass = findNextOfClass;
  */
 function indexInContainer(current, parentObj, sibClass) {
     var parent;
-    if (typeof (parent) == 'string') {
+    if (typeof (parentObj) == 'string') {
         parent = findParentOfClass(current, parentObj);
     }
     else {
@@ -149,14 +152,14 @@ function findInNextContainer(current, matchClass, skipClass, containerClass, dir
     if (container == null) {
         return null;
     }
-    var nextContainer = findNextOfClass(container, containerClass, null, dir);
+    var nextContainer = findNextOfClass(container, containerClass, undefined, dir);
     while (nextContainer != null) {
         var child = findFirstChildOfClass(nextContainer, matchClass, skipClass);
         if (child != null) {
             return child;
         }
         // Look further ahead
-        nextContainer = findNextOfClass(nextContainer, containerClass, null, dir);
+        nextContainer = findNextOfClass(nextContainer, containerClass, undefined, dir);
     }
     return null;
 }
@@ -171,7 +174,6 @@ exports.findInNextContainer = findInNextContainer;
 * @returns The first or last sibling element, or null if no matches
  */
 function findEndInContainer(current, matchClass, skipClass, containerClass, dir) {
-    if (skipClass === void 0) { skipClass = null; }
     if (dir === void 0) { dir = 1; }
     var container = findParentOfClass(current, containerClass);
     if (container == null) {
@@ -208,7 +210,7 @@ exports.findParentOfClass = findParentOfClass;
  * @returns A child element, if a match is found, else null
  */
 function findFirstChildOfClass(elmt, childClass, skipClass, dir) {
-    if (skipClass === void 0) { skipClass = null; }
+    if (skipClass === void 0) { skipClass = undefined; }
     if (dir === void 0) { dir = 1; }
     var children = elmt.getElementsByClassName(childClass);
     for (var i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
@@ -229,20 +231,18 @@ exports.findFirstChildOfClass = findFirstChildOfClass;
  * @returns The found or default style, optional with prefix added
  */
 function getOptionalStyle(elmt, attrName, defaultStyle, prefix) {
-    if (defaultStyle === void 0) { defaultStyle = null; }
-    if (prefix === void 0) { prefix = ''; }
     var val = elmt.getAttribute(attrName);
     while (val === null) {
         elmt = elmt.parentNode;
         if (elmt === null || elmt.tagName === 'BODY') {
-            val = defaultStyle;
+            val = defaultStyle || null;
             break;
         }
         else {
             val = elmt.getAttribute(attrName);
         }
     }
-    return (val === null || prefix === null) ? val : (prefix + val);
+    return (val === null || prefix === undefined) ? val : (prefix + val);
 }
 exports.getOptionalStyle = getOptionalStyle;
 /**
@@ -253,7 +253,6 @@ exports.getOptionalStyle = getOptionalStyle;
  * @returns true if the input element and caret position are valid, else false
  */
 function moveFocus(input, caret) {
-    if (caret === void 0) { caret = undefined; }
     if (input !== null) {
         input.focus();
         if (input.type !== 'number') {
@@ -362,7 +361,7 @@ function onLetterKeyDown(event) {
         if (code == 'Backspace' || code == 'Space') {
             if (code == 'Space') {
                 // Make sure user isn't just typing a space between words
-                prior = findNextOfClass(input, 'letter-input', null, -1);
+                prior = findNextOfClass(input, 'letter-input', undefined, -1);
                 if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
                     var lit = prior.getAttribute('data-literal');
                     if (lit == ' ' || lit == '¶') { // match any space-like things  (lit == '¤'?)
@@ -391,8 +390,10 @@ function onLetterKeyDown(event) {
                     prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel);
                 }
                 ExtractFromInput(input);
-                moveFocus(prior);
-                input = prior; // fall through
+                if (prior !== null) {
+                    moveFocus(prior);
+                    input = prior; // fall through
+                }
             }
             if (input != null && input.value.length > 0) {
                 if (!hasClass(input.parentNode, 'multiple-letter')) {
@@ -501,8 +502,8 @@ function onLetterKey(event) {
     if (input.value.length === 1 && !input.value.match(/[a-z0-9]/i)) {
         // Spaces and punctuation might be intentional, but if they follow a matching literal, they probably aren't.
         // NOTE: this tends to fail when the punctuation is stylized like smart quotes or minus instead of dash.
-        var prior = findNextOfClass(input, 'letter-input', null, -1);
-        if (hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
+        var prior = findNextOfClass(input, 'letter-input', undefined, -1);
+        if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
             if (prior.getAttribute('data-literal') == input.value) {
                 input.value = ''; // abort this space
                 return;
@@ -564,7 +565,7 @@ function afterInputUpdate(input) {
  * @param input an input field
  */
 function ExtractFromInput(input) {
-    var extractedId = getOptionalStyle(input, 'data-extracted-id', null, 'extracted-');
+    var extractedId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
     if (hasClass(input.parentNode, 'extract')) {
         UpdateExtraction(extractedId);
     }
@@ -580,7 +581,7 @@ function ExtractFromInput(input) {
  * @param extractedId The id of an element that collects extractions
  */
 function UpdateExtraction(extractedId) {
-    var extracted = document.getElementById(extractedId || 'extracted');
+    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
     if (extracted == null) {
         return;
     }
@@ -591,7 +592,7 @@ function UpdateExtraction(extractedId) {
     var inputs = document.getElementsByClassName('extract-input');
     var extraction = '';
     for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', null, 'extracted-') != extractedId) {
+        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
         var inp = inputs[i];
@@ -698,7 +699,7 @@ function onWordKey(event) {
     }
     var input = event.currentTarget;
     if (getOptionalStyle(input, 'data-extract-index') != null) {
-        var extractId = getOptionalStyle(input, 'data-extracted-id', null, 'extracted-');
+        var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         UpdateWordExtraction(extractId);
     }
     var code = event.code;
@@ -706,11 +707,11 @@ function onWordKey(event) {
         code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
     }
     if (code == 'PageUp') {
-        moveFocus(findNextOfClass(input, 'word-input', null, -1));
+        moveFocus(findNextOfClass(input, 'word-input', undefined, -1));
         return;
     }
     else if (code == 'Enter' || code == 'PageDown') {
-        moveFocus(findNextOfClass(input, 'word-input', null));
+        moveFocus(findNextOfClass(input, 'word-input'));
         return;
     }
 }
@@ -720,7 +721,7 @@ exports.onWordKey = onWordKey;
  * @param extractedId The ID of an extraction area
  */
 function UpdateWordExtraction(extractedId) {
-    var extracted = document.getElementById(extractedId || 'extracted');
+    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
     if (extracted == null) {
         return;
     }
@@ -728,7 +729,7 @@ function UpdateWordExtraction(extractedId) {
     var extraction = '';
     var partial = false;
     for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', null, 'extracted-') != extractedId) {
+        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
         var index = getOptionalStyle(inputs[i], 'data-extract-index', '');
@@ -998,11 +999,11 @@ function setupLetterPatterns() {
         var numberedPattern = parsePattern2(parent, 'data-number-assignments');
         var vertical = hasClass(parent, 'vertical');
         var numeric = hasClass(parent, 'numeric');
-        var styles = getLetterStyles(parent, 'underline', null, numberedPattern == null ? 'box' : 'numbered');
+        var styles = getLetterStyles(parent, 'underline', '', numberedPattern == null ? 'box' : 'numbered');
         if (pattern != null) { //if (parent.classList.contains('letter-cell-block')) {
             var prevCount = 0;
             for (var pi = 0; pi < pattern.length; pi++) {
-                if (pattern[pi]['type'] == 'number') {
+                if (pattern[pi]['count']) {
                     var count = pattern[pi]['count'];
                     for (var ci = 1; ci <= count; ci++) {
                         var span = document.createElement('span');
@@ -1032,9 +1033,10 @@ function setupLetterPatterns() {
                     }
                     prevCount += count;
                 }
-                else if (pattern[pi]['type'] == 'text') {
-                    var span = createLetterLiteral(pattern[pi]['char']);
-                    span.classList.add(styles.literal);
+                else if (pattern[pi]['char'] !== null) {
+                    var lit = pattern[pi]['char'];
+                    var span = createLetterLiteral(lit);
+                    toggleClass(span, styles.literal, true);
                     parent.appendChild(span);
                     if (vertical && (pi < pattern.length - 1)) {
                         parent.appendChild(document.createElement('br'));
@@ -1115,11 +1117,11 @@ function initLiteralLetter(span, char) {
  * @returns An array of pattern tokens
  */
 function parseNumberPattern(elmt, patternAttr) {
+    var list = [];
     var pattern = elmt.getAttributeNS('', patternAttr);
     if (pattern == null) {
-        return null;
+        return list;
     }
-    var list = [];
     for (var pi = 0; pi < pattern.length; pi++) {
         var count = 0;
         while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
@@ -1216,7 +1218,7 @@ function setupLetterCells() {
         toggleClass(inp, 'letter-input');
         if (hasClass(cell, 'extract')) {
             toggleClass(inp, 'extract-input');
-            var extractImg = getOptionalStyle(cell, 'data-extract-image', null);
+            var extractImg = getOptionalStyle(cell, 'data-extract-image');
             if (extractImg != null) {
                 var img = document.createElement('img');
                 img.src = extractImg;
@@ -1225,7 +1227,10 @@ function setupLetterCells() {
             }
             if (hasClass(cell, 'numbered')) {
                 toggleClass(inp, 'numbered-input');
-                inp.setAttribute('data-number', cell.getAttribute('data-number'));
+                var dataNumber = cell.getAttribute('data-number');
+                if (dataNumber != null) {
+                    inp.setAttribute('data-number', dataNumber);
+                }
             }
             else {
                 // Implicit number based on reading order
@@ -1327,9 +1332,9 @@ function setupExtractPattern() {
                 var count = numPattern[pi]['count'];
                 for (var ci = 1; ci <= count; ci++) {
                     var span_1 = document.createElement('span');
-                    toggleClass(span_1, 'letter-cell');
-                    toggleClass(span_1, 'extractor');
-                    toggleClass(span_1, extractorStyle);
+                    toggleClass(span_1, 'letter-cell', true);
+                    toggleClass(span_1, 'extractor', true);
+                    toggleClass(span_1, extractorStyle, true);
                     extracted.appendChild(span_1);
                     if (numbered) {
                         toggleClass(span_1, 'numbered');
@@ -1431,16 +1436,23 @@ function createSimpleA(_a) {
     }
     a.innerHTML = friendly;
     a.href = href;
-    a.target = target !== null ? target : '_blank';
+    a.target = target || '_blank';
     return a;
 }
 function boilerplate(bp) {
     if (bp === null) {
         return;
     }
+    var html = document.getElementsByTagName('html')[0];
+    var head = document.getElementsByTagName('head')[0];
     var body = document.getElementsByTagName('body')[0];
     var pageBody = document.getElementById('pageBody');
     document.title = bp['title'];
+    html.lang = bp['lang'] || 'en-us';
+    var viewport = document.createElement('meta');
+    viewport.name = 'viewport';
+    viewport.content = 'width=device-width, initial-scale=1';
+    head.appendChild(viewport);
     toggleClass(body, bp['paperSize'] || 'letter');
     toggleClass(body, bp['orientation'] || 'portrait');
     var page = createSimpleDiv({ id: 'page', cls: 'printedPage' });
