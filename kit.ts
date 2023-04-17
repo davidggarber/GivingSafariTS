@@ -13,27 +13,27 @@
 export function toggleClass(obj: Node|string|null, 
                             cls: string|null, 
                             bool?: boolean) {
-  if (obj === null || cls === null || cls === undefined) {
-    return;
-  }
-  let elmt: Element;
-  if ('string' === typeof obj) {
-    elmt = document.getElementById(obj as string) as Element;
-  }
-  else {
-    elmt = obj as Element;
-  }
-  if (elmt !== null && elmt.classList !== null) {
-    if (bool === undefined) {
-      bool = !elmt.classList.contains(cls);
+    if (obj === null || cls === null || cls === undefined) {
+        return;
     }
-    if (bool) {
-      elmt.classList.add(cls);
+    let elmt: Element;
+    if ('string' === typeof obj) {
+        elmt = document.getElementById(obj as string) as Element;
     }
     else {
-      elmt.classList.remove(cls);
+        elmt = obj as Element;
     }
-  }
+    if (elmt !== null && elmt.classList !== null) {
+        if (bool === undefined) {
+            bool = !elmt.classList.contains(cls);
+        }
+        if (bool) {
+            elmt.classList.add(cls);
+        }
+        else {
+            elmt.classList.remove(cls);
+        }
+    }
 }
 
 /**
@@ -45,19 +45,19 @@ export function toggleClass(obj: Node|string|null,
 export function hasClass( obj: Node|string|null, 
                           cls: string|undefined) 
                           : boolean {
-  if (obj === null || cls === undefined) {
-    return false;
-  }
-  let elmt: Element;
-  if ('string' === typeof obj) {
-    elmt = document.getElementById(obj as string) as Element;
-  }
-  else {
-    elmt = obj as Element;
-  }
-  return elmt !== null 
-      && elmt.classList !== null
-      && elmt.classList.contains(cls);
+    if (obj === null || cls === undefined) {
+        return false;
+    }
+    let elmt: Element;
+    if ('string' === typeof obj) {
+        elmt = document.getElementById(obj as string) as Element;
+    }
+    else {
+        elmt = obj as Element;
+    }
+    return elmt !== null 
+        && elmt.classList !== null
+        && elmt.classList.contains(cls);
 }
 
 /**
@@ -67,10 +67,10 @@ export function hasClass( obj: Node|string|null,
  */
 export function applyAllClasses(obj: Node|string, 
                                 classes:string) {
-  var list = classes.split(' ');
-  for (let cls of list) {
-    toggleClass(obj, cls, true);
-  }
+    var list = classes.split(' ');
+    for (let cls of list) {
+        toggleClass(obj, cls, true);
+    }
 }
 
 /**
@@ -86,18 +86,18 @@ export function findNextOfClass(current: Element,
                                 skipClass?: string, 
                                 dir: number = 1)
                                 : Element|null {
-  var inputs = document.getElementsByClassName(matchClass);
-  var found = false;
-  for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
-      if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
-          continue;
-      }
-      if (found) {
-          return inputs[i];
-      }
-      found = inputs[i] == current;
-  }
-  return null;
+    var inputs = document.getElementsByClassName(matchClass);
+    var found = false;
+    for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
+        if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
+            continue;
+        }
+        if (found) {
+            return inputs[i];
+        }
+        found = inputs[i] == current;
+    }
+    return null;
 }
 
 /**
@@ -110,20 +110,20 @@ export function findNextOfClass(current: Element,
 export function indexInContainer( current: Element, 
                                   parentObj: Element|string, 
                                   sibClass: string) {
-  let parent: Element;
-  if (typeof(parentObj) == 'string') {
-      parent = findParentOfClass(current, parentObj as string) as Element;
-  }
-  else {
-    parent = parentObj as Element;
-  }
-  var sibs = parent.getElementsByClassName(sibClass);
-  for (var i = 0; i < sibs.length; i++) {
-      if (sibs[i] === current) {
-          return i;
-      }
-  }
-  return -1;
+    let parent: Element;
+    if (typeof(parentObj) == 'string') {
+        parent = findParentOfClass(current, parentObj as string) as Element;
+    }
+    else {
+        parent = parentObj as Element;
+    }
+    var sibs = parent.getElementsByClassName(sibClass);
+    for (var i = 0; i < sibs.length; i++) {
+        if (sibs[i] === current) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 /**
@@ -137,17 +137,17 @@ export function childAtIndex( parent: Element,
                               childClass: string, 
                               index: number)
                               : Element|null {
-  var sibs = parent.getElementsByClassName(childClass);
-  if (index < 0) {
-      index = sibs.length + index;
-  }
-  else if (index >= sibs.length) {
-      index = sibs.length - 1;
-  }
-  if (index < 0) {
-    return null;
-  }
-  return sibs[index];
+    var sibs = parent.getElementsByClassName(childClass);
+    if (index < 0) {
+        index = sibs.length + index;
+    }
+    else if (index >= sibs.length) {
+        index = sibs.length - 1;
+    }
+    if (index < 0) {
+        return null;
+    }
+    return sibs[index];
 }
 
 /**
@@ -164,20 +164,20 @@ export function findInNextContainer(current: Element,
                                     containerClass: string, 
                                     dir: number = 1)
                                     : Element|null {
-  var container = findParentOfClass(current, containerClass);
-  if (container == null) {
-      return null;
-  }
-  var nextContainer = findNextOfClass(container, containerClass, undefined, dir);
-  while (nextContainer != null) {
-      var child = findFirstChildOfClass(nextContainer, matchClass, skipClass);
-      if (child != null) {
-          return child;
-      }
-      // Look further ahead
-      nextContainer = findNextOfClass(nextContainer, containerClass, undefined, dir);
-  }
-  return null;
+    var container = findParentOfClass(current, containerClass);
+    if (container == null) {
+        return null;
+    }
+    var nextContainer = findNextOfClass(container, containerClass, undefined, dir);
+    while (nextContainer != null) {
+        var child = findFirstChildOfClass(nextContainer, matchClass, skipClass);
+        if (child != null) {
+            return child;
+        }
+        // Look further ahead
+        nextContainer = findNextOfClass(nextContainer, containerClass, undefined, dir);
+    }
+    return null;
 }
 
 /**
@@ -194,11 +194,11 @@ export function findEndInContainer( current: Element,
                                     skipClass: string|undefined, 
                                     containerClass: string, 
                                     dir: number = 1) {
-  var container = findParentOfClass(current, containerClass);
-  if (container == null) {
-      return null;
-  }
-  return findFirstChildOfClass(container, matchClass, skipClass, dir);
+    var container = findParentOfClass(current, containerClass);
+    if (container == null) {
+        return null;
+    }
+    return findFirstChildOfClass(container, matchClass, skipClass, dir);
 }
 
 /**
@@ -210,20 +210,20 @@ export function findEndInContainer( current: Element,
 export function findParentOfClass(elmt: Element, 
                                   parentClass: string)
                                   : Element|null {
-  if (parentClass == null || parentClass == undefined) {
-      return null;
-  }
-  while (elmt !== null && elmt.tagName !== 'BODY') {
-      const name = elmt.tagName;
-      if (name == 'BODY') {
-        break;
-      }
-      if (hasClass(elmt, parentClass)) {
-          return elmt;
-      }
-      elmt = elmt.parentNode as Element;
-  }
-  return null;
+    if (parentClass == null || parentClass == undefined) {
+        return null;
+    }
+    while (elmt !== null && elmt.tagName !== 'BODY') {
+        const name = elmt.tagName;
+        if (name == 'BODY') {
+            break;
+        }
+        if (hasClass(elmt, parentClass)) {
+            return elmt;
+        }
+        elmt = elmt.parentNode as Element;
+    }
+    return null;
 }
 
 /**
@@ -262,18 +262,18 @@ export function getOptionalStyle( elmt: Element,
                                   defaultStyle?: string, 
                                   prefix?: string)
                                   : string|null {
-  var val = elmt.getAttribute(attrName);
-  while (val === null) {
-    elmt = elmt.parentNode as Element;
-    if (elmt === null || elmt.tagName === 'BODY') {
-      val = defaultStyle || null;
-      break;
+    var val = elmt.getAttribute(attrName);
+    while (val === null) {
+        elmt = elmt.parentNode as Element;
+        if (elmt === null || elmt.tagName === 'BODY') {
+            val = defaultStyle || null;
+            break;
+        }
+        else {
+            val = elmt.getAttribute(attrName);
+        }
     }
-    else {
-      val = elmt.getAttribute(attrName);
-    }
-  }
-  return (val === null || prefix === undefined) ? val : (prefix + val);
+    return (val === null || prefix === undefined) ? val : (prefix + val);
 }
 
 /**
@@ -286,19 +286,19 @@ export function getOptionalStyle( elmt: Element,
 export function moveFocus(input: HTMLInputElement, 
                           caret?: number)
                           : boolean {
-  if (input !== null) {
-      input.focus();
-      if (input.type !== 'number') {
-          if (caret === undefined) {
-              input.setSelectionRange(0, input.value.length);
-          }
-          else {
-              input.setSelectionRange(caret, caret);
-          }
-      }
-      return true;
-  }
-  return false;
+    if (input !== null) {
+        input.focus();
+        if (input.type !== 'number') {
+            if (caret === undefined) {
+                input.setSelectionRange(0, input.value.length);
+            }
+            else {
+                input.setSelectionRange(caret, caret);
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 
@@ -1560,123 +1560,123 @@ function debugSetup() {
 }
 
 export function isDebug() {
-  return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
+    return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
 }
 
 export function isIFrame() {
-  return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
+    return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
 }
 
 function preSetup() {
-  debugSetup();
-  if (isIFrame()) {
-      var bodies = document.getElementsByTagName('BODY');
-      bodies[0].classList.add('iframe');
-  }
+    debugSetup();
+    if (isIFrame()) {
+        var bodies = document.getElementsByTagName('BODY');
+        bodies[0].classList.add('iframe');
+    }
 }
 
 type BoilerPlateData = {
-  title: string;
-  author: string;
-  copyright: string;
-  type: string;  // todo: enum
-  lang?: string;  // en-us by default
-  paperSize?: string;  // letter by default
-  orientation?: string;  // portrait by default
-  textInput?: boolean;  // false by default
-  storage?: boolean;  // false by default
-  notes?: boolean;  // false by default
-  dragDrop?: boolean;  // false by default
-  decoders?: boolean;  // false by default
+    title: string;
+    author: string;
+    copyright: string;
+    type: string;  // todo: enum
+    lang?: string;  // en-us by default
+    paperSize?: string;  // letter by default
+    orientation?: string;  // portrait by default
+    textInput?: boolean;  // false by default
+    storage?: boolean;  // false by default
+    notes?: boolean;  // false by default
+    dragDrop?: boolean;  // false by default
+    decoders?: boolean;  // false by default
 }
 
 
 interface CreateSimpleDivArgs {
-  id?: string;
-  cls?: string;
-  html?: string;
+    id?: string;
+    cls?: string;
+    html?: string;
 }
 function createSimpleDiv({id, cls, html}: CreateSimpleDivArgs) : HTMLDivElement {
-  let div: HTMLDivElement = document.createElement('DIV');
-  if (id !== undefined) {
-    div.id = id;
-  }
-  if (cls !== undefined) {
-    div.classList.add(cls);
-  }
-  if (html !== undefined) {
-    div.innerHTML = html;
-  }
-  return div;
+    let div: HTMLDivElement = document.createElement('DIV') as HTMLDivElement;
+    if (id !== undefined) {
+        div.id = id;
+    }
+    if (cls !== undefined) {
+        div.classList.add(cls);
+    }
+    if (html !== undefined) {
+        div.innerHTML = html;
+    }
+    return div;
 }
 
 interface CreateSimpleAArgs {
-  id?: string;
-  cls?: string;
-  friendly: string;
-  href: string;
-  target?: string;
+    id?: string;
+    cls?: string;
+    friendly: string;
+    href: string;
+    target?: string;
 }
 function createSimpleA({id, cls, friendly, href, target}: CreateSimpleAArgs) : HTMLAnchorElement {
-  let a: HTMLAnchorElement = document.createElement('A');
-  if (id !== undefined) {
-    a.id = id;
-  }
-  if (cls !== undefined) {
-    a.classList.add(cls);
-  }
-  a.innerHTML = friendly;
-  a.href = href;
-  a.target = target || '_blank';
-  return a;
+    let a: HTMLAnchorElement = document.createElement('A') as HTMLAnchorElement;
+    if (id !== undefined) {
+        a.id = id;
+    }
+    if (cls !== undefined) {
+        a.classList.add(cls);
+    }
+    a.innerHTML = friendly;
+    a.href = href;
+    a.target = target || '_blank';
+    return a;
 }
 
 function boilerplate(bp: BoilerPlateData) {
-  if (bp === null) {
-    return;
-  }
+    if (bp === null) {
+        return;
+    }
 
-  const html:HTMLHtmlElement = document.getElementsByTagName('HTML')[0] as HTMLHtmlElement;
-  const head:HTMLHeadElement = document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
-  const body:HTMLBodyElement = document.getElementsByTagName('BODY')[0] as HTMLBodyElement;
-  const pageBody:HTMLDivElement = document.getElementById('pageBody') as HTMLDivElement;
+    const html:HTMLHtmlElement = document.getElementsByTagName('HTML')[0] as HTMLHtmlElement;
+    const head:HTMLHeadElement = document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
+    const body:HTMLBodyElement = document.getElementsByTagName('BODY')[0] as HTMLBodyElement;
+    const pageBody:HTMLDivElement = document.getElementById('pageBody') as HTMLDivElement;
 
-  document.title = bp['title'];
-  
-  html.lang = bp['lang'] || 'en-us';
+    document.title = bp['title'];
+    
+    html.lang = bp['lang'] || 'en-us';
 
-  const viewport = document.createElement('META') as HTMLMetaElement;
-  viewport.name = 'viewport';
-  viewport.content = 'width=device-width, initial-scale=1'
-  head.appendChild(viewport);
+    const viewport = document.createElement('META') as HTMLMetaElement;
+    viewport.name = 'viewport';
+    viewport.content = 'width=device-width, initial-scale=1'
+    head.appendChild(viewport);
 
 
-  toggleClass(body, bp['paperSize'] || 'letter');
-  toggleClass(body, bp['orientation'] || 'portrait');
+    toggleClass(body, bp['paperSize'] || 'letter');
+    toggleClass(body, bp['orientation'] || 'portrait');
 
-  const page: HTMLDivElement = createSimpleDiv({id:'page', cls:'printedPage'});
-  const margins: HTMLDivElement = createSimpleDiv({cls:'pageWithinMargins'});
-  body.appendChild(page);
-  page.appendChild(margins);
-  margins.appendChild(pageBody);
-  margins.appendChild(createSimpleDiv({cls:'title', html:bp['title']}));
-  margins.appendChild(createSimpleDiv({id:'copyright', html:'&copy; ' + bp['copyright'] + ' ' + bp['author']}));
-  margins.appendChild(createSimpleA({id:'backlink', href:'safari.html', friendly:'Puzzle list'}));
-  
-  if (bp['notes']) {
-    margins.appendChild(createSimpleA({id:'notes-toggle', href:'safari.html', friendly:'Show Notes'}));
-  }
-  if (bp['decoder']) {
-    margins.appendChild(createSimpleA({id:'decoder-toggle', href:'https://ambitious-cliff-0dbb54410.azurestaticapps.net/Decoders/', friendly:'Show Decoders'}));
-  }
+    const page: HTMLDivElement = createSimpleDiv({id:'page', cls:'printedPage'});
+    const margins: HTMLDivElement = createSimpleDiv({cls:'pageWithinMargins'});
+    body.appendChild(page);
+    page.appendChild(margins);
+    margins.appendChild(pageBody);
+    margins.appendChild(createSimpleDiv({cls:'title', html:bp['title']}));
+    margins.appendChild(createSimpleDiv({id:'copyright', html:'&copy; ' + bp['copyright'] + ' ' + bp['author']}));
+    margins.appendChild(createSimpleA({id:'backlink', href:'safari.html', friendly:'Puzzle list'}));
+    
+    if (bp['notes']) {
+        margins.appendChild(createSimpleA({id:'notes-toggle', href:'safari.html', friendly:'Show Notes'}));
+    }
+    if (bp['decoder']) {
+        margins.appendChild(createSimpleA({id:'decoder-toggle', href:'https://ambitious-cliff-0dbb54410.azurestaticapps.net/Decoders/', friendly:'Show Decoders'}));
+    }
 
-  preSetup()
-  
-  if (bp['textInput']) {
-    textSetup()
-  }
+    preSetup()
+    
+    if (bp['textInput']) {
+        textSetup()
+    }
 
-  //setTimeout(checkLocalStorage, 100);
+    //setTimeout(checkLocalStorage, 100);
 
 }
 
