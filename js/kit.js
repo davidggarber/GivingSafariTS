@@ -192,7 +192,11 @@ function findParentOfClass(elmt, parentClass) {
     if (parentClass == null || parentClass == undefined) {
         return null;
     }
-    while (elmt !== null && elmt.tagName !== 'body') {
+    while (elmt !== null && elmt.tagName !== 'BODY') {
+        var name_1 = elmt.tagName;
+        if (name_1 == 'BODY') {
+            break;
+        }
         if (hasClass(elmt, parentClass)) {
             return elmt;
         }
@@ -1407,13 +1411,13 @@ exports.isIFrame = isIFrame;
 function preSetup() {
     debugSetup();
     if (isIFrame()) {
-        var bodies = document.getElementsByTagName('body');
+        var bodies = document.getElementsByTagName('BODY');
         bodies[0].classList.add('iframe');
     }
 }
 function createSimpleDiv(_a) {
     var id = _a.id, cls = _a.cls, html = _a.html;
-    var div = document.createElement('div');
+    var div = document.createElement('DIV');
     if (id !== undefined) {
         div.id = id;
     }
@@ -1427,7 +1431,7 @@ function createSimpleDiv(_a) {
 }
 function createSimpleA(_a) {
     var id = _a.id, cls = _a.cls, friendly = _a.friendly, href = _a.href, target = _a.target;
-    var a = document.createElement('a');
+    var a = document.createElement('A');
     if (id !== undefined) {
         a.id = id;
     }
@@ -1443,13 +1447,13 @@ function boilerplate(bp) {
     if (bp === null) {
         return;
     }
-    var html = document.getElementsByTagName('html')[0];
-    var head = document.getElementsByTagName('head')[0];
-    var body = document.getElementsByTagName('body')[0];
+    var html = document.getElementsByTagName('HTML')[0];
+    var head = document.getElementsByTagName('HEAD')[0];
+    var body = document.getElementsByTagName('BODY')[0];
     var pageBody = document.getElementById('pageBody');
     document.title = bp['title'];
     html.lang = bp['lang'] || 'en-us';
-    var viewport = document.createElement('meta');
+    var viewport = document.createElement('META');
     viewport.name = 'viewport';
     viewport.content = 'width=device-width, initial-scale=1';
     head.appendChild(viewport);

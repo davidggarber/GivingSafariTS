@@ -213,7 +213,11 @@ export function findParentOfClass(elmt: Element,
   if (parentClass == null || parentClass == undefined) {
       return null;
   }
-  while (elmt !== null && elmt.tagName !== 'body') {
+  while (elmt !== null && elmt.tagName !== 'BODY') {
+      const name = elmt.tagName;
+      if (name == 'BODY') {
+        break;
+      }
       if (hasClass(elmt, parentClass)) {
           return elmt;
       }
@@ -1566,7 +1570,7 @@ export function isIFrame() {
 function preSetup() {
   debugSetup();
   if (isIFrame()) {
-      var bodies = document.getElementsByTagName('body');
+      var bodies = document.getElementsByTagName('BODY');
       bodies[0].classList.add('iframe');
   }
 }
@@ -1593,7 +1597,7 @@ interface CreateSimpleDivArgs {
   html?: string;
 }
 function createSimpleDiv({id, cls, html}: CreateSimpleDivArgs) : HTMLDivElement {
-  let div: HTMLDivElement = document.createElement('div');
+  let div: HTMLDivElement = document.createElement('DIV');
   if (id !== undefined) {
     div.id = id;
   }
@@ -1614,7 +1618,7 @@ interface CreateSimpleAArgs {
   target?: string;
 }
 function createSimpleA({id, cls, friendly, href, target}: CreateSimpleAArgs) : HTMLAnchorElement {
-  let a: HTMLAnchorElement = document.createElement('a');
+  let a: HTMLAnchorElement = document.createElement('A');
   if (id !== undefined) {
     a.id = id;
   }
@@ -1632,16 +1636,16 @@ function boilerplate(bp: BoilerPlateData) {
     return;
   }
 
-  const html:HTMLHtmlElement = document.getElementsByTagName('html')[0] as HTMLHtmlElement;
-  const head:HTMLHeadElement = document.getElementsByTagName('head')[0] as HTMLHeadElement;
-  const body:HTMLBodyElement = document.getElementsByTagName('body')[0] as HTMLBodyElement;
+  const html:HTMLHtmlElement = document.getElementsByTagName('HTML')[0] as HTMLHtmlElement;
+  const head:HTMLHeadElement = document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
+  const body:HTMLBodyElement = document.getElementsByTagName('BODY')[0] as HTMLBodyElement;
   const pageBody:HTMLDivElement = document.getElementById('pageBody') as HTMLDivElement;
 
   document.title = bp['title'];
   
   html.lang = bp['lang'] || 'en-us';
 
-  const viewport = document.createElement('meta') as HTMLMetaElement;
+  const viewport = document.createElement('META') as HTMLMetaElement;
   viewport.name = 'viewport';
   viewport.content = 'width=device-width, initial-scale=1'
   head.appendChild(viewport);

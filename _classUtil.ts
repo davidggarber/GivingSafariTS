@@ -7,27 +7,27 @@
 export function toggleClass(obj: Node|string|null, 
                             cls: string|null, 
                             bool?: boolean) {
-  if (obj === null || cls === null || cls === undefined) {
-    return;
-  }
-  let elmt: Element;
-  if ('string' === typeof obj) {
-    elmt = document.getElementById(obj as string) as Element;
-  }
-  else {
-    elmt = obj as Element;
-  }
-  if (elmt !== null && elmt.classList !== null) {
-    if (bool === undefined) {
-      bool = !elmt.classList.contains(cls);
+    if (obj === null || cls === null || cls === undefined) {
+        return;
     }
-    if (bool) {
-      elmt.classList.add(cls);
+    let elmt: Element;
+    if ('string' === typeof obj) {
+        elmt = document.getElementById(obj as string) as Element;
     }
     else {
-      elmt.classList.remove(cls);
+        elmt = obj as Element;
     }
-  }
+    if (elmt !== null && elmt.classList !== null) {
+        if (bool === undefined) {
+            bool = !elmt.classList.contains(cls);
+        }
+        if (bool) {
+            elmt.classList.add(cls);
+        }
+        else {
+            elmt.classList.remove(cls);
+        }
+    }
 }
 
 /**
@@ -39,19 +39,19 @@ export function toggleClass(obj: Node|string|null,
 export function hasClass( obj: Node|string|null, 
                           cls: string|undefined) 
                           : boolean {
-  if (obj === null || cls === undefined) {
-    return false;
-  }
-  let elmt: Element;
-  if ('string' === typeof obj) {
-    elmt = document.getElementById(obj as string) as Element;
-  }
-  else {
-    elmt = obj as Element;
-  }
-  return elmt !== null 
-      && elmt.classList !== null
-      && elmt.classList.contains(cls);
+    if (obj === null || cls === undefined) {
+        return false;
+    }
+    let elmt: Element;
+    if ('string' === typeof obj) {
+        elmt = document.getElementById(obj as string) as Element;
+    }
+    else {
+        elmt = obj as Element;
+    }
+    return elmt !== null 
+        && elmt.classList !== null
+        && elmt.classList.contains(cls);
 }
 
 /**
@@ -61,10 +61,10 @@ export function hasClass( obj: Node|string|null,
  */
 export function applyAllClasses(obj: Node|string, 
                                 classes:string) {
-  var list = classes.split(' ');
-  for (let cls of list) {
-    toggleClass(obj, cls, true);
-  }
+    var list = classes.split(' ');
+    for (let cls of list) {
+        toggleClass(obj, cls, true);
+    }
 }
 
 /**
@@ -80,18 +80,18 @@ export function findNextOfClass(current: Element,
                                 skipClass?: string, 
                                 dir: number = 1)
                                 : Element|null {
-  var inputs = document.getElementsByClassName(matchClass);
-  var found = false;
-  for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
-      if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
-          continue;
-      }
-      if (found) {
-          return inputs[i];
-      }
-      found = inputs[i] == current;
-  }
-  return null;
+    var inputs = document.getElementsByClassName(matchClass);
+    var found = false;
+    for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
+        if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
+            continue;
+        }
+        if (found) {
+            return inputs[i];
+        }
+        found = inputs[i] == current;
+    }
+    return null;
 }
 
 /**
@@ -104,20 +104,20 @@ export function findNextOfClass(current: Element,
 export function indexInContainer( current: Element, 
                                   parentObj: Element|string, 
                                   sibClass: string) {
-  let parent: Element;
-  if (typeof(parentObj) == 'string') {
-      parent = findParentOfClass(current, parentObj as string) as Element;
-  }
-  else {
-    parent = parentObj as Element;
-  }
-  var sibs = parent.getElementsByClassName(sibClass);
-  for (var i = 0; i < sibs.length; i++) {
-      if (sibs[i] === current) {
-          return i;
-      }
-  }
-  return -1;
+    let parent: Element;
+    if (typeof(parentObj) == 'string') {
+        parent = findParentOfClass(current, parentObj as string) as Element;
+    }
+    else {
+        parent = parentObj as Element;
+    }
+    var sibs = parent.getElementsByClassName(sibClass);
+    for (var i = 0; i < sibs.length; i++) {
+        if (sibs[i] === current) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 /**
@@ -131,17 +131,17 @@ export function childAtIndex( parent: Element,
                               childClass: string, 
                               index: number)
                               : Element|null {
-  var sibs = parent.getElementsByClassName(childClass);
-  if (index < 0) {
-      index = sibs.length + index;
-  }
-  else if (index >= sibs.length) {
-      index = sibs.length - 1;
-  }
-  if (index < 0) {
-    return null;
-  }
-  return sibs[index];
+    var sibs = parent.getElementsByClassName(childClass);
+    if (index < 0) {
+        index = sibs.length + index;
+    }
+    else if (index >= sibs.length) {
+        index = sibs.length - 1;
+    }
+    if (index < 0) {
+        return null;
+    }
+    return sibs[index];
 }
 
 /**
@@ -158,20 +158,20 @@ export function findInNextContainer(current: Element,
                                     containerClass: string, 
                                     dir: number = 1)
                                     : Element|null {
-  var container = findParentOfClass(current, containerClass);
-  if (container == null) {
-      return null;
-  }
-  var nextContainer = findNextOfClass(container, containerClass, undefined, dir);
-  while (nextContainer != null) {
-      var child = findFirstChildOfClass(nextContainer, matchClass, skipClass);
-      if (child != null) {
-          return child;
-      }
-      // Look further ahead
-      nextContainer = findNextOfClass(nextContainer, containerClass, undefined, dir);
-  }
-  return null;
+    var container = findParentOfClass(current, containerClass);
+    if (container == null) {
+        return null;
+    }
+    var nextContainer = findNextOfClass(container, containerClass, undefined, dir);
+    while (nextContainer != null) {
+        var child = findFirstChildOfClass(nextContainer, matchClass, skipClass);
+        if (child != null) {
+            return child;
+        }
+        // Look further ahead
+        nextContainer = findNextOfClass(nextContainer, containerClass, undefined, dir);
+    }
+    return null;
 }
 
 /**
@@ -188,11 +188,11 @@ export function findEndInContainer( current: Element,
                                     skipClass: string|undefined, 
                                     containerClass: string, 
                                     dir: number = 1) {
-  var container = findParentOfClass(current, containerClass);
-  if (container == null) {
-      return null;
-  }
-  return findFirstChildOfClass(container, matchClass, skipClass, dir);
+    var container = findParentOfClass(current, containerClass);
+    if (container == null) {
+        return null;
+    }
+    return findFirstChildOfClass(container, matchClass, skipClass, dir);
 }
 
 /**
@@ -204,16 +204,20 @@ export function findEndInContainer( current: Element,
 export function findParentOfClass(elmt: Element, 
                                   parentClass: string)
                                   : Element|null {
-  if (parentClass == null || parentClass == undefined) {
-      return null;
-  }
-  while (elmt !== null && elmt.tagName !== 'body') {
-      if (hasClass(elmt, parentClass)) {
-          return elmt;
-      }
-      elmt = elmt.parentNode as Element;
-  }
-  return null;
+    if (parentClass == null || parentClass == undefined) {
+        return null;
+    }
+    while (elmt !== null && elmt.tagName !== 'BODY') {
+        const name = elmt.tagName;
+        if (name == 'BODY') {
+            break;
+        }
+        if (hasClass(elmt, parentClass)) {
+            return elmt;
+        }
+        elmt = elmt.parentNode as Element;
+    }
+    return null;
 }
 
 /**
@@ -252,18 +256,18 @@ export function getOptionalStyle( elmt: Element,
                                   defaultStyle?: string, 
                                   prefix?: string)
                                   : string|null {
-  var val = elmt.getAttribute(attrName);
-  while (val === null) {
-    elmt = elmt.parentNode as Element;
-    if (elmt === null || elmt.tagName === 'BODY') {
-      val = defaultStyle || null;
-      break;
+    var val = elmt.getAttribute(attrName);
+    while (val === null) {
+        elmt = elmt.parentNode as Element;
+        if (elmt === null || elmt.tagName === 'BODY') {
+            val = defaultStyle || null;
+            break;
+        }
+        else {
+            val = elmt.getAttribute(attrName);
+        }
     }
-    else {
-      val = elmt.getAttribute(attrName);
-    }
-  }
-  return (val === null || prefix === undefined) ? val : (prefix + val);
+    return (val === null || prefix === undefined) ? val : (prefix + val);
 }
 
 /**
@@ -276,17 +280,17 @@ export function getOptionalStyle( elmt: Element,
 export function moveFocus(input: HTMLInputElement, 
                           caret?: number)
                           : boolean {
-  if (input !== null) {
-      input.focus();
-      if (input.type !== 'number') {
-          if (caret === undefined) {
-              input.setSelectionRange(0, input.value.length);
-          }
-          else {
-              input.setSelectionRange(caret, caret);
-          }
-      }
-      return true;
-  }
-  return false;
+    if (input !== null) {
+        input.focus();
+        if (input.type !== 'number') {
+            if (caret === undefined) {
+                input.setSelectionRange(0, input.value.length);
+            }
+            else {
+                input.setSelectionRange(caret, caret);
+            }
+        }
+        return true;
+    }
+    return false;
 }
