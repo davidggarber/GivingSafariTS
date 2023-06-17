@@ -306,8 +306,311 @@ export function moveFocus(input: HTMLInputElement,
  * _notes.ts
  *-----------------------------------------------------------*/
 
-export function toggleHighlight(elmt) {
+
+/***********************************************************
+ * NOTES.TS
+ * Utilities for multiple kinds of annotations on a puzzle
+ *  - Text fields near objects, to take notes
+ *  - Check marks near objects, to show they've been used
+ *  - Highlighting of objects
+ * Each kind of annotation is optional. It can be turned on
+ * in a puzzle's metadata. 
+ */
+
+/**
+ * Define an optional callback.
+ * A puzzle document may define a function with this name, and will get called at the end of setup.
+ */
+let initGuessFunctionality: any;
+
+function simpleSetup(load) {
+
+    if (typeof initGuessFunctionality === 'function') {
+        initGuessFunctionality();
+    }
 }
+
+/**
+ * Look for elements tagged with any of the implemented "notes" classes.
+ * Each of these will end up with a notes input area, near the owning element.
+ * Note fields are for players to jot down their thoughts, before comitting to an answer.
+ */
+export function setupNotes() {
+    let index = 0;
+    index = setupNotesCells('notes-above', 'note-above', index);
+    index = setupNotesCells('notes-below', 'note-below', index);
+    index = setupNotesCells('notes-right', 'note-right', index);
+    index = setupNotesCells('notes-left', 'note-left', index);
+    index = setupNotesCells('notes-left', 'note-left', index);
+    // Puzzles can use the generic 'notes' class if they have their own .note-input style
+    index = setupNotesCells('notes', undefined, index);
+    index = setupNotesCells('notes-abs', undefined, index);
+    setupNotesToggle();
+    indexAllNoteFields();
+    if (isBodyDebug()) {
+        setNoteState(NoteState.Visible);
+    }
+}
+
+/**
+ * Find all objects tagged as needing notes, then create a note cell adjacent.
+ * @param findClass The class of the puzzle element that wants notes
+ * @param tagInput The class of note to create
+ * @param index The inde of the first note
+ * @returns The index after the last note
+ */
+function setupNotesCells(findClass:string, tagInput:string|undefined, index:number) {
+    var cells = document.getElementsByClassName(findClass);
+    for (var i = 0; i < cells.length; i++) {
+        const cell = cells[i];
+
+        // Place a small text input field in each cell
+        let inp = document.createElement('input');
+        inp.type = 'text';
+        inp.classList.add('note-input');
+        if (tagInput != undefined) {
+            inp.classList.add(tagInput);
+        }
+        inp.onkeyup=function(e){onNoteArrowKey(e)};
+        inp.onchange=function(e){onNoteChange(e)};
+        cell.appendChild(inp);
+    }
+    return index;
+}
+
+/**
+ * Custom nabigation key controls from within notes
+ * @param event The key event
+ */
+function onNoteArrowKey(event:KeyboardEvent) {
+    if (event.isComposing || event.currentTarget == null) {
+        return;  // Don't interfere with IMEs
+    }
+
+    const input = event.currentTarget as Element;
+    let code = event.code;
+    if (code == 'Enter') {
+        code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
+    }
+    if (code == 'ArrowUp' || code == 'PageUp') {
+        moveFocus(findNextOfClass(input, 'note-input', undefined, -1) as HTMLInputElement);
+        return;
+    }
+    else if (code == 'Enter' || code == 'ArrowDown' || code == 'PageDown') {
+        moveFocus(findNextOfClass(input, 'note-input') as HTMLInputElement);
+        return;
+    }
+}
+
+/**
+ * Each time a note is modified, save
+ * @param event The change event
+ */
+function onNoteChange(event:Event) {
+    if (event.target == null || (event.type == 'KeyboardEvent' && (event as KeyboardEvent).isComposing)) {
+        return;  // Don't interfere with IMEs
+    }
+
+    const input = event.currentTarget as Element;
+    const note =  findParentOfClass(input, 'note-input') as HTMLInputElement;
+    saveNoteLocally(note);
+}
+
+/**
+ * Notes can be toggled on or off, and when on, can also be lit up to make them easier to see.
+ */
+var NoteState = {
+    Disabled: 0,
+    Visible: 1,
+    Subdued: 2,  // Enabled but not highlighted
+    MAX: 3,
+};
+
+/**
+ * The note visibility state is tracked by a a class in the body tag.
+ * @returns a NoteState enum value
+ */
+function getNoteState() {
+    var body = document.getElementsByTagName('body')[0];
+    if (hasClass(body, 'show-notes')) {
+        return NoteState.Visible;
+    }
+    return hasClass(body, 'enable-notes')
+        ? NoteState.Subdued : NoteState.Disabled;
+}
+
+/**
+ * Update the body tag to be the desired visibility state
+ * @param state A NoteState enum value
+ */
+function setNoteState(state:number) {
+    var body = document.getElementsByTagName('body')[0];
+    toggleClass(body, 'show-notes', state == NoteState.Visible);
+    toggleClass(body, 'enable-notes', state == NoteState.Subdued);
+}
+
+/**
+ * There is a Notes link in the bottom corner of the page.
+ * Set it up such that clicking rotates through the 3 visibility states.
+ */
+function setupNotesToggle() {
+    let toggle = document.getElementById('notes-toggle') as HTMLAnchorElement;
+    if (toggle == null) {
+        toggle = document.createElement('a');
+        toggle.id = 'notes-toggle';
+        document.getElementsByClassName('pageWithinMargins')[0]?.appendChild(toggle);
+    }
+    const state = getNoteState();
+    if (state == NoteState.Disabled) {
+        toggle.innerText = 'Show Notes';
+    }
+    else if (state == NoteState.Subdued) {
+        toggle.innerText = 'Disable Notes';
+    }
+    else {  // NoteState.Visible
+        toggle.innerText = 'Dim Notes';
+    }
+    toggle.href = 'javascript:toggleNotes()';
+}
+
+/**
+ * Rotate to the next note visibility state.
+ */
+export function toggleNotes() {
+    const state = getNoteState();
+    setNoteState((state + 1) % NoteState.MAX);
+    setupNotesToggle();
+}
+
+
+/**
+ * Elements tagged with class = 'cross-off' are for puzzles clues that don't indicate where to use it.
+ * Any such elements are clickable. When clicked, a check mark is toggled on and off, allowed players to mark some clues as done.
+ */
+export function setupCrossOffs() {
+    const cells = document.getElementsByClassName('cross-off');
+    for (var i = 0; i < cells.length; i++) {
+        const cell = cells[i] as HTMLElement;
+
+        // Place a small text input field in each cell
+        cell.onclick=function(e){onCrossOff(e)};
+
+        var check = document.createElement('span');
+        check.classList.add('check');
+        check.innerHTML = '&#x2714;&#xFE0F;' // ✔️;
+        cell.appendChild(check);
+    }
+    indexAllCheckFields();
+}
+
+/**
+ * Handler for when an object that can be crossed off is clicked
+ * @param event The mouse event
+ */
+function onCrossOff(event:MouseEvent) {
+    let obj = event.target as HTMLElement;
+    if (obj.tagName == 'A' || hasClass(obj, 'note-input') || hasClass(obj, 'letter-input') || hasClass(obj, 'word-input')) {
+        return;  // Clicking on lines, notes, or inputs should not check anything
+    }
+    obj = findParentOfClass(obj, 'cross-off') as HTMLElement;
+    if (obj != null) {
+        const newVal = !hasClass(obj, 'crossed-off');
+        toggleClass(obj, 'crossed-off', newVal);
+        saveCheckLocally(obj, newVal);
+    }
+}
+
+export function setupHighlights() {
+    indexAllHighlightableFields();
+
+    const highlight = document.getElementById('highlight-ability');
+    if (highlight != null) {
+        highlight.onmousedown = function() {toggleHighlight()};
+    }
+}
+
+/**
+ * If an element can be highlighted, toggle that highlight on or off
+ * @param elmt The element to highlight
+ */
+export function toggleHighlight(elmt?:HTMLElement) {
+    if (elmt == undefined) {
+        elmt = document.activeElement as HTMLElement;  // will be body if no inputs have focus
+    }
+    const highlight = findParentOfClass(elmt, 'can-highlight') as HTMLElement;
+    if (highlight) {
+        toggleClass(highlight, 'highlighted');
+        saveHighlightLocally(highlight);
+    }
+}
+
+
+
+/*-----------------------------------------------------------
+ * _decoders.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * The decoder frame is either visible (true), hidden (false), or not present (null)
+ * @returns true, false, or null
+ */
+function getDecoderState() {
+    const frame = document.getElementById('decoder-frame');
+    if (frame != null) {
+        const style = window.getComputedStyle(frame);
+        return style.display != 'none';
+    }
+    return null;
+}
+
+/**
+ * Update the iframe tag to be the desired visibility state.
+ * Also ensure that it points at the correct URL
+ * @param state true to show, false to hide
+ */
+function setDecoderState(state: boolean) {
+    const frame = document.getElementById('decoder-frame') as HTMLIFrameElement;
+    if (frame != null) {
+        let src = 'https://www.decrypt.fun/index.html';
+        const mode = frame.getAttributeNS('', 'data-decoder-mode');
+        if (mode != null) {
+            src = 'https://www.decrypt.fun/' + mode + '.html';
+        }
+        frame.style.display = state ? 'block' : 'none';
+        if (frame.src === '' || state) {
+            frame.src = src;
+        }
+    }
+}
+
+/**
+ * There is a Decoders link in the bottom corner of the page.
+ * Set it up such that clicking rotates through the 3 visibility states.
+ */
+export function setupDecoderToggle() {
+    const toggle = document.getElementById('decoder-toggle') as HTMLAnchorElement;
+    if (toggle !== null) {
+        const visible = getDecoderState();
+        if (visible) {
+            toggle.innerText = 'Hide Decoders';
+        }
+        else {
+            toggle.innerText = 'Show Decoders';
+        }
+        toggle.href = 'javascript:toggleDecoder()';
+    }
+}
+
+/**
+ * Rotate to the next note visibility state.
+ */
+export function toggleDecoder() {
+    var visible = getDecoderState();
+    setDecoderState(!visible);
+    setupDecoderToggle();
+}
+
 
 
 /*-----------------------------------------------------------
@@ -320,7 +623,28 @@ export function saveLetterLocally(input: HTMLInputElement) {
 export function saveWordLocally(input: HTMLInputElement) {
 }
 
+export function saveNoteLocally(input: HTMLInputElement) {
+}
+
+export function saveCheckLocally(input: HTMLElement, val: boolean) {
+}
+
+export function saveHighlightLocally(input: HTMLElement) {
+}
+
 export function indexAllInputFields() {
+}
+
+export function indexAllNoteFields() {
+}
+
+export function indexAllCheckFields() {
+}
+
+export function indexAllHighlightableFields() {
+}
+
+export function checkLocalStorage() {
 }
 
 /*-----------------------------------------------------------
@@ -1540,8 +1864,15 @@ function hasProgress(event: Event): boolean {
 
 
 
+/**
+ * Cache the URL parameneters as a dictionary.
+ * Arguments that don't specify a value receive a default value of true
+ */
 const urlArgs = {};
 
+/**
+ * Scan the url for special arguments.
+ */
 function debugSetup() {
     var search = window.location.search;
     if (search !== '') {
@@ -1557,12 +1888,33 @@ function debugSetup() {
             }
         }
     }
+    if (urlArgs['body-debug'] != undefined && urlArgs['body-debug'] !== false) {
+        toggleClass(document.getElementsByTagName('body')[0], 'debug', true);
+    }
 }
 
+/**
+ * Determines if the caller has specified <i>debug</i> in the URL
+ * @returns true if set, unless explictly set to false
+ */
 export function isDebug() {
     return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
 }
 
+/**
+ * Determines if the caller has specified <i>body-debug</i> in the URL,
+ * or else if the puzzle explictly has set class='debug' on the body.
+ * @returns true if set, unless explictly set to false
+ */
+export function isBodyDebug() {
+    return hasClass(document.getElementsByTagName('body')[0], 'debug');
+}
+
+/**
+ * Determines if this document is being loaded inside an iframe.
+ * While any document could in theory be in an iframe, this library tags such pages with a url argument.
+ * @returns true if this page's URL contains an iframe argument (other than false)
+ */
 export function isIFrame() {
     return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
 }
@@ -1575,6 +1927,14 @@ function preSetup() {
     }
 }
 
+type AbilityData = {
+    notes?: boolean;
+    checkMarks?: boolean;
+    highlights?: boolean;
+    decoder?: boolean;
+    dragDrop?: boolean;
+}
+
 type BoilerPlateData = {
     title: string;
     author: string;
@@ -1585,9 +1945,7 @@ type BoilerPlateData = {
     orientation?: string;  // portrait by default
     textInput?: boolean;  // false by default
     storage?: boolean;  // false by default
-    notes?: boolean;  // false by default
-    dragDrop?: boolean;  // false by default
-    decoders?: boolean;  // false by default
+    abilities?: AbilityData;  // booleans for various UI affordances
 }
 
 
@@ -1636,6 +1994,39 @@ function boilerplate(bp: BoilerPlateData) {
         return;
     }
 
+    /* A puzzle doc must have this shape:
+     *   <html>
+     *    <head>
+     *     <script>
+     *      const boiler = { ... };        // Most fields are optional
+     *     </script>
+     *    </head>
+     *    <body>
+     *     <div id='pageBody'>
+     *      // All page contents
+     *     </div>
+     *    </body>
+     *   </html>
+     *  
+     * Several new objects and attibutes are inserted.
+     * Some are univeral; some depend on boiler plate data fields.
+     *   <html>
+     *    <head></head>
+     *    <body class='letter portrait'>            // new classes
+     *     <div id='page' class='printedPage'>      // new layer
+     *      <div id='pageWithinMargins'>            // new layer
+     *       <div id='pageBody'>
+     *        // All page contents
+     *       </div>
+     *       <div id='title'>[title]</div>          // new element
+     *       <div id='copyright'>[copyright]</div>  // new element
+     *       <a id='backlink'>Puzzle List</a>       // new element
+     *      </div>
+     *     </div>
+     *    </body>
+     *   </html>
+     */
+
     const html:HTMLHtmlElement = document.getElementsByTagName('HTML')[0] as HTMLHtmlElement;
     const head:HTMLHeadElement = document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
     const body:HTMLBodyElement = document.getElementsByTagName('BODY')[0] as HTMLBodyElement;
@@ -1675,10 +2066,65 @@ function boilerplate(bp: BoilerPlateData) {
     if (bp['textInput']) {
         textSetup()
     }
+    setupAbilities(bp['abilities'] || {});
 
     //setTimeout(checkLocalStorage, 100);
 
 }
+
+/**
+ * For each ability set to true in the AbilityData, do appropriate setup,
+ * and show an indicator emoji or instruction in the bottom corner.
+ * Back-compat: Scan the contents of the <ability> tag for known emoji.
+ */
+function setupAbilities(data:AbilityData) {
+    let ability = document.getElementById('ability');
+    if (ability != null) {
+        const text = ability.innerText;
+        if (text.search('✔️') >= 0) {
+            data.checkMarks = true;
+        }
+        else if (text.search('💡') >= 0) {
+            data.highlights = true;
+        }
+        else if (text.search('👈') >= 0) {
+            data.dragDrop = true;
+        }
+    }
+    else {
+        ability = document.createElement('div');
+        ability.id = 'ability';
+        document.getElementById('pageWithinMargins')?.appendChild(ability);
+    }
+    let fancy = '';
+    let count = 0;
+    if (data.checkMarks) {
+        setupCrossOffs();
+        fancy += '<span id="check-ability" title="Click items to check them off">✔️</span>';
+        count++;
+    }
+    if (data.highlights) {
+        fancy += '<span id="highlight-ability" title="Ctrl+` to highlight cells" style="text-shadow: 0 0 3px black;">💡</span>';
+        setupHighlights();
+        count++;
+    }
+    if (data.dragDrop) {
+        fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
+        // setupDragDrop();
+        count++;
+    }
+    if (data.notes) {
+        setupNotes();
+    }
+    if (data.decoder) {
+        setupDecoderToggle();
+    }
+    ability.innerHTML = fancy;
+    if (count == 2) {
+        ability.style.right = '0.1in';
+    }
+}
+
 
 declare let boiler: any;
 window.onload = function(){boilerplate(boiler as BoilerPlateData)};

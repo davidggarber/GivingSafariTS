@@ -3,6 +3,7 @@ import os
 kitFiles = [
     '_classUtil.ts',
     '_notes.ts',
+    '_decoders.ts',
     '_storage.ts',
     '_textInput.ts',
     '_textSetup.ts',
@@ -14,7 +15,7 @@ cwd = os.getcwd()
 print('Running in ' + cwd)
 
 for srcFile in kitFiles:
-  file = open(srcFile, "r")
+  file = open(srcFile, mode="r", encoding="utf-8")
   lines = file.readlines()
   file.close()
   afterImport = 0
@@ -35,6 +36,6 @@ for srcFile in kitFiles:
   merged += [' *-----------------------------------------------------------*/\n', '\n']
   merged += lines[afterImport:]
 
-out = open('kit.ts', "w")
+out = open('kit.ts', mode="w", encoding="utf-8")
 out.writelines(merged)
 out.close()

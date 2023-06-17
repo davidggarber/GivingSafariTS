@@ -1,9 +1,18 @@
 import { textSetup } from "./_textSetup"
-import { toggleClass } from "./_classUtil"
+import { hasClass, toggleClass } from "./_classUtil"
+import { setupNotes, setupCrossOffs, setupHighlights } from "./_notes"
+import { setupDecoderToggle } from "./_decoders"
 
 
+/**
+ * Cache the URL parameneters as a dictionary.
+ * Arguments that don't specify a value receive a default value of true
+ */
 const urlArgs = {};
 
+/**
+ * Scan the url for special arguments.
+ */
 function debugSetup() {
     var search = window.location.search;
     if (search !== '') {
@@ -19,12 +28,33 @@ function debugSetup() {
             }
         }
     }
+    if (urlArgs['body-debug'] != undefined && urlArgs['body-debug'] !== false) {
+        toggleClass(document.getElementsByTagName('body')[0], 'debug', true);
+    }
 }
 
+/**
+ * Determines if the caller has specified <i>debug</i> in the URL
+ * @returns true if set, unless explictly set to false
+ */
 export function isDebug() {
     return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
 }
 
+/**
+ * Determines if the caller has specified <i>body-debug</i> in the URL,
+ * or else if the puzzle explictly has set class='debug' on the body.
+ * @returns true if set, unless explictly set to false
+ */
+export function isBodyDebug() {
+    return hasClass(document.getElementsByTagName('body')[0], 'debug');
+}
+
+/**
+ * Determines if this document is being loaded inside an iframe.
+ * While any document could in theory be in an iframe, this library tags such pages with a url argument.
+ * @returns true if this page's URL contains an iframe argument (other than false)
+ */
 export function isIFrame() {
     return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
 }
@@ -37,6 +67,14 @@ function preSetup() {
     }
 }
 
+type AbilityData = {
+    notes?: boolean;
+    checkMarks?: boolean;
+    highlights?: boolean;
+    decoder?: boolean;
+    dragDrop?: boolean;
+}
+
 type BoilerPlateData = {
     title: string;
     author: string;
@@ -47,9 +85,7 @@ type BoilerPlateData = {
     orientation?: string;  // portrait by default
     textInput?: boolean;  // false by default
     storage?: boolean;  // false by default
-    notes?: boolean;  // false by default
-    dragDrop?: boolean;  // false by default
-    decoders?: boolean;  // false by default
+    abilities?: AbilityData;  // booleans for various UI affordances
 }
 
 
@@ -98,6 +134,39 @@ function boilerplate(bp: BoilerPlateData) {
         return;
     }
 
+    /* A puzzle doc must have this shape:
+     *   <html>
+     *    <head>
+     *     <script>
+     *      const boiler = { ... };        // Most fields are optional
+     *     </script>
+     *    </head>
+     *    <body>
+     *     <div id='pageBody'>
+     *      // All page contents
+     *     </div>
+     *    </body>
+     *   </html>
+     *  
+     * Several new objects and attibutes are inserted.
+     * Some are univeral; some depend on boiler plate data fields.
+     *   <html>
+     *    <head></head>
+     *    <body class='letter portrait'>            // new classes
+     *     <div id='page' class='printedPage'>      // new layer
+     *      <div id='pageWithinMargins'>            // new layer
+     *       <div id='pageBody'>
+     *        // All page contents
+     *       </div>
+     *       <div id='title'>[title]</div>          // new element
+     *       <div id='copyright'>[copyright]</div>  // new element
+     *       <a id='backlink'>Puzzle List</a>       // new element
+     *      </div>
+     *     </div>
+     *    </body>
+     *   </html>
+     */
+
     const html:HTMLHtmlElement = document.getElementsByTagName('HTML')[0] as HTMLHtmlElement;
     const head:HTMLHeadElement = document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
     const body:HTMLBodyElement = document.getElementsByTagName('BODY')[0] as HTMLBodyElement;
@@ -137,10 +206,65 @@ function boilerplate(bp: BoilerPlateData) {
     if (bp['textInput']) {
         textSetup()
     }
+    setupAbilities(bp['abilities'] || {});
 
     //setTimeout(checkLocalStorage, 100);
 
 }
+
+/**
+ * For each ability set to true in the AbilityData, do appropriate setup,
+ * and show an indicator emoji or instruction in the bottom corner.
+ * Back-compat: Scan the contents of the <ability> tag for known emoji.
+ */
+function setupAbilities(data:AbilityData) {
+    let ability = document.getElementById('ability');
+    if (ability != null) {
+        const text = ability.innerText;
+        if (text.search('✔️') >= 0) {
+            data.checkMarks = true;
+        }
+        else if (text.search('💡') >= 0) {
+            data.highlights = true;
+        }
+        else if (text.search('👈') >= 0) {
+            data.dragDrop = true;
+        }
+    }
+    else {
+        ability = document.createElement('div');
+        ability.id = 'ability';
+        document.getElementById('pageWithinMargins')?.appendChild(ability);
+    }
+    let fancy = '';
+    let count = 0;
+    if (data.checkMarks) {
+        setupCrossOffs();
+        fancy += '<span id="check-ability" title="Click items to check them off">✔️</span>';
+        count++;
+    }
+    if (data.highlights) {
+        fancy += '<span id="highlight-ability" title="Ctrl+` to highlight cells" style="text-shadow: 0 0 3px black;">💡</span>';
+        setupHighlights();
+        count++;
+    }
+    if (data.dragDrop) {
+        fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
+        // setupDragDrop();
+        count++;
+    }
+    if (data.notes) {
+        setupNotes();
+    }
+    if (data.decoder) {
+        setupDecoderToggle();
+    }
+    ability.innerHTML = fancy;
+    if (count == 2) {
+        ability.style.right = '0.1in';
+    }
+}
+
 
 declare let boiler: any;
 window.onload = function(){boilerplate(boiler as BoilerPlateData)};

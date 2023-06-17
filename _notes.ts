@@ -1,2 +1,243 @@
-export function toggleHighlight(elmt) {
+import { isBodyDebug } from "./_boilerplate";
+import { hasClass, toggleClass,     
+    moveFocus, findNextOfClass, findParentOfClass } from "./_classUtil";
+import { indexAllNoteFields, indexAllCheckFields, indexAllHighlightableFields, 
+    saveNoteLocally, saveCheckLocally, saveHighlightLocally } from "./_storage"
+
+/***********************************************************
+ * NOTES.TS
+ * Utilities for multiple kinds of annotations on a puzzle
+ *  - Text fields near objects, to take notes
+ *  - Check marks near objects, to show they've been used
+ *  - Highlighting of objects
+ * Each kind of annotation is optional. It can be turned on
+ * in a puzzle's metadata. 
+ */
+
+/**
+ * Define an optional callback.
+ * A puzzle document may define a function with this name, and will get called at the end of setup.
+ */
+let initGuessFunctionality: any;
+
+function simpleSetup(load) {
+
+    if (typeof initGuessFunctionality === 'function') {
+        initGuessFunctionality();
+    }
 }
+
+/**
+ * Look for elements tagged with any of the implemented "notes" classes.
+ * Each of these will end up with a notes input area, near the owning element.
+ * Note fields are for players to jot down their thoughts, before comitting to an answer.
+ */
+export function setupNotes() {
+    let index = 0;
+    index = setupNotesCells('notes-above', 'note-above', index);
+    index = setupNotesCells('notes-below', 'note-below', index);
+    index = setupNotesCells('notes-right', 'note-right', index);
+    index = setupNotesCells('notes-left', 'note-left', index);
+    index = setupNotesCells('notes-left', 'note-left', index);
+    // Puzzles can use the generic 'notes' class if they have their own .note-input style
+    index = setupNotesCells('notes', undefined, index);
+    index = setupNotesCells('notes-abs', undefined, index);
+    setupNotesToggle();
+    indexAllNoteFields();
+    if (isBodyDebug()) {
+        setNoteState(NoteState.Visible);
+    }
+}
+
+/**
+ * Find all objects tagged as needing notes, then create a note cell adjacent.
+ * @param findClass The class of the puzzle element that wants notes
+ * @param tagInput The class of note to create
+ * @param index The inde of the first note
+ * @returns The index after the last note
+ */
+function setupNotesCells(findClass:string, tagInput:string|undefined, index:number) {
+    var cells = document.getElementsByClassName(findClass);
+    for (var i = 0; i < cells.length; i++) {
+        const cell = cells[i];
+
+        // Place a small text input field in each cell
+        let inp = document.createElement('input');
+        inp.type = 'text';
+        inp.classList.add('note-input');
+        if (tagInput != undefined) {
+            inp.classList.add(tagInput);
+        }
+        inp.onkeyup=function(e){onNoteArrowKey(e)};
+        inp.onchange=function(e){onNoteChange(e)};
+        cell.appendChild(inp);
+    }
+    return index;
+}
+
+/**
+ * Custom nabigation key controls from within notes
+ * @param event The key event
+ */
+function onNoteArrowKey(event:KeyboardEvent) {
+    if (event.isComposing || event.currentTarget == null) {
+        return;  // Don't interfere with IMEs
+    }
+
+    const input = event.currentTarget as Element;
+    let code = event.code;
+    if (code == 'Enter') {
+        code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
+    }
+    if (code == 'ArrowUp' || code == 'PageUp') {
+        moveFocus(findNextOfClass(input, 'note-input', undefined, -1) as HTMLInputElement);
+        return;
+    }
+    else if (code == 'Enter' || code == 'ArrowDown' || code == 'PageDown') {
+        moveFocus(findNextOfClass(input, 'note-input') as HTMLInputElement);
+        return;
+    }
+}
+
+/**
+ * Each time a note is modified, save
+ * @param event The change event
+ */
+function onNoteChange(event:Event) {
+    if (event.target == null || (event.type == 'KeyboardEvent' && (event as KeyboardEvent).isComposing)) {
+        return;  // Don't interfere with IMEs
+    }
+
+    const input = event.currentTarget as Element;
+    const note =  findParentOfClass(input, 'note-input') as HTMLInputElement;
+    saveNoteLocally(note);
+}
+
+/**
+ * Notes can be toggled on or off, and when on, can also be lit up to make them easier to see.
+ */
+var NoteState = {
+    Disabled: 0,
+    Visible: 1,
+    Subdued: 2,  // Enabled but not highlighted
+    MAX: 3,
+};
+
+/**
+ * The note visibility state is tracked by a a class in the body tag.
+ * @returns a NoteState enum value
+ */
+function getNoteState() {
+    var body = document.getElementsByTagName('body')[0];
+    if (hasClass(body, 'show-notes')) {
+        return NoteState.Visible;
+    }
+    return hasClass(body, 'enable-notes')
+        ? NoteState.Subdued : NoteState.Disabled;
+}
+
+/**
+ * Update the body tag to be the desired visibility state
+ * @param state A NoteState enum value
+ */
+function setNoteState(state:number) {
+    var body = document.getElementsByTagName('body')[0];
+    toggleClass(body, 'show-notes', state == NoteState.Visible);
+    toggleClass(body, 'enable-notes', state == NoteState.Subdued);
+}
+
+/**
+ * There is a Notes link in the bottom corner of the page.
+ * Set it up such that clicking rotates through the 3 visibility states.
+ */
+function setupNotesToggle() {
+    let toggle = document.getElementById('notes-toggle') as HTMLAnchorElement;
+    if (toggle == null) {
+        toggle = document.createElement('a');
+        toggle.id = 'notes-toggle';
+        document.getElementsByClassName('pageWithinMargins')[0]?.appendChild(toggle);
+    }
+    const state = getNoteState();
+    if (state == NoteState.Disabled) {
+        toggle.innerText = 'Show Notes';
+    }
+    else if (state == NoteState.Subdued) {
+        toggle.innerText = 'Disable Notes';
+    }
+    else {  // NoteState.Visible
+        toggle.innerText = 'Dim Notes';
+    }
+    toggle.href = 'javascript:toggleNotes()';
+}
+
+/**
+ * Rotate to the next note visibility state.
+ */
+export function toggleNotes() {
+    const state = getNoteState();
+    setNoteState((state + 1) % NoteState.MAX);
+    setupNotesToggle();
+}
+
+
+/**
+ * Elements tagged with class = 'cross-off' are for puzzles clues that don't indicate where to use it.
+ * Any such elements are clickable. When clicked, a check mark is toggled on and off, allowed players to mark some clues as done.
+ */
+export function setupCrossOffs() {
+    const cells = document.getElementsByClassName('cross-off');
+    for (var i = 0; i < cells.length; i++) {
+        const cell = cells[i] as HTMLElement;
+
+        // Place a small text input field in each cell
+        cell.onclick=function(e){onCrossOff(e)};
+
+        var check = document.createElement('span');
+        check.classList.add('check');
+        check.innerHTML = '&#x2714;&#xFE0F;' // ✔️;
+        cell.appendChild(check);
+    }
+    indexAllCheckFields();
+}
+
+/**
+ * Handler for when an object that can be crossed off is clicked
+ * @param event The mouse event
+ */
+function onCrossOff(event:MouseEvent) {
+    let obj = event.target as HTMLElement;
+    if (obj.tagName == 'A' || hasClass(obj, 'note-input') || hasClass(obj, 'letter-input') || hasClass(obj, 'word-input')) {
+        return;  // Clicking on lines, notes, or inputs should not check anything
+    }
+    obj = findParentOfClass(obj, 'cross-off') as HTMLElement;
+    if (obj != null) {
+        const newVal = !hasClass(obj, 'crossed-off');
+        toggleClass(obj, 'crossed-off', newVal);
+        saveCheckLocally(obj, newVal);
+    }
+}
+
+export function setupHighlights() {
+    indexAllHighlightableFields();
+
+    const highlight = document.getElementById('highlight-ability');
+    if (highlight != null) {
+        highlight.onmousedown = function() {toggleHighlight()};
+    }
+}
+
+/**
+ * If an element can be highlighted, toggle that highlight on or off
+ * @param elmt The element to highlight
+ */
+export function toggleHighlight(elmt?:HTMLElement) {
+    if (elmt == undefined) {
+        elmt = document.activeElement as HTMLElement;  // will be body if no inputs have focus
+    }
+    const highlight = findParentOfClass(elmt, 'can-highlight') as HTMLElement;
+    if (highlight) {
+        toggleClass(highlight, 'highlighted');
+        saveHighlightLocally(highlight);
+    }
+}
+

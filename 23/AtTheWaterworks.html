@@ -14,8 +14,12 @@
         'author': 'Philippe Nicolle',
         'copyright': '2020',
         'type': 'Word',
-        'notes': true,
         'textInput': true,
+        'abilities' :
+        {
+          'notes': true,
+          'checkMarks': true,
+        }
       };
     </script>
     <style>
@@ -40,6 +44,13 @@
       .letter-literal {
         font-size: 14pt;
       }
+      .note-input {
+        position: relative;
+        width: 0.6in;
+        height: 3ex;
+        text-align: center;
+        z-index: 5;
+      }
       #extracted {
         position: absolute;
         left: 2in;
@@ -49,7 +60,7 @@
       }
     </style>
   </head>
-  <body class="debugx">
+  <body class="debug">
     <div id="pageBody">
       <p class="flavor">
         In the first Magic School Bus book, Ms. Frizzle&rsquo;s class visits the waterworks and learns about the water cycle.&nbsp;  
@@ -71,6 +82,7 @@
         <svg width="70" height="70" style="left: 1.2in; top:0.22in;">
           <path class="arrow" marker-end='url(#head)' d='M10,10, L60,35'/>
         </svg>
+        <div class="notes-abs" style="left:0.3in; top:1.5in;"></div>
       </div>
       <div class="hint" style="left: 5.2in; top: 1.7in; z-index: 2;">
         <img src="Images/Wworks/box.jpg" style="height:1in; position:absolute; top:-.34in; left: .6in;" alt="a cardboard container">
@@ -78,6 +90,7 @@
         <svg width="70" height="70" style="left: 0.6in; top:0.6in;">
           <path class="arrow" marker-end='url(#head)' d='M10,10, L45,50'/>
         </svg>
+        <div class="notes-abs" style="left:1in; top:0.7in;"></div>
       </div>
       <div class="hint" style="left: 6.3in; top: 3in;">
         <img src="Images/Wworks/beat.png" style="height:1.2in; position:absolute; top:-.2in; left: -1.5in;" alt="a pattern from a heart monitor">
@@ -85,6 +98,7 @@
         <svg width="70" height="70" style="left: 0.4in; top:0.6in;">
           <path class="arrow" marker-end='url(#head)' d='M10,10, L25,60'/>
         </svg>
+        <div class="notes-abs" style="left:-1.7in; top:.5in;"></div>
       </div>
       <div class="hint" style="left: 6.7in; top: 4.5in;">
         <img src="Images/Wworks/ski.png" style="height:2in; position:absolute; top:-.7in; left: -.4in;" alt="A long board for a foot">
@@ -92,6 +106,7 @@
         <svg width="70" height="70" style="left: 0in; top:0.6in;">
           <path class="arrow" marker-end='url(#head)' d='M30,10, L20,60'/>
         </svg>
+        <div class="notes-abs" style="left:-1.1in; top:0.3in;"></div>
       </div>
       <div class="hint" style="left: 6.3in; top: 6in;">
         <img src="Images/Wworks/pool.jpg" style="height:0.79in; position:absolute; top:-.2in; left: -1.6in;" alt="A tub of water">
@@ -99,6 +114,7 @@
         <svg width="70" height="70" style="left: -0.30in; top:0.6in;">
           <path class="arrow" marker-end='url(#head)' d='M50,10, L20,50'/>
         </svg>
+        <div class="notes-abs" style="left:-1.15in; top:0.65in;"></div>
       </div>
       <div class="hint" style="left: 5.2in; top: 7.3in;">
         <img src="Images/Wworks/car.jpg" style="height:1.2in; position:absolute; top:0.1in; left: .4in;" alt="a yellow hotrod">
@@ -106,6 +122,7 @@
         <svg width="70" height="70" style="left: -0.9in; top:0.6in;">
           <path class="arrow" marker-end='url(#head)' d='M60,10, L10,20'/>
         </svg>
+        <div class="notes-abs" style="left:1.2in; top:1in;"></div>
       </div>
       <div class="hint" style="left: 3.3in; top: 7.9in;">
         <img src="Images/Wworks/switch.jpg" style="height:1in; position:absolute; top:-0.85in; left:-0.25in;" alt="a toggle switch">
@@ -113,6 +130,7 @@
         <svg width="70" height="70" style="left: -0.8in; top:-0.3in;">
           <path class="arrow" marker-end='url(#head)' d='M60,50, L10,40'/>
         </svg>
+        <div class="notes-abs" style="left:0.4in; top:-0.95in;"></div>
       </div>
       <div class="hint" style="left: 1.5in; top: 7.3in;">
         <img src="Images/Wworks/rss.jpg" style="height:1.2in; position:absolute; top:0in; left: -1.2in;" alt="the RSS icon">
@@ -120,6 +138,7 @@
         <svg width="70" height="70" style="left: -0.5in; top:-0.5in;">
           <path class="arrow" marker-end='url(#head)' d='M40,50, L10,10'/>
         </svg>
+        <div class="notes-abs" style="left:-0.9in; top:1.25in;"></div>
       </div>
       <div class="hint" style="left: .45in; top: 6in;">
         <img src="Images/Wworks/water.jpg" style="height:0.8in; position:absolute; top:-.1in; left: 1.4in;" alt="a drop hitting water">
@@ -127,6 +146,7 @@
         <svg width="70" height="70" style="left: -0.1in; top:-0.7in;">
           <path class="arrow" marker-end='url(#head)' d='M20,60, L10,10'/>
         </svg>
+        <div class="notes-abs" style="left:1.65in; top:0.8in;"></div>
       </div>
       <div class="hint" style="left: 0in; top: 4.5in;">
         <img src="Images/Wworks/table.png" style="height:1in; position:absolute; top:-.2in; left: 1.3in;" alt="A four-legged eating surface">
@@ -134,6 +154,7 @@
         <svg width="70" height="70" style="left: 0.3in; top:-0.8in;">
           <path class="arrow" marker-end='url(#head)' d='M10,60, L25,10'/>
         </svg>
+        <div class="notes-abs" style="left:1.6in; top:0.6in;"></div>
       </div>
       <div class="hint" style="left: 0.45in; top: 3in;">
         <img src="Images/Wworks/back.jpg" style="height:1.21in; position:absolute; top:-.2in; left: 1.1in;" alt="a pattern from a heart monitor">
@@ -141,6 +162,7 @@
         <svg width="70" height="70" style="left: 0.4in; top:-0.7in;">
           <path class="arrow" marker-end='url(#head)' d='M10,50, L45,10'/>
         </svg>
+        <div class="notes-abs" style="left:1.9in; top:0.3in;"></div>
       </div>
       <div class="hint" style="left: 1.5in; top: 1.7in;">
         <img src="Images/Wworks/lift.jpg" style="height:0.84in; position:absolute; top:-.34in; left: -1.4in;" alt="a cardboard container">
@@ -148,6 +170,7 @@
         <svg width="70" height="70" style="left: 0.9in; top:-0.5in;">
           <path class="arrow" marker-end='url(#head)' d='M10,50, L60,25'/>
         </svg>
+        <div class="notes-abs" style="left:-1.1in; top:0.6in;"></div>
       </div>
 
       <div id="extracted" data-number-pattern="8"></div>
