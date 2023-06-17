@@ -2094,7 +2094,7 @@ function setupAbilities(data:AbilityData) {
     else {
         ability = document.createElement('div');
         ability.id = 'ability';
-        document.getElementById('pageWithinMargins')?.appendChild(ability);
+        document.getElementsByClassName('pageWithinMargins')[0]?.appendChild(ability);
     }
     let fancy = '';
     let count = 0;

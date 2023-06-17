@@ -1861,7 +1861,7 @@ function setupAbilities(data) {
     else {
         ability = document.createElement('div');
         ability.id = 'ability';
-        (_a = document.getElementById('pageWithinMargins')) === null || _a === void 0 ? void 0 : _a.appendChild(ability);
+        (_a = document.getElementsByClassName('pageWithinMargins')[0]) === null || _a === void 0 ? void 0 : _a.appendChild(ability);
     }
     var fancy = '';
     var count = 0;
