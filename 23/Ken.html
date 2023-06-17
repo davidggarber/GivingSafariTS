@@ -1,0 +1,40 @@
+<html>
+  <style>
+    .pressed {
+      background-color: lime;
+    }
+  </style>
+  <script>
+    var playing = null;
+    var audio = null;
+    function play(id) {
+      var btn = document.getElementById("song" + id);
+      if (audio != null) {
+        audio.pause();
+        audio = null;
+      }
+
+      if (playing != null) {
+        playing.classList.remove('pressed');
+        if (playing == btn) {
+          btn = null;
+        }
+        playing = null;
+        // TODO: stop mp3
+      }
+      if (btn != null) {
+        playing = btn;
+        var mp3 = btn.getAttribute('data-mp3');
+        btn.classList.add('pressed');
+
+        audio = new Audio('mp3/' + mp3);
+        audio.loop = false;
+        audio.play();
+      }
+    }
+  </script>
+  <body>
+    <p><button id="song1" data-mp3="m.mp3" onclick="javascript:play(1)">Song 1</button></p>
+    <p><button id="song2" data-mp3="z.mp3" onclick="javascript:play(2)">Song 2</button></p>
+  </body>
+</html>
