@@ -72,6 +72,7 @@ type AbilityData = {
     checkMarks?: boolean;
     highlights?: boolean;
     decoder?: boolean;
+    decoderMode?: string;
     dragDrop?: boolean;
 }
 
@@ -197,16 +198,13 @@ function boilerplate(bp: BoilerPlateData) {
     if (bp['notes']) {
         margins.appendChild(createSimpleA({id:'notes-toggle', href:'safari.html', friendly:'Show Notes'}));
     }
-    if (bp['decoder']) {
-        margins.appendChild(createSimpleA({id:'decoder-toggle', href:'https://ambitious-cliff-0dbb54410.azurestaticapps.net/Decoders/', friendly:'Show Decoders'}));
-    }
 
     preSetup()
     
     if (bp['textInput']) {
         textSetup()
     }
-    setupAbilities(bp['abilities'] || {});
+    setupAbilities(margins, bp['abilities'] || {});
 
     //setTimeout(checkLocalStorage, 100);
 
@@ -217,7 +215,7 @@ function boilerplate(bp: BoilerPlateData) {
  * and show an indicator emoji or instruction in the bottom corner.
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
-function setupAbilities(data:AbilityData) {
+function setupAbilities(margins:HTMLDivElement, data:AbilityData) {
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;
@@ -234,7 +232,7 @@ function setupAbilities(data:AbilityData) {
     else {
         ability = document.createElement('div');
         ability.id = 'ability';
-        document.getElementsByClassName('pageWithinMargins')[0]?.appendChild(ability);
+        margins.appendChild(ability);
     }
     let fancy = '';
     let count = 0;
@@ -254,10 +252,10 @@ function setupAbilities(data:AbilityData) {
         count++;
     }
     if (data.notes) {
-        setupNotes();
+        setupNotes(margins);
     }
     if (data.decoder) {
-        setupDecoderToggle();
+        setupDecoderToggle(margins, data.decoderMode);
     }
     ability.innerHTML = fancy;
     if (count == 2) {

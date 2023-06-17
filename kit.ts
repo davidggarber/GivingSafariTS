@@ -335,7 +335,7 @@ function simpleSetup(load) {
  * Each of these will end up with a notes input area, near the owning element.
  * Note fields are for players to jot down their thoughts, before comitting to an answer.
  */
-export function setupNotes() {
+export function setupNotes(margins:HTMLDivElement) {
     let index = 0;
     index = setupNotesCells('notes-above', 'note-above', index);
     index = setupNotesCells('notes-below', 'note-below', index);
@@ -345,7 +345,7 @@ export function setupNotes() {
     // Puzzles can use the generic 'notes' class if they have their own .note-input style
     index = setupNotesCells('notes', undefined, index);
     index = setupNotesCells('notes-abs', undefined, index);
-    setupNotesToggle();
+    setupNotesToggle(margins);
     indexAllNoteFields();
     if (isBodyDebug()) {
         setNoteState(NoteState.Visible);
@@ -452,13 +452,14 @@ function setNoteState(state:number) {
 /**
  * There is a Notes link in the bottom corner of the page.
  * Set it up such that clicking rotates through the 3 visibility states.
+ * @param margins the parent of the toggle UI
  */
-function setupNotesToggle() {
+function setupNotesToggle(margins:HTMLDivElement|null) {
     let toggle = document.getElementById('notes-toggle') as HTMLAnchorElement;
-    if (toggle == null) {
+    if (toggle == null && margins != null) {
         toggle = document.createElement('a');
         toggle.id = 'notes-toggle';
-        document.getElementsByClassName('pageWithinMargins')[0]?.appendChild(toggle);
+        margins.appendChild(toggle);
     }
     const state = getNoteState();
     if (state == NoteState.Disabled) {
@@ -479,7 +480,7 @@ function setupNotesToggle() {
 export function toggleNotes() {
     const state = getNoteState();
     setNoteState((state + 1) % NoteState.MAX);
-    setupNotesToggle();
+    setupNotesToggle(null);
 }
 
 
@@ -587,19 +588,34 @@ function setDecoderState(state: boolean) {
 /**
  * There is a Decoders link in the bottom corner of the page.
  * Set it up such that clicking rotates through the 3 visibility states.
+ * @param margins the parent node of the toggle UI
+ * @param mode the default decoder mode, if specified
  */
-export function setupDecoderToggle() {
-    const toggle = document.getElementById('decoder-toggle') as HTMLAnchorElement;
-    if (toggle !== null) {
-        const visible = getDecoderState();
-        if (visible) {
-            toggle.innerText = 'Hide Decoders';
+export function setupDecoderToggle(margins:HTMLDivElement|null, mode:string|null) {
+    let iframe = document.getElementById('decoder-frame') as HTMLIFrameElement;
+    if (iframe == null) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'decoder-frame';
+        if (mode != null) {
+            iframe.setAttributeNS(null, 'data-decoder-mode', mode);
         }
-        else {
-            toggle.innerText = 'Show Decoders';
-        }
-        toggle.href = 'javascript:toggleDecoder()';
+        document.getElementsByTagName('body')[0]?.appendChild(iframe);
     }
+
+    let toggle = document.getElementById('decoder-toggle') as HTMLAnchorElement;
+    if (toggle == null && margins != null) {
+        toggle = document.createElement('a');
+        toggle.id = 'decoder-toggle';
+        margins.appendChild(toggle);
+    }
+    const visible = getDecoderState();
+    if (visible) {
+        toggle.innerText = 'Hide Decoders';
+    }
+    else {
+        toggle.innerText = 'Show Decoders';
+    }
+    toggle.href = 'javascript:toggleDecoder()';
 }
 
 /**
@@ -608,7 +624,7 @@ export function setupDecoderToggle() {
 export function toggleDecoder() {
     var visible = getDecoderState();
     setDecoderState(!visible);
-    setupDecoderToggle();
+    setupDecoderToggle(null, null);
 }
 
 
@@ -1932,6 +1948,7 @@ type AbilityData = {
     checkMarks?: boolean;
     highlights?: boolean;
     decoder?: boolean;
+    decoderMode?: string;
     dragDrop?: boolean;
 }
 
@@ -2057,16 +2074,13 @@ function boilerplate(bp: BoilerPlateData) {
     if (bp['notes']) {
         margins.appendChild(createSimpleA({id:'notes-toggle', href:'safari.html', friendly:'Show Notes'}));
     }
-    if (bp['decoder']) {
-        margins.appendChild(createSimpleA({id:'decoder-toggle', href:'https://ambitious-cliff-0dbb54410.azurestaticapps.net/Decoders/', friendly:'Show Decoders'}));
-    }
 
     preSetup()
     
     if (bp['textInput']) {
         textSetup()
     }
-    setupAbilities(bp['abilities'] || {});
+    setupAbilities(margins, bp['abilities'] || {});
 
     //setTimeout(checkLocalStorage, 100);
 
@@ -2077,7 +2091,7 @@ function boilerplate(bp: BoilerPlateData) {
  * and show an indicator emoji or instruction in the bottom corner.
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
-function setupAbilities(data:AbilityData) {
+function setupAbilities(margins:HTMLDivElement, data:AbilityData) {
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;
@@ -2094,7 +2108,7 @@ function setupAbilities(data:AbilityData) {
     else {
         ability = document.createElement('div');
         ability.id = 'ability';
-        document.getElementsByClassName('pageWithinMargins')[0]?.appendChild(ability);
+        margins.appendChild(ability);
     }
     let fancy = '';
     let count = 0;
@@ -2114,10 +2128,10 @@ function setupAbilities(data:AbilityData) {
         count++;
     }
     if (data.notes) {
-        setupNotes();
+        setupNotes(margins);
     }
     if (data.decoder) {
-        setupDecoderToggle();
+        setupDecoderToggle(margins, data.decoderMode);
     }
     ability.innerHTML = fancy;
     if (count == 2) {

@@ -299,7 +299,7 @@ function simpleSetup(load) {
  * Each of these will end up with a notes input area, near the owning element.
  * Note fields are for players to jot down their thoughts, before comitting to an answer.
  */
-function setupNotes() {
+function setupNotes(margins) {
     var index = 0;
     index = setupNotesCells('notes-above', 'note-above', index);
     index = setupNotesCells('notes-below', 'note-below', index);
@@ -309,7 +309,7 @@ function setupNotes() {
     // Puzzles can use the generic 'notes' class if they have their own .note-input style
     index = setupNotesCells('notes', undefined, index);
     index = setupNotesCells('notes-abs', undefined, index);
-    setupNotesToggle();
+    setupNotesToggle(margins);
     indexAllNoteFields();
     if (isBodyDebug()) {
         setNoteState(NoteState.Visible);
@@ -407,14 +407,14 @@ function setNoteState(state) {
 /**
  * There is a Notes link in the bottom corner of the page.
  * Set it up such that clicking rotates through the 3 visibility states.
+ * @param margins the parent of the toggle UI
  */
-function setupNotesToggle() {
-    var _a;
+function setupNotesToggle(margins) {
     var toggle = document.getElementById('notes-toggle');
-    if (toggle == null) {
+    if (toggle == null && margins != null) {
         toggle = document.createElement('a');
         toggle.id = 'notes-toggle';
-        (_a = document.getElementsByClassName('pageWithinMargins')[0]) === null || _a === void 0 ? void 0 : _a.appendChild(toggle);
+        margins.appendChild(toggle);
     }
     var state = getNoteState();
     if (state == NoteState.Disabled) {
@@ -434,7 +434,7 @@ function setupNotesToggle() {
 function toggleNotes() {
     var state = getNoteState();
     setNoteState((state + 1) % NoteState.MAX);
-    setupNotesToggle();
+    setupNotesToggle(null);
 }
 exports.toggleNotes = toggleNotes;
 /**
@@ -531,19 +531,34 @@ function setDecoderState(state) {
 /**
  * There is a Decoders link in the bottom corner of the page.
  * Set it up such that clicking rotates through the 3 visibility states.
+ * @param margins the parent node of the toggle UI
+ * @param mode the default decoder mode, if specified
  */
-function setupDecoderToggle() {
-    var toggle = document.getElementById('decoder-toggle');
-    if (toggle !== null) {
-        var visible = getDecoderState();
-        if (visible) {
-            toggle.innerText = 'Hide Decoders';
+function setupDecoderToggle(margins, mode) {
+    var _a;
+    var iframe = document.getElementById('decoder-frame');
+    if (iframe == null) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'decoder-frame';
+        if (mode != null) {
+            iframe.setAttributeNS(null, 'data-decoder-mode', mode);
         }
-        else {
-            toggle.innerText = 'Show Decoders';
-        }
-        toggle.href = 'javascript:toggleDecoder()';
+        (_a = document.getElementsByTagName('body')[0]) === null || _a === void 0 ? void 0 : _a.appendChild(iframe);
     }
+    var toggle = document.getElementById('decoder-toggle');
+    if (toggle == null && margins != null) {
+        toggle = document.createElement('a');
+        toggle.id = 'decoder-toggle';
+        margins.appendChild(toggle);
+    }
+    var visible = getDecoderState();
+    if (visible) {
+        toggle.innerText = 'Hide Decoders';
+    }
+    else {
+        toggle.innerText = 'Show Decoders';
+    }
+    toggle.href = 'javascript:toggleDecoder()';
 }
 exports.setupDecoderToggle = setupDecoderToggle;
 /**
@@ -552,7 +567,7 @@ exports.setupDecoderToggle = setupDecoderToggle;
 function toggleDecoder() {
     var visible = getDecoderState();
     setDecoderState(!visible);
-    setupDecoderToggle();
+    setupDecoderToggle(null, null);
 }
 exports.toggleDecoder = toggleDecoder;
 /*-----------------------------------------------------------
@@ -1828,14 +1843,11 @@ function boilerplate(bp) {
     if (bp['notes']) {
         margins.appendChild(createSimpleA({ id: 'notes-toggle', href: 'safari.html', friendly: 'Show Notes' }));
     }
-    if (bp['decoder']) {
-        margins.appendChild(createSimpleA({ id: 'decoder-toggle', href: 'https://ambitious-cliff-0dbb54410.azurestaticapps.net/Decoders/', friendly: 'Show Decoders' }));
-    }
     preSetup();
     if (bp['textInput']) {
         textSetup();
     }
-    setupAbilities(bp['abilities'] || {});
+    setupAbilities(margins, bp['abilities'] || {});
     //setTimeout(checkLocalStorage, 100);
 }
 /**
@@ -1843,8 +1855,7 @@ function boilerplate(bp) {
  * and show an indicator emoji or instruction in the bottom corner.
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
-function setupAbilities(data) {
-    var _a;
+function setupAbilities(margins, data) {
     var ability = document.getElementById('ability');
     if (ability != null) {
         var text = ability.innerText;
@@ -1861,7 +1872,7 @@ function setupAbilities(data) {
     else {
         ability = document.createElement('div');
         ability.id = 'ability';
-        (_a = document.getElementsByClassName('pageWithinMargins')[0]) === null || _a === void 0 ? void 0 : _a.appendChild(ability);
+        margins.appendChild(ability);
     }
     var fancy = '';
     var count = 0;
@@ -1881,10 +1892,10 @@ function setupAbilities(data) {
         count++;
     }
     if (data.notes) {
-        setupNotes();
+        setupNotes(margins);
     }
     if (data.decoder) {
-        setupDecoderToggle();
+        setupDecoderToggle(margins, data.decoderMode);
     }
     ability.innerHTML = fancy;
     if (count == 2) {

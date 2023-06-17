@@ -32,7 +32,7 @@ function simpleSetup(load) {
  * Each of these will end up with a notes input area, near the owning element.
  * Note fields are for players to jot down their thoughts, before comitting to an answer.
  */
-export function setupNotes() {
+export function setupNotes(margins:HTMLDivElement) {
     let index = 0;
     index = setupNotesCells('notes-above', 'note-above', index);
     index = setupNotesCells('notes-below', 'note-below', index);
@@ -42,7 +42,7 @@ export function setupNotes() {
     // Puzzles can use the generic 'notes' class if they have their own .note-input style
     index = setupNotesCells('notes', undefined, index);
     index = setupNotesCells('notes-abs', undefined, index);
-    setupNotesToggle();
+    setupNotesToggle(margins);
     indexAllNoteFields();
     if (isBodyDebug()) {
         setNoteState(NoteState.Visible);
@@ -149,13 +149,14 @@ function setNoteState(state:number) {
 /**
  * There is a Notes link in the bottom corner of the page.
  * Set it up such that clicking rotates through the 3 visibility states.
+ * @param margins the parent of the toggle UI
  */
-function setupNotesToggle() {
+function setupNotesToggle(margins:HTMLDivElement|null) {
     let toggle = document.getElementById('notes-toggle') as HTMLAnchorElement;
-    if (toggle == null) {
+    if (toggle == null && margins != null) {
         toggle = document.createElement('a');
         toggle.id = 'notes-toggle';
-        document.getElementsByClassName('pageWithinMargins')[0]?.appendChild(toggle);
+        margins.appendChild(toggle);
     }
     const state = getNoteState();
     if (state == NoteState.Disabled) {
@@ -176,7 +177,7 @@ function setupNotesToggle() {
 export function toggleNotes() {
     const state = getNoteState();
     setNoteState((state + 1) % NoteState.MAX);
-    setupNotesToggle();
+    setupNotesToggle(null);
 }
 
 

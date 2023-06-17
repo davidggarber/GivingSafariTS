@@ -35,19 +35,34 @@ function setDecoderState(state: boolean) {
 /**
  * There is a Decoders link in the bottom corner of the page.
  * Set it up such that clicking rotates through the 3 visibility states.
+ * @param margins the parent node of the toggle UI
+ * @param mode the default decoder mode, if specified
  */
-export function setupDecoderToggle() {
-    const toggle = document.getElementById('decoder-toggle') as HTMLAnchorElement;
-    if (toggle !== null) {
-        const visible = getDecoderState();
-        if (visible) {
-            toggle.innerText = 'Hide Decoders';
+export function setupDecoderToggle(margins:HTMLDivElement|null, mode:string|null) {
+    let iframe = document.getElementById('decoder-frame') as HTMLIFrameElement;
+    if (iframe == null) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'decoder-frame';
+        if (mode != null) {
+            iframe.setAttributeNS(null, 'data-decoder-mode', mode);
         }
-        else {
-            toggle.innerText = 'Show Decoders';
-        }
-        toggle.href = 'javascript:toggleDecoder()';
+        document.getElementsByTagName('body')[0]?.appendChild(iframe);
     }
+
+    let toggle = document.getElementById('decoder-toggle') as HTMLAnchorElement;
+    if (toggle == null && margins != null) {
+        toggle = document.createElement('a');
+        toggle.id = 'decoder-toggle';
+        margins.appendChild(toggle);
+    }
+    const visible = getDecoderState();
+    if (visible) {
+        toggle.innerText = 'Hide Decoders';
+    }
+    else {
+        toggle.innerText = 'Show Decoders';
+    }
+    toggle.href = 'javascript:toggleDecoder()';
 }
 
 /**
@@ -56,6 +71,6 @@ export function setupDecoderToggle() {
 export function toggleDecoder() {
     var visible = getDecoderState();
     setDecoderState(!visible);
-    setupDecoderToggle();
+    setupDecoderToggle(null, null);
 }
 
