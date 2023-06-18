@@ -2332,7 +2332,7 @@ var safariDetails = {
     'title': 'Safari Labs',
     'logo': './Images/PS20 logo.png',
     'icon': './Images/Beaker_icon.png',
-    'puzzleList': './index.html'
+    'puzzleList': './indexx.html'
 };
 /**
  * Return the details of this puzzle event
@@ -2439,8 +2439,13 @@ function boilerplate(bp) {
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({ id: 'backlink', href: safariDetails.puzzleList, friendly: 'Puzzle list' }));
     }
-    if (bp['notes']) {
-        margins.appendChild(createSimpleA({ id: 'notes-toggle', href: 'safari.html', friendly: 'Show Notes' }));
+    if (bp['type']) {
+        var iconDiv = document.createElement('div');
+        iconDiv.id = 'icons';
+        var icon = document.createElement('img');
+        icon.src = './Icons/' + bp['type'] + '.png';
+        iconDiv.appendChild(icon);
+        margins.appendChild(iconDiv);
     }
     preSetup(bp);
     if (bp['textInput']) {

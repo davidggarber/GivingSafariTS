@@ -2594,7 +2594,7 @@ const safariDetails:PuzzleEventDetails = {
     'title': 'Safari Labs',
     'logo': './Images/PS20 logo.png',
     'icon': './Images/Beaker_icon.png',
-    'puzzleList': './index.html'
+    'puzzleList': './indexx.html'
 }
 
 /**
@@ -2747,9 +2747,14 @@ function boilerplate(bp: BoilerPlateData) {
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:'Puzzle list'}));
     }
-    
-    if (bp['notes']) {
-        margins.appendChild(createSimpleA({id:'notes-toggle', href:'safari.html', friendly:'Show Notes'}));
+
+    if (bp['type']) {
+        const iconDiv = document.createElement('div');
+        iconDiv.id = 'icons';
+        const icon = document.createElement('img');
+        icon.src = './Icons/' + bp['type'] + '.png';
+        iconDiv.appendChild(icon);
+        margins.appendChild(iconDiv);
     }
 
     preSetup(bp)
