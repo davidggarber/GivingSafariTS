@@ -3,7 +3,7 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.onWordKey = exports.onLetterKey = exports.onLetterKeyDown = exports.checkLocalStorage = exports.indexAllHighlightableFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.saveHighlightLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.doDraw = exports.quickFreeMove = exports.quickMove = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.saveHighlightLocally = exports.saveDrawingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -540,7 +540,7 @@ function setupDecoderToggle(margins, mode) {
     if (iframe == null) {
         iframe = document.createElement('iframe');
         iframe.id = 'decoder-frame';
-        if (mode != null) {
+        if (mode != undefined) {
             iframe.setAttributeNS(null, 'data-decoder-mode', mode);
         }
         (_a = document.getElementsByTagName('body')[0]) === null || _a === void 0 ? void 0 : _a.appendChild(iframe);
@@ -567,42 +567,598 @@ exports.setupDecoderToggle = setupDecoderToggle;
 function toggleDecoder() {
     var visible = getDecoderState();
     setDecoderState(!visible);
-    setupDecoderToggle(null, null);
+    setupDecoderToggle(null);
 }
 exports.toggleDecoder = toggleDecoder;
-/*-----------------------------------------------------------
- * _storage.ts
- *-----------------------------------------------------------*/
-function saveLetterLocally(input) {
-}
-exports.saveLetterLocally = saveLetterLocally;
-function saveWordLocally(input) {
-}
-exports.saveWordLocally = saveWordLocally;
-function saveNoteLocally(input) {
-}
-exports.saveNoteLocally = saveNoteLocally;
-function saveCheckLocally(input, val) {
-}
-exports.saveCheckLocally = saveCheckLocally;
-function saveHighlightLocally(input) {
-}
-exports.saveHighlightLocally = saveHighlightLocally;
-function indexAllInputFields() {
-}
-exports.indexAllInputFields = indexAllInputFields;
-function indexAllNoteFields() {
-}
-exports.indexAllNoteFields = indexAllNoteFields;
-function indexAllCheckFields() {
-}
-exports.indexAllCheckFields = indexAllCheckFields;
-function indexAllHighlightableFields() {
-}
-exports.indexAllHighlightableFields = indexAllHighlightableFields;
+var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, drawings: {}, highlights: {}, time: null };
+////////////////////////////////////////////////////////////////////////
+// User interface
+//
+var checkStorage = null;
+/**
+ * If storage exists from a previous visit to this puzzle, offer to reload.
+ */
 function checkLocalStorage() {
+    // Each puzzle is cached within localStorage by its URL
+    if (window.location.href in localStorage) {
+        var item = localStorage.getItem(window.location.href);
+        if (item != null) {
+            checkStorage = JSON.parse(item);
+            var empty = true; // It's possible to cache all blanks, which are uninteresting
+            for (var key in checkStorage) {
+                if (checkStorage[key] != null && checkStorage[key] != '') {
+                    empty = false;
+                    break;
+                }
+            }
+            if (!empty) {
+                createReloadUI(checkStorage.time);
+            }
+        }
+    }
 }
 exports.checkLocalStorage = checkLocalStorage;
+/**
+ * Globals for reload UI elements
+ */
+var reloadDialog;
+var reloadButton;
+var restartButton;
+/**
+ * Create a modal dialog, asking the user if they want to reload.
+ * @param time The time the cached data was saved (as a string)
+ *
+ * If a page object can be found, compose a dialog:
+ *   +-------------------------------------------+
+ *   | Would you like to reload your progress on |
+ *   | [title] from earlier? The last change was |
+ *   | [## time-units ago].                      |
+ *   |                                           |
+ *   |       [Reload]     [Start over]           |
+ *   +-------------------------------------------+
+ * else use the generic javascript confirm prompt.
+ */
+function createReloadUI(time) {
+    reloadDialog = document.createElement('div');
+    reloadDialog.id = 'reloadLocalStorage';
+    var img = document.createElement('img');
+    img.classList.add('icon');
+    img.src = getSafariDetails().icon;
+    var title = document.createElement('span');
+    title.classList.add('title-font');
+    title.innerText = document.title;
+    var p1 = document.createElement('p');
+    p1.appendChild(document.createTextNode('Would you like to reload your progress on '));
+    p1.appendChild(title);
+    p1.appendChild(document.createTextNode(' from earlier?'));
+    var now = new Date();
+    var dateTime = new Date(time);
+    var delta = now.getTime() - dateTime.getTime();
+    var seconds = Math.ceil(delta / 1000);
+    var minutes = Math.floor(seconds / 60);
+    var hours = Math.floor(minutes / 60);
+    var days = Math.floor(hours / 24);
+    var ago = 'The last change was ';
+    if (days >= 2) {
+        ago += days + ' days ago.';
+    }
+    else if (hours >= 2) {
+        ago += hours + ' hours ago.';
+    }
+    else if (minutes >= 2) {
+        ago += minutes + ' minutes ago.';
+    }
+    else {
+        ago += seconds + ' seconds ago.';
+    }
+    var p2 = document.createElement('p');
+    p2.innerText = ago;
+    reloadButton = document.createElement('button');
+    reloadButton.innerText = 'Reload';
+    reloadButton.onclick = function () { doLocalReload(true); };
+    reloadButton.onkeydown = function (e) { onkeyReload(e); };
+    restartButton = document.createElement('button');
+    restartButton.innerText = 'Start over';
+    restartButton.onclick = function () { cancelLocalReload(true); };
+    restartButton.onkeydown = function (e) { onkeyReload(e); };
+    var p3 = document.createElement('p');
+    p3.appendChild(reloadButton);
+    p3.appendChild(restartButton);
+    reloadDialog.appendChild(img);
+    reloadDialog.appendChild(p1);
+    reloadDialog.appendChild(p2);
+    reloadDialog.appendChild(p3);
+    var page = document.getElementById('page');
+    if (page == null) {
+        if (confirm("Continue where you left off?")) {
+            doLocalReload(false);
+        }
+        else {
+            cancelLocalReload(false);
+        }
+    }
+    else {
+        page.appendChild(reloadDialog);
+        reloadButton.focus();
+    }
+}
+/**
+ * Handle keyboard accelerators while focus is on either reload button
+ */
+function onkeyReload(e) {
+    if (e.code == 'Escape') {
+        cancelLocalReload(true);
+    }
+    else if (e.code.search('Arrow') == 0) {
+        if (e.target == reloadButton) {
+            restartButton.focus();
+        }
+        else {
+            reloadButton.focus();
+        }
+    }
+}
+/**
+ * User has confirmed they want to reload
+ * @param hide true if called from reloadDialog
+ */
+function doLocalReload(hide) {
+    if (hide) {
+        reloadDialog.style.display = 'none';
+    }
+    loadLocalStorage(checkStorage);
+}
+/**
+ * User has confirmed they want to start over
+ * @param hide true if called from reloadDialog
+ */
+function cancelLocalReload(hide) {
+    if (hide) {
+        reloadDialog.style.display = 'none';
+    }
+    // Clear cached storage
+    checkStorage = null;
+    localStorage.removeItem(window.location.href);
+}
+//////////////////////////////////////////////////////////
+// Utilities for saving to local cache
+//
+/**
+ * Overwrite the localStorage with the current cache structure
+ */
+function saveCache() {
+    if (!reloading) {
+        localCache.time = new Date();
+        localStorage.setItem(window.location.href, JSON.stringify(localCache));
+    }
+}
+/**
+ * Update the saved letters object
+ * @param element an letter-input element
+ */
+function saveLetterLocally(input) {
+    if (input) {
+        var index = getGlobalIndex(input);
+        if (index) {
+            localCache.letters[index] = input.value;
+            saveCache();
+        }
+    }
+}
+exports.saveLetterLocally = saveLetterLocally;
+/**
+ * Update the saved words object
+ * @param element an word-input element
+ */
+function saveWordLocally(input) {
+    if (input) {
+        var index = getGlobalIndex(input);
+        if (index) {
+            localCache.words[index] = input.value;
+            saveCache();
+        }
+    }
+}
+exports.saveWordLocally = saveWordLocally;
+/**
+ * Update the saved notes object
+ * @param element an note-input element
+ */
+function saveNoteLocally(input) {
+    if (input) {
+        var index = getGlobalIndex(input);
+        if (index) {
+            localCache.notes[index] = input.value;
+            saveCache();
+        }
+    }
+}
+exports.saveNoteLocally = saveNoteLocally;
+/**
+ * Update the saved checkmark object
+ * @param element an element which might contain a checkmark
+ */
+function saveCheckLocally(element, value) {
+    if (element) {
+        var index = getGlobalIndex(element);
+        if (index) {
+            localCache.checks[index] = value;
+            saveCache();
+        }
+    }
+}
+exports.saveCheckLocally = saveCheckLocally;
+/**
+ * Update the saved containers objects
+ * @param element an element which can move between containers
+ */
+function saveContainerLocally(element, container) {
+    if (element && container) {
+        var elemIndex = getGlobalIndex(element);
+        var destIndex = getGlobalIndex(container);
+        if (elemIndex && destIndex) {
+            localCache.containers[elemIndex] = destIndex;
+            saveCache();
+        }
+    }
+}
+exports.saveContainerLocally = saveContainerLocally;
+/**
+ * Update the saved positions object
+ * @param element a moveable element which can free-move in its container
+ */
+function savePositionLocally(element) {
+    if (element) {
+        var index = getGlobalIndex(element);
+        if (index) {
+            var pos = positionFromStyle(element);
+            localCache.positions[index] = pos;
+            saveCache();
+        }
+    }
+}
+exports.savePositionLocally = savePositionLocally;
+/**
+ * Update the saved drawings object
+ * @param element an element which might contain a drawn object
+ */
+function saveDrawingLocally(element) {
+    if (element) {
+        var index = getGlobalIndex(element);
+        if (index) {
+            var drawn = findFirstChildOfClass(element, 'drawnObject');
+            if (drawn) {
+                localCache.drawings[index] = drawn.getAttributeNS('', 'data-template-id');
+            }
+            else {
+                delete localCache.drawings[index];
+            }
+            saveCache();
+        }
+    }
+}
+exports.saveDrawingLocally = saveDrawingLocally;
+/**
+ * Update the saved highlights object
+ * @param element a highlightable object
+ */
+function saveHighlightLocally(element) {
+    if (element) {
+        var index = getGlobalIndex(element, 'ch');
+        if (index) {
+            localCache.highlights[index] = hasClass(element, 'highlighted');
+            saveCache();
+        }
+    }
+}
+exports.saveHighlightLocally = saveHighlightLocally;
+////////////////////////////////////////////////////////////////////////
+// Utilities for applying global indeces for saving and loading
+//
+/**
+ * Assign indeces to all of the elements in a group
+ * @param elements A list of elements
+ * @param suffix A variant name of the index (optional)
+ */
+function applyGlobalIndeces(elements, suffix) {
+    var attr = 'data-globalIndex';
+    if (suffix != undefined) {
+        attr += '-' + suffix;
+    }
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].setAttributeNS('', attr, String(i));
+    }
+}
+/**
+ * At page initialization, every element that can be cached gets an index attached to it.
+ * Possibly more than one, if it can cache multiple traits.
+ * Now retrieve that index.
+ * @param elmt The element with the index
+ * @param suffix The name of the index (optional)
+ * @returns The index
+ */
+function getGlobalIndex(elmt, suffix) {
+    var attr = 'data-globalIndex';
+    if (suffix != undefined) {
+        attr += '-' + suffix;
+    }
+    return Number(elmt.getAttributeNS('', attr));
+}
+/**
+ * Assign globalIndeces to every letter- or word- input field
+ */
+function indexAllInputFields() {
+    var inputs = document.getElementsByClassName('letter-input');
+    applyGlobalIndeces(inputs);
+    inputs = document.getElementsByClassName('word-input');
+    applyGlobalIndeces(inputs);
+}
+exports.indexAllInputFields = indexAllInputFields;
+/**
+ * Assign globalIndeces to every note field
+ */
+function indexAllNoteFields() {
+    var inputs = document.getElementsByClassName('note-input');
+    applyGlobalIndeces(inputs);
+}
+exports.indexAllNoteFields = indexAllNoteFields;
+/**
+ * Assign globalIndeces to every check mark
+ */
+function indexAllCheckFields() {
+    var inputs = document.getElementsByClassName('cross-off');
+    applyGlobalIndeces(inputs);
+}
+exports.indexAllCheckFields = indexAllCheckFields;
+/**
+ * Assign globalIndeces to every moveable element and drop target
+ */
+function indexAllDragDropFields() {
+    var inputs = document.getElementsByClassName('moveable');
+    applyGlobalIndeces(inputs);
+    inputs = document.getElementsByClassName('drop-target');
+    applyGlobalIndeces(inputs);
+}
+exports.indexAllDragDropFields = indexAllDragDropFields;
+/**
+ * Assign globalIndeces to every drawable element
+ */
+function indexAllDrawableFields() {
+    var inputs = document.getElementsByClassName('drawable');
+    applyGlobalIndeces(inputs);
+}
+exports.indexAllDrawableFields = indexAllDrawableFields;
+/**
+ * Assign globalIndeces to every highlightable element
+ */
+function indexAllHighlightableFields() {
+    var inputs = document.getElementsByClassName('can-highlight');
+    applyGlobalIndeces(inputs, 'ch');
+}
+exports.indexAllHighlightableFields = indexAllHighlightableFields;
+////////////////////////////////////////////////////////////////////////
+// Load from local storage
+//
+/**
+ * Avoid re-entrancy. Track if we're mid-reload
+ */
+var reloading = false;
+/**
+ * Load all structure types from storage
+ */
+function loadLocalStorage(storage) {
+    reloading = true;
+    restoreLetters(storage.letters);
+    restoreWords(storage.words);
+    restoreNotes(storage.notes);
+    restoreCrossOffs(storage.checks);
+    restoreContainers(storage.containers);
+    restorePositions(storage.positions);
+    restoreDrawings(storage.drawings);
+    restoreHighlights(storage.highlights);
+    reloading = false;
+}
+/**
+ * Restore any saved letter input values
+ * @param values A dictionary of index=>string
+ */
+function restoreLetters(values) {
+    localCache.letters = values;
+    var inputs = document.getElementsByClassName('letter-input');
+    for (var i = 0; i < inputs.length; i++) {
+        var input = inputs[i];
+        var value = values[i];
+        if (value != undefined) {
+            input.value = value;
+            afterInputUpdate(input);
+        }
+    }
+}
+/**
+ * Restore any saved word input values
+ * @param values A dictionary of index=>string
+ */
+function restoreWords(values) {
+    localCache.words = values;
+    var inputs = document.getElementsByClassName('word-input');
+    for (var i = 0; i < inputs.length; i++) {
+        var input = inputs[i];
+        var value = values[i];
+        if (value != undefined) {
+            input.value = value;
+            var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
+            if (extractId != null) {
+                updateWordExtraction(extractId);
+            }
+        }
+    }
+    if (inputs.length > 0) {
+        updateWordExtraction(null);
+    }
+}
+/**
+ * Restore any saved note input values
+ * @param values A dictionary of index=>string
+ */
+function restoreNotes(values) {
+    localCache.notes = values;
+    var elements = document.getElementsByClassName('note-input');
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        var globalIndex = getGlobalIndex(element);
+        var value = values[globalIndex];
+        if (value != undefined) {
+            element.value = value;
+        }
+    }
+}
+/**
+ * Restore any saved note input values
+ * @param values A dictionary of index=>boolean
+ */
+function restoreCrossOffs(values) {
+    localCache.checks = values;
+    var elements = document.getElementsByClassName('cross-off');
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        var globalIndex = getGlobalIndex(element);
+        var value = values[globalIndex];
+        if (value != undefined) {
+            toggleClass(element, 'crossed-off', value);
+        }
+    }
+}
+/**
+ * Restore any saved moveable objects to drop targets
+ * @param containers A dictionary of moveable-index=>target-index
+ */
+function restoreContainers(containers) {
+    localCache.containers = containers;
+    var movers = document.getElementsByClassName('moveable');
+    var targets = document.getElementsByClassName('drop-target');
+    for (var i = 0; i < movers.length; i++) {
+        var j = containers[i];
+        if (j != undefined) {
+            quickMove(movers[i], targets[j]);
+        }
+    }
+}
+/**
+ * Restore any saved moveable objects to free-positions within their targets
+ * @param positions A dictionary of index=>Position
+ */
+function restorePositions(positions) {
+    localCache.positions = positions;
+    var movers = document.getElementsByClassName('moveable');
+    for (var i = 0; i < movers.length; i++) {
+        var pos = positions[i];
+        if (pos != undefined) {
+            quickFreeMove(movers[i], pos);
+        }
+    }
+}
+/**
+ * Restore any saved note input values
+ * @param values A dictionary of index=>string
+ */
+function restoreDrawings(drawings) {
+    localCache.drawings = drawings;
+    var targets = document.getElementsByClassName('drawable');
+    for (var i = 0; i < targets.length; i++) {
+        var tool = drawings[i];
+        if (tool != undefined) {
+            doDraw(targets[i], tool);
+        }
+    }
+}
+/**
+ * Restore any saved highlight toggle
+ * @param highlights A dictionary of index=>boolean
+ */
+function restoreHighlights(highlights) {
+    localCache.highlights = highlights == undefined ? {} : highlights;
+    var elements = document.getElementsByClassName('can-highlight');
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        var globalIndex = getGlobalIndex(element, 'ch');
+        var value = highlights[globalIndex];
+        if (value != undefined) {
+            toggleClass(element, 'highlighted', value);
+        }
+    }
+}
+////////////////////////////////////////////////////////////////////////
+// Utils for sharing data between puzzles
+//
+/**
+ * Save when meta materials have been acquired.
+ * @param puzzle The meta-puzzle name
+ * @param up Steps up from current folder where meta puzzle is found
+ * @param page The meta-clue label (i.e. part 1 or B)
+ * @param obj Any meta object structure
+ */
+function saveMetaMaterials(puzzle, up, page, obj) {
+    var key = getOtherFileHref(puzzle, up) + "-" + page;
+    localStorage.setItem(key, JSON.stringify(obj));
+}
+/**
+ * Load cached meta materials, if they have been acquired.
+ * @param puzzle The meta-puzzle name
+ * @param up Steps up from current folder where meta puzzle is found
+ * @param page The meta-clue label (i.e. part 1 or B)
+ * @returns An object - can be different for each meta type
+ */
+function loadMetaMaterials(puzzle, up, page) {
+    var key = getOtherFileHref(puzzle, up) + "-" + page;
+    if (key in localStorage) {
+        var item = localStorage.getItem(key);
+        if (item) {
+            return JSON.parse(item);
+        }
+    }
+    return undefined;
+}
+// Convert the absolute href of the current window to a relative href
+// levels: 1=just this file, 2=parent folder + fiole, etc.
+function getRelFileHref(levels) {
+    var bslash = window.location.href.lastIndexOf('\\');
+    var fslash = window.location.href.lastIndexOf('/');
+    var delim = '/';
+    if (fslash < 0 || bslash > fslash) {
+        delim = '\\';
+    }
+    var parts = window.location.href.split(delim);
+    parts.splice(0, parts.length - levels);
+    return parts.join(delim);
+}
+/**
+ * Convert the absolute href of the current window to an absolute href of another file
+ * @param file name of another file
+ * @param up the number of steps up. 0=same folder. 1=parent folder, etc.
+ * @param rel if set, only return the last N terms of the relative path
+ * @returns a path to the other file
+ */
+function getOtherFileHref(file, up, rel) {
+    var bslash = window.location.href.lastIndexOf('\\');
+    var fslash = window.location.href.lastIndexOf('/');
+    var delim = '/';
+    if (fslash < 0 || bslash > fslash) {
+        delim = '\\';
+    }
+    // We'll replace the current filename and potentially some parent folders
+    if (!up) {
+        up = 1;
+    }
+    else {
+        up += 1;
+    }
+    var parts = window.location.href.split(delim);
+    parts.splice(parts.length - up, up, file);
+    if (rel) {
+        parts.splice(0, parts.length - rel);
+    }
+    return parts.join(delim);
+}
 /*-----------------------------------------------------------
  * _textInput.ts
  *-----------------------------------------------------------*/
@@ -877,6 +1433,7 @@ function afterInputUpdate(input) {
     }
     saveLetterLocally(input);
 }
+exports.afterInputUpdate = afterInputUpdate;
 /**
  * Extract contents of an extract-flagged input
  * @param input an input field
@@ -1017,7 +1574,7 @@ function onWordKey(event) {
     var input = event.currentTarget;
     if (getOptionalStyle(input, 'data-extract-index') != null) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
-        UpdateWordExtraction(extractId);
+        updateWordExtraction(extractId);
     }
     var code = event.code;
     if (code == 'Enter') {
@@ -1037,7 +1594,7 @@ exports.onWordKey = onWordKey;
  * Update extractions that come from word input
  * @param extractedId The ID of an extraction area
  */
-function UpdateWordExtraction(extractedId) {
+function updateWordExtraction(extractedId) {
     var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
     if (extracted == null) {
         return;
@@ -1063,6 +1620,7 @@ function UpdateWordExtraction(extractedId) {
     }
     ApplyExtraction(extraction, extracted);
 }
+exports.updateWordExtraction = updateWordExtraction;
 /**
  * Callback when user has changed the text in a letter-input
  * @param event A keyboard event
@@ -1693,6 +2251,27 @@ function hasProgress(event) {
     }
     return false;
 }
+/**
+ * Convert an element's left/top style to a position
+ * @param elmt Any element with a style
+ * @returns A position
+ */
+function positionFromStyle(elmt) {
+    return { x: parseInt(elmt.style.left), y: parseInt(elmt.style.top) };
+}
+exports.positionFromStyle = positionFromStyle;
+function quickMove(moveable, destination) {
+}
+exports.quickMove = quickMove;
+function quickFreeMove(moveable, position) {
+}
+exports.quickFreeMove = quickFreeMove;
+/*-----------------------------------------------------------
+ * _drawTools.ts
+ *-----------------------------------------------------------*/
+function doDraw(target, tool) {
+}
+exports.doDraw = doDraw;
 /*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
@@ -1749,11 +2328,29 @@ function isIFrame() {
     return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
 }
 exports.isIFrame = isIFrame;
-function preSetup() {
+var safariDetails = {
+    'title': 'Safari Labs',
+    'logo': './Images/PS20 logo.png',
+    'icon': './Images/Beaker_icon.png',
+    'puzzleList': './index.html'
+};
+/**
+ * Return the details of this puzzle event
+ */
+function getSafariDetails() {
+    return safariDetails;
+}
+exports.getSafariDetails = getSafariDetails;
+function preSetup(bp) {
     debugSetup();
     if (isIFrame()) {
         var bodies = document.getElementsByTagName('BODY');
         bodies[0].classList.add('iframe');
+    }
+    if (bp.pathToRoot) {
+        safariDetails.logo = bp.pathToRoot + '/' + safariDetails.logo;
+        safariDetails.icon = bp.pathToRoot + '/' + safariDetails.icon;
+        safariDetails.puzzleList = bp.pathToRoot + '/' + safariDetails.puzzleList;
     }
 }
 function createSimpleDiv(_a) {
@@ -1839,16 +2436,18 @@ function boilerplate(bp) {
     margins.appendChild(pageBody);
     margins.appendChild(createSimpleDiv({ cls: 'title', html: bp['title'] }));
     margins.appendChild(createSimpleDiv({ id: 'copyright', html: '&copy; ' + bp['copyright'] + ' ' + bp['author'] }));
-    margins.appendChild(createSimpleA({ id: 'backlink', href: 'safari.html', friendly: 'Puzzle list' }));
+    if (safariDetails.puzzleList) {
+        margins.appendChild(createSimpleA({ id: 'backlink', href: safariDetails.puzzleList, friendly: 'Puzzle list' }));
+    }
     if (bp['notes']) {
         margins.appendChild(createSimpleA({ id: 'notes-toggle', href: 'safari.html', friendly: 'Show Notes' }));
     }
-    preSetup();
+    preSetup(bp);
     if (bp['textInput']) {
         textSetup();
     }
     setupAbilities(margins, bp['abilities'] || {});
-    //setTimeout(checkLocalStorage, 100);
+    setTimeout(checkLocalStorage, 100);
 }
 /**
  * For each ability set to true in the AbilityData, do appropriate setup,

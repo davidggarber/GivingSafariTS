@@ -2,6 +2,7 @@ import { textSetup } from "./_textSetup"
 import { hasClass, toggleClass } from "./_classUtil"
 import { setupNotes, setupCrossOffs, setupHighlights } from "./_notes"
 import { setupDecoderToggle } from "./_decoders"
+import { checkLocalStorage } from "./_storage";
 
 
 /**
@@ -59,12 +60,25 @@ export function isIFrame() {
     return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
 }
 
-function preSetup() {
-    debugSetup();
-    if (isIFrame()) {
-        var bodies = document.getElementsByTagName('BODY');
-        bodies[0].classList.add('iframe');
-    }
+type PuzzleEventDetails = {
+    title: string;
+    logo: string;  // path from root
+    icon: string;  // path from root
+    puzzleList: string;
+}
+
+const safariDetails:PuzzleEventDetails = {
+    'title': 'Safari Labs',
+    'logo': './Images/PS20 logo.png',
+    'icon': './Images/Beaker_icon.png',
+    'puzzleList': './index.html'
+}
+
+/**
+ * Return the details of this puzzle event
+ */
+export function getSafariDetails(): PuzzleEventDetails {
+    return safariDetails;
 }
 
 type AbilityData = {
@@ -87,8 +101,21 @@ type BoilerPlateData = {
     textInput?: boolean;  // false by default
     storage?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
+    pathToRoot?: string;  // By default, '.'
 }
 
+function preSetup(bp:BoilerPlateData) {
+    debugSetup();
+    if (isIFrame()) {
+        var bodies = document.getElementsByTagName('BODY');
+        bodies[0].classList.add('iframe');
+    }
+    if (bp.pathToRoot) {
+        safariDetails.logo = bp.pathToRoot + '/' + safariDetails.logo;
+        safariDetails.icon = bp.pathToRoot + '/' + safariDetails.icon;
+        safariDetails.puzzleList = bp.pathToRoot + '/' + safariDetails.puzzleList;
+    }
+}
 
 interface CreateSimpleDivArgs {
     id?: string;
@@ -193,20 +220,22 @@ function boilerplate(bp: BoilerPlateData) {
     margins.appendChild(pageBody);
     margins.appendChild(createSimpleDiv({cls:'title', html:bp['title']}));
     margins.appendChild(createSimpleDiv({id:'copyright', html:'&copy; ' + bp['copyright'] + ' ' + bp['author']}));
-    margins.appendChild(createSimpleA({id:'backlink', href:'safari.html', friendly:'Puzzle list'}));
+    if (safariDetails.puzzleList) {
+        margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:'Puzzle list'}));
+    }
     
     if (bp['notes']) {
         margins.appendChild(createSimpleA({id:'notes-toggle', href:'safari.html', friendly:'Show Notes'}));
     }
 
-    preSetup()
+    preSetup(bp)
     
     if (bp['textInput']) {
         textSetup()
     }
     setupAbilities(margins, bp['abilities'] || {});
 
-    //setTimeout(checkLocalStorage, 100);
+    setTimeout(checkLocalStorage, 100);
 
 }
 

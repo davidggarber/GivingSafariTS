@@ -249,7 +249,7 @@ export function onLetterKey(event:KeyboardEvent) {
  * Re-scan for extractions
  * @param input The input which just changed
  */
-function afterInputUpdate(input:HTMLInputElement) {
+export function afterInputUpdate(input:HTMLInputElement) {
     var text = input.value;
     if (hasClass(input.parentNode, 'lower-case')) {
         text = text.toLocaleLowerCase();
@@ -449,7 +449,7 @@ export function onWordKey(event:KeyboardEvent) {
     const input = event.currentTarget as HTMLInputElement;
     if (getOptionalStyle(input, 'data-extract-index') != null) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
-        UpdateWordExtraction(extractId);
+        updateWordExtraction(extractId);
     }
 
     var code = event.code;
@@ -470,7 +470,7 @@ export function onWordKey(event:KeyboardEvent) {
  * Update extractions that come from word input
  * @param extractedId The ID of an extraction area
  */
-function UpdateWordExtraction(extractedId:string|null) {
+export function updateWordExtraction(extractedId:string|null) {
     var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
 
     if (extracted == null) {
