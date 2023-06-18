@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <link href="23.css" rel="Stylesheet" type="text/css"></link>
+    <link href="PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="TextInput.css" rel="Stylesheet" type="text/css"></link>
+    <link rel="shortcut icon" type="image/png" href="Images/Beaker_icon.png">
+    <script>
+      const boiler = {
+        'title': 'Animal Magnetism',
+        'author': 'Dana Young',
+        'copyright': '2020',
+        'type': 'Logic',
+        'abilities': {
+          'drawing': true
+        }
+      };
+    </script>
+    <style>
+      .flavor {
+        margin-top: 8pt;
+        margin-right: 2in;
+      }
+      .head-positive {
+        background-color: #FF6B6B;
+      }
+      .tail-negative {
+        background-color: #c0c0c0;
+      }
+      #grid {
+        margin-top: 0.3in;
+        border-collapse: collapse;
+      }
+      #grid td {
+        position: relative;
+        text-align: center;
+        vertical-align: middle;
+        width: 90px;
+        height: 90px;
+        font-size: 28pt;
+      }
+      #grid .top {
+        border-top: solid 5px black;
+      }
+      #grid .bottom {
+        border-bottom: solid 5px black;
+      }
+      #grid .left {
+        border-left: solid 5px black;
+      }
+      #grid .right {
+        border-right: solid 5px black;
+      }
+      #grid .col2 {
+        position: absolute;
+        top: 4px;
+        left: 2px;
+        height: 76px;
+        width: 164px;
+        text-align: center;
+        border: solid 3px black;
+        border-radius: 15px;
+        -moz-border-radius: 15px;
+      }
+      .col2 img {
+        height: 75px;
+        margin-top: 0.5px;
+      }
+      #grid .row2 {
+        position: absolute;
+        top: 5px;
+        left: 3px;
+        width: 76px;
+        height: 167px;
+        border: solid 3px black;
+        border-radius: 15px;
+        -moz-border-radius: 15px;
+      }
+      .row2 img {
+        width: 72px;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="pageBody">
+      <p class="flavor">
+        Most animals are like magnets with one end being a <span class="head-positive">head/positive pole</span> and
+        the other a <span class="tail-negative">tail/negative pole</span>. Like magnets, these animals don't like to touch
+        head to head or tail to tail horizontally or vertically. (The actual orientation of
+        the animal pictures does not indicate which end is the head or tail)
+      </p>
+      <p class="flavor">
+        The numbers on the outside of the central grid represent the number of heads
+        or tails in their row or column. In the example, heads are <span class="head-positive">red</span>, tails are <span class="tail-negative">gray</span>,
+        and the RAT is not like a magent, and has no specific orientation.
+      </p>
+      <p class="flavor">
+        Take the first letter of each animal with no specified orientation in order from 
+        left to right and top to bottom to discover the answer.
+      </p>
+      <img src="Images/AniMag/Example.png" style="position: absolute; top:0.1in; right:0px; width: 1.9in;">
+
+      <table id="grid">
+        <tr>
+          <td class="head-positive top left" style="font-size: 16pt;">HEAD<br>END</td>
+          <td class="top">2</td>
+          <td class="top">2</td>
+          <td class="top">3</td>
+          <td class="top">2</td>
+          <td class="top">2</td>
+          <td class="top right">1</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td class="left">2</td>
+          <td class="left top">
+            <div class="col2"><img src="Images/AniMag/Octopus.png"></div></td>
+          <td class="top"></td>
+          <td class="top">
+            <div class="row2"><img src="Images/AniMag/Pig.png"></div></td>
+          <td class="top">
+            <div class="col2"><img src="Images/AniMag/Bat.png"></div></td>
+          </td>
+          <td class="top"></td>
+          <td class="top right">
+            <div class="row2"><img src="Images/AniMag/Whale.png"></div></td>
+          <td class="top right">1</td>
+        </tr>
+        <tr>
+          <td class="left">2</td>
+          <td class="left">
+            <div class="row2"><img src="Images/AniMag/Elephant.png"></div></td>
+          <td class="">
+            <div class="row2"><img src="Images/AniMag/Crab.png"></div></td>
+          <td class=""></td>
+          <td class="">
+            <div class="col2"><img src="Images/AniMag/Racoon.png"></div></td>
+          <td class=""></td>
+          <td class="right"></td>
+          <td class="right">3</td>
+        </tr>
+        <tr>
+          <td class="left">3</td>
+          <td class="left"></td>
+          <td class=""></td>
+          <td class="">
+            <div class="row2"><img src="Images/AniMag/Ant.png"></div></td>
+            <td class="">
+              <div class="col2"><img src="Images/AniMag/Eagle.png"></div></td>
+            <td class=""></td>
+          <td class="right">
+            <div class="row2"><img src="Images/AniMag/Snake.png"></div></td>
+          <td class="right">3</td>
+        </tr>
+        <tr>
+          <td class="left">3</td>
+          <td class="left">
+            <div class="col2"><img src="Images/AniMag/Horse.png"></div></td>
+          <td class=""></td>
+          <td class=""></td>
+          <td class="">
+            <div class="col2"><img src="Images/AniMag/Monkey.png"></div></td>
+          <td class=""></td>
+          <td class="right"></td>
+          <td class="right">3</td>
+        </tr>
+        <tr>
+          <td class="left bottom">2</td>
+          <td class="left bottom">
+            <div class="col2"><img src="Images/AniMag/Dog.png"></div></td>
+          <td class="bottom"></td>
+          <td class="bottom">
+            <div class="col2"><img src="Images/AniMag/Turtle.png"></div></td>
+          <td class="bottom"></td>
+          <td class="bottom">
+            <div class="col2"><img src="Images/AniMag/Lion.png"></div></td>
+          <td class="right bottom"></td>
+          <td class="right">2</td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td class="left bottom">2</td>
+          <td class="bottom">2</td>
+          <td class="bottom">3</td>
+          <td class="bottom">2</td>
+          <td class="bottom">2</td>
+          <td class="bottom">1</td>
+          <td class="tail-negative bottom right" style="font-size: 16pt;">TAIL<br>END</td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

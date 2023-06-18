@@ -88,6 +88,7 @@ type AbilityData = {
     decoder?: boolean;
     decoderMode?: string;
     dragDrop?: boolean;
+    drawing?: boolean;
 }
 
 type BoilerPlateData = {
