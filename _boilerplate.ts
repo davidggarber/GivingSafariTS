@@ -2,7 +2,8 @@ import { textSetup } from "./_textSetup"
 import { hasClass, toggleClass } from "./_classUtil"
 import { setupNotes, setupCrossOffs, setupHighlights } from "./_notes"
 import { setupDecoderToggle } from "./_decoders"
-import { checkLocalStorage } from "./_storage";
+import { checkLocalStorage, indexAllDrawableFields } from "./_storage";
+import { preprocessDrawObjects } from "./_drawTools";
 
 
 /**
@@ -257,11 +258,14 @@ function setupAbilities(margins:HTMLDivElement, data:AbilityData) {
         if (text.search('✔️') >= 0) {
             data.checkMarks = true;
         }
-        else if (text.search('💡') >= 0) {
+        if (text.search('💡') >= 0) {
             data.highlights = true;
         }
-        else if (text.search('👈') >= 0) {
+        if (text.search('👈') >= 0) {
             data.dragDrop = true;
+        }
+        if (text.search('✒️') >= 0) {
+            data.drawing = true;
         }
     }
     else {
@@ -285,6 +289,10 @@ function setupAbilities(margins:HTMLDivElement, data:AbilityData) {
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         // setupDragDrop();
         count++;
+    }
+    if (data.drawing) {
+        preprocessDrawObjects();
+        indexAllDrawableFields();    
     }
     if (data.notes) {
         setupNotes(margins);

@@ -6,7 +6,7 @@
     <script src="../js/kit.js"></script>
     <link href="23.css" rel="Stylesheet" type="text/css"></link>
     <link href="PageSizes.css" rel="Stylesheet" type="text/css"></link>
-    <link href="TextInput.css" rel="Stylesheet" type="text/css"></link>
+    <link href="DrawTools.css" rel="Stylesheet" type="text/css"></link>
     <link rel="shortcut icon" type="image/png" href="Images/Beaker_icon.png">
     <script>
       const boiler = {
@@ -41,6 +41,11 @@
         width: 90px;
         height: 90px;
         font-size: 28pt;
+        user-select: none;
+        cursor: pointer;
+      }
+      #grid td.count {
+        cursor: default;
       }
       #grid .top {
         border-top: solid 5px black;
@@ -55,6 +60,8 @@
         border-right: solid 5px black;
       }
       #grid .col2 {
+        pointer-events: none;
+        user-select: none;
         position: absolute;
         top: 4px;
         left: 2px;
@@ -70,6 +77,8 @@
         margin-top: 0.5px;
       }
       #grid .row2 {
+        pointer-events: none;
+        user-select: none;
         position: absolute;
         top: 5px;
         left: 3px;
@@ -82,6 +91,26 @@
       .row2 img {
         width: 72px;
         margin-top: 40px;
+      }
+      .drawTool {
+        width: .5in;
+        height: .5in;
+        margin: 0px;
+      }
+      .drawTool div {
+        width:.5in; 
+        height:.5in; 
+        text-align: center;
+        border-radius: 5px;
+      }
+      .drawTool.selected div {
+        border-radius: 5px;
+      }
+      .drawnObject {
+        position: relative;
+        width: 100%; 
+        height: 100%; 
+        user-select: none;
       }
     </style>
   </head>
@@ -107,91 +136,123 @@
       <table id="grid">
         <tr>
           <td class="head-positive top left" style="font-size: 16pt;">HEAD<br>END</td>
-          <td class="top">2</td>
-          <td class="top">2</td>
-          <td class="top">3</td>
-          <td class="top">2</td>
-          <td class="top">2</td>
-          <td class="top right">1</td>
+          <td class="top count">2</td>
+          <td class="top count">2</td>
+          <td class="top count">3</td>
+          <td class="top count">2</td>
+          <td class="top count">2</td>
+          <td class="top right count">1</td>
           <td>&nbsp;</td>
         </tr>
         <tr>
-          <td class="left">2</td>
-          <td class="left top">
+          <td class="left count">2</td>
+          <td class="left top drawable">
             <div class="col2"><img src="Images/AniMag/Octopus.png"></div></td>
-          <td class="top"></td>
-          <td class="top">
+          <td class="top drawable"></td>
+          <td class="top drawable">
             <div class="row2"><img src="Images/AniMag/Pig.png"></div></td>
-          <td class="top">
+          <td class="top drawable">
             <div class="col2"><img src="Images/AniMag/Bat.png"></div></td>
           </td>
-          <td class="top"></td>
-          <td class="top right">
+          <td class="top drawable"></td>
+          <td class="top right drawable">
             <div class="row2"><img src="Images/AniMag/Whale.png"></div></td>
-          <td class="top right">1</td>
+          <td class="top right count">1</td>
         </tr>
         <tr>
-          <td class="left">2</td>
-          <td class="left">
+          <td class="left count">2</td>
+          <td class="left drawable">
             <div class="row2"><img src="Images/AniMag/Elephant.png"></div></td>
-          <td class="">
+          <td class="drawable">
             <div class="row2"><img src="Images/AniMag/Crab.png"></div></td>
-          <td class=""></td>
-          <td class="">
+          <td class="drawable"></td>
+          <td class="drawable">
             <div class="col2"><img src="Images/AniMag/Racoon.png"></div></td>
-          <td class=""></td>
-          <td class="right"></td>
-          <td class="right">3</td>
+          <td class="drawable"></td>
+          <td class="right drawable"></td>
+          <td class="right count">3</td>
         </tr>
         <tr>
-          <td class="left">3</td>
-          <td class="left"></td>
-          <td class=""></td>
-          <td class="">
+          <td class="left count">3</td>
+          <td class="left drawable"></td>
+          <td class="drawable"></td>
+          <td class="drawable">
             <div class="row2"><img src="Images/AniMag/Ant.png"></div></td>
-            <td class="">
+            <td class="drawable">
               <div class="col2"><img src="Images/AniMag/Eagle.png"></div></td>
-            <td class=""></td>
-          <td class="right">
+            <td class="drawable"></td>
+          <td class="right drawable">
             <div class="row2"><img src="Images/AniMag/Snake.png"></div></td>
-          <td class="right">3</td>
+          <td class="right count">3</td>
         </tr>
         <tr>
-          <td class="left">3</td>
-          <td class="left">
+          <td class="left count">3</td>
+          <td class="left drawable">
             <div class="col2"><img src="Images/AniMag/Horse.png"></div></td>
-          <td class=""></td>
-          <td class=""></td>
-          <td class="">
+          <td class="drawable"></td>
+          <td class="drawable"></td>
+          <td class="drawable">
             <div class="col2"><img src="Images/AniMag/Monkey.png"></div></td>
-          <td class=""></td>
-          <td class="right"></td>
-          <td class="right">3</td>
+          <td class="drawable"></td>
+          <td class="right drawable"></td>
+          <td class="right count">3</td>
         </tr>
         <tr>
-          <td class="left bottom">2</td>
-          <td class="left bottom">
+          <td class="left bottom count">2</td>
+          <td class="left bottom drawable">
             <div class="col2"><img src="Images/AniMag/Dog.png"></div></td>
-          <td class="bottom"></td>
-          <td class="bottom">
+          <td class="bottom drawable"></td>
+          <td class="bottom drawable">
             <div class="col2"><img src="Images/AniMag/Turtle.png"></div></td>
-          <td class="bottom"></td>
-          <td class="bottom">
+          <td class="bottom drawable"></td>
+          <td class="bottom drawable">
             <div class="col2"><img src="Images/AniMag/Lion.png"></div></td>
-          <td class="right bottom"></td>
-          <td class="right">2</td>
+          <td class="right bottom drawable"></td>
+          <td class="right count">2</td>
         </tr>
         <tr>
           <td>&nbsp;</td>
-          <td class="left bottom">2</td>
-          <td class="bottom">2</td>
-          <td class="bottom">3</td>
-          <td class="bottom">2</td>
-          <td class="bottom">2</td>
-          <td class="bottom">1</td>
+          <td class="left bottom count">2</td>
+          <td class="bottom count">2</td>
+          <td class="bottom count">3</td>
+          <td class="bottom count">2</td>
+          <td class="bottom count">2</td>
+          <td class="bottom count">1</td>
           <td class="tail-negative bottom right" style="font-size: 16pt;">TAIL<br>END</td>
         </tr>
       </table>
+
+      <div id="drawPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; right:2.5in; bottom: -0.7in;">
+        <p style="text-align: center; margin:4px;">&#x2712;&#xfe0f; Draw tools:</p>
+        <div class="drawTool" data-template-id="drawHead" data-click-modifier="ctrl" title="ctrl + draw" style="display:inline-block; ">
+          <div class="head-positive">
+            <span class="label" style="position:relative;top:0.15in;">HEAD</span>
+          </div>
+        </div>
+        <div class="drawTool" data-template-id="drawTail" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
+          <div class="tail-negative">
+            <span class="label" style="position:relative;top:0.15in;">TAIL</span>
+          </div>
+        </div>
+        <div class="drawTool" data-template-id="drawErase" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
+          <div style="background-color: #eee;">
+            <span class="label" style="position:relative;top:0.15in;">erase</span>
+          </div>
+        </div>
+      </div>
+      <div class="drawToolTemplates" id="drawTool1">
+        <template id="drawHead">
+          <div class="drawnObject" style="background-color: #FF6B6B99;" data-template-id="drawHead" data-next-template-id="drawTail">
+            &nbsp;
+          </div>
+        </template>
+        <template id="drawTail">
+          <div class="drawnObject" style="background-color: #c0c0c099;" data-template-id="drawTail" data-next-template-id="drawErase">
+            &nbsp;
+          </div>
+        </template>
+      </div>  
+
     </div>
   </body>
 </html>
