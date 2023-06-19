@@ -2,8 +2,9 @@ import { textSetup } from "./_textSetup"
 import { hasClass, toggleClass } from "./_classUtil"
 import { setupNotes, setupCrossOffs, setupHighlights } from "./_notes"
 import { setupDecoderToggle } from "./_decoders"
-import { checkLocalStorage, indexAllDrawableFields } from "./_storage";
+import { checkLocalStorage, indexAllDragDropFields, indexAllDrawableFields } from "./_storage";
 import { preprocessDrawObjects } from "./_drawTools";
+import { preprocessDragFunctions } from "./_dragDrop";
 
 
 /**
@@ -287,7 +288,8 @@ function setupAbilities(margins:HTMLDivElement, data:AbilityData) {
     }
     if (data.dragDrop) {
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
-        // setupDragDrop();
+        preprocessDragFunctions();
+        indexAllDragDropFields();
         count++;
     }
     if (data.drawing) {

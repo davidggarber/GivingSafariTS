@@ -8,6 +8,13 @@ body.debug {
   box-shadow:0px 0px 15px #009999; 
 }
 
+/*
+Use class="letter portrait"       for 8½  x 11
+Use class="letter landscape"      for 11" x 8½"
+Use class="legal portrait"        for 8½  x 14"
+Use class="ledger portrait"       for 11" x 17"
+Use class="scrapbook scrapbook"   for 12" x 12"
+*/
 .letter.landscape .printedPage {
   width:10in;
   height:7.5in; 
@@ -16,6 +23,20 @@ body.debug {
 .letter.portrait .printedPage {
   width:7.5in;
   height:10in; 
+}
+
+.legal.portrait .printedPage {
+  width:7.5in;
+  height:13in; 
+}
+.ledger.portrait .printedPage {
+  width:10in;
+  height:16in; 
+}
+
+.scrapbook.scrapbook .printedPage {
+  width:11in;
+  height:11in; 
 }
 
 @media screen {
@@ -71,13 +92,33 @@ body.debug {
   z-index: 0;
 }
 
-.portrait #pageBody {
+.letter.portrait #pageBody {
   height: 9.25in;
 }
 
-.landscape #pageBody {
+.letter.landscape #pageBody {
   height: 6.75in;
 }
+
+.legal.portrait #pageBody {
+  height: 12.25in;
+}    
+
+.legal.landscape #pageBody {
+  height: 6.75in;
+}
+
+.ledger.portrait #pageBody {
+  height: 15.25in;
+}    
+
+.ledger.landscape #pageBody {
+  height: 9.25in;
+}    
+
+.scrapbook #pageBody {
+  height: 11.75in;
+}    
 
 .debug #pageBody {
   box-shadow:0px 0px 15px #33cc66; 
@@ -172,28 +213,17 @@ body, p, td {
       box-shadow:0px 0px 5px fuchsia; 
   }
 
-  .letter.portrait #backlink {
-      top: 10in;
-  }
-
-  .letter.landscape #backlink {
-      top: 7.5in;
+  #backlink {
+      bottom: -14pt
   }
 
   #ability {
       position: absolute;
       display: block;
       right: 0.3in;
+      bottom: -16pt;
       font-size: 14pt;
       cursor: help;
-  }
-  
-  .portrait #ability {
-      top: 10in;
-  }
-
-  .landscape #ability {
-      top: 7.5in;
   }
   
   #qr {

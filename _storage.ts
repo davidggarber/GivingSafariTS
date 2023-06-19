@@ -203,7 +203,7 @@ function saveCache() {
 export function saveLetterLocally(input:HTMLInputElement) {
     if (input) {
         var index = getGlobalIndex(input);
-        if (index) {
+        if (index >= 0) {
             localCache.letters[index] = input.value;
             saveCache();  
         }  
@@ -217,7 +217,7 @@ export function saveLetterLocally(input:HTMLInputElement) {
 export function saveWordLocally(input:HTMLInputElement) {
     if (input) {
         var index = getGlobalIndex(input);
-        if (index) {
+        if (index >= 0) {
             localCache.words[index] = input.value;
             saveCache();  
         }  
@@ -231,7 +231,7 @@ export function saveWordLocally(input:HTMLInputElement) {
 export function saveNoteLocally(input:HTMLInputElement) {
     if (input) {
         var index = getGlobalIndex(input);
-        if (index) {
+        if (index >= 0) {
             localCache.notes[index] = input.value;
             saveCache();  
         }  
@@ -245,7 +245,7 @@ export function saveNoteLocally(input:HTMLInputElement) {
 export function saveCheckLocally(element:HTMLElement, value:boolean) {
     if (element) {
         var index = getGlobalIndex(element);
-        if (index) {
+        if (index >= 0) {
             localCache.checks[index] = value;
             saveCache();
         }
@@ -260,8 +260,9 @@ export function saveContainerLocally(element:HTMLElement, container:HTMLElement)
     if (element && container) {
         var elemIndex = getGlobalIndex(element);
         var destIndex = getGlobalIndex(container);
-        if (elemIndex && destIndex) {
+        if (elemIndex >= 0 && destIndex >= 0) {
             localCache.containers[elemIndex] = destIndex;
+            console.log(localCache.containers);
             saveCache();
         }
     }
@@ -274,7 +275,7 @@ export function saveContainerLocally(element:HTMLElement, container:HTMLElement)
 export function savePositionLocally(element:HTMLElement) {
     if (element) {
         var index = getGlobalIndex(element);
-        if (index) {
+        if (index >= 0) {
             var pos = positionFromStyle(element);
             localCache.positions[index] = pos;
             saveCache();
@@ -289,7 +290,7 @@ export function savePositionLocally(element:HTMLElement) {
 export function saveDrawingLocally(element:HTMLElement) {
     if (element) {
         var index = getGlobalIndex(element);
-        if (index) {
+        if (index >= 0) {
             var drawn = findFirstChildOfClass(element, 'drawnObject');
             if (drawn) {
                 localCache.drawings[index] = drawn.getAttributeNS('', 'data-template-id');
@@ -309,7 +310,7 @@ export function saveDrawingLocally(element:HTMLElement) {
 export function saveHighlightLocally(element:HTMLElement) {
     if (element) {
         var index = getGlobalIndex(element, 'ch');
-        if (index) {
+        if (index >= 0) {
             localCache.highlights[index] = hasClass(element, 'highlighted');
             saveCache();
         }
@@ -341,14 +342,20 @@ function applyGlobalIndeces(elements:HTMLCollectionOf<Element>, suffix?:string) 
  * Now retrieve that index.
  * @param elmt The element with the index
  * @param suffix The name of the index (optional)
- * @returns The index
+ * @returns The index, or -1 if invalid
  */
 function getGlobalIndex(elmt:HTMLElement, suffix?:string):number {
-    let attr = 'data-globalIndex';
-    if (suffix != undefined) {
-        attr += '-' + suffix;
+    if (elmt) {
+        let attr = 'data-globalIndex';
+        if (suffix != undefined) {
+            attr += '-' + suffix;
+        }
+        const index = elmt.getAttributeNS('', attr);
+        if (index) {  // not null or empty
+            return Number(index);
+        }
     }
-    return Number(elmt.getAttributeNS('', attr));
+    return -1;
 }
 
 /**
@@ -510,10 +517,18 @@ function restoreContainers(containers:object) {
     localCache.containers = containers;
     var movers = document.getElementsByClassName('moveable');
     var targets = document.getElementsByClassName('drop-target');
-    for (var i = 0; i < movers.length; i++) {
-        var j = containers[i] as number;
+    // Each time an element is moved, the movers structure recalcs. So pre-fetch.
+    const moved:HTMLElement[] = [];
+    for (let key in containers) {
+        moved.push(movers[key]);
+    }
+    for (var i = 0; i < moved.length; i++) {
+        const mover = moved[i];
+        // Movers can move, and thus get re-ordered. Don't trust i to be the index.
+        const index = getGlobalIndex(mover);
+        var j = containers[index] as number;
         if (j != undefined) {
-            quickMove(movers[i] as HTMLElement, targets[j] as HTMLElement);
+            quickMove(mover, targets[j] as HTMLElement);
         }
     }
 }

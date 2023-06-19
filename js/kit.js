@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.doDraw = exports.preprocessDrawObjects = exports.quickFreeMove = exports.quickMove = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.saveHighlightLocally = exports.saveDrawingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = void 0;
+exports.isBodyDebug = exports.isDebug = exports.doDraw = exports.preprocessDrawObjects = exports.quickFreeMove = exports.quickMove = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.saveHighlightLocally = exports.saveDrawingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isIFrame = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -740,7 +740,7 @@ function saveCache() {
 function saveLetterLocally(input) {
     if (input) {
         var index = getGlobalIndex(input);
-        if (index) {
+        if (index >= 0) {
             localCache.letters[index] = input.value;
             saveCache();
         }
@@ -754,7 +754,7 @@ exports.saveLetterLocally = saveLetterLocally;
 function saveWordLocally(input) {
     if (input) {
         var index = getGlobalIndex(input);
-        if (index) {
+        if (index >= 0) {
             localCache.words[index] = input.value;
             saveCache();
         }
@@ -768,7 +768,7 @@ exports.saveWordLocally = saveWordLocally;
 function saveNoteLocally(input) {
     if (input) {
         var index = getGlobalIndex(input);
-        if (index) {
+        if (index >= 0) {
             localCache.notes[index] = input.value;
             saveCache();
         }
@@ -782,7 +782,7 @@ exports.saveNoteLocally = saveNoteLocally;
 function saveCheckLocally(element, value) {
     if (element) {
         var index = getGlobalIndex(element);
-        if (index) {
+        if (index >= 0) {
             localCache.checks[index] = value;
             saveCache();
         }
@@ -797,8 +797,9 @@ function saveContainerLocally(element, container) {
     if (element && container) {
         var elemIndex = getGlobalIndex(element);
         var destIndex = getGlobalIndex(container);
-        if (elemIndex && destIndex) {
+        if (elemIndex >= 0 && destIndex >= 0) {
             localCache.containers[elemIndex] = destIndex;
+            console.log(localCache.containers);
             saveCache();
         }
     }
@@ -811,7 +812,7 @@ exports.saveContainerLocally = saveContainerLocally;
 function savePositionLocally(element) {
     if (element) {
         var index = getGlobalIndex(element);
-        if (index) {
+        if (index >= 0) {
             var pos = positionFromStyle(element);
             localCache.positions[index] = pos;
             saveCache();
@@ -826,7 +827,7 @@ exports.savePositionLocally = savePositionLocally;
 function saveDrawingLocally(element) {
     if (element) {
         var index = getGlobalIndex(element);
-        if (index) {
+        if (index >= 0) {
             var drawn = findFirstChildOfClass(element, 'drawnObject');
             if (drawn) {
                 localCache.drawings[index] = drawn.getAttributeNS('', 'data-template-id');
@@ -846,7 +847,7 @@ exports.saveDrawingLocally = saveDrawingLocally;
 function saveHighlightLocally(element) {
     if (element) {
         var index = getGlobalIndex(element, 'ch');
-        if (index) {
+        if (index >= 0) {
             localCache.highlights[index] = hasClass(element, 'highlighted');
             saveCache();
         }
@@ -876,14 +877,20 @@ function applyGlobalIndeces(elements, suffix) {
  * Now retrieve that index.
  * @param elmt The element with the index
  * @param suffix The name of the index (optional)
- * @returns The index
+ * @returns The index, or -1 if invalid
  */
 function getGlobalIndex(elmt, suffix) {
-    var attr = 'data-globalIndex';
-    if (suffix != undefined) {
-        attr += '-' + suffix;
+    if (elmt) {
+        var attr = 'data-globalIndex';
+        if (suffix != undefined) {
+            attr += '-' + suffix;
+        }
+        var index = elmt.getAttributeNS('', attr);
+        if (index) { // not null or empty
+            return Number(index);
+        }
     }
-    return Number(elmt.getAttributeNS('', attr));
+    return -1;
 }
 /**
  * Assign globalIndeces to every letter- or word- input field
@@ -1037,10 +1044,18 @@ function restoreContainers(containers) {
     localCache.containers = containers;
     var movers = document.getElementsByClassName('moveable');
     var targets = document.getElementsByClassName('drop-target');
-    for (var i = 0; i < movers.length; i++) {
-        var j = containers[i];
+    // Each time an element is moved, the movers structure recalcs. So pre-fetch.
+    var moved = [];
+    for (var key in containers) {
+        moved.push(movers[key]);
+    }
+    for (var i = 0; i < moved.length; i++) {
+        var mover = moved[i];
+        // Movers can move, and thus get re-ordered. Don't trust i to be the index.
+        var index = getGlobalIndex(mover);
+        var j = containers[index];
         if (j != undefined) {
-            quickMove(movers[i], targets[j]);
+            quickMove(mover, targets[j]);
         }
     }
 }
@@ -2261,10 +2276,336 @@ function positionFromStyle(elmt) {
     return { x: parseInt(elmt.style.left), y: parseInt(elmt.style.top) };
 }
 exports.positionFromStyle = positionFromStyle;
+// VOCABULARY
+// moveable: any object which can be clicked on to begin a move
+// drop-target: a container that can receive a (single) moveable element
+// drag-source: a container that can hold a single spare moveable element
+/**
+ * Scan the page for anything marked moveable, drag-source, or drop-target
+ * Those items get click handlers
+ */
+function preprocessDragFunctions() {
+    var elems = document.getElementsByClassName('moveable');
+    for (var i = 0; i < elems.length; i++) {
+        preprocessMoveable(elems[i]);
+    }
+    elems = document.getElementsByClassName('drop-target');
+    for (var i = 0; i < elems.length; i++) {
+        preprocessDropTarget(elems[i]);
+    }
+    elems = document.getElementsByClassName('free-drop');
+    for (var i = 0; i < elems.length; i++) {
+        var elem = elems[i];
+        preprocessFreeDrop(elem);
+        var height = elem.getBoundingClientRect().height;
+        var zUp = hasClass(elems[i], 'z-grow-up');
+        var zDown = hasClass(elems[i], 'z-grow-down');
+        if (zUp || zDown) {
+            var children = elems[i].getElementsByClassName('moveable');
+            for (var j = 0; j < children.length; j++) {
+                var child = children[i];
+                var z = parseInt(child.style.top);
+                z = zUp ? 1000 + (height - z) : z;
+                child.style.zIndex = String(z);
+            }
+        }
+    }
+}
+exports.preprocessDragFunctions = preprocessDragFunctions;
+/**
+ * Hook up the necessary mouse events to each moveable item
+ * @param elem a moveable element
+ */
+function preprocessMoveable(elem) {
+    elem.onmouseup = function (e) { onClickDrop(e); };
+    elem.ondragenter = function (e) { onDropAllowed(e); };
+    elem.ondragover = function (e) { onDropAllowed(e); };
+}
+/**
+ * Hook up the necessary mouse events to each drop target
+ * @param elem a moveable element
+ */
+function preprocessDropTarget(elem) {
+    elem.onmousedown = function (e) { onClickDrag(e); };
+    elem.ondrag = function (e) { onDrag(e); };
+    elem.ondragend = function (e) { onDragDrop(e); };
+}
+/**
+ * Hook up the necessary mouse events to each free drop target
+ * @param elem a moveable element
+ */
+function preprocessFreeDrop(elem) {
+    elem.onmousedown = function (e) { doFreeDrop(e); };
+    elem.ondragenter = function (e) { onDropAllowed(e); };
+    elem.ondragover = function (e) { onDropAllowed(e); };
+}
+/**
+ * The most recent object to be moved
+ */
+var _priorDrag = null;
+/**
+ * The object that is selected, if any
+ */
+var _dragSelected = null;
+/**
+ * The drop-target over which we are dragging
+ */
+var _dropHover = null;
+/**
+ * The position within its container that a dragged object was in before dragging started
+ */
+var _dragPoint = null;
+/**
+ * Pick up an object
+ * @param obj A moveable object
+ */
+function pickUp(obj) {
+    _priorDrag = _dragSelected;
+    if (_dragSelected != null && _dragSelected != obj) {
+        toggleClass(_dragSelected, 'drag-selected', false);
+        _dragSelected = null;
+    }
+    if (obj != null && obj != _dragSelected) {
+        _dragSelected = obj;
+        toggleClass(_dragSelected, 'displaced', false); // in case from earlier
+        toggleClass(_dragSelected, 'placed', false);
+        toggleClass(_dragSelected, 'drag-selected', true);
+    }
+}
+/**
+ * Drop the selected drag object onto a destination
+ * If something else is already there, it gets moved to an empty drag source
+ * Once complete, nothing is selected.
+ * @param dest The target of this drag action
+ */
+function doDrop(dest) {
+    if (!_dragSelected) {
+        return;
+    }
+    var src = getDragSource();
+    if (dest === src) {
+        if (_priorDrag !== _dragSelected) {
+            // Don't treat the first click of a 2-click drag
+            // as a 1-click non-move.
+            return;
+        }
+        // 2nd click on src is equivalent to dropping no-op
+        dest = null;
+    }
+    var other = null;
+    if (dest != null) {
+        other = findFirstChildOfClass(dest, 'moveable', undefined, 0);
+        if (other != null) {
+            dest.removeChild(other);
+        }
+        src === null || src === void 0 ? void 0 : src.removeChild(_dragSelected);
+        dest.appendChild(_dragSelected);
+        saveContainerLocally(_dragSelected, dest);
+    }
+    toggleClass(_dragSelected, 'placed', true);
+    toggleClass(_dragSelected, 'drag-selected', false);
+    _dragSelected = null;
+    _dragPoint = null;
+    if (_dropHover != null) {
+        toggleClass(_dropHover, 'drop-hover', false);
+        _dropHover = null;
+    }
+    if (other != null) {
+        // Any element that was previous at dest swaps places
+        toggleClass(other, 'placed', false);
+        toggleClass(other, 'displaced', true);
+        if (!hasClass(src, 'drag-source')) {
+            // Don't displace to a destination if an empty source is available
+            var src2 = findEmptySource();
+            if (src2 != null) {
+                src = src2;
+            }
+        }
+        src === null || src === void 0 ? void 0 : src.appendChild(other);
+        saveContainerLocally(other, src);
+    }
+}
+/**
+ * Drag the selected object on a region with flexible placement.
+ * @param event The drop event
+ */
+function doFreeDrop(event) {
+    if (_dragPoint == null
+        || (event.clientX == _dragPoint.x && event.clientY == _dragPoint.y && _priorDrag == null)) {
+        // This is the initial click
+        return;
+    }
+    if (_dragSelected != null) {
+        var dx = event.clientX - _dragPoint.x;
+        var dy = event.clientY - _dragPoint.y;
+        var oldLeft = parseInt(_dragSelected.style.left);
+        var oldTop = parseInt(_dragSelected.style.top);
+        _dragSelected.style.left = (oldLeft + dx) + 'px';
+        _dragSelected.style.top = (oldTop + dy) + 'px';
+        updateZ(_dragSelected, oldTop + dy);
+        savePositionLocally(_dragSelected);
+        doDrop(null);
+    }
+}
+/**
+ * When an object is dragged in a container that holds multiple items,
+ * the z-order can change. Use the relative y position to set z-index.
+ * @param elem The element whose position just changed
+ * @param y The y-offset of that element
+ */
+function updateZ(elem, y) {
+    var dest = findParentOfClass(elem, 'free-drop');
+    if (hasClass(dest, 'z-grow-down')) {
+        elem.style.zIndex = String(1000 + y);
+    }
+    else if (hasClass(dest, 'z-grow-up')) {
+        var rect = dest.getBoundingClientRect();
+        elem.style.zIndex = String(rect.height + 1000 - y);
+    }
+}
+/**
+ * The drag-target or drag-source that is the current parent of the dragging item
+ * @returns
+ */
+function getDragSource() {
+    if (_dragSelected != null) {
+        var src = findParentOfClass(_dragSelected, 'drop-target');
+        if (src == null) {
+            src = findParentOfClass(_dragSelected, 'drag-source');
+        }
+        if (src == null) {
+            src = findParentOfClass(_dragSelected, 'free-drop');
+        }
+        return src;
+    }
+    return null;
+}
+/**
+ * Initialize a drag with mouse-down
+ * This may be the beginning of a 1- or 2-click drag action
+ * @param event The mouse down event
+ */
+function onClickDrag(event) {
+    var target = event.target;
+    if (!target || target.tagName == 'INPUT') {
+        return;
+    }
+    var obj = findParentOfClass(target, 'moveable');
+    if (obj != null) {
+        if (_dragSelected == null) {
+            pickUp(obj);
+            _dragPoint = { x: event.clientX, y: event.clientY };
+        }
+        else if (obj == _dragSelected) {
+            // 2nd click on this object - enable no-op drop
+            _priorDrag = obj;
+        }
+    }
+}
+/**
+ * Conclude a drag with the mouse up
+ * @param event A mouse up event
+ */
+function onClickDrop(event) {
+    var target = event.target;
+    if (!target || target.tagName == 'INPUT') {
+        return;
+    }
+    if (_dragSelected != null) {
+        var dest = findParentOfClass(target, 'drop-target');
+        doDrop(dest);
+    }
+}
+/**
+ * Conlcude a drag with a single drag-move-release.
+ * We we released over a drop-target or free-drop element, make the move.
+ * @param event The mouse drag end event
+ */
+function onDragDrop(event) {
+    var elem = document.elementFromPoint(event.clientX, event.clientY);
+    var dest = findParentOfClass(elem, 'drop-target');
+    if (dest) {
+        doDrop(dest);
+    }
+    else {
+        dest = findParentOfClass(elem, 'free-drop');
+        if (dest) {
+            doFreeDrop(event);
+        }
+    }
+}
+/**
+ * As a drag is happening, highlight the destination
+ * @param event The mouse drag start event
+ */
+function onDrag(event) {
+    if (event.eventPhase >= 3) {
+        return; // bubbling
+    }
+    var elem = document.elementFromPoint(event.clientX, event.clientY);
+    var dest = findParentOfClass(elem, 'drop-target');
+    if (dest != _dropHover) {
+        toggleClass(_dropHover, 'drop-hover', false);
+        var src = getDragSource();
+        if (dest != src) {
+            toggleClass(dest, 'drop-hover', true);
+            _dropHover = dest;
+        }
+    }
+}
+/**
+ * As a drag is happening, make the cursor show valid or invalid targets
+ * @param event A mouse hover event
+ */
+function onDropAllowed(event) {
+    var elem = document.elementFromPoint(event.clientX, event.clientY);
+    var dest = findParentOfClass(elem, 'drop-target');
+    if (dest == null) {
+        dest = findParentOfClass(elem, 'free-drop');
+    }
+    if (_dragSelected != null && dest != null) {
+        event.preventDefault();
+    }
+}
+/**
+ * Find a drag-source that is currently empty.
+ * Called when a moved object needs to eject another occupant.
+ * @returns An un-occuped drag-source, if one can be found
+ */
+function findEmptySource() {
+    var elems = document.getElementsByClassName('drag-source');
+    for (var i = 0; i < elems.length; i++) {
+        if (findFirstChildOfClass(elems[i], 'moveable', undefined, 0) == null) {
+            return elems[i];
+        }
+    }
+    // All drag sources are occupied
+    return null;
+}
+/**
+ * Move an object to a destination.
+ * @param moveable The object to move
+ * @param destination The container to place it in
+ */
 function quickMove(moveable, destination) {
+    if (moveable != null && destination != null) {
+        pickUp(moveable);
+        doDrop(destination);
+    }
 }
 exports.quickMove = quickMove;
+/**
+ * Move an object within a free-move container
+ * @param moveable The object to move
+ * @param position The destination position within the container
+ */
 function quickFreeMove(moveable, position) {
+    if (moveable != null && position != null) {
+        moveable.style.left = position.x + 'px';
+        moveable.style.top = position.y + 'px';
+        updateZ(moveable, position.y);
+        toggleClass(moveable, 'placed', true);
+    }
 }
 exports.quickFreeMove = quickFreeMove;
 /*-----------------------------------------------------------
@@ -2717,7 +3058,8 @@ function setupAbilities(margins, data) {
     }
     if (data.dragDrop) {
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
-        // setupDragDrop();
+        preprocessDragFunctions();
+        indexAllDragDropFields();
         count++;
     }
     if (data.drawing) {

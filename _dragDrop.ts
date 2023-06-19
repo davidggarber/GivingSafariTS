@@ -1,6 +1,9 @@
+import { findFirstChildOfClass, findParentOfClass, hasClass, toggleClass } from "./_classUtil";
+import { saveContainerLocally, savePositionLocally } from "./_storage";
+
 export type Position = {
-  x: number;
-  y: number;
+    x: number;
+    y: number;
 }
 
 /**
@@ -9,12 +12,363 @@ export type Position = {
  * @returns A position
  */
 export function positionFromStyle(elmt:HTMLElement): Position {
-  return { x: parseInt(elmt.style.left), y: parseInt(elmt.style.top) };
+    return { x: parseInt(elmt.style.left), y: parseInt(elmt.style.top) };
 }
 
+// VOCABULARY
+// moveable: any object which can be clicked on to begin a move
+// drop-target: a container that can receive a (single) moveable element
+// drag-source: a container that can hold a single spare moveable element
+
+/**
+ * Scan the page for anything marked moveable, drag-source, or drop-target
+ * Those items get click handlers
+ */
+export function preprocessDragFunctions() {
+    let elems = document.getElementsByClassName('moveable');
+    for (let i = 0; i < elems.length; i++) {
+        preprocessMoveable(elems[i] as HTMLElement);
+    }
+
+    elems = document.getElementsByClassName('drop-target');
+    for (let i = 0; i < elems.length; i++) {
+        preprocessDropTarget(elems[i] as HTMLElement);
+    }
+
+    elems = document.getElementsByClassName('free-drop');
+    for (let i = 0; i < elems.length; i++) {
+        const elem = elems[i] as HTMLElement;
+        preprocessFreeDrop(elem);
+
+        const height = elem.getBoundingClientRect().height;
+        const zUp = hasClass(elems[i], 'z-grow-up');
+        const zDown = hasClass(elems[i], 'z-grow-down');
+        if (zUp || zDown) {
+            const children = elems[i].getElementsByClassName('moveable');
+            for (let j = 0; j < children.length; j++) {
+                const child = children[i] as HTMLElement;
+                let z = parseInt(child.style.top);
+                z = zUp ? 1000 + (height - z) : z;
+                child.style.zIndex = String(z);
+            }
+        }
+    }
+}
+
+/**
+ * Hook up the necessary mouse events to each moveable item
+ * @param elem a moveable element
+ */
+function preprocessMoveable(elem:HTMLElement) {
+    elem.onmouseup=function(e){onClickDrop(e)};
+    elem.ondragenter=function(e){onDropAllowed(e)};
+    elem.ondragover=function(e){onDropAllowed(e)};
+}
+
+/**
+ * Hook up the necessary mouse events to each drop target
+ * @param elem a moveable element
+ */
+function preprocessDropTarget(elem:HTMLElement) {
+    elem.onmousedown=function(e){onClickDrag(e)};
+    elem.ondrag=function(e){onDrag(e)};
+    elem.ondragend=function(e){onDragDrop(e)};
+}
+
+/**
+ * Hook up the necessary mouse events to each free drop target
+ * @param elem a moveable element
+ */
+function preprocessFreeDrop(elem:HTMLElement) {
+    elem.onmousedown=function(e){doFreeDrop(e)};
+    elem.ondragenter=function(e){onDropAllowed(e)};
+    elem.ondragover=function(e){onDropAllowed(e)};
+}
+
+/**
+ * The most recent object to be moved
+ */
+let _priorDrag:HTMLElement|null = null;
+/**
+ * The object that is selected, if any
+ */
+let _dragSelected:HTMLElement|null = null;
+/**
+ * The drop-target over which we are dragging
+ */
+let _dropHover:HTMLElement|null = null;
+/**
+ * The position within its container that a dragged object was in before dragging started
+ */
+let _dragPoint:Position|null = null;
+
+/**
+ * Pick up an object
+ * @param obj A moveable object
+ */
+function pickUp(obj:HTMLElement) {
+    _priorDrag = _dragSelected;
+    if (_dragSelected != null && _dragSelected != obj) {
+        toggleClass(_dragSelected, 'drag-selected', false);
+        _dragSelected = null;
+    }
+    if (obj != null && obj != _dragSelected) {
+        _dragSelected = obj;
+        toggleClass(_dragSelected, 'displaced', false);  // in case from earlier
+        toggleClass(_dragSelected, 'placed', false);
+        toggleClass(_dragSelected, 'drag-selected', true);
+    }
+}
+
+/**
+ * Drop the selected drag object onto a destination
+ * If something else is already there, it gets moved to an empty drag source
+ * Once complete, nothing is selected.
+ * @param dest The target of this drag action
+ */
+function doDrop(dest:HTMLElement|null) {
+    if (!_dragSelected) {
+        return;
+    }
+    
+    let src = getDragSource();
+    if (dest === src) {
+        if (_priorDrag !== _dragSelected) {
+            // Don't treat the first click of a 2-click drag
+            // as a 1-click non-move.
+            return;
+        }
+        // 2nd click on src is equivalent to dropping no-op
+        dest = null;
+    }
+
+    let other:Element|null = null;
+    if (dest != null) {
+        other = findFirstChildOfClass(dest, 'moveable', undefined, 0);
+        if (other != null) {
+            dest.removeChild(other);
+        }
+        src?.removeChild(_dragSelected);
+        dest.appendChild(_dragSelected);
+        saveContainerLocally(_dragSelected, dest);
+    }
+
+    toggleClass(_dragSelected, 'placed', true);
+    toggleClass(_dragSelected, 'drag-selected', false);
+    _dragSelected = null;
+    _dragPoint = null;
+
+    if (_dropHover != null) {
+        toggleClass(_dropHover, 'drop-hover', false);
+        _dropHover = null;
+    }
+
+    if (other != null) {
+        // Any element that was previous at dest swaps places
+        toggleClass(other, 'placed', false);
+        toggleClass(other, 'displaced', true);
+        if (!hasClass(src, 'drag-source')) {
+            // Don't displace to a destination if an empty source is available
+            const src2 = findEmptySource();
+            if (src2 != null) {
+                src = src2;
+            }
+        }
+        src?.appendChild(other);
+        saveContainerLocally(other as HTMLElement, src as HTMLElement);
+    }
+}
+
+/**
+ * Drag the selected object on a region with flexible placement.
+ * @param event The drop event
+ */
+function doFreeDrop(event:MouseEvent) {
+    if (_dragPoint == null 
+            || (event.clientX == _dragPoint.x && event.clientY == _dragPoint.y && _priorDrag == null)) {
+        // This is the initial click
+        return;
+    }
+    if (_dragSelected != null) {
+        const dx = event.clientX - _dragPoint.x;
+        const dy = event.clientY - _dragPoint.y;
+        const oldLeft = parseInt(_dragSelected.style.left);
+        const oldTop = parseInt(_dragSelected.style.top);
+        _dragSelected.style.left = (oldLeft + dx) + 'px';
+        _dragSelected.style.top = (oldTop + dy) + 'px';
+
+        updateZ(_dragSelected, oldTop + dy);
+        savePositionLocally(_dragSelected);
+        doDrop(null);
+    }
+}
+
+/**
+ * When an object is dragged in a container that holds multiple items,
+ * the z-order can change. Use the relative y position to set z-index.
+ * @param elem The element whose position just changed
+ * @param y The y-offset of that element
+ */
+function updateZ(elem:HTMLElement, y:number) {
+    let dest = findParentOfClass(elem, 'free-drop') as HTMLElement;
+    if (hasClass(dest, 'z-grow-down')) {
+        elem.style.zIndex = String(1000 + y);
+    }
+    else if (hasClass(dest, 'z-grow-up')) {
+        const rect = dest.getBoundingClientRect();
+        elem.style.zIndex = String(rect.height + 1000 - y);
+    }
+}
+
+/**
+ * The drag-target or drag-source that is the current parent of the dragging item
+ * @returns 
+ */
+function getDragSource():HTMLElement|null {
+    if (_dragSelected != null) {
+        let src = findParentOfClass(_dragSelected, 'drop-target') as HTMLElement;
+        if (src == null) {
+            src = findParentOfClass(_dragSelected, 'drag-source') as HTMLElement;
+        }
+        if (src == null) {
+            src = findParentOfClass(_dragSelected, 'free-drop') as HTMLElement;
+        }
+        return src;
+    }
+    return null;
+}
+
+/**
+ * Initialize a drag with mouse-down
+ * This may be the beginning of a 1- or 2-click drag action
+ * @param event The mouse down event
+ */
+function onClickDrag(event:MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target || target.tagName == 'INPUT') {
+        return;
+    }
+    const obj = findParentOfClass(target, 'moveable') as HTMLElement;
+    if (obj != null) {
+        if (_dragSelected == null) {
+            pickUp(obj);
+            _dragPoint = {x: event.clientX, y: event.clientY};
+        }
+        else if (obj == _dragSelected) {
+            // 2nd click on this object - enable no-op drop
+            _priorDrag = obj;
+        }
+    }
+}
+
+/**
+ * Conclude a drag with the mouse up
+ * @param event A mouse up event
+ */
+function onClickDrop(event:MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target || target.tagName == 'INPUT') {
+        return;
+    }
+    if (_dragSelected != null) {
+        const dest = findParentOfClass(target, 'drop-target') as HTMLElement;
+        doDrop(dest);
+    }
+}
+
+/**
+ * Conlcude a drag with a single drag-move-release.
+ * We we released over a drop-target or free-drop element, make the move.
+ * @param event The mouse drag end event
+ */
+function onDragDrop(event:MouseEvent) {
+    const elem = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement;
+    let dest = findParentOfClass(elem, 'drop-target') as HTMLElement;
+    if (dest) {
+        doDrop(dest);
+    }
+    else {
+        dest = findParentOfClass(elem, 'free-drop') as HTMLElement;
+        if (dest) {
+            doFreeDrop(event);
+        }
+    }    
+}
+
+/**
+ * As a drag is happening, highlight the destination
+ * @param event The mouse drag start event
+ */
+function onDrag(event:MouseEvent) {
+    if (event.eventPhase >= 3) {
+        return;  // bubbling
+    }
+    const elem = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement;
+    const dest = findParentOfClass(elem, 'drop-target') as HTMLElement;
+    if (dest != _dropHover) {
+        toggleClass(_dropHover, 'drop-hover', false);
+
+        const src = getDragSource();
+        if (dest != src) {
+            toggleClass(dest, 'drop-hover', true);
+            _dropHover = dest;
+        }
+    }    
+}
+
+/**
+ * As a drag is happening, make the cursor show valid or invalid targets
+ * @param event A mouse hover event
+ */
+function onDropAllowed(event:MouseEvent) {
+    const elem = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement;
+    let dest = findParentOfClass(elem, 'drop-target');
+    if (dest == null) {
+        dest = findParentOfClass(elem, 'free-drop');
+    }
+    if (_dragSelected != null && dest != null) {
+        event.preventDefault();
+    }    
+}
+
+/**
+ * Find a drag-source that is currently empty.
+ * Called when a moved object needs to eject another occupant.
+ * @returns An un-occuped drag-source, if one can be found
+ */
+function findEmptySource():HTMLElement|null {
+    const elems = document.getElementsByClassName('drag-source');
+    for (let i = 0; i < elems.length; i++) {
+        if (findFirstChildOfClass(elems[i], 'moveable', undefined, 0) == null) {
+            return elems[i] as HTMLElement;
+        }
+    }
+    // All drag sources are occupied
+    return null;
+}
+
+/**
+ * Move an object to a destination.
+ * @param moveable The object to move
+ * @param destination The container to place it in
+ */
 export function quickMove(moveable:HTMLElement, destination:HTMLElement) {
-
+    if (moveable != null && destination != null) {
+        pickUp(moveable);
+        doDrop(destination);    
+    }
 }
 
+/**
+ * Move an object within a free-move container
+ * @param moveable The object to move
+ * @param position The destination position within the container
+ */
 export function quickFreeMove(moveable:HTMLElement, position:Position) {
+    if (moveable != null && position != null) {
+        moveable.style.left = position.x + 'px';
+        moveable.style.top = position.y + 'px';
+        updateZ(moveable, position.y);
+        toggleClass(moveable, 'placed', true);
+    }
 }
