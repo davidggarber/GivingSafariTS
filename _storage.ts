@@ -262,7 +262,6 @@ export function saveContainerLocally(element:HTMLElement, container:HTMLElement)
         var destIndex = getGlobalIndex(container);
         if (elemIndex >= 0 && destIndex >= 0) {
             localCache.containers[elemIndex] = destIndex;
-            console.log(localCache.containers);
             saveCache();
         }
     }

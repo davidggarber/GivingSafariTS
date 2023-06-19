@@ -892,7 +892,6 @@ export function saveContainerLocally(element:HTMLElement, container:HTMLElement)
         var destIndex = getGlobalIndex(container);
         if (elemIndex >= 0 && destIndex >= 0) {
             localCache.containers[elemIndex] = destIndex;
-            console.log(localCache.containers);
             saveCache();
         }
     }
@@ -2568,8 +2567,6 @@ export function preprocessDragFunctions() {
  */
 function preprocessMoveable(elem:HTMLElement) {
     elem.onmouseup=function(e){onClickDrop(e)};
-    elem.ondragenter=function(e){onDropAllowed(e)};
-    elem.ondragover=function(e){onDropAllowed(e)};
 }
 
 /**
@@ -2580,6 +2577,8 @@ function preprocessDropTarget(elem:HTMLElement) {
     elem.onmousedown=function(e){onClickDrag(e)};
     elem.ondrag=function(e){onDrag(e)};
     elem.ondragend=function(e){onDragDrop(e)};
+    elem.ondragenter=function(e){onDropAllowed(e)};
+    elem.ondragover=function(e){onDropAllowed(e)};
 }
 
 /**
@@ -2807,8 +2806,8 @@ function onDragDrop(event:MouseEvent) {
  * @param event The mouse drag start event
  */
 function onDrag(event:MouseEvent) {
-    if (event.eventPhase >= 3) {
-        return;  // bubbling
+    if (event.screenX == 0 && event.screenY == 0) {
+        return;  // not a real event; some extra fire on drop
     }
     const elem = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement;
     const dest = findParentOfClass(elem, 'drop-target') as HTMLElement;
@@ -2835,7 +2834,11 @@ function onDropAllowed(event:MouseEvent) {
     }
     if (_dragSelected != null && dest != null) {
         event.preventDefault();
-    }    
+        console.log('drop allowed');
+    }
+    else {
+        console.log('drop disallowed');
+    }
 }
 
 /**
