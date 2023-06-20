@@ -107,6 +107,10 @@ type BoilerPlateData = {
     pathToRoot?: string;  // By default, '.'
 }
 
+/**
+ * Do some basic setup before of the page and boilerplate, before building new components
+ * @param bp 
+ */
 function preSetup(bp:BoilerPlateData) {
     debugSetup();
     if (isIFrame()) {
@@ -160,10 +164,40 @@ function createSimpleA({id, cls, friendly, href, target}: CreateSimpleAArgs) : H
     return a;
 }
 
+/**
+ * Map puzzle types to alt text
+ */
+const iconTypeAltText = {
+    'Word': 'Word puzzle',
+    'Math': 'Math puzzle',
+    'Rebus': 'Rebus puzzle',
+    'Code': 'Features encodings',
+    'Trivia': 'Trivia puzzle',
+    'Meta': 'Meta puzzle',
+    'Reassemble': 'Assembly'
+}
+
+/**
+ * Create an icon appropriate for this puzzle type
+ * @param puzzleType the name of the puzzle type
+ * @returns A div element, to be appended to the pageWithinMargins
+ */
+function createTypeIcon(puzzleType:string):HTMLDivElement {
+    const iconDiv = document.createElement('div');
+    iconDiv.id = 'icons';
+    const icon = document.createElement('img');
+    icon.src = './Icons/' + puzzleType + '.png';
+    icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' puzzle');
+    iconDiv.appendChild(icon);
+    return iconDiv;
+}
+
 function boilerplate(bp: BoilerPlateData) {
     if (bp === null) {
         return;
     }
+
+    preSetup(bp)
 
     /* A puzzle doc must have this shape:
      *   <html>
@@ -227,17 +261,18 @@ function boilerplate(bp: BoilerPlateData) {
         margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:'Puzzle list'}));
     }
 
+    // Set tab icon for safari event
+    const tabIcon = document.createElement('link');
+    tabIcon.rel = 'shortcut icon';
+    tabIcon.type = 'image/png';
+    tabIcon.href = safariDetails.icon;
+    head.appendChild(tabIcon);
+
+
     if (bp['type']) {
-        const iconDiv = document.createElement('div');
-        iconDiv.id = 'icons';
-        const icon = document.createElement('img');
-        icon.src = './Icons/' + bp['type'] + '.png';
-        iconDiv.appendChild(icon);
-        margins.appendChild(iconDiv);
+        margins.appendChild(createTypeIcon(bp['type']));
     }
 
-    preSetup(bp)
-    
     if (bp['textInput']) {
         textSetup()
     }

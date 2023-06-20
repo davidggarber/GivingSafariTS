@@ -46,7 +46,7 @@ export function preprocessDragFunctions() {
         if (zUp || zDown) {
             const children = elems[i].getElementsByClassName('moveable');
             for (let j = 0; j < children.length; j++) {
-                const child = children[i] as HTMLElement;
+                const child = children[j] as HTMLElement;
                 let z = parseInt(child.style.top);
                 z = zUp ? 1000 + (height - z) : z;
                 child.style.zIndex = String(z);
@@ -60,7 +60,9 @@ export function preprocessDragFunctions() {
  * @param elem a moveable element
  */
 function preprocessMoveable(elem:HTMLElement) {
-    elem.onmouseup=function(e){onClickDrop(e)};
+    elem.onmousedown=function(e){onClickDrag(e)};
+    elem.ondrag=function(e){onDrag(e)};
+    elem.ondragend=function(e){onDragDrop(e)};
 }
 
 /**
@@ -68,9 +70,7 @@ function preprocessMoveable(elem:HTMLElement) {
  * @param elem a moveable element
  */
 function preprocessDropTarget(elem:HTMLElement) {
-    elem.onmousedown=function(e){onClickDrag(e)};
-    elem.ondrag=function(e){onDrag(e)};
-    elem.ondragend=function(e){onDragDrop(e)};
+    elem.onmouseup=function(e){onClickDrop(e)};
     elem.ondragenter=function(e){onDropAllowed(e)};
     elem.ondragover=function(e){onDropAllowed(e)};
 }

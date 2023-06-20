@@ -2302,7 +2302,7 @@ function preprocessDragFunctions() {
         if (zUp || zDown) {
             var children = elems[i].getElementsByClassName('moveable');
             for (var j = 0; j < children.length; j++) {
-                var child = children[i];
+                var child = children[j];
                 var z = parseInt(child.style.top);
                 z = zUp ? 1000 + (height - z) : z;
                 child.style.zIndex = String(z);
@@ -2316,16 +2316,16 @@ exports.preprocessDragFunctions = preprocessDragFunctions;
  * @param elem a moveable element
  */
 function preprocessMoveable(elem) {
-    elem.onmouseup = function (e) { onClickDrop(e); };
+    elem.onmousedown = function (e) { onClickDrag(e); };
+    elem.ondrag = function (e) { onDrag(e); };
+    elem.ondragend = function (e) { onDragDrop(e); };
 }
 /**
  * Hook up the necessary mouse events to each drop target
  * @param elem a moveable element
  */
 function preprocessDropTarget(elem) {
-    elem.onmousedown = function (e) { onClickDrag(e); };
-    elem.ondrag = function (e) { onDrag(e); };
-    elem.ondragend = function (e) { onDragDrop(e); };
+    elem.onmouseup = function (e) { onClickDrop(e); };
     elem.ondragenter = function (e) { onDropAllowed(e); };
     elem.ondragover = function (e) { onDropAllowed(e); };
 }
@@ -2564,10 +2564,6 @@ function onDropAllowed(event) {
     }
     if (_dragSelected != null && dest != null) {
         event.preventDefault();
-        console.log('drop allowed');
-    }
-    else {
-        console.log('drop disallowed');
     }
 }
 /**
@@ -2907,6 +2903,10 @@ function getSafariDetails() {
     return safariDetails;
 }
 exports.getSafariDetails = getSafariDetails;
+/**
+ * Do some basic setup before of the page and boilerplate, before building new components
+ * @param bp
+ */
 function preSetup(bp) {
     debugSetup();
     if (isIFrame()) {
@@ -2947,10 +2947,37 @@ function createSimpleA(_a) {
     a.target = target || '_blank';
     return a;
 }
+/**
+ * Map puzzle types to alt text
+ */
+var iconTypeAltText = {
+    'Word': 'Word puzzle',
+    'Math': 'Math puzzle',
+    'Rebus': 'Rebus puzzle',
+    'Code': 'Features encodings',
+    'Trivia': 'Trivia puzzle',
+    'Meta': 'Meta puzzle',
+    'Reassemble': 'Assembly'
+};
+/**
+ * Create an icon appropriate for this puzzle type
+ * @param puzzleType the name of the puzzle type
+ * @returns A div element, to be appended to the pageWithinMargins
+ */
+function createTypeIcon(puzzleType) {
+    var iconDiv = document.createElement('div');
+    iconDiv.id = 'icons';
+    var icon = document.createElement('img');
+    icon.src = './Icons/' + puzzleType + '.png';
+    icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' puzzle');
+    iconDiv.appendChild(icon);
+    return iconDiv;
+}
 function boilerplate(bp) {
     if (bp === null) {
         return;
     }
+    preSetup(bp);
     /* A puzzle doc must have this shape:
      *   <html>
      *    <head>
@@ -3005,15 +3032,15 @@ function boilerplate(bp) {
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({ id: 'backlink', href: safariDetails.puzzleList, friendly: 'Puzzle list' }));
     }
+    // Set tab icon for safari event
+    var tabIcon = document.createElement('link');
+    tabIcon.rel = 'shortcut icon';
+    tabIcon.type = 'image/png';
+    tabIcon.href = safariDetails.icon;
+    head.appendChild(tabIcon);
     if (bp['type']) {
-        var iconDiv = document.createElement('div');
-        iconDiv.id = 'icons';
-        var icon = document.createElement('img');
-        icon.src = './Icons/' + bp['type'] + '.png';
-        iconDiv.appendChild(icon);
-        margins.appendChild(iconDiv);
+        margins.appendChild(createTypeIcon(bp['type']));
     }
-    preSetup(bp);
     if (bp['textInput']) {
         textSetup();
     }
