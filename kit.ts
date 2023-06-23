@@ -3368,7 +3368,7 @@ function boilerplate(bp: BoilerPlateData) {
     viewport.content = 'width=device-width, initial-scale=1'
     head.appendChild(viewport);
 
-
+    linkCss(head, 'Css/PageSizes.css');
     toggleClass(body, bp['paperSize'] || 'letter');
     toggleClass(body, bp['orientation'] || 'portrait');
 
@@ -3398,10 +3398,23 @@ function boilerplate(bp: BoilerPlateData) {
     if (bp['textInput']) {
         textSetup()
     }
-    setupAbilities(margins, bp['abilities'] || {});
+    setupAbilities(head, margins, bp['abilities'] || {});
 
     setTimeout(checkLocalStorage, 100);
 
+}
+
+/**
+ * Append a CSS link to the header
+ * @param head the head tag
+ * @param relPath The contents of the link's href
+ */
+function linkCss(head:HTMLHeadElement, relPath:string) {
+    const link = document.createElement('link');
+    link.href=relPath;
+    link.rel = "Stylesheet";
+    link.type = "text/css";
+    head.appendChild(link);
 }
 
 /**
@@ -3409,7 +3422,11 @@ function boilerplate(bp: BoilerPlateData) {
  * and show an indicator emoji or instruction in the bottom corner.
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
-function setupAbilities(margins:HTMLDivElement, data:AbilityData) {
+function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:AbilityData) {
+
+    // Puzzle don't need to explicitly specify this ability
+    linkCss(head, 'Css/TextInput.css');
+
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;
@@ -3447,14 +3464,18 @@ function setupAbilities(margins:HTMLDivElement, data:AbilityData) {
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         preprocessDragFunctions();
         indexAllDragDropFields();
+        linkCss(head, 'Css/DragDrop.css');
         count++;
     }
     if (data.drawing) {
         preprocessDrawObjects();
-        indexAllDrawableFields();    
+        indexAllDrawableFields();
+        linkCss(head, 'Css/DrawTools.css');
+        // No ability icon
     }
     if (data.notes) {
         setupNotes(margins);
+        // no ability icon
     }
     if (data.decoder) {
         setupDecoderToggle(margins, data.decoderMode);

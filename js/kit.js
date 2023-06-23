@@ -3020,6 +3020,7 @@ function boilerplate(bp) {
     viewport.name = 'viewport';
     viewport.content = 'width=device-width, initial-scale=1';
     head.appendChild(viewport);
+    linkCss(head, 'Css/PageSizes.css');
     toggleClass(body, bp['paperSize'] || 'letter');
     toggleClass(body, bp['orientation'] || 'portrait');
     var page = createSimpleDiv({ id: 'page', cls: 'printedPage' });
@@ -3044,15 +3045,27 @@ function boilerplate(bp) {
     if (bp['textInput']) {
         textSetup();
     }
-    setupAbilities(margins, bp['abilities'] || {});
+    setupAbilities(head, margins, bp['abilities'] || {});
     setTimeout(checkLocalStorage, 100);
+}
+/**
+ * Append a CSS link to the header
+ * @param head the head tag
+ * @param relPath The contents of the link's href
+ */
+function linkCss(head, relPath) {
+    var link = document.createElement('link');
+    link.href = relPath;
+    link.rel = "Stylesheet";
+    link.type = "text/css";
+    head.appendChild(link);
 }
 /**
  * For each ability set to true in the AbilityData, do appropriate setup,
  * and show an indicator emoji or instruction in the bottom corner.
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
-function setupAbilities(margins, data) {
+function setupAbilities(head, margins, data) {
     var ability = document.getElementById('ability');
     if (ability != null) {
         var text = ability.innerText;
@@ -3095,6 +3108,7 @@ function setupAbilities(margins, data) {
     if (data.drawing) {
         preprocessDrawObjects();
         indexAllDrawableFields();
+        linkCss(head, 'Css/DragDrop.css');
     }
     if (data.notes) {
         setupNotes(margins);
