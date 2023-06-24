@@ -2987,6 +2987,8 @@ function onRulerHover(evt) {
     }
     if (ruler.nearest && _straightLine) {
         if (_linePoints.length >= ruler.maxPoints) {
+            _straightLine.points.removeItem(ruler.maxPoints - 1);
+            _linePoints.splice(ruler.maxPoints - 1, 1);
         }
         // Extend to new point
         _linePoints.push(ruler.nearest.endpoint);
