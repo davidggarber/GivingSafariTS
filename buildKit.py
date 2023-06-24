@@ -9,6 +9,7 @@ kitFiles = [
     '_textSetup.ts',
     '_dragDrop.ts',
     '_drawTools.ts',
+    '_straightEdge.ts',
     '_boilerplate.ts'
 ]
 

@@ -5,6 +5,7 @@ import { setupDecoderToggle } from "./_decoders"
 import { checkLocalStorage, indexAllDragDropFields, indexAllDrawableFields } from "./_storage";
 import { preprocessDrawObjects } from "./_drawTools";
 import { preprocessDragFunctions } from "./_dragDrop";
+import { preprocessRulerFunctions } from "./_straightEdge";
 
 
 /**
@@ -91,6 +92,7 @@ type AbilityData = {
     decoderMode?: string;
     dragDrop?: boolean;
     drawing?: boolean;
+    straightEdge?: boolean;
 }
 
 type BoilerPlateData = {
@@ -345,6 +347,13 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         preprocessDrawObjects();
         indexAllDrawableFields();
         linkCss(head, 'Css/DrawTools.css');
+        // No ability icon
+    }
+    if (data.straightEdge) {
+        fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">📐</span>';
+        preprocessRulerFunctions();
+        //indexAllStraightEdges();
+        //linkCss(head, 'Css/DrawTools.css');
         // No ability icon
     }
     if (data.notes) {

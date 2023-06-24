@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isBodyDebug = exports.isDebug = exports.doDraw = exports.preprocessDrawObjects = exports.quickFreeMove = exports.quickMove = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.saveHighlightLocally = exports.saveDrawingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isIFrame = void 0;
+exports.positionFromCenter = exports.doDraw = exports.preprocessDrawObjects = exports.quickFreeMove = exports.quickMove = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.saveHighlightLocally = exports.saveDrawingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.createSVGPoint = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -206,6 +206,30 @@ function findParentOfClass(elmt, parentClass) {
     return null;
 }
 exports.findParentOfClass = findParentOfClass;
+/**
+ * Find the nearest containing node of the specified tag type.
+ * @param elmt - An existing element
+ * @param parentTag - A tag name of a parent element
+ * @returns The nearest matching parent element, up to and including the body
+ */
+function findParentOfTag(elmt, parentTag) {
+    if (parentTag == null || parentTag == undefined) {
+        return null;
+    }
+    parentTag = parentTag.toUpperCase();
+    while (elmt !== null) {
+        var name_2 = elmt.tagName.toUpperCase();
+        if (name_2 === parentTag) {
+            return elmt;
+        }
+        if (name_2 === 'BODY') {
+            break;
+        }
+        elmt = elmt.parentNode;
+    }
+    return null;
+}
+exports.findParentOfTag = findParentOfTag;
 /**
  * Find the first child/descendent of the current element which matches a desired class
  * @param elmt - A parent element
@@ -2835,6 +2859,207 @@ function updateDrawExtraction() {
     }
 }
 /*-----------------------------------------------------------
+ * _straightEdge.ts
+ *-----------------------------------------------------------*/
+/**
+ * Find the center of an element, in client coordinates
+ * @param elmt Any element
+ * @returns A position
+ */
+function positionFromCenter(elmt) {
+    var rect = elmt.getBoundingClientRect();
+    return new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+}
+exports.positionFromCenter = positionFromCenter;
+/**
+ * Convert a client position to an SVG point
+ * @param elmt An element in an SVG
+ * @param pos A position, in client coordinates
+ * @returns an SVG position, in SVG coordinates
+ */
+function createSVGPoint(elmt, pos) {
+    var svg = findParentOfTag(elmt, 'SVG');
+    var rect = svg.getBoundingClientRect();
+    var spt = svg.createSVGPoint();
+    spt.x = pos.x - rect.left;
+    spt.y = pos.y - rect.top;
+    return spt;
+}
+exports.createSVGPoint = createSVGPoint;
+/**
+ * Find the square of the distance between a point and the mouse
+ * @param elmt A position, in screen coordinates
+ * @param evt A mouse event
+ * @returns The distance, squared
+ */
+function distance2Mouse(pos, evt) {
+    var dx = pos.x - evt.x;
+    var dy = pos.y - evt.y;
+    return dx * dx + dy * dy;
+}
+exports.distance2Mouse = distance2Mouse;
+function distance2(pos, pos2) {
+    var dx = pos.x - pos2.x;
+    var dy = pos.y - pos2.y;
+    return dx * dx + dy * dy;
+}
+exports.distance2 = distance2;
+// VOCABULARY
+// endpoint: any point that can anchor a straight edge
+// ruler-range: the potential drag range
+// ruler-path: a drawn line connecting one or more endpoints.
+// 
+// Ruler ranges can have styles and rules.
+// Styles shape the straight edge, which can also be an outline
+// Rules dictate drop restrictions and the snap range
+/**
+ * Scan the page for anything marked endpoint or ruler-range
+ * Those items get click handlers
+ */
+function preprocessRulerFunctions() {
+    var elems = document.getElementsByClassName('ruler-range');
+    for (var i = 0; i < elems.length; i++) {
+        preprocessRulerRange(elems[i]);
+    }
+    // TODO: make lines editable
+}
+exports.preprocessRulerFunctions = preprocessRulerFunctions;
+/**
+ * Hook up the necessary mouse events to each moveable item
+ * @param elem a moveable element
+ */
+function preprocessEndpoint(elem) {
+}
+/**
+ * Hook up the necessary mouse events to the background region for a ruler
+ * @param elem a moveable element
+ */
+function preprocessRulerRange(elem) {
+    elem.onmousemove = function (e) { onRulerHover(e); };
+    elem.onmousedown = function (e) { onLineStart(e); };
+    elem.onmouseup = function (e) { onLineUp(e); };
+    elem.ondragenter = function (e) { onRulerAllowed(e); };
+    elem.ondragover = function (e) { onRulerAllowed(e); };
+}
+function getRulerData(evt) {
+    var range = findParentOfClass(evt.target, 'ruler-range');
+    var svg = findParentOfTag(range, 'SVG');
+    var bounds = svg.getBoundingClientRect();
+    var maxPoints = range.getAttributeNS('', 'data-max-points');
+    var hoverRange = range.getAttributeNS('', 'data-hover-range');
+    var pos = new DOMPoint(evt.x, evt.y);
+    var spt = svg.createSVGPoint();
+    spt.x = pos.x - bounds.left;
+    spt.y = pos.y - bounds.top;
+    var data = {
+        svg: svg,
+        container: range,
+        bounds: bounds,
+        maxPoints: maxPoints ? parseInt(maxPoints) : 2,
+        hoverRange: hoverRange ? parseInt(hoverRange) : (bounds.width + bounds.height),
+        evtPos: pos,
+        evtPoint: spt,
+    };
+    var near = findNearestEndpoint(data);
+    if (near) {
+        data.nearest = {
+            endpoint: near,
+            group: findParentOfClass(near, 'endpoint-g') || near,
+            centerPos: positionFromCenter(near),
+            centerPoint: svg.createSVGPoint()
+        };
+        data.nearest.centerPoint.x = data.nearest.centerPos.x - bounds.left;
+        data.nearest.centerPoint.y = data.nearest.centerPos.y - bounds.top;
+    }
+    return data;
+}
+var _nearestEndpoint = null;
+var _straightLine = null;
+var _linePoints = [];
+function onRulerHover(evt) {
+    var _a, _b, _c;
+    var ruler = getRulerData(evt);
+    if (!ruler) {
+        return;
+    }
+    if (ruler.nearest && isInLine(ruler.nearest.endpoint)) {
+        return;
+    }
+    if (ruler.nearest && _straightLine) {
+        if (_linePoints.length >= ruler.maxPoints) {
+        }
+        // Extend to new point
+        _linePoints.push(ruler.nearest.endpoint);
+        _straightLine.points.appendItem(ruler.nearest.centerPoint);
+    }
+    else {
+        if (((_a = ruler.nearest) === null || _a === void 0 ? void 0 : _a.group) != _nearestEndpoint) {
+            toggleClass(_nearestEndpoint, 'hover', false);
+            toggleClass((_b = ruler.nearest) === null || _b === void 0 ? void 0 : _b.group, 'hover', true);
+            _nearestEndpoint = ((_c = ruler.nearest) === null || _c === void 0 ? void 0 : _c.group) || null;
+        }
+    }
+}
+/**
+ * Checks to see if an endpoint is already in the current straightline
+ * @param end an endpoint
+ * @returns true if that endpoint is already in the polyline
+ */
+function isInLine(end) {
+    if (!_linePoints || !end) {
+        return false;
+    }
+    for (var i = 0; i < _linePoints.length; i++) {
+        if (_linePoints[i] == end) {
+            return true;
+        }
+    }
+    return false;
+}
+/**
+ * Mouse down over an endpoint
+ * @param evt Mouse down event
+ */
+function onLineStart(evt) {
+    var ruler = getRulerData(evt);
+    if (!ruler || !ruler.nearest) {
+        return;
+    }
+    _linePoints = [];
+    _linePoints.push(ruler.nearest.endpoint);
+    _straightLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    toggleClass(_straightLine, 'straight-line');
+    _straightLine.points.appendItem(ruler.nearest.centerPoint);
+    ruler.container.appendChild(_straightLine);
+    toggleClass(_nearestEndpoint, 'hover', false);
+    _nearestEndpoint = null;
+}
+function onLineUp(evt) {
+    if (_straightLine) {
+        var range = findParentOfClass(_straightLine, 'ruler-range');
+        range.removeChild(_straightLine);
+        _straightLine = null;
+        _linePoints = [];
+    }
+}
+function onRulerAllowed(evt) {
+}
+function findNearestEndpoint(data) {
+    var min = data.hoverRange * data.hoverRange;
+    var endpoints = data.container.getElementsByClassName('endpoint');
+    var nearest = null;
+    for (var i = 0; i < endpoints.length; i++) {
+        var end = endpoints[i];
+        var center = positionFromCenter(end);
+        var dist = distance2(center, data.evtPos);
+        if (min < 0 || dist < min) {
+            min = dist;
+            nearest = end;
+        }
+    }
+    return nearest;
+}
+/*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
 /**
@@ -3103,15 +3328,25 @@ function setupAbilities(head, margins, data) {
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         preprocessDragFunctions();
         indexAllDragDropFields();
+        linkCss(head, 'Css/DragDrop.css');
         count++;
     }
     if (data.drawing) {
         preprocessDrawObjects();
         indexAllDrawableFields();
-        linkCss(head, 'Css/DragDrop.css');
+        linkCss(head, 'Css/DrawTools.css');
+        // No ability icon
+    }
+    if (data.straightEdge) {
+        fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">📐</span>';
+        preprocessRulerFunctions();
+        //indexAllStraightEdges();
+        //linkCss(head, 'Css/DrawTools.css');
+        // No ability icon
     }
     if (data.notes) {
         setupNotes(margins);
+        // no ability icon
     }
     if (data.decoder) {
         setupDecoderToggle(margins, data.decoderMode);

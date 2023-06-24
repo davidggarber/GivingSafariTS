@@ -221,6 +221,31 @@ export function findParentOfClass(elmt: Element,
 }
 
 /**
+ * Find the nearest containing node of the specified tag type.
+ * @param elmt - An existing element
+ * @param parentTag - A tag name of a parent element
+ * @returns The nearest matching parent element, up to and including the body
+ */
+export function findParentOfTag(elmt: Element, parentTag: string)
+                                : Element|null {
+    if (parentTag == null || parentTag == undefined) {
+        return null;
+    }
+    parentTag = parentTag.toUpperCase();
+    while (elmt !== null) {
+        const name = elmt.tagName.toUpperCase();
+        if (name === parentTag) {
+            return elmt;
+        }
+        if (name === 'BODY') {
+            break;
+        }
+        elmt = elmt.parentNode as Element;
+    }
+    return null;
+}
+
+/**
  * Find the first child/descendent of the current element which matches a desired class
  * @param elmt - A parent element
  * @param childClass - A class name of the desired child
@@ -228,19 +253,19 @@ export function findParentOfClass(elmt: Element,
  * @param dir - If positive (default), search forward; else search backward
  * @returns A child element, if a match is found, else null
  */
-export function findFirstChildOfClass( elmt: Element, 
-                                childClass: string, 
-                                skipClass: string|undefined = undefined,
-                                dir: number = 1)
-                                : Element|null {
-  var children = elmt.getElementsByClassName(childClass);
-  for (var i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
-      if (skipClass !== null && hasClass(children[i], skipClass)) {
-          continue;
-      }
-      return children[i];
-  }
-  return null;
+export function findFirstChildOfClass(  elmt: Element, 
+                                        childClass: string, 
+                                        skipClass: string|undefined = undefined,
+                                        dir: number = 1)
+                                        : Element|null {
+    var children = elmt.getElementsByClassName(childClass);
+    for (var i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
+        if (skipClass !== null && hasClass(children[i], skipClass)) {
+            continue;
+        }
+        return children[i];
+    }
+    return null;
 }
 
 /**
@@ -251,11 +276,11 @@ export function findFirstChildOfClass( elmt: Element,
  * @param prefix - (optional) - A prefix to apply to the answer
  * @returns The found or default style, optional with prefix added
  */
-export function getOptionalStyle( elmt: Element, 
-                                  attrName: string, 
-                                  defaultStyle?: string, 
-                                  prefix?: string)
-                                  : string|null {
+export function getOptionalStyle(   elmt: Element, 
+                                    attrName: string, 
+                                    defaultStyle?: string, 
+                                    prefix?: string)
+                                    : string|null {
     var val = elmt.getAttribute(attrName);
     while (val === null) {
         elmt = elmt.parentNode as Element;
