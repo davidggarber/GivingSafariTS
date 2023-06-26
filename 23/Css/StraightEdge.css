@@ -1,0 +1,23 @@
+.straigh-edge-area .vertex {
+  fill:black;
+  stroke:none;
+}
+.straigh-edge-area .hover .vertex {
+  fill:red;
+}
+.straigh-edge-area .hover text {
+  stroke:red;
+}
+.straight-edge {
+  stroke: #b00;
+  stroke-width: 2.5px;
+  fill: none;
+}
+.straight-edge.building {
+  stroke: red;
+  stroke-width: 4px;
+}
+.vertex.building {
+  stroke:red;
+  stroke-width: 1px;
+}

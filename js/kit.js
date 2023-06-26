@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.positionFromCenter = exports.doDraw = exports.preprocessDrawObjects = exports.quickFreeMove = exports.quickMove = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.saveHighlightLocally = exports.saveDrawingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.createSVGPoint = void 0;
+exports.quickFreeMove = exports.quickMove = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveHighlightLocally = exports.saveDrawingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doDraw = exports.preprocessDrawObjects = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -12,7 +12,7 @@ exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDe
  * @param bool - If omitted, cls is toggled in the classList; if true, cls is added; if false, cls is removed
  */
 function toggleClass(obj, cls, bool) {
-    if (obj === null || cls === null || cls === undefined) {
+    if (obj === null || obj === undefined || cls === null || cls === undefined) {
         return;
     }
     var elmt;
@@ -42,7 +42,7 @@ exports.toggleClass = toggleClass;
  * @returns true iff the class is in the classList
  */
 function hasClass(obj, cls) {
-    if (obj === null || cls === undefined) {
+    if (obj === null || obj === undefined || cls === undefined) {
         return false;
     }
     var elmt;
@@ -915,6 +915,24 @@ function getGlobalIndex(elmt, suffix) {
     }
     return -1;
 }
+exports.getGlobalIndex = getGlobalIndex;
+/**
+ * Create a dictionary, mapping global indeces to the corresponding elements
+ * @param cls the class tag on all applicable elements
+ * @param suffix the optional suffix of the global indeces
+ */
+function mapGlobalIndeces(cls, suffix) {
+    var map = {};
+    var elements = document.getElementsByClassName(cls);
+    for (var i = 0; i < elements.length; i++) {
+        var index = getGlobalIndex(elements[i], suffix);
+        if (index >= 0) {
+            map[index] = elements[String(i)];
+        }
+    }
+    return map;
+}
+exports.mapGlobalIndeces = mapGlobalIndeces;
 /**
  * Assign globalIndeces to every letter- or word- input field
  */
@@ -967,6 +985,14 @@ function indexAllHighlightableFields() {
     applyGlobalIndeces(inputs, 'ch');
 }
 exports.indexAllHighlightableFields = indexAllHighlightableFields;
+/**
+ * Assign globalIndeces to every vertex
+ */
+function indexAllVertices() {
+    var inputs = document.getElementsByClassName('vertex');
+    applyGlobalIndeces(inputs, 'vx');
+}
+exports.indexAllVertices = indexAllVertices;
 ////////////////////////////////////////////////////////////////////////
 // Load from local storage
 //
@@ -2872,21 +2898,6 @@ function positionFromCenter(elmt) {
 }
 exports.positionFromCenter = positionFromCenter;
 /**
- * Convert a client position to an SVG point
- * @param elmt An element in an SVG
- * @param pos A position, in client coordinates
- * @returns an SVG position, in SVG coordinates
- */
-function createSVGPoint(elmt, pos) {
-    var svg = findParentOfTag(elmt, 'SVG');
-    var rect = svg.getBoundingClientRect();
-    var spt = svg.createSVGPoint();
-    spt.x = pos.x - rect.left;
-    spt.y = pos.y - rect.top;
-    return spt;
-}
-exports.createSVGPoint = createSVGPoint;
-/**
  * Find the square of the distance between a point and the mouse
  * @param elmt A position, in screen coordinates
  * @param evt A mouse event
@@ -2905,22 +2916,23 @@ function distance2(pos, pos2) {
 }
 exports.distance2 = distance2;
 // VOCABULARY
-// endpoint: any point that can anchor a straight edge
-// ruler-range: the potential drag range
-// ruler-path: a drawn line connecting one or more endpoints.
+// vertex: any point that can anchor a straight edge
+// straigh-edge-area: the potential drag range
+// ruler-path: a drawn line connecting one or more vertices.
 // 
 // Ruler ranges can have styles and rules.
 // Styles shape the straight edge, which can also be an outline
 // Rules dictate drop restrictions and the snap range
 /**
- * Scan the page for anything marked endpoint or ruler-range
+ * Scan the page for anything marked vertex or straigh-edge-area
  * Those items get click handlers
  */
 function preprocessRulerFunctions() {
-    var elems = document.getElementsByClassName('ruler-range');
+    var elems = document.getElementsByClassName('straigh-edge-area');
     for (var i = 0; i < elems.length; i++) {
         preprocessRulerRange(elems[i]);
     }
+    indexAllVertices();
     // TODO: make lines editable
 }
 exports.preprocessRulerFunctions = preprocessRulerFunctions;
@@ -2942,10 +2954,11 @@ function preprocessRulerRange(elem) {
     elem.ondragover = function (e) { onRulerAllowed(e); };
 }
 function getRulerData(evt) {
-    var range = findParentOfClass(evt.target, 'ruler-range');
+    var range = findParentOfClass(evt.target, 'straigh-edge-area');
     var svg = findParentOfTag(range, 'SVG');
     var bounds = svg.getBoundingClientRect();
     var maxPoints = range.getAttributeNS('', 'data-max-points');
+    var canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
     var hoverRange = range.getAttributeNS('', 'data-hover-range');
     var pos = new DOMPoint(evt.x, evt.y);
     var spt = svg.createSVGPoint();
@@ -2956,70 +2969,103 @@ function getRulerData(evt) {
         container: range,
         bounds: bounds,
         maxPoints: maxPoints ? parseInt(maxPoints) : 2,
+        canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         hoverRange: hoverRange ? parseInt(hoverRange) : (bounds.width + bounds.height),
         evtPos: pos,
         evtPoint: spt,
     };
-    var near = findNearestEndpoint(data);
+    var near = findNearestVertex(data);
     if (near) {
-        data.nearest = {
-            endpoint: near,
-            group: findParentOfClass(near, 'endpoint-g') || near,
-            centerPos: positionFromCenter(near),
-            centerPoint: svg.createSVGPoint()
-        };
-        data.nearest.centerPoint.x = data.nearest.centerPos.x - bounds.left;
-        data.nearest.centerPoint.y = data.nearest.centerPos.y - bounds.top;
+        data.nearest = getVertexData(data, near);
     }
     return data;
 }
-var _nearestEndpoint = null;
-var _straightLine = null;
-var _linePoints = [];
+function getVertexData(ruler, vert) {
+    var data = {
+        vertex: vert,
+        index: getGlobalIndex(vert, 'vx'),
+        group: findParentOfClass(vert, 'vertex-g') || vert,
+        centerPos: positionFromCenter(vert),
+        centerPoint: ruler.svg.createSVGPoint()
+    };
+    data.centerPoint.x = data.centerPos.x - ruler.bounds.left;
+    data.centerPoint.y = data.centerPos.y - ruler.bounds.top;
+    return data;
+}
+/**
+ * All straight edges on the page, except for the one under construction
+ */
+var _straightEdges = [];
+/**
+ * The nearest vertex, if being affected by hover
+ */
+var _hoverEndpoint = null;
+/**
+ * A straight edge under construction
+ */
+var _straightEdgeBuilder = null;
+/**
+ * The vertices that are part of the straight edge under construction
+ */
+var _straightEdgeVertices = [];
+/**
+ * If an edge is under construction, does it have a free end?
+ */
+var _straightEdgeFreeEnd = false;
 function onRulerHover(evt) {
     var _a, _b, _c;
     var ruler = getRulerData(evt);
     if (!ruler) {
         return;
     }
-    if (ruler.nearest && isInLine(ruler.nearest.endpoint)) {
+    var inLineIndex = ruler.nearest ? indexInLine(ruler.nearest.vertex) : -1;
+    if (_straightEdgeBuilder && inLineIndex >= 0) {
+        if (inLineIndex == _straightEdgeVertices.length - 2) {
+            // Dragging back to the start contracts the line
+            _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
+            toggleClass(_straightEdgeVertices[ruler.maxPoints - 1], 'building', false);
+            _straightEdgeVertices.splice(ruler.maxPoints - 1, 1);
+        }
+        // Hoving near any other index is ignored
         return;
     }
-    if (ruler.nearest && _straightLine) {
-        if (_linePoints.length >= ruler.maxPoints) {
-            _straightLine.points.removeItem(ruler.maxPoints - 1);
-            _linePoints.splice(ruler.maxPoints - 1, 1);
+    if (ruler.nearest && _straightEdgeBuilder) {
+        // Drawing out straight-edges
+        if (_straightEdgeVertices.length >= ruler.maxPoints) {
+            _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
+            toggleClass(_straightEdgeVertices[ruler.maxPoints - 1], 'building', false);
+            _straightEdgeVertices.splice(ruler.maxPoints - 1, 1);
         }
         // Extend to new point
-        _linePoints.push(ruler.nearest.endpoint);
-        _straightLine.points.appendItem(ruler.nearest.centerPoint);
+        snapStraightLineTo(ruler, ruler.nearest);
     }
     else {
-        if (((_a = ruler.nearest) === null || _a === void 0 ? void 0 : _a.group) != _nearestEndpoint) {
-            toggleClass(_nearestEndpoint, 'hover', false);
+        // Hovering near a point
+        if (((_a = ruler.nearest) === null || _a === void 0 ? void 0 : _a.group) != _hoverEndpoint) {
+            toggleClass(_hoverEndpoint, 'hover', false);
             toggleClass((_b = ruler.nearest) === null || _b === void 0 ? void 0 : _b.group, 'hover', true);
-            _nearestEndpoint = ((_c = ruler.nearest) === null || _c === void 0 ? void 0 : _c.group) || null;
+            _hoverEndpoint = ((_c = ruler.nearest) === null || _c === void 0 ? void 0 : _c.group) || null;
         }
     }
 }
 /**
- * Checks to see if an endpoint is already in the current straightline
- * @param end an endpoint
- * @returns true if that endpoint is already in the polyline
+ * Checks to see if an vertex is already in the current straightline
+ * @param end an vertex
+ * @returns The index of this element in the straight edge
  */
-function isInLine(end) {
-    if (!_linePoints || !end) {
-        return false;
+function indexInLine(end) {
+    if (!_straightEdgeVertices || !end) {
+        return -1;
     }
-    for (var i = 0; i < _linePoints.length; i++) {
-        if (_linePoints[i] == end) {
-            return true;
+    for (var i = 0; i < _straightEdgeVertices.length; i++) {
+        if (_straightEdgeVertices[i] == end) {
+            return i;
         }
     }
-    return false;
+    return -1;
 }
 /**
- * Mouse down over an endpoint
+ * Mouse down over an vertex
  * @param evt Mouse down event
  */
 function onLineStart(evt) {
@@ -3027,31 +3073,106 @@ function onLineStart(evt) {
     if (!ruler || !ruler.nearest) {
         return;
     }
-    _linePoints = [];
-    _linePoints.push(ruler.nearest.endpoint);
-    _straightLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    toggleClass(_straightLine, 'straight-line');
-    _straightLine.points.appendItem(ruler.nearest.centerPoint);
-    ruler.container.appendChild(_straightLine);
-    toggleClass(_nearestEndpoint, 'hover', false);
-    _nearestEndpoint = null;
+    if (!ruler.canShareVertices && hasClass(ruler.nearest.vertex, 'has-line')) {
+        // User has clicked a point that already has a line
+        // Re-select it
+        var edge = findStraightEdgeFromVertex(ruler.nearest.index);
+        if (edge) {
+            deleteStraightEdge(edge);
+            // Find the other end of this edge
+            var vertices = findStraightEdgeVertices(edge);
+            if (vertices.length == 2) {
+                if (vertices[0] == ruler.nearest.vertex) {
+                    createStraightLineFrom(ruler, getVertexData(ruler, vertices[1]));
+                }
+                else {
+                    createStraightLineFrom(ruler, getVertexData(ruler, vertices[0]));
+                }
+                snapStraightLineTo(ruler, ruler.nearest);
+                return;
+            }
+        }
+    }
+    createStraightLineFrom(ruler, ruler.nearest);
+}
+function createStraightLineFrom(ruler, start) {
+    _straightEdgeVertices = [];
+    _straightEdgeVertices.push(start.vertex);
+    _straightEdgeBuilder = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    toggleClass(_straightEdgeBuilder, 'straight-edge', true);
+    toggleClass(_straightEdgeBuilder, 'building', true);
+    toggleClass(start.vertex, 'building', true);
+    _straightEdgeBuilder.points.appendItem(start.centerPoint);
+    ruler.container.appendChild(_straightEdgeBuilder);
+    toggleClass(_hoverEndpoint, 'hover', false);
+    _hoverEndpoint = null;
+}
+function snapStraightLineTo(ruler, next) {
+    _straightEdgeVertices.push(next.vertex);
+    _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.points.appendItem(next.centerPoint);
+    toggleClass(next.vertex, 'building', true);
+}
+function freeStraightLineTo(ruler, evt) {
+    var pos = new DOMPoint(evt.x, evt.y);
+    var spt = ruler.svg.createSVGPoint();
+    spt.x = pos.x - ruler.bounds.left;
+    spt.y = pos.y - ruler.bounds.top;
+    _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.points.appendItem(spt);
+}
+function deleteStraightEdge(edge) {
+    var _a;
+    for (var i = 0; i < _straightEdges.length; i++) {
+        if (_straightEdges[i] === edge) {
+            _straightEdges.splice(i, 1);
+            break;
+        }
+    }
+    (_a = edge.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(edge);
 }
 function onLineUp(evt) {
-    if (_straightLine) {
-        var range = findParentOfClass(_straightLine, 'ruler-range');
-        range.removeChild(_straightLine);
-        _straightLine = null;
-        _linePoints = [];
+    var ruler = getRulerData(evt);
+    if (!ruler) {
+        return;
     }
+    if (_straightEdgeBuilder) {
+        if (_straightEdgeVertices.length < 2) {
+            // Incomplete. Abandon
+            var range = findParentOfClass(_straightEdgeBuilder, 'straigh-edge-area');
+            range.removeChild(_straightEdgeBuilder);
+            _straightEdgeBuilder = null;
+        }
+        else {
+            if (_straightEdgeFreeEnd) {
+                _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
+            }
+            if (_straightEdgeBuilder.points.length != _straightEdgeVertices.length) { // isDebug() && 
+                throw new DOMException('Straight edge parts are out of sync');
+            }
+        }
+    }
+    var indeces = [];
+    for (var i = 0; i < _straightEdgeVertices.length; i++) {
+        toggleClass(_straightEdgeVertices[i], 'building', false);
+        toggleClass(_straightEdgeVertices[i], 'has-line', _straightEdgeBuilder != null);
+        indeces.push(getGlobalIndex(_straightEdgeVertices[i], 'vx'));
+    }
+    if (_straightEdgeBuilder) {
+        toggleClass(_straightEdgeBuilder, 'building', false);
+        _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.setAttributeNS('', 'data-vertices', ',' + indeces.join(',') + ',');
+        _straightEdges.push(_straightEdgeBuilder);
+    }
+    _straightEdgeVertices = [];
+    _straightEdgeBuilder = null;
+    _straightEdgeFreeEnd = false;
 }
 function onRulerAllowed(evt) {
 }
-function findNearestEndpoint(data) {
+function findNearestVertex(data) {
     var min = data.hoverRange * data.hoverRange;
-    var endpoints = data.container.getElementsByClassName('endpoint');
+    var vertices = data.container.getElementsByClassName('vertex');
     var nearest = null;
-    for (var i = 0; i < endpoints.length; i++) {
-        var end = endpoints[i];
+    for (var i = 0; i < vertices.length; i++) {
+        var end = vertices[i];
         var center = positionFromCenter(end);
         var dist = distance2(center, data.evtPos);
         if (min < 0 || dist < min) {
@@ -3060,6 +3181,34 @@ function findNearestEndpoint(data) {
         }
     }
     return nearest;
+}
+function findStraightEdgeFromVertex(index) {
+    var pat = ',' + String(index) + ',';
+    var edges = document.getElementsByClassName('straight-edge');
+    for (var i = 0; i < edges.length; i++) {
+        var edge = edges[i];
+        var indexList = edge.getAttributeNS('', 'data-vertices');
+        if (indexList && indexList.search(pat) >= 0) {
+            return edge;
+        }
+        ;
+    }
+    return null;
+}
+function findStraightEdgeVertices(edge) {
+    var indexList = edge.getAttributeNS('', 'data-vertices');
+    var vertices = [];
+    var indeces = indexList === null || indexList === void 0 ? void 0 : indexList.split(',');
+    if (indeces) {
+        var map = mapGlobalIndeces('vertex', 'vx');
+        for (var i = 0; i < indeces.length; i++) {
+            if (indeces[i]) {
+                var vertex = map[indeces[i]];
+                vertices.push(vertex);
+            }
+        }
+    }
+    return vertices;
 }
 /*-----------------------------------------------------------
  * _boilerplate.ts
@@ -3342,8 +3491,8 @@ function setupAbilities(head, margins, data) {
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions();
-        //indexAllStraightEdges();
-        //linkCss(head, 'Css/DrawTools.css');
+        linkCss(head, 'Css/StraightEdge.css');
+        //indexAllVertices();
         // No ability icon
     }
     if (data.notes) {

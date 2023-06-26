@@ -10,10 +10,10 @@
  * @param cls - A class name to toggle (unless null)
  * @param bool - If omitted, cls is toggled in the classList; if true, cls is added; if false, cls is removed
  */
-export function toggleClass(obj: Node|string|null, 
+export function toggleClass(obj: Node|string|null|undefined, 
                             cls: string|null, 
                             bool?: boolean) {
-    if (obj === null || cls === null || cls === undefined) {
+    if (obj === null || obj === undefined || cls === null || cls === undefined) {
         return;
     }
     let elmt: Element;
@@ -45,7 +45,7 @@ export function toggleClass(obj: Node|string|null,
 export function hasClass( obj: Node|string|null, 
                           cls: string|undefined) 
                           : boolean {
-    if (obj === null || cls === undefined) {
+    if (obj === null || obj === undefined || cls === undefined) {
         return false;
     }
     let elmt: Element;
@@ -998,7 +998,7 @@ function applyGlobalIndeces(elements:HTMLCollectionOf<Element>, suffix?:string) 
  * @param suffix The name of the index (optional)
  * @returns The index, or -1 if invalid
  */
-function getGlobalIndex(elmt:HTMLElement, suffix?:string):number {
+export function getGlobalIndex(elmt:HTMLElement, suffix?:string):number {
     if (elmt) {
         let attr = 'data-globalIndex';
         if (suffix != undefined) {
@@ -1010,6 +1010,23 @@ function getGlobalIndex(elmt:HTMLElement, suffix?:string):number {
         }
     }
     return -1;
+}
+
+/**
+ * Create a dictionary, mapping global indeces to the corresponding elements
+ * @param cls the class tag on all applicable elements
+ * @param suffix the optional suffix of the global indeces
+ */
+export function mapGlobalIndeces(cls:string, suffix?:string):object {
+    const map = {};
+    const elements = document.getElementsByClassName(cls);
+    for (let i = 0; i < elements.length; i++) {
+        const index = getGlobalIndex(elements[i] as HTMLElement, suffix);
+        if (index >= 0) {
+            map[index] = elements[String(i)] as HTMLElement;
+        }
+    }
+    return map;
 }
 
 /**
@@ -1062,6 +1079,14 @@ export function indexAllDrawableFields() {
 export function indexAllHighlightableFields() {
     const inputs = document.getElementsByClassName('can-highlight');
     applyGlobalIndeces(inputs, 'ch');
+}
+
+/**
+ * Assign globalIndeces to every vertex
+ */
+export function indexAllVertices() {
+    const inputs = document.getElementsByClassName('vertex');
+    applyGlobalIndeces(inputs, 'vx');
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -3164,21 +3189,6 @@ export function positionFromCenter(elmt:HTMLElement): DOMPoint {
 }
 
 /**
- * Convert a client position to an SVG point
- * @param elmt An element in an SVG
- * @param pos A position, in client coordinates
- * @returns an SVG position, in SVG coordinates
- */
-export function createSVGPoint(elmt:HTMLElement, pos:DOMPoint) {
-    const svg = findParentOfTag(elmt, 'SVG') as SVGSVGElement;
-    const rect = svg.getBoundingClientRect();
-    const spt = svg.createSVGPoint();
-    spt.x = pos.x - rect.left;
-    spt.y = pos.y - rect.top;
-    return spt;
-}
-
-/**
  * Find the square of the distance between a point and the mouse
  * @param elmt A position, in screen coordinates
  * @param evt A mouse event
@@ -3197,24 +3207,25 @@ export function distance2(pos:DOMPoint, pos2:DOMPoint): number {
 }
 
 // VOCABULARY
-// endpoint: any point that can anchor a straight edge
-// ruler-range: the potential drag range
-// ruler-path: a drawn line connecting one or more endpoints.
+// vertex: any point that can anchor a straight edge
+// straigh-edge-area: the potential drag range
+// ruler-path: a drawn line connecting one or more vertices.
 // 
 // Ruler ranges can have styles and rules.
 // Styles shape the straight edge, which can also be an outline
 // Rules dictate drop restrictions and the snap range
 
 /**
- * Scan the page for anything marked endpoint or ruler-range
+ * Scan the page for anything marked vertex or straigh-edge-area
  * Those items get click handlers
  */
 export function preprocessRulerFunctions() {
-    let elems = document.getElementsByClassName('ruler-range');
+    let elems = document.getElementsByClassName('straigh-edge-area');
     for (let i = 0; i < elems.length; i++) {
         preprocessRulerRange(elems[i] as HTMLElement);
     }
 
+    indexAllVertices();
     // TODO: make lines editable
 }
 
@@ -3237,8 +3248,9 @@ function preprocessRulerRange(elem:HTMLElement) {
     elem.ondragover=function(e){onRulerAllowed(e)};
 }
 
-type NearestEndpoint = {
-    endpoint: HTMLElement;
+type VertexData = {
+    vertex: HTMLElement;
+    index: number;
     centerPos: DOMPoint;
     centerPoint: SVGPoint;
     group: HTMLElement;
@@ -3249,17 +3261,19 @@ type RulerEventData = {
     container: HTMLElement;
     bounds: DOMRect;
     maxPoints: number;
+    canShareVertices: boolean;
     hoverRange: number;
     evtPos: DOMPoint;
     evtPoint: SVGPoint;
-    nearest?: NearestEndpoint;
+    nearest?: VertexData;
 }
 
 function getRulerData(evt:MouseEvent):RulerEventData {
-    const range = findParentOfClass(evt.target as Element, 'ruler-range') as HTMLElement;
+    const range = findParentOfClass(evt.target as Element, 'straigh-edge-area') as HTMLElement;
     const svg = findParentOfTag(range, 'SVG') as SVGSVGElement;
     const bounds = svg.getBoundingClientRect();
     const maxPoints = range.getAttributeNS('', 'data-max-points');
+    const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
     const hoverRange = range.getAttributeNS('', 'data-hover-range');
     const pos = new DOMPoint(evt.x, evt.y);
     let spt = svg.createSVGPoint();
@@ -3270,74 +3284,108 @@ function getRulerData(evt:MouseEvent):RulerEventData {
         container: range,
         bounds: bounds,
         maxPoints:maxPoints ? parseInt(maxPoints) : 2, 
+        canShareVertices:canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         hoverRange:hoverRange ? parseInt(hoverRange) : (bounds.width + bounds.height),
         evtPos: pos,
         evtPoint: spt,
     };
 
-    let near = findNearestEndpoint(data) as HTMLElement;
+    let near = findNearestVertex(data) as HTMLElement;
     if (near) {
-        data.nearest = {
-            endpoint: near,
-            group: (findParentOfClass(near, 'endpoint-g') as HTMLElement) || near,
-            centerPos: positionFromCenter(near),
-            centerPoint: svg.createSVGPoint()    
-        };
-        data.nearest.centerPoint.x = data.nearest.centerPos.x - bounds.left;
-        data.nearest.centerPoint.y = data.nearest.centerPos.y - bounds.top;
+        data.nearest = getVertexData(data, near);
     }
     return data;
 }
 
-let _nearestEndpoint:HTMLElement|null = null;
-let _straightLine:SVGPolylineElement|null = null;
-let _linePoints:HTMLElement[] = [];
+function getVertexData(ruler:RulerEventData, vert:HTMLElement):VertexData {
+    const data:VertexData = {
+        vertex: vert,
+        index: getGlobalIndex(vert, 'vx'),
+        group: (findParentOfClass(vert, 'vertex-g') as HTMLElement) || vert,
+        centerPos: positionFromCenter(vert),
+        centerPoint: ruler.svg.createSVGPoint()    
+    };
+    data.centerPoint.x = data.centerPos.x - ruler.bounds.left;
+    data.centerPoint.y = data.centerPos.y - ruler.bounds.top;
+    return data;
+}
+
+/**
+ * All straight edges on the page, except for the one under construction
+ */
+let _straightEdges:SVGPolylineElement[] = [];
+/**
+ * The nearest vertex, if being affected by hover
+ */
+let _hoverEndpoint:HTMLElement|null = null;
+/**
+ * A straight edge under construction
+ */
+let _straightEdgeBuilder:SVGPolylineElement|null = null;
+/**
+ * The vertices that are part of the straight edge under construction
+ */
+let _straightEdgeVertices:HTMLElement[] = [];
+/**
+ * If an edge is under construction, does it have a free end?
+ */
+let _straightEdgeFreeEnd:boolean = false;
 
 function onRulerHover(evt:MouseEvent) {
     const ruler = getRulerData(evt);
     if (!ruler) {
         return;
     }
-    if (ruler.nearest && isInLine(ruler.nearest.endpoint)) {
+    const inLineIndex = ruler.nearest ? indexInLine(ruler.nearest.vertex) : -1;
+    if (_straightEdgeBuilder && inLineIndex >= 0) {
+        if (inLineIndex == _straightEdgeVertices.length - 2) {
+            // Dragging back to the start contracts the line
+            _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
+            toggleClass(_straightEdgeVertices[ruler.maxPoints - 1], 'building', false);
+            _straightEdgeVertices.splice(ruler.maxPoints - 1, 1);
+        }
+        // Hoving near any other index is ignored
         return;
     }
-    if (ruler.nearest && _straightLine) {
-        if (_linePoints.length >= ruler.maxPoints) {
-            _straightLine.points.removeItem(ruler.maxPoints - 1);
-            _linePoints.splice(ruler.maxPoints - 1, 1);
+    if (ruler.nearest && _straightEdgeBuilder) {
+        // Drawing out straight-edges
+        if (_straightEdgeVertices.length >= ruler.maxPoints) {
+            _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
+            toggleClass(_straightEdgeVertices[ruler.maxPoints - 1], 'building', false);
+            _straightEdgeVertices.splice(ruler.maxPoints - 1, 1);
         }
         // Extend to new point
-        _linePoints.push(ruler.nearest.endpoint);
-        _straightLine.points.appendItem(ruler.nearest.centerPoint);
+        snapStraightLineTo(ruler, ruler.nearest);
     }
     else {
-        if (ruler.nearest?.group != _nearestEndpoint) {
-            toggleClass(_nearestEndpoint, 'hover', false);
+        // Hovering near a point
+        if (ruler.nearest?.group != _hoverEndpoint) {
+            toggleClass(_hoverEndpoint, 'hover', false);
             toggleClass(ruler.nearest?.group as HTMLElement, 'hover', true);
-            _nearestEndpoint = ruler.nearest?.group || null;
+            _hoverEndpoint = ruler.nearest?.group || null;
         }
     }
 }
 
 /**
- * Checks to see if an endpoint is already in the current straightline
- * @param end an endpoint
- * @returns true if that endpoint is already in the polyline
+ * Checks to see if an vertex is already in the current straightline
+ * @param end an vertex
+ * @returns The index of this element in the straight edge
  */
-function isInLine(end: HTMLElement):boolean {
-    if (!_linePoints || !end) {
-        return false;
+function indexInLine(end: HTMLElement):number {
+    if (!_straightEdgeVertices || !end) {
+        return -1;
     }
-    for (let i = 0; i < _linePoints.length; i++) {
-        if (_linePoints[i] == end) {
-            return true;
+    for (let i = 0; i < _straightEdgeVertices.length; i++) {
+        if (_straightEdgeVertices[i] == end) {
+            return i;
         }
     }
-    return false;
+    return -1;
 }
 
 /**
- * Mouse down over an endpoint
+ * Mouse down over an vertex
  * @param evt Mouse down event
  */
 function onLineStart(evt:MouseEvent) {
@@ -3346,37 +3394,119 @@ function onLineStart(evt:MouseEvent) {
         return;
     }
 
-    _linePoints = [];
-    _linePoints.push(ruler.nearest.endpoint);
+    if (!ruler.canShareVertices && hasClass(ruler.nearest.vertex, 'has-line')) {
+        // User has clicked a point that already has a line
+        // Re-select it
+        const edge = findStraightEdgeFromVertex(ruler.nearest.index);
+        if (edge) {
+            deleteStraightEdge(edge);
+            // Find the other end of this edge
+            const vertices = findStraightEdgeVertices(edge);
+            if (vertices.length == 2) {
+                if (vertices[0] == ruler.nearest.vertex) {
+                    createStraightLineFrom(ruler, getVertexData(ruler, vertices[1]));
+                }
+                else {
+                    createStraightLineFrom(ruler, getVertexData(ruler, vertices[0]));
+                }
+                snapStraightLineTo(ruler, ruler.nearest);
+                return;
+            }
+        }
+    }
 
-    _straightLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline') as SVGPolylineElement;
-    toggleClass(_straightLine, 'straight-line');
-    _straightLine.points.appendItem(ruler.nearest.centerPoint);
-    ruler.container.appendChild(_straightLine);
+    createStraightLineFrom(ruler, ruler.nearest);
+}
 
-    toggleClass(_nearestEndpoint, 'hover', false);
-    _nearestEndpoint = null;
+function createStraightLineFrom(ruler:RulerEventData, start:VertexData) {
+    _straightEdgeVertices = [];
+    _straightEdgeVertices.push(start.vertex);
+
+    _straightEdgeBuilder = document.createElementNS('http://www.w3.org/2000/svg', 'polyline') as SVGPolylineElement;
+    toggleClass(_straightEdgeBuilder, 'straight-edge', true);
+    toggleClass(_straightEdgeBuilder, 'building', true);
+    toggleClass(start.vertex, 'building', true);
+    _straightEdgeBuilder.points.appendItem(start.centerPoint);
+    ruler.container.appendChild(_straightEdgeBuilder);
+
+    toggleClass(_hoverEndpoint, 'hover', false);
+    _hoverEndpoint = null;
+}
+
+function snapStraightLineTo(ruler:RulerEventData, next:VertexData) {
+    _straightEdgeVertices.push(next.vertex);
+    _straightEdgeBuilder?.points.appendItem(next.centerPoint);
+    toggleClass(next.vertex, 'building', true);
+}
+
+function freeStraightLineTo(ruler:RulerEventData, evt:MouseEvent) {
+    const pos = new DOMPoint(evt.x, evt.y);
+    const spt = ruler.svg.createSVGPoint();
+        spt.x = pos.x - ruler.bounds.left;
+        spt.y = pos.y - ruler.bounds.top;
+    _straightEdgeBuilder?.points.appendItem(spt);
+}
+
+function deleteStraightEdge(edge:SVGPolylineElement) {
+    for (let i = 0; i < _straightEdges.length; i++) {
+        if (_straightEdges[i] === edge) {
+            _straightEdges.splice(i, 1);
+            break;
+        }
+    }
+    edge.parentNode?.removeChild(edge);
 }
 
 function onLineUp(evt:MouseEvent) {
-    if (_straightLine) {
-        const range = findParentOfClass(_straightLine, 'ruler-range') as HTMLElement;
-        range.removeChild(_straightLine);
-        _straightLine = null;
-        _linePoints = [];
+    const ruler = getRulerData(evt);
+    if (!ruler) {
+        return;
     }
+    if (_straightEdgeBuilder) {
+        if (_straightEdgeVertices.length < 2) {
+            // Incomplete. Abandon
+            const range = findParentOfClass(_straightEdgeBuilder, 'straigh-edge-area') as HTMLElement;
+            range.removeChild(_straightEdgeBuilder);
+            _straightEdgeBuilder = null;
+        }
+        else {
+            if (_straightEdgeFreeEnd) {
+                _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
+            }
+            if (_straightEdgeBuilder.points.length != _straightEdgeVertices.length) {  // isDebug() && 
+                throw new DOMException('Straight edge parts are out of sync');
+            }
+        }
+    }
+
+    const indeces:number[] = [];
+    for (let i = 0; i < _straightEdgeVertices.length; i++) {
+        toggleClass(_straightEdgeVertices[i], 'building', false);
+        toggleClass(_straightEdgeVertices[i], 'has-line', _straightEdgeBuilder != null);
+        indeces.push(getGlobalIndex(_straightEdgeVertices[i], 'vx'));
+    }
+
+    if (_straightEdgeBuilder) {
+        toggleClass(_straightEdgeBuilder, 'building', false);
+        _straightEdgeBuilder?.setAttributeNS('', 'data-vertices', ','+indeces.join(',')+',');
+        _straightEdges.push(_straightEdgeBuilder);
+    }
+
+    _straightEdgeVertices = [];
+    _straightEdgeBuilder = null;
+    _straightEdgeFreeEnd = false;
 }
 
 function onRulerAllowed(evt:MouseEvent) {
     
 }
 
-function findNearestEndpoint(data:RulerEventData):Element|null {
+function findNearestVertex(data:RulerEventData):Element|null {
     let min = data.hoverRange * data.hoverRange;
-    const endpoints = data.container.getElementsByClassName('endpoint');
+    const vertices = data.container.getElementsByClassName('vertex');
     let nearest:HTMLElement|null = null;
-    for (let i = 0; i < endpoints.length; i++) {
-        const end = endpoints[i] as HTMLElement;
+    for (let i = 0; i < vertices.length; i++) {
+        const end = vertices[i] as HTMLElement;
         const center = positionFromCenter(end);
         const dist = distance2(center, data.evtPos);
         if (min < 0 || dist < min) {
@@ -3385,6 +3515,35 @@ function findNearestEndpoint(data:RulerEventData):Element|null {
         }
     }
     return nearest;
+}
+
+function findStraightEdgeFromVertex(index:number):SVGPolylineElement|null {
+    const pat = ',' + String(index) + ',';
+    const edges = document.getElementsByClassName('straight-edge');
+    for (let i = 0; i < edges.length; i++) {
+        const edge = edges[i] as SVGPolylineElement;
+        const indexList = edge.getAttributeNS('', 'data-vertices')
+        if (indexList && indexList.search(pat) >= 0) {
+            return edge;
+        };
+    }
+    return null;
+}
+
+function findStraightEdgeVertices(edge:SVGPolylineElement):HTMLElement[] {
+    const indexList = edge.getAttributeNS('', 'data-vertices')
+    const vertices:HTMLElement[] = [];
+    const indeces = indexList?.split(',');
+    if (indeces) {
+        const map = mapGlobalIndeces('vertex', 'vx');
+        for (var i = 0; i < indeces.length; i++) {
+            if (indeces[i]) {
+                const vertex = map[indeces[i]];
+                vertices.push(vertex);
+            }
+        }        
+    }
+    return vertices;
 }
 
 /*-----------------------------------------------------------
@@ -3737,8 +3896,8 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions();
-        //indexAllStraightEdges();
-        //linkCss(head, 'Css/DrawTools.css');
+        linkCss(head, 'Css/StraightEdge.css');
+        //indexAllVertices();
         // No ability icon
     }
     if (data.notes) {

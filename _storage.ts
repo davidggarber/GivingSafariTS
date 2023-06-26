@@ -343,7 +343,7 @@ function applyGlobalIndeces(elements:HTMLCollectionOf<Element>, suffix?:string) 
  * @param suffix The name of the index (optional)
  * @returns The index, or -1 if invalid
  */
-function getGlobalIndex(elmt:HTMLElement, suffix?:string):number {
+export function getGlobalIndex(elmt:HTMLElement, suffix?:string):number {
     if (elmt) {
         let attr = 'data-globalIndex';
         if (suffix != undefined) {
@@ -355,6 +355,23 @@ function getGlobalIndex(elmt:HTMLElement, suffix?:string):number {
         }
     }
     return -1;
+}
+
+/**
+ * Create a dictionary, mapping global indeces to the corresponding elements
+ * @param cls the class tag on all applicable elements
+ * @param suffix the optional suffix of the global indeces
+ */
+export function mapGlobalIndeces(cls:string, suffix?:string):object {
+    const map = {};
+    const elements = document.getElementsByClassName(cls);
+    for (let i = 0; i < elements.length; i++) {
+        const index = getGlobalIndex(elements[i] as HTMLElement, suffix);
+        if (index >= 0) {
+            map[index] = elements[String(i)] as HTMLElement;
+        }
+    }
+    return map;
 }
 
 /**
@@ -407,6 +424,14 @@ export function indexAllDrawableFields() {
 export function indexAllHighlightableFields() {
     const inputs = document.getElementsByClassName('can-highlight');
     applyGlobalIndeces(inputs, 'ch');
+}
+
+/**
+ * Assign globalIndeces to every vertex
+ */
+export function indexAllVertices() {
+    const inputs = document.getElementsByClassName('vertex');
+    applyGlobalIndeces(inputs, 'vx');
 }
 
 ////////////////////////////////////////////////////////////////////////

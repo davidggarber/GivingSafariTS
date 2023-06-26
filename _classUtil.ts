@@ -4,10 +4,10 @@
  * @param cls - A class name to toggle (unless null)
  * @param bool - If omitted, cls is toggled in the classList; if true, cls is added; if false, cls is removed
  */
-export function toggleClass(obj: Node|string|null, 
+export function toggleClass(obj: Node|string|null|undefined, 
                             cls: string|null, 
                             bool?: boolean) {
-    if (obj === null || cls === null || cls === undefined) {
+    if (obj === null || obj === undefined || cls === null || cls === undefined) {
         return;
     }
     let elmt: Element;
@@ -39,7 +39,7 @@ export function toggleClass(obj: Node|string|null,
 export function hasClass( obj: Node|string|null, 
                           cls: string|undefined) 
                           : boolean {
-    if (obj === null || cls === undefined) {
+    if (obj === null || obj === undefined || cls === undefined) {
         return false;
     }
     let elmt: Element;

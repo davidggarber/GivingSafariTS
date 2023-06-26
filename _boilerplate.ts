@@ -352,8 +352,8 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions();
-        //indexAllStraightEdges();
-        //linkCss(head, 'Css/DrawTools.css');
+        linkCss(head, 'Css/StraightEdge.css');
+        //indexAllVertices();
         // No ability icon
     }
     if (data.notes) {
