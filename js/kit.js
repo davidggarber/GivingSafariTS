@@ -3299,12 +3299,25 @@ function isIFrame() {
     return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
 }
 exports.isIFrame = isIFrame;
-var safariDetails = {
+var safariSampleDetails = {
+    'title': 'Puzzle Safari',
+    'logo': './Images/Sample_Logo.png',
+    'icon': './Images/Sample_Icon.png',
+    'puzzleList': './index.html',
+    'fontCss': './Css/Fonts.css'
+};
+var safari20Details = {
     'title': 'Safari Labs',
     'logo': './Images/PS20 logo.png',
     'icon': './Images/Beaker_icon.png',
-    'puzzleList': './indexx.html'
+    'puzzleList': './indexx.html',
+    'fontCss': './Css/20.css'
 };
+var pastSafaris = {
+    'Sample': safariSampleDetails,
+    '20': safari20Details,
+};
+var safariDetails;
 /**
  * Return the details of this puzzle event
  */
@@ -3317,6 +3330,7 @@ exports.getSafariDetails = getSafariDetails;
  * @param bp
  */
 function preSetup(bp) {
+    safariDetails = pastSafaris[bp.safari];
     debugSetup();
     if (isIFrame()) {
         var bodies = document.getElementsByTagName('BODY');
@@ -3429,6 +3443,7 @@ function boilerplate(bp) {
     viewport.name = 'viewport';
     viewport.content = 'width=device-width, initial-scale=1';
     head.appendChild(viewport);
+    linkCss(head, safariDetails.fontCss);
     linkCss(head, 'Css/PageSizes.css');
     linkCss(head, 'Css/TextInput.css');
     toggleClass(body, bp['paperSize'] || 'letter');
@@ -3527,14 +3542,12 @@ function setupAbilities(head, margins, data) {
         preprocessRulerFunctions('straight-edge');
         linkCss(head, 'Css/StraightEdge.css');
         //indexAllVertices();
-        // No ability icon
     }
     else if (data.wordSearch) {
-        fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">📐</span>';
+        fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
         preprocessRulerFunctions('word-select');
         linkCss(head, 'Css/WordSearch.css');
         //indexAllVertices();
-        // No ability icon
     }
     if (data.notes) {
         setupNotes(margins);

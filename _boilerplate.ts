@@ -68,14 +68,31 @@ type PuzzleEventDetails = {
     logo: string;  // path from root
     icon: string;  // path from root
     puzzleList: string;
+    fontCss: string;  // path from root
 }
 
-const safariDetails:PuzzleEventDetails = {
+const safariSampleDetails:PuzzleEventDetails = {
+    'title': 'Puzzle Safari',
+    'logo': './Images/Sample_Logo.png',
+    'icon': './Images/Sample_Icon.png',
+    'puzzleList': './index.html',
+    'fontCss': './Css/Fonts.css'
+}
+
+const safari20Details:PuzzleEventDetails = {
     'title': 'Safari Labs',
     'logo': './Images/PS20 logo.png',
     'icon': './Images/Beaker_icon.png',
-    'puzzleList': './indexx.html'
+    'puzzleList': './indexx.html',
+    'fontCss': './Css/20.css'
 }
+
+const pastSafaris = {
+    'Sample': safariSampleDetails,
+    '20': safari20Details,
+}
+
+let safariDetails:PuzzleEventDetails;
 
 /**
  * Return the details of this puzzle event
@@ -97,6 +114,7 @@ type AbilityData = {
 }
 
 type BoilerPlateData = {
+    safari: string;  // key for Safari details
     title: string;
     author: string;
     copyright: string;
@@ -115,6 +133,7 @@ type BoilerPlateData = {
  * @param bp 
  */
 function preSetup(bp:BoilerPlateData) {
+    safariDetails = pastSafaris[bp.safari];
     debugSetup();
     if (isIFrame()) {
         var bodies = document.getElementsByTagName('BODY');
@@ -249,6 +268,7 @@ function boilerplate(bp: BoilerPlateData) {
     viewport.content = 'width=device-width, initial-scale=1'
     head.appendChild(viewport);
 
+    linkCss(head, safariDetails.fontCss);
     linkCss(head, 'Css/PageSizes.css');
     linkCss(head, 'Css/TextInput.css');
     toggleClass(body, bp['paperSize'] || 'letter');
@@ -356,14 +376,12 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         preprocessRulerFunctions('straight-edge');
         linkCss(head, 'Css/StraightEdge.css');
         //indexAllVertices();
-        // No ability icon
     }
     else if (data.wordSearch) {
-        fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">📐</span>';
+        fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
         preprocessRulerFunctions('word-select');
         linkCss(head, 'Css/WordSearch.css');
         //indexAllVertices();
-        // No ability icon
     }
     if (data.notes) {
         setupNotes(margins);

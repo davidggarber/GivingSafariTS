@@ -1,0 +1,265 @@
+.letter-cell {
+  display: inline-block;
+  position: relative;
+  width: 1em;
+  height: 3ex;
+  text-align: center;
+}
+
+.letter-hover:hover {
+  border: dotted 1px #999;
+}
+
+.literal.letter-hover:hover {
+  border: none;
+}
+
+.literal-underline {
+  border-bottom: solid 1px black;
+  margin-right: 0.05in;
+}
+
+.letter-underline {
+  border-bottom: solid 1px black;
+  margin-right: 0.05in;
+}
+
+.letter-box {
+  border: solid 1px black;
+  margin-left: -1px;
+  height: 2.5ex;
+}
+
+.letter-grid {
+  width: 4ex;
+  height: 4ex;
+  border: solid 1px black;
+  margin-left: -1px;
+}
+
+.block {
+  background-color: #7f7f7f;
+}
+
+.under-number {
+  display: block;
+  position: absolute;
+  bottom: -1.4em;
+  width: 100%;
+  text-align: center;
+  color: black;
+}
+
+.extract-box {
+  border: solid 1px black;
+}
+
+@media screen {
+  .extract-highlight {
+      background-color: #cccccc;
+  }
+}
+@media print {
+  .extract-highlight {
+      background-color: #999999;
+  }
+}
+
+.extract-bold .letter-input {
+  font-weight: 900;
+  color: #cc0000;
+}
+
+.extract-underline {
+  border-bottom: solid 2.5px black;
+}
+.letter-input {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background-color: transparent;
+  padding: 0px;
+  border: none;
+  color: red;
+  font-family: inherit;
+  font-size: inherit;
+  text-transform: uppercase;
+}
+
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.letter-literal {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 0.5em;
+  font-family: 'Verdana', cursive;
+  font-size: 10pt;
+  color: black;
+  
+}
+
+.extract-image {
+  position: absolute;
+  width: 105%;
+  height: 107%;
+  left: -1px;
+  top: -1px;
+  z-index: 0;
+}
+
+.letter-grid .extract-image {
+  height: 105%;
+}
+
+#extracted {
+  letter-spacing: .2rem;
+  color: #ff0099;
+}
+.extractor-input {
+  color: #ff0099;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.debug #extracted {
+  box-shadow:0px 0px 15px #00cc00; 
+}
+
+#extracted .under-number {
+  letter-spacing: normal;
+}
+
+.notes-abs {
+  position: absolute;
+}
+
+.notes-above {
+  position: relative;
+}
+
+.notes-below {
+  position: relative;
+}
+
+.note-input {
+  display: none;
+  height: 0.28in;
+  background-color: transparent;
+  font-weight: 100;
+  font-style: italic;
+  border: none;
+  color: #b97800;
+  cursor: alias;
+}
+
+.note-input.note-above {
+  position: absolute;
+  top: -2em;
+  width: 100%;
+  left: 0px;
+  text-align: center;
+}
+
+.note-input.note-below {
+  position: absolute;
+  bottom: -2em;
+  width: 100%;
+  left: 0px;
+  text-align: center;
+}
+
+.enable-notes .note-input {
+  display: inline-block;
+}
+
+.show-notes .note-input {
+  display: inline-block;
+  box-shadow:0px 0px 5px orange; 
+}
+
+.enable-notes .note-input {
+  border:dotted 1px #cccccc; 
+}
+
+.debug.enable-notes .note-input {
+  box-shadow:0px 0px 2px #cccccc; 
+}
+
+.check {
+  display: none;
+  position: absolute;
+  font-size: 16pt;
+  left: -0.6em;
+  top:-0.5em;
+  width: 1em;
+}
+
+.crossed-off .check {
+  display: inline-block;
+}
+
+.cross-off {
+  cursor: pointer;
+}
+
+.extract-image {
+  z-index: 0;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+input {
+  z-index: 100;
+}
+
+.word-input {
+  width: 1.5in;
+  text-align: center;
+  background-color: transparent;
+  padding: 0px;
+  border: none;
+  color: red;
+  font-family: inherit;
+  font-size: inherit;
+  text-transform: uppercase;
+}
+
+.word-input.word-underline {
+  border-bottom: solid 1px black;
+}
+
+.word-input.word-dotted {
+  border-bottom: dotted 1px black;
+}
+
+.word-input.word-box {
+  border: solid 1px black;
+}
+
+.highlighted {
+  background-color: yellow;
+}
+
+#ability {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
