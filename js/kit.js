@@ -2960,6 +2960,7 @@ function getRulerData(evt) {
     var maxPoints = range.getAttributeNS('', 'data-max-points');
     var canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
     var hoverRange = range.getAttributeNS('', 'data-hover-range');
+    var showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
     var pos = new DOMPoint(evt.x, evt.y);
     var spt = svg.createSVGPoint();
     spt.x = pos.x - bounds.left;
@@ -2971,6 +2972,7 @@ function getRulerData(evt) {
         maxPoints: maxPoints ? parseInt(maxPoints) : 2,
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         hoverRange: hoverRange ? parseInt(hoverRange) : (bounds.width + bounds.height),
+        showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() == 'true') : false,
         evtPos: pos,
         evtPoint: spt,
     };
@@ -3008,10 +3010,6 @@ var _straightEdgeBuilder = null;
  * The vertices that are part of the straight edge under construction
  */
 var _straightEdgeVertices = [];
-/**
- * If an edge is under construction, does it have a free end?
- */
-var _straightEdgeFreeEnd = false;
 function onRulerHover(evt) {
     var _a, _b, _c;
     var ruler = getRulerData(evt);
@@ -3029,15 +3027,28 @@ function onRulerHover(evt) {
         // Hoving near any other index is ignored
         return;
     }
-    if (ruler.nearest && _straightEdgeBuilder) {
-        // Drawing out straight-edges
-        if (_straightEdgeVertices.length >= ruler.maxPoints) {
-            _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
-            toggleClass(_straightEdgeVertices[ruler.maxPoints - 1], 'building', false);
-            _straightEdgeVertices.splice(ruler.maxPoints - 1, 1);
+    if (_straightEdgeBuilder) {
+        // Extending a straight-edge that we've already started
+        if (ruler.nearest || ruler.showOpenDrag) {
+            if (_straightEdgeBuilder.points.length >= ruler.maxPoints) {
+                if (_straightEdgeVertices.length == _straightEdgeBuilder.points.length) {
+                    toggleClass(_straightEdgeVertices[ruler.maxPoints - 1], 'building', false);
+                    _straightEdgeVertices.splice(ruler.maxPoints - 1, 1);
+                }
+                _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
+            }
         }
-        // Extend to new point
-        snapStraightLineTo(ruler, ruler.nearest);
+        if (_straightEdgeVertices.length < ruler.maxPoints) {
+            if (ruler.nearest) {
+                // Extend to new point
+                toggleClass(_straightEdgeBuilder, 'open-ended', false);
+                snapStraightLineTo(ruler, ruler.nearest);
+            }
+            else if (ruler.showOpenDrag) {
+                toggleClass(_straightEdgeBuilder, 'open-ended', true);
+                openStraightLineTo(ruler);
+            }
+        }
     }
     else {
         // Hovering near a point
@@ -3047,22 +3058,6 @@ function onRulerHover(evt) {
             _hoverEndpoint = ((_c = ruler.nearest) === null || _c === void 0 ? void 0 : _c.group) || null;
         }
     }
-}
-/**
- * Checks to see if an vertex is already in the current straightline
- * @param end an vertex
- * @returns The index of this element in the straight edge
- */
-function indexInLine(end) {
-    if (!_straightEdgeVertices || !end) {
-        return -1;
-    }
-    for (var i = 0; i < _straightEdgeVertices.length; i++) {
-        if (_straightEdgeVertices[i] == end) {
-            return i;
-        }
-    }
-    return -1;
 }
 /**
  * Mouse down over an vertex
@@ -3095,6 +3090,40 @@ function onLineStart(evt) {
     }
     createStraightLineFrom(ruler, ruler.nearest);
 }
+function onLineUp(evt) {
+    var ruler = getRulerData(evt);
+    if (!ruler) {
+        return;
+    }
+    if (_straightEdgeBuilder) {
+        if (_straightEdgeVertices.length < 2) {
+            // Incomplete without at least two snapped ends. Abandon
+            var range = findParentOfClass(_straightEdgeBuilder, 'straigh-edge-area');
+            range.removeChild(_straightEdgeBuilder);
+            _straightEdgeBuilder = null;
+        }
+        else {
+            if (_straightEdgeBuilder.points.length > _straightEdgeVertices.length) {
+                // Remove open-end
+                _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
+                toggleClass(_straightEdgeBuilder, 'open-ended', false);
+            }
+        }
+    }
+    var indeces = [];
+    for (var i = 0; i < _straightEdgeVertices.length; i++) {
+        toggleClass(_straightEdgeVertices[i], 'building', false);
+        toggleClass(_straightEdgeVertices[i], 'has-line', _straightEdgeBuilder != null);
+        indeces.push(getGlobalIndex(_straightEdgeVertices[i], 'vx'));
+    }
+    if (_straightEdgeBuilder) {
+        toggleClass(_straightEdgeBuilder, 'building', false);
+        _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.setAttributeNS('', 'data-vertices', ',' + indeces.join(',') + ',');
+        _straightEdges.push(_straightEdgeBuilder);
+    }
+    _straightEdgeVertices = [];
+    _straightEdgeBuilder = null;
+}
 function createStraightLineFrom(ruler, start) {
     _straightEdgeVertices = [];
     _straightEdgeVertices.push(start.vertex);
@@ -3112,12 +3141,24 @@ function snapStraightLineTo(ruler, next) {
     _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.points.appendItem(next.centerPoint);
     toggleClass(next.vertex, 'building', true);
 }
-function freeStraightLineTo(ruler, evt) {
-    var pos = new DOMPoint(evt.x, evt.y);
-    var spt = ruler.svg.createSVGPoint();
-    spt.x = pos.x - ruler.bounds.left;
-    spt.y = pos.y - ruler.bounds.top;
-    _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.points.appendItem(spt);
+function openStraightLineTo(ruler) {
+    _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.points.appendItem(ruler.evtPoint);
+}
+/**
+ * Checks to see if an vertex is already in the current straightline
+ * @param end an vertex
+ * @returns The index of this element in the straight edge
+ */
+function indexInLine(end) {
+    if (!_straightEdgeVertices || !end) {
+        return -1;
+    }
+    for (var i = 0; i < _straightEdgeVertices.length; i++) {
+        if (_straightEdgeVertices[i] == end) {
+            return i;
+        }
+    }
+    return -1;
 }
 function deleteStraightEdge(edge) {
     var _a;
@@ -3128,42 +3169,6 @@ function deleteStraightEdge(edge) {
         }
     }
     (_a = edge.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(edge);
-}
-function onLineUp(evt) {
-    var ruler = getRulerData(evt);
-    if (!ruler) {
-        return;
-    }
-    if (_straightEdgeBuilder) {
-        if (_straightEdgeVertices.length < 2) {
-            // Incomplete. Abandon
-            var range = findParentOfClass(_straightEdgeBuilder, 'straigh-edge-area');
-            range.removeChild(_straightEdgeBuilder);
-            _straightEdgeBuilder = null;
-        }
-        else {
-            if (_straightEdgeFreeEnd) {
-                _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
-            }
-            if (_straightEdgeBuilder.points.length != _straightEdgeVertices.length) { // isDebug() && 
-                throw new DOMException('Straight edge parts are out of sync');
-            }
-        }
-    }
-    var indeces = [];
-    for (var i = 0; i < _straightEdgeVertices.length; i++) {
-        toggleClass(_straightEdgeVertices[i], 'building', false);
-        toggleClass(_straightEdgeVertices[i], 'has-line', _straightEdgeBuilder != null);
-        indeces.push(getGlobalIndex(_straightEdgeVertices[i], 'vx'));
-    }
-    if (_straightEdgeBuilder) {
-        toggleClass(_straightEdgeBuilder, 'building', false);
-        _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.setAttributeNS('', 'data-vertices', ',' + indeces.join(',') + ',');
-        _straightEdges.push(_straightEdgeBuilder);
-    }
-    _straightEdgeVertices = [];
-    _straightEdgeBuilder = null;
-    _straightEdgeFreeEnd = false;
 }
 function onRulerAllowed(evt) {
 }

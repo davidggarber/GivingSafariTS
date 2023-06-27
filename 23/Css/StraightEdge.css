@@ -17,6 +17,9 @@
   stroke: red;
   stroke-width: 4px;
 }
+.straight-edge.building.open-ended {
+  stroke-width: 3px;
+}
 .vertex.building {
   stroke:red;
   stroke-width: 1px;
