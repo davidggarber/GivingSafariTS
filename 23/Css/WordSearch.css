@@ -1,0 +1,34 @@
+.vertex-g {
+  z-index: 100;
+}
+.vertex {
+  z-index: 101;
+}
+
+.word-select-area .vertex {
+  fill:none;
+}
+.word-select-area .hover .vertex {
+  fill:#ffff9999;
+}
+.word-select-area .hover text {
+  text-shadow: 2px 2px #ccc;
+}
+.word-select {
+  stroke:#ff000033;
+  stroke-width: 34px;
+  stroke-linecap: round;
+  fill: none;
+  z-index: 1;
+}
+.word-select.building {
+  stroke: #ff000066;
+  z-index: 10;
+}
+.word-select.building.open-ended {
+  stroke: #ff550066;
+  stroke-width: 25px;
+}
+.vertex.building {
+  stroke:red;
+}

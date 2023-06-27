@@ -1,11 +1,11 @@
-.straigh-edge-area .vertex {
+.straight-edge-area .vertex {
   fill:black;
   stroke:none;
 }
-.straigh-edge-area .hover .vertex {
+.straight-edge-area .hover .vertex {
   fill:red;
 }
-.straigh-edge-area .hover text {
+.straight-edge-area .hover text {
   stroke:red;
 }
 .straight-edge {

@@ -2917,18 +2917,21 @@ function distance2(pos, pos2) {
 exports.distance2 = distance2;
 // VOCABULARY
 // vertex: any point that can anchor a straight edge
-// straigh-edge-area: the potential drag range
+// straight-edge-area: the potential drag range
 // ruler-path: a drawn line connecting one or more vertices.
 // 
 // Ruler ranges can have styles and rules.
 // Styles shape the straight edge, which can also be an outline
 // Rules dictate drop restrictions and the snap range
 /**
- * Scan the page for anything marked vertex or straigh-edge-area
+ * Scan the page for anything marked vertex or straight-edge-area
  * Those items get click handlers
+ * @param areaCls the class name of the root SVG for drawing straight edges
  */
-function preprocessRulerFunctions() {
-    var elems = document.getElementsByClassName('straigh-edge-area');
+function preprocessRulerFunctions(mode) {
+    selector_class = mode;
+    container_class = mode + '-area';
+    var elems = document.getElementsByClassName(container_class);
     for (var i = 0; i < elems.length; i++) {
         preprocessRulerRange(elems[i]);
     }
@@ -2953,13 +2956,16 @@ function preprocessRulerRange(elem) {
     elem.ondragenter = function (e) { onRulerAllowed(e); };
     elem.ondragover = function (e) { onRulerAllowed(e); };
 }
+var selector_class;
+var container_class;
 function getRulerData(evt) {
-    var range = findParentOfClass(evt.target, 'straigh-edge-area');
+    var range = findParentOfClass(evt.target, container_class);
     var svg = findParentOfTag(range, 'SVG');
     var bounds = svg.getBoundingClientRect();
     var maxPoints = range.getAttributeNS('', 'data-max-points');
     var canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
     var hoverRange = range.getAttributeNS('', 'data-hover-range');
+    var angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
     var showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
     var pos = new DOMPoint(evt.x, evt.y);
     var spt = svg.createSVGPoint();
@@ -2972,6 +2978,7 @@ function getRulerData(evt) {
         maxPoints: maxPoints ? parseInt(maxPoints) : 2,
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         hoverRange: hoverRange ? parseInt(hoverRange) : (bounds.width + bounds.height),
+        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() == 'true') : false,
         evtPos: pos,
         evtPoint: spt,
@@ -3020,9 +3027,9 @@ function onRulerHover(evt) {
     if (_straightEdgeBuilder && inLineIndex >= 0) {
         if (inLineIndex == _straightEdgeVertices.length - 2) {
             // Dragging back to the start contracts the line
-            _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
-            toggleClass(_straightEdgeVertices[ruler.maxPoints - 1], 'building', false);
-            _straightEdgeVertices.splice(ruler.maxPoints - 1, 1);
+            _straightEdgeBuilder.points.removeItem(inLineIndex + 1);
+            toggleClass(_straightEdgeVertices[inLineIndex + 1], 'building', false);
+            _straightEdgeVertices.splice(inLineIndex + 1, 1);
         }
         // Hoving near any other index is ignored
         return;
@@ -3037,9 +3044,13 @@ function onRulerHover(evt) {
                 }
                 _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
             }
+            else if (_straightEdgeVertices.length < _straightEdgeBuilder.points.length) {
+                // Always remove the last open end
+                _straightEdgeBuilder.points.removeItem(_straightEdgeBuilder.points.length - 1);
+            }
         }
         if (_straightEdgeVertices.length < ruler.maxPoints) {
-            if (ruler.nearest) {
+            if (ruler.nearest && isReachable(ruler, ruler.nearest)) {
                 // Extend to new point
                 toggleClass(_straightEdgeBuilder, 'open-ended', false);
                 snapStraightLineTo(ruler, ruler.nearest);
@@ -3098,8 +3109,7 @@ function onLineUp(evt) {
     if (_straightEdgeBuilder) {
         if (_straightEdgeVertices.length < 2) {
             // Incomplete without at least two snapped ends. Abandon
-            var range = findParentOfClass(_straightEdgeBuilder, 'straigh-edge-area');
-            range.removeChild(_straightEdgeBuilder);
+            ruler.container.removeChild(_straightEdgeBuilder);
             _straightEdgeBuilder = null;
         }
         else {
@@ -3128,7 +3138,7 @@ function createStraightLineFrom(ruler, start) {
     _straightEdgeVertices = [];
     _straightEdgeVertices.push(start.vertex);
     _straightEdgeBuilder = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    toggleClass(_straightEdgeBuilder, 'straight-edge', true);
+    toggleClass(_straightEdgeBuilder, selector_class, true);
     toggleClass(_straightEdgeBuilder, 'building', true);
     toggleClass(start.vertex, 'building', true);
     _straightEdgeBuilder.points.appendItem(start.centerPoint);
@@ -3160,6 +3170,24 @@ function indexInLine(end) {
     }
     return -1;
 }
+function isReachable(data, vert) {
+    if (_straightEdgeVertices.length < 1) {
+        return false;
+    }
+    var prev = getVertexData(data, _straightEdgeVertices[_straightEdgeVertices.length - 1]);
+    var dx = vert.centerPos.x - prev.centerPos.x;
+    var dy = vert.centerPos.y - prev.centerPos.y;
+    if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) {
+        return false; // Can't re-select the previous point
+    }
+    else if (data.angleConstraints == undefined) {
+        return true; // Any other point is valid
+    }
+    var degrees = Math.atan2(dy, dx) * 180 / Math.PI;
+    var mult = degrees / data.angleConstraints;
+    var err = Math.abs(mult - Math.round(mult));
+    return err <= 0.1; // Within 10% of constraint angle pattern
+}
 function deleteStraightEdge(edge) {
     var _a;
     for (var i = 0; i < _straightEdges.length; i++) {
@@ -3189,7 +3217,7 @@ function findNearestVertex(data) {
 }
 function findStraightEdgeFromVertex(index) {
     var pat = ',' + String(index) + ',';
-    var edges = document.getElementsByClassName('straight-edge');
+    var edges = document.getElementsByClassName(selector_class);
     for (var i = 0; i < edges.length; i++) {
         var edge = edges[i];
         var indexList = edge.getAttributeNS('', 'data-vertices');
@@ -3495,9 +3523,16 @@ function setupAbilities(head, margins, data) {
         // No ability icon
     }
     if (data.straightEdge) {
-        fancy += '<span id="drag-ability" title="Line-drawer enabled" style="text-shadow: 0 0 3px black;">📐</span>';
-        preprocessRulerFunctions();
+        fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
+        preprocessRulerFunctions('straight-edge');
         linkCss(head, 'Css/StraightEdge.css');
+        //indexAllVertices();
+        // No ability icon
+    }
+    else if (data.wordSearch) {
+        fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">📐</span>';
+        preprocessRulerFunctions('word-select');
+        linkCss(head, 'Css/WordSearch.css');
         //indexAllVertices();
         // No ability icon
     }

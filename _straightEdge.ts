@@ -33,7 +33,7 @@ export function distance2(pos:DOMPoint, pos2:DOMPoint): number {
 
 // VOCABULARY
 // vertex: any point that can anchor a straight edge
-// straigh-edge-area: the potential drag range
+// straight-edge-area: the potential drag range
 // ruler-path: a drawn line connecting one or more vertices.
 // 
 // Ruler ranges can have styles and rules.
@@ -41,11 +41,14 @@ export function distance2(pos:DOMPoint, pos2:DOMPoint): number {
 // Rules dictate drop restrictions and the snap range
 
 /**
- * Scan the page for anything marked vertex or straigh-edge-area
+ * Scan the page for anything marked vertex or straight-edge-area
  * Those items get click handlers
+ * @param areaCls the class name of the root SVG for drawing straight edges
  */
-export function preprocessRulerFunctions() {
-    let elems = document.getElementsByClassName('straigh-edge-area');
+export function preprocessRulerFunctions(mode:string) {
+    selector_class = mode;
+    container_class = mode + '-area';
+    let elems = document.getElementsByClassName(container_class);
     for (let i = 0; i < elems.length; i++) {
         preprocessRulerRange(elems[i] as HTMLElement);
     }
@@ -73,6 +76,9 @@ function preprocessRulerRange(elem:HTMLElement) {
     elem.ondragover=function(e){onRulerAllowed(e)};
 }
 
+let selector_class:string;
+let container_class:string;
+
 type VertexData = {
     vertex: HTMLElement;
     index: number;
@@ -88,6 +94,7 @@ type RulerEventData = {
     maxPoints: number;
     canShareVertices: boolean;
     hoverRange: number;
+    angleConstraints?: number;
     showOpenDrag: boolean;
     evtPos: DOMPoint;
     evtPoint: SVGPoint;
@@ -95,12 +102,13 @@ type RulerEventData = {
 }
 
 function getRulerData(evt:MouseEvent):RulerEventData {
-    const range = findParentOfClass(evt.target as Element, 'straigh-edge-area') as HTMLElement;
+    const range = findParentOfClass(evt.target as Element, container_class) as HTMLElement;
     const svg = findParentOfTag(range, 'SVG') as SVGSVGElement;
     const bounds = svg.getBoundingClientRect();
     const maxPoints = range.getAttributeNS('', 'data-max-points');
     const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
     const hoverRange = range.getAttributeNS('', 'data-hover-range');
+    const angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
     const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
     const pos = new DOMPoint(evt.x, evt.y);
     let spt = svg.createSVGPoint();
@@ -113,6 +121,7 @@ function getRulerData(evt:MouseEvent):RulerEventData {
         maxPoints: maxPoints ? parseInt(maxPoints) : 2, 
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         hoverRange: hoverRange ? parseInt(hoverRange) : (bounds.width + bounds.height),
+        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() == 'true') : false,
         evtPos: pos,
         evtPoint: spt,
@@ -164,9 +173,9 @@ function onRulerHover(evt:MouseEvent) {
     if (_straightEdgeBuilder && inLineIndex >= 0) {
         if (inLineIndex == _straightEdgeVertices.length - 2) {
             // Dragging back to the start contracts the line
-            _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
-            toggleClass(_straightEdgeVertices[ruler.maxPoints - 1], 'building', false);
-            _straightEdgeVertices.splice(ruler.maxPoints - 1, 1);
+            _straightEdgeBuilder.points.removeItem(inLineIndex + 1);
+            toggleClass(_straightEdgeVertices[inLineIndex + 1], 'building', false);
+            _straightEdgeVertices.splice(inLineIndex + 1, 1);
         }
         // Hoving near any other index is ignored
         return;
@@ -181,9 +190,13 @@ function onRulerHover(evt:MouseEvent) {
                 }
                 _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
             }
+            else if (_straightEdgeVertices.length < _straightEdgeBuilder.points.length) {
+                // Always remove the last open end
+                _straightEdgeBuilder.points.removeItem(_straightEdgeBuilder.points.length - 1);
+            }
         }
         if (_straightEdgeVertices.length < ruler.maxPoints) {
-            if (ruler.nearest) {
+            if (ruler.nearest && isReachable(ruler, ruler.nearest)) {
                 // Extend to new point
                 toggleClass(_straightEdgeBuilder, 'open-ended', false);
                 snapStraightLineTo(ruler, ruler.nearest);
@@ -245,8 +258,7 @@ function onLineUp(evt:MouseEvent) {
     if (_straightEdgeBuilder) {
         if (_straightEdgeVertices.length < 2) {
             // Incomplete without at least two snapped ends. Abandon
-            const range = findParentOfClass(_straightEdgeBuilder, 'straigh-edge-area') as HTMLElement;
-            range.removeChild(_straightEdgeBuilder);
+            ruler.container.removeChild(_straightEdgeBuilder);
             _straightEdgeBuilder = null;
         }
         else {
@@ -280,7 +292,7 @@ function createStraightLineFrom(ruler:RulerEventData, start:VertexData) {
     _straightEdgeVertices.push(start.vertex);
 
     _straightEdgeBuilder = document.createElementNS('http://www.w3.org/2000/svg', 'polyline') as SVGPolylineElement;
-    toggleClass(_straightEdgeBuilder, 'straight-edge', true);
+    toggleClass(_straightEdgeBuilder, selector_class, true);
     toggleClass(_straightEdgeBuilder, 'building', true);
     toggleClass(start.vertex, 'building', true);
     _straightEdgeBuilder.points.appendItem(start.centerPoint);
@@ -317,6 +329,25 @@ function indexInLine(end: HTMLElement):number {
     return -1;
 }
 
+function isReachable(data:RulerEventData, vert: VertexData):boolean {
+    if (_straightEdgeVertices.length < 1) {
+        return false;
+    }
+    const prev = getVertexData(data, _straightEdgeVertices[_straightEdgeVertices.length - 1]);
+    const dx = vert.centerPos.x - prev.centerPos.x;
+    const dy = vert.centerPos.y - prev.centerPos.y;
+    if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) {
+        return false;  // Can't re-select the previous point
+    }
+    else if (data.angleConstraints == undefined) {
+        return true;  // Any other point is valid
+    }
+    const degrees = Math.atan2(dy, dx) * 180 / Math.PI;
+    const mult = degrees / data.angleConstraints;
+    const err = Math.abs(mult - Math.round(mult));
+    return err <= 0.1;  // Within 10% of constraint angle pattern
+}
+
 function deleteStraightEdge(edge:SVGPolylineElement) {
     for (let i = 0; i < _straightEdges.length; i++) {
         if (_straightEdges[i] === edge) {
@@ -349,7 +380,7 @@ function findNearestVertex(data:RulerEventData):Element|null {
 
 function findStraightEdgeFromVertex(index:number):SVGPolylineElement|null {
     const pat = ',' + String(index) + ',';
-    const edges = document.getElementsByClassName('straight-edge');
+    const edges = document.getElementsByClassName(selector_class);
     for (let i = 0; i < edges.length; i++) {
         const edge = edges[i] as SVGPolylineElement;
         const indexList = edge.getAttributeNS('', 'data-vertices')

@@ -93,6 +93,7 @@ type AbilityData = {
     dragDrop?: boolean;
     drawing?: boolean;
     straightEdge?: boolean;
+    wordSearch?: boolean;
 }
 
 type BoilerPlateData = {
@@ -352,8 +353,15 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
-        preprocessRulerFunctions();
+        preprocessRulerFunctions('straight-edge');
         linkCss(head, 'Css/StraightEdge.css');
+        //indexAllVertices();
+        // No ability icon
+    }
+    else if (data.wordSearch) {
+        fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">📐</span>';
+        preprocessRulerFunctions('word-select');
+        linkCss(head, 'Css/WordSearch.css');
         //indexAllVertices();
         // No ability icon
     }
