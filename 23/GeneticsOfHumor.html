@@ -15,7 +15,8 @@
         'copyright': '2020',
         'type': 'Trivia',
         'abilities': {
-          'straightEdge': true
+          'straightEdge': true,
+          'checkMarks': true,
         }
       };
     </script>
@@ -23,6 +24,10 @@
       .clues li {
         margin-top: 6pt;
         margin-bottom: 8pt;
+        position: relative;
+      }
+      .clues li .check {
+        left: -2em;
       }
       #dot2dot {
         user-select: none; 
@@ -45,15 +50,15 @@
         We don&rsquo;t make science jokes all the time, just periodically. We&rsquo;re looking for the genetic source of these jokes:
       </p>
       <ol class="clues">
-        <li>Do I think I&rsquo;m losing my electrons?</li>
-        <li>I&rsquo;m reading a book on anti-gravity.</li>
-        <li>A physicist and a biologist have a relationship.</li>
-        <li>The photon, asked why there was no luggage, said,</li>
-        <li>My science puns are bad, because all the good ones</li>
-        <li>When I try jokes on Helium,</li>
-        <li>You can&rsquo;t trust atoms,</li>
-        <li>How Oxygen&rsquo;s date with Potassium went:</li>
-        <li>When are multiplication and division the same?</li>
+        <li class="cross-off">Do I think I&rsquo;m losing my electrons?</li>
+        <li class="cross-off">I&rsquo;m reading a book on anti-gravity.</li>
+        <li class="cross-off">A physicist and a biologist have a relationship.</li>
+        <li class="cross-off">The photon, asked why there was no luggage, said,</li>
+        <li class="cross-off">My science puns are bad, because all the good ones</li>
+        <li class="cross-off">When I try jokes on Helium,</li>
+        <li class="cross-off">You can&rsquo;t trust atoms,</li>
+        <li class="cross-off">How Oxygen&rsquo;s date with Potassium went:</li>
+        <li class="cross-off">When are multiplication and division the same?</li>
       </ol>
 
       <svg id="dot2dot" class="straigh-edge-area" width="720" height="320" data-max-points="2" data-hover-range="50" data-can-share-vertex="false" data-show-open-drag="true">
@@ -133,15 +138,15 @@
       </svg>
 
       <ol class="clues" type="a">
-        <li>Argon.</li>
-        <li>I can&rsquo;t put it down.</li>
-        <li>He doesn&rsquo;t react.</li>
-        <li>They make up everything.</li>
-        <li>There&rsquo;s no chemistry.</li>
-        <li>In cellular biology.</li>
-        <li>It was OK.</li>
-        <li>I&rsquo;m positive.</li>
-        <li>I&rsquo;m traveling light.</li>
+        <li class="cross-off">Argon.</li>
+        <li class="cross-off">I can&rsquo;t put it down.</li>
+        <li class="cross-off">He doesn&rsquo;t react.</li>
+        <li class="cross-off">They make up everything.</li>
+        <li class="cross-off">There&rsquo;s no chemistry.</li>
+        <li class="cross-off">In cellular biology.</li>
+        <li class="cross-off">It was OK.</li>
+        <li class="cross-off">I&rsquo;m positive.</li>
+        <li class="cross-off">I&rsquo;m traveling light.</li>
       </ol>
 
       </div>

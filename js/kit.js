@@ -3402,6 +3402,7 @@ function boilerplate(bp) {
     viewport.content = 'width=device-width, initial-scale=1';
     head.appendChild(viewport);
     linkCss(head, 'Css/PageSizes.css');
+    linkCss(head, 'Css/TextInput.css');
     toggleClass(body, bp['paperSize'] || 'letter');
     toggleClass(body, bp['orientation'] || 'portrait');
     var page = createSimpleDiv({ id: 'page', cls: 'printedPage' });
@@ -3494,7 +3495,7 @@ function setupAbilities(head, margins, data) {
         // No ability icon
     }
     if (data.straightEdge) {
-        fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">📐</span>';
+        fancy += '<span id="drag-ability" title="Line-drawer enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions();
         linkCss(head, 'Css/StraightEdge.css');
         //indexAllVertices();

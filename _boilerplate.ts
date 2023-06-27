@@ -249,6 +249,7 @@ function boilerplate(bp: BoilerPlateData) {
     head.appendChild(viewport);
 
     linkCss(head, 'Css/PageSizes.css');
+    linkCss(head, 'Css/TextInput.css');
     toggleClass(body, bp['paperSize'] || 'letter');
     toggleClass(body, bp['orientation'] || 'portrait');
 
@@ -350,7 +351,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         // No ability icon
     }
     if (data.straightEdge) {
-        fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">📐</span>';
+        fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions();
         linkCss(head, 'Css/StraightEdge.css');
         //indexAllVertices();
