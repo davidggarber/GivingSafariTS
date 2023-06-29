@@ -15,14 +15,24 @@
   text-shadow: 2px 2px #ccc;
 }
 .word-select {
-  stroke:#ff000033;
+  stroke:#ff000066;
   stroke-width: 34px;
   stroke-linecap: round;
+  stroke-linejoin: round;
   fill: none;
   z-index: 1;
 }
+.word-select-fill {
+  stroke:#ffffff33;
+  stroke-width: 31px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  z-index: 2;
+}
+
 .word-select.building {
-  stroke: #ff000066;
+  stroke: #ff000099;
   z-index: 10;
 }
 .word-select.building.open-ended {

@@ -373,13 +373,13 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
-        preprocessRulerFunctions('straight-edge');
+        preprocessRulerFunctions('straight-edge', false);
         linkCss(head, 'Css/StraightEdge.css');
         //indexAllVertices();
     }
-    else if (data.wordSearch) {
+    if (data.wordSearch) {
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
-        preprocessRulerFunctions('word-select');
+        preprocessRulerFunctions('word-select', true);
         linkCss(head, 'Css/WordSearch.css');
         //indexAllVertices();
     }

@@ -18,6 +18,19 @@
       ]
     },
     {
+      "type": "msedge",
+      "request": "launch",
+      "name": "Launch GS 23",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "url": "${workspaceFolder}\\23\\indexx.html",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/js/**/*.js"
+      ]
+    },
+    {
       "name": "Python: buildKit.py",
       "type": "python",
       "request": "launch",
