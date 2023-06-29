@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Sample',
+        'title': 'Boilerplate',
+        'author': 'David Garber',
+        'copyright': '2023',
+        'type': 'Word',
+        'textInput': true,
+        'abilities': {
+          
+        }
+      };
+      function initForm() {
+        boilerplate(boiler);
+        document.getElementById('new_title').value = boiler.title;
+        document.getElementById('new_author').value = boiler.author;
+        document.getElementById('new_copyright').value = boiler.copyright;
+        document.getElementById('new_type').value = boiler.type;
+        document.getElementById('new_textInput').checked = boiler.textInput;
+        document.getElementById('drawPalette').style.display = boiler.abilities.drawing ? 'block' : 'none';
+        
+        updateJson();
+      }
+      function updateBoiler() {
+        var prev = Object.assign({}, boiler);
+        boiler.title = document.getElementById('new_title').value;
+        boiler.author = document.getElementById('new_author').value;
+        boiler.copyright = document.getElementById('new_copyright').value;
+        boiler.type = document.getElementById('new_type').value;
+        boiler.paperSize = document.getElementById('new_paperSize').value;
+        boiler.orientation = document.getElementById('new_orientation').value;
+        boiler.textInput = asOptional('new_textInput');
+        boiler.abilities.notes = asOptional('new_notes');
+        boiler.abilities.checkMarks = asOptional('new_checkMarks');
+        boiler.abilities.highlights = asOptional('new_highlights');
+        boiler.abilities.dragDrop = asOptional('new_dragDrop');
+        boiler.abilities.drawing = asOptional('new_drawing');
+        boiler.abilities.straightEdge = asOptional('new_straightEdge');
+        boiler.abilities.wordSearch = asOptional('new_wordSearch');
+        var decoder = document.getElementById('new_decoder').value;
+        if (decoder == 'off') {
+          boiler.abilities.decoder = boiler.abilities.decoderMode = undefined;
+        }
+        else {
+          boiler.abilities.decoder = true;
+          if (decoder != 'any') {
+            boiler.abilities.decoderMode = decoder;
+          }
+        }
+
+        updateFields(prev);
+        updateJson();
+      }
+      function asOptional(id) {
+        var check = document.getElementById(id);
+        if (check.checked) {
+          return true;
+        }
+        return undefined;
+      }
+      function updateFields(prev) {
+        var body = document.getElementsByTagName('body')[0];
+        if (prev.paperSize != boiler.paperSize) {
+          body.classList.remove(prev.paperSize);
+          body.classList.add(boiler.paperSize);
+        }
+        if (prev.orientation != boiler.orientation) {
+          body.classList.remove(prev.orientation);
+          body.classList.add(boiler.orientation);
+        }
+        
+        document.getElementsByClassName('title')[0].innerHTML = boiler.title;
+        document.getElementById('copyright').innerHTML = "&copy; " + boiler.copyright + ' ' + boiler.author;
+        document.getElementById('icons-0').src = './Icons/' + boiler.type + '.png';
+        document.getElementById('icons-0').alt = iconTypeAltText[boiler.type];
+
+        // Clean up fields that setupAbilities assumes start blank
+        var decoder = document.getElementById('decoder-toggle');
+        if (decoder) {
+          decoder.parentNode.removeChild(decoder);
+          var iframe = document.getElementById('decoder-frame');
+          iframe.parentNode.removeChild(iframe);
+        }
+
+        var ability = document.getElementById('ability');
+        if (ability) {
+          ability.innerHTML = '';
+        }
+        if (!boiler.abilities.notes) {
+          var toggle = document.getElementById('notes-toggle');
+          if (toggle) {
+            toggle.innerText = '';
+          }
+        }
+        var head = document.getElementsByTagName('head')[0];
+        var margins = document.getElementsByClassName('pageWithinMargins')[0];
+        setupAbilities(head, margins, boiler.abilities);
+
+        document.getElementById('drawPalette').style.display = boiler.abilities.drawing ? 'block' : 'none';
+      }
+      function updateJson() {
+        let str = JSON.stringify(boiler);
+        str = str.replaceAll('{', '{<span class="indent">');
+        str = str.replaceAll(',"', ',<br/>&quot;');
+        str = str.replaceAll('}', '</span>}');
+        boiler_json.innerHTML = str;
+      }
+    </script>
+    <style>
+      .indent {
+        display: block;
+        margin-left:0.2in;
+      }
+    </style>
+  </head>
+  <body onload="initForm()">
+    <div id="pageBody">
+      <p class="flavor">
+        A blank puzzle template, built from this boilerplate:
+      </p>
+      <p>
+        <span style="display: inline-block; border: solid 2px blue; padding:0.1in">
+          const boiler = <span id="boiler_json">{}</span>;
+        </span>
+      </p>
+
+      <table style="position: absolute; left:3in; top: 1in;">
+        <tr><th colspan="2">Update any fields</th></tr>
+        <tr>
+          <td>Title</td>
+          <td><input id="new_title" type='text' onkeyup="updateBoiler()"></td>
+        </tr>
+        <tr>
+          <td>Author</td>
+          <td><input id="new_author" type='text' onkeyup="updateBoiler()"></td>
+        </tr>
+        <tr>
+          <td>Copyright</td>
+          <td><input id="new_copyright" type='text' onkeyup="updateBoiler()"></td>
+        </tr>
+        <tr>
+          <td>Type icon</td>
+          <td>
+            <select id="new_type" onchange="updateBoiler()">
+              <option>Word</option>
+              <option>Rebus</option>
+              <option>Math</option>
+              <option>Logic</option>
+              <option>Trivia</option>
+              <option>Assembly</option>
+              <option>Meta</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Paper size</td>
+          <td>
+            <select id="new_paperSize" onchange="updateBoiler()">
+              <option>letter</option>
+              <option>legal</option>
+              <option>ledger</option>
+              <option>scrapbook</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Orientation</td>
+          <td>
+            <select id="new_orientation" onchange="updateBoiler()">
+              <option>portrait</option>
+              <option>landscape</option>
+            </select>
+          </td>
+        </tr>
+        <tr><th colspan="2">Abilities</th></tr>
+        <tr>
+          <td></td>
+          <td>
+            <input id="new_textInput" type='checkbox' onchange="updateBoiler()">
+            Text Input
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input id="new_notes" type='checkbox' onchange="updateBoiler()">
+            Notes
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input id="new_checkMarks" type='checkbox' onchange="updateBoiler()">
+            Check marks
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input id="new_highlights" type='checkbox' onchange="updateBoiler()">
+            Highlights
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input id="new_dragDrop" type='checkbox' onchange="updateBoiler()">
+            Drag & Drop
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input id="new_drawing" type='checkbox' onchange="updateBoiler()">
+            Drawing / Stamping
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input id="new_straightEdge" type='checkbox' onchange="updateBoiler()">
+            Straight edge
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input id="new_wordSearch" type='checkbox' onchange="updateBoiler()">
+            Word search
+          </td>
+        </tr>
+        <tr>
+          <td>Decoder</td>
+          <td>
+            <select id="new_decoder" onchange="updateBoiler()">
+              <option>off</option>
+              <option>any</option>
+              <option>Braille</option>
+              <option>Morse</option>
+              <option>Semaphore</option>
+              <option value="PigPen">Pig Pen</option>
+              <option>Trinary</option>
+              <option value="RotCipher">Rot Cipher</option>
+              <option>Ascii</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+
+      <div id="drawPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; left:0in; top: 4.5in;">
+        <p style="text-align: center; margin:4px;">&#x2712;&#xfe0f; Draw tools:</p>
+        <div class="drawTool" data-template-id="drawCheck" data-click-modifier="ctrl" title="ctrl + draw" style="display:inline-block; ">
+          <div style="background-color: #9f9;">
+            <span class="emoji">🎁</span>
+            <span class="label">stamp</span>
+          </div>
+        </div>
+        <div class="drawTool" data-template-id="drawErase" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
+          <div style="background-color: #eee;">
+            <span class="emoji" style="color: transparent;">&#x1f3d7;</span>
+            <span class="label">erase</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

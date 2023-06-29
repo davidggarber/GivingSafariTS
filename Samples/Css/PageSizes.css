@@ -33,7 +33,10 @@ Use class="scrapbook scrapbook"   for 12" x 12"
   width:10in;
   height:16in; 
 }
-
+.ledger.landscape .printedPage {
+  width:16in;
+  height:10in; 
+}
 .scrapbook.scrapbook .printedPage {
   width:11in;
   height:11in; 

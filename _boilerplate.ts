@@ -123,7 +123,6 @@ type BoilerPlateData = {
     paperSize?: string;  // letter by default
     orientation?: string;  // portrait by default
     textInput?: boolean;  // false by default
-    storage?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
 }
@@ -206,8 +205,9 @@ const iconTypeAltText = {
  */
 function createTypeIcon(puzzleType:string):HTMLDivElement {
     const iconDiv = document.createElement('div');
-    iconDiv.id = 'icons';
+    iconDiv.id = 'icons';    
     const icon = document.createElement('img');
+    icon.id = 'icons-' + iconDiv.childNodes.length;
     icon.src = './Icons/' + puzzleType + '.png';
     icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' puzzle');
     iconDiv.appendChild(icon);
@@ -271,8 +271,14 @@ function boilerplate(bp: BoilerPlateData) {
     linkCss(head, safariDetails.fontCss);
     linkCss(head, 'Css/PageSizes.css');
     linkCss(head, 'Css/TextInput.css');
-    toggleClass(body, bp['paperSize'] || 'letter');
-    toggleClass(body, bp['orientation'] || 'portrait');
+    if (!bp['paperSize']) {
+        bp['paperSize'] = 'letter';
+    }
+    if (!bp['orientation']) {
+        bp['orientation'] = 'portrait';
+    }
+    toggleClass(body, bp['paperSize']);
+    toggleClass(body, bp['orientation']);
 
     const page: HTMLDivElement = createSimpleDiv({id:'page', cls:'printedPage'});
     const margins: HTMLDivElement = createSimpleDiv({cls:'pageWithinMargins'});
@@ -391,6 +397,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         setupDecoderToggle(margins, data.decoderMode);
     }
     ability.innerHTML = fancy;
+    ability.style.bottom = data.decoder ? '-32pt' : '-16pt';
     if (count == 2) {
         ability.style.right = '0.1in';
     }

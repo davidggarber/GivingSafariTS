@@ -3474,6 +3474,7 @@ function createTypeIcon(puzzleType) {
     var iconDiv = document.createElement('div');
     iconDiv.id = 'icons';
     var icon = document.createElement('img');
+    icon.id = 'icons-' + iconDiv.childNodes.length;
     icon.src = './Icons/' + puzzleType + '.png';
     icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' puzzle');
     iconDiv.appendChild(icon);
@@ -3529,8 +3530,14 @@ function boilerplate(bp) {
     linkCss(head, safariDetails.fontCss);
     linkCss(head, 'Css/PageSizes.css');
     linkCss(head, 'Css/TextInput.css');
-    toggleClass(body, bp['paperSize'] || 'letter');
-    toggleClass(body, bp['orientation'] || 'portrait');
+    if (!bp['paperSize']) {
+        bp['paperSize'] = 'letter';
+    }
+    if (!bp['orientation']) {
+        bp['orientation'] = 'portrait';
+    }
+    toggleClass(body, bp['paperSize']);
+    toggleClass(body, bp['orientation']);
     var page = createSimpleDiv({ id: 'page', cls: 'printedPage' });
     var margins = createSimpleDiv({ cls: 'pageWithinMargins' });
     body.appendChild(page);
@@ -3640,6 +3647,7 @@ function setupAbilities(head, margins, data) {
         setupDecoderToggle(margins, data.decoderMode);
     }
     ability.innerHTML = fancy;
+    ability.style.bottom = data.decoder ? '-32pt' : '-16pt';
     if (count == 2) {
         ability.style.right = '0.1in';
     }
