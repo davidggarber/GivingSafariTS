@@ -3757,6 +3757,7 @@ type PuzzleEventDetails = {
     logo: string;  // path from root
     icon: string;  // path from root
     puzzleList: string;
+    cssRoot: string;  // path from root
     fontCss: string;  // path from root
 }
 
@@ -3765,6 +3766,7 @@ const safariSampleDetails:PuzzleEventDetails = {
     'logo': './Images/Sample_Logo.png',
     'icon': './Images/Sample_Icon.png',
     'puzzleList': './index.html',
+    'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css'
 }
 
@@ -3773,7 +3775,8 @@ const safari20Details:PuzzleEventDetails = {
     'logo': './Images/PS20 logo.png',
     'icon': './Images/Beaker_icon.png',
     'puzzleList': './indexx.html',
-    'fontCss': './Css/20.css'
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts20.css'
 }
 
 const pastSafaris = {
@@ -3958,8 +3961,8 @@ function boilerplate(bp: BoilerPlateData) {
     head.appendChild(viewport);
 
     linkCss(head, safariDetails.fontCss);
-    linkCss(head, 'Css/PageSizes.css');
-    linkCss(head, 'Css/TextInput.css');
+    linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
+    linkCss(head, safariDetails.cssRoot + 'TextInput.css');
     if (!bp['paperSize']) {
         bp['paperSize'] = 'letter';
     }
@@ -4057,25 +4060,25 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         preprocessDragFunctions();
         indexAllDragDropFields();
-        linkCss(head, 'Css/DragDrop.css');
+        linkCss(head, safariDetails.cssRoot + 'DragDrop.css');
         count++;
     }
     if (data.drawing) {
         preprocessDrawObjects();
         indexAllDrawableFields();
-        linkCss(head, 'Css/DrawTools.css');
+        linkCss(head, safariDetails.cssRoot + 'DrawTools.css');
         // No ability icon
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions('straight-edge', false);
-        linkCss(head, 'Css/StraightEdge.css');
+        linkCss(head, safariDetails.cssRoot + 'StraightEdge.css');
         //indexAllVertices();
     }
     if (data.wordSearch) {
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
         preprocessRulerFunctions('word-select', true);
-        linkCss(head, 'Css/WordSearch.css');
+        linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
         //indexAllVertices();
     }
     if (data.notes) {
