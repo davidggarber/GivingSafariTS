@@ -124,6 +124,7 @@ type RulerEventData = {
     bounds: DOMRect;
     maxPoints: number;
     canShareVertices: boolean;
+    canCrossSelf: boolean;
     hoverRange: number;
     angleConstraints?: number;
     showOpenDrag: boolean;
@@ -142,8 +143,10 @@ function getRulerData(evt:MouseEvent):RulerEventData {
     const svg = findParentOfTag(range, 'SVG') as SVGSVGElement;
     const containers = svg.getElementsByClassName(selector_class + '-container');
     const bounds = svg.getBoundingClientRect();
-    const maxPoints = range.getAttributeNS('', 'data-max-points');
+    const max_points = range.getAttributeNS('', 'data-max-points');
+    const maxPoints = max_points ? parseInt(max_points) : 2;
     const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
+    const canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
     const hoverRange = range.getAttributeNS('', 'data-hover-range');
     const angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
     const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
@@ -155,9 +158,10 @@ function getRulerData(evt:MouseEvent):RulerEventData {
         svg: svg, 
         container: (containers && containers.length > 0) ? containers[0] : svg,
         bounds: bounds,
-        maxPoints: maxPoints ? parseInt(maxPoints) : 2, 
+        maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
-        hoverRange: hoverRange ? parseInt(hoverRange) : (bounds.width + bounds.height),
+        canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
+        hoverRange: hoverRange ? parseInt(hoverRange) : Math.max(bounds.width, bounds.height),
         angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() == 'true') : false,
         evtPos: pos,
@@ -230,12 +234,17 @@ function onRulerHover(evt:MouseEvent) {
     if (_straightEdgeBuilder) {
         // Extending a straight-edge that we've already started
         if (ruler.nearest || ruler.showOpenDrag) {
-            if (_straightEdgeBuilder.points.length >= ruler.maxPoints) {
-                if (_straightEdgeVertices.length == _straightEdgeBuilder.points.length) {
-                    toggleClass(_straightEdgeVertices[ruler.maxPoints - 1], 'building', false);
-                    _straightEdgeVertices.splice(ruler.maxPoints - 1, 1);
+            const extendLast = extendsLastSegment(ruler.nearest);
+            const updateOpen = _straightEdgeBuilder.points.length > _straightEdgeVertices.length;
+            if (extendLast || _straightEdgeBuilder.points.length >= ruler.maxPoints) {
+                if (updateOpen) {
+                    _straightEdgeBuilder.points.removeItem(_straightEdgeVertices.length);
                 }
-                _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
+                if (extendLast || !updateOpen) {
+                    toggleClass(_straightEdgeVertices[ruler.maxPoints - 1], 'building', false);
+                    _straightEdgeVertices.splice(_straightEdgeVertices.length - 1, 1);
+                    _straightEdgeBuilder.points.removeItem(_straightEdgeVertices.length);
+                }
             }
             else if (_straightEdgeVertices.length < _straightEdgeBuilder.points.length) {
                 // Always remove the last open end
@@ -273,13 +282,14 @@ function onLineStart(evt:MouseEvent) {
 
     if (!ruler.canShareVertices && hasClass(ruler.nearest.vertex, 'has-line')) {
         // User has clicked a point that already has a line
-        // Re-select it
+        // Either re-select it or delete it
         const edge = findStraightEdgeFromVertex(ruler.nearest.index);
         if (edge) {
-            deleteStraightEdge(edge);
-            // Find the other end of this edge
             const vertices = findStraightEdgeVertices(edge);
+            // Always delete the existing edge
+            deleteStraightEdge(edge);
             if (vertices.length == 2) {
+                // Restart line
                 if (vertices[0] == ruler.nearest.vertex) {
                     createStraightLineFrom(ruler, getVertexData(ruler, vertices[1]));
                 }
@@ -287,8 +297,8 @@ function onLineStart(evt:MouseEvent) {
                     createStraightLineFrom(ruler, getVertexData(ruler, vertices[0]));
                 }
                 snapStraightLineTo(ruler, ruler.nearest);
-                return;
             }
+            return;
         }
     }
 
@@ -320,7 +330,7 @@ function onLineUp(evt:MouseEvent) {
     }
     else if (_straightEdgeBuilder.points.length > _straightEdgeVertices.length) {
         // Remove open-end
-        _straightEdgeBuilder.points.removeItem(ruler.maxPoints - 1);
+        _straightEdgeBuilder.points.removeItem(_straightEdgeVertices.length);
         toggleClass(_straightEdgeBuilder, 'open-ended', false);
     }
 
@@ -402,16 +412,109 @@ function indexInLine(end: HTMLElement):number {
 }
 
 /**
+ * Does a proposed vertex extend the last segment in the straight-edge under construction?
+ * @param vert A new vertex
+ * @returns true if this vertex is in the same direction as the last segment, either shorter or longer
+ */
+function extendsLastSegment(vert:VertexData|undefined):boolean {
+    if (!vert || !_straightEdgeBuilder || _straightEdgeVertices.length < 2) {
+        return false;
+    }
+    const last = _straightEdgeBuilder.points[_straightEdgeVertices.length - 1];
+    const prev = _straightEdgeBuilder.points[_straightEdgeVertices.length - 2];
+    const angle = Math.atan2(last.y - prev.y, last.x - prev.x);
+    const err = Math.atan2(vert.centerPoint.y - prev.y, vert.centerPoint.x - prev.x) - angle;
+    return Math.abs(err * 180 / Math.PI) < 1;
+}
+
+/**
+ * Uses a form a dot-product to detect if the sweep from segment AB to AC is counter-clockwise
+ * @param a Start of both segments
+ * @param b First endpoint
+ * @param c Second endpoint
+ * @returns true if sweep is to the left (counter-clockwise)
+ */
+function segmentPointCCW(a:SVGPoint, b:SVGPoint, c:SVGPoint) {
+    return (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
+}
+
+/**
+ * A point is on a line if the slope is the same, and the distance
+ * is a fraction of the segment's between 0 and 1
+ * @param pt Point to test
+ * @param a Start of segments
+ * @param b End of endpoint
+ * @returns true if point lies on the segment between a and b
+ */
+function pointOnSegment(pt:SVGPoint, a:SVGPoint, b:SVGPoint) {
+    if (pt == a || pt == b) {
+        return true;
+    }
+    if (a.x == b.x) {
+        return pt.x == a.x && pt.y >= Math.min(a.y, b.y) && pt.y <= Math.max(a.y, b.y);
+    }
+    if (a.y == b.y) {
+        return pt.y == a.y && pt.x >= Math.min(a.x, b.x) && pt.x <= Math.max(a.x, b.x);
+    }
+    const dxS = b.x - a.x;
+    const dyS = b.y - a.y;
+    const dxP = pt.x - a.x;
+    const dyP = pt.y - a.y;
+    const pctX = dxP / dxS;
+    const pctY = dyP / dyS;
+    return pctX == pctY && pctX > 0 && pctY < 1;
+}
+
+/**
+ * Sweep algorithm to determine if two segments intersect
+ * @param a Start of first segment
+ * @param b End of first segment
+ * @param c Start of second segment
+ * @param d End of second segment
+ * @returns true if they intersect along both segments
+ */
+function segmentsIntersect(a:SVGPoint, b:SVGPoint, c:SVGPoint, d:SVGPoint) {
+    return (segmentPointCCW(a, c, d) != segmentPointCCW(b, c, d)
+            && segmentPointCCW(a, b, c) != segmentPointCCW(a, b, d))
+        || (pointOnSegment(c, a, b) || pointOnSegment(d, a, b)
+            || pointOnSegment(a, c, d) || pointOnSegment(b, c, d));
+}
+
+/**
+ * Detect if extending a polyline would cause an intersection with itself
+ * @param pt Candidate point to add to polyline
+ * @param points Points from a polyline
+ * @returns True
+ */
+function polylineSelfIntersection(pt:SVGPoint, points:SVGPointList) {
+    if (points.length <= 1) {
+        return false;
+    }
+    const p0 = points[points.length - 1];
+    for (let i = 1; i < points.length - 1; i++) {
+        if (segmentsIntersect(p0, pt, points[i - 1], points[i])) {
+            segmentsIntersect(p0, pt, points[i - 1], points[i]);
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Enforces vertex angle constraints
  * @param data The containing area and rules
  * @param vert A new vertex
  * @returns 
  */
 function isReachable(data:RulerEventData, vert: VertexData):boolean {
-    if (_straightEdgeVertices.length < 1) {
+    if (!_straightEdgeBuilder || _straightEdgeVertices.length < 1) {
         return false;
     }
     
+    if (!data.canCrossSelf && polylineSelfIntersection(vert.centerPoint, _straightEdgeBuilder.points)) {
+        return false;
+    }
+
     //if (indexInLine(vert.vertex) >= 0) return false;
 
     const prev = getVertexData(data, _straightEdgeVertices[_straightEdgeVertices.length - 1]);
@@ -423,10 +526,9 @@ function isReachable(data:RulerEventData, vert: VertexData):boolean {
     else if (data.angleConstraints == undefined) {
         return true;  // Any other point is valid
     }
-    const degrees = Math.atan2(dy, dx) * 180 / Math.PI;
-    const mult = degrees / data.angleConstraints;
-    const err = Math.abs(mult - Math.round(mult));
-    return err <= 0.1;  // Within 10% of constraint angle pattern
+    const degrees = Math.atan2(dy, dx) * 180 / Math.PI + 360;
+    const mod = degrees % data.angleConstraints;
+    return Math.abs(mod) < 1; // Within 1 degree of constraint angle pattern
 }
 
 /**
@@ -443,10 +545,11 @@ function deleteStraightEdge(edge:SVGPolylineElement) {
 
     // See if there's a duplicate straight-edge, of class word-select2
     if (selector_fill_class) {
+        const points = (edge as Element).getAttributeNS('', 'points');
         const second = document.getElementsByClassName(selector_fill_class);
-        for (let i = 0; i < 0; i < second.length) {
-            const sec = second[i] as SVGPolylineElement;
-            if (sec.points == edge.points) {
+        for (let i = 0; i < second.length; i++) {
+            const sec = second[i] as HTMLElement;
+            if (sec.getAttributeNS('', 'points') === points) {
                 edge.parentNode?.removeChild(sec);
                 break;
             }
@@ -514,4 +617,28 @@ function findStraightEdgeVertices(edge:SVGPolylineElement):HTMLElement[] {
         }        
     }
     return vertices;
+}
+
+export function clearAllStraightEdges(id:string) {
+    const svg = document.getElementById(id);
+    if (!svg) {
+        return;
+    }
+
+    const edges = svg.getElementsByClassName(selector_class);
+    for (let i = edges.length - 1; i >= 0; i--) {
+        const edge = edges[i];
+        edge.parentNode?.removeChild(edge);
+    }
+
+    // Remove styles from all vertices
+    const vertices = svg.getElementsByClassName('vertex');
+    for (let i = 0; i < _straightEdgeVertices.length; i++) {
+        toggleClass(vertices[i], 'building', false);
+        toggleClass(vertices[i], 'has-line', false);
+    }
+
+    // Remove builder
+    _straightEdgeVertices = [];
+    _straightEdgeBuilder = null;
 }
