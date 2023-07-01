@@ -4,10 +4,11 @@
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
     <script src="../js/kit.js"></script>
+    <script src="demoTools.js"></script>
     <script>
       const boiler = {
         'safari': 'Sample',
-        'title': 'Word Search',
+        'title': 'Word Search Demo',
         'author': 'David Garber',
         'copyright': '2023',
         'type': 'Word',
@@ -21,71 +22,38 @@
 
       function init() {
         crossword = document.getElementById('crossword');
-        container = document.getElementById('word-select-container');
+        container = document.getElementById('_word-select-container');
 
         // Copy the crossword template before running the exploding the puzzle during boilerplate initialization
         boilerplate(boiler);
 
-        attr2Input('data-max-points');
-        attr2Input('data-hover-range');
-        attr2Input('data-angle-constraints');
-        attr2Input('data-show-open-drag');
-        attr2Input('data-can-cross-self');
+        attr2Input(crossword, 'data-max-points');
+        attr2Input(crossword, 'data-hover-range');
+        attr2Input(crossword, 'data-angle-constraints');
+        attr2Input(crossword, 'data-show-open-drag');
+        attr2Input(crossword, 'data-can-cross-self');
+        class2Check(container, 'word-select-container');
 
-        document.getElementById('toggle-word-select-container').checked = container.classList.contains('word-select-container');
+        showHtml();
       }
 
       function update() {
-        input2Attr('data-max-points');
-        input2Attr('data-hover-range');
-        input2Attr('data-angle-constraints');
-        input2Attr('data-show-open-drag');
-        input2Attr('data-can-cross-self');
-
-        if (document.getElementById('toggle-word-select-container').checked) {
-          container.classList.add('word-select-container');
-        }
-        else {
-          container.classList.remove('word-select-container');
-        }
+        input2Attr(crossword, 'data-max-points');
+        input2Attr(crossword, 'data-hover-range');
+        input2Attr(crossword, 'data-angle-constraints');
+        input2Attr(crossword, 'data-show-open-drag');
+        input2Attr(crossword, 'data-can-cross-self');
+        check2Class(container, 'word-select-container');
 
         showHtml();
       }
 
       function showHtml() {
-        var svgTag = crossword.outerHTML;
-        svgTag = svgTag.substr(0, svgTag.length - 6 - crossword.innerHTML.length);
-        svgTag = svgTag.replaceAll('<', "&lt;");
-        svgTag = svgTag.replaceAll('" ', "&quot;<br>&nbsp;");
-        svgTag = svgTag.replaceAll('"', "&quot;");
-        document.getElementById('svgHTML').innerHTML = svgTag;
-      }
-
-      function attr2Input(id) {
-        var val = crossword.getAttributeNS('', id);
-        if (!val) {
-          val = '';
-        }
-        document.getElementById(id).value = val;
-      }
-
-      function input2Attr(id) {
-        var val = document.getElementById(id).value;
-        if (val.length == 0) {
-          crossword.removeAttributeNS('', id);
-        }
-        else {
-          crossword.setAttributeNS('', id, document.getElementById(id).value);
-        }
+        document.getElementById('svgHTML').innerHTML = friendlyStartTag(crossword);
       }
 
       function quick(btn) {
-        var val = btn.innerText;
-        if (val.startsWith('unset')) {
-          val = '';
-        }
-        var input = btn.parentNode.parentNode.getElementsByTagName('input')[0];
-        input.value = val;
+        quickBtn(btn);
         update();
       }
       function clearEdges() {
@@ -93,6 +61,10 @@
       }
     </script>
     <style>
+      #customize th {
+        padding-top: 0.2in;
+        padding-bottom: 0.1in;
+      }
       #crossword {
         user-select: none; 
         -webkit-user-select: none; /* Safari */        
@@ -130,7 +102,7 @@
       </p>
 
       <svg id="crossword" width="336px" height="336px" class="word-select-area" data-max-points="30" data-hover-range="30" data-angle-constraints="90" data-show-open-drag="true" data-can-cross-self="true">
-        <g id="word-select-container" class="word-select-container"></g>
+        <g id="_word-select-container" class="word-select-container"></g>
         <g transform="translate(48 48)">
           <rect id="border" width="240" height="240"></rect>
           <g transform="translate(0 0)">
@@ -185,8 +157,10 @@
         <button onclick="clearEdges()">Clear Selection</button>
       </div>
 
-      <table style="margin-top: 0.25in;">
-        <tr><th colspan="2">Update any fields</th></tr>
+      <table id="customize">
+        <tr><th colspan="3">
+          Customize the &lt;svg class='<u>word-select-area</u>'&gt;
+        </th></tr>
         <tr>
           <td>data-max-points</td>
           <td><input id="data-max-points" type='text' onkeyup="update()"></td>
@@ -204,7 +178,7 @@
             <button onclick="quick(this)">30</button>
             <button onclick="quick(this)">10</button>
             <button onclick="quick(this)">60</button>
-            <button onclick="quick(this)">unset = <i>max</i></button>
+            <button onclick="quick(this)">unset = <i>30</i></button>
           </td>
         </tr>
         <tr>
@@ -223,7 +197,7 @@
           <td>
             <button onclick="quick(this)">true</button>
             <button onclick="quick(this)">false</button>
-            <button onclick="quick(this)">unset = <i>false</i></button>
+            <button onclick="quick(this)">unset = <i>true</i></button>
           </td>
         </tr>
         <tr>
@@ -235,9 +209,12 @@
             <button onclick="quick(this)">unset = <i>false</i></button>
           </td>
         </tr>
+        <tr><th colspan="3">
+          Customize the &lt;g class='<u>word-select-container</u>'&gt;
+        </th></tr>
         <tr>
           <td>word-select-container</td>
-          <td><input id="toggle-word-select-container" type='checkbox' onchange="update()"></td>
+          <td><input id="word-select-container" type='checkbox' onchange="update()"></td>
           <td>exists</td>
         </tr>
       </table>

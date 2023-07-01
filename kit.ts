@@ -3336,9 +3336,9 @@ function getRulerData(evt:MouseEvent):RulerEventData {
         maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
-        hoverRange: hoverRange ? parseInt(hoverRange) : Math.max(bounds.width, bounds.height),
+        hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
         angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
-        showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() == 'true') : false,
+        showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
         evtPos: pos,
         evtPoint: spt,
     };
