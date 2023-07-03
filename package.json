@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/davidggarber/GivingSafariTS/issues"
   },
-  "homepage": "https://github.com/davidggarber/GivingSafariTS#readme"
+  "homepage": "https://github.com/davidggarber/GivingSafariTS#readme",
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  }
 }
