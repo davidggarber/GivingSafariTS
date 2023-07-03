@@ -7,10 +7,10 @@
     <script>
       const boiler = {
         'safari': 'Sample',
-        'title': 'Rapid Unscheduled Disassembly',
-        'author': 'Colin Robertson',
-        'copyright': '2019',
-        'type': 'Construction',
+        'title': 'Free Drag & Drop',
+        'author': 'David Garber',
+        'copyright': '2023',
+        'type': 'Reassemble',
         'abilities': {
           'dragDrop': true
         }
@@ -20,33 +20,40 @@
       .section {
         position: absolute;
         cursor: pointer;
+        width:100px; 
+        height:100px;
       }
     </style>
   </head>
   <body>
-    <div id="pageBody" class="free-drop z-grow-up">
+    <div id="pageBody">
       <p class="flavor">
-        Musk and Bezos have been hogging all the glory! 
-        That&rsquo;s according to your boss, a billionaire who also dabbles in the spaceflight business. 
-        She&rsquo;s getting tired of the expense of incorrectly assembled rockets employing lithobraking instead of returning gracefully, and re-usably, to Earth.
-        The rapid unscheduled disassembly of each rocket has been spectacular.
-        Your predecessors have been unceremoniously fired as a result.
-        You&rsquo;re charged with putting this rocket together, paying close attention to the inside wiring, suspected of being the cause of previous failures.
-        There should be no stray cables that don&rsquo;t terminate at a control box.
-        The finished rocket has the owner and founder&rsquo;s motto painted on the side.
+        Move the balls anywhere. Stack them on top of each other.
       </p>
 
-      <img class="section moveable" draggable="true" src="Images/Rapid/cone.png" style="width:160px; top: 150px; left: 250px;">
-      <img class="section moveable" draggable="true" src="Images/Rapid/a1.png" style="width:160px; top: 250px; left: 50px;">
-      <img class="section moveable" draggable="true" src="Images/Rapid/c1.png" style="width:160px; top: 250px; left: 450px;">
-      <img class="section moveable" draggable="true" src="Images/Rapid/b1.png" style="width:160px; top: 350px; left: 250px;">
-      <img class="section moveable" draggable="true" src="Images/Rapid/a2.png" style="width:160px; top: 450px; left: 50px;">
-      <img class="section moveable" draggable="true" src="Images/Rapid/c2.png" style="width:160px; top: 450px; left: 450px;">
-      <img class="section moveable" draggable="true" src="Images/Rapid/b2.png" style="width:160px; top: 550px; left: 250px;">
-      <img class="section moveable" draggable="true" src="Images/Rapid/a3.png" style="width:160px; top: 650px; left: 50px;">
-      <img class="section moveable" draggable="true" src="Images/Rapid/c3.png" style="width:160px; top: 650px; left: 450px;">
-      <img class="section moveable" draggable="true" src="Images/Rapid/tail.png" style="width:182px; top: 750px; left: 239px;">
-
+      <div id="canvas" class="free-drop z-grow-up" style="width:7.5in; height:500px; background-color:#eee;">
+        <svg class="section moveable" draggable="true" style="left:50px; top:100px;">
+          <ellipse cx="50" cy="50" rx="49" ry="49" fill="red"></ellipse>
+        </svg>
+        <svg class="section moveable" draggable="true" style="left:200px; top:150px;">
+          <ellipse cx="50" cy="50" rx="49" ry="49" fill="orange"></ellipse>
+        </svg>
+        <svg class="section moveable" draggable="true" style="left:350px; top:200px;">
+          <ellipse cx="50" cy="50" rx="49" ry="49" fill="yellow"></ellipse>
+        </svg>
+        <svg class="section moveable" draggable="true" style="left:500px; top:250px;">
+          <ellipse cx="50" cy="50" rx="49" ry="49" fill="green"></ellipse>
+        </svg>
+        <svg class="section moveable" draggable="true" style="left:100px; top:300px;">
+          <ellipse cx="50" cy="50" rx="49" ry="49" fill="cyan"></ellipse>
+        </svg>
+        <svg class="section moveable" draggable="true" style="left:250px; top:350px;">
+          <ellipse cx="50" cy="50" rx="49" ry="49" fill="blue"></ellipse>
+        </svg>
+        <svg class="section moveable" draggable="true" style="left:400px; top:400px;">
+          <ellipse cx="50" cy="50" rx="49" ry="49" fill="purple"></ellipse>
+        </svg>
+      </div>
       </div>
     </div>
   </body>
