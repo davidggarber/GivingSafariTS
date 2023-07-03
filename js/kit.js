@@ -3335,8 +3335,11 @@ function isReachable(data, vert) {
         return true; // Any other point is valid
     }
     var degrees = Math.atan2(dy, dx) * 180 / Math.PI + 360;
-    var mod = degrees % data.angleConstraints;
-    return Math.abs(mod) < 1; // Within 1 degree of constraint angle pattern
+    var mod = Math.abs(degrees % data.angleConstraints);
+    if (mod > data.angleConstraints / 2) {
+        mod = data.angleConstraints - mod;
+    }
+    return mod < 1; // Within 1 degree of constraint angle pattern
 }
 /**
  * Delete an existing straight-edge

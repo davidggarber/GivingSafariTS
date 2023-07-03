@@ -527,8 +527,11 @@ function isReachable(data:RulerEventData, vert: VertexData):boolean {
         return true;  // Any other point is valid
     }
     const degrees = Math.atan2(dy, dx) * 180 / Math.PI + 360;
-    const mod = degrees % data.angleConstraints;
-    return Math.abs(mod) < 1; // Within 1 degree of constraint angle pattern
+    let mod = Math.abs(degrees % data.angleConstraints);
+    if (mod > data.angleConstraints / 2) {
+        mod = data.angleConstraints - mod;
+    }
+    return mod < 1; // Within 1 degree of constraint angle pattern
 }
 
 /**
