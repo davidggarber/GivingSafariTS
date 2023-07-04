@@ -2595,19 +2595,7 @@ export function preprocessDragFunctions() {
     for (let i = 0; i < elems.length; i++) {
         const elem = elems[i] as HTMLElement;
         preprocessFreeDrop(elem);
-
-        const height = elem.getBoundingClientRect().height;
-        const zUp = hasClass(elems[i], 'z-grow-up');
-        const zDown = hasClass(elems[i], 'z-grow-down');
-        if (zUp || zDown) {
-            const children = elems[i].getElementsByClassName('moveable');
-            for (let j = 0; j < children.length; j++) {
-                const child = children[j] as HTMLElement;
-                let z = parseInt(child.style.top);
-                z = zUp ? 1000 + (height - z) : z;
-                child.style.zIndex = String(z);
-            }
-        }
+        initFreeDropZorder(elem);
     }
 }
 
@@ -2616,6 +2604,7 @@ export function preprocessDragFunctions() {
  * @param elem a moveable element
  */
 function preprocessMoveable(elem:HTMLElement) {
+    elem.setAttribute('draggable', 'true');
     elem.onmousedown=function(e){onClickDrag(e)};
     elem.ondrag=function(e){onDrag(e)};
     elem.ondragend=function(e){onDragDrop(e)};
@@ -2623,7 +2612,7 @@ function preprocessMoveable(elem:HTMLElement) {
 
 /**
  * Hook up the necessary mouse events to each drop target
- * @param elem a moveable element
+ * @param elem a drop-target element
  */
 function preprocessDropTarget(elem:HTMLElement) {
     elem.onmouseup=function(e){onClickDrop(e)};
@@ -2633,12 +2622,33 @@ function preprocessDropTarget(elem:HTMLElement) {
 
 /**
  * Hook up the necessary mouse events to each free drop target
- * @param elem a moveable element
+ * @param elem a free-drop element
  */
 function preprocessFreeDrop(elem:HTMLElement) {
     elem.onmousedown=function(e){doFreeDrop(e)};
     elem.ondragenter=function(e){onDropAllowed(e)};
     elem.ondragover=function(e){onDropAllowed(e)};
+}
+
+/**
+ * Assign z-index values to all moveable objects within a container.
+ * Objects' z index is a function of their y-axis, and can extend up or down.
+ * @param container The free-drop container, which can contain a data-z-grow attribute
+ */
+export function initFreeDropZorder(container:HTMLElement) {
+    const zGrow = container.getAttributeNS('', 'data-z-grow')?.toLowerCase();
+    if (!zGrow || (zGrow != 'up' && zGrow != 'down')) {
+        return;
+    }
+    const zUp = zGrow == 'up';
+    const height = container.getBoundingClientRect().height;
+    const children = container.getElementsByClassName('moveable');
+    for (let i = 0; i < children.length; i++) {
+        const child = children[i] as HTMLElement;
+        let z = parseInt(child.style.top);  // will always be in pixels, relative to the container
+        z = 1000 + (zUp ? (height - z) : z);
+        child.style.zIndex = String(z);
+    }
 }
 
 /**
@@ -2763,16 +2773,17 @@ function doFreeDrop(event:MouseEvent) {
  * When an object is dragged in a container that holds multiple items,
  * the z-order can change. Use the relative y position to set z-index.
  * @param elem The element whose position just changed
- * @param y The y-offset of that element
+ * @param y The y-offset of that element, within its free-drop container
  */
 function updateZ(elem:HTMLElement, y:number) {
     let dest = findParentOfClass(elem, 'free-drop') as HTMLElement;
-    if (hasClass(dest, 'z-grow-down')) {
+    const zGrow = dest?.getAttributeNS('', 'data-z-grow')?.toLowerCase();
+    if (zGrow == 'down') {
         elem.style.zIndex = String(1000 + y);
     }
-    else if (hasClass(dest, 'z-grow-up')) {
+    else if (zGrow == 'up') {
         const rect = dest.getBoundingClientRect();
-        elem.style.zIndex = String(rect.height + 1000 - y);
+        elem.style.zIndex = String(1000 + rect.height - y);
     }
 }
 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
     <script src="../js/kit.js"></script>
+    <script src="demoTools.js"></script>
     <script>
       const boiler = {
         'safari': 'Sample',
@@ -15,6 +16,35 @@
           'dragDrop': true
         }
       };
+
+      var canvas;
+      function init() {
+        canvas = document.getElementById('canvas');
+
+        // Copy the crossword template before running the exploding the puzzle during boilerplate initialization
+        boilerplate(boiler);
+
+        attr2Input(canvas, 'data-z-grow');
+
+        showHtml();
+      }
+
+      function update() {
+        input2Attr(canvas, 'data-z-grow');
+        initFreeDropZorder(canvas);
+
+        showHtml();
+      }
+
+      function showHtml() {
+        document.getElementById('canvasHTML').innerHTML = friendlyStartTag(canvas);
+      }
+
+      function quick(btn) {
+        quickBtn(btn);
+        update();
+      }
+
     </script>
     <style>
       .section {
@@ -25,36 +55,74 @@
       }
     </style>
   </head>
-  <body>
+  <body onload="init();">
     <div id="pageBody">
       <p class="flavor">
         Move the balls anywhere. Stack them on top of each other.
       </p>
 
-      <div id="canvas" class="free-drop z-grow-up" style="width:7.5in; height:500px; background-color:#eee;">
-        <svg class="section moveable" draggable="true" style="left:50px; top:100px;">
-          <ellipse cx="50" cy="50" rx="49" ry="49" fill="red"></ellipse>
-        </svg>
-        <svg class="section moveable" draggable="true" style="left:200px; top:150px;">
-          <ellipse cx="50" cy="50" rx="49" ry="49" fill="orange"></ellipse>
-        </svg>
-        <svg class="section moveable" draggable="true" style="left:350px; top:200px;">
-          <ellipse cx="50" cy="50" rx="49" ry="49" fill="yellow"></ellipse>
-        </svg>
-        <svg class="section moveable" draggable="true" style="left:500px; top:250px;">
-          <ellipse cx="50" cy="50" rx="49" ry="49" fill="green"></ellipse>
-        </svg>
-        <svg class="section moveable" draggable="true" style="left:100px; top:300px;">
-          <ellipse cx="50" cy="50" rx="49" ry="49" fill="cyan"></ellipse>
-        </svg>
-        <svg class="section moveable" draggable="true" style="left:250px; top:350px;">
-          <ellipse cx="50" cy="50" rx="49" ry="49" fill="blue"></ellipse>
-        </svg>
-        <svg class="section moveable" draggable="true" style="left:400px; top:400px;">
-          <ellipse cx="50" cy="50" rx="49" ry="49" fill="purple"></ellipse>
-        </svg>
+      <!-- Any div could be the free-drop area. For example, the pageBody, above -->
+      <div id="canvas" class="free-drop" style="width:7.5in; height:500px; background-color:#eee;">
+        
+        <!-- SVG tags cannot be moveable. Wrap with a DIV. -->
+        <div class="section moveable" style="left:50px; top:100px;">
+          <svg width="100" height="100">
+            <ellipse cx="50" cy="50" rx="49" ry="49" fill="red"></ellipse>
+          </svg>
+        </div>
+        <div class="section moveable" style="left:200px; top:150px;">
+          <svg width="100" height="100">
+            <ellipse cx="50" cy="50" rx="49" ry="49" fill="orange"></ellipse>
+          </svg>
+        </div>
+        <div class="section moveable" style="left:350px; top:200px;">
+          <svg width="100" height="100">
+            <ellipse cx="50" cy="50" rx="49" ry="49" fill="yellow"></ellipse>
+          </svg>
+        </div>
+        <div class="section moveable" style="left:500px; top:250px;">
+          <svg width="100" height="100">
+            <ellipse cx="50" cy="50" rx="49" ry="49" fill="green"></ellipse>
+          </svg>
+        </div>
+        <div class="section moveable" style="left:100px; top:300px;">
+          <svg width="100" height="100">
+            <ellipse cx="50" cy="50" rx="49" ry="49" fill="cyan"></ellipse>
+          </svg>
+        </div>
+        <div class="section moveable" style="left:250px; top:350px;">
+          <svg width="100" height="100">
+            <ellipse cx="50" cy="50" rx="49" ry="49" fill="blue"></ellipse>
+          </svg>
+        </div>
+        <div class="section moveable" style="left:400px; top:400px;">
+          <svg width="100" height="100">
+            <ellipse cx="50" cy="50" rx="49" ry="49" fill="purple"></ellipse>
+          </svg>
+        </div>
       </div>
-      </div>
+
+
+      <table id="customize">
+        <tr><th colspan="3">
+          Customize the &lt;div class='<u>free-drop</u>'&gt;
+        </th></tr>
+        <tr>
+          <td>data-z-grow</td>
+          <td><input id="data-z-grow" type='text' onkeyup="update()"></td>
+          <td>
+            <button onclick="quick(this)">up</button>
+            <button onclick="quick(this)">down</button>
+            <button onclick="quick(this)">unset</button>
+          </td>
+        </tr>
+      </table>
+
+      <p>
+        <span id="canvasHTML" style="display: inline-block; border: solid 2px blue; padding:0.1in">
+        </span>
+      </p>
+
     </div>
   </body>
 </html>

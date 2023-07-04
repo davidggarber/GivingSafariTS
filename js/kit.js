@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.quickFreeMove = exports.quickMove = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveHighlightLocally = exports.saveDrawingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doDraw = exports.preprocessDrawObjects = void 0;
+exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveHighlightLocally = exports.saveDrawingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doDraw = exports.preprocessDrawObjects = exports.quickFreeMove = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -2346,18 +2346,7 @@ function preprocessDragFunctions() {
     for (var i = 0; i < elems.length; i++) {
         var elem = elems[i];
         preprocessFreeDrop(elem);
-        var height = elem.getBoundingClientRect().height;
-        var zUp = hasClass(elems[i], 'z-grow-up');
-        var zDown = hasClass(elems[i], 'z-grow-down');
-        if (zUp || zDown) {
-            var children = elems[i].getElementsByClassName('moveable');
-            for (var j = 0; j < children.length; j++) {
-                var child = children[j];
-                var z = parseInt(child.style.top);
-                z = zUp ? 1000 + (height - z) : z;
-                child.style.zIndex = String(z);
-            }
-        }
+        initFreeDropZorder(elem);
     }
 }
 exports.preprocessDragFunctions = preprocessDragFunctions;
@@ -2366,13 +2355,14 @@ exports.preprocessDragFunctions = preprocessDragFunctions;
  * @param elem a moveable element
  */
 function preprocessMoveable(elem) {
+    elem.setAttribute('draggable', 'true');
     elem.onmousedown = function (e) { onClickDrag(e); };
     elem.ondrag = function (e) { onDrag(e); };
     elem.ondragend = function (e) { onDragDrop(e); };
 }
 /**
  * Hook up the necessary mouse events to each drop target
- * @param elem a moveable element
+ * @param elem a drop-target element
  */
 function preprocessDropTarget(elem) {
     elem.onmouseup = function (e) { onClickDrop(e); };
@@ -2381,13 +2371,35 @@ function preprocessDropTarget(elem) {
 }
 /**
  * Hook up the necessary mouse events to each free drop target
- * @param elem a moveable element
+ * @param elem a free-drop element
  */
 function preprocessFreeDrop(elem) {
     elem.onmousedown = function (e) { doFreeDrop(e); };
     elem.ondragenter = function (e) { onDropAllowed(e); };
     elem.ondragover = function (e) { onDropAllowed(e); };
 }
+/**
+ * Assign z-index values to all moveable objects within a container.
+ * Objects' z index is a function of their y-axis, and can extend up or down.
+ * @param container The free-drop container, which can contain a data-z-grow attribute
+ */
+function initFreeDropZorder(container) {
+    var _a;
+    var zGrow = (_a = container.getAttributeNS('', 'data-z-grow')) === null || _a === void 0 ? void 0 : _a.toLowerCase();
+    if (!zGrow || (zGrow != 'up' && zGrow != 'down')) {
+        return;
+    }
+    var zUp = zGrow == 'up';
+    var height = container.getBoundingClientRect().height;
+    var children = container.getElementsByClassName('moveable');
+    for (var i = 0; i < children.length; i++) {
+        var child = children[i];
+        var z = parseInt(child.style.top); // will always be in pixels, relative to the container
+        z = 1000 + (zUp ? (height - z) : z);
+        child.style.zIndex = String(z);
+    }
+}
+exports.initFreeDropZorder = initFreeDropZorder;
 /**
  * The most recent object to be moved
  */
@@ -2500,16 +2512,18 @@ function doFreeDrop(event) {
  * When an object is dragged in a container that holds multiple items,
  * the z-order can change. Use the relative y position to set z-index.
  * @param elem The element whose position just changed
- * @param y The y-offset of that element
+ * @param y The y-offset of that element, within its free-drop container
  */
 function updateZ(elem, y) {
+    var _a;
     var dest = findParentOfClass(elem, 'free-drop');
-    if (hasClass(dest, 'z-grow-down')) {
+    var zGrow = (_a = dest === null || dest === void 0 ? void 0 : dest.getAttributeNS('', 'data-z-grow')) === null || _a === void 0 ? void 0 : _a.toLowerCase();
+    if (zGrow == 'down') {
         elem.style.zIndex = String(1000 + y);
     }
-    else if (hasClass(dest, 'z-grow-up')) {
+    else if (zGrow == 'up') {
         var rect = dest.getBoundingClientRect();
-        elem.style.zIndex = String(rect.height + 1000 - y);
+        elem.style.zIndex = String(1000 + rect.height - y);
     }
 }
 /**
