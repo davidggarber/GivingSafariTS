@@ -431,7 +431,7 @@ function setupExtractPattern() {
     if (numPattern != null) {
         var nextNumber = 1;
         for (var pi = 0; pi < numPattern.length; pi++) {
-            if (numPattern[pi]['count'] !== null) {
+            if (numPattern[pi]['count']) {
                 var count = numPattern[pi]['count'] as number;
                 for (var ci = 1; ci <= count; ci++) {
                     const span:HTMLSpanElement = document.createElement('span');

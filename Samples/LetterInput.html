@@ -27,6 +27,7 @@
         attr2Input(container, 'data-literal-style');
         attr2Input(container, 'data-input-style');
         attr2Input(container, 'data-extract-style');
+        attr2Input(container, 'data-extract-image');
         class2Check(container, 'letter-grid-2d');
         class2Check(container, 'letter-grid-discover');
 
@@ -46,6 +47,7 @@
         input2Attr(container, 'data-literal-style');
         input2Attr(container, 'data-input-style');
         input2Attr(container, 'data-extract-style');
+        input2Attr(container, 'data-extract-image');
         check2Class(container, 'letter-grid-2d');
         check2Class(container, 'letter-grid-discover');
         reset();
@@ -71,7 +73,10 @@
         background-color: #ccc;
       }
       #customize input {
-        width: 8ch;
+        width: 10ch;
+      }
+      .under-number {
+        font-size: 9pt;
       }
     </style>
   </head>
@@ -95,8 +100,12 @@
           <td class="letter-cell-block create-from-pattern" data-letter-pattern="2'1 1 6-4" data-extract-indeces="3 5 10"></p>
         </tr>
         <tr>
-          <td>1 2 3</td>
-          <td class="letter-cell-block create-from-pattern numeric" data-letter-pattern="1 1 1" data-extract-indeces="3"></p>
+          <td>1¤2¤3</td>
+          <td class="letter-cell-block create-from-pattern numeric" data-letter-pattern="1¤1¤1" data-extract-indeces="3"></p>
+        </tr>
+        <tr>
+          <td>ALPHA BETA</td>
+          <td class="letter-cell-block create-from-pattern numeric" data-letter-pattern="5 4" data-number-assignments="6=8 4=9"></p>
         </tr>
         <tr>
           <th colspan="2" style="padding-top:0.25in;">
@@ -104,11 +113,11 @@
           </th>
         </tr>
         <tr>
-          <td id="extracted" colspan="2" data-number-pattern="3 3 1"></td>
+          <td id="extracted" colspan="2" data-number-pattern="3 3 3"></td>
         </tr>
       </table>
 
-      <table id="customize" style="margin-top: 1in;">
+      <table id="customize" style="position:absolute; top: 4.5in;">
         <tr><th colspan="3">
           Customize the container of all input patterns
         </th></tr>
@@ -145,6 +154,14 @@
           </td>
         </tr>
         <tr>
+          <td>data-extract-image</td>
+          <td><input id="data-extract-image" type='text' onkeyup="update()"></td>
+          <td>
+            <button onclick="quick(this)">Icons/Circle.png</button>
+            <button onclick="quick(this)">unset = <i>none</i></button>
+          </td>
+        </tr>
+        <tr>
           <td>letter-grid-2d</td>
           <td><input id="letter-grid-2d" type='checkbox' onchange="update()"></td>
           <td>Grid 2D navigation</td>
@@ -157,7 +174,7 @@
       </table>
 
       <p>
-        <span id="containerHTML" style="display: inline-block; border: solid 2px blue; padding:0.1in">
+        <span id="containerHTML" style="position: absolute; top:7.5in; display: inline-block; border: solid 2px blue; padding:0.1in">
         </span>
       </p>
 

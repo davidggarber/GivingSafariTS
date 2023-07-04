@@ -1485,7 +1485,7 @@ export function onLetterKeyDown(event: KeyboardEvent) {
             if (event.key == '`') {
                 toggleHighlight(input);
             }
-            if (!event.ctrlKey && !event.altKey && event.key.match(/[a-z0-9]/i)) {
+            if (matchInputRules(input, event)) {
                 input.value = event.key;
                 afterInputUpdate(input);
             }
@@ -1524,6 +1524,20 @@ export function onLetterKeyDown(event: KeyboardEvent) {
 }
 
 /**
+ * Does a typed character match the input rules?
+ * @param input 
+ * @param evt 
+ * @returns 
+ */
+function matchInputRules(input:HTMLInputElement, evt:KeyboardEvent) {
+    if (evt.key.length != 1 || evt.ctrlKey || evt.altKey) {
+        return false;
+    }
+    return (input.inputMode === 'numeric')
+        ? evt.key.match(/[0-9]/) : evt.key.match(/[a-z0-9]/i);
+}
+
+/**
  * Callback when a user releases a keyboard key from any letter-input or word-input text field
  * @param event - A keyboard event
  */
@@ -1557,7 +1571,7 @@ export function onLetterKey(event:KeyboardEvent) {
         return;
     }
     else if (code == 'Home') {
-        moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 0) as HTMLInputElement);
+        moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 10) as HTMLInputElement);
         return;
     }
     else if (code == 'End') {
@@ -2501,7 +2515,7 @@ function setupExtractPattern() {
     if (numPattern != null) {
         var nextNumber = 1;
         for (var pi = 0; pi < numPattern.length; pi++) {
-            if (numPattern[pi]['count'] !== null) {
+            if (numPattern[pi]['count']) {
                 var count = numPattern[pi]['count'] as number;
                 for (var ci = 1; ci <= count; ci++) {
                     const span:HTMLSpanElement = document.createElement('span');
