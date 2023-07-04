@@ -2346,6 +2346,13 @@ function preprocessDragFunctions() {
     for (var i = 0; i < elems.length; i++) {
         var elem = elems[i];
         preprocessFreeDrop(elem);
+        // backward-compatible
+        if (hasClass(elem, 'z-grow-up')) {
+            elem.setAttributeNS('', 'data-z-grow', 'up');
+        }
+        else if (hasClass(elem, 'z-grow-down')) {
+            elem.setAttributeNS('', 'data-z-grow', 'down');
+        }
         initFreeDropZorder(elem);
     }
 }

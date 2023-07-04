@@ -4,487 +4,134 @@
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
     <script src="../js/kit.js"></script>
+    <script src="demoTools.js"></script>
     <script>
       const boiler = {
         'safari': 'Sample',
-        'title': 'Chemical Compounds',
-        'author': 'Rorke Haining',
-        'copyright': '2020',
+        'title': 'Grid Drag',
+        'author': 'David Garber',
+        'copyright': '2023',
         'type': 'Reassemble',
-        'paperSize': 'letter',
         'abilities': {
           'dragDrop': true
         }
       };
+
+      var canvas;
+      function init() {
+        canvas = document.getElementById('canvas');
+
+        // Copy the crossword template before running the exploding the puzzle during boilerplate initialization
+        boilerplate(boiler);
+
+        attr2Input(canvas, 'data-z-grow');
+
+        showHtml();
+      }
+
+      function update() {
+        input2Attr(canvas, 'data-z-grow');
+        initFreeDropZorder(canvas);
+
+        showHtml();
+      }
+
+      function showHtml() {
+        document.getElementById('canvasHTML').innerHTML = friendlyStartTag(canvas);
+      }
+
+      function quick(btn) {
+        quickBtn(btn);
+        update();
+      }
+
     </script>
     <style>
-      #table {
-        position: absolute;
-        left: 0px;
-        width:720px;
-        border-collapse: collapse;
+      .drop-target {
+        width:100px; 
+        height:100px;
       }
-      #table td {
-        margin: 0px;
-        padding: 0px;
-        width: 90px;
-        height: 90px;
-        border: 0px;
-        position: relative;
+      .xmoveable {
+        cursor: pointer;
       }
-      .tile {
-        position: absolute;
-        left:0px;
-        top:0px;
-        width: 89px;
-        height: 89px;
-        margin: 0px;
-        padding: 0px;
-        border: dashed 1px gray;
-        user-select: none; 
-        -webkit-user-select: none; /* Safari */        
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* IE10+/Edge */
-      }
-      .center {
-        position: absolute;
-        top: 25px;
-        left: 0px;
-        width: 100%;
-        font-size: 20pt;
-        text-align: center;
-        text-decoration: underline;
-      }
-      .top {
-        position: absolute;
-        width: 100%;
-        top: 0px;
-        left: 0px;
-        text-align: center;
-        font-size: 9pt;
-      }
-      .bottom {
-        position: absolute;
-        width: 100%;
-        bottom: 0px;
-        left: 0px;
-        text-align: center;
-        font-size: 9pt;
-      }
-      .left {
-        position: absolute;
-        width: 100%;
-        transform: rotate(270deg);
-        transform-origin: top left;
-        left: 0px;
-        top:89px;
-        text-align: center;
-        font-size: 9pt;
-      }
-      .right {
-        position: absolute;
-        width: 100%;
-        transform: rotate(270deg);
-        transform-origin: top right;
-        top: 0px;
-        right: 12pt;
-        text-align: center;
-        font-size: 9pt;
-      }
-
-
     </style>
   </head>
-  <body>
+  <body onload="init();">
     <div id="pageBody">
       <p class="flavor">
-        Our chemistry lab is in complete disarray! We need something to contain the mess. Cut out the element
-        squares along the dashed lines and rearrange them, joining edges to form “chemical compounds”. The
-        chemical compounds read left-to-right or top-to-bottom across adjacent edges. Do not rotate the element
-        squares; use the underlines to help prevent accidental rotations.
+        Move the balls around within the grid
       </p>
 
-      <table id="table">
+      <table id="canvas">
         <tr>
-          <td class="drop-target"></td>
           <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">Ke</div>
-              <div class="top">energy</div>
-              <div class="left">method</div>
-              <div class="right">liquid</div>
-              <div class="bottom"></div>
-            </div>
+            <div class="moveable">
+              <svg width="100" height="100">
+                <ellipse cx="50" cy="50" rx="49" ry="49" fill="red"></ellipse>
+              </svg>
+            </div>    
           </td>
           <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">T</div>
-              <div class="top">tension</div>
-              <div class="left">nitrogen</div>
-              <div class="right">boiling</div>
-              <div class="bottom"></div>
-            </div>
+            <div class="moveable">
+              <svg width="100" height="100">
+                <ellipse cx="50" cy="50" rx="49" ry="49" fill="orange"></ellipse>
+              </svg>
+            </div>    
           </td>
           <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">Ow</div>
-              <div class="top">metal</div>
-              <div class="left"></div>
-              <div class="right">critical</div>
-              <div class="bottom">guest</div>
-            </div>
+            <div class="moveable">
+              <svg width="100" height="100">
+                <ellipse cx="50" cy="50" rx="49" ry="49" fill="yellow"></ellipse>
+              </svg>
+            </div>    
           </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">O</div>
-              <div class="top">goggle</div>
-              <div class="left">prize</div>
-              <div class="right"></div>
-              <div class="bottom">research</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">S</div>
-              <div class="top">gas</div>
-              <div class="left">assistant</div>
-              <div class="right">closed</div>
-              <div class="bottom">saline</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">N</div>
-              <div class="top">table</div>
-              <div class="left">vapor</div>
-              <div class="right"></div>
-              <div class="bottom">organic</div>
-            </div>
-          </td>
-          <td class="drop-target"></td>
         </tr>
         <tr>
-          <td class="drop-target"></td>
           <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">H</div>
-              <div class="top">radical</div>
-              <div class="left">fuel</div>
-              <div class="right">electron</div>
-              <div class="bottom">dependent</div>
-            </div>
+            <div class="moveable">
+              <svg width="100" height="100">
+                <ellipse cx="50" cy="50" rx="49" ry="49" fill="lime"></ellipse>
+              </svg>
+            </div>    
           </td>
           <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">W</div>
-              <div class="top">system</div>
-              <div class="left">system</div>
-              <div class="right">pH</div>
-              <div class="bottom">cold</div>
-            </div>
+            <div class="moveable">
+              <svg width="100" height="100">
+                <ellipse cx="50" cy="50" rx="49" ry="49" fill="cyan"></ellipse>
+              </svg>
+            </div>    
           </td>
           <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">A</div>
-              <div class="top">burner</div>
-              <div class="left">microscope</div>
-              <div class="right">quantum</div>
-              <div class="bottom">kinetic</div>
-            </div>
+            <div class="moveable">
+              <svg width="100" height="100">
+                <ellipse cx="50" cy="50" rx="49" ry="49" fill="darkblue"></ellipse>
+              </svg>
+            </div>    
           </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">Y</div>
-              <div class="top"></div>
-              <div class="left"></div>
-              <div class="right">electric</div>
-              <div class="bottom">subatomic</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">Am</div>
-              <div class="top">soda</div>
-              <div class="left"></div>
-              <div class="right">absolute</div>
-              <div class="bottom">unit</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">Et</div>
-              <div class="top">particle</div>
-              <div class="left"></div>
-              <div class="right">fossil</div>
-              <div class="bottom">sulfuric</div>
-            </div>
-          </td>
-          <td class="drop-target"></td>
         </tr>
         <tr>
-          <td class="drop-target"></td>
           <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">Gl</div>
-              <div class="top">tube</div>
-              <div class="left">charge</div>
-              <div class="right">potential</div>
-              <div class="bottom">free</div>
-            </div>
+            <div class="moveable">
+              <svg width="100" height="100">
+                <ellipse cx="50" cy="50" rx="49" ry="49" fill="purple"></ellipse>
+              </svg>
+            </div>    
           </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">Ar</div>
-              <div class="top"></div>
-              <div class="left">balance</div>
-              <div class="right"></div>
-              <div class="bottom">safety</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">E</div>
-              <div class="top">chemistry</div>
-              <div class="left">zero</div>
-              <div class="right"></div>
-              <div class="bottom">metal</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">Lo</div>
-              <div class="top">fusion</div>
-              <div class="left">earth</div>
-              <div class="right">Nobel</div>
-              <div class="bottom">cell</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">F</div>
-              <div class="top">conversion</div>
-              <div class="left">acid</div>
-              <div class="right">sodium</div>
-              <div class="bottom">carbon</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">I</div>
-              <div class="top">paper</div>
-              <div class="left">scale</div>
-              <div class="right">ozone</div>
-              <div class="bottom"></div>
-            </div>
-          </td>
-          <td class="drop-target"></td>
-        </tr>
-        <tr>
-          <td class="drop-target"></td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">I</div>
-              <div class="top">dating</div>
-              <div class="left">motion</div>
-              <div class="right">ventilation</div>
-              <div class="bottom">ionic</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">W</div>
-              <div class="top"></div>
-              <div class="left">helix</div>
-              <div class="right"></div>
-              <div class="bottom">radioactive</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">As</div>
-              <div class="top">bond</div>
-              <div class="left">energy</div>
-              <div class="right">teaching</div>
-              <div class="bottom">Bunsen</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">R</div>
-              <div class="top">reaction</div>
-              <div class="left">gas</div>
-              <div class="right"></div>
-              <div class="bottom">metric</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">O</div>
-              <div class="top">decay</div>
-              <div class="left">mass</div>
-              <div class="right"></div>
-              <div class="bottom">periodic</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">He</div>
-              <div class="top"></div>
-              <div class="left">number</div>
-              <div class="right"></div>
-              <div class="bottom">chain</div>
-            </div>
-          </td>
-          <td class="drop-target"></td>
-        </tr>
-        <tr>
-          <td class="drop-target"></td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">St</div>
-              <div class="top">wash</div>
-              <div class="left">hood</div>
-              <div class="right">greenhouse</div>
-              <div class="bottom">noble</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">M</div>
-              <div class="top">principle</div>
-              <div class="left"></div>
-              <div class="right">Brownian</div>
-              <div class="bottom">test</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">O</div>
-              <div class="top"></div>
-              <div class="left"></div>
-              <div class="right">amino</div>
-              <div class="bottom">uncertainty</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">H</div>
-              <div class="top">membrane</div>
-              <div class="left">point</div>
-              <div class="right">balance</div>
-              <div class="bottom"></div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">S</div>
-              <div class="top">acid</div>
-              <div class="left">test</div>
-              <div class="right">federal</div>
-              <div class="bottom"></div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">Li</div>
-              <div class="top">variable</div>
-              <div class="left">grant</div>
-              <div class="right">scientific</div>
-              <div class="bottom"></div>
-            </div>
-          </td>
-          <td class="drop-target"></td>
-        </tr>
-        <tr>
-          <td class="drop-target"></td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">S</div>
-              <div class="top"></div>
-              <div class="left">layer</div>
-              <div class="right"></div>
-              <div class="bottom"></div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">T</div>
-              <div class="top"></div>
-              <div class="left"></div>
-              <div class="right">double</div>
-              <div class="bottom">heavy</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">T</div>
-              <div class="top">solution</div>
-              <div class="left">mechanics</div>
-              <div class="right">rare</div>
-              <div class="bottom">surface</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">K</div>
-              <div class="top"></div>
-              <div class="left"></div>
-              <div class="right">litmus</div>
-              <div class="bottom"></div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">C</div>
-              <div class="top">alloy</div>
-              <div class="left">chloride</div>
-              <div class="right">atomic</div>
-              <div class="bottom">eye</div>
-            </div>
-          </td>
-          <td class="drop-target">
-            <div class="tile moveable" draggable="true">
-              <div class="center">Rd</div>
-              <div class="top">lecturer</div>
-              <div class="left"></div>
-              <div class="right">water</div>
-              <div class="bottom">baking</div>
-            </div>
-          </td>
-          <td class="drop-target"></td>
-        </tr>
-        <tr>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-        </tr>
-        <tr>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-        </tr>
-        <tr>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
-          <td class="drop-target"></td>
           <td class="drop-target"></td>
           <td class="drop-target"></td>
         </tr>
       </table>
 
+      <table id="customize">
+        <tr><th colspan="3">
+          Nothing to customize
+        </th></tr>
+      </table>
+
+      <p>
+        <span id="canvasHTML" style="display: inline-block; border: solid 2px blue; padding:0.1in">
+        </span>
+      </p>
 
     </div>
   </body>
