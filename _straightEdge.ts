@@ -1,7 +1,7 @@
 import { isDebug } from "./_boilerplate";
 import { findParentOfClass, findParentOfTag, hasClass, toggleClass } from "./_classUtil";
 import { Position } from "./_dragDrop";
-import { getGlobalIndex, indexAllVertices, mapGlobalIndeces } from "./_storage";
+import { getGlobalIndex, indexAllVertices, mapGlobalIndeces, saveStraightEdge } from "./_storage";
 
 /**
  * Find the center of an element, in client coordinates
@@ -59,6 +59,14 @@ export function preprocessRulerFunctions(mode:string, fill:boolean) {
 }
 
 /**
+ * Identified which type of selector is enabled for this page
+ * @returns either 'straight-edge' or 'word-select'
+ */
+export function getStraightEdgeType() {
+    return selector_class;
+}
+
+/**
  * Hook up the necessary mouse events to each moveable item
  * @param elem a moveable element
  */
@@ -76,7 +84,15 @@ function preprocessRulerRange(elem:HTMLElement) {
 }
 
 /**
- * Which class are we looking for: straight-edge or word-select
+ * Supported kinds of straight edges. 
+ */
+export const EdgeTypes = {
+    straightEdge: 'straight-edge',
+    wordSelect: 'word-select'
+}
+
+/**
+ * Which class are we looking for: should be one of the EdgeTypes
  */
 let selector_class:string;
 /**
@@ -151,6 +167,49 @@ function getRulerData(evt:MouseEvent):RulerEventData {
     const angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
     const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
     const pos = new DOMPoint(evt.x, evt.y);
+    let spt = svg.createSVGPoint();
+        spt.x = pos.x - bounds.left;
+        spt.y = pos.y - bounds.top;
+    const data:RulerEventData = {
+        svg: svg, 
+        container: (containers && containers.length > 0) ? containers[0] : svg,
+        bounds: bounds,
+        maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
+        canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
+        canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
+        hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
+        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
+        showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
+        evtPos: pos,
+        evtPoint: spt,
+    };
+
+    let near = findNearestVertex(data) as HTMLElement;
+    if (near) {
+        data.nearest = getVertexData(data, near);
+    }
+    return data;
+}
+
+/**
+ * Get ruler data as if a user had clicked on a specific vertex
+ * @param vertex Any vertex element
+ * @returns a RulerEventData
+ */
+function getRulerDataFromVertex(vertex:HTMLElement):RulerEventData {
+    const range = findParentOfClass(vertex, area_class) as HTMLElement;
+    const svg = findParentOfTag(range, 'SVG') as SVGSVGElement;
+    const containers = svg.getElementsByClassName(selector_class + '-container');
+    const bounds = svg.getBoundingClientRect();
+    const max_points = range.getAttributeNS('', 'data-max-points');
+    const maxPoints = max_points ? parseInt(max_points) : 2;
+    const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
+    const canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
+    const hoverRange = range.getAttributeNS('', 'data-hover-range');
+    const angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
+    const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
+    const vBounds = vertex.getBoundingClientRect();
+    const pos = new DOMPoint(vBounds.x + vBounds.width / 2, vBounds.y + vBounds.height / 2);
     let spt = svg.createSVGPoint();
         spt.x = pos.x - bounds.left;
         spt.y = pos.y - bounds.top;
@@ -323,34 +382,8 @@ function onLineUp(evt:MouseEvent) {
         indeces.push(getGlobalIndex(_straightEdgeVertices[i], 'vx'));
     }
 
-    if (_straightEdgeVertices.length < 2) {
-        // Incomplete without at least two snapped ends. Abandon
-        ruler.container.removeChild(_straightEdgeBuilder);
-        _straightEdgeBuilder = null;
-    }
-    else if (_straightEdgeBuilder.points.length > _straightEdgeVertices.length) {
-        // Remove open-end
-        _straightEdgeBuilder.points.removeItem(_straightEdgeVertices.length);
-        toggleClass(_straightEdgeBuilder, 'open-ended', false);
-    }
-
-    if (_straightEdgeBuilder) {
-        toggleClass(_straightEdgeBuilder, 'building', false);
-        _straightEdgeBuilder?.setAttributeNS('', 'data-vertices', ','+indeces.join(',')+',');
-        _straightEdges.push(_straightEdgeBuilder);
-
-        if (selector_fill_class) {
-            const fill = document.createElementNS('http://www.w3.org/2000/svg', 'polyline') as SVGPolylineElement;
-            toggleClass(fill, selector_fill_class, true);
-            for (let i = 0; i < _straightEdgeBuilder.points.length; i++) {
-                fill.points.appendItem(_straightEdgeBuilder.points[i]);
-            }
-            ruler.container.appendChild(fill);  // will always be after the original
-        }
-    }
-
-    _straightEdgeVertices = [];
-    _straightEdgeBuilder = null;
+    const vertexList = ','+indeces.join(',')+',';
+    completeStraightLine(ruler, vertexList);
 }
 
 /**
@@ -392,6 +425,50 @@ function snapStraightLineTo(ruler:RulerEventData, next:VertexData) {
 function openStraightLineTo(ruler:RulerEventData) {
     toggleClass(_straightEdgeBuilder, 'open-ended', true);
     _straightEdgeBuilder?.points.appendItem(ruler.evtPoint);
+}
+
+/**
+ * Convert the straight line being built to a finished line
+ * @param ruler The containing area and rules
+ * @param vertexList A string join of all the vertex indeces
+ * @param save Determines whether this edge is saved. It should be false when loading from a save.
+ */
+function completeStraightLine(ruler:RulerEventData, vertexList:string, save:boolean = true) {
+    if (!_straightEdgeBuilder) {
+        return;
+    }
+    if (_straightEdgeVertices.length < 2) {
+        // Incomplete without at least two snapped ends. Abandon
+        ruler.container.removeChild(_straightEdgeBuilder);
+        _straightEdgeBuilder = null;
+    }
+    else if (_straightEdgeBuilder.points.length > _straightEdgeVertices.length) {
+        // Remove open-end
+        _straightEdgeBuilder.points.removeItem(_straightEdgeVertices.length);
+        toggleClass(_straightEdgeBuilder, 'open-ended', false);
+    }
+
+    if (_straightEdgeBuilder) {
+        toggleClass(_straightEdgeBuilder, 'building', false);
+        _straightEdgeBuilder.setAttributeNS('', 'data-vertices', vertexList);
+        _straightEdges.push(_straightEdgeBuilder);
+
+        if (selector_fill_class) {
+            const fill = document.createElementNS('http://www.w3.org/2000/svg', 'polyline') as SVGPolylineElement;
+            toggleClass(fill, selector_fill_class, true);
+            for (let i = 0; i < _straightEdgeBuilder.points.length; i++) {
+                fill.points.appendItem(_straightEdgeBuilder.points[i]);
+            }
+            ruler.container.appendChild(fill);  // will always be after the original
+        }
+
+        if (save) {
+            saveStraightEdge(vertexList, true);
+        }
+    }
+
+    _straightEdgeVertices = [];
+    _straightEdgeBuilder = null;
 }
 
 /**
@@ -559,6 +636,9 @@ function deleteStraightEdge(edge:SVGPolylineElement) {
         }
     }
 
+    const indexList = edge.getAttributeNS('', 'data-vertices');
+    saveStraightEdge(indexList as string, false);  // Deletes from the saved list
+
     edge.parentNode?.removeChild(edge);
 }
 
@@ -620,6 +700,35 @@ function findStraightEdgeVertices(edge:SVGPolylineElement):HTMLElement[] {
         }        
     }
     return vertices;
+}
+
+/**
+ * Create a straight-edge from a list of vertices
+ * Called while restoring from a save, so does not redundantly save progress.
+ * @param vertexList A joined list of vertex global-indeces, delimeted by commas
+ */
+export function createFromVertexList(vertexList:string) {
+    const map = mapGlobalIndeces('vertex', 'vx');
+    const vertices:string[] = vertexList.split(',');
+    let ruler:RulerEventData|null = null;
+    for (let i = 0; i < vertices.length; i++) {
+        if (vertices[i].length > 0) {
+            const id = parseInt(vertices[i]);
+            const vert = map[id];
+            if (vert) {
+                if (ruler == null) {
+                    ruler = getRulerDataFromVertex(vert);
+                    createStraightLineFrom(ruler, ruler.nearest as VertexData);
+                }
+                else {
+                    snapStraightLineTo(ruler, getVertexData(ruler, vert));
+                }
+            }
+        }
+    }
+    if (ruler) {
+        completeStraightLine(ruler, vertexList, false/*no save while restoring*/);
+    }
 }
 
 export function clearAllStraightEdges(id:string) {

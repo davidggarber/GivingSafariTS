@@ -2,7 +2,8 @@ import { getSafariDetails } from "./_boilerplate";
 import { hasClass, toggleClass, getOptionalStyle, findFirstChildOfClass } from "./_classUtil";
 import { afterInputUpdate, updateWordExtraction } from "./_textInput";
 import { quickMove, quickFreeMove, Position, positionFromStyle } from "./_dragDrop";
-import { doStamp } from "./_drawTools";
+import { doStamp } from "./_stampTools";
+import { createFromVertexList } from "./_straightEdge";
 
 ////////////////////////////////////////////////////////////////////////
 // Types
@@ -19,12 +20,13 @@ type LocalCacheStruct = {
     checks: object;     // number => boolean
     containers: object; // number => number
     positions: object;  // number => Position
-    drawings: object;   // number => string
+    stamps: object;   // number => string
     highlights: object; // number => boolean
+    edges: string[]; // strings
     time: Date|null;
 }
 
-var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, drawings: {}, highlights: {}, time: null };
+var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], time: null };
 
 ////////////////////////////////////////////////////////////////////////
 // User interface
@@ -292,10 +294,10 @@ export function saveStampingLocally(element:HTMLElement) {
         if (index >= 0) {
             var drawn = findFirstChildOfClass(element, 'stampedObject');
             if (drawn) {
-                localCache.drawings[index] = drawn.getAttributeNS('', 'data-template-id');
+                localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
             }
             else {
-                delete localCache.drawings[index];
+                delete localCache.stamps[index];
             }
             saveCache();
         }
@@ -314,6 +316,24 @@ export function saveHighlightLocally(element:HTMLElement) {
             saveCache();
         }
     }
+}
+
+/**
+ * Update the local cache with this vertex list.
+ * @param vertexList A list of vertex global indeces
+ * @param add If true, this edge is added to the saved state. If false, it is removed.
+ */
+export function saveStraightEdge(vertexList: string, add:boolean) {
+    if (add) {
+        localCache.edges.push(vertexList);
+    }
+    else {
+        const i = localCache.edges.indexOf(vertexList);
+        if (i >= 0) {
+            localCache.edges.splice(i, 1);
+        }
+    }
+    saveCache();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -454,8 +474,9 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreCrossOffs(storage.checks);
     restoreContainers(storage.containers);
     restorePositions(storage.positions);
-    restoreDrawings(storage.drawings);
+    restoreDrawings(storage.stamps);
     restoreHighlights(storage.highlights);
+    restoreEdges(storage.edges);
     reloading = false;
 }
 
@@ -577,7 +598,7 @@ function restorePositions(positions:object) {
  * @param values A dictionary of index=>string
  */
 function restoreDrawings(drawings:object) {
-    localCache.drawings = drawings;
+    localCache.stamps = drawings;
     var targets = document.getElementsByClassName('stampable');
     for (var i = 0; i < targets.length; i++) {
         var tool = drawings[i] as string;
@@ -601,6 +622,20 @@ function restoreHighlights(highlights) {
         if (value != undefined){
             toggleClass(element, 'highlighted', value);
         }
+    }
+}
+
+/**
+ * Recreate any saved straight-edges and word-selections
+ * @param vertexLists A list of strings, where each string is a comma-separated-list of vertices
+ */
+function restoreEdges(vertexLists:string[]) {
+    if (!vertexLists) {
+        vertexLists = [];
+    }
+    localCache.edges = vertexLists;
+    for (var i = 0; i < vertexLists.length; i++) {
+        createFromVertexList(vertexLists[i]);
     }
 }
 

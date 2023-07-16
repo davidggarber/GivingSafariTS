@@ -5,7 +5,7 @@ import { setupDecoderToggle } from "./_decoders"
 import { checkLocalStorage, indexAllDragDropFields, indexAllDrawableFields } from "./_storage";
 import { preprocessStampObjects } from "./_stampTools";
 import { preprocessDragFunctions } from "./_dragDrop";
-import { preprocessRulerFunctions } from "./_straightEdge";
+import { EdgeTypes, preprocessRulerFunctions } from "./_straightEdge";
 
 
 /**
@@ -111,7 +111,7 @@ type AbilityData = {
     decoder?: boolean;
     decoderMode?: string;
     dragDrop?: boolean;
-    drawing?: boolean;
+    stamping?: boolean;
     straightEdge?: boolean;
     wordSearch?: boolean;
 }
@@ -347,7 +347,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
             data.dragDrop = true;
         }
         if (text.search('✒️') >= 0) {
-            data.drawing = true;
+            data.stamping = true;
         }
     }
     else {
@@ -374,7 +374,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         linkCss(head, safariDetails.cssRoot + 'DragDrop.css');
         count++;
     }
-    if (data.drawing) {
+    if (data.stamping) {
         preprocessStampObjects();
         indexAllDrawableFields();
         linkCss(head, safariDetails.cssRoot + 'StampTools.css');
@@ -382,13 +382,13 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
-        preprocessRulerFunctions('straight-edge', false);
+        preprocessRulerFunctions(EdgeTypes.straightEdge, false);
         linkCss(head, safariDetails.cssRoot + 'StraightEdge.css');
         //indexAllVertices();
     }
     if (data.wordSearch) {
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
-        preprocessRulerFunctions('word-select', true);
+        preprocessRulerFunctions(EdgeTypes.wordSelect, true);
         linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
         //indexAllVertices();
     }

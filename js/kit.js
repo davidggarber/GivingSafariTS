@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.preprocessStampObjects = exports.quickFreeMove = void 0;
+exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -595,7 +595,7 @@ function toggleDecoder() {
     setupDecoderToggle(null);
 }
 exports.toggleDecoder = toggleDecoder;
-var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, drawings: {}, highlights: {}, time: null };
+var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], time: null };
 ////////////////////////////////////////////////////////////////////////
 // User interface
 //
@@ -853,10 +853,10 @@ function saveStampingLocally(element) {
         if (index >= 0) {
             var drawn = findFirstChildOfClass(element, 'stampedObject');
             if (drawn) {
-                localCache.drawings[index] = drawn.getAttributeNS('', 'data-template-id');
+                localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
             }
             else {
-                delete localCache.drawings[index];
+                delete localCache.stamps[index];
             }
             saveCache();
         }
@@ -877,6 +877,24 @@ function saveHighlightLocally(element) {
     }
 }
 exports.saveHighlightLocally = saveHighlightLocally;
+/**
+ * Update the local cache with this vertex list.
+ * @param vertexList A list of vertex global indeces
+ * @param add If true, this edge is added to the saved state. If false, it is removed.
+ */
+function saveStraightEdge(vertexList, add) {
+    if (add) {
+        localCache.edges.push(vertexList);
+    }
+    else {
+        var i = localCache.edges.indexOf(vertexList);
+        if (i >= 0) {
+            localCache.edges.splice(i, 1);
+        }
+    }
+    saveCache();
+}
+exports.saveStraightEdge = saveStraightEdge;
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -1011,8 +1029,9 @@ function loadLocalStorage(storage) {
     restoreCrossOffs(storage.checks);
     restoreContainers(storage.containers);
     restorePositions(storage.positions);
-    restoreDrawings(storage.drawings);
+    restoreDrawings(storage.stamps);
     restoreHighlights(storage.highlights);
+    restoreEdges(storage.edges);
     reloading = false;
 }
 /**
@@ -1127,7 +1146,7 @@ function restorePositions(positions) {
  * @param values A dictionary of index=>string
  */
 function restoreDrawings(drawings) {
-    localCache.drawings = drawings;
+    localCache.stamps = drawings;
     var targets = document.getElementsByClassName('stampable');
     for (var i = 0; i < targets.length; i++) {
         var tool = drawings[i];
@@ -1150,6 +1169,19 @@ function restoreHighlights(highlights) {
         if (value != undefined) {
             toggleClass(element, 'highlighted', value);
         }
+    }
+}
+/**
+ * Recreate any saved straight-edges and word-selections
+ * @param vertexLists A list of strings, where each string is a comma-separated-list of vertices
+ */
+function restoreEdges(vertexLists) {
+    if (!vertexLists) {
+        vertexLists = [];
+    }
+    localCache.edges = vertexLists;
+    for (var i = 0; i < vertexLists.length; i++) {
+        createFromVertexList(vertexLists[i]);
     }
 }
 ////////////////////////////////////////////////////////////////////////
@@ -2978,6 +3010,14 @@ function preprocessRulerFunctions(mode, fill) {
 }
 exports.preprocessRulerFunctions = preprocessRulerFunctions;
 /**
+ * Identified which type of selector is enabled for this page
+ * @returns either 'straight-edge' or 'word-select'
+ */
+function getStraightEdgeType() {
+    return selector_class;
+}
+exports.getStraightEdgeType = getStraightEdgeType;
+/**
  * Hook up the necessary mouse events to each moveable item
  * @param elem a moveable element
  */
@@ -2993,7 +3033,14 @@ function preprocessRulerRange(elem) {
     elem.onmouseup = function (e) { onLineUp(e); };
 }
 /**
- * Which class are we looking for: straight-edge or word-select
+ * Supported kinds of straight edges.
+ */
+exports.EdgeTypes = {
+    straightEdge: 'straight-edge',
+    wordSelect: 'word-select'
+};
+/**
+ * Which class are we looking for: should be one of the EdgeTypes
  */
 var selector_class;
 /**
@@ -3022,6 +3069,47 @@ function getRulerData(evt) {
     var angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
     var showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
     var pos = new DOMPoint(evt.x, evt.y);
+    var spt = svg.createSVGPoint();
+    spt.x = pos.x - bounds.left;
+    spt.y = pos.y - bounds.top;
+    var data = {
+        svg: svg,
+        container: (containers && containers.length > 0) ? containers[0] : svg,
+        bounds: bounds,
+        maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
+        canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
+        canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
+        hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
+        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
+        showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
+        evtPos: pos,
+        evtPoint: spt,
+    };
+    var near = findNearestVertex(data);
+    if (near) {
+        data.nearest = getVertexData(data, near);
+    }
+    return data;
+}
+/**
+ * Get ruler data as if a user had clicked on a specific vertex
+ * @param vertex Any vertex element
+ * @returns a RulerEventData
+ */
+function getRulerDataFromVertex(vertex) {
+    var range = findParentOfClass(vertex, area_class);
+    var svg = findParentOfTag(range, 'SVG');
+    var containers = svg.getElementsByClassName(selector_class + '-container');
+    var bounds = svg.getBoundingClientRect();
+    var max_points = range.getAttributeNS('', 'data-max-points');
+    var maxPoints = max_points ? parseInt(max_points) : 2;
+    var canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
+    var canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
+    var hoverRange = range.getAttributeNS('', 'data-hover-range');
+    var angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
+    var showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
+    var vBounds = vertex.getBoundingClientRect();
+    var pos = new DOMPoint(vBounds.x + vBounds.width / 2, vBounds.y + vBounds.height / 2);
     var spt = svg.createSVGPoint();
     spt.x = pos.x - bounds.left;
     spt.y = pos.y - bounds.top;
@@ -3186,31 +3274,8 @@ function onLineUp(evt) {
         toggleClass(_straightEdgeVertices[i], 'has-line', _straightEdgeBuilder != null);
         indeces.push(getGlobalIndex(_straightEdgeVertices[i], 'vx'));
     }
-    if (_straightEdgeVertices.length < 2) {
-        // Incomplete without at least two snapped ends. Abandon
-        ruler.container.removeChild(_straightEdgeBuilder);
-        _straightEdgeBuilder = null;
-    }
-    else if (_straightEdgeBuilder.points.length > _straightEdgeVertices.length) {
-        // Remove open-end
-        _straightEdgeBuilder.points.removeItem(_straightEdgeVertices.length);
-        toggleClass(_straightEdgeBuilder, 'open-ended', false);
-    }
-    if (_straightEdgeBuilder) {
-        toggleClass(_straightEdgeBuilder, 'building', false);
-        _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.setAttributeNS('', 'data-vertices', ',' + indeces.join(',') + ',');
-        _straightEdges.push(_straightEdgeBuilder);
-        if (selector_fill_class) {
-            var fill = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-            toggleClass(fill, selector_fill_class, true);
-            for (var i = 0; i < _straightEdgeBuilder.points.length; i++) {
-                fill.points.appendItem(_straightEdgeBuilder.points[i]);
-            }
-            ruler.container.appendChild(fill); // will always be after the original
-        }
-    }
-    _straightEdgeVertices = [];
-    _straightEdgeBuilder = null;
+    var vertexList = ',' + indeces.join(',') + ',';
+    completeStraightLine(ruler, vertexList);
 }
 /**
  * Create a new straight-edge, starting at one vertex
@@ -3247,6 +3312,46 @@ function snapStraightLineTo(ruler, next) {
 function openStraightLineTo(ruler) {
     toggleClass(_straightEdgeBuilder, 'open-ended', true);
     _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.points.appendItem(ruler.evtPoint);
+}
+/**
+ * Convert the straight line being built to a finished line
+ * @param ruler The containing area and rules
+ * @param vertexList A string join of all the vertex indeces
+ * @param save Determines whether this edge is saved. It should be false when loading from a save.
+ */
+function completeStraightLine(ruler, vertexList, save) {
+    if (save === void 0) { save = true; }
+    if (!_straightEdgeBuilder) {
+        return;
+    }
+    if (_straightEdgeVertices.length < 2) {
+        // Incomplete without at least two snapped ends. Abandon
+        ruler.container.removeChild(_straightEdgeBuilder);
+        _straightEdgeBuilder = null;
+    }
+    else if (_straightEdgeBuilder.points.length > _straightEdgeVertices.length) {
+        // Remove open-end
+        _straightEdgeBuilder.points.removeItem(_straightEdgeVertices.length);
+        toggleClass(_straightEdgeBuilder, 'open-ended', false);
+    }
+    if (_straightEdgeBuilder) {
+        toggleClass(_straightEdgeBuilder, 'building', false);
+        _straightEdgeBuilder.setAttributeNS('', 'data-vertices', vertexList);
+        _straightEdges.push(_straightEdgeBuilder);
+        if (selector_fill_class) {
+            var fill = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            toggleClass(fill, selector_fill_class, true);
+            for (var i = 0; i < _straightEdgeBuilder.points.length; i++) {
+                fill.points.appendItem(_straightEdgeBuilder.points[i]);
+            }
+            ruler.container.appendChild(fill); // will always be after the original
+        }
+        if (save) {
+            saveStraightEdge(vertexList, true);
+        }
+    }
+    _straightEdgeVertices = [];
+    _straightEdgeBuilder = null;
 }
 /**
  * Checks to see if an vertex is already in the current straightline
@@ -3402,6 +3507,8 @@ function deleteStraightEdge(edge) {
             }
         }
     }
+    var indexList = edge.getAttributeNS('', 'data-vertices');
+    saveStraightEdge(indexList, false); // Deletes from the saved list
     (_b = edge.parentNode) === null || _b === void 0 ? void 0 : _b.removeChild(edge);
 }
 /**
@@ -3462,6 +3569,35 @@ function findStraightEdgeVertices(edge) {
     }
     return vertices;
 }
+/**
+ * Create a straight-edge from a list of vertices
+ * Called while restoring from a save, so does not redundantly save progress.
+ * @param vertexList A joined list of vertex global-indeces, delimeted by commas
+ */
+function createFromVertexList(vertexList) {
+    var map = mapGlobalIndeces('vertex', 'vx');
+    var vertices = vertexList.split(',');
+    var ruler = null;
+    for (var i = 0; i < vertices.length; i++) {
+        if (vertices[i].length > 0) {
+            var id = parseInt(vertices[i]);
+            var vert = map[id];
+            if (vert) {
+                if (ruler == null) {
+                    ruler = getRulerDataFromVertex(vert);
+                    createStraightLineFrom(ruler, ruler.nearest);
+                }
+                else {
+                    snapStraightLineTo(ruler, getVertexData(ruler, vert));
+                }
+            }
+        }
+    }
+    if (ruler) {
+        completeStraightLine(ruler, vertexList, false /*no save while restoring*/);
+    }
+}
+exports.createFromVertexList = createFromVertexList;
 function clearAllStraightEdges(id) {
     var _a;
     var svg = document.getElementById(id);
@@ -3754,7 +3890,7 @@ function setupAbilities(head, margins, data) {
             data.dragDrop = true;
         }
         if (text.search('✒️') >= 0) {
-            data.drawing = true;
+            data.stamping = true;
         }
     }
     else {
@@ -3781,7 +3917,7 @@ function setupAbilities(head, margins, data) {
         linkCss(head, safariDetails.cssRoot + 'DragDrop.css');
         count++;
     }
-    if (data.drawing) {
+    if (data.stamping) {
         preprocessStampObjects();
         indexAllDrawableFields();
         linkCss(head, safariDetails.cssRoot + 'StampTools.css');
@@ -3789,13 +3925,13 @@ function setupAbilities(head, margins, data) {
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
-        preprocessRulerFunctions('straight-edge', false);
+        preprocessRulerFunctions(exports.EdgeTypes.straightEdge, false);
         linkCss(head, safariDetails.cssRoot + 'StraightEdge.css');
         //indexAllVertices();
     }
     if (data.wordSearch) {
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
-        preprocessRulerFunctions('word-select', true);
+        preprocessRulerFunctions(exports.EdgeTypes.wordSelect, true);
         linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
         //indexAllVertices();
     }
