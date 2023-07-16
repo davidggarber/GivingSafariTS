@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveHighlightLocally = exports.saveDrawingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doDraw = exports.preprocessDrawObjects = exports.quickFreeMove = void 0;
+exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.preprocessStampObjects = exports.quickFreeMove = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -847,11 +847,11 @@ exports.savePositionLocally = savePositionLocally;
  * Update the saved drawings object
  * @param element an element which might contain a drawn object
  */
-function saveDrawingLocally(element) {
+function saveStampingLocally(element) {
     if (element) {
         var index = getGlobalIndex(element);
         if (index >= 0) {
-            var drawn = findFirstChildOfClass(element, 'drawnObject');
+            var drawn = findFirstChildOfClass(element, 'stampedObject');
             if (drawn) {
                 localCache.drawings[index] = drawn.getAttributeNS('', 'data-template-id');
             }
@@ -862,7 +862,7 @@ function saveDrawingLocally(element) {
         }
     }
 }
-exports.saveDrawingLocally = saveDrawingLocally;
+exports.saveStampingLocally = saveStampingLocally;
 /**
  * Update the saved highlights object
  * @param element a highlightable object
@@ -970,10 +970,10 @@ function indexAllDragDropFields() {
 }
 exports.indexAllDragDropFields = indexAllDragDropFields;
 /**
- * Assign globalIndeces to every drawable element
+ * Assign globalIndeces to every stampable element
  */
 function indexAllDrawableFields() {
-    var inputs = document.getElementsByClassName('drawable');
+    var inputs = document.getElementsByClassName('stampable');
     applyGlobalIndeces(inputs);
 }
 exports.indexAllDrawableFields = indexAllDrawableFields;
@@ -1128,11 +1128,11 @@ function restorePositions(positions) {
  */
 function restoreDrawings(drawings) {
     localCache.drawings = drawings;
-    var targets = document.getElementsByClassName('drawable');
+    var targets = document.getElementsByClassName('stampable');
     for (var i = 0; i < targets.length; i++) {
         var tool = drawings[i];
         if (tool != undefined) {
-            doDraw(targets[i], tool);
+            doStamp(targets[i], tool);
         }
     }
 }
@@ -2695,19 +2695,19 @@ function quickFreeMove(moveable, position) {
 }
 exports.quickFreeMove = quickFreeMove;
 /*-----------------------------------------------------------
- * _drawTools.ts
+ * _stampTools.ts
  *-----------------------------------------------------------*/
 // VOCABULARY
-// drawable: any object which can be clicked on to draw an icon
-// drawPalette: the toolbar from which a user can see and select the draw tools
-// drawTool: a UI control to make one or another draw mode the default
-// selected: when a drawTool is primary, and will draw when clicking in an active area
-// drawToolTemplates: a hidden container of objects that are cloned when drawn
-// drawnObject: templates for cloning when drawn
+// stampable: any object which can be clicked on to draw an icon
+// stampPalette: the toolbar from which a user can see and select the draw tools
+// stampTool: a UI control to make one or another draw mode the default
+// selected: when a stampTool is primary, and will draw when clicking in an active area
+// stampToolTemplates: a hidden container of objects that are cloned when drawn
+// stampedObject: templates for cloning when drawn
 /**
  * The tools in the palette.
  */
-var _drawTools = [];
+var _stampTools = [];
 /**
  * The currently selected tool from the palette.
  */
@@ -2721,39 +2721,39 @@ var _extractorTool = null;
  */
 var _eraseTool = null;
 /**
- * Scan the page for anything marked drawable or a draw tool
+ * Scan the page for anything marked stampable or a draw tool
  */
-function preprocessDrawObjects() {
-    var elems = document.getElementsByClassName('drawable');
+function preprocessStampObjects() {
+    var elems = document.getElementsByClassName('stampable');
     for (var i = 0; i < elems.length; i++) {
         var elmt = elems[i];
-        elmt.onmousedown = function (e) { onClickDraw(e); };
-        //elmt.ondrag=function(e){onMoveDraw(e)};
-        elmt.onmouseenter = function (e) { onMoveDraw(e); };
-        elmt.onmouseleave = function (e) { preMoveDraw(e); };
+        elmt.onmousedown = function (e) { onClickStamp(e); };
+        //elmt.ondrag=function(e){onMoveStamp(e)};
+        elmt.onmouseenter = function (e) { onMoveStamp(e); };
+        elmt.onmouseleave = function (e) { preMoveStamp(e); };
     }
-    elems = document.getElementsByClassName('drawTool');
+    elems = document.getElementsByClassName('stampTool');
     for (var i = 0; i < elems.length; i++) {
         var elmt = elems[i];
-        _drawTools.push(elmt);
-        elmt.onclick = function (e) { onSelectDrawTool(e); };
+        _stampTools.push(elmt);
+        elmt.onclick = function (e) { onSelectStampTool(e); };
     }
-    var palette = document.getElementById('drawPalette');
+    var palette = document.getElementById('stampPalette');
     if (palette != null) {
         _extractorTool = palette.getAttributeNS('', 'data-tool-extractor');
         _eraseTool = palette.getAttributeNS('', 'data-tool-erase');
     }
 }
-exports.preprocessDrawObjects = preprocessDrawObjects;
+exports.preprocessStampObjects = preprocessStampObjects;
 /**
  * Called when a draw tool is selected from the palette
  * @param event The click event
  */
-function onSelectDrawTool(event) {
-    var tool = findParentOfClass(event.target, 'drawTool');
+function onSelectStampTool(event) {
+    var tool = findParentOfClass(event.target, 'stampTool');
     if (tool != null) {
-        for (var i = 0; i < _drawTools.length; i++) {
-            toggleClass(_drawTools[i], 'selected', false);
+        for (var i = 0; i < _stampTools.length; i++) {
+            toggleClass(_stampTools[i], 'selected', false);
         }
         if (tool != _selectedTool) {
             toggleClass(tool, 'selected', true);
@@ -2773,15 +2773,15 @@ function onSelectDrawTool(event) {
  * @param toolFromErase An override because we're erasing/rotating
  * @returns the name of a draw tool
  */
-function getDrawTool(event, toolFromErase) {
+function getStampTool(event, toolFromErase) {
     if (event.shiftKey || event.altKey || event.ctrlKey) {
-        for (var i = 0; i < _drawTools.length; i++) {
-            var mods = _drawTools[i].getAttributeNS('', 'data-click-modifier');
+        for (var i = 0; i < _stampTools.length; i++) {
+            var mods = _stampTools[i].getAttributeNS('', 'data-click-modifier');
             if (mods != null
                 && event.shiftKey == (mods.indexOf('shift') >= 0)
                 && event.ctrlKey == (mods.indexOf('ctrl') >= 0)
                 && event.altKey == (mods.indexOf('alt') >= 0)) {
-                return _drawTools[i].getAttributeNS('', 'data-template-id');
+                return _stampTools[i].getAttributeNS('', 'data-template-id');
             }
         }
     }
@@ -2791,7 +2791,7 @@ function getDrawTool(event, toolFromErase) {
     if (_selectedTool != null) {
         return _selectedTool.getAttributeNS('', 'data-template-id');
     }
-    return _drawTools[0].getAttributeNS('', 'data-template-id');
+    return _stampTools[0].getAttributeNS('', 'data-template-id');
 }
 /**
  * When drawing on a surface where something is already drawn. The first click
@@ -2799,20 +2799,20 @@ function getDrawTool(event, toolFromErase) {
  * In that case, if the existing drawing was the selected tool, then we are in erase mode.
  * If there is no selected tool, then rotate to the next tool in the palette.
  * Otherwise, return null, to let normal drawing happen.
- * @param target a click event on a drawable object
+ * @param target a click event on a stampable object
  * @returns The name of a draw tool (overriding the default), or null
  */
-function eraseDraw(target) {
+function eraseStamp(target) {
     if (target == null) {
         return null;
     }
-    var cur = findFirstChildOfClass(target, 'drawnObject');
+    var cur = findFirstChildOfClass(target, 'stampedObject');
     if (cur != null) {
         var curTool = cur.getAttributeNS('', 'data-template-id');
         toggleClass(target, curTool, false);
         target.removeChild(cur);
         if (_extractorTool != null) {
-            updateDrawExtraction();
+            updateStampExtraction();
         }
         if (_selectedTool == null) {
             return cur.getAttributeNS('', 'data-next-template-id'); // rotate
@@ -2828,7 +2828,7 @@ function eraseDraw(target) {
  * @param target The surface on which to draw
  * @param tool The name of a tool template
  */
-function doDraw(target, tool) {
+function doStamp(target, tool) {
     // Template can be null if tool removes drawn objects
     var template = document.getElementById(tool);
     if (template != null) {
@@ -2837,11 +2837,11 @@ function doDraw(target, tool) {
         toggleClass(target, tool, true);
     }
     if (_extractorTool != null) {
-        updateDrawExtraction();
+        updateStampExtraction();
     }
-    saveDrawingLocally(target);
+    saveStampingLocally(target);
 }
-exports.doDraw = doDraw;
+exports.doStamp = doStamp;
 var _dragDrawTool = null;
 var _lastDrawTool = null;
 /**
@@ -2849,12 +2849,12 @@ var _lastDrawTool = null;
  * Which tool is taken from selected state, click modifiers, and current target state.
  * @param event The mouse click
  */
-function onClickDraw(event) {
-    var target = findParentOfClass(event.target, 'drawable');
-    var nextTool = eraseDraw(target);
-    nextTool = getDrawTool(event, nextTool);
+function onClickStamp(event) {
+    var target = findParentOfClass(event.target, 'stampable');
+    var nextTool = eraseStamp(target);
+    nextTool = getStampTool(event, nextTool);
     if (nextTool) {
-        doDraw(target, nextTool);
+        doStamp(target, nextTool);
     }
     _lastDrawTool = nextTool;
     _dragDrawTool = null;
@@ -2863,25 +2863,25 @@ function onClickDraw(event) {
  * Continue drawing when the mouse is dragged, using the same tool as in the cell we just left.
  * @param event The mouse enter event
  */
-function onMoveDraw(event) {
+function onMoveStamp(event) {
     if (event.buttons == 1 && _dragDrawTool != null) {
-        var target = findParentOfClass(event.target, 'drawable');
-        eraseDraw(target);
-        doDraw(target, _dragDrawTool);
+        var target = findParentOfClass(event.target, 'stampable');
+        eraseStamp(target);
+        doStamp(target, _dragDrawTool);
         _dragDrawTool = null;
     }
 }
 /**
  * When dragging a drawing around, copy each cell's drawing to the next one.
  * As the mouse leaves one surface, note which tool is used there.
- * If dragging unrelated to drawing, flag the coming onMoveDraw to do nothing.
+ * If dragging unrelated to drawing, flag the coming onMoveStamp to do nothing.
  * @param event The mouse leave event
  */
-function preMoveDraw(event) {
+function preMoveStamp(event) {
     if (event.buttons == 1) {
-        var target = findParentOfClass(event.target, 'drawable');
+        var target = findParentOfClass(event.target, 'stampable');
         if (target != null) {
-            var cur = findFirstChildOfClass(target, 'drawnObject');
+            var cur = findFirstChildOfClass(target, 'stampedObject');
             if (cur != null) {
                 _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
             }
@@ -2897,10 +2897,10 @@ function preMoveDraw(event) {
 /**
  * Drawing tools can be flagged to do extraction.
  */
-function updateDrawExtraction() {
+function updateStampExtraction() {
     var extracted = document.getElementById('extracted');
     if (extracted != null) {
-        var drawnObjects = document.getElementsByClassName('drawnObject');
+        var drawnObjects = document.getElementsByClassName('stampedObject');
         var extraction = '';
         for (var i = 0; i < drawnObjects.length; i++) {
             var tool = drawnObjects[i].getAttributeNS('', 'data-template-id');
@@ -3782,9 +3782,9 @@ function setupAbilities(head, margins, data) {
         count++;
     }
     if (data.drawing) {
-        preprocessDrawObjects();
+        preprocessStampObjects();
         indexAllDrawableFields();
-        linkCss(head, safariDetails.cssRoot + 'DrawTools.css');
+        linkCss(head, safariDetails.cssRoot + 'StampTools.css');
         // No ability icon
     }
     if (data.straightEdge) {

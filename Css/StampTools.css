@@ -1,15 +1,15 @@
 @media screen {
-  #drawPalette {
+  #stampPalette {
       display: block;
   }
 }
 @media print {
-  #drawPalette {
+  #stampPalette {
       display: none;
   }
 }
 
-#drawPalette {
+#stampPalette {
   -moz-user-select: -moz-none;
   -khtml-user-select: none;
   -webkit-user-select: none;
@@ -17,7 +17,7 @@
   user-select: none;
 }
 
-.drawTool {
+.stampTool {
   position: relative;
   display: inline-block;
   width: 78px;
@@ -26,7 +26,7 @@
   cursor: pointer;
 }
 
-.drawTool div {
+.stampTool div {
   position: relative;
   width: 72px;
   height: 72px;
@@ -36,34 +36,34 @@
   text-align: center;
 }
 
-.drawTool .label {
+.stampTool .label {
   padding-bottom: 2px;
 }
 
-.drawTool .emoji {
+.stampTool .emoji {
   display: block;
   top: 4px;
   font-size: 24pt;
 }
 
-.drawTool .label {
+.stampTool .label {
   bottom: 4px;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 12pt;
 }
 
-.drawTool.selected div {
+.stampTool.selected div {
   margin-top: 0px;
   margin-left: 0px;
   border: solid 3px #00ff00;
   border-radius: 12px;
 }
 
-.drawToolTemplates {
+.stampToolTemplates {
   display: none;
 }
 
-.drawable {
+.stampable {
   position: relative;
   cursor: pointer;
 }

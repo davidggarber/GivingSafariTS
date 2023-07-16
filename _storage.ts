@@ -2,7 +2,7 @@ import { getSafariDetails } from "./_boilerplate";
 import { hasClass, toggleClass, getOptionalStyle, findFirstChildOfClass } from "./_classUtil";
 import { afterInputUpdate, updateWordExtraction } from "./_textInput";
 import { quickMove, quickFreeMove, Position, positionFromStyle } from "./_dragDrop";
-import { doDraw } from "./_drawTools";
+import { doStamp } from "./_drawTools";
 
 ////////////////////////////////////////////////////////////////////////
 // Types
@@ -286,11 +286,11 @@ export function savePositionLocally(element:HTMLElement) {
  * Update the saved drawings object
  * @param element an element which might contain a drawn object
  */
-export function saveDrawingLocally(element:HTMLElement) {
+export function saveStampingLocally(element:HTMLElement) {
     if (element) {
         var index = getGlobalIndex(element);
         if (index >= 0) {
-            var drawn = findFirstChildOfClass(element, 'drawnObject');
+            var drawn = findFirstChildOfClass(element, 'stampedObject');
             if (drawn) {
                 localCache.drawings[index] = drawn.getAttributeNS('', 'data-template-id');
             }
@@ -411,10 +411,10 @@ export function indexAllDragDropFields() {
 }
 
 /**
- * Assign globalIndeces to every drawable element
+ * Assign globalIndeces to every stampable element
  */
 export function indexAllDrawableFields() {
-    const inputs = document.getElementsByClassName('drawable');
+    const inputs = document.getElementsByClassName('stampable');
     applyGlobalIndeces(inputs);
 }
 
@@ -578,11 +578,11 @@ function restorePositions(positions:object) {
  */
 function restoreDrawings(drawings:object) {
     localCache.drawings = drawings;
-    var targets = document.getElementsByClassName('drawable');
+    var targets = document.getElementsByClassName('stampable');
     for (var i = 0; i < targets.length; i++) {
         var tool = drawings[i] as string;
         if (tool != undefined) {
-            doDraw(targets[i] as HTMLElement, tool);
+            doStamp(targets[i] as HTMLElement, tool);
         }
     }
 }

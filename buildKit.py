@@ -8,7 +8,7 @@ kitFiles = [
     '_textInput.ts',
     '_textSetup.ts',
     '_dragDrop.ts',
-    '_drawTools.ts',
+    '_stampTools.ts',
     '_straightEdge.ts',
     '_boilerplate.ts'
 ]

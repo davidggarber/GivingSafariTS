@@ -23,7 +23,7 @@
         document.getElementById('new_copyright').value = boiler.copyright;
         document.getElementById('new_type').value = boiler.type;
         document.getElementById('new_textInput').checked = boiler.textInput;
-        document.getElementById('drawPalette').style.display = boiler.abilities.drawing ? 'block' : 'none';
+        document.getElementById('stampPalette').style.display = boiler.abilities.drawing ? 'block' : 'none';
         
         updateJson();
       }
@@ -102,7 +102,7 @@
         var margins = document.getElementsByClassName('pageWithinMargins')[0];
         setupAbilities(head, margins, boiler.abilities);
 
-        document.getElementById('drawPalette').style.display = boiler.abilities.drawing ? 'block' : 'none';
+        document.getElementById('stampPalette').style.display = boiler.abilities.drawing ? 'block' : 'none';
       }
       function updateJson() {
         let str = JSON.stringify(boiler);
@@ -253,15 +253,15 @@
         </tr>
       </table>
 
-      <div id="drawPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; left:0in; top: 4.5in;">
+      <div id="stampPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; left:0in; top: 4.5in;">
         <p style="text-align: center; margin:4px;">&#x2712;&#xfe0f; Draw tools:</p>
-        <div class="drawTool" data-template-id="drawCheck" data-click-modifier="ctrl" title="ctrl + draw" style="display:inline-block; ">
+        <div class="stampTool" data-template-id="drawCheck" data-click-modifier="ctrl" title="ctrl + draw" style="display:inline-block; ">
           <div style="background-color: #9f9;">
             <span class="emoji">🎁</span>
             <span class="label">stamp</span>
           </div>
         </div>
-        <div class="drawTool" data-template-id="drawErase" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
+        <div class="stampTool" data-template-id="drawErase" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
           <div style="background-color: #eee;">
             <span class="emoji" style="color: transparent;">&#x1f3d7;</span>
             <span class="label">erase</span>

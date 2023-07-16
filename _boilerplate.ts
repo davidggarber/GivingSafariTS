@@ -3,7 +3,7 @@ import { hasClass, toggleClass } from "./_classUtil"
 import { setupNotes, setupCrossOffs, setupHighlights } from "./_notes"
 import { setupDecoderToggle } from "./_decoders"
 import { checkLocalStorage, indexAllDragDropFields, indexAllDrawableFields } from "./_storage";
-import { preprocessDrawObjects } from "./_drawTools";
+import { preprocessStampObjects } from "./_stampTools";
 import { preprocessDragFunctions } from "./_dragDrop";
 import { preprocessRulerFunctions } from "./_straightEdge";
 
@@ -375,9 +375,9 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         count++;
     }
     if (data.drawing) {
-        preprocessDrawObjects();
+        preprocessStampObjects();
         indexAllDrawableFields();
-        linkCss(head, safariDetails.cssRoot + 'DrawTools.css');
+        linkCss(head, safariDetails.cssRoot + 'StampTools.css');
         // No ability icon
     }
     if (data.straightEdge) {
