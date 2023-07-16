@@ -23,7 +23,7 @@
         document.getElementById('new_copyright').value = boiler.copyright;
         document.getElementById('new_type').value = boiler.type;
         document.getElementById('new_textInput').checked = boiler.textInput;
-        document.getElementById('stampPalette').style.display = boiler.abilities.drawing ? 'block' : 'none';
+        document.getElementById('stampPalette').style.display = boiler.abilities.stamping ? 'block' : 'none';
         
         updateJson();
       }
@@ -40,7 +40,7 @@
         boiler.abilities.checkMarks = asOptional('new_checkMarks');
         boiler.abilities.highlights = asOptional('new_highlights');
         boiler.abilities.dragDrop = asOptional('new_dragDrop');
-        boiler.abilities.drawing = asOptional('new_drawing');
+        boiler.abilities.stamping = asOptional('new_stamping');
         boiler.abilities.straightEdge = asOptional('new_straightEdge');
         boiler.abilities.wordSearch = asOptional('new_wordSearch');
         var decoder = document.getElementById('new_decoder').value;
@@ -102,12 +102,13 @@
         var margins = document.getElementsByClassName('pageWithinMargins')[0];
         setupAbilities(head, margins, boiler.abilities);
 
-        document.getElementById('stampPalette').style.display = boiler.abilities.drawing ? 'block' : 'none';
+        document.getElementById('stampPalette').style.display = boiler.abilities.stamping ? 'block' : 'none';
       }
       function updateJson() {
         let str = JSON.stringify(boiler);
+        str = str.replaceAll('"', "'");
         str = str.replaceAll('{', '{<span class="indent">');
-        str = str.replaceAll(',"', ',<br/>&quot;');
+        str = str.replaceAll(",'", ',<br/>&apos;');
         str = str.replaceAll('}', '</span>}');
         boiler_json.innerHTML = str;
       }
@@ -217,8 +218,8 @@
         <tr>
           <td></td>
           <td>
-            <input id="new_drawing" type='checkbox' onchange="updateBoiler()">
-            Drawing / Stamping
+            <input id="new_stamping" type='checkbox' onchange="updateBoiler()">
+            Stamping
           </td>
         </tr>
         <tr>
@@ -254,7 +255,7 @@
       </table>
 
       <div id="stampPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; left:0in; top: 4.5in;">
-        <p style="text-align: center; margin:4px;">&#x2712;&#xfe0f; Draw tools:</p>
+        <p style="text-align: center; margin:4px;">&#x2712;&#xfe0f; Stamp tools:</p>
         <div class="stampTool" data-template-id="drawCheck" data-click-modifier="ctrl" title="ctrl + draw" style="display:inline-block; ">
           <div style="background-color: #9f9;">
             <span class="emoji">🎁</span>

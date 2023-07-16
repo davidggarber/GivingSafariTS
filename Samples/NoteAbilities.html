@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Sample',
+        'title': 'Note Abilities',
+        'author': 'David Garber',
+        'copyright': '2023',
+        'type':'Word',
+        'textInput':true,
+        'abilities':{
+          'notes':true,
+          'checkMarks':true,
+          'highlights':true
+          },
+        'paperSize':'letter',
+        'orientation':'portrait'
+      };
+    </script>
+    <style>
+      p {
+        position: relative;
+      }
+      .note-input {
+        width: 1in;
+      }
+      .note-input.note-left {
+        position: absolute;
+        left: -1.1in;
+        top: 0px;
+      }
+      #svg rect {
+        stroke: black;
+        stroke-width: 1px;
+        fill: white;
+      }
+      #svg rect.highlighted {
+        fill: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="pageBody">
+      <p class="flavor">
+        Various objects with notes, highlights, and check marks.
+      </p>
+      <p class="flavor">
+        "This clue" is always check-markable.
+        <br>
+      </p>
+
+      <div style="position: relative; margin-top:1in; margin-left:1in;" data-input-style="underline">
+        <p class="notes-above">
+          <span class="cross-off">This clue</span> has a note above
+          <span class="create-from-pattern can-highlight" data-letter-pattern="4" data-highlight-rules="input"></span> 
+        </p>
+        <p class="notes-left">
+          <span class="cross-off">This clue</span> has a note to the left 
+          <span class="create-from-pattern can-highlight" data-letter-pattern="4" data-highlight-rules="input"></span> 
+        </p>
+        <p class="notes-right">
+          <span class="cross-off">This clue</span> has a note to the right
+          <span class="create-from-pattern can-highlight" data-letter-pattern="4" data-highlight-rules="input"></span> 
+        </p>
+        <p class="notes-below">
+          <span class="cross-off">This clue</span> has a note area below
+          <span class="create-from-pattern can-highlight" data-letter-pattern="4" data-highlight-rules="input"></span> 
+        </p>
+
+        <svg id="svg" width="500" height="400" class="can-highlight" data-highlight-rules="rect">
+          <rect x="10" y="10" width="100" height="100" ></rect>
+        </svg>
+
+
+      </div>
+
+
+    </div>
+  </body>
+</html>

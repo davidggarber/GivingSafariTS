@@ -1,6 +1,6 @@
 import { isBodyDebug } from "./_boilerplate";
 import { hasClass, toggleClass,     
-    moveFocus, findNextOfClass, findParentOfClass } from "./_classUtil";
+    moveFocus, findNextOfClass, findParentOfClass, getOptionalStyle } from "./_classUtil";
 import { indexAllNoteFields, indexAllCheckFields, indexAllHighlightableFields, 
     saveNoteLocally, saveCheckLocally, saveHighlightLocally } from "./_storage"
 
@@ -37,7 +37,6 @@ export function setupNotes(margins:HTMLDivElement) {
     index = setupNotesCells('notes-above', 'note-above', index);
     index = setupNotesCells('notes-below', 'note-below', index);
     index = setupNotesCells('notes-right', 'note-right', index);
-    index = setupNotesCells('notes-left', 'note-left', index);
     index = setupNotesCells('notes-left', 'note-left', index);
     // Puzzles can use the generic 'notes' class if they have their own .note-input style
     index = setupNotesCells('notes', undefined, index);
@@ -225,6 +224,12 @@ export function setupHighlights() {
     if (highlight != null) {
         highlight.onmousedown = function() {toggleHighlight()};
     }
+
+    const cans = document.getElementsByClassName('can-highlight');
+    for (let i = 0; i < cans.length; i++) {
+        const can = cans[i] as HTMLElement;
+        can.onclick = function(e) { onClickHighlight(e);};
+    }
 }
 
 /**
@@ -236,9 +241,53 @@ export function toggleHighlight(elmt?:HTMLElement) {
         elmt = document.activeElement as HTMLElement;  // will be body if no inputs have focus
     }
     const highlight = findParentOfClass(elmt, 'can-highlight') as HTMLElement;
-    if (highlight) {
+    if (!highlight) {
+        return;
+    }
+
+    // Determine if the clicked-upon element should be toggled, or some parent
+    let can = false;
+    const rules = getOptionalStyle(highlight, 'data-highlight-rules');
+    if (rules) {
+        while (!can && elmt && elmt != highlight) {
+            const list = rules.toUpperCase().split(' ');
+            for (let i = 0; i < rules.length; i++) {
+                const rule = list[i];
+                if (((rule[0] == '.') && hasClass(elmt, rule.substring(1)))
+                        || ((rule[0] == '#') && elmt.id == rule.substring(1))
+                        || (elmt.tagName.toUpperCase() == rule.toUpperCase())) {
+                    can = true;
+                    break;
+                }
+            }
+            if (!can) {
+                elmt = elmt.parentNode as HTMLElement;
+            }
+        }
+    }
+
+    if (can && elmt) {
+        toggleClass(elmt, 'highlighted');
+        saveHighlightLocally(elmt);
+    }
+    else if (!rules) {
         toggleClass(highlight, 'highlighted');
         saveHighlightLocally(highlight);
+    }
+}
+
+/**
+ * Clicking on highlightable elements can toggle their highlighting.
+ * If they are not input elements, a simple click works.
+ * If they are inputs, user must ctrl+click.
+ * @param evt The mouse event from the click
+ */
+function onClickHighlight(evt:MouseEvent) {
+    const elem = document.elementFromPoint(evt.clientX, evt.clientY) as HTMLElement;
+    if (elem) {
+        if (elem.tagName != 'INPUT' || evt.ctrlKey) {
+            toggleHighlight(elem);
+        }    
     }
 }
 

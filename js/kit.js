@@ -330,7 +330,6 @@ function setupNotes(margins) {
     index = setupNotesCells('notes-below', 'note-below', index);
     index = setupNotesCells('notes-right', 'note-right', index);
     index = setupNotesCells('notes-left', 'note-left', index);
-    index = setupNotesCells('notes-left', 'note-left', index);
     // Puzzles can use the generic 'notes' class if they have their own .note-input style
     index = setupNotesCells('notes', undefined, index);
     index = setupNotesCells('notes-abs', undefined, index);
@@ -502,6 +501,11 @@ function setupHighlights() {
     if (highlight != null) {
         highlight.onmousedown = function () { toggleHighlight(); };
     }
+    var cans = document.getElementsByClassName('can-highlight');
+    for (var i = 0; i < cans.length; i++) {
+        var can = cans[i];
+        can.onclick = function (e) { onClickHighlight(e); };
+    }
 }
 exports.setupHighlights = setupHighlights;
 /**
@@ -513,12 +517,53 @@ function toggleHighlight(elmt) {
         elmt = document.activeElement; // will be body if no inputs have focus
     }
     var highlight = findParentOfClass(elmt, 'can-highlight');
-    if (highlight) {
+    if (!highlight) {
+        return;
+    }
+    // Determine if the clicked-upon element should be toggled, or some parent
+    var can = false;
+    var rules = getOptionalStyle(highlight, 'data-highlight-rules');
+    if (rules) {
+        while (!can && elmt && elmt != highlight) {
+            var list = rules.toUpperCase().split(' ');
+            for (var i = 0; i < rules.length; i++) {
+                var rule = list[i];
+                if (((rule[0] == '.') && hasClass(elmt, rule.substring(1)))
+                    || ((rule[0] == '#') && elmt.id == rule.substring(1))
+                    || (elmt.tagName.toUpperCase() == rule.toUpperCase())) {
+                    can = true;
+                    break;
+                }
+            }
+            if (!can) {
+                elmt = elmt.parentNode;
+            }
+        }
+    }
+    if (can && elmt) {
+        toggleClass(elmt, 'highlighted');
+        saveHighlightLocally(elmt);
+    }
+    else if (!rules) {
         toggleClass(highlight, 'highlighted');
         saveHighlightLocally(highlight);
     }
 }
 exports.toggleHighlight = toggleHighlight;
+/**
+ * Clicking on highlightable elements can toggle their highlighting.
+ * If they are not input elements, a simple click works.
+ * If they are inputs, user must ctrl+click.
+ * @param evt The mouse event from the click
+ */
+function onClickHighlight(evt) {
+    var elem = document.elementFromPoint(evt.clientX, evt.clientY);
+    if (elem) {
+        if (elem.tagName != 'INPUT' || evt.ctrlKey) {
+            toggleHighlight(elem);
+        }
+    }
+}
 /*-----------------------------------------------------------
  * _decoders.ts
  *-----------------------------------------------------------*/
