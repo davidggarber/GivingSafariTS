@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script src="demoTools.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Sample',
+        'title': 'Word Input',
+        'author': 'David Garber',
+        'copyright': '2023',
+        'type': 'Word',
+        'textInput': true,
+        'abilities': {
+        }
+      };
+
+      var container;
+      var letters1;
+      var letters2;
+      var letter_styles = [ 'letter-underline', 'letter-box', 'letter-dotted' ];
+
+      function init() {
+        container = document.getElementById('container');
+        letters1 = document.getElementById('letters1');
+        letters2 = document.getElementById('letters2');
+
+        // Copy the crossword template before running the exploding the puzzle during boilerplate initialization
+        boilerplate(boiler);
+
+        attr2Input(container, 'data-word-style');
+        class2Input(letters1, 'data-letter-style', letter_styles);
+        class2Check(letters1, 'multiple-letter');
+
+        showHtml();
+      }
+
+      function reset() {
+        var patterns = document.getElementsByClassName('word-cell');
+        for (var i = 0; i < patterns.length; i++) {
+          patterns[i].innerHTML = "";
+        }
+        letters1.innerHTML = "";
+        letters2.innerHTML = "";
+        var extracted = document.getElementById('extracted');
+        extracted.innerHTML = "";
+      }
+
+      function update() {
+        reset();
+        input2Attr(container, 'data-word-style');
+        input2Class(letters1, 'data-letter-style', letter_styles);
+        check2Class(letters1, 'multiple-letter');
+        input2Class(letters2, 'data-letter-style', letter_styles);
+        check2Class(letters2, 'multiple-letter');
+        textSetup();
+
+        showHtml();
+      }
+
+      function showHtml() {
+        document.getElementById('containerHTML').innerHTML = friendlyStartTag(container);
+      }
+
+      function quick(btn) {
+        quickBtn(btn);
+        update();
+      }
+
+
+    </script>
+    <style>
+      #extracted, #extracted-2 {
+        position: relative;
+        background-color: #ccc;
+      }
+      #customize input {
+        width: 10ch;
+      }
+      .under-number {
+        font-size: 9pt;
+      }
+    </style>
+  </head>
+  <body onload="init();">
+    <div id="pageBody">
+      <p class="flavor">
+        Demo of various word input styles.
+      </p>
+
+      <table id="container" data-literal-style="none">
+        <tr>
+          <th style="width:3in;">Formation</th>
+          <th>Rendering</th>
+        </tr>
+        <tr>
+          <td>Applied to TD (1)</td>
+          <td class="word-cell" data-extract-index="1"></td>
+        </tr>
+        <tr>
+          <td>Applied to span (3,1)</td>
+          <td>Alpha <span class="word-cell" data-extract-index="3 1"></span> charlie</td>
+        </tr>
+        <tr>
+          <td>Multi-letter spans</td>
+          <td>One 
+            <span id="letters1" class="letter-cell extract multiple-letter" data-extracted-id="2" style="width:0.5in;"></span> 
+            three
+            <span id="letters2" class="letter-cell extract multiple-letter" data-extracted-id="2" style="width:0.5in;"></span> 
+            five
+          </td>
+        </tr>
+        <tr>
+          <th colspan="2" style="padding-top:0.25in;">
+            Extractions (can't mix words and letters):
+          </th>
+        </tr>
+        <tr>
+          <td id="extracted" data-number-pattern="3"></td>
+          <td id="extracted-2"></td>
+        </tr>
+      </table>
+
+      <table id="customize" style="position:absolute; top: 4.5in;">
+        <tr><th colspan="3">
+          Customize the container of all word input cells
+        </th></tr>
+        <tr>
+          <td>data-word-style</td>
+          <td><input id="data-word-style" type='text' onkeyup="update()"></td>
+          <td>
+            <button onclick="quick(this)">underline</button>
+            <button onclick="quick(this)">dotted</button>
+            <button onclick="quick(this)">box</button>
+            <button onclick="quick(this)">unset = <i>underline</i></button>
+          </td>
+        </tr>
+        <tr>
+          <td>letter span's <b>letter-</b> class</td>
+          <td><input id="data-letter-style" type='text' onkeyup="update()"></td>
+          <td>
+            <button onclick="quick(this)">letter-underline</button>
+            <button onclick="quick(this)">letter-box</button>
+            <button onclick="quick(this)">letter-none</button>
+            <button onclick="quick(this)">unset = <i>none</i></button>
+          </td>
+        </tr>
+        <tr>
+          <td>letter span's <b>multiple-letter</b> class</td>
+          <td><input id="multiple-letter" type='checkbox' onchange="update()"></td>
+          <td>Organic 2D navigation</td>
+        </tr>
+      </table>
+
+      <p>
+        <span id="containerHTML" style="position: absolute; top:7.5in; display: inline-block; border: solid 2px blue; padding:0.1in">
+        </span>
+      </p>
+
+    </div>
+  </body>
+</html>

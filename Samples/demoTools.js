@@ -40,6 +40,42 @@ function input2Attr(elmt, id) {
 }
 
 /**
+ * Copy the presence of a class into an input field of the same name.
+ * @param elmt The element with the classes
+ * @param id Both the name of the attribute and the id of the input
+ * @param list The set of classes that are relevant for this property
+ */
+function class2Input(elmt, id, list) {
+  var val = '';
+  for (var i = 0; i < list.length; i++) {
+    if (elmt.classList.contains(list[i])) {
+      val = list[i];
+      break;
+    }
+  }
+  
+  document.getElementById(id).value = val;
+}
+
+/**
+ * Copy the value of an input field into an elements classList.
+ * Remove any other competing classes.
+ * @param elmt The element with the classes
+ * @param id Both the name of the attribute and the id of the input
+ * @param list The set of classes that are relevant for this property
+ */
+function input2Class(elmt, id, list) {
+  var val = document.getElementById(id).value;
+  for (var i = 0; i < list.length; i++) {
+    elmt.classList.remove(list[i]);
+  }
+
+  if (val.length > 0) {
+    elmt.classList.add(val);
+  }
+}
+
+/**
  * Copy the contents of a button into the nearby input field.
  * The destination must be the first input in the current table row.
  * @param btn The button element

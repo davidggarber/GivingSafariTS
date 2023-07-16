@@ -242,10 +242,13 @@ export function onLetterKey(event:KeyboardEvent) {
         return;  // Highlight already handled in key down
     }
     if (input.value.length == 0 || ignoreKeys.indexOf(code) >= 0) {
+        var multiLetter = hasClass(input.parentNode, 'multiple-letter');
         // Don't move focus if nothing was typed
-        return;
+        if (!multiLetter) {
+            return;
+        }
     }
-    if (input.value.length === 1 && !input.value.match(/[a-z0-9]/i)) {
+    else if (input.value.length === 1 && !input.value.match(/[a-z0-9]/i)) {
         // Spaces and punctuation might be intentional, but if they follow a matching literal, they probably aren't.
         // NOTE: this tends to fail when the punctuation is stylized like smart quotes or minus instead of dash.
         var prior = findNextOfClass(input, 'letter-input', undefined, -1);
@@ -386,7 +389,7 @@ function ApplyExtraction(   text:string,
         text = text.toLocaleUpperCase();
     }
 
-    const destInp:HTMLInputElement = dest as HTMLInputElement;
+    const destInp:HTMLInputElement|null = (dest.tagName != 'INPUT') ? null : dest as HTMLInputElement;
     var current = (destInp === null) ? dest.innerText : destInp.value;
     if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
         return;
@@ -394,7 +397,7 @@ function ApplyExtraction(   text:string,
     if (!ExtractionIsInteresting(text) && ExtractionIsInteresting(current)) {
         text = '';
     }
-    if (dest.tagName != 'INPUT') {
+    if (!destInp) {
         dest.innerText = text;
     }
     else {
