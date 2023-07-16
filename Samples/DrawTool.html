@@ -7,9 +7,9 @@
     <script>
       const boiler = {
         'safari': 'Sample',
-        'title': 'Animal Magnetism',
-        'author': 'Dana Young',
-        'copyright': '2020',
+        'title': 'Draw Tools',
+        'author': 'David Garber',
+        'copyright': '2023',
         'type': 'Logic',
         'abilities': {
           'drawing': true
@@ -17,218 +17,65 @@
       };
     </script>
     <style>
-      .flavor {
-        margin-top: 8pt;
-        margin-right: 2in;
-      }
-      .head-positive {
-        background-color: #FF6B6B;
-      }
-      .tail-negative {
-        background-color: #c0c0c0;
-      }
-      #grid {
-        margin-top: 0.3in;
-        border-collapse: collapse;
-      }
-      #grid td {
-        position: relative;
+      td {
+        border: solid 1px black;
+        width: 1in;
+        height: 1in;
         text-align: center;
-        vertical-align: middle;
-        width: 90px;
-        height: 90px;
-        font-size: 28pt;
+
+        -moz-user-select: -moz-none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -o-user-select: none;
         user-select: none;
-        cursor: pointer;
-      }
-      #grid td.count {
-        cursor: default;
-      }
-      #grid .top {
-        border-top: solid 5px black;
-      }
-      #grid .bottom {
-        border-bottom: solid 5px black;
-      }
-      #grid .left {
-        border-left: solid 5px black;
-      }
-      #grid .right {
-        border-right: solid 5px black;
-      }
-      #grid .col2 {
-        pointer-events: none;
-        user-select: none;
-        position: absolute;
-        top: 4px;
-        left: 2px;
-        height: 76px;
-        width: 164px;
-        text-align: center;
-        border: solid 3px black;
-        border-radius: 15px;
-        -moz-border-radius: 15px;
-      }
-      .col2 img {
-        height: 75px;
-        margin-top: 0.5px;
-      }
-      #grid .row2 {
-        pointer-events: none;
-        user-select: none;
-        position: absolute;
-        top: 5px;
-        left: 3px;
-        width: 76px;
-        height: 167px;
-        border: solid 3px black;
-        border-radius: 15px;
-        -moz-border-radius: 15px;
-      }
-      .row2 img {
-        width: 72px;
-        margin-top: 40px;
-      }
-      .drawTool {
-        width: .5in;
-        height: .5in;
-        margin: 0px;
-      }
-      .drawTool div {
-        width:.5in; 
-        height:.5in; 
-        text-align: center;
-        border-radius: 5px;
-      }
-      .drawTool.selected div {
-        border-radius: 5px;
       }
       .drawnObject {
+        width:100%;
+        height:100%;
         position: relative;
-        width: 100%; 
-        height: 100%; 
-        user-select: none;
+      }
+      .xo {
+        position: absolute;        
+        font-size: 50pt;
+        left:0px;
+        top:0px;
       }
     </style>
   </head>
   <body>
     <div id="pageBody">
       <p class="flavor">
-        Most animals are like magnets with one end being a <span class="head-positive">head/positive pole</span> and
-        the other a <span class="tail-negative">tail/negative pole</span>. Like magnets, these animals don't like to touch
-        head to head or tail to tail horizontally or vertically. (The actual orientation of
-        the animal pictures does not indicate which end is the head or tail)
+        Tic-tac-toe via stamping!
       </p>
-      <p class="flavor">
-        The numbers on the outside of the central grid represent the number of heads
-        or tails in their row or column. In the example, heads are <span class="head-positive">red</span>, tails are <span class="tail-negative">gray</span>,
-        and the RAT is not like a magent, and has no specific orientation.
-      </p>
-      <p class="flavor">
-        Take the first letter of each animal with no specified orientation in order from 
-        left to right and top to bottom to discover the answer.
-      </p>
-      <img src="Images/AniMag/Example.png" style="position: absolute; top:0.1in; right:0px; width: 1.9in;">
 
       <table id="grid">
         <tr>
-          <td class="head-positive top left" style="font-size: 16pt;">HEAD<br>END</td>
-          <td class="top count">2</td>
-          <td class="top count">2</td>
-          <td class="top count">3</td>
-          <td class="top count">2</td>
-          <td class="top count">2</td>
-          <td class="top right count">1</td>
-          <td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td class="left count">2</td>
-          <td class="left top drawable">
-            <div class="col2"><img src="Images/AniMag/Octopus.png"></div></td>
-          <td class="top drawable"></td>
-          <td class="top drawable">
-            <div class="row2"><img src="Images/AniMag/Pig.png"></div></td>
-          <td class="top drawable">
-            <div class="col2"><img src="Images/AniMag/Bat.png"></div></td>
-          </td>
-          <td class="top drawable"></td>
-          <td class="top right drawable">
-            <div class="row2"><img src="Images/AniMag/Whale.png"></div></td>
-          <td class="top right count">1</td>
-        </tr>
-        <tr>
-          <td class="left count">2</td>
-          <td class="left drawable">
-            <div class="row2"><img src="Images/AniMag/Elephant.png"></div></td>
-          <td class="drawable">
-            <div class="row2"><img src="Images/AniMag/Crab.png"></div></td>
-          <td class="drawable"></td>
-          <td class="drawable">
-            <div class="col2"><img src="Images/AniMag/Racoon.png"></div></td>
-          <td class="drawable"></td>
-          <td class="right drawable"></td>
-          <td class="right count">3</td>
-        </tr>
-        <tr>
-          <td class="left count">3</td>
-          <td class="left drawable"></td>
-          <td class="drawable"></td>
-          <td class="drawable">
-            <div class="row2"><img src="Images/AniMag/Ant.png"></div></td>
-            <td class="drawable">
-              <div class="col2"><img src="Images/AniMag/Eagle.png"></div></td>
-            <td class="drawable"></td>
-          <td class="right drawable">
-            <div class="row2"><img src="Images/AniMag/Snake.png"></div></td>
-          <td class="right count">3</td>
-        </tr>
-        <tr>
-          <td class="left count">3</td>
-          <td class="left drawable">
-            <div class="col2"><img src="Images/AniMag/Horse.png"></div></td>
           <td class="drawable"></td>
           <td class="drawable"></td>
-          <td class="drawable">
-            <div class="col2"><img src="Images/AniMag/Monkey.png"></div></td>
           <td class="drawable"></td>
-          <td class="right drawable"></td>
-          <td class="right count">3</td>
         </tr>
         <tr>
-          <td class="left bottom count">2</td>
-          <td class="left bottom drawable">
-            <div class="col2"><img src="Images/AniMag/Dog.png"></div></td>
-          <td class="bottom drawable"></td>
-          <td class="bottom drawable">
-            <div class="col2"><img src="Images/AniMag/Turtle.png"></div></td>
-          <td class="bottom drawable"></td>
-          <td class="bottom drawable">
-            <div class="col2"><img src="Images/AniMag/Lion.png"></div></td>
-          <td class="right bottom drawable"></td>
-          <td class="right count">2</td>
+          <td class="drawable"></td>
+          <td class="drawable"></td>
+          <td class="drawable"></td>
         </tr>
         <tr>
-          <td>&nbsp;</td>
-          <td class="left bottom count">2</td>
-          <td class="bottom count">2</td>
-          <td class="bottom count">3</td>
-          <td class="bottom count">2</td>
-          <td class="bottom count">2</td>
-          <td class="bottom count">1</td>
-          <td class="tail-negative bottom right" style="font-size: 16pt;">TAIL<br>END</td>
+          <td class="drawable"></td>
+          <td class="drawable"></td>
+          <td class="drawable"></td>
         </tr>
       </table>
 
-      <div id="drawPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; right:2.5in; bottom: -0.7in;">
+      <div id="drawPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; right:2.5in; top: 5in;">
         <p style="text-align: center; margin:4px;">&#x2712;&#xfe0f; Draw tools:</p>
-        <div class="drawTool" data-template-id="drawHead" data-click-modifier="ctrl" title="ctrl + draw" style="display:inline-block; ">
-          <div class="head-positive">
-            <span class="label" style="position:relative;top:0.15in;">HEAD</span>
+        <div class="drawTool" data-template-id="drawX" data-click-modifier="ctrl" title="ctrl + draw" style="display:inline-block; ">
+          <div style="background-color: gold;">
+            <span class="label" style="position:relative;top:0.15in;">☠️</span>
           </div>
         </div>
-        <div class="drawTool" data-template-id="drawTail" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
-          <div class="tail-negative">
-            <span class="label" style="position:relative;top:0.15in;">TAIL</span>
+        <div class="drawTool" data-template-id="drawO" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
+          <div style="background-color: palevioletred;">
+            <span class="label" style="position:relative;top:0.15in;">🍩</span>
           </div>
         </div>
         <div class="drawTool" data-template-id="drawErase" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
@@ -238,14 +85,14 @@
         </div>
       </div>
       <div class="drawToolTemplates" id="drawTool1">
-        <template id="drawHead">
-          <div class="drawnObject" style="background-color: #FF6B6B99;" data-template-id="drawHead" data-next-template-id="drawTail">
-            &nbsp;
+        <template id="drawX">
+          <div class="drawnObject" style="background-color: gold;" data-template-id="drawX" data-next-template-id="drawO">
+            <span class="xo">☠️</span>
           </div>
         </template>
-        <template id="drawTail">
-          <div class="drawnObject" style="background-color: #c0c0c099;" data-template-id="drawTail" data-next-template-id="drawErase">
-            &nbsp;
+        <template id="drawO">
+          <div class="drawnObject" style="background-color: palevioletred;" data-template-id="drawO" data-next-template-id="drawErase">
+            <span class="xo">🍩</span>
           </div>
         </template>
       </div>  
