@@ -496,16 +496,44 @@ function onCrossOff(event) {
     }
 }
 function setupHighlights() {
-    indexAllHighlightableFields();
     var highlight = document.getElementById('highlight-ability');
     if (highlight != null) {
         highlight.onmousedown = function () { toggleHighlight(); };
+    }
+    var containers = document.getElementsByClassName('highlight-container');
+    for (var i = 0; i < containers.length; i++) {
+        var container = containers[i];
+        var rules = getOptionalStyle(container, 'data-highlight-rules');
+        if (rules) {
+            var list = rules.split(' ');
+            for (var r = 0; r < list.length; r++) {
+                var rule = list[r];
+                if (rule[0] == '.') {
+                    var children = container.getElementsByClassName(rule.substring(1));
+                    for (var i_1 = 0; i_1 < children.length; i_1++) {
+                        toggleClass(children[i_1], 'can-highlight', true);
+                    }
+                }
+                else if (rule[0] == '#') {
+                    var child = document.getElementById(rule.substring(1));
+                    toggleClass(child, 'can-highlight', true);
+                }
+                else {
+                    var children = container.getElementsByTagName(rule.toLowerCase());
+                    for (var i_2 = 0; i_2 < children.length; i_2++) {
+                        toggleClass(children[i_2], 'can-highlight', true);
+                    }
+                }
+            }
+        }
     }
     var cans = document.getElementsByClassName('can-highlight');
     for (var i = 0; i < cans.length; i++) {
         var can = cans[i];
         can.onclick = function (e) { onClickHighlight(e); };
     }
+    // Index will now include all children from above expansion rules
+    indexAllHighlightableFields();
 }
 exports.setupHighlights = setupHighlights;
 /**
@@ -517,34 +545,7 @@ function toggleHighlight(elmt) {
         elmt = document.activeElement; // will be body if no inputs have focus
     }
     var highlight = findParentOfClass(elmt, 'can-highlight');
-    if (!highlight) {
-        return;
-    }
-    // Determine if the clicked-upon element should be toggled, or some parent
-    var can = false;
-    var rules = getOptionalStyle(highlight, 'data-highlight-rules');
-    if (rules) {
-        while (!can && elmt && elmt != highlight) {
-            var list = rules.toUpperCase().split(' ');
-            for (var i = 0; i < rules.length; i++) {
-                var rule = list[i];
-                if (((rule[0] == '.') && hasClass(elmt, rule.substring(1)))
-                    || ((rule[0] == '#') && elmt.id == rule.substring(1))
-                    || (elmt.tagName.toUpperCase() == rule.toUpperCase())) {
-                    can = true;
-                    break;
-                }
-            }
-            if (!can) {
-                elmt = elmt.parentNode;
-            }
-        }
-    }
-    if (can && elmt) {
-        toggleClass(elmt, 'highlighted');
-        saveHighlightLocally(elmt);
-    }
-    else if (!rules) {
+    if (highlight) {
         toggleClass(highlight, 'highlighted');
         saveHighlightLocally(highlight);
     }

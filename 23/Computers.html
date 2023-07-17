@@ -17,14 +17,23 @@
       };
     </script>
     <style>
+      #diagram {
+        user-select: none;
+      }
       #diagram .can-highlight {
-        fill: #bbb;
+        fill: #00000044  ;
         stroke: black;
+      }
+      #diagram .can-highlight.highlighted {
+        fill: #ffff00c0;
+        stroke: darkgoldenrod;
       }
       #diagram text {
         font-family: Arial;
         font-size: 28px;
         text-anchor:middle;
+        fill:black;
+        stroke:none;
       }
       .circuit-gate {
         stroke-width: 2px;
@@ -56,23 +65,27 @@
 
       <img src="Images/Computers/Display.png" style="position: absolute; left: 0px; bottom: 0px; width: 3.08in">
 
-      <svg id="diagram" style="position: absolute; right: -0.25in; top: 0px; width: 4.5in; height: 9.1in;" class="can-highlight" data-highlight-rules=".circuit-gate .circuit-diode">
+      <svg id="diagram" style="position: absolute; right: -0.25in; top: 0px; width: 4.5in; height: 9.1in;" class="highlight-container" data-highlight-rules=".circuit-gate .circuit-diode">
         <!--starts-->
-        <rect x="103" y="4.5" width="35" height="35" rx="9" class="can-highlight circuit-gate start"></rect>
-        <text x="120.5" y="32">?</text>
-        <rect x="231.5" y="4.5" width="35" height="35" rx="9" class="can-highlight circuit-gate start"></rect>
-        <text x="249" y="32">?</text>
+        <g class="circuit-gate">
+          <rect x="103" y="4.5" width="35" height="35" rx="9" class="start"></rect>
+          <text x="120.5" y="32">?</text>
+        </g>
+        <g class="circuit-gate">
+          <rect x="231.5" y="4.5" width="35" height="35" rx="9" class="start"></rect>
+          <text x="249" y="32">?</text>
+        </g>
 
         <!--horizontal diodes-->
-        <path d="M125.5,600.5 l17,17 l69,0 l17,-17 l-17,-17 l-69,0 Z" class="can-highlight circuit-diode"></path>
-        <path d="M125.5,712.5 l17,17 l69,0 l17,-17 l-17,-17 l-69,0 Z" class="can-highlight circuit-diode"></path>
-        <path d="M125.5,823.5 l17,17 l69,0 l17,-17 l-17,-17 l-69,0 Z" class="can-highlight circuit-diode"></path>
+        <path d="M125.5,600.5 l17,17 l69,0 l17,-17 l-17,-17 l-69,0 Z" class="circuit-diode"></path>
+        <path d="M125.5,712.5 l17,17 l69,0 l17,-17 l-17,-17 l-69,0 Z" class="circuit-diode"></path>
+        <path d="M125.5,823.5 l17,17 l69,0 l17,-17 l-17,-17 l-69,0 Z" class="circuit-diode"></path>
 
         <!--vertical diodes-->
-        <path d="M117,606 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="can-highlight circuit-diode"></path>
-        <path d="M237,606 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="can-highlight circuit-diode"></path>
-        <path d="M117,716 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="can-highlight circuit-diode"></path>
-        <path d="M237,716 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="can-highlight circuit-diode"></path>
+        <path d="M117,606 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="circuit-diode"></path>
+        <path d="M237,606 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="circuit-diode"></path>
+        <path d="M117,716 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="circuit-diode"></path>
+        <path d="M237,716 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="circuit-diode"></path>
 
         <!--circuits from left start-->
         <path d="M120.5,39 v245" class="circuit-wire"></path>
@@ -88,8 +101,8 @@
         <path d="M332,65 v65" class="circuit-wire"></path>
 
         <!--first two NOT gates-->
-        <path d="M156.5,129 l48,0 l-24,48 a4,4,0,0,1,0,8 a4,4,0,0,1,0,-8 Z" class="can-highlight circuit-gate not"></path>
-        <path d="M309,129 l48,0 l-24,48 a4,4,0,0,1,0,8 a4,4,0,0,1,0,-8 Z" class="can-highlight circuit-gate not"></path>
+        <path d="M156.5,129 l48,0 l-24,48 a4,4,0,0,1,0,8 a4,4,0,0,1,0,-8 Z" class="circuit-gate not"></path>
+        <path d="M309,129 l48,0 l-24,48 a4,4,0,0,1,0,8 a4,4,0,0,1,0,-8 Z" class="circuit-gate not"></path>
 
         <!--circuits from first not-->
         <path d="M180.5,180 v22.5 h62 a6,5,0,0,1,13,0 h53.5 v81" class="circuit-wire"></path>
@@ -99,10 +112,10 @@
         <path d="M333,180 v105" class="circuit-wire"></path>
 
         <!--first two ORs and ANDs-->
-        <path d="M31.5,283 l0,19 a40,60,0,0,0,24,44 a40,60,0,0,0,24,-44 l0,-19 a40,46,0,0,1,-48,0 Z" class="can-highlight circuit-gate or"></path>
-        <path d="M382.5,283 l0,19 a40,60,0,0,0,24,44 a40,60,0,0,0,24,-44 l0,-19 a40,46,0,0,1,-48,0 Z" class="can-highlight circuit-gate or"></path>
-        <path d="M108.5,283 l0,40 a24,23,0,0,0,48,0 l0,-40 Z" class="can-highlight circuit-gate and"></path>
-        <path d="M297,283 l0,40 a24,23,0,0,0,48,0 l0,-40 Z" class="can-highlight circuit-gate and"></path>
+        <path d="M31.5,283 l0,19 a40,60,0,0,0,24,44 a40,60,0,0,0,24,-44 l0,-19 a40,46,0,0,1,-48,0 Z" class="circuit-gate or"></path>
+        <path d="M382.5,283 l0,19 a40,60,0,0,0,24,44 a40,60,0,0,0,24,-44 l0,-19 a40,46,0,0,1,-48,0 Z" class="circuit-gate or"></path>
+        <path d="M108.5,283 l0,40 a24,23,0,0,0,48,0 l0,-40 Z" class="circuit-gate and"></path>
+        <path d="M297,283 l0,40 a24,23,0,0,0,48,0 l0,-40 Z" class="circuit-gate and"></path>
 
         <!--circuits from first or-->
         <path d="M55.5,346 v311 h62 m-62,0 v110 h62" class="circuit-wire"></path>
@@ -122,7 +135,7 @@
         <ellipse cx="177" cy="823.5" rx="5" ry="5" class="circuit-end"></ellipse>
 
         <!--third OR-->
-        <path d="M153,414 l0,19 a40,60,0,0,0,24,44 a40,60,0,0,0,24,-44 l0,-19 a40,46,0,0,1,-48,0 Z" class="can-highlight circuit-gate or"></path>
+        <path d="M153,414 l0,19 a40,60,0,0,0,24,44 a40,60,0,0,0,24,-44 l0,-19 a40,46,0,0,1,-48,0 Z" class="circuit-gate or"></path>
 
         <!--circuits from third or-->
         <path d="M177,477 v124" class="circuit-wire"></path>
@@ -130,7 +143,7 @@
         <path d="M177,506 h104 v23" class="circuit-wire"></path>
 
         <!--third NOT-->
-        <path d="M257.5,528 l48,0 l-24,48 a4,4,0,0,1,0,8 a4,4,0,0,1,0,-8 Z" class="can-highlight circuit-gate not"></path>
+        <path d="M257.5,528 l48,0 l-24,48 a4,4,0,0,1,0,8 a4,4,0,0,1,0,-8 Z" class="circuit-gate not"></path>
         <ellipse cx="237" cy="767" rx="5" ry="5" class="circuit-end"></ellipse>
 
         <!--circuit from third not-->

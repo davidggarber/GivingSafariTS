@@ -218,11 +218,37 @@ function onCrossOff(event:MouseEvent) {
 }
 
 export function setupHighlights() {
-    indexAllHighlightableFields();
-
     const highlight = document.getElementById('highlight-ability');
     if (highlight != null) {
         highlight.onmousedown = function() {toggleHighlight()};
+    }
+
+    const containers = document.getElementsByClassName('highlight-container');
+    for (let i = 0; i < containers.length; i++) {
+        const container = containers[i] as HTMLElement;
+        const rules = getOptionalStyle(container, 'data-highlight-rules');
+        if (rules) {
+            const list = rules.split(' ');
+            for (let r = 0; r < list.length; r++) {
+                const rule = list[r];
+                if (rule[0] == '.') {
+                    const children = container.getElementsByClassName(rule.substring(1));
+                    for (let i = 0; i < children.length; i++) {
+                        toggleClass(children[i], 'can-highlight', true);
+                    }
+                }
+                else if (rule[0] == '#') {
+                    const child = document.getElementById(rule.substring(1));
+                    toggleClass(child, 'can-highlight', true);
+                }
+                else {
+                    const children = container.getElementsByTagName(rule.toLowerCase());
+                    for (let i = 0; i < children.length; i++) {
+                        toggleClass(children[i], 'can-highlight', true);
+                    }
+                }
+            }
+        }
     }
 
     const cans = document.getElementsByClassName('can-highlight');
@@ -230,6 +256,9 @@ export function setupHighlights() {
         const can = cans[i] as HTMLElement;
         can.onclick = function(e) { onClickHighlight(e);};
     }
+
+    // Index will now include all children from above expansion rules
+    indexAllHighlightableFields();
 }
 
 /**
@@ -241,36 +270,7 @@ export function toggleHighlight(elmt?:HTMLElement) {
         elmt = document.activeElement as HTMLElement;  // will be body if no inputs have focus
     }
     const highlight = findParentOfClass(elmt, 'can-highlight') as HTMLElement;
-    if (!highlight) {
-        return;
-    }
-
-    // Determine if the clicked-upon element should be toggled, or some parent
-    let can = false;
-    const rules = getOptionalStyle(highlight, 'data-highlight-rules');
-    if (rules) {
-        while (!can && elmt && elmt != highlight) {
-            const list = rules.toUpperCase().split(' ');
-            for (let i = 0; i < rules.length; i++) {
-                const rule = list[i];
-                if (((rule[0] == '.') && hasClass(elmt, rule.substring(1)))
-                        || ((rule[0] == '#') && elmt.id == rule.substring(1))
-                        || (elmt.tagName.toUpperCase() == rule.toUpperCase())) {
-                    can = true;
-                    break;
-                }
-            }
-            if (!can) {
-                elmt = elmt.parentNode as HTMLElement;
-            }
-        }
-    }
-
-    if (can && elmt) {
-        toggleClass(elmt, 'highlighted');
-        saveHighlightLocally(elmt);
-    }
-    else if (!rules) {
+    if (highlight) {
         toggleClass(highlight, 'highlighted');
         saveHighlightLocally(highlight);
     }
