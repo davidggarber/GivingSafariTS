@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Crop Dusters',
+        'author': 'Dana Young',
+        'copyright': '2020',
+        'type': 'logic',
+        'textInput': true,
+        'abilities': {
+          'stamp': true
+        }
+      };
+    </script>
+    <style>
+      .flavor {
+        font-size: 9pt;
+      }
+      path {
+        fill: none;
+        stroke: #00ffff80;
+        stroke-width: 3.5px;
+      }
+      path.asparagus {
+        fill: #0c0;
+      }
+      path.blackberries {
+        fill: #666;
+      }
+      path.sunflowers {
+        fill: #ca0;
+      }
+      path.watermelons {
+        fill: red;
+      }
+      #answer {
+        position: absolute;
+        right: 0px;
+        bottom: -10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="pageBody">
+      <p class="flavor">
+        Farmers Al Minnack and Mark Itt want to plant four types of crops. They’ve already decided where some 
+        <span style="background-color:lime;">ASPARAGUS</span>, 
+        <span style="background-color:gray;">BLACKBERRIES</span>, 
+        <span style="background-color:yellow;">SUNFLOWERS</span>, and
+        <span style="background-color:red;">WATERMELONS</span>, 
+        will be planted. Help them finish the plans such that no two regions sharing a boundary have the same crop. 
+        Two regions which meet only diagonally at a point may have the same crop. 
+        Use the number of each type of crop as an ordering and an index into that crop to get your answer.
+      </p>
+
+      <img src="Images/Crop.png" style="position: absolute; left: 0px; bottom: 25px; width:7.4in; height:8.06in;">
+      <svg style="position: absolute; left: 0px; bottom: 25px; width:7.5in; height:8.1in;">
+        <rect x="3" y="7" width="706" height="770" stroke="#00ffffc0" fill="none" stroke-width="4"></rect>
+        <path d="M3,7 h140 v37 h-140 Z" class="xasparagus"></path>
+        <path d="M3,44 h46 v39 h-46 Z" class="xasparagus"></path>
+      </svg>
+
+      
+      <div id="answer" class="screen-only">Answer: <span class="letter-cell-block create-from-pattern" data-letter-pattern="4"></span></div>
+
+    </div>
+  </body>
+</html>
