@@ -29,3 +29,9 @@
   font-size: 20pt;
   color: #ff0099;
 }
+
+@media print {
+  .screen-only {
+    display: none;
+  }
+}

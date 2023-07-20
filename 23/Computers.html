@@ -30,7 +30,7 @@
         stroke-width: 0.5px;
       }
       .circuit-diode {
-        fill: white  ;
+        fill: white;
         stroke: black;
         stroke-width: 3px;
         cursor: pointer;
@@ -56,10 +56,17 @@
         stroke: none;
       }
 
-      #display .circuit-diode {
+      .display-diode {
         fill: white;
+        stroke: black;
         stroke-width: 0.5px;
+        cursor: pointer;
       }
+      .display-diode.highlighted {
+        fill: blue;
+        stroke: darkblue;
+      }
+
       #display text {
         font-family:'Lucida Console', Courier, monospace;
         font-size: 10pt;
@@ -181,45 +188,45 @@
         </tr>
       </table>
 
-      <svg id="display" style="position: absolute; left: 0px; bottom: 0px; width:4in; height: 1.5in;">
+      <svg id="display" style="position: absolute; left: 0px; bottom: 0px; width:4in; height: 1.5in;" class="highlight-container" data-highlight-rules=".display-diode">
         <g transform="translate(0,0)">
-          <path d="M8,12 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M8,53 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M8,94 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M7,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M48,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M7,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M48,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
+          <path d="M8,12 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M8,53 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M8,94 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M7,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M48,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M7,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M48,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
           <text x="28" y="116">0</text>
         </g>
         <g transform="translate(80,0)">
-          <path d="M8,12 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M8,53 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M8,94 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M7,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M48,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M7,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M48,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
+          <path d="M8,12 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M8,53 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M8,94 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M7,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M48,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M7,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M48,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
           <text x="28" y="116">1</text>
         </g>
         <g transform="translate(160,0)">
-          <path d="M8,12 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M8,53 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M8,94 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M7,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M48,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M7,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M48,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
+          <path d="M8,12 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M8,53 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M8,94 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M7,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M48,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M7,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M48,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
           <text x="28" y="116">2</text>
         </g>
         <g transform="translate(240,0)">
-          <path d="M8,12 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M8,53 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M8,94 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="circuit-diode"></path>
-          <path d="M7,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M48,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M7,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
-          <path d="M48,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="circuit-diode"></path>
+          <path d="M8,12 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M8,53 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M8,94 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
+          <path d="M7,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M48,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M7,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
+          <path d="M48,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode"></path>
           <text x="28" y="116">3</text>
         </g>
       </svg>
@@ -308,10 +315,11 @@
 
         <!--circuit from third not-->
         <path d="M281.5,579 v188 h-44" class="circuit-wire"></path>
-
-
-
       </svg>
+
+      <p class="flavor screen-only" style="position: absolute; bottom: -20px; right: 1.25in;">
+        Click on circuits to highlight.
+      </p>
 
     </div>
   </body>
