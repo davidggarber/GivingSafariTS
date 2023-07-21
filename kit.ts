@@ -742,7 +742,7 @@ let checkStorage:any = null;
  */
 export function checkLocalStorage() {
     // Each puzzle is cached within localStorage by its URL
-    if (window.location.href in localStorage){
+    if (!isIFrame() && window.location.href in localStorage){
         const item = localStorage.getItem(window.location.href);
         if (item != null) {
             checkStorage = JSON.parse(item);
@@ -4358,7 +4358,9 @@ function boilerplate(bp: BoilerPlateData) {
     }
     setupAbilities(head, margins, bp['abilities'] || {});
 
-    setTimeout(checkLocalStorage, 100);
+    if (!isIFrame()) {
+        setTimeout(checkLocalStorage, 100);
+    }
 
 }
 

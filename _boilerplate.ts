@@ -311,7 +311,9 @@ function boilerplate(bp: BoilerPlateData) {
     }
     setupAbilities(head, margins, bp['abilities'] || {});
 
-    setTimeout(checkLocalStorage, 100);
+    if (!isIFrame()) {
+        setTimeout(checkLocalStorage, 100);
+    }
 
 }
 

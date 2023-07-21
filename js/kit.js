@@ -651,7 +651,7 @@ var checkStorage = null;
  */
 function checkLocalStorage() {
     // Each puzzle is cached within localStorage by its URL
-    if (window.location.href in localStorage) {
+    if (!isIFrame() && window.location.href in localStorage) {
         var item = localStorage.getItem(window.location.href);
         if (item != null) {
             checkStorage = JSON.parse(item);
@@ -3903,7 +3903,9 @@ function boilerplate(bp) {
         textSetup();
     }
     setupAbilities(head, margins, bp['abilities'] || {});
-    setTimeout(checkLocalStorage, 100);
+    if (!isIFrame()) {
+        setTimeout(checkLocalStorage, 100);
+    }
 }
 /**
  * Append a CSS link to the header

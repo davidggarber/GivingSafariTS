@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Printable packet of all portrait-oriented puzzles">
+    <meta name="author" content="David Garber">
+    <link href="../Css/Print.css" rel="Stylesheet" type="text/css"></link>
+    <link rel="shortcut icon" type="image/png" href="Images/Beaker_icon.png">
+
+    <title>Giving Safari 2023 - All Portrait Puzzles</title>
+
+    <script>
+      var group = {
+        portrait: 'portrait',
+        landscape: 'landscape',
+        feeder: 'feeder'
+      }
+
+      var puzzles = [
+          { title: 'Animal Magnetism', group: group.portrait },
+          { title: 'At The Waterworks', group: group.portrait },
+          { title: 'Chemical Compounds', group: group.portrait },
+          { title: 'Computers', group: group.portrait },
+          { title: 'Crop Dusters', group: group.portrait },
+          { title: 'Elementary Charge', group: group.portrait },
+          { title: 'Entomology Lab', group: group.portrait },
+          { title: 'Genetics Of Humor', group: group.portrait },
+      ];
+
+      function onLoad() {
+          expandIFrames(group.portrait, 'block');
+          expandIFrames(group.landscape, 'none');
+          expandIFrames(group.feeder, 'none');
+          switchLayout('portrait');
+      }
+
+      function expandIFrames(grp, vis) {
+          var list = document.getElementById(grp + '_list');
+          list.style.display = vis;
+          var orientation = 'print-' + ((grp == 'feeder') ? 'portrait' : grp);
+          var other = grp == 'feeder' ? grp : '';
+          var count = 0;
+          for (var i = 0; i < puzzles.length; i++) {
+              var puz = puzzles[i];
+              if (puz.group != grp) {
+                continue;
+              }
+
+              var div = document.createElement('div');
+              var iframe = document.createElement('iframe');
+              div.classList.add('page');
+              div.classList.add(orientation);
+              if (other != '') {
+                div.classList.add(other);
+              }
+
+              var page = puz.title.replaceAll(' ', '');
+              iframe.src = page + '.html?iframe';
+
+              div.appendChild(iframe);
+              list.appendChild(div);
+              count++;
+          }
+
+          if (count == 0) {
+            var btn = document.getElementById(grp+'s');
+            btn.style.display = 'none';
+          }
+      }
+
+      function switchLayout(grp) {
+        // Buttons and lists must be in the same order
+        var buttons = document.getElementsByClassName('layout-btn');
+        var lists = document.getElementsByClassName('group-list');
+        for (var i = 0; i < lists.length; i++) {
+          var btn = buttons[i];
+          var list = lists[i];
+          if (list.id == grp + '_list') {
+            list.style.display = 'block';
+            btn.classList.add('current');
+            var count = list.getElementsByTagName('iframe').length;
+            document.getElementById('page-count').innerText = count;
+          }
+          else {
+            list.style.display = 'none';
+            btn.classList.remove('current');
+          }
+        }
+      }
+
+    </script>
+  </head> 
+  <body id="print-view" class="portrait landscape feeders" onload="onLoad()">
+    <div id="layout">
+      <button id="portraits" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('portrait')">Portrait</button>
+      <button id="landscapes" class="layout-btn" style="width:1.1in; height: 0.85in;" onclick="switchLayout('landscape')">Landscape</button>
+      <button id="feeders" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('feeder')">Meta Feeders</button>  
+      <a href="indexx.html" style="color:cornflowerblue">Puzzle index</a>
+      <p style="color:wheat; background-color: dark-gray;">
+        When printing. Make sure margins are set to NONE, and background graphics is checked.
+        <br>There may be an extra blank page. Recommend printing explicitly pages 1-<span id="page-count">21</span>.
+      </p>
+    </div>
+    <div id="portrait_list" class="group-list">
+
+    </div>
+    <div id="landscape_list" class="group-list">
+
+    </div>
+    <div id="feeder_list" class="group-list">
+
+    </div>
+  </body>
+</html>

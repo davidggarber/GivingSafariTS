@@ -67,66 +67,91 @@
         #legend td {
             vertical-align: top;
         }
+        .icons img {
+            height: 0.25in;
+        }
     </style>
-</head>
-<body style="background-color: #D1D6D7;" onload="simpleSetup()">
-    <table id="table" style="border-collapse: collapse; width:8.5in">
-        <tr>
-            <th style="width: 1in;">Type</th>
-            <th style="width:3in; text-align: left;">Puzzle</th>
-            <th class="author" style="text-align: left; width: 2in; position: relative;">Author
-                <img id="logo" src="Images/PS20 logo.png" style="width: 440px; height: 569px;">
-            </th>
-        </tr>
-        <tr class="cross-off">
-            <th><img src="Icons/Rebus.png" style="height:0.25in;" title="Rebus puzzle"></th>
-            <td class="html"><a href="AnimalMagnetism.html" target="_blank">Animal Magnetism</a></td>
-            <td class="author">Dana Young</td>
-        </tr>
-        <tr class="cross-off">
-            <th><img src="Icons/Logic.png" style="height:0.25in;" title="Logic puzzle"></th>
-            <td class="html"><a href="AtTheWaterworks.html" target="_blank">At The Waterworks</a></td>
-            <td class="author">Philippe Nicolle</td>
-        </tr>
-        <tr class="cross-off">
-            <th><img src="Icons/Word.png" style="height:0.25in;" title="Word puzzle"></th>
-            <td class="html"><a href="ChemicalCompounds.html" target="_blank">Chemical Compounds</a></td>
-            <td class="author">Rorke Haining</td>
-        </tr>
-        <tr class="cross-off">
-            <th><img src="Icons/Logic.png" style="height:0.25in;" title="Logic puzzle"></th>
-            <td class="html"><a href="Computers.html" target="_blank">Computers</a></td>
-            <td class="author">Rorke Haining</td>
-        </tr>
-        <tr class="cross-off">
-            <th><img src="Icons/Logic.png" style="height:0.25in;" title="Logic puzzle"></th>
-            <td class="html"><a href="CropDusters.html" target="_blank">Crop Dusters</a></td>
-            <td class="author">Dana Young</td>
-        </tr>
-        <tr class="cross-off">
-            <th><img src="Icons/Rebus.png" style="height:0.25in;" title="Rebus puzzle"></th>
-            <td class="html"><a href="EntomologyLab.html" target="_blank">Elementary Charge</a></td>
-            <td class="author">Dana Young</td>
-        </tr>
-        <tr class="cross-off">
-            <th><img src="Icons/Word.png" style="height:0.25in;" title="Word puzzle"></th>
-            <td class="html"><a href="EntomologyLab.html" target="_blank">Entomology Lab</a></td>
-            <td class="author">Peter Golde</td>
-        </tr>
-        <tr class="cross-off">
-            <th><img src="Icons/Trivia.png" style="height:0.25in;" title="Trivia puzzle"></th>
-            <td class="html"><a href="GeneticsOfHumor.html" target="_blank">Genetics Of Humor</a></td>
-            <td class="author">Colin Robertson</td>
-        </tr>
+    <script>
+        var types = {
+            word: { icon: 'Word', alt: 'Word puzzle' },
+            logic: { icon: 'Logic', alt: 'Logic puzzle' },
+            rebus: { icon: 'Rebus', alt: 'Rebus puzzle' },
+            trivia: { icon: 'Trivia', alt: 'Trivia puzzle' },
+            construction: { icon: 'Construction', alt: 'Construction puzzle' },
+        }
+        var puzzles = [
+            { title: 'Animal Magnetism', author: 'Dana Young', type: types.logic },
+            { title: 'At The Waterworks', author: 'Philippe Nicolle', type: types.logic },
+            { title: 'Chemical Compounds', author: 'Rorke Haining', type: types.word },
+            { title: 'Computers', author: 'Rorke Haining', type: types.logic },
+            { title: 'Crop Dusters', author: 'Dana Young', type: types.logic },
+            { title: 'Elementary Charge', author: 'Dana Young', type: types.rebus },
+            { title: 'Entomology Lab', author: 'Peter Golde', type: types.word },
+            { title: 'Genetics Of Humor', author: 'Colin Robertson', type: types.trivia },
+        ];
 
-        <tr>
-            <td colspan="3" style="background-color: #D1D6D7">&nbsp;</th>
-        </tr>
-        <tr>
-            <th>&nbsp;</th>
-            <th class="title" style="text-align: left;">Meta-Puzzle</th>
-            <th class="author" style="text-align: left;">Author</th>
-        </tr>
+        function onLoad() {
+            simpleSetup();
+            expandPuzzles();
+        }
+
+        function expandPuzzles() {
+            var list = document.getElementById('puzzle_list');
+            for (var i = 0; i < puzzles.length; i++) {
+                var puz = puzzles[i];
+
+                var tr = document.createElement('tr');
+                var thIcon = document.createElement('th');
+                var tdTitle = document.createElement('td');
+                var tdAuthor = document.createElement('td');
+                thIcon.classList.add('icons');
+                tdTitle.classList.add('html');
+                tdAuthor.classList.add('author');
+                var imgIcon = document.createElement('img');
+                var aTitle = document.createElement('a');
+                imgIcon.src = 'Icons/' + puz.type.icon + '.png';
+                imgIcon.title = puz.type.title;
+                var page = puz.title.replaceAll(' ', '');
+                aTitle.href = page + '.html';
+                aTitle.target = '_blank';
+                aTitle.innerText = puz.title;
+                tdAuthor.innerText = puz.author;
+
+                tr.appendChild(thIcon);
+                tr.appendChild(tdTitle);
+                tr.appendChild(tdAuthor);
+                thIcon.appendChild(imgIcon);
+                tdTitle.appendChild(aTitle);
+
+                list.appendChild(tr);
+            }
+        }
+    </script>
+</head>
+<body style="background-color: #D1D6D7;" onload="onLoad()">
+    <table id="table" style="border-collapse: collapse; width:8.5in">
+        <thead>
+            <tr>
+                <th style="width: 1in;">Type</th>
+                <th class="title" style="width:3in; text-align: left;">Puzzles</th>
+                <th class="author" style="text-align: left; width: 2in; position: relative;">Author
+                    <img id="logo" src="Images/PS20 logo.png" style="width: 440px; height: 569px;">
+                </th>
+            </tr>    
+        </thead>
+        <tbody id="puzzle_list">
+
+        </tbody>
+        <tfoot id="meta_list">
+            <tr>
+                <td colspan="3" style="background-color: #D1D6D7">&nbsp;</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th class="title" style="text-align: left;">Meta-Puzzles</th>
+                <th class="author" style="text-align: left;">Author</th>
+            </tr>    
+        </tfoot>
     </table>
 
     <table id="legend" style="margin-top: 0.5in; margin-left: 0.25in;">
