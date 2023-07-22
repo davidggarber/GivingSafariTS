@@ -17,13 +17,114 @@
       };
     </script>
     <style>
+      .vial {
+        fill: none;
+        stroke: black;
+        stroke-width: 4px;
+      }
+      .fluid {
+        stroke: none;
+      }
+      .boundary {
+        fill: none;
+        stroke: #333;
+        stroke-width: 1px;
+      }
+      .clue-stack {
+        position: absolute; 
+        width: 1.3in;
+        top: 3in;
+      }
+      .clue {
+        height: 0.68in;
+        padding-top: 10px;
+        vertical-align: middle;
+        text-align: center;
+      }
+      .gap {
+        height: 0.2in;
+        vertical-align: middle;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
     <div id="pageBody">
       <p class="flavor">
-        Hello!
+        We&rsquo;ve come a long way since the dark ages of alchemy.  
+        We now know how to mix chemical solutions properly, and that an element always falls out 
+        (and always in the correct sequence) as you descend down to the next layer.  
+        Solve this puzzle and read across to determine what&rsquo;s left at the end of the experiment.
       </p>
+
+      <svg style="width:7in; height:7in; position: absolute; left: 0px; top: 2in;">
+        <g transform="translate(48, 0)">
+          <path d="M4,85 v150 h136 v-150 a68,11,0,0,0,-136,0" class="fluid" style="fill:#e0e0e0;"></path>
+          <ellipse cx="72" cy="85" rx="68" ry="11" class="boundary"></ellipse>
+          <path d="M4,199 v150 h136 v-150 a68,12,0,0,0,-136,0" class="fluid" style="fill:#c0c0c0;"></path>
+          <ellipse cx="72" cy="199" rx="68" ry="12" class="boundary"></ellipse>
+          <path d="M4,312 v150 h136 v-150 a68,13,0,0,0,-136,0" class="fluid" style="fill:#a0a0a0;"></path>
+          <ellipse cx="72" cy="312" rx="68" ry="13" class="boundary"></ellipse>
+          <path d="M4,425 v70 a68,68,0,0,0,136,0 v-70 a68,14,0,0,0,-136,0" class="fluid" style="fill:#808080;"></path>
+          <ellipse cx="72" cy="425" rx="68" ry="14" class="boundary"></ellipse>
+          <path d="M4,14 v482 a68,68,0,0,0,136,0 v-482" class="vial"></path>
+          <ellipse cx="72" cy="11" rx="72" ry="10" class="vial"></ellipse>
+        </g>
+        <g transform="translate(288, 0)">
+          <path d="M4,85 v150 h136 v-150 a68,11,0,0,0,-136,0" class="fluid" style="fill:#e0e0e0;"></path>
+          <ellipse cx="72" cy="85" rx="68" ry="11" class="boundary"></ellipse>
+          <path d="M4,199 v150 h136 v-150 a68,12,0,0,0,-136,0" class="fluid" style="fill:#c0c0c0;"></path>
+          <ellipse cx="72" cy="199" rx="68" ry="12" class="boundary"></ellipse>
+          <path d="M4,312 v150 h136 v-150 a68,13,0,0,0,-136,0" class="fluid" style="fill:#a0a0a0;"></path>
+          <ellipse cx="72" cy="312" rx="68" ry="13" class="boundary"></ellipse>
+          <path d="M4,425 v70 a68,68,0,0,0,136,0 v-70 a68,14,0,0,0,-136,0" class="fluid" style="fill:#808080;"></path>
+          <ellipse cx="72" cy="425" rx="68" ry="14" class="boundary"></ellipse>
+          <path d="M4,14 v482 a68,68,0,0,0,136,0 v-482" class="vial"></path>
+          <ellipse cx="72" cy="11" rx="72" ry="10" class="vial"></ellipse>
+        </g>
+        <g transform="translate(528, 0)">
+          <path d="M4,85 v150 h136 v-150 a68,11,0,0,0,-136,0" class="fluid" style="fill:#e0e0e0;"></path>
+          <ellipse cx="72" cy="85" rx="68" ry="11" class="boundary"></ellipse>
+          <path d="M4,199 v150 h136 v-150 a68,12,0,0,0,-136,0" class="fluid" style="fill:#c0c0c0;"></path>
+          <ellipse cx="72" cy="199" rx="68" ry="12" class="boundary"></ellipse>
+          <path d="M4,312 v150 h136 v-150 a68,13,0,0,0,-136,0" class="fluid" style="fill:#a0a0a0;"></path>
+          <ellipse cx="72" cy="312" rx="68" ry="13" class="boundary"></ellipse>
+          <path d="M4,425 v70 a68,68,0,0,0,136,0 v-70 a68,14,0,0,0,-136,0" class="fluid" style="fill:#808080;"></path>
+          <ellipse cx="72" cy="425" rx="68" ry="14" class="boundary"></ellipse>
+          <path d="M4,14 v482 a68,68,0,0,0,136,0 v-482" class="vial"></path>
+          <ellipse cx="72" cy="11" rx="72" ry="10" class="vial"></ellipse>
+        </g>
+      </svg>
+
+      <table class="clue-stack" style="left:0.6in;">
+        <tr><td class="clue">Braided (or homophone for &ldquo;arranged on a dish&rdquo;)</td></tr>
+        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
+        <tr><td class="clue">Fine point</td></tr>
+        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
+        <tr><td class="clue">Greek letter denoting change</td></tr>
+        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
+        <tr><td class="clue">Guided (or homophone for an element)</td></tr>
+      </table>
+
+      <table class="clue-stack" style="left:3.1in;">
+        <tr><td class="clue">Proofs of purchase</td></tr>
+        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
+        <tr><td class="clue">Infected, like a sewage tank</td></tr>
+        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
+        <tr><td class="clue">References a scientific article</td></tr>
+        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
+        <tr><td class="clue">Latin abbr. for &ldquo;the error was in the source&rdquo;</td></tr>
+      </table>
+
+      <table class="clue-stack" style="left:5.6in;">
+        <tr><td class="clue">Six-legged bug</td></tr>
+        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
+        <tr><td class="clue">Forks have them</td></tr>
+        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
+        <tr><td class="clue">Bird abode</td></tr>
+        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
+        <tr><td class="clue">Low card of a royal flush</td></tr>
+      </table>
 
 
     </div>
