@@ -71,26 +71,8 @@
             height: 0.25in;
         }
     </style>
+    <script src="puzzle_list.js"></script>
     <script>
-        var types = {
-            word: { icon: 'Word', alt: 'Word puzzle' },
-            logic: { icon: 'Logic', alt: 'Logic puzzle' },
-            rebus: { icon: 'Rebus', alt: 'Rebus puzzle' },
-            trivia: { icon: 'Trivia', alt: 'Trivia puzzle' },
-            construction: { icon: 'Construction', alt: 'Construction puzzle' },
-        }
-        var puzzles = [
-            { title: 'Animal Magnetism', author: 'Dana Young', type: types.logic },
-            { title: 'At The Waterworks', author: 'Philippe Nicolle', type: types.logic },
-            { title: 'Chemical Compounds', author: 'Rorke Haining', type: types.word },
-            { title: 'Computers', author: 'Rorke Haining', type: types.logic },
-            { title: 'Crop Dusters', author: 'Dana Young', type: types.logic },
-            { title: 'Elementary Charge', author: 'Dana Young', type: types.rebus },
-            { title: 'Entomology Lab', author: 'Peter Golde', type: types.word },
-            { title: 'Genetics Of Humor', author: 'Colin Robertson', type: types.trivia },
-            { title: 'Test Tubes', author: 'Rorke Haining', type: types.word },
-        ];
-
         function onLoad() {
             simpleSetup();
             expandPuzzles();
@@ -98,6 +80,7 @@
 
         function expandPuzzles() {
             var list = document.getElementById('puzzle_list');
+            var metas = document.getElementById('meta_list');
             for (var i = 0; i < puzzles.length; i++) {
                 var puz = puzzles[i];
 
@@ -111,9 +94,11 @@
                 var imgIcon = document.createElement('img');
                 var aTitle = document.createElement('a');
                 imgIcon.src = 'Icons/' + puz.type.icon + '.png';
-                imgIcon.title = puz.type.title;
+                imgIcon.title = puz.type.alt;
                 var page = puz.title.replaceAll(' ', '');
-                aTitle.href = page + '.html';
+                if (puz.group != group.pending) {
+                    aTitle.href = page + '.html';
+                }
                 aTitle.target = '_blank';
                 aTitle.innerText = puz.title;
                 tdAuthor.innerText = puz.author;
@@ -124,7 +109,12 @@
                 thIcon.appendChild(imgIcon);
                 tdTitle.appendChild(aTitle);
 
-                list.appendChild(tr);
+                if (puz.group == group.meta) {
+                    metas.appendChild(tr);
+                }
+                else {
+                    list.appendChild(tr);
+                }
             }
         }
     </script>

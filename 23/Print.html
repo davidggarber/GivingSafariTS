@@ -10,28 +10,12 @@
 
     <title>Giving Safari 2023 - All Portrait Puzzles</title>
 
+    <script src="puzzle_list.js"></script>
     <script>
-      var group = {
-        portrait: 'portrait',
-        landscape: 'landscape',
-        feeder: 'feeder'
-      }
-
-      var puzzles = [
-          { title: 'Animal Magnetism', group: group.portrait },
-          { title: 'At The Waterworks', group: group.portrait },
-          { title: 'Chemical Compounds', group: group.portrait },
-          { title: 'Computers', group: group.portrait },
-          { title: 'Crop Dusters', group: group.portrait },
-          { title: 'Elementary Charge', group: group.portrait },
-          { title: 'Entomology Lab', group: group.portrait },
-          { title: 'Genetics Of Humor', group: group.portrait },
-          { title: 'Test Tubes', group: group.portrait },
-      ];
-
       function onLoad() {
           expandIFrames(group.portrait, 'block');
           expandIFrames(group.landscape, 'none');
+          expandIFrames(group.meta, 'none');
           expandIFrames(group.feeder, 'none');
           switchLayout('portrait');
       }
@@ -96,6 +80,7 @@
     <div id="layout">
       <button id="portraits" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('portrait')">Portrait</button>
       <button id="landscapes" class="layout-btn" style="width:1.1in; height: 0.85in;" onclick="switchLayout('landscape')">Landscape</button>
+      <button id="metas" class="layout-btn" style="width:1in; height: 1in;" onclick="switchLayout('meta')">Meta Puzzles</button>  
       <button id="feeders" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('feeder')">Meta Feeders</button>  
       <a href="indexx.html" style="color:cornflowerblue">Puzzle index</a>
       <p style="color:wheat; background-color: dark-gray;">
@@ -103,14 +88,9 @@
         <br>There may be an extra blank page. Recommend printing explicitly pages 1-<span id="page-count">21</span>.
       </p>
     </div>
-    <div id="portrait_list" class="group-list">
-
-    </div>
-    <div id="landscape_list" class="group-list">
-
-    </div>
-    <div id="feeder_list" class="group-list">
-
-    </div>
+    <div id="portrait_list" class="group-list"></div>
+    <div id="landscape_list" class="group-list"></div>
+    <div id="meta_list" class="group-list"></div>
+    <div id="feeder_list" class="group-list"></div>
   </body>
 </html>
