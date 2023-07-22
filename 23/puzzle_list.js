@@ -42,5 +42,6 @@ var puzzles = [
     { title: 'X-Ray Crystallography', author: 'Colin Robertson', type: types.construction, group: group.pending },
     { title: 'Exoplanets', author: 'Jess McGatha', type: types.logic, group: group.pending },
     { title: 'Mathematics', author: 'David Garber', type: types.word, group: group.pending },
+    { title: 'Aaaaaaaa!', author: 'Jeff Lin', type: types.logic, group: group.pending },
     { title: 'Weird Science', author: 'Martyn Lovell', type: types.meta, group: group.pending },  // meta
 ];
