@@ -25,7 +25,7 @@ var puzzles = [
     { title: 'Entomology Lab', author: 'Peter Golde', type: types.word, group: group.portrait },
     { title: 'Genetics Of Humor', author: 'Colin Robertson', type: types.trivia, group: group.portrait },
     { title: 'Test Tubes', author: 'Rorke Haining', type: types.word, group: group.portrait },
-    { title: 'Weird Maths', author: 'Martyn Lovell', type: types.logic, group: group.pending },
+    { title: 'Weird Maths', author: 'Martyn Lovell', type: types.logic, group: group.portrait },
     { title: 'Weird, You Nits', author: 'Martyn Lovell', type: types.rebus, group: group.pending },
     { title: 'Buried Logic', author: 'Martyn Lovell', type: types.word, group: group.pending },
     { title: 'Fish Story', author: 'Dana Young', type: types.rebus, group: group.pending },

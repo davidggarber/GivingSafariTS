@@ -2026,6 +2026,22 @@ exports.textSetup = textSetup;
  *   NOTE: the -style and -image fields can be placed on the affected pattern tag, or on any parent below the <BODY>.
  */
 function setupLetterPatterns() {
+    var tables = document.getElementsByClassName('letter-cell-table');
+    for (var i = 0; i < tables.length; i++) {
+        var table = tables[i];
+        var cells = table.getElementsByTagName('td');
+        for (var j = 0; j < cells.length; j++) {
+            var td = cells[j];
+            // Skip cells with existing contents
+            if (td.innerHTML == '') {
+                toggleClass(td, 'create-from-pattern', true);
+                toggleClass(td, 'letter-cell-block', true);
+                if (!getOptionalStyle(td, 'data-letter-pattern')) {
+                    td.setAttributeNS(null, 'data-letter-pattern', '1');
+                }
+            }
+        }
+    }
     var patterns = document.getElementsByClassName('create-from-pattern');
     for (var i = 0; i < patterns.length; i++) {
         var parent = patterns[i];

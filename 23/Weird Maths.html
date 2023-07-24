@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Weird Maths',
+        'author': 'Martyn Lovell',
+        'copyright': '2020',
+        'type': 'Math',
+        'textInput': true,
+        'abilities': {
+        }
+      };
+    </script>
+    <style>
+      .flavor {
+        font-style: italic;
+      }
+      #sudoku {
+        border-spacing: 0px;
+      }
+      #sudoku td {
+        width: 0.6in;
+        height: 0.6in;
+        vertical-align: middle;
+        text-align: center;
+        border-left: solid 0.5px black;
+        border-top: solid 0.5px black;
+      }
+      #sudoku td.given {
+        font-family: 'Calibri';
+        font-size: 25pt;
+      }
+      #sudoku td.rt {
+        border-top: solid 2.25px red;
+      }
+      #sudoku td.rl {
+        border-left: solid 2.25px red;
+      }
+      #sudoku td.rr {
+        border-right: solid 2.25px red;
+      }
+      #sudoku td.rb {
+        border-bottom: solid 2.25px red;
+      }
+      #sudoku td.rt2 {
+        border-top: solid 4.5px red;
+      }
+      #sudoku td.rl2 {
+        border-left: solid 4.5px red;
+      }
+      #sudoku td.rr2 {
+        border-right: solid 4.5px red;
+      }
+      #sudoku td.rb2 {
+        border-bottom: solid 4.5px red;
+      }
+      #sudoku td.bt {
+        border-top: solid 2.25px black;
+      }
+      #sudoku td.bl {
+        border-left: solid 2.25px black;
+      }
+      #sudoku td.br {
+        border-right: solid 2.25px black;
+      }
+      #sudoku td.bb {
+        border-bottom: solid 2.25px black;
+      }
+      #sudoku td.nt {
+        border-top: none;
+      }
+      #sudoku td.nl {
+        border-left: none;
+      }
+      #sudoku td.nr {
+        border-right: none;
+      }
+      #sudoku td.nb {
+        border-bottom: none;
+      }
+      #sudoku td.gray {
+        background-color: #d4d4d4;
+      }
+      #sudoku td.black {
+        background-color: black;
+      }
+      #WeirdMaths .letter-cell {
+        font-size: 20pt;
+      }
+      #WeirdMaths .letter-input {
+        color: blue;
+      }
+    </style>
+  </head>
+  <body id="WeirdMaths">
+    <div id="pageBody">
+      <p class="flavor">
+        This grid works like Sudoku. 
+        Each large 3x3 square that is outlined red or black square should contain each of the digits 1-9 once. 
+        There may be no repeated digits in any column or row, even where the row or column includes filled black squares. 
+        Filled black squares contain no digit. Ignore the light grey squares until you have solved the grid.
+      </p>
+
+      <table id="sudoku" class="letter-cell-table letter-grid-2d" data-input-style="none" style="margin-left: 0.8in;">
+        <tr> <!--row 1-->
+          <td class="given rl2 rt2">5</td>
+          <td class="numeric gray rt2 bb"></td>
+          <td class="numeric gray rt2 rr bb"></td>
+          <td class="black rl bb">&nbsp;</td>
+          <td class="black">&nbsp;</td>
+          <td class="black rr bb">&nbsp;</td>
+          <td class="numeric rt2 rl bb"></td>
+          <td class="numeric rt2 bb"></td>
+          <td class="given rt2 rr2"></td>
+        </tr>
+        <tr> <!--row 2-->
+          <td class="numeric gray rl2 br"></td>
+          <td class="given bl bt">4</td>
+          <td class="numeric bt rr"></td>
+          <td class="given bt br rl">1</td>
+          <td class="numeric bt bl br"></td>
+          <td class="given gray rr bl bt">5</td>
+          <td class="given rl bt">8</td>
+          <td class="given bt br">3</td>
+          <td class="numeric gray rr2 bl"></td>
+        </tr>
+        <tr> <!--row 3-->
+          <td class="numeric rl2 rb br"></td>
+          <td class="numeric bl rb"></td>
+          <td class="given gray rr rb">9</td>
+          <td class="numeric rl br"></td>
+          <td class="given bl br">8</td>
+          <td class="numeric bl rr"></td>
+          <td class="given rl rb">7</td>
+          <td class="numeric gray rb br"></td>
+          <td class="numeric gray rr2 rb bl"></td>
+        </tr>
+        <tr> <!--row 4-->
+          <td class="black rt">&nbsp;</td>
+          <td class="given gray bl bb rt">5</td>
+          <td class="numeric gray bb rt"></td>
+          <td class="given gray br bb">8</td>
+          <td class="given bl br">3</td>
+          <td class="given bl bb">9</td>
+          <td class="numeric bb rt"></td>
+          <td class="given bb br rt">6</td>
+          <td class="black rt">&nbsp;</td>
+        </tr>
+        <tr> <!--row 5-->
+          <td class="black">&nbsp;</td>
+          <td class="numeric gray bl bt bb"></td>
+          <td class="numeric bt bb"></td>
+          <td class="given bt bb">6</td>
+          <td class="given ">7</td>
+          <td class="given bt bb">1</td>
+          <td class="numeric bt bb"></td>
+          <td class="given gray bt br bb">5</td>
+          <td class="black">&nbsp;</td>
+        </tr>
+        <tr> <!--row 6-->
+          <td class="black rb">&nbsp;</td>
+          <td class="given rb bl bt">9</td>
+          <td class="numeric rb bt"></td>
+          <td class="given gray br bt">5</td>
+          <td class="given bl br">2</td>
+          <td class="given bl bt">4</td>
+          <td class="numeric gray rb bt"></td>
+          <td class="given gray rb bt br">7</td>
+          <td class="black rb">&nbsp;</td>
+        </tr>
+        <tr> <!--row 7-->
+          <td class="numeric gray rl2 rt br"></td>
+          <td class="numeric bl rt"></td>
+          <td class="given rr rt">8</td>
+          <td class="numeric rl br"></td>
+          <td class="given bl br">1</td>
+          <td class="numeric bl rr"></td>
+          <td class="given rl rt">5</td>
+          <td class="given rt br">9</td>
+          <td class="numeric rr2 rt bl"></td>
+        </tr>
+        <tr> <!--row 8-->
+          <td class="numeric rl2 br"></td>
+          <td class="given bl bb">3</td>
+          <td class="numeric bb rr"></td>
+          <td class="given bb br rl">4</td>
+          <td class="numeric gray bl br"></td>
+          <td class="given rr bl bb">8</td>
+          <td class="numeric rl bb"></td>
+          <td class="given bb br">1</td>
+          <td class="numeric rr2 bl"></td>
+        </tr>
+        <tr> <!--row 9-->
+          <td class="given rl2 rb2">2</td>
+          <td class="numeric rb2 bt"></td>
+          <td class="numeric rb2 bt rr"></td>
+          <td class="black rl">&nbsp;</td>
+          <td class="black">&nbsp;</td>
+          <td class="black rr">&nbsp;</td>
+          <td class="numeric gray rb2 bt rl"></td>
+          <td class="numeric gray rb2 bt"></td>
+          <td class="given rb2 rr2">6</td>
+        </tr>
+      </table>
+
+      <p class="flavor">
+        Once you have completed the puzzle, sum the light grey shaded digits in each of the nine rows, 
+        and convert those numbers to letters. Read off in order, top to bottom.
+      </p>
+
+      <p>
+        Final Answer: <span id="final" class="create-from-pattern" data-letter-pattern="9" ex></span>
+      </p>
+
+    </div>
+  </body>
+</html>
+b
