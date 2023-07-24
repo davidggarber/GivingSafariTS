@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Crop Dusters',
+        'author': 'Dana Young',
+        'copyright': '2020',
+        'type': 'logic',
+        'textInput': true,
+        'abilities': {
+          'stamp': true
+        }
+      };
+    </script>
+    <style>
+      .flavor {
+        font-size: 9pt;
+      }
+      path {
+        fill: none;
+        stroke: #00ffff80;
+        stroke-width: 3.5px;
+        xstroke-width: 1px;
+      }
+      path.asparagus {
+        fill: #00C800;
+      }
+      path.blackberries {
+        fill: #3B3B3B;
+      }
+      path.sunflowers {
+        fill: #FFC800;
+      }
+      path.watermelons {
+        fill: red;
+      }
+      path.open {
+        fill: #ffffff80;
+      }
+      #answer {
+        position: absolute;
+        right: 0px;
+        bottom: -10px;
+      }
+    </style>
+  </head>
+  <script>
+    var offset = {x:3, y:7};
+    var lastClick = {x:0, y:0};
+    var chunk = {x:47, y:38};
+    var path_d = "";
+    var path_m = {x: 0, y: 0}
+    function debugMouse(e, name) {
+      var reference = document.getElementById('reference');
+      var bounds = reference.getBoundingClientRect();
+      var x = e.clientX - bounds.left - offset.x;
+      x = chunk.x * Math.round(x / chunk.x);
+      var y = e.clientY - bounds.top - offset.y;
+      y = chunk.y * Math.round(y / chunk.y);
+      var pt = document.getElementById(name + 'Pt');
+      pt.style.transform="translate(" + x + "px," + y + "px)";
+      if (name == 'move') {
+        x -= lastClick.x;
+        y -= lastClick.y;
+        document.getElementById('moveText').innerHTML = "" + x + "," + y;
+      }
+      else {
+        document.getElementById('relText').innerHTML = document.getElementById('moveText').innerHTML;
+        document.getElementById('absText').innerHTML = "" + x + "," + y;
+        if (!e.shiftKey) {
+          path_d = "M" + x + "," + y;
+          path_m = {x: x, y: y};
+        }
+        else {
+          var dx = x - lastClick.x;
+          var dy = y - lastClick.y;
+          if (x == path_m.x && y == path_m.y) {
+            path_d += " Z";
+          }
+          else if (dx == 0) {
+            path_d += " v" + dy;
+          }
+          else if (dy == 0) {
+            path_d += " h" + dx;
+          }
+          else {
+            path_d += " l" + dx + "," + dy;
+          }
+        }
+        document.getElementById('path-d').innerText = path_d;
+        lastClick.x = x;
+        lastClick.y = y;
+      }
+    }
+    function onMouseMove(e) {
+      debugMouse(e, 'move');
+    }
+    function onMouseClick(e) {
+      debugMouse(e, 'click');
+    }
+  </script>
+  <body>
+    <div id="pageBody">
+      <div style="position: absolute; top: -1in;">&lt;path d="<span id="path-d"></span>" class="open" /&gt;</div>
+
+      <p class="flavor">
+        Farmers Al Minnack and Mark Itt want to plant four types of crops. They’ve already decided where some 
+        <span style="background-color:lime;">ASPARAGUS</span>, 
+        <span style="background-color:gray;">BLACKBERRIES</span>, 
+        <span style="background-color:yellow;">SUNFLOWERS</span>, and
+        <span style="background-color:red;">WATERMELONS</span>, 
+        will be planted. Help them finish the plans such that no two regions sharing a boundary have the same crop. 
+        Two regions which meet only diagonally at a point may have the same crop. 
+        Use the number of each type of crop as an ordering and an index into that crop to get your answer.
+      </p>
+
+      <ximg src="Images/Crop.png" style="position: absolute; left: 0px; bottom: 25px; width:7.4in; height:8.06in;">
+      <svg id="reference" style="position: absolute; left: 0px; bottom: 25px; width:7.5in; height:8.1in; user-select: none;" onmousemove="onMouseMove(event)" onmousedown="onMouseClick(event)">
+        <g transform="translate(3,7)">
+          <xrect x="0" y="0" width="706" height="770" stroke="#00ffffc0" fill="none" stroke-width="4"></xrect>
+          <path d="M0,0 h141 v38 h-141 Z" class="asparagus" />
+          <path d="M141,0 h94 v114 l-47,38 h-94 v-38 l-47,-38 v-38 h94 Z" class="open" />
+          <path d="M235,0 h188 v38 l47,38 v38 h-188 v-38 h-47 Z" class="asparagus" />
+          <path d="M423,0 h282 v304 h-47 l-47,-38 v-152 l-47,-38 v-38 h-47 v76 h-47 v-38 l-47,-38 Z" class="open" />
+          <path d="M0,38 h47 v38 h-47 Z" class="open" />
+          <path d="M0,76 h47 l47,38 v38 l-47,38 h-47 Z" class="sunflowers"/>
+          <path d="M94,152 h94 v76 h-188 v-38 h47 Z" class="open" />
+          <path d="M188,152 l47,-38 v-38 h47 v76 h47 l47,38 v76 h-94 v-38 h-47 v38 h-47 Z" class="open" />
+          <path d="M282,114 h188 v38 h47 l47,38 l-47,38 v38 l-47,38 h-47 l-47,-38 v-76 l-47,-38 h-47 Z" class="open" />
+          <path d="M470,114 h47 v-76 h47 v38 l47,38 v152 h-94 v-38 l47,-38 l-47,-38 h-47 Z" class="watermelons" />
+          <path d="M0,228 h188 v76 l-47,38 l-47,-38 l-47,38 v38 h-47 Z" class="watermelons" />
+          <path d="M47,342 l47,-38 l47,38 l47,-38 v-38 h47 v-38 h47 v190 l-47,38 h-47 v38 h-47 l-94,-76 Z" class="open" />
+          <path d="M282,266 h94 l47,38 v38 l-47,38 v38 h-47 v-38 h-47 Z" class="open" />
+          <path d="M423,304 h47 l47,-38 h47 v114 h-47 l-47,38 h-94 v-38 l47,-38 Z" class="asparagus" />
+          <path d="M564,266 h47 l47,38 h47 v38 h-47 v38 h-94 Z" class="open" />
+          <path d="M0,380 h47 v38 l94,76 v76 l-47,38 v38 h-94 Z" class="open" />
+          <path d="M188,456 h47 l47,-38 v-38 h47 v38 h47 v38 h-47 l-47,38 h-94 Z" class="open" />
+          <path d="M376,418 h94 v38 l-47,38 l47,38 l-47,38 v76 h-47 v-38 h-47 v38 h-47 v-76 l-47,-38 v-38 h47 l47,-38 h47 Z" class="open" />
+          <path d="M470,418 l47,-38 h94 v76 h-141 Z" class="open" />
+          <path d="M611,380 h47 v38 h-47 Z" class="sunflowers" />
+          <path d="M611,418 h47 v38 h-47 Z" class="open" />
+          <path d="M658,342 h47 v152 h-47 Z" class="open" />
+          <path d="M611,456 h47 v38 h47 v76 h-94 Z" class="blackberries" />
+          <path d="M470,456 h141 v114 l-94,76 l-47,-38 h-47 v-38 l47,-38 l-47,-38 Z" class="open" />
+          <path d="M141,494 h94 v38 l47,38 v76 h-94 l-47,38 l-47,-38 v-38 l47,-38 Z" class="blackberries" />
+          <path d="M0,646 h94 l47,38 v76 h-141 Z" class="open" />
+          <path d="M141,684 l47,-38 h141 v114 h-188 Z" class="watermelons" />
+          <path d="M329,608 h47 v38 h47 v-38 h47 l47,38 v38 h-47 l-47,38 h-94 Z" class="open" />
+          <path d="M611,570 h94 v190 h-94 v-38 l-47,-38 h-47 v-38 Z" class="sunflowers" />
+          <path d="M329,722 h94 l47,-38 h94 l47,38 v38 h-282 Z" class="open" />
+
+
+
+          <g id="movePt" style="transform:translate(0,0)">
+            <path d="M-3,0.25 h6.5 M0.25,-3 v6.5" style="stroke:#33f; stroke-width:0.5px"/>
+            <text id="moveText" x="1" y="9" style="font-size: 8pt;" >0, 0</text>
+          </g>
+          <g id="clickPt" style="transform:translate(0,0)">
+            <path d="M-3,0.25 h6.5 M0.25,-3 v6.5" style="stroke:#00c; stroke-width:0.5px"/>
+            <text id="absText" x="1" y="0" style="font-size: 8pt;" >0, 0</text>
+            <text id="relText" x="1" y="9" style="font-size: 8pt;" >0, 0</text>
+          </g>
+        </g>
+      </svg>
+
+      
+      <div id="answer" class="screen-only">Answer: <span class="letter-cell-block create-from-pattern" data-letter-pattern="4"></span></div>
+
+    </div>
+  </body>
+</html>
