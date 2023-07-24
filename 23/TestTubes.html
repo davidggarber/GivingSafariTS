@@ -13,6 +13,7 @@
         'type': 'Word',
         'textInput': true,
         'abilities': {
+          'notes': true
         }
       };
     </script>
@@ -46,9 +47,23 @@
         vertical-align: middle;
         text-align: center;
       }
+      .letter-input {
+        position: relative;
+        top: 5px;
+      }
+      #TestTubes .note-right {
+        right: -0.95in;
+        width: 0.75in;
+        top: 10pt;
+      }
+      #TestTubes .multiple-letter {
+        width: 0.3in; 
+        border-bottom: solid 1px black;
+      }
+
     </style>
   </head>
-  <body>
+  <body id="TestTubes">
     <div id="pageBody">
       <p class="flavor">
         We&rsquo;ve come a long way since the dark ages of alchemy.  
@@ -97,35 +112,56 @@
       </svg>
 
       <table class="clue-stack" style="left:0.6in;">
-        <tr><td class="clue">Braided (or homophone for &ldquo;arranged on a dish&rdquo;)</td></tr>
-        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
-        <tr><td class="clue">Fine point</td></tr>
-        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
-        <tr><td class="clue">Greek letter denoting change</td></tr>
-        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
-        <tr><td class="clue">Guided (or homophone for an element)</td></tr>
+        <tr><td class="clue notes-right">Braided (or homophone for &ldquo;arranged on a dish&rdquo;)</td></tr>
+        <tr><td class="gap letter-cell-block">
+          <span class="letter-cell extract multiple-letter fixed-spacing" data-extracted-id="1"></span>
+        </td></tr>
+        <tr><td class="clue notes-right">Fine point</td></tr>
+        <tr><td class="gap letter-cell-block">
+          <span class="letter-cell extract multiple-letter fixed-spacing" data-extracted-id="2"></span>
+        </td></tr>
+        <tr><td class="clue notes-right">Greek letter denoting change</td></tr>
+        <tr><td class="gap letter-cell-block">
+          <span class="letter-cell extract multiple-letter fixed-spacing" data-extracted-id="3"></span>
+        </td></tr>
+        <tr><td class="clue notes-right">Guided (or homophone for an element)</td></tr>
       </table>
 
       <table class="clue-stack" style="left:3.1in;">
-        <tr><td class="clue">Proofs of purchase</td></tr>
-        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
-        <tr><td class="clue">Infected, like a sewage tank</td></tr>
-        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
-        <tr><td class="clue">References a scientific article</td></tr>
-        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
-        <tr><td class="clue">Latin abbr. for &ldquo;the error was in the source&rdquo;</td></tr>
+        <tr><td class="clue notes-right">Proofs of purchase</td></tr>
+        <tr><td class="gap letter-cell-block">
+          <span class="letter-cell extract multiple-letter fixed-spacing" data-extracted-id="1"></span>
+        </td></tr>
+        <tr><td class="clue notes-right">Infected, like a sewage tank</td></tr>
+        <tr><td class="gap letter-cell-block">
+          <span class="letter-cell extract multiple-letter fixed-spacing" data-extracted-id="2"></span>
+        </td></tr>
+        <tr><td class="clue notes-right">References a scientific article</td></tr>
+        <tr><td class="gap letter-cell-block">
+          <span class="letter-cell extract multiple-letter fixed-spacing" data-extracted-id="3"></span>
+        </td></tr>
+        <tr><td class="clue notes-right">Latin abbr. for &ldquo;the error was in the source&rdquo;</td></tr>
       </table>
 
       <table class="clue-stack" style="left:5.6in;">
-        <tr><td class="clue">Six-legged bug</td></tr>
-        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
-        <tr><td class="clue">Forks have them</td></tr>
-        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
-        <tr><td class="clue">Bird abode</td></tr>
-        <tr><td class="gap letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></td></tr>
-        <tr><td class="clue">Low card of a royal flush</td></tr>
+        <tr><td class="clue notes-right">Six-legged bug</td></tr>
+        <tr><td class="gap letter-cell-block">
+          <span class="letter-cell extract multiple-letter fixed-spacing" data-extracted-id="1"></span>
+        </td></tr>
+        <tr><td class="clue notes-right">Forks have them</td></tr>
+        <tr><td class="gap letter-cell-block">
+          <span class="letter-cell extract multiple-letter fixed-spacing" data-extracted-id="2"></span>
+        </td></tr>
+        <tr><td class="clue notes-right">Bird abode</td></tr>
+        <tr><td class="gap letter-cell-block">
+          <span class="letter-cell extract multiple-letter fixed-spacing" data-extracted-id="3"></span>
+        </td></tr>
+        <tr><td class="clue notes-right">Low card of a royal flush</td></tr>
       </table>
 
+      <div style="position:absolute; bottom: 0.5in; left: 1in;" class="extracted">
+        <span id="extracted-1"></span><span id="extracted-2"></span><span id="extracted-3"></span>
+      </div>
 
     </div>
   </body>

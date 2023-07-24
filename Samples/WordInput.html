@@ -33,6 +33,7 @@
         attr2Input(container, 'data-word-style');
         class2Input(letters1, 'data-letter-style', letter_styles);
         class2Check(letters1, 'multiple-letter');
+        class2Check(letters1, 'fixed-spacing');
 
         showHtml();
       }
@@ -53,8 +54,10 @@
         input2Attr(container, 'data-word-style');
         input2Class(letters1, 'data-letter-style', letter_styles);
         check2Class(letters1, 'multiple-letter');
+        check2Class(letters1, 'fixed-spacing');
         input2Class(letters2, 'data-letter-style', letter_styles);
         check2Class(letters2, 'multiple-letter');
+        check2Class(letters2, 'fixed-spacing');
         textSetup();
 
         showHtml();
@@ -150,7 +153,12 @@
         <tr>
           <td>letter span's <b>multiple-letter</b> class</td>
           <td><input id="multiple-letter" type='checkbox' onchange="update()"></td>
-          <td>Organic 2D navigation</td>
+          <td>Allow multiple letters in one cell</td>
+        </tr>
+        <tr>
+          <td>letter span's <b>fixed-spacing</b> class</td>
+          <td><input id="fixed-spacing" type='checkbox' onchange="update()"></td>
+          <td>Squeeze letter-spacing for multiple letters</td>
         </tr>
       </table>
 

@@ -1584,7 +1584,7 @@ function afterInputUpdate(input) {
             }
         }
     }
-    else {
+    else if (!hasClass(input.parentNode, 'fixed-spacing')) {
         var spacing = (text.length - 1) * 0.05;
         input.style.letterSpacing = -spacing + 'em';
         input.style.paddingRight = (2 * spacing) + 'em';
