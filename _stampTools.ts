@@ -1,4 +1,4 @@
-import { findFirstChildOfClass, findParentOfClass, toggleClass } from "./_classUtil";
+import { findFirstChildOfClass, findParentOfClass, getOptionalStyle, toggleClass } from "./_classUtil";
 import { saveStampingLocally } from "./_storage";
 
 // VOCABULARY
@@ -117,11 +117,17 @@ function eraseStamp(target:HTMLElement):string|null {
     if (target == null) {
         return null;
     }
-    const cur = findFirstChildOfClass(target, 'stampedObject');
+    const parentId = getOptionalStyle(target, 'data-stamp-parent');
+    let parent = target;
+    if (parentId) {
+        parent = document.getElementById(parentId) as HTMLElement;
+    }
+
+    const cur = findFirstChildOfClass(parent, 'stampedObject');
     if (cur != null) {
         const curTool = cur.getAttributeNS('', 'data-template-id');
         toggleClass(target, curTool, false);
-        target.removeChild(cur);
+        parent.removeChild(cur);
         if (_extractorTool != null) {
             updateStampExtraction();
         }
@@ -142,11 +148,17 @@ function eraseStamp(target:HTMLElement):string|null {
  * @param tool The name of a tool template
  */
 export function doStamp(target:HTMLElement, tool:string) {
+    const parentId = getOptionalStyle(target, 'data-stamp-parent');
+    let parent = target;
+    if (parentId) {
+        parent = document.getElementById(parentId) as HTMLElement;
+    }
+    
     // Template can be null if tool removes drawn objects
     let template = document.getElementById(tool) as HTMLTemplateElement;
     if (template != null) {
         const clone = template.content.cloneNode(true);
-        target.appendChild(clone);
+        parent.appendChild(clone);
         toggleClass(target, tool, true);
     }
     if (_extractorTool != null) {

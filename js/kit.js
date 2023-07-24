@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = void 0;
+exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -651,7 +651,7 @@ var checkStorage = null;
  */
 function checkLocalStorage() {
     // Each puzzle is cached within localStorage by its URL
-    if (!isIFrame() && window.location.href in localStorage) {
+    if (!isIFrame() && !isRestart() && window.location.href in localStorage) {
         var item = localStorage.getItem(window.location.href);
         if (item != null) {
             checkStorage = JSON.parse(item);
@@ -2884,11 +2884,16 @@ function eraseStamp(target) {
     if (target == null) {
         return null;
     }
-    var cur = findFirstChildOfClass(target, 'stampedObject');
+    var parentId = getOptionalStyle(target, 'data-stamp-parent');
+    var parent = target;
+    if (parentId) {
+        parent = document.getElementById(parentId);
+    }
+    var cur = findFirstChildOfClass(parent, 'stampedObject');
     if (cur != null) {
         var curTool = cur.getAttributeNS('', 'data-template-id');
         toggleClass(target, curTool, false);
-        target.removeChild(cur);
+        parent.removeChild(cur);
         if (_extractorTool != null) {
             updateStampExtraction();
         }
@@ -2907,11 +2912,16 @@ function eraseStamp(target) {
  * @param tool The name of a tool template
  */
 function doStamp(target, tool) {
+    var parentId = getOptionalStyle(target, 'data-stamp-parent');
+    var parent = target;
+    if (parentId) {
+        parent = document.getElementById(parentId);
+    }
     // Template can be null if tool removes drawn objects
     var template = document.getElementById(tool);
     if (template != null) {
         var clone = template.content.cloneNode(true);
-        target.appendChild(clone);
+        parent.appendChild(clone);
         toggleClass(target, tool, true);
     }
     if (_extractorTool != null) {
@@ -3722,6 +3732,14 @@ function isIFrame() {
     return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
 }
 exports.isIFrame = isIFrame;
+/**
+ * Special url arg to override any cached storage. Always restarts.
+ * @returns true if this page's URL contains a restart argument (other than =false)
+ */
+function isRestart() {
+    return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
+}
+exports.isRestart = isRestart;
 var safariSampleDetails = {
     'title': 'Puzzle Safari',
     'logo': './Images/Sample_Logo.png',

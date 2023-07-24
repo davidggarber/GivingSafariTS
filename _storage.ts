@@ -1,4 +1,4 @@
-import { getSafariDetails, isIFrame } from "./_boilerplate";
+import { getSafariDetails, isIFrame, isRestart } from "./_boilerplate";
 import { hasClass, toggleClass, getOptionalStyle, findFirstChildOfClass } from "./_classUtil";
 import { afterInputUpdate, updateWordExtraction } from "./_textInput";
 import { quickMove, quickFreeMove, Position, positionFromStyle } from "./_dragDrop";
@@ -39,7 +39,7 @@ let checkStorage:any = null;
  */
 export function checkLocalStorage() {
     // Each puzzle is cached within localStorage by its URL
-    if (!isIFrame() && window.location.href in localStorage){
+    if (!isIFrame() && !isRestart() && window.location.href in localStorage){
         const item = localStorage.getItem(window.location.href);
         if (item != null) {
             checkStorage = JSON.parse(item);

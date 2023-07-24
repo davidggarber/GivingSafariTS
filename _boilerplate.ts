@@ -63,6 +63,14 @@ export function isIFrame() {
     return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
 }
 
+/**
+ * Special url arg to override any cached storage. Always restarts.
+ * @returns true if this page's URL contains a restart argument (other than =false)
+ */
+export function isRestart() {
+    return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
+}
+
 type PuzzleEventDetails = {
     title: string;
     logo: string;  // path from root

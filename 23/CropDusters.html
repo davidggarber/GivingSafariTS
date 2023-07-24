@@ -13,7 +13,7 @@
         'type': 'logic',
         'textInput': true,
         'abilities': {
-          'stamp': true
+          'stamping': true
         }
       };
     </script>
@@ -23,25 +23,53 @@
       }
       path {
         fill: none;
-        stroke: #00ffff80;
+        stroke: black;
         stroke-width: 3.5px;
       }
       path.asparagus {
-        fill: #0c0;
+        fill: #00C800;
       }
       path.blackberries {
-        fill: #666;
+        fill: #3B3B3B;
       }
       path.sunflowers {
-        fill: #ca0;
+        fill: #FFC800;
       }
       path.watermelons {
         fill: red;
+      }
+      path.open {
+        fill: transparent;
       }
       #answer {
         position: absolute;
         right: 0px;
         bottom: -10px;
+      }
+      #fields foreignObject {
+        width: 48px;
+        height: 38px;
+        pointer-events: none;
+      }
+      #stampPalette .stampTool {
+        width: 72px;
+        margin: 0px;
+      }
+      .stampTool.selected img {
+        background-color: #ccc;
+        border-bottom: solid black 2px;
+      }
+      path.open.asparagus-stamp {
+        fill: #00C80090;
+      }
+      path.open.blackberry-stamp {
+        fill: #3B3B3B90;
+      }
+      path.open.sunflower-stamp {
+        fill: #FFC80090;
+      }
+      path.open.watermelon-stamp {
+        fill: #ff000090;
       }
     </style>
   </head>
@@ -58,14 +86,94 @@
         Use the number of each type of crop as an ordering and an index into that crop to get your answer.
       </p>
 
-      <img src="Images/Crop.png" style="position: absolute; left: 0px; bottom: 25px; width:7.4in; height:8.06in;">
-      <svg style="position: absolute; left: 0px; bottom: 25px; width:7.5in; height:8.1in;">
-        <rect x="3" y="7" width="706" height="770" stroke="#00ffffc0" fill="none" stroke-width="4"></rect>
-        <path d="M3,7 h140 v37 h-140 Z" class="xasparagus"></path>
-        <path d="M3,44 h46 v39 h-46 Z" class="xasparagus"></path>
+      <svg id="fields" style="position: absolute; left: 0px; bottom: 25px; width:7.5in; height:8.1in; user-select: none;">
+        <g transform="translate(3,7)">
+
+          <path d="M0,0 h141 v38 h-141 Z" class="asparagus" />
+          <path d="M141,0 h94 v114 l-47,38 h-94 v-38 l-47,-38 v-38 h94 Z" class="open stampable" data-stamp-parent="fo-2" />
+          <path d="M235,0 h188 v38 l47,38 v38 h-188 v-38 h-47 Z" class="asparagus" />
+          <path d="M423,0 h282 v304 h-47 l-47,-38 v-152 l-47,-38 v-38 h-47 v76 h-47 v-38 l-47,-38 Z" class="open stampable" data-stamp-parent="fo-3" />
+          <path d="M0,38 h47 v38 h-47 Z" class="open stampable" data-stamp-parent="fo-1" />
+          <path d="M0,76 h47 l47,38 v38 l-47,38 h-47 Z" class="sunflowers"/>
+          <path d="M94,152 h94 v76 h-188 v-38 h47 Z" class="open stampable" data-stamp-parent="fo-4" />
+          <path d="M188,152 l47,-38 v-38 h47 v76 h47 l47,38 v76 h-94 v-38 h-47 v38 h-47 Z" class="open stampable" data-stamp-parent="fo-5" />
+          <path d="M282,114 h188 v38 h47 l47,38 l-47,38 v38 l-47,38 h-47 l-47,-38 v-76 l-47,-38 h-47 Z" class="open stampable" data-stamp-parent="fo-6" />
+          <path d="M470,114 h47 v-76 h47 v38 l47,38 v152 h-94 v-38 l47,-38 l-47,-38 h-47 Z" class="watermelons" />
+          <path d="M0,228 h188 v76 l-47,38 l-47,-38 l-47,38 v38 h-47 Z" class="watermelons" />
+          <path d="M47,342 l47,-38 l47,38 l47,-38 v-38 h47 v-38 h47 v190 l-47,38 h-47 v38 h-47 l-94,-76 Z" class="open stampable" data-stamp-parent="fo-7" />
+          <path d="M282,266 h94 l47,38 v38 l-47,38 v38 h-47 v-38 h-47 Z" class="open stampable" data-stamp-parent="fo-8" />
+          <path d="M423,304 h47 l47,-38 h47 v114 h-47 l-47,38 h-94 v-38 l47,-38 Z" class="asparagus" />
+          <path d="M564,266 h47 l47,38 h47 v38 h-47 v38 h-94 Z" class="open stampable" data-stamp-parent="fo-9" />
+          <path d="M0,380 h47 v38 l94,76 v76 l-47,38 v38 h-94 Z" class="open stampable" data-stamp-parent="fo-10" />
+          <path d="M188,456 h47 l47,-38 v-38 h47 v38 h47 v38 h-47 l-47,38 h-94 Z" class="open stampable" data-stamp-parent="fo-11" />
+          <path d="M376,418 h94 v38 l-47,38 l47,38 l-47,38 v76 h-47 v-38 h-47 v38 h-47 v-76 l-47,-38 v-38 h47 l47,-38 h47 Z" class="open stampable" data-stamp-parent="fo-12" />
+          <path d="M470,418 l47,-38 h94 v76 h-141 Z" class="open stampable" data-stamp-parent="fo-13" />
+          <path d="M611,380 h47 v38 h-47 Z" class="sunflowers" />
+          <path d="M611,418 h47 v38 h-47 Z" class="open stampable" data-stamp-parent="fo-14" />
+          <path d="M658,342 h47 v152 h-47 Z" class="open stampable" data-stamp-parent="fo-15" />
+          <path d="M611,456 h47 v38 h47 v76 h-94 Z" class="blackberries" />
+          <path d="M470,456 h141 v114 l-94,76 l-47,-38 h-47 v-38 l47,-38 l-47,-38 Z" class="open stampable" data-stamp-parent="fo-16" />
+          <path d="M141,494 h94 v38 l47,38 v76 h-94 l-47,38 l-47,-38 v-38 l47,-38 Z" class="blackberries" />
+          <path d="M0,646 h94 l47,38 v76 h-141 Z" class="open stampable" data-stamp-parent="fo-17" />
+          <path d="M141,684 l47,-38 h141 v114 h-188 Z" class="watermelons" />
+          <path d="M329,608 h47 v38 h47 v-38 h47 l47,38 v38 h-47 l-47,38 h-94 Z" class="open stampable" data-stamp-parent="fo-18" />
+          <path d="M611,570 h94 v190 h-94 v-38 l-47,-38 h-47 v-38 Z" class="sunflowers" />
+          <path d="M329,722 h94 l47,-38 h94 l47,38 v38 h-282 Z" class="open stampable" data-stamp-parent="fo-19" />
+
+          <foreignObject id="fo-1" x="0" y="38"></foreignObject>
+          <foreignObject id="fo-2" x="141" y="56"></foreignObject>
+          <foreignObject id="fo-3" x="611" y="76"></foreignObject>
+          <foreignObject id="fo-4" x="94" y="172"></foreignObject>
+          <foreignObject id="fo-5" x="259" y="172"></foreignObject>
+          <foreignObject id="fo-6" x="423" y="190"></foreignObject>
+          <foreignObject id="fo-7" x="150" y="370"></foreignObject>
+          <foreignObject id="fo-8" x="329" y="312"></foreignObject>
+          <foreignObject id="fo-9" x="587" y="304"></foreignObject>
+          <foreignObject id="fo-10" x="40" y="500"></foreignObject>
+          <foreignObject id="fo-11" x="258" y="430"></foreignObject>
+          <foreignObject id="fo-12" x="329" y="500"></foreignObject>
+          <foreignObject id="fo-13" x="517" y="398"></foreignObject>
+          <foreignObject id="fo-14" x="611" y="418"></foreignObject>
+          <foreignObject id="fo-15" x="658" y="400"></foreignObject>
+          <foreignObject id="fo-16" x="517" y="504"></foreignObject>
+          <foreignObject id="fo-17" x="47" y="684"></foreignObject>
+          <foreignObject id="fo-18" x="400" y="664"></foreignObject>
+          <foreignObject id="fo-19" x="470" y="702"></foreignObject>
+        </g>
       </svg>
 
-      
+      <div id="stampPalette" data-tool-count="5" data-tool-erase="erase-stamp" style="position: absolute; left:1.75in; bottom: -0.6in;">
+        <div class="stampTool" data-template-id="asparagus-stamp" style="display:inline-block; ">
+          <img src="Images/Crops/Asparagus.png" style="width: 72px;">
+        </div>
+        <div class="stampTool" data-template-id="blackberry-stamp" style="display:inline-block; ">
+          <img src="Images/Crops/Blackberry.png" style="width: 72px;">
+        </div>
+        <div class="stampTool" data-template-id="suflower-stamp" style="display:inline-block; ">
+          <img src="Images/Crops/Sunflower.png" style="width: 72px;">
+        </div>
+        <div class="stampTool" data-template-id="watermelon-stamp" style="display:inline-block; ">
+          <img src="Images/Crops/Watermelon.png" style="width: 72px;">
+        </div>
+        <div class="stampTool" data-template-id="erase-stamp" style="display:inline-block; ">
+          <img src="Images/Crops/Shovel.png" style="width: 72px;">
+        </div>
+      </div>
+      <div class="stampToolTemplates" id="drawTool1">
+        <template id="asparagus-stamp">
+          <img src="Images/Crops/Asparagus.png" style="width: 44px; margin:2px;" class="stampedObject" data-template-id="asparagus-stamp" data-next-template-id="blackberry-stamp">
+        </template>
+        <template id="blackberry-stamp">
+          <img src="Images/Crops/Blackberry.png" style="width: 44px; margin:2px;" class="stampedObject" data-template-id="blackberry-stamp" data-next-template-id="sunflower-stamp">
+        </template>
+        <template id="sunflower-stamp">
+          <img src="Images/Crops/Sunflower.png" style="width: 44px; margin:2px;" class="stampedObject" data-template-id="sunflower-stamp" data-next-template-id="watermelon-stamp">
+        </template>
+        <template id="watermelon-stamp">
+          <img src="Images/Crops/Watermelon.png" style="width: 44px; margin:2px;" class="stampedObject" data-template-id="watermelon-stamp" data-next-template-id="erase-stamp">
+        </template>
+      </div>  
+
       <div id="answer" class="screen-only">Answer: <span class="letter-cell-block create-from-pattern" data-letter-pattern="4"></span></div>
 
     </div>
