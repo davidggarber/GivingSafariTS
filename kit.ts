@@ -2256,7 +2256,7 @@ function setupLetterPatterns() {
         var numeric = hasClass(parent, 'numeric');
         var styles = getLetterStyles(parent, 'underline', '', numberedPattern == null ? 'box' : 'numbered');
 
-        if (pattern != null) { //if (parent.classList.contains('letter-cell-block')) {
+        if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
             var prevCount = 0;
             for (var pi = 0; pi < pattern.length; pi++) {
                 if (pattern[pi]['count']) {
@@ -2624,7 +2624,7 @@ function setupExtractPattern() {
     var extractorStyle = getOptionalStyle(extracted, 'data-extractor-style', 'underline', 'letter-');
 
     let numPattern = parseNumberPattern(extracted, 'data-number-pattern');
-    if (numPattern === null) {
+    if (numPattern === null || numPattern.length === 0) {
         numbered = false;
         numPattern = parseNumberPattern(extracted, 'data-letter-pattern');
     }
@@ -4386,6 +4386,7 @@ function boilerplate(bp: BoilerPlateData) {
     }
     toggleClass(body, bp['paperSize']);
     toggleClass(body, bp['orientation']);
+    toggleClass(body, safariDetails.fontCss);  // So event fonts can trump defaults
 
     const page: HTMLDivElement = createSimpleDiv({id:'page', cls:'printedPage'});
     const margins: HTMLDivElement = createSimpleDiv({cls:'pageWithinMargins'});

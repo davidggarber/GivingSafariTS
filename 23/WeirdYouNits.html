@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Weird, You Nits',
+        'author': 'Martyn Lovell',
+        'copyright': '2020',
+        'type': 'Rebus',
+        'textInput': true,
+        'abilities': {
+          'notes': true
+        }
+      };
+    </script>
+    <style>
+      .plusLetter {
+        font-size: 50pt;
+      }
+      #columns td {
+        padding-left: 0.15in;
+        padding-right: 0px;
+        height: 6in; 
+        vertical-align: top;
+      }
+      div.letter-cell-block {
+        margin-bottom: 10px;
+      }
+      .notes-below {
+        display: inline-block;
+      }
+      #WeirdYouNits .note-input.note-below {
+        height: 1.5em;
+        bottom: 0px;
+        background-color: #ffffffc0;
+      }
+    </style>
+  </head>
+  <body id="WeirdYouNits">
+    <div id="pageBody">
+      <p class="flavor">
+        My friend Simon has a system for everything. 
+        I like to call him &ldquo;Si&rdquo; for short. 
+        He is always confused about how to read my lab notes. 
+        &ldquo;Si, you nit!&rdquo;, I said, &ldquo;You can understand what kind of quantity I was measuring by what I wrote next to the number.&rdquo; 
+        Solve the clues and extract the grey letters top to bottom then left to right to reveal the final answer.  
+      </p>
+
+      <table id="columns" data-input-style="underline" data-extract-style="highlight" style="border-spacing: 0px;">
+        <tr>
+          <td style="width:2.5in; border-right: solid 0.5px black;">
+            <div class="notes-below"><img src="Images/YouNits/water.png" style="height:0.75in;"></div>
+            <div class="notes-below"><img src="Images/YouNits/traffic.png" style="height:0.91in;"></div>
+            <span class="plusLetter">+D</span>
+            <div class="letter-cell-block create-from-pattern" data-letter-pattern="6" data-extract-indeces="6"></div>
+
+            <div class="notes-below"><img src="Images/YouNits/meat.jpg" style="height:1.04in;"></div>
+            <span class="plusLetter">+R</span>
+            <div class="letter-cell-block create-from-pattern" data-letter-pattern="5" data-extract-indeces="2"></div>
+
+            <div class="notes-below"><img src="Images/YouNits/greens.jpg" style="height:0.92in;"></div>
+            <div class="notes-below"><img src="Images/YouNits/berries.jpg" style="height:0.98in;"></div>
+            <div class="letter-cell-block create-from-pattern" data-letter-pattern="6" data-extract-indeces="6"></div>
+
+            <div class="notes-below"><img src="Images/YouNits/rodent.png" style="height:0.98in;"></div>
+            <div class="letter-cell-block create-from-pattern" data-letter-pattern="4" data-extract-indeces="2"></div>
+          </td>
+          <td style="width:2.5in; border-left: solid 0.5px black; border-right: solid 0.5px black;">
+            <div class="notes-below"><img src="Images/YouNits/thermometer.png" style="height:1.49in;"></div>
+            <div class="notes-below"><img src="Images/YouNits/weaver.jpg" style="height:1.48in;"></div>
+            <span class="plusLetter">+B</span>
+            <div class="letter-cell-block create-from-pattern" data-letter-pattern="7" data-extract-indeces="6"></div>
+
+            <div class="notes-below"><img src="Images/YouNits/sun.png" style="height:1.45in;"></div>
+            <div class="notes-below"><img src="Images/YouNits/jamesdean.jpg" style="height:1.61in;"></div>
+            <div class="letter-cell-block create-from-pattern" data-letter-pattern="6" data-extract-indeces="4"></div>
+          </td>
+          <td style="width:2.5in; border-left: solid 0.5px black;">
+            <div class="notes-below"><img src="Images/YouNits/bonbons.gif" style="height:0.82in;"></div>
+            <div class="notes-below"><img src="Images/YouNits/books.png" style="height:1.24in;"></div>
+            <div class="letter-cell-block create-from-pattern" data-letter-pattern="7" data-extract-indeces="3"></div>
+
+            <div class="notes-below"><img src="Images/YouNits/boat.png" style="height:1.5in;"></div>
+            <div class="notes-below"><img src="Images/YouNits/monster.jpg" style="height:1.52in;"></div>
+            <div class="notes-below"><img src="Images/YouNits/sheep.png" style="height:1in;"></div>
+            <div class="letter-cell-block create-from-pattern" data-letter-pattern="8" data-extract-indeces="7"></div>
+
+            <div class="notes-below"><img src="Images/YouNits/lizard.jpg" style="height:0.88in;"></div>
+            <div class="notes-below"><img src="Images/YouNits/weight.jpg" style="height:0.88in;"></div>
+            <div class="letter-cell-block create-from-pattern" data-letter-pattern="6" data-extract-indeces="4"></div>
+
+            <div class="notes-below"><img src="Images/YouNits/limb.png" style="height:0.74in;"></div>
+            <div class="notes-below"><img src="Images/YouNits/fruit.jpg" style="height:1.31in;"></div>
+            <div class="letter-cell-block create-from-pattern" data-letter-pattern="6" data-extract-indeces="4"></div>
+          </td>
+        </tr>
+      </table>
+
+      <p>
+        Final Answer: <span id="extracted" data-letter-pattern="10" ex></span>
+      </p>
+
+    </div>
+  </body>
+</html>
