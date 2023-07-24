@@ -13,7 +13,8 @@
         'type': 'logic',
         'textInput': true,
         'abilities': {
-          'stamping': true
+          'stamping': true,
+          'notes': true,
         }
       };
     </script>
@@ -44,7 +45,7 @@
       #answer {
         position: absolute;
         right: 0px;
-        bottom: -10px;
+        bottom: -0.6in;
       }
       #fields foreignObject {
         width: 48px;
@@ -71,9 +72,16 @@
       path.open.watermelon-stamp {
         fill: #ff000090;
       }
+      #CropDusters #notes-toggle {
+        bottom: 20px;
+      }
+      #CropDusters .note-input.note-below {
+        bottom: -1.5em;
+        height: 0.2in;
+      }
     </style>
   </head>
-  <body>
+  <body id="CropDusters">
     <div id="pageBody">
       <p class="flavor">
         Farmers Al Minnack and Mark Itt want to plant four types of crops. They’ve already decided where some 
@@ -144,16 +152,16 @@
 
       <div id="stampPalette" data-tool-count="5" data-tool-erase="erase-stamp" style="position: absolute; left:1.75in; bottom: -0.6in;">
         <div class="stampTool" data-template-id="asparagus-stamp" style="display:inline-block; ">
-          <img src="Images/Crops/Asparagus.png" style="width: 72px;">
+          <div class="notes-below"><img src="Images/Crops/Asparagus.png" style="width: 72px;"></div>
         </div>
         <div class="stampTool" data-template-id="blackberry-stamp" style="display:inline-block; ">
-          <img src="Images/Crops/Blackberry.png" style="width: 72px;">
+          <div class="notes-below"><img src="Images/Crops/Blackberry.png" style="width: 72px;" class="notes-below"></div>
         </div>
         <div class="stampTool" data-template-id="suflower-stamp" style="display:inline-block; ">
-          <img src="Images/Crops/Sunflower.png" style="width: 72px;">
+          <div class="notes-below"><img src="Images/Crops/Sunflower.png" style="width: 72px;" class="notes-below"></div>
         </div>
         <div class="stampTool" data-template-id="watermelon-stamp" style="display:inline-block; ">
-          <img src="Images/Crops/Watermelon.png" style="width: 72px;">
+          <div class="notes-below"><img src="Images/Crops/Watermelon.png" style="width: 72px;" class="notes-below"></div>
         </div>
         <div class="stampTool" data-template-id="erase-stamp" style="display:inline-block; ">
           <img src="Images/Crops/Shovel.png" style="width: 72px;">

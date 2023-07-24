@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = void 0;
+exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -897,7 +897,8 @@ function saveStampingLocally(element) {
     if (element) {
         var index = getGlobalIndex(element);
         if (index >= 0) {
-            var drawn = findFirstChildOfClass(element, 'stampedObject');
+            var parent_1 = getStampParent(element);
+            var drawn = findFirstChildOfClass(parent_1, 'stampedObject');
             if (drawn) {
                 localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
             }
@@ -1075,7 +1076,7 @@ function loadLocalStorage(storage) {
     restoreCrossOffs(storage.checks);
     restoreContainers(storage.containers);
     restorePositions(storage.positions);
-    restoreDrawings(storage.stamps);
+    restoreStamps(storage.stamps);
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
     reloading = false;
@@ -1191,7 +1192,7 @@ function restorePositions(positions) {
  * Restore any saved note input values
  * @param values A dictionary of index=>string
  */
-function restoreDrawings(drawings) {
+function restoreStamps(drawings) {
     localCache.stamps = drawings;
     var targets = document.getElementsByClassName('stampable');
     for (var i = 0; i < targets.length; i++) {
@@ -2872,6 +2873,21 @@ function getStampTool(event, toolFromErase) {
     return _stampTools[0].getAttributeNS('', 'data-template-id');
 }
 /**
+ * A stampable element can be the eventual container of the stamp. (example: TD)
+ * Or it can assign another element to be the stamp container, with the data-stamp-parent attribute.
+ * If present, that field specifies the ID of an element.
+ * @param target An element with class="stampable"
+ * @returns
+ */
+function getStampParent(target) {
+    var parentId = getOptionalStyle(target, 'data-stamp-parent');
+    if (parentId) {
+        return document.getElementById(parentId);
+    }
+    return target;
+}
+exports.getStampParent = getStampParent;
+/**
  * When drawing on a surface where something is already drawn. The first click
  * always erases the existing drawing.
  * In that case, if the existing drawing was the selected tool, then we are in erase mode.
@@ -2884,11 +2900,7 @@ function eraseStamp(target) {
     if (target == null) {
         return null;
     }
-    var parentId = getOptionalStyle(target, 'data-stamp-parent');
-    var parent = target;
-    if (parentId) {
-        parent = document.getElementById(parentId);
-    }
+    var parent = getStampParent(target);
     var cur = findFirstChildOfClass(parent, 'stampedObject');
     if (cur != null) {
         var curTool = cur.getAttributeNS('', 'data-template-id');
@@ -2912,11 +2924,7 @@ function eraseStamp(target) {
  * @param tool The name of a tool template
  */
 function doStamp(target, tool) {
-    var parentId = getOptionalStyle(target, 'data-stamp-parent');
-    var parent = target;
-    if (parentId) {
-        parent = document.getElementById(parentId);
-    }
+    var parent = getStampParent(target);
     // Template can be null if tool removes drawn objects
     var template = document.getElementById(tool);
     if (template != null) {

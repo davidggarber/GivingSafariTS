@@ -105,6 +105,21 @@ function getStampTool(event:MouseEvent, toolFromErase:string|null):string|null {
 }
 
 /**
+ * A stampable element can be the eventual container of the stamp. (example: TD)
+ * Or it can assign another element to be the stamp container, with the data-stamp-parent attribute.
+ * If present, that field specifies the ID of an element.
+ * @param target An element with class="stampable"
+ * @returns 
+ */
+export function getStampParent(target:HTMLElement) {
+    const parentId = getOptionalStyle(target, 'data-stamp-parent');
+    if (parentId) {
+        return document.getElementById(parentId) as HTMLElement;
+    }
+    return target;
+}
+
+/**
  * When drawing on a surface where something is already drawn. The first click
  * always erases the existing drawing.
  * In that case, if the existing drawing was the selected tool, then we are in erase mode.
@@ -117,11 +132,7 @@ function eraseStamp(target:HTMLElement):string|null {
     if (target == null) {
         return null;
     }
-    const parentId = getOptionalStyle(target, 'data-stamp-parent');
-    let parent = target;
-    if (parentId) {
-        parent = document.getElementById(parentId) as HTMLElement;
-    }
+    const parent = getStampParent(target);
 
     const cur = findFirstChildOfClass(parent, 'stampedObject');
     if (cur != null) {
@@ -148,11 +159,7 @@ function eraseStamp(target:HTMLElement):string|null {
  * @param tool The name of a tool template
  */
 export function doStamp(target:HTMLElement, tool:string) {
-    const parentId = getOptionalStyle(target, 'data-stamp-parent');
-    let parent = target;
-    if (parentId) {
-        parent = document.getElementById(parentId) as HTMLElement;
-    }
+    const parent = getStampParent(target);
     
     // Template can be null if tool removes drawn objects
     let template = document.getElementById(tool) as HTMLTemplateElement;

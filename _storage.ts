@@ -2,7 +2,7 @@ import { getSafariDetails, isIFrame, isRestart } from "./_boilerplate";
 import { hasClass, toggleClass, getOptionalStyle, findFirstChildOfClass } from "./_classUtil";
 import { afterInputUpdate, updateWordExtraction } from "./_textInput";
 import { quickMove, quickFreeMove, Position, positionFromStyle } from "./_dragDrop";
-import { doStamp } from "./_stampTools";
+import { doStamp, getStampParent } from "./_stampTools";
 import { createFromVertexList } from "./_straightEdge";
 
 ////////////////////////////////////////////////////////////////////////
@@ -292,7 +292,8 @@ export function saveStampingLocally(element:HTMLElement) {
     if (element) {
         var index = getGlobalIndex(element);
         if (index >= 0) {
-            var drawn = findFirstChildOfClass(element, 'stampedObject');
+            const parent = getStampParent(element);
+            var drawn = findFirstChildOfClass(parent, 'stampedObject');
             if (drawn) {
                 localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
             }
@@ -474,7 +475,7 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreCrossOffs(storage.checks);
     restoreContainers(storage.containers);
     restorePositions(storage.positions);
-    restoreDrawings(storage.stamps);
+    restoreStamps(storage.stamps);
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
     reloading = false;
@@ -597,7 +598,7 @@ function restorePositions(positions:object) {
  * Restore any saved note input values
  * @param values A dictionary of index=>string
  */
-function restoreDrawings(drawings:object) {
+function restoreStamps(drawings:object) {
     localCache.stamps = drawings;
     var targets = document.getElementsByClassName('stampable');
     for (var i = 0; i < targets.length; i++) {
