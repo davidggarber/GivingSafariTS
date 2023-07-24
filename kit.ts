@@ -2088,13 +2088,13 @@ function findNextByPosition(root: Element,
                             cls: string, 
                             clsSkip: string)
                             : HTMLInputElement|null {
-    var rect = start.getBoundingClientRect();
-    var pos = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
-    var elements = document.getElementsByClassName(cls);
-    var distance = 0;
+    let rect = start.getBoundingClientRect();
+    let pos = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+    const elements = document.getElementsByClassName(cls);
+    let distance = 0;
     let nearest:HTMLInputElement|null = null;
-    for (var i = 0; i < elements.length; i++) {
-        var elmt = elements[i];
+    for (let i = 0; i < elements.length; i++) {
+        const elmt = elements[i];
         if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
             continue;
         }
@@ -2106,7 +2106,7 @@ function findNextByPosition(root: Element,
             // Look for inputs in the same row
             if (pos.y >= rect.y && pos.y < rect.y + rect.height) {
                 // Measure distance in the dx direction
-                var d = (rect.x + rect.width / 2 - pos.x) / dx;
+                const d = (rect.x + rect.width / 2 - pos.x) / dx;
                 // Keep the nearest
                 if (d > 0 && (nearest == null || d < distance)) {
                     distance = d;
@@ -2118,7 +2118,7 @@ function findNextByPosition(root: Element,
             // Look for inputs in the same column
             if (pos.x >= rect.x && pos.x < rect.x + rect.width) {
                 // Measure distance in the dy direction
-                var d = (rect.y + rect.height / 2 - pos.y) / dy;
+                const d = (rect.y + rect.height / 2 - pos.y) / dy;
                 if (d > 0 && (nearest == null || d < distance)) {
                     // Keep the nearest
                     distance = d;
@@ -2132,10 +2132,13 @@ function findNextByPosition(root: Element,
     }
 
     // Try again, but look in the next row/column
-    var distance2 = 0;
+    rect = start.getBoundingClientRect();
+    pos = plusX > 0 ? { x: rect.x + (dy > 0 ? rect.width - 1 : 1), y: rect.y + (dx > 0 ? rect.height - 1 : 1) }
+                    : { x: rect.x + (dy < 0 ? rect.width - 1 : 1), y: rect.y + (dx < 0 ? rect.height - 1 : 1) }
+    let distance2 = 0;
     let wrap:HTMLInputElement|null = null;
-    for (var i = 0; i < elements.length; i++) {
-        var elmt = elements[i];
+    for (let i = 0; i < elements.length; i++) {
+        const elmt = elements[i];
         if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
             continue;
         }
@@ -2147,17 +2150,20 @@ function findNextByPosition(root: Element,
             wrap = elmt as HTMLInputElement;
         }
         rect = elmt.getBoundingClientRect();
-        var d = 0, d2 = 0;
+        // d measures direction in continuing perpendicular direction
+        // d2 measures relative position within original direction
+        let d = 0, d2 = 0;
         if (dx != 0) {
             // Look for inputs in the next row, using dx as a dy
-            d = (rect.y + rect.height / 2 - pos.y) / dx;
+            d = (rect.y + rect.height / 2 - pos.y) / (dx * plusX);
             d2 = rect.x / dx;
         }
         else if (dy != 0) {
             // Look for inputs in the next row, using dx as a dy
-            d = (rect.x + rect.width / 2 - pos.x) / dy;
+            d = (rect.x + rect.width / 2 - pos.x) / (dy * plusX);
             d2 = rect.y / dy;
         }
+        // Remember the earliest (d2) element in nearest next row (d)
         if (d > 0 && (nearest == null || d < distance || (d == distance && d2 < distance2))) {
             distance = d;
             distance2 = d2;
@@ -2190,6 +2196,7 @@ export function textSetup() {
  * Look for elements of class 'create-from-pattern'.
  * When found, use the pattern, as well as other inputs, to build out a sequence of text inputs inside that element.
  * Secondary attributes:
+ *   letter-cell-table: A table with this class is will expect every cell
  *   data-letter-pattern: A string specifying the number of input, and any decorative text.
  *                        Example: "2-2-4" would create _ _ - _ _ - _ _ _ _
  *                        Special case: The character '¤' is reserved for a solid block, like you might see in a crossword.
@@ -2226,10 +2233,15 @@ function setupLetterPatterns() {
             // Skip cells with existing contents
             if (td.innerHTML == '') {
                 toggleClass(td, 'create-from-pattern', true);
-                toggleClass(td, 'letter-cell-block', true);
                 if (!getOptionalStyle(td, 'data-letter-pattern')) {
                     td.setAttributeNS(null, 'data-letter-pattern', '1');
                 }
+                // Make sure every row that contains any cells with inputs is tagged as a block
+                const tr = td.parentNode;
+                toggleClass(tr, 'letter-cell-block', true);
+            }
+            else {
+                toggleClass(td, 'literal', true);
             }
         }
     }

@@ -13,6 +13,8 @@
         'type': 'Math',
         'textInput': true,
         'abilities': {
+          'decoder': true,
+          'decoderMode': 'Ascii'
         }
       };
     </script>
@@ -93,7 +95,7 @@
         font-size: 20pt;
       }
       #WeirdMaths .letter-input {
-        color: blue;
+        color: deepskyblue;
       }
     </style>
   </head>
@@ -106,7 +108,7 @@
         Filled black squares contain no digit. Ignore the light grey squares until you have solved the grid.
       </p>
 
-      <table id="sudoku" class="letter-cell-table letter-grid-2d" data-input-style="none" style="margin-left: 0.8in;">
+      <table id="sudoku" class="letter-cell-table letter-grid-discover" data-input-style="none" style="margin-left: 0.8in;">
         <tr> <!--row 1-->
           <td class="given rl2 rt2">5</td>
           <td class="numeric gray rt2 bb"></td>
@@ -189,7 +191,7 @@
           <td class="given bl bb">3</td>
           <td class="numeric bb rr"></td>
           <td class="given bb br rl">4</td>
-          <td class="numeric gray bl br"></td>
+          <td class="numeric gray bl br bb"></td>
           <td class="given rr bl bb">8</td>
           <td class="numeric rl bb"></td>
           <td class="given bb br">1</td>

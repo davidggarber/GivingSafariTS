@@ -19,6 +19,7 @@ export function textSetup() {
  * Look for elements of class 'create-from-pattern'.
  * When found, use the pattern, as well as other inputs, to build out a sequence of text inputs inside that element.
  * Secondary attributes:
+ *   letter-cell-table: A table with this class is will expect every cell
  *   data-letter-pattern: A string specifying the number of input, and any decorative text.
  *                        Example: "2-2-4" would create _ _ - _ _ - _ _ _ _
  *                        Special case: The character '¤' is reserved for a solid block, like you might see in a crossword.
@@ -55,10 +56,15 @@ function setupLetterPatterns() {
             // Skip cells with existing contents
             if (td.innerHTML == '') {
                 toggleClass(td, 'create-from-pattern', true);
-                toggleClass(td, 'letter-cell-block', true);
                 if (!getOptionalStyle(td, 'data-letter-pattern')) {
                     td.setAttributeNS(null, 'data-letter-pattern', '1');
                 }
+                // Make sure every row that contains any cells with inputs is tagged as a block
+                const tr = td.parentNode;
+                toggleClass(tr, 'letter-cell-block', true);
+            }
+            else {
+                toggleClass(td, 'literal', true);
             }
         }
     }
