@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Buried Logic',
+        'author': 'Martyn Lovell',
+        'copyright': '2020',
+        'type': 'word',
+        'textInput': true,
+        'abilities': {
+        }
+      };
+    </script>
+    <style>
+      .flavor {
+        font-style: italic;
+      }
+      #table {
+        border-spacing: 0px;
+      }
+      #table td {
+        border: solid 1px black;
+        padding: 7px;
+      }
+      #table td.question {
+        padding-top: 10px;
+        width: 5.1in;
+      }
+      #table td.letter-cell-block {
+        width: 2in;
+        vertical-align: middle;
+      }
+      #table .letter-cell {
+        margin-left: 1px;
+      }
+    </style>
+  </head>
+  <body id="BuriedLogic">
+    <div id="pageBody">
+      <p class="flavor">
+        In order to have a logical dialog, we must use analogy to break the logjam and avoid a monolog. Otherwise it is a slog.
+      </p>
+
+      <table id="table" data-input-style="underline" data-extract-style="highlight">
+        <tr>
+          <td class="question">Saturated and filled after a storm (e.g. land)</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="5~3" data-extract-indeces="3"></td>
+        </tr>
+        <tr>
+          <td class="question">German city known for a cathedral and for eponymous men&rsquo;s perfume</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="2~2" data-extract-indeces="4"></td>
+        </tr>
+        <tr>
+          <td class="question">Ordering of events by time</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="6~1" data-extract-indeces="3"></td>
+        </tr>
+        <tr>
+          <td class="question">Three-dimensional representation created by light</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="2~3" data-extract-indeces="5"></td>
+        </tr>
+        <tr>
+          <td class="question">Short scene after the conclusion of the main story</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="3~" data-extract-indeces="3"></td>
+        </tr>
+        <tr>
+          <td class="question">Technological opposite of digital &ndash; a continuously changing value</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="3~" data-extract-indeces="2"></td>
+        </tr>
+        <tr>
+          <!-- REVIEW: will be non-sensical in Giving Safaris -->
+          <td class="question">Record of actions or stamps, used in previous Safaris, but not this one!</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="~4" data-extract-indeces="2"></td>
+        </tr>
+        <tr>
+          <td class="question">Set of three movies that combine to make a larger story</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="3~1" data-extract-indeces="3"></td>
+        </tr>
+        <tr>
+          <td class="question">Large list of tasks to be completed when you are behind schedule</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="4~" data-extract-indeces="3"></td>
+        </tr>
+        <tr>
+          <td class="question">Short phrase to promote a product, cause or sports team</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="1~2" data-extract-indeces="3"></td>
+        </tr>
+        <tr>
+          <td class="question">Reasoning that makes jumps or conclusions without rational basis </td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="2~4" data-extract-indeces="2"></td>
+        </tr>
+        <tr>
+          <td class="question">Three-part logical structure that draws a conclusion from two premises. 
+            For example: &ldquo;All cats are cute, Austen is a cat therefore Austen is cute&rdquo;</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="3~3" data-extract-indeces="3"></td>
+        </tr>
+        <tr>
+          <td class="question">Pseudo-science that claims and fails to predict future from stars</td>
+          <td class="letter-cell-block create-from-pattern" data-letter-pattern="5~1" data-extract-indeces="6"></td>
+        </tr>
+      </table>
+
+      <p>
+        Extract letters in order for final answer: <span id="extracted" data-letter-pattern="7~6"></span>
+      </p>
+
+    </div>
+  </body>
+</html>

@@ -4386,7 +4386,7 @@ function boilerplate(bp: BoilerPlateData) {
     }
     toggleClass(body, bp['paperSize']);
     toggleClass(body, bp['orientation']);
-    toggleClass(body, safariDetails.fontCss);  // So event fonts can trump defaults
+    toggleClass(body, '_' + bp['safari']);  // So event fonts can trump defaults
 
     const page: HTMLDivElement = createSimpleDiv({id:'page', cls:'printedPage'});
     const margins: HTMLDivElement = createSimpleDiv({cls:'pageWithinMargins'});
