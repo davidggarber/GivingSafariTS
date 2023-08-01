@@ -28,7 +28,7 @@ var puzzles = [
     { title: 'Weird Maths', author: 'Martyn Lovell', type: types.logic, group: group.portrait },
     { title: 'Weird, You Nits', author: 'Martyn Lovell', type: types.rebus, group: group.portrait },
     { title: 'Buried Logic', author: 'Martyn Lovell', type: types.word, group: group.portrait },
-    { title: 'Fish Story', author: 'Dana Young', type: types.rebus, group: group.pending },
+    { title: 'Fish Story', author: 'Dana Young', type: types.rebus, group: group.portrait },
     { title: 'Moon', author: 'Rorke Haining', type: types.word, group: group.pending },
     { title: 'Petri Dish', author: 'Peter Golde', type: types.word, group: group.pending },
     { title: 'Complex Molecules', author: 'Philippe ', type: types.word, group: group.pending },

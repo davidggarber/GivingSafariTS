@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Fish Story',
+        'author': 'Dana Young',
+        'copyright': '2020',
+        'type': 'word',
+        'textInput': true,
+        'abilities': {
+          'checkMarks': true,
+          'wordSearch': true
+        }
+      };
+    </script>
+    <style>
+      #grid {
+        margin-left: 1in;
+        user-select: none; 
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+      }
+      #border {
+        fill: none;
+      }
+      .vertex-g text {
+        transform: translate(24px, 34px);
+        font-size: 18pt;
+        text-anchor: middle;
+        cursor: pointer;
+        font-family: 'Lucida Console';
+        font-size: 26pt;
+        font-weight: bold;
+      }
+      .vertex {
+        fill: none;
+        width: 48px;
+        height: 48px;
+        stroke: none;
+      }
+      #clues .row {
+        position: relative;
+      }
+      #clues img {
+        height: 1.03in;
+      }
+      #clues #taller {
+        position: absolute;
+        right: 10px;
+        top: 0px;
+      }
+      #clues #taller img {
+        height: 1.2in;
+      }
+      .cross-off {
+        display: inline-block;
+        position: relative;
+      }
+      #FishStory .check {
+        left: -0.2em;
+      }
+    </style>
+  </head>
+  <body id="FishStory">
+    <div id="pageBody">
+      <p class="flavor">
+        Find the hidden fish using the picture clues at the bottom of the page. <br>
+        Read the leftover letters left to right and top to bottom to help you find the answer.
+      </p>
+
+      <svg id="grid" width="528" height="528" class="word-select-area" data-max-points="2" data-hover-range="30" data-angle-constraints="45">
+        <g class="word-select-container"></g>
+        <g transform="translate(48 48)">
+          <rect id="border" width="432" height="432"></rect>
+          <g transform="translate(0 0)">
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>B</text></g>
+            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>J</text></g>
+            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>F</text></g>
+            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>L</text></g>
+            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>Y</text></g>
+            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>I</text></g>
+            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>N</text></g>
+            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>G</text></g>
+            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>G</text></g>
+          </g>
+          <g transform="translate(0 48)">
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>M</text></g>
+            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>L</text></g>
+            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>E</text></g>
+            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>I</text></g>
+            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>S</text></g>
+            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>N</text></g>
+            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>C</text></g>
+          </g>
+          <g transform="translate(0 96)">
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>P</text></g>
+            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>U</text></g>
+            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>U</text></g>
+            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>L</text></g>
+            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>B</text></g>
+            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>U</text></g>
+            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>S</text></g>
+            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>S</text></g>
+          </g>
+          <g transform="translate(0 144)">
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>N</text></g>
+            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>G</text></g>
+            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>E</text></g>
+            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>L</text></g>
+            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>L</text></g>
+            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>N</text></g>
+            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>L</text></g>
+            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>T</text></g>
+          </g>
+          <g transform="translate(0 192)">
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>M</text></g>
+            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>P</text></g>
+            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>S</text></g>
+            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>Y</text></g>
+            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>I</text></g>
+            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>A</text></g>
+          </g>
+          <g transform="translate(0 240)">
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>F</text></g>
+            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>I</text></g>
+            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>W</text></g>
+            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>G</text></g>
+            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>R</text></g>
+          </g>
+          <g transform="translate(0 288)">
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>N</text></g>
+            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>S</text></g>
+            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>S</text></g>
+            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>T</text></g>
+          </g>
+          <g transform="translate(0 336)">
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>K</text></g>
+            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>E</text></g>
+            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>K</text></g>
+            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>B</text></g>
+            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>L</text></g>
+            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>W</text></g>
+          </g>
+          <g transform="translate(0 384)">
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>L</text></g>
+            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>W</text></g>
+            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>N</text></g>
+            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>D</text></g>
+            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>K</text></g>
+          </g>
+        </g>
+      </svg>
+
+      <div id="clues">
+        <div class="row" id="row1">
+          <div class="cross-off"><img src="Images/Fish/a1.png"></div>
+          <div class="cross-off"><img src="Images/Fish/a2.png"></div>
+          <div class="cross-off"><img src="Images/Fish/a3.png"></div>
+          <div class="cross-off"><img src="Images/Fish/a4.png"></div>
+          <div class="cross-off"><img src="Images/Fish/a5.png"></div>
+          <div class="cross-off"><img src="Images/Fish/a6.png"></div>
+        </div>
+        <div class="row" id="row2">
+          <div class="cross-off"><img src="Images/Fish/b1.png"></div>
+          <div class="cross-off"><img src="Images/Fish/b2.png"></div>
+          <div class="cross-off"><img src="Images/Fish/b3.png"></div>
+          <div class="cross-off"><img src="Images/Fish/b4.png"></div>
+          <div class="cross-off"><img src="Images/Fish/b5.png"></div>
+          <div id="taller">
+            <div class="cross-off"><img src="Images/Fish/b6.png"></div>
+            <div class="cross-off"><img src="Images/Fish/b7.png"></div>
+          </div>
+        </div>
+        <div class="row" id="row3">
+          <div class="cross-off"><img src="Images/Fish/c1.png"></div>
+          <div class="cross-off"><img src="Images/Fish/c2.png"></div>
+          <div class="cross-off"><img src="Images/Fish/c3.png"></div>
+          <div class="cross-off"><img src="Images/Fish/c4.png"></div>
+          <div class="cross-off"><img src="Images/Fish/c5.png"></div>
+          <div class="cross-off"><img src="Images/Fish/c6.png"></div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>
