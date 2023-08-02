@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Petri Dish',
+        'author': 'Peter Golde',
+        'copyright': '2020',
+        'type': 'word',
+        'textInput': true,
+        'abilities': {
+          'checkMarks': true,
+          'notes': true,
+          'wordSearch': true
+        }
+      };
+    </script>
+    <style>
+      #grid {
+        margin-left: 1in;
+        user-select: none; 
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+      }
+      #border {
+        fill: none;
+        stroke: black;
+        stroke-width: 3px;
+      }
+      .vertex {
+        transform: translate(5px, 5px);
+        fill: none;
+        width: 40px;
+        height: 40px;
+        stroke: none;
+      }
+      .vertex-g text {
+        transform: translate(24px, 34px);
+        text-anchor: middle;
+        cursor: pointer;
+        font-family: 'Verdana';
+        font-size: 12pt;
+      }
+      .vertex-g image {
+        transform: translate(8px, 8px);
+        width: 32px;
+        height: 32px;
+      }
+      #clues td {
+        text-align: left;
+        padding: 0.15in 0.1in;
+      }
+      #clues p {
+        margin-top: 0.25in;
+        position: relative;
+      }
+      .cross-off {
+        position: relative;
+      }
+      #PetriDish .check {
+        left: -0.5em;
+        top: -0.2em;
+      }
+      #PetriDish .note-input.note-below {
+        height: 0.2in;
+        bottom: -1em;
+        width: 1.5in;
+        left: 0.5in;
+      }
+    </style>
+  </head>
+  <body id="PetriDish">
+    <div id="pageBody">
+      <p class="flavor">
+        There&rsquo;s a lot of DNA in there! We need to find the cause of the outbreak as soon as possible. 
+        If you remove all the known contaminants from the Petri dish, you should be able to sequence the infectious agent.
+      </p>
+
+      <svg id="grid" width="520" height="480" class="word-select-area" data-max-points="2" data-hover-range="30" data-angle-constraints="45">
+        <g class="word-select-container"></g>
+        <g transform="translate(240 10)">
+      
+
+          <ellipse id="border" cx="25" cy="230" rx="230" ry="230"></ellipse>
+          <g transform="translate(0 0)">
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>G</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>N</text></g>
+          </g>
+          <g transform="translate(0 40)">
+            <g class="vertex-g" transform="translate(-120 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(-80 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>G</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(80 0)"><rect class="vertex"></rect><text>G</text></g>
+            <g class="vertex-g" transform="translate(120 0)"><rect class="vertex"></rect><text>C</text></g>
+          </g>
+          <g transform="translate(0 80)">
+            <g class="vertex-g" transform="translate(-160 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(-120 0)"><rect class="vertex"></rect><text>L</text></g>
+            <g class="vertex-g" transform="translate(-80 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(80 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(120 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(160 0)"><rect class="vertex"></rect><text>O</text></g>
+          </g>
+          <g transform="translate(0 120)">
+            <g class="vertex-g" transform="translate(-160 0)"><rect class="vertex"></rect><text>U</text></g>
+            <g class="vertex-g" transform="translate(-120 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(-80 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>E</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>I</text></g>
+            <g class="vertex-g" transform="translate(80 0)"><rect class="vertex"></rect><text>L</text></g>
+            <g class="vertex-g" transform="translate(120 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(160 0)"><rect class="vertex"></rect><text>F</text></g>
+          </g>
+          <g transform="translate(0 160)">
+            <g class="vertex-g" transform="translate(-200 0)"><rect class="vertex"></rect><text>G</text></g>
+            <g class="vertex-g" transform="translate(-160 0)"><rect class="vertex"></rect><text>H</text></g>
+            <g class="vertex-g" transform="translate(-120 0)"><rect class="vertex"></rect><text>M</text></g>
+            <g class="vertex-g" transform="translate(-80 0)"><rect class="vertex"></rect><text>E</text></g>
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>W</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(80 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(120 0)"><rect class="vertex"></rect><text>S</text></g>
+            <g class="vertex-g" transform="translate(160 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(200 0)"><rect class="vertex"></rect><text>O</text></g>
+          </g>
+          <g transform="translate(0 200)">      
+            <g class="vertex-g" transform="translate(-200 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(-160 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(-120 0)"><rect class="vertex"></rect><text>V</text></g>
+            <g class="vertex-g" transform="translate(-80 0)"><rect class="vertex"></rect><text>G</text></g>
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(80 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(120 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(160 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(200 0)"><rect class="vertex"></rect><text>I</text></g>
+          </g>
+          <g transform="translate(0 240)">
+            <g class="vertex-g" transform="translate(-200 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(-160 0)"><rect class="vertex"></rect><text>V</text></g>
+            <g class="vertex-g" transform="translate(-120 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(-80 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>G</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(80 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(120 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(160 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(200 0)"><rect class="vertex"></rect><text>U</text></g>
+          </g>
+          <g transform="translate(0 280)">
+            <g class="vertex-g" transform="translate(-160 0)"><rect class="vertex"></rect><text>N</text></g>
+            <g class="vertex-g" transform="translate(-120 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(-80 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(80 0)"><rect class="vertex"></rect><text>I</text></g>
+            <g class="vertex-g" transform="translate(120 0)"><rect class="vertex"></rect><text>N</text></g>
+            <g class="vertex-g" transform="translate(160 0)"><rect class="vertex"></rect><text>A</text></g>
+          </g>
+          <g transform="translate(0 320)">
+            <g class="vertex-g" transform="translate(-160 0)"><rect class="vertex"></rect><text>E</text></g>
+            <g class="vertex-g" transform="translate(-120 0)"><rect class="vertex"></rect><text>O</text></g>
+            <g class="vertex-g" transform="translate(-80 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>T</text></g>
+            <g class="vertex-g" transform="translate(80 0)"><rect class="vertex"></rect><text>C</text></g>
+            <g class="vertex-g" transform="translate(120 0)"><rect class="vertex"></rect><text>I</text></g>
+            <g class="vertex-g" transform="translate(160 0)"><rect class="vertex"></rect><text>T</text></g>
+          </g>
+          <g transform="translate(0 360)">
+            <g class="vertex-g" transform="translate(-120 0)"><rect class="vertex"></rect><text>S</text></g>
+            <g class="vertex-g" transform="translate(-80 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>B</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>N</text></g>
+            <g class="vertex-g" transform="translate(80 0)"><rect class="vertex"></rect><text>A</text></g>
+            <g class="vertex-g" transform="translate(120 0)"><rect class="vertex"></rect><text>S</text></g>
+          </g>
+          <g transform="translate(0 400)">
+            <g class="vertex-g" transform="translate(-40 0)"><rect class="vertex"></rect><text>S</text></g>
+            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>R</text></g>
+            <g class="vertex-g" transform="translate(40 0)"><rect class="vertex"></rect><text>A</text></g>
+          </g>
+        </g>
+      </svg>
+
+      <p style="font-weight: bold;">Contaminants (in alphabetical order reading down; numbers indicate word length):</p>
+      <table id="clues">
+        <tr>
+          <td class="cross-off notes-below">____ Christie (author) [6]</td>
+          <td class="cross-off notes-below">Computerized X-ray [3,4]</td>
+          <td class="cross-off notes-below">Lewis and Clark guide [9]</td>
+        </tr>
+        <tr>
+          <td class="cross-off notes-below">Southernmost continent [10]</td>
+          <td class="cross-off notes-below">Rich person, in slang [3,3]</td>
+          <td class="cross-off notes-below">Sharply detached musical notes [8]</td>
+        </tr>
+        <tr>
+          <td class="cross-off notes-below">James Cameron sci-fi flick [6]</td>
+          <td class="cross-off notes-below">Battlestar ______ [9]</td>
+          <td class="cross-off notes-below">Airport pavement [6]</td>
+        </tr>
+        <tr>
+          <td class="cross-off notes-below">007’s favorite game [8]</td>
+          <td class="cross-off notes-below">Soviet prison camp [5]</td>
+          <td class="cross-off notes-below">Noughts and crosses [9]</td>
+        </tr>
+        <tr>
+          <td class="cross-off notes-below">Settlers of ____ (board game) [5]</td>
+          <td class="cross-off notes-below">Rowing meet [7]</td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
