@@ -40,8 +40,7 @@
                 div.classList.add(other);
               }
 
-              var page = puz.title.replaceAll(' ', '');
-              iframe.src = page + '.html?iframe';
+              iframe.src = puzzleHref(puz) + '?iframe&print';
 
               div.appendChild(iframe);
               list.appendChild(div);

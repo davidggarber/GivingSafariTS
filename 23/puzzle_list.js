@@ -16,6 +16,7 @@ var group = {
 };
 
 var puzzles = [
+    { title: 'Aaaaaaaa!', file: 'Aaaaaaaa', author: 'Jeff Lin', type: types.math, group: group.portrait },
     { title: 'Animal Magnetism', author: 'Dana Young', type: types.logic, group: group.portrait },
     { title: 'At The Waterworks', author: 'Philippe Nicolle', type: types.logic, group: group.portrait },
     { title: 'Chemical Compounds', author: 'Rorke Haining', type: types.word, group: group.portrait },
@@ -26,12 +27,12 @@ var puzzles = [
     { title: 'Genetics Of Humor', author: 'Colin Robertson', type: types.trivia, group: group.portrait },
     { title: 'Test Tubes', author: 'Rorke Haining', type: types.word, group: group.portrait },
     { title: 'Weird Maths', author: 'Martyn Lovell', type: types.logic, group: group.portrait },
-    { title: 'Weird, You Nits', author: 'Martyn Lovell', type: types.rebus, group: group.portrait },
+    { title: 'Weird, You Nits', file: 'WeirdYouNits', author: 'Martyn Lovell', type: types.rebus, group: group.portrait },
     { title: 'Buried Logic', author: 'Martyn Lovell', type: types.word, group: group.portrait },
     { title: 'Fish Story', author: 'Dana Young', type: types.rebus, group: group.portrait },
     { title: 'Moon', author: 'Rorke Haining', type: types.word, group: group.portrait },
     { title: 'Petri Dish', author: 'Peter Golde', type: types.word, group: group.portrait },
-    { title: 'Complex Molecules', author: 'Philippe ', type: types.word, group: group.pending },
+    { title: 'Complex Molecules', author: 'Philippe Nicolle', type: types.word, group: group.pending },
     { title: 'Engineering', author: 'Dana Young', type: types.logic, group: group.pending },
     { title: 'Zoology', author: 'David Garber', type: types.rebus, group: group.pending },
     { title: 'Evolution', author: 'Rorke Haining', type: types.word, group: group.pending },
@@ -42,6 +43,12 @@ var puzzles = [
     { title: 'X-Ray Crystallography', author: 'Colin Robertson', type: types.construction, group: group.pending },
     { title: 'Exoplanets', author: 'Jess McGatha', type: types.logic, group: group.pending },
     { title: 'Mathematics', author: 'David Garber', type: types.word, group: group.pending },
-    { title: 'Aaaaaaaa!', author: 'Jeff Lin', type: types.logic, group: group.pending },
     { title: 'Weird Science', author: 'Martyn Lovell', type: types.meta, group: group.pending },  // meta
 ];
+
+function puzzleHref(puz) {
+    if (puz['file']) {
+        return puz['file'] + '.html';
+    }
+    return puz.title.replaceAll(' ', '') + '.html';
+}

@@ -95,10 +95,8 @@
                 var aTitle = document.createElement('a');
                 imgIcon.src = 'Icons/' + puz.type.icon + '.png';
                 imgIcon.title = puz.type.alt;
-                var page = puz.title.replaceAll(' ', '');
-                // TODO: remove other punctuation, like '!'
                 if (puz.group != group.pending) {
-                    aTitle.href = page + '.html';
+                    aTitle.href = puzzleHref(puz);
                 }
                 aTitle.target = '_blank';
                 aTitle.innerText = puz.title;

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Aaaaaaaa!',
+        'author': 'Jeff Lin',
+        'copyright': '2020',
+        'type': 'math',
+        'textInput': true,
+        'abilities': {
+          'notes': true,
+          'decoder': true,
+          'decoderMode': 'Ascii'
+        }
+      };
+    </script>
+    <style>
+      #key {
+        width: 4.8in;
+        margin-left: 1.25in;
+        margin-top: 0.25in;
+        margin-bottom: 0.25in;
+        height: 1.5in;
+        border: solid 1px black;
+        padding: 0.1in;
+      }
+      #key td {
+        text-align: center;
+      }
+      .hint {
+        text-align: right;
+        width: 3.5in;
+        height: 0.5in;
+        padding-right: 0.1in;
+      }
+      .combo {
+        display: inline-block;
+        font-size: 0px;
+       }
+      .combo.space {
+        margin-left: 6px;
+      }
+      .dots {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        fill: none;
+        stroke: #666;
+        stroke-width: 2px;
+        stroke-dasharray: 3 3;
+      }
+      .ops {
+        display: inline-block;
+        margin-left: 0.1in;
+        color: gray;
+      }
+      .aaa {
+        font-size: 24pt;
+        line-height: 22pt;
+        xcontent: 'A';
+      }
+      .under {
+        display: inline-block;
+        position: relative;
+        margin-bottom: 2px;
+        padding-bottom: 2px;
+        border-bottom: solid 1.5px black;
+      }
+      .box {
+        display: inline-block;
+        position: relative;
+        margin: 1px;
+        padding: 2px;
+        border: solid 1.5px black;
+      }
+      .strike {
+        position: relative;
+        display: inline-block;
+        margin: 3px;
+      }
+      .bar {
+        width: 110%;
+        position: absolute;
+        border-top: solid 1.5px black;
+        top: 50%;
+        left: -5%;
+      }
+      .gray {
+        display: inline-block;
+        position: relative;
+        margin: 1px;
+        padding: 2px;
+        background-color: #aaa;
+      }
+      .bold {
+        position: relative;
+        font-weight: bolder;
+      }
+      .bold .under {
+        position: relative;
+        border-bottom: solid 4px black;
+      }
+      .bold .box {
+        position: relative;
+        border: solid 4px black;
+      }
+      .bold .bar {
+        border-top: solid 4px black;
+      }
+      .bold .dots {
+        stroke: black;
+        stroke-width: 4px;
+        stroke-dasharray: 4 4;
+      }
+      .wide {
+        display: inline-block;
+        position: relative;
+        padding: 0px 3px;
+      }
+      .gray.wide {
+        padding: 2px 4px;
+      }
+      .star {
+        position: relative;
+        top: -10px;
+        font-size: 18pt;
+      }
+      #phrase {
+        margin-top: 0.5in;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="pageBody">
+      <div id="key">
+        <p style="text-align: center; margin: 0px;"><span class="aaa">A = 1</span></p>
+        <table style="width:100%; margin: 0px;">
+          <tr>
+            <td style="width: 1.6in;">
+              <span class="under">
+                <svg class="dots">
+                  <ellipse cx="15" cy="15" rx="13" ry="13"></ellipse>  
+                </svg>
+              </span>
+              <table class="ops">
+                <tr>
+                  <td>&plus;</td>
+                  <td>&minus;</td>
+                  <td>1</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>&times;</td>
+                  <td>^</td>
+                  <td>5</td>
+                  <td>10</td>
+                </tr>
+              </table>
+            </td>
+            <td style="width: 1.6in;">
+              <span class="box">
+                <svg class="dots">
+                  <ellipse cx="15" cy="15" rx="13" ry="13"></ellipse>  
+                </svg>
+              </span>
+              <table class="ops">
+                <tr>
+                  <td>&plus;</td>
+                  <td>&minus;</td>
+                  <td>1</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>&times;</td>
+                  <td>^</td>
+                  <td>5</td>
+                  <td>10</td>
+                </tr>
+              </table>
+            </td>
+            <td style="width: 1.6in;">
+              <span class="strike">
+                <svg class="dots">
+                  <ellipse cx="15" cy="15" rx="13" ry="13"></ellipse>  
+                </svg>
+                <span class="bar" style="width:140%; left:-20%"></span>
+              </span>
+              <table class="ops">
+                <tr>
+                  <td>&plus;</td>
+                  <td>&minus;</td>
+                  <td>1</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>&times;</td>
+                  <td>^</td>
+                  <td>5</td>
+                  <td>10</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="gray wide">
+                <svg class="dots">
+                  <ellipse cx="15" cy="15" rx="13" ry="13" fill="none"></ellipse>  
+                </svg>
+              </span>
+              <table class="ops">
+                <tr>
+                  <td>&plus;</td>
+                  <td>&minus;</td>
+                  <td>1</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>&times;</td>
+                  <td>^</td>
+                  <td>5</td>
+                  <td>10</td>
+                </tr>
+              </table>
+            </td>
+            <td>
+              <span class="bold">
+                <svg class="dots">
+                  <ellipse cx="15" cy="15" rx="13" ry="13"></ellipse>  
+                </svg>
+              </span>
+              <table class="ops">
+                <tr>
+                  <td>&plus;</td>
+                  <td>&minus;</td>
+                  <td>1</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>&times;</td>
+                  <td>^</td>
+                  <td>5</td>
+                  <td>10</td>
+                </tr>
+              </table>
+            </td>
+            <td>
+              <span class="combo">
+                <svg class="dots">
+                  <ellipse cx="15" cy="15" rx="13" ry="13"></ellipse>  
+                </svg>
+                <span class="star">*</span>
+              </span>
+              <table class="ops">
+                <tr>
+                  <td>&plus;</td>
+                  <td>&minus;</td>
+                  <td>1</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>&times;</td>
+                  <td>^</td>
+                  <td>5</td>
+                  <td>10</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <table id="steps">
+        <tr>
+          <td class="hint">Alternative to regular coffee</td>
+          <td>
+            <div class="combo space">
+              <span class="under">
+                <span class="under">
+                  <span class="under">
+                    <span class="aaa">A</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="combo space">
+              <span class="under">
+                <span class="under">
+                  <span class="under">
+                    <span class="under">
+                      <span class="aaa">A</span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="combo space">
+              <span class="under">
+                <span class="under">
+                  <span class="aaa">A</span>
+                </span>
+              </span>
+            </div>
+            <div class="combo space">
+              <span class="aaa">A</span>
+            </div>
+            <div class="combo space">
+              <span class="under">
+                <span class="under">
+                  <span class="under">
+                    <span class="under">
+                      <span class="under">
+                        <span class="aaa">A</span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="hint">Toyota Prius or Chevrolet Volt</td>
+          <td>
+            <div class="combo">
+              <span class="box">
+                <span class="box">
+                  <span class="box">
+                    <span class="aaa">A</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="under">
+                <span class="box">
+                  <span class="box">
+                    <span class="box">
+                      <span class="under">
+                        <span class="under">
+                          <span class="aaa">A</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="box">
+                <span class="aaa">A</span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="box">
+                <span class="under">
+                  <span class="box">
+                    <span class="box">
+                    <span class="aaa">A</span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="under">
+                <span class="box">
+                  <span class="box">
+                    <span class="aaa">A</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="box">
+                <span class="box">
+                  <span class="aaa">A</span>
+                </span>
+              </span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="hint">GEICO mascot</td>
+          <td>
+            <div class="combo">
+              <span class="strike">
+                <span class="box">
+                  <span class="box">
+                    <span class="box">
+                      <span class="aaa">A</span>
+                    </span>
+                  </span>
+                </span>
+                <span class="bar"></span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="strike">
+                <span class="box">
+                  <span class="box">
+                    <span class="box">
+                      <span class="aaa">A</span>
+                    </span>
+                  </span>
+                </span>
+                <span class="bar"></span>
+                <span class="bar" style="top:43%"></span>
+                <span class="bar" style="top:57%"></span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="strike">
+                <span class="box">
+                  <span class="aaa">A</span>
+                </span>
+                <span class="bar"></span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="strike">
+                <span class="box">
+                  <span class="box">
+                    <span class="aaa">A</span>
+                  </span>
+                </span>
+                <span class="bar"></span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="strike">
+                <span class="box">
+                  <span class="box">
+                    <span class="box">
+                      <span class="aaa">A</span>
+                    </span>
+                  </span>
+                </span>
+                <span class="bar"></span>
+              </span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="hint">A bit drunk</td>
+          <td>
+            <div class="combo">
+              <span class="box">
+                <span class="box">
+                  <span class="under">
+                    <span class="gray">
+                      <span class="under">
+                        <span class="aaa">A</span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="gray">
+                <span class="under">
+                  <span class="under">
+                    <span class="aaa">A</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="gray">
+                <span class="box">
+                  <span class="under">
+                    <span class="aaa">A</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="under">
+                <span class="box">
+                  <span class="gray">
+                    <span class="under">
+                      <span class="under">
+                        <span class="aaa">A</span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="gray">
+                <span class="under">
+                  <span class="box">
+                    <span class="under">
+                      <span class="aaa">A</span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="hint">Old Glory and the Maple Leaf</td>
+          <td>
+            <div class="combo">
+              <span vclass="bold">
+                <span class="aaa">A</span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="box">
+                <span class="bold">
+                  <span class="aaa">A</span>
+                </span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="strike">
+                <span class="bold">
+                  <span class="wide"><span class="aaa">A</span></span>
+                </span>
+                <span class="bar" style="top:30%"></span>
+                <span class="bar" style="top:40%"></span>
+                <span class="bar"></span>
+                <span class="bar" style="top:60%"></span>
+                <span class="bar" style="top:70%"></span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="bold">
+                <span class="box">
+                  <span class="aaa">A</span>
+                </span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="strike">
+                <span class="box">
+                  <span class="bold">
+                    <span class="under">
+                      <span class="gray">
+                        <span class="under">
+                          <span class="aaa">A</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                  <span class="bar" style="top:40%"></span>
+                </span>
+              </span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="hint">“Corona” ending, in 2020</td>
+          <td>
+            <div class="combo">
+              <span class="box">
+                <span class="aaa">A</span>
+                <span class="star">*</span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="strike">
+                <span class="aaa">A</span>
+                <span class="star">*</span>
+                <span class="bar" style="top:50%"></span>
+                <span class="bar" style="top:40%"></span>
+              </span>
+            </div>
+            <div class="combo">
+              <span class="box">
+                <span class="gray">
+                  <span class="under">
+                    <span class="aaa">A</span>
+                  </span>
+                </span>
+              </span>
+              <span class="star">*</span>
+            </div>
+            <div class="combo">
+                <span class="aaa">A</span>
+                <span class="star">**</span>
+            </div>
+            <div class="combo">
+              <span class="under">
+                <span class="bold">
+                  <span class="under">
+                    <span class="under">
+                      <span class="aaa">A</span>
+                    </span>
+                    <span class="star">*</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <div id="phrase">
+
+        <div class="combo notes-below">
+          <span class="gray wide">
+            <span class="aaa">A</span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="box">
+            <span class="box">
+              <span class="under">
+                <span class="under">
+                  <span class="aaa">A</span>
+                </span>
+              </span>
+            </span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="aaa">A</span>
+          <span class="star">*</span>
+        </div>
+        <div class="combo notes-below">
+          <span class="strike">
+            <span class="box">
+              <span class="aaa">A</span>
+            </span>
+            <span class="bar"></span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="under">
+            <span class="aaa">A</span>
+            <span class="star">*</span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="strike">
+            <span class="box">
+              <span class="strike">
+                <span class="bold">
+                  <span class="aaa">A</span>
+                </span>
+                <span class="bar" style="top:55%"></span>
+              </span>
+            </span>
+            <span class="bar" style="top:45%"></span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="box">
+            <span class="box">
+              <span class="aaa">A</span>
+            </span>
+          </span>
+          <span class="star">*</span>
+        </div>
+        <div class="combo notes-below">
+          <span class="under">
+            <span class="gray wide">
+              <span class="under">
+                <span class="aaa">A</span>
+              </span>
+            </span>
+          </span>
+        </div>
+
+        <div class="combo">
+          <span class="aaa">&nbsp;</span>
+        </div>
+
+        <div class="combo notes-below">
+          <span class="under">
+            <span class="box">
+              <span class="box">
+                <span class="strike">
+                  <span class="aaa">A</span>
+                  <span class="bar" style="top:50%"></span>
+                </span>
+              </span>
+            </span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="under" style="padding-bottom:0px;">
+            <span class="strike">
+              <span class="under">
+                <span class="strike">
+                  <span class="aaa">A</span>
+                  <span class="bar" style="top:50%"></span>
+                </span>
+              </span>
+              <span class="bar" style="top:30%"></span>
+            </span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="bold">
+            <span class="box">
+              <span class="box">
+                <span class="strike">
+                  <span class="aaa">A</span>
+                  <span class="bar" style="top:33%"></span>
+                  <span class="bar" style="top:50%"></span>
+                </span>
+              </span>
+            </span>
+          </span>
+        </div>
+
+        <p>&nbsp;</p>
+
+        <div class="combo notes-below">
+          <span class="under">
+            <span class="box">
+              <span class="strike">
+                <span class="bold">
+                  <span class="aaa">A</span>
+                </span>
+                <span class="bar" style="top:40%"></span>
+                <span class="bar" style="top:50%"></span>
+            </span>
+            </span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="under">
+            <span class="box">
+              <span class="under">
+                <span class="aaa">A</span>
+              </span>
+            </span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="under">
+            <span class="box">
+              <span class="aaa">A</span>
+            </span>
+          </span>
+        </div>
+
+        <div class="combo">
+          <span class="aaa">&nbsp;</span>
+        </div>
+
+        <div class="combo notes-below">
+          <span class="strike">
+            <span class="strike">
+              <span class="bold">
+                <span class="aaa">A</span>
+              </span>
+              <span class="bar" style="top:40%"></span>
+            </span>
+            <span class="star">*</span>
+            <span class="bar" style="top:50%"></span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="strike">
+            <span class="under">
+              <span class="aaa">A</span>
+            </span>
+            <span class="bar" style="top:50%"></span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="bold">
+            <span class="box">
+              <span class="box">
+                <span class="under">
+                  <span class="aaa">A</span>
+                </span>
+              </span>
+            </span>
+          </span>
+        </div>
+        <div class="combo notes-below">
+          <span class="strike">
+            <span class="bold">
+              <span class="aaa">A</span>
+            </span>
+            <span class="bar" style="top:50%"></span>
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+  </body>
+</html>
