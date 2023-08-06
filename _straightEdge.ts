@@ -723,6 +723,8 @@ export function createFromVertexList(vertexList:string) {
                 else {
                     snapStraightLineTo(ruler, getVertexData(ruler, vert));
                 }
+                // Both of the above set 'building', but complete does not clear it
+                toggleClass(vert, 'building', false);
             }
         }
     }

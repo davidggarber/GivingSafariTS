@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = void 0;
+exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -297,6 +297,76 @@ function moveFocus(input, caret) {
     return false;
 }
 exports.moveFocus = moveFocus;
+/**
+ * Create a generic TR tag for each row in a table.
+ * Available for TableDetails.onRow where that is all that's needed
+ */
+function newTR(y) {
+    return document.createElement('tr');
+}
+exports.newTR = newTR;
+/**
+ * Create a table from details
+ * @param details A TableDetails, which can exist in several permutations with optional fields
+ */
+function constructTable(details) {
+    var root = document.getElementById(details.rootId);
+    var height = (details.data) ? details.data.length : details.height;
+    for (var y = 0; y < height; y++) {
+        var row = root;
+        if (details.onRow) {
+            var rr = details.onRow(y);
+            if (rr) {
+                root === null || root === void 0 ? void 0 : root.appendChild(rr);
+                row = rr;
+            }
+        }
+        var width = (details.data) ? details.data[y].length : details.width;
+        for (var x = 0; x < width; x++) {
+            var val = (details.data) ? details.data[y][x] : '';
+            var cc = details.onCell(val, x, y);
+            if (cc) {
+                row === null || row === void 0 ? void 0 : row.appendChild(cc);
+            }
+        }
+    }
+}
+exports.constructTable = constructTable;
+function constructSvgTextCell(val, dx, dy, cls) {
+    if (val == ' ') {
+        return null;
+    }
+    var vg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    vg.classList.add('vertex-g');
+    if (cls) {
+        applyAllClasses(vg, cls);
+    }
+    vg.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
+    var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    r.classList.add('vertex');
+    var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    t.appendChild(document.createTextNode(val));
+    vg.appendChild(r);
+    vg.appendChild(t);
+    return vg;
+}
+exports.constructSvgTextCell = constructSvgTextCell;
+function constructSvgImageCell(img, dx, dy, cls) {
+    var vg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    vg.classList.add('vertex-g');
+    if (cls) {
+        applyAllClasses(vg, cls);
+    }
+    vg.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
+    var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    r.classList.add('vertex');
+    var i = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+    i.setAttributeNS('', 'href', img);
+    vg.appendChild(r);
+    vg.appendChild(i);
+    return vg;
+}
+exports.constructSvgImageCell = constructSvgImageCell;
 /*-----------------------------------------------------------
  * _notes.ts
  *-----------------------------------------------------------*/
@@ -3682,6 +3752,8 @@ function createFromVertexList(vertexList) {
                 else {
                     snapStraightLineTo(ruler, getVertexData(ruler, vert));
                 }
+                // Both of the above set 'building', but complete does not clear it
+                toggleClass(vert, 'building', false);
             }
         }
     }
@@ -3913,6 +3985,9 @@ function boilerplate(bp) {
      *    </body>
      *   </html>
      */
+    if (bp['tableBuilder']) {
+        constructTable(bp['tableBuilder']);
+    }
     var html = document.getElementsByTagName('HTML')[0];
     var head = document.getElementsByTagName('HEAD')[0];
     var body = document.getElementsByTagName('BODY')[0];

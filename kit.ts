@@ -328,6 +328,94 @@ export function moveFocus(input: HTMLInputElement,
 
 
 /*-----------------------------------------------------------
+ * _tableBuilder.ts
+ *-----------------------------------------------------------*/
+
+
+
+export type TableDetails = {
+  rootId: string;
+  height?: number;  // number of rows, indexed [0..height)
+  width?: number;   // number of columns, indexed [0..width)
+  data?: string[];  // array of strings, where each string is one row and each character is one cell
+                        // if set, height and width can be omitted, and derived from this array
+  onRow?: (y: number) => HTMLElement|null;
+  onCell: (val: string, x: number, y: number) => HTMLElement|null;
+}
+
+/**
+ * Create a generic TR tag for each row in a table.
+ * Available for TableDetails.onRow where that is all that's needed
+ */
+export function newTR(y:number) {
+  return document.createElement('tr');
+}
+
+/**
+ * Create a table from details
+ * @param details A TableDetails, which can exist in several permutations with optional fields
+ */
+export function constructTable(details: TableDetails) {
+  const root = document.getElementById(details.rootId);
+  const height = (details.data) ? details.data.length : (details.height as number);
+  for (let y = 0; y < height; y++) {
+    let row = root;
+    if (details.onRow) {
+      const rr = details.onRow(y);
+      if (rr) {
+        root?.appendChild(rr);
+        row = rr;
+      }
+    }
+
+    const width = (details.data) ? details.data[y].length : (details.width as number);
+    for (let x = 0; x < width; x++) {
+      const val:string = (details.data) ? details.data[y][x] : '';
+      const cc = details.onCell(val, x, y);
+      if (cc) {
+        row?.appendChild(cc);
+      }
+    }
+  }
+}
+
+export function constructSvgTextCell(val:string, dx:number, dy:number, cls:string) {
+  if (val == ' ') {
+    return null;
+  }
+  var vg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  vg.classList.add('vertex-g');
+  if (cls) {
+    applyAllClasses(vg, cls);
+  }
+  vg.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
+  var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  r.classList.add('vertex');
+  var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  t. appendChild(document.createTextNode(val));
+  vg.appendChild(r);
+  vg.appendChild(t);
+  return vg;
+}
+
+export function constructSvgImageCell(img:string, dx:number, dy:number, cls:string) {
+  var vg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  vg.classList.add('vertex-g');
+  if (cls) {
+    applyAllClasses(vg, cls);
+  }
+  vg.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
+  var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  r.classList.add('vertex');
+  var i = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+  i.setAttributeNS('', 'href', img);
+  vg.appendChild(r);
+  vg.appendChild(i);
+  return vg;
+}
+
+
+/*-----------------------------------------------------------
  * _notes.ts
  *-----------------------------------------------------------*/
 
@@ -4066,6 +4154,8 @@ export function createFromVertexList(vertexList:string) {
                 else {
                     snapStraightLineTo(ruler, getVertexData(ruler, vert));
                 }
+                // Both of the above set 'building', but complete does not clear it
+                toggleClass(vert, 'building', false);
             }
         }
     }
@@ -4232,6 +4322,7 @@ type BoilerPlateData = {
     textInput?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
+    tableBuilder?: TableDetails;  // Arguments to table-generate the page content
 }
 
 /**
@@ -4360,6 +4451,10 @@ function boilerplate(bp: BoilerPlateData) {
      *    </body>
      *   </html>
      */
+
+    if (bp['tableBuilder']) {
+        constructTable(bp['tableBuilder']);
+    }
 
     const html:HTMLHtmlElement = document.getElementsByTagName('HTML')[0] as HTMLHtmlElement;
     const head:HTMLHeadElement = document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;

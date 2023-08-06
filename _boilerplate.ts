@@ -6,6 +6,7 @@ import { checkLocalStorage, indexAllDragDropFields, indexAllDrawableFields } fro
 import { preprocessStampObjects } from "./_stampTools";
 import { preprocessDragFunctions } from "./_dragDrop";
 import { EdgeTypes, preprocessRulerFunctions } from "./_straightEdge";
+import { TableDetails, constructTable } from "./_tableBuilder";
 
 
 /**
@@ -136,6 +137,7 @@ type BoilerPlateData = {
     textInput?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
+    tableBuilder?: TableDetails;  // Arguments to table-generate the page content
 }
 
 /**
@@ -264,6 +266,10 @@ function boilerplate(bp: BoilerPlateData) {
      *    </body>
      *   </html>
      */
+
+    if (bp['tableBuilder']) {
+        constructTable(bp['tableBuilder']);
+    }
 
     const html:HTMLHtmlElement = document.getElementsByTagName('HTML')[0] as HTMLHtmlElement;
     const head:HTMLHeadElement = document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;

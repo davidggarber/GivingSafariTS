@@ -2,6 +2,7 @@ import os
 
 kitFiles = [
     '_classUtil.ts',
+    '_tableBuilder.ts',
     '_notes.ts',
     '_decoders.ts',
     '_storage.ts',
