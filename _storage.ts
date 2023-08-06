@@ -345,11 +345,15 @@ export function saveStraightEdge(vertexList: string, add:boolean) {
  * Assign indeces to all of the elements in a group
  * @param elements A list of elements
  * @param suffix A variant name of the index (optional)
+ * @param offset A number to shift all indeces (optional) - used when two collections share an index space
  */
-function applyGlobalIndeces(elements:HTMLCollectionOf<Element>, suffix?:string) {
+function applyGlobalIndeces(elements:HTMLCollectionOf<Element>, suffix?:string, offset?:number) {
     let attr = 'data-globalIndex';
     if (suffix != undefined) {
         attr += '-' + suffix;
+    }
+    if (!offset) {
+        offset = 0;
     }
     for (var i = 0; i < elements.length; i++) {
         elements[i].setAttributeNS('', attr, String(i));
@@ -417,8 +421,10 @@ export function indexAllNoteFields() {
  * Assign globalIndeces to every check mark
  */
 export function indexAllCheckFields() {
-    const inputs = document.getElementsByClassName('cross-off');
-    applyGlobalIndeces(inputs);
+    const checks = document.getElementsByClassName('cross-off');
+    applyGlobalIndeces(checks);
+    const circles = document.getElementsByClassName('circle-off');
+    applyGlobalIndeces(circles, undefined, checks.length);
 }
 
 /**
@@ -544,11 +550,20 @@ function restoreNotes(values:object) {
  */
 function restoreCrossOffs(values:object) {
     localCache.checks = values;
-    var elements = document.getElementsByClassName('cross-off');
+    let elements = document.getElementsByClassName('cross-off');
     for (var i = 0; i < elements.length; i++) {
-        var element = elements[i] as HTMLElement;
-        var globalIndex = getGlobalIndex(element);
-        var value = values[globalIndex] as boolean;
+        const element = elements[i] as HTMLElement;
+        const globalIndex = getGlobalIndex(element);
+        const value = values[globalIndex] as boolean;
+        if(value != undefined){
+            toggleClass(element, 'crossed-off', value);
+        }
+    }  
+    elements = document.getElementsByClassName('circle-off');
+    for (var i = 0; i < elements.length; i++) {
+        const element = elements[i] as HTMLElement;
+        const globalIndex = getGlobalIndex(element);
+        const value = values[globalIndex] as boolean;
         if(value != undefined){
             toggleClass(element, 'crossed-off', value);
         }

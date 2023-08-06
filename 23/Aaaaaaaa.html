@@ -13,6 +13,7 @@
         'type': 'math',
         'textInput': true,
         'abilities': {
+          'checkMarks': true,
           'notes': true,
           'decoder': true,
           'decoderMode': 'Ascii'
@@ -32,16 +33,39 @@
       #key td {
         text-align: center;
       }
+      .ops td {
+        position: relative;
+        width: 15px;
+        height: 15px; 
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .circle-off {
+        cursor: pointer;
+      }
+      .circle-off .check {
+        font-size: 22pt;
+        top: -11px;
+        left: -11px;
+      }
       .hint {
         text-align: right;
         width: 3.5in;
         height: 0.5in;
         padding-right: 0.1in;
       }
+      .hint .note-input.note-below {
+        bottom: -2px;
+        height: 1.5em;
+        width: 2in;
+        left: 1.5in;
+      }
       .combo {
         display: inline-block;
         font-size: 0px;
-       }
+      }
       .combo.space {
         margin-left: 6px;
       }
@@ -150,9 +174,9 @@
               </span>
               <table class="ops">
                 <tr>
-                  <td>&plus;</td>
+                  <td>&plus;<img src="Images/HandCircle.png" style="position:absolute; top: -3px; left: -5px;"></td>
                   <td>&minus;</td>
-                  <td>1</td>
+                  <td>1<img src="Images/HandCircle.png" style="position:absolute; top: -3px; left: -5px;"></td>
                   <td>2</td>
                 </tr>
                 <tr>
@@ -171,16 +195,16 @@
               </span>
               <table class="ops">
                 <tr>
-                  <td>&plus;</td>
-                  <td>&minus;</td>
-                  <td>1</td>
-                  <td>2</td>
+                  <td class="circle-off">&plus;</td>
+                  <td class="circle-off">&minus;</td>
+                  <td class="circle-off">1</td>
+                  <td class="circle-off">2</td>
                 </tr>
                 <tr>
-                  <td>&times;</td>
-                  <td>^</td>
-                  <td>5</td>
-                  <td>10</td>
+                  <td class="circle-off">&times;</td>
+                  <td class="circle-off">^</td>
+                  <td class="circle-off">5</td>
+                  <td class="circle-off">10</td>
                 </tr>
               </table>
             </td>
@@ -189,20 +213,20 @@
                 <svg class="dots">
                   <ellipse cx="15" cy="15" rx="13" ry="13"></ellipse>  
                 </svg>
-                <span class="bar" style="width:140%; left:-20%"></span>
+                <span class="bar" style="width:140%; left:-20%; top:45%;"></span>
               </span>
               <table class="ops">
                 <tr>
-                  <td>&plus;</td>
-                  <td>&minus;</td>
-                  <td>1</td>
-                  <td>2</td>
+                  <td class="circle-off">&plus;</td>
+                  <td class="circle-off">&minus;</td>
+                  <td class="circle-off">1</td>
+                  <td class="circle-off">2</td>
                 </tr>
                 <tr>
-                  <td>&times;</td>
-                  <td>^</td>
-                  <td>5</td>
-                  <td>10</td>
+                  <td class="circle-off">&times;</td>
+                  <td class="circle-off">^</td>
+                  <td class="circle-off">5</td>
+                  <td class="circle-off">10</td>
                 </tr>
               </table>
             </td>
@@ -216,16 +240,16 @@
               </span>
               <table class="ops">
                 <tr>
-                  <td>&plus;</td>
-                  <td>&minus;</td>
-                  <td>1</td>
-                  <td>2</td>
+                  <td class="circle-off">&plus;</td>
+                  <td class="circle-off">&minus;</td>
+                  <td class="circle-off">1</td>
+                  <td class="circle-off">2</td>
                 </tr>
                 <tr>
-                  <td>&times;</td>
-                  <td>^</td>
-                  <td>5</td>
-                  <td>10</td>
+                  <td class="circle-off">&times;</td>
+                  <td class="circle-off">^</td>
+                  <td class="circle-off">5</td>
+                  <td class="circle-off">10</td>
                 </tr>
               </table>
             </td>
@@ -237,16 +261,16 @@
               </span>
               <table class="ops">
                 <tr>
-                  <td>&plus;</td>
-                  <td>&minus;</td>
-                  <td>1</td>
-                  <td>2</td>
+                  <td class="circle-off">&plus;</td>
+                  <td class="circle-off">&minus;</td>
+                  <td class="circle-off">1</td>
+                  <td class="circle-off">2</td>
                 </tr>
                 <tr>
-                  <td>&times;</td>
-                  <td>^</td>
-                  <td>5</td>
-                  <td>10</td>
+                  <td class="circle-off">&times;</td>
+                  <td class="circle-off">^</td>
+                  <td class="circle-off">5</td>
+                  <td class="circle-off">10</td>
                 </tr>
               </table>
             </td>
@@ -259,16 +283,16 @@
               </span>
               <table class="ops">
                 <tr>
-                  <td>&plus;</td>
-                  <td>&minus;</td>
-                  <td>1</td>
-                  <td>2</td>
+                  <td class="circle-off">&plus;</td>
+                  <td class="circle-off">&minus;</td>
+                  <td class="circle-off">1</td>
+                  <td class="circle-off">2</td>
                 </tr>
                 <tr>
-                  <td>&times;</td>
-                  <td>^</td>
-                  <td>5</td>
-                  <td>10</td>
+                  <td class="circle-off">&times;</td>
+                  <td class="circle-off">^</td>
+                  <td class="circle-off">5</td>
+                  <td class="circle-off">10</td>
                 </tr>
               </table>
             </td>
@@ -277,7 +301,7 @@
       </div>
       <table id="steps">
         <tr>
-          <td class="hint">Alternative to regular coffee</td>
+          <td class="hint notes-below">Alternative to regular coffee</td>
           <td>
             <div class="combo space">
               <span class="under">
@@ -325,7 +349,7 @@
           </td>
         </tr>
         <tr>
-          <td class="hint">Toyota Prius or Chevrolet Volt</td>
+          <td class="hint notes-below">Toyota Prius or Chevrolet Volt</td>
           <td>
             <div class="combo">
               <span class="box">
@@ -386,7 +410,7 @@
           </td>
         </tr>
         <tr>
-          <td class="hint">GEICO mascot</td>
+          <td class="hint notes-below">GEICO mascot</td>
           <td>
             <div class="combo">
               <span class="strike">
@@ -447,7 +471,7 @@
           </td>
         </tr>
         <tr>
-          <td class="hint">A bit drunk</td>
+          <td class="hint notes-below">A bit drunk</td>
           <td>
             <div class="combo">
               <span class="box">
@@ -507,7 +531,7 @@
           </td>
         </tr>
         <tr>
-          <td class="hint">Old Glory and the Maple Leaf</td>
+          <td class="hint notes-below">Old Glory and the Maple Leaf</td>
           <td>
             <div class="combo">
               <span vclass="bold">
@@ -559,7 +583,7 @@
           </td>
         </tr>
         <tr>
-          <td class="hint">“Corona” ending, in 2020</td>
+          <td class="hint notes-below">&ldquo;Corona&rdquo; ending, in 2020</td>
           <td>
             <div class="combo">
               <span class="box">

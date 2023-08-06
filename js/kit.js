@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = void 0;
+exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCircleOffCircles = exports.setupCrossOffChecks = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = exports.onLetterChange = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -536,6 +536,16 @@ exports.toggleNotes = toggleNotes;
  * Any such elements are clickable. When clicked, a check mark is toggled on and off, allowed players to mark some clues as done.
  */
 function setupCrossOffs() {
+    setupCrossOffChecks();
+    setupCircleOffCircles();
+    indexAllCheckFields();
+}
+exports.setupCrossOffs = setupCrossOffs;
+/**
+ * Elements tagged with class = 'cross-off' are for puzzles clues that don't indicate where to use it.
+ * Any such elements are clickable. When clicked, a check mark is toggled on and off, allowed players to mark some clues as done.
+ */
+function setupCrossOffChecks() {
     var cells = document.getElementsByClassName('cross-off');
     for (var i = 0; i < cells.length; i++) {
         var cell = cells[i];
@@ -546,9 +556,25 @@ function setupCrossOffs() {
         check.innerHTML = '&#x2714;&#xFE0F;'; // ✔️;
         cell.appendChild(check);
     }
-    indexAllCheckFields();
 }
-exports.setupCrossOffs = setupCrossOffs;
+exports.setupCrossOffChecks = setupCrossOffChecks;
+/**
+ * Elements tagged with class = 'cross-off' are for puzzles clues that don't indicate where to use it.
+ * Any such elements are clickable. When clicked, a check mark is toggled on and off, allowed players to mark some clues as done.
+ */
+function setupCircleOffCircles() {
+    var cells = document.getElementsByClassName('circle-off');
+    for (var i = 0; i < cells.length; i++) {
+        var cell = cells[i];
+        // Place a small text input field in each cell
+        cell.onclick = function (e) { onCrossOff(e); };
+        var check = document.createElement('span');
+        check.classList.add('check');
+        check.innerHTML = '&#x2b55;'; // ⭕;
+        cell.appendChild(check);
+    }
+}
+exports.setupCircleOffCircles = setupCircleOffCircles;
 /**
  * Handler for when an object that can be crossed off is clicked
  * @param event The mouse event
@@ -558,11 +584,14 @@ function onCrossOff(event) {
     if (obj.tagName == 'A' || hasClass(obj, 'note-input') || hasClass(obj, 'letter-input') || hasClass(obj, 'word-input')) {
         return; // Clicking on lines, notes, or inputs should not check anything
     }
-    obj = findParentOfClass(obj, 'cross-off');
-    if (obj != null) {
-        var newVal = !hasClass(obj, 'crossed-off');
-        toggleClass(obj, 'crossed-off', newVal);
-        saveCheckLocally(obj, newVal);
+    var parent = findParentOfClass(obj, 'cross-off');
+    if (!parent) {
+        parent = findParentOfClass(obj, 'circle-off');
+    }
+    if (parent != null) {
+        var newVal = !hasClass(parent, 'crossed-off');
+        toggleClass(parent, 'crossed-off', newVal);
+        saveCheckLocally(parent, newVal);
     }
 }
 function setupHighlights() {
@@ -1019,11 +1048,15 @@ exports.saveStraightEdge = saveStraightEdge;
  * Assign indeces to all of the elements in a group
  * @param elements A list of elements
  * @param suffix A variant name of the index (optional)
+ * @param offset A number to shift all indeces (optional) - used when two collections share an index space
  */
-function applyGlobalIndeces(elements, suffix) {
+function applyGlobalIndeces(elements, suffix, offset) {
     var attr = 'data-globalIndex';
     if (suffix != undefined) {
         attr += '-' + suffix;
+    }
+    if (!offset) {
+        offset = 0;
     }
     for (var i = 0; i < elements.length; i++) {
         elements[i].setAttributeNS('', attr, String(i));
@@ -1090,8 +1123,10 @@ exports.indexAllNoteFields = indexAllNoteFields;
  * Assign globalIndeces to every check mark
  */
 function indexAllCheckFields() {
-    var inputs = document.getElementsByClassName('cross-off');
-    applyGlobalIndeces(inputs);
+    var checks = document.getElementsByClassName('cross-off');
+    applyGlobalIndeces(checks);
+    var circles = document.getElementsByClassName('circle-off');
+    applyGlobalIndeces(circles, undefined, checks.length);
 }
 exports.indexAllCheckFields = indexAllCheckFields;
 /**
@@ -1212,6 +1247,15 @@ function restoreNotes(values) {
 function restoreCrossOffs(values) {
     localCache.checks = values;
     var elements = document.getElementsByClassName('cross-off');
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        var globalIndex = getGlobalIndex(element);
+        var value = values[globalIndex];
+        if (value != undefined) {
+            toggleClass(element, 'crossed-off', value);
+        }
+    }
+    elements = document.getElementsByClassName('circle-off');
     for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
         var globalIndex = getGlobalIndex(element);
