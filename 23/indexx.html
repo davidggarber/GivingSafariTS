@@ -9,6 +9,40 @@
     <link href="../Css/TextInput.css" rel="Stylesheet" type="text/css"></link>
     <link rel="shortcut icon" type="image/png" href="Images/Beaker_icon.png">
     <style>
+        th {
+            background-color: #FFFF66;
+        }
+        #sortHeader th {
+            cursor: s-resize;
+        }
+
+        #table tr:nth-child(odd) {
+            background-color: #f5f5f5;
+        }
+        #table tr:nth-child(even) {
+            background-color: #ECEEEE;
+        }
+
+        td {
+            position: relative;
+            line-height: 8pt;
+            padding: 0px;
+        }
+        
+        .icons {
+            width: 1in; 
+            text-align: center;
+        }
+        .html {
+            width: 3in; 
+            text-align: left;
+        }
+        .author {
+            width: 1.5in; 
+            position: relative;
+            text-align: left; 
+        }
+
         .feeder {
             text-align: center;
         }
@@ -26,23 +60,12 @@
         .feeder a:link {
             text-decoration: none;
         }
-        td {
-            position: relative;
-            line-height: 8pt;
-            padding: 0px;
-        }
         sub {
             position: relative;
             left: -.5em;
             top: -.5em;
             padding: 0px;
             font-size: 6pt;
-        }
-        #table tr:nth-child(odd) {
-            background-color: #f5f5f5;
-        }
-        #table tr:nth-child(even) {
-            background-color: #ECEEEE;
         }
         #logo {
             position: absolute;
@@ -85,9 +108,10 @@
                 var puz = puzzles[i];
 
                 var tr = document.createElement('tr');
-                var thIcon = document.createElement('th');
+                var thIcon = document.createElement('td');
                 var tdTitle = document.createElement('td');
                 var tdAuthor = document.createElement('td');
+                tr.classList.add('sortable');
                 thIcon.classList.add('icons');
                 tdTitle.classList.add('html');
                 tdAuthor.classList.add('author');
@@ -116,15 +140,44 @@
                 }
             }
         }
+
+        var sortOrder = 3;
+        function sortTable(col) {
+            var tbody = document.getElementById('puzzle_list');
+            var rows = document.getElementsByClassName('sortable');
+            var lookup = {};
+            var order = [];
+            for (var i = rows.length - 1; i >= 0; i--) {
+                var row = rows[i];
+                var cols = row.getElementsByTagName('td');
+                var cell = cols[col - 1];
+                var prevOrder = String(i).padStart(2, '0');
+                var val = cell.innerHTML + ' ' + prevOrder;
+                order.push(val);
+                lookup[val] = row;
+                tbody.removeChild(row);
+            }
+            order.sort();
+            sortOrder = (sortOrder == col) ? -col : col;
+            if (sortOrder < 0) {
+                order.reverse();
+            }
+            for (var i = 0; i < order.length; i++) {
+                var row = lookup[order[i]];
+                tbody.appendChild(row);
+            }
+            // TODO: update header with arrow indicating sort order
+        }
+
     </script>
 </head>
 <body style="background-color: #D1D6D7;" onload="onLoad()">
     <table id="table" style="border-collapse: collapse; width:8.5in">
         <thead>
-            <tr>
-                <th style="width: 1in;">Type</th>
-                <th class="title" style="width:3in; text-align: left;">Puzzles</th>
-                <th class="author" style="text-align: left; width: 2in; position: relative;">Author
+            <tr id="sortHeader">
+                <th class="icon" onclick="sortTable(1)">Type</th>
+                <th class="html" onclick="sortTable(2)">Puzzle</th>
+                <th class="author" onclick="sortTable(3)">Author
                     <img id="logo" src="Images/PS20 logo.png" style="width: 440px; height: 569px;">
                 </th>
             </tr>    
