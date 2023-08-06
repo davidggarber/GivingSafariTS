@@ -43,6 +43,7 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:string) {
     if (iframe == null) {
         iframe = document.createElement('iframe');
         iframe.id = 'decoder-frame';
+        iframe.style.display = 'none';
         if (mode != undefined) {
             iframe.setAttributeNS(null, 'data-decoder-mode', mode);
         }

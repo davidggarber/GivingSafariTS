@@ -220,6 +220,14 @@ input[type=number]::-webkit-outer-spin-button {
   top:-0.5em;
   width: 1em;
 }
+.check::before {
+  background-image: url('Check.png');
+  background-size: 30px 27px;
+  display: inline-block;
+  width: 30px; 
+  height: 27px;
+  content:"";
+}
 
 .crossed-off .check {
   display: inline-block;

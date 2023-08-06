@@ -423,8 +423,6 @@ export function indexAllNoteFields() {
 export function indexAllCheckFields() {
     const checks = document.getElementsByClassName('cross-off');
     applyGlobalIndeces(checks);
-    const circles = document.getElementsByClassName('circle-off');
-    applyGlobalIndeces(circles, undefined, checks.length);
 }
 
 /**
@@ -551,15 +549,6 @@ function restoreNotes(values:object) {
 function restoreCrossOffs(values:object) {
     localCache.checks = values;
     let elements = document.getElementsByClassName('cross-off');
-    for (var i = 0; i < elements.length; i++) {
-        const element = elements[i] as HTMLElement;
-        const globalIndex = getGlobalIndex(element);
-        const value = values[globalIndex] as boolean;
-        if(value != undefined){
-            toggleClass(element, 'crossed-off', value);
-        }
-    }  
-    elements = document.getElementsByClassName('circle-off');
     for (var i = 0; i < elements.length; i++) {
         const element = elements[i] as HTMLElement;
         const globalIndex = getGlobalIndex(element);

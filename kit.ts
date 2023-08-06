@@ -601,16 +601,6 @@ export function toggleNotes() {
  * Any such elements are clickable. When clicked, a check mark is toggled on and off, allowed players to mark some clues as done.
  */
 export function setupCrossOffs() {
-    setupCrossOffChecks();
-    setupCircleOffCircles();
-    indexAllCheckFields();
-}
-
-/**
- * Elements tagged with class = 'cross-off' are for puzzles clues that don't indicate where to use it.
- * Any such elements are clickable. When clicked, a check mark is toggled on and off, allowed players to mark some clues as done.
- */
-export function setupCrossOffChecks() {
     const cells = document.getElementsByClassName('cross-off');
     for (var i = 0; i < cells.length; i++) {
         const cell = cells[i] as HTMLElement;
@@ -620,28 +610,10 @@ export function setupCrossOffChecks() {
 
         var check = document.createElement('span');
         check.classList.add('check');
-        check.innerHTML = '&#x2714;&#xFE0F;' // ✔️;
+        //check.innerHTML = '&#x2714;&#xFE0F;' // ✔️;
         cell.appendChild(check);
     }
-}
-
-/**
- * Elements tagged with class = 'cross-off' are for puzzles clues that don't indicate where to use it.
- * Any such elements are clickable. When clicked, a check mark is toggled on and off, allowed players to mark some clues as done.
- */
-export function setupCircleOffCircles() {
-    const cells = document.getElementsByClassName('circle-off');
-    for (var i = 0; i < cells.length; i++) {
-        const cell = cells[i] as HTMLElement;
-
-        // Place a small text input field in each cell
-        cell.onclick=function(e){onCrossOff(e)};
-
-        var check = document.createElement('span');
-        check.classList.add('check');
-        check.innerHTML = '&#x2b55;' // ⭕;
-        cell.appendChild(check);
-    }
+    indexAllCheckFields();
 }
 
 /**
@@ -654,9 +626,6 @@ function onCrossOff(event:MouseEvent) {
         return;  // Clicking on lines, notes, or inputs should not check anything
     }
     let parent = findParentOfClass(obj, 'cross-off') as HTMLElement;
-    if (!parent) {
-        parent = findParentOfClass(obj, 'circle-off') as HTMLElement;
-    }
     if (parent != null) {
         const newVal = !hasClass(parent, 'crossed-off');
         toggleClass(parent, 'crossed-off', newVal);
@@ -789,6 +758,7 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:string) {
     if (iframe == null) {
         iframe = document.createElement('iframe');
         iframe.id = 'decoder-frame';
+        iframe.style.display = 'none';
         if (mode != undefined) {
             iframe.setAttributeNS(null, 'data-decoder-mode', mode);
         }
@@ -1245,8 +1215,6 @@ export function indexAllNoteFields() {
 export function indexAllCheckFields() {
     const checks = document.getElementsByClassName('cross-off');
     applyGlobalIndeces(checks);
-    const circles = document.getElementsByClassName('circle-off');
-    applyGlobalIndeces(circles, undefined, checks.length);
 }
 
 /**
@@ -1373,15 +1341,6 @@ function restoreNotes(values:object) {
 function restoreCrossOffs(values:object) {
     localCache.checks = values;
     let elements = document.getElementsByClassName('cross-off');
-    for (var i = 0; i < elements.length; i++) {
-        const element = elements[i] as HTMLElement;
-        const globalIndex = getGlobalIndex(element);
-        const value = values[globalIndex] as boolean;
-        if(value != undefined){
-            toggleClass(element, 'crossed-off', value);
-        }
-    }  
-    elements = document.getElementsByClassName('circle-off');
     for (var i = 0; i < elements.length; i++) {
         const element = elements[i] as HTMLElement;
         const globalIndex = getGlobalIndex(element);
