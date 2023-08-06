@@ -15,8 +15,27 @@
         'abilities': {
           'checkMarks': true,
           'wordSearch': true
+        },
+        'tableBuilder': {
+          'rootId': 'grid-root',
+          'data': [
+            'BJFLYINGG',
+            'MLEAIRSNC',
+            'PUULBOUSS',
+            'ANGELLNLT',
+            'RMPSOYIAA',
+            'ROFIWACGR',
+            'ONCSSOOOT',
+            'TKEKRBRLW',
+            'OOCLOWNDK',
+        ],
+          'onCell': buildCell
         }
       };
+
+      function buildCell(val, x, y) {
+        return constructSvgTextCell(val, x * 48, y * 48);
+      }
     </script>
     <style>
       #grid {
@@ -75,107 +94,8 @@
 
       <svg id="grid" width="528" height="528" class="word-select-area" data-max-points="2" data-hover-range="30" data-angle-constraints="45">
         <g class="word-select-container"></g>
-        <g transform="translate(48 48)">
+        <g id="grid-root" transform="translate(48 48)">
           <rect id="border" width="432" height="432"></rect>
-          <g transform="translate(0 0)">
-            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>B</text></g>
-            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>J</text></g>
-            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>F</text></g>
-            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>L</text></g>
-            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>Y</text></g>
-            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>I</text></g>
-            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>N</text></g>
-            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>G</text></g>
-            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>G</text></g>
-          </g>
-          <g transform="translate(0 48)">
-            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>M</text></g>
-            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>L</text></g>
-            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>E</text></g>
-            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>A</text></g>
-            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>I</text></g>
-            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>R</text></g>
-            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>S</text></g>
-            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>N</text></g>
-            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>C</text></g>
-          </g>
-          <g transform="translate(0 96)">
-            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>P</text></g>
-            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>U</text></g>
-            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>U</text></g>
-            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>L</text></g>
-            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>B</text></g>
-            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>O</text></g>
-            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>U</text></g>
-            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>S</text></g>
-            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>S</text></g>
-          </g>
-          <g transform="translate(0 144)">
-            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>A</text></g>
-            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>N</text></g>
-            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>G</text></g>
-            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>E</text></g>
-            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>L</text></g>
-            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>L</text></g>
-            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>N</text></g>
-            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>L</text></g>
-            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>T</text></g>
-          </g>
-          <g transform="translate(0 192)">
-            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>R</text></g>
-            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>M</text></g>
-            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>P</text></g>
-            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>S</text></g>
-            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>O</text></g>
-            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>Y</text></g>
-            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>I</text></g>
-            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>A</text></g>
-            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>A</text></g>
-          </g>
-          <g transform="translate(0 240)">
-            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>R</text></g>
-            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>O</text></g>
-            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>F</text></g>
-            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>I</text></g>
-            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>W</text></g>
-            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>A</text></g>
-            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>C</text></g>
-            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>G</text></g>
-            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>R</text></g>
-          </g>
-          <g transform="translate(0 288)">
-            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>O</text></g>
-            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>N</text></g>
-            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>C</text></g>
-            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>S</text></g>
-            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>S</text></g>
-            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>O</text></g>
-            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>O</text></g>
-            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>O</text></g>
-            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>T</text></g>
-          </g>
-          <g transform="translate(0 336)">
-            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>T</text></g>
-            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>K</text></g>
-            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>E</text></g>
-            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>K</text></g>
-            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>R</text></g>
-            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>B</text></g>
-            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>R</text></g>
-            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>L</text></g>
-            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>W</text></g>
-          </g>
-          <g transform="translate(0 384)">
-            <g class="vertex-g" transform="translate(0 0)"><rect class="vertex"></rect><text>O</text></g>
-            <g class="vertex-g" transform="translate(48 0)"><rect class="vertex"></rect><text>O</text></g>
-            <g class="vertex-g" transform="translate(96 0)"><rect class="vertex"></rect><text>C</text></g>
-            <g class="vertex-g" transform="translate(144 0)"><rect class="vertex"></rect><text>L</text></g>
-            <g class="vertex-g" transform="translate(192 0)"><rect class="vertex"></rect><text>O</text></g>
-            <g class="vertex-g" transform="translate(240 0)"><rect class="vertex"></rect><text>W</text></g>
-            <g class="vertex-g" transform="translate(288 0)"><rect class="vertex"></rect><text>N</text></g>
-            <g class="vertex-g" transform="translate(336 0)"><rect class="vertex"></rect><text>D</text></g>
-            <g class="vertex-g" transform="translate(384 0)"><rect class="vertex"></rect><text>K</text></g>
-          </g>
         </g>
       </svg>
 
