@@ -379,7 +379,7 @@ export function constructTable(details: TableDetails) {
   }
 }
 
-export function constructSvgTextCell(val:string, dx:number, dy:number, cls:string) {
+export function constructSvgTextCell(val:string, dx:number, dy:number, cls:string, stampable?:boolean) {
   if (val == ' ') {
     return null;
   }
@@ -395,6 +395,12 @@ export function constructSvgTextCell(val:string, dx:number, dy:number, cls:strin
   t. appendChild(document.createTextNode(val));
   vg.appendChild(r);
   vg.appendChild(t);
+
+  if (stampable) {
+    var fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    fo.classList.add('stampable');
+    vg. appendChild(fo);  
+  }
   return vg;
 }
 
@@ -414,6 +420,11 @@ export function constructSvgImageCell(img:string, dx:number, dy:number, cls:stri
   return vg;
 }
 
+export function constructSvgStampable() {
+  var foreign = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+  foreign.classList.add('stampable');
+  return foreign;
+}
 
 /*-----------------------------------------------------------
  * _notes.ts
