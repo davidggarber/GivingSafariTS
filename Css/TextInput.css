@@ -37,6 +37,13 @@
   margin-left: -1px;
 }
 
+.literal-gridgap {
+  width: 4ex;
+  height: 4ex;
+  border: none;
+  margin-left: -1px;
+}
+
 .block {
   background-color: #7f7f7f;
 }

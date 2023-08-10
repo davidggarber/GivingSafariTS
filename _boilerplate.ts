@@ -7,6 +7,7 @@ import { preprocessStampObjects } from "./_stampTools";
 import { preprocessDragFunctions } from "./_dragDrop";
 import { EdgeTypes, preprocessRulerFunctions } from "./_straightEdge";
 import { TableDetails, constructTable } from "./_tableBuilder";
+import { setupSubways } from "./_subway";
 
 
 /**
@@ -123,6 +124,7 @@ type AbilityData = {
     stamping?: boolean;
     straightEdge?: boolean;
     wordSearch?: boolean;
+    subway?: boolean;
 }
 
 type BoilerPlateData = {
@@ -228,7 +230,7 @@ function createTypeIcon(puzzleType:string):HTMLDivElement {
 }
 
 function boilerplate(bp: BoilerPlateData) {
-    if (bp === null) {
+    if (!bp) {
         return;
     }
 
@@ -332,6 +334,8 @@ function boilerplate(bp: BoilerPlateData) {
 
 }
 
+let cssToLoad = 1;
+
 /**
  * Append a CSS link to the header
  * @param head the head tag
@@ -342,7 +346,15 @@ function linkCss(head:HTMLHeadElement, relPath:string) {
     link.href=relPath;
     link.rel = "Stylesheet";
     link.type = "text/css";
+    link.onload = function(){cssLoaded();};
+    cssToLoad++;
     head.appendChild(link);
+}
+
+function cssLoaded() {
+    if (--cssToLoad == 0) {
+        setupAfterCss(boiler as BoilerPlateData);
+    }
 }
 
 /**
@@ -409,6 +421,9 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
         //indexAllVertices();
     }
+    if (data.subway) {
+        linkCss(head, safariDetails.cssRoot + 'Subway.css');
+    }
     if (data.notes) {
         setupNotes(margins);
         // no ability icon
@@ -421,8 +436,19 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     if (count == 2) {
         ability.style.right = '0.1in';
     }
+
+    // Release our lock on css loading
+    cssLoaded();
+}
+
+function setupAfterCss(bp: BoilerPlateData) {
+    if (bp.abilities) {
+        if (bp.abilities.subway) {
+            setupSubways();
+        }
+    }
 }
 
 
-declare let boiler: any;
-window.onload = function(){boilerplate(boiler as BoilerPlateData)};
+declare let boiler: BoilerPlateData | undefined;
+window.onload = function(){boilerplate(boiler as BoilerPlateData)};  // error if boiler still undefined

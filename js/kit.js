@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.textSetup = exports.onWordChange = void 0;
+exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -2525,6 +2525,274 @@ function hasProgress(event) {
     }
     return false;
 }
+/*-----------------------------------------------------------
+ * _subway.ts
+ *-----------------------------------------------------------*/
+/**
+ * On page load, look for any instances of elements tag with class names we respond to.
+ * When found, expand those elements appropriately.
+ */
+function setupSubways() {
+    var subways = document.getElementsByClassName('subway');
+    for (var i = 0; i < subways.length; i++) {
+        createSubway(subways[i]);
+    }
+}
+exports.setupSubways = setupSubways;
+/**
+ * Maximum of two numbers, or the second, if current is null
+ * @param val A new value
+ * @param curr The current max value, which can be null
+ * @returns The max
+ */
+function maxx(val, curr) {
+    return (!curr || curr < val) ? val : curr;
+}
+/**
+ * Minimum of two numbers, or the second, if current is null
+ * @param val A new value
+ * @param curr The current min value, which can be null
+ * @returns The min
+ */
+function minn(val, curr) {
+    return (!curr || curr > val) ? val : curr;
+}
+function bounding(pt, rect) {
+    if (!rect) {
+        return new DOMRect(pt.x, pt.y, 0, 0);
+    }
+    var left = minn(rect.left, pt.x);
+    var right = maxx(rect.right, pt.x);
+    var top = minn(rect.top, pt.y);
+    var bottom = maxx(rect.bottom, pt.y);
+    return new DOMRect(left, top, right - left, bottom - top);
+}
+/**
+ * Round a value to the nearest 0.1
+ * @param n Any number
+ * @returns A number with no significant digits smaller than a tenth
+ */
+function dec(n) {
+    return Math.round(n * 10) / 10;
+}
+/**
+ * Create an SVG inside a <div class='subway'>, to connect input cells.
+ * @param subway
+ */
+function createSubway(subway) {
+    var details = verticalSubway(subway);
+    if (!details) {
+        details = horizontalSubway(subway);
+    }
+    if (details) {
+        var xmlns = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(xmlns, 'svg');
+        var path = document.createElementNS(xmlns, 'path');
+        path.setAttributeNS(null, 'd', details.path_d);
+        svg.appendChild(path);
+        svg.setAttributeNS(null, 'width', dec(details.bounds.right - details.origin.x - details.shift.x + 2) + 'px');
+        svg.setAttributeNS(null, 'height', dec(details.bounds.bottom - details.origin.y - details.shift.y + 2) + 'px');
+        subway.appendChild(svg);
+        if (details.shift.x != 0) {
+            subway.style.left = dec(details.shift.x) + 'px';
+        }
+        if (details.shift.y != 0) {
+            subway.style.top = dec(details.shift.y) + 'px';
+        }
+    }
+}
+/**
+ * Build the paths of a vertically-oriented subway
+ * @param subway The <div class='subway' with coordinate info
+ * @returns Details for the SVG and PATH to be created, or undefined if the div does not indicate vertical
+ */
+function verticalSubway(subway) {
+    var origin = subway.getBoundingClientRect();
+    var sLefts = subway.getAttributeNS('', 'data-left-end') || '';
+    var sRights = subway.getAttributeNS('', 'data-right-end') || '';
+    if (sLefts.length == 0 && sRights.length == 0) {
+        return undefined;
+    }
+    var bounds;
+    var yLefts = [];
+    var yRights = [];
+    // right-side spurs
+    var rights = sRights.split(' ');
+    for (var i = 0; i < rights.length; i++) {
+        var pt = getAnchor(rights[i], 'left');
+        bounds = bounding(pt, bounds);
+        yRights.push(dec(pt.y - origin.top));
+    }
+    // left-side spurs
+    var lefts = sLefts.split(' ');
+    for (var i = 0; i < lefts.length; i++) {
+        var pt = getAnchor(lefts[i], 'right');
+        bounds = bounding(pt, bounds);
+        yLefts.push(dec(pt.y - origin.top));
+    }
+    if (!bounds) {
+        return; // ERROR
+    }
+    // rationalize the boundaries
+    var shift_left = minn(0, bounds.left - origin.left);
+    var left = maxx(0, dec(bounds.left - origin.left - shift_left));
+    var right = dec(bounds.left + bounds.width - origin.left - shift_left);
+    // belatedly calculate the middle
+    var sMiddle = subway.getAttributeNS('', 'data-center-line');
+    var middle;
+    if (!sMiddle) {
+        middle = bounds.width / 2;
+    }
+    else if (sMiddle.indexOf('%') == sMiddle.length - 1) {
+        middle = dec(parseInt(sMiddle) * bounds.width / 100);
+    }
+    else {
+        middle = parseInt(sMiddle);
+    }
+    // Draw the first left to the last right
+    var d = 'M' + left + ',' + yLefts[0]
+        + ' L' + middle + ',' + yLefts[0]
+        + ' L' + middle + ',' + yRights[yRights.length - 1]
+        + ' L' + right + ',' + yRights[yRights.length - 1];
+    if (yLefts.length > 0 || yRights.length > 0) {
+        // Draw the last left to the first right
+        d += 'M' + left + ',' + yLefts[yLefts.length - 1]
+            + ' L' + middle + ',' + yLefts[yLefts.length - 1]
+            + ' L' + middle + ',' + yRights[0]
+            + ' L' + right + ',' + yRights[0];
+    }
+    // Add any middle spurs
+    for (var i = 1; i < yLefts.length - 1; i++) {
+        d += 'M' + left + ',' + yLefts[i]
+            + ' L' + middle + ',' + yLefts[i]
+            + ' L' + middle + ',' + yRights[0];
+    }
+    for (var i = 1; i < yRights.length - 1; i++) {
+        d += 'M' + right + ',' + yRights[i]
+            + ' L' + middle + ',' + yRights[i]
+            + ' L' + middle + ',' + yLefts[0];
+    }
+    return {
+        origin: origin,
+        path_d: d,
+        bounds: bounds,
+        shift: new DOMPoint(shift_left, 0)
+    };
+}
+/**
+ * Build the paths of a horizontally-oriented subway
+ * @param subway The <div class='subway' with coordinate info
+ * @returns Details for the SVG and PATH to be created, or undefined if the div does not indicate horizontal
+ */
+function horizontalSubway(subway) {
+    var origin = subway.getBoundingClientRect();
+    var sTops = subway.getAttributeNS('', 'data-top-end') || '';
+    var sBottoms = subway.getAttributeNS('', 'data-bottom-end') || '';
+    if (sTops.length == 0 && sBottoms.length == 0) {
+        return undefined;
+    }
+    var bounds;
+    var xTops = [];
+    var xBottoms = [];
+    // top-side spurs
+    var bottoms = sBottoms.split(' ');
+    for (var i = 0; i < bottoms.length; i++) {
+        var pt = getAnchor(bottoms[i], 'top');
+        bounds = bounding(pt, bounds);
+        xBottoms.push(dec(pt.x - origin.left));
+    }
+    // bottom-side spurs
+    var tops = sTops.split(' ');
+    for (var i = 0; i < tops.length; i++) {
+        var pt = getAnchor(tops[i], 'bottom');
+        bounds = bounding(pt, bounds);
+        xTops.push(dec(pt.x - origin.left));
+    }
+    if (!bounds) {
+        return; // ERROR
+    }
+    // align the boundaries
+    var shift_top = minn(0, bounds.top - origin.top); // zero or negative
+    var top = maxx(0, dec(bounds.top - origin.top - shift_top));
+    var bottom = dec(bounds.top + bounds.height - origin.top - shift_top);
+    // belatedly calculate the middle
+    var sMiddle = subway.getAttributeNS('', 'data-center-line');
+    var middle;
+    if (!sMiddle) {
+        middle = bounds.height / 2;
+    }
+    else if (sMiddle.indexOf('%') == sMiddle.length - 1) {
+        middle = dec(parseInt(sMiddle) * bounds.height / 100);
+    }
+    else {
+        middle = parseInt(sMiddle);
+    }
+    var d = '';
+    if (bounds.width <= 2.5 && xTops.length == 1 && xBottoms.length == 1) {
+        d = 'M' + xTops[0] + ',' + top
+            + ' L' + xBottoms[xBottoms.length - 1] + ',' + bottom;
+    }
+    else {
+        // Draw the first top to the last bottom
+        d = 'M' + xTops[0] + ',' + top
+            + ' L' + xTops[0] + ',' + middle
+            + ' L' + xBottoms[xBottoms.length - 1] + ',' + middle
+            + ' L' + xBottoms[xBottoms.length - 1] + ',' + bottom;
+        if (xTops.length > 0 || xBottoms.length > 0) {
+            // Draw the last top to the first bottom
+            d += 'M' + xTops[xTops.length - 1] + ',' + top
+                + ' L' + xTops[xTops.length - 1] + ',' + middle
+                + ' L' + xBottoms[0] + ',' + middle
+                + ' L' + xBottoms[0] + ',' + bottom;
+        }
+        // Add any middle spurs
+        for (var i = 1; i < xTops.length - 1; i++) {
+            d += 'M' + xTops[i] + ',' + top
+                + ' L' + xTops[i] + ',' + middle
+                + ' L' + xBottoms[0] + ',' + middle;
+        }
+        for (var i = 1; i < xBottoms.length - 1; i++) {
+            d += 'M' + xBottoms[i] + ',' + bottom
+                + ' L' + xBottoms[i] + ',' + middle
+                + ' L' + xTops[0] + ',' + middle;
+        }
+    }
+    return {
+        origin: origin,
+        path_d: d,
+        bounds: bounds,
+        shift: new DOMPoint(0, shift_top)
+    };
+}
+/**
+ * Find a point on the perimeter of a specific subway cell
+ * @param id_index A cell identity in the form "col1.4", where col1 is a letter-cell-block and .4 is the 4th cell in that block
+ * @param edge One of {left|right|top|bottom}. The point is the midpoint of that edge of the cell
+ * @returns A point on the page in client coordinates
+ */
+function getAnchor(id_index, edge) {
+    var idx = id_index.split('.');
+    var elmt = document.getElementById(idx[0]);
+    if (idx.length > 1) {
+        var children = elmt.getElementsByClassName('letter-cell');
+        elmt = children[parseInt(idx[1]) - 1]; // indexes start at 1
+    }
+    var rect = elmt.getBoundingClientRect();
+    if (edge == 'left') {
+        return new DOMPoint(rect.left, rect.top + 1 + rect.height / 2);
+    }
+    if (edge == 'right') {
+        return new DOMPoint(rect.right, rect.top - 1 + rect.height / 2);
+    }
+    if (edge == 'top') {
+        return new DOMPoint(rect.left + 1 + rect.width / 2, rect.top);
+    }
+    if (edge == 'bottom') {
+        return new DOMPoint(rect.left - 1 + rect.width / 2, rect.bottom);
+    }
+    // error: return middle
+    return new DOMPoint(rect.left - 1 + rect.width / 2, rect.top - 1 + rect.height / 2);
+}
 /**
  * Convert an element's left/top style to a position
  * @param elmt Any element with a style
@@ -3965,7 +4233,7 @@ function createTypeIcon(puzzleType) {
     return iconDiv;
 }
 function boilerplate(bp) {
-    if (bp === null) {
+    if (!bp) {
         return;
     }
     preSetup(bp);
@@ -4053,6 +4321,7 @@ function boilerplate(bp) {
         setTimeout(checkLocalStorage, 100);
     }
 }
+var cssToLoad = 1;
 /**
  * Append a CSS link to the header
  * @param head the head tag
@@ -4063,7 +4332,14 @@ function linkCss(head, relPath) {
     link.href = relPath;
     link.rel = "Stylesheet";
     link.type = "text/css";
+    link.onload = function () { cssLoaded(); };
+    cssToLoad++;
     head.appendChild(link);
+}
+function cssLoaded() {
+    if (--cssToLoad == 0) {
+        setupAfterCss(boiler);
+    }
 }
 /**
  * For each ability set to true in the AbilityData, do appropriate setup,
@@ -4129,6 +4405,9 @@ function setupAbilities(head, margins, data) {
         linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
         //indexAllVertices();
     }
+    if (data.subway) {
+        linkCss(head, safariDetails.cssRoot + 'Subway.css');
+    }
     if (data.notes) {
         setupNotes(margins);
         // no ability icon
@@ -4141,6 +4420,15 @@ function setupAbilities(head, margins, data) {
     if (count == 2) {
         ability.style.right = '0.1in';
     }
+    // Release our lock on css loading
+    cssLoaded();
 }
-window.onload = function () { boilerplate(boiler); };
+function setupAfterCss(bp) {
+    if (bp.abilities) {
+        if (bp.abilities.subway) {
+            setupSubways();
+        }
+    }
+}
+window.onload = function () { boilerplate(boiler); }; // error if boiler still undefined
 //# sourceMappingURL=kit.js.map
