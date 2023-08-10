@@ -334,6 +334,9 @@ function boilerplate(bp: BoilerPlateData) {
 
 }
 
+/**
+ * Count-down before we know all delay-linked CSS have been loaded
+ */
 let cssToLoad = 1;
 
 /**
@@ -351,6 +354,11 @@ function linkCss(head:HTMLHeadElement, relPath:string) {
     head.appendChild(link);
 }
 
+/**
+ * Each CSS file that is delay-linked needs time to load.
+ * Decrement the count after each one.
+ * When complete, call final setup step.
+ */
 function cssLoaded() {
     if (--cssToLoad == 0) {
         setupAfterCss(boiler as BoilerPlateData);
@@ -423,6 +431,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.subway) {
         linkCss(head, safariDetails.cssRoot + 'Subway.css');
+        // Don't setupSubways() until all styles have applied, so CSS-derived locations are final
     }
     if (data.notes) {
         setupNotes(margins);
@@ -441,6 +450,10 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     cssLoaded();
 }
 
+/**
+ * All delay-linked CSS files are now loaded. Layout should be complete.
+ * @param bp The global boilerplate
+ */
 function setupAfterCss(bp: BoilerPlateData) {
     if (bp.abilities) {
         if (bp.abilities.subway) {
