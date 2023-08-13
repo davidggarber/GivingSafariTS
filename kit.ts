@@ -1759,7 +1759,7 @@ export function onLetterKey(event:KeyboardEvent) {
         return;
     }
     else if (code == 'Home') {
-        moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 10) as HTMLInputElement);
+        moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 1) as HTMLInputElement);
         return;
     }
     else if (code == 'End') {
@@ -1880,9 +1880,15 @@ function UpdateExtraction(extractedId:string|null) {
         if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        const inp = inputs[i] as HTMLInputElement;
-        var letter = inp.value || '';
-        letter = letter.trim();
+        let letter = '';
+        if (hasClass(inputs[i], 'extract-literal')) {
+            letter = getOptionalStyle(inputs[i], 'data-extract-value') || '';
+        }
+        else {
+            const inp = inputs[i] as HTMLInputElement;
+            letter = inp.value || '';
+            letter = letter.trim();    
+        }
         if (letter.length == 0) {
             extraction += '_';
         }
@@ -2932,28 +2938,35 @@ function verticalSubway(subway:HTMLElement) :SubwayPath|undefined {
       middle = parseInt(sMiddle);
   }
   
-  // Draw the first left to the last right
-  let d = 'M' + left + ',' + yLefts[0] 
-      + ' L' + middle + ',' + yLefts[0]
-      + ' L' + middle + ',' + yRights[yRights.length - 1]
-      + ' L' + right + ',' + yRights[yRights.length - 1];
-  if (yLefts.length > 0 || yRights.length > 0) {
-      // Draw the last left to the first right
-      d += 'M' + left + ',' + yLefts[yLefts.length - 1] 
-          + ' L' + middle + ',' + yLefts[yLefts.length - 1]
-          + ' L' + middle + ',' + yRights[0]
-          + ' L' + right + ',' + yRights[0];
+  let d = '';
+  if (bounds.height <= 2.5 && yLefts.length == 1 && yRights.length == 1) {
+    d = 'M' + left + ',' + yLefts[0]
+      + ' L' + right + yRights[0];
   }
-  // Add any middle spurs
-  for (let i = 1; i < yLefts.length - 1; i++) {
-      d += 'M' + left + ',' + yLefts[i] 
-          + ' L' + middle + ',' + yLefts[i]
-          + ' L' + middle + ',' + yRights[0];
-  }
-  for (let i = 1; i < yRights.length - 1; i++) {
-      d += 'M' + right + ',' + yRights[i] 
-          + ' L' + middle + ',' + yRights[i]
-          + ' L' + middle + ',' + yLefts[0];
+  else {
+    // Draw the first left to the last right
+    let d = 'M' + left + ',' + yLefts[0] 
+        + ' L' + middle + ',' + yLefts[0]
+        + ' L' + middle + ',' + yRights[yRights.length - 1]
+        + ' L' + right + ',' + yRights[yRights.length - 1];
+    if (yLefts.length > 0 || yRights.length > 0) {
+        // Draw the last left to the first right
+        d += 'M' + left + ',' + yLefts[yLefts.length - 1] 
+            + ' L' + middle + ',' + yLefts[yLefts.length - 1]
+            + ' L' + middle + ',' + yRights[0]
+            + ' L' + right + ',' + yRights[0];
+    }
+    // Add any middle spurs
+    for (let i = 1; i < yLefts.length - 1; i++) {
+        d += 'M' + left + ',' + yLefts[i] 
+            + ' L' + middle + ',' + yLefts[i]
+            + ' L' + middle + ',' + yRights[0];
+    }
+    for (let i = 1; i < yRights.length - 1; i++) {
+        d += 'M' + right + ',' + yRights[i] 
+            + ' L' + middle + ',' + yRights[i]
+            + ' L' + middle + ',' + yLefts[0];
+    }
   }
 
   return {
@@ -3021,7 +3034,7 @@ function horizontalSubway(subway:HTMLElement) :SubwayPath|undefined {
   let d = '';
   if (bounds.width <= 2.5 && xTops.length == 1 && xBottoms.length == 1) {
     d = 'M' + xTops[0] + ',' + top  
-    + ' L' + xBottoms[xBottoms.length - 1] + ',' + bottom;
+      + ' L' + xBottoms[0] + ',' + bottom;
   }
   else {
     // Draw the first top to the last bottom
@@ -4574,6 +4587,13 @@ export function isRestart() {
     return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
 }
 
+type LinkDetails = {
+    rel: string;  // 'preconnect', 'stylesheet', ...
+    href: string;
+    type?: string;  // example: 'text/css'
+    crossorigin?: string;  // if anything, ''
+}
+
 type PuzzleEventDetails = {
     title: string;
     logo: string;  // path from root
@@ -4581,6 +4601,20 @@ type PuzzleEventDetails = {
     puzzleList: string;
     cssRoot: string;  // path from root
     fontCss: string;  // path from root
+    links: LinkDetails[];
+}
+
+const safariSingleDetails:PuzzleEventDetails = {
+    'title': 'Puzzle',
+    'logo': './Images/Sample_Logo.png',
+    'icon': './Images/Sample_Icon.png',
+    'puzzleList': '',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts.css',
+    'links': [
+//        { rel:'preconnect', href:'https://fonts.googleapis.com' },
+//        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
+    ]
 }
 
 const safariSampleDetails:PuzzleEventDetails = {
@@ -4589,7 +4623,8 @@ const safariSampleDetails:PuzzleEventDetails = {
     'icon': './Images/Sample_Icon.png',
     'puzzleList': './index.html',
     'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css'
+    'fontCss': './Css/Fonts.css',
+    'links': []
 }
 
 const safari20Details:PuzzleEventDetails = {
@@ -4598,11 +4633,13 @@ const safari20Details:PuzzleEventDetails = {
     'icon': './Images/Beaker_icon.png',
     'puzzleList': './indexx.html',
     'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts20.css'
+    'fontCss': './Css/Fonts20.css',
+    'links': []
 }
 
 const pastSafaris = {
     'Sample': safariSampleDetails,
+    'Single': safariSingleDetails,
     '20': safari20Details,
 }
 
@@ -4655,9 +4692,15 @@ function preSetup(bp:BoilerPlateData) {
         bodies[0].classList.add('iframe');
     }
     if (bp.pathToRoot) {
-        safariDetails.logo = bp.pathToRoot + '/' + safariDetails.logo;
-        safariDetails.icon = bp.pathToRoot + '/' + safariDetails.icon;
-        safariDetails.puzzleList = bp.pathToRoot + '/' + safariDetails.puzzleList;
+        if (safariDetails.logo) { 
+            safariDetails.logo = bp.pathToRoot + '/' + safariDetails.logo;
+        }
+        if (safariDetails.icon) { 
+            safariDetails.icon = bp.pathToRoot + '/' + safariDetails.icon;
+        }
+        if (safariDetails.puzzleList) { 
+            safariDetails.puzzleList = bp.pathToRoot + '/' + safariDetails.puzzleList;
+        }
     }
 }
 
@@ -4783,12 +4826,18 @@ function boilerplate(bp: BoilerPlateData) {
     
     html.lang = bp['lang'] || 'en-us';
 
+    for (var i = 0; i < safariDetails.links.length; i++) {
+        addLink(head, safariDetails.links[i]);
+    }
+
     const viewport = document.createElement('META') as HTMLMetaElement;
     viewport.name = 'viewport';
     viewport.content = 'width=device-width, initial-scale=1'
     head.appendChild(viewport);
 
-    linkCss(head, safariDetails.fontCss);
+    if (safariDetails.fontCss) {
+        linkCss(head, safariDetails.fontCss);
+    }
     linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
     linkCss(head, safariDetails.cssRoot + 'TextInput.css');
     if (!bp['paperSize']) {
@@ -4835,7 +4884,30 @@ function boilerplate(bp: BoilerPlateData) {
 
 }
 
+/**
+ * Count-down before we know all delay-linked CSS have been loaded
+ */
 let cssToLoad = 1;
+
+/**
+ * Append a any link to the header
+ * @param head the head tag
+ * @param det the attributes of the link tag
+ */
+function addLink(head:HTMLHeadElement, det:LinkDetails) {
+    const link = document.createElement('link');
+    link.href = det.href;
+    link.rel = det.rel;
+    if (det.type) {
+        link.type = det.type;
+    }
+    if (det.crossorigin) {
+        link.crossOrigin = det.crossorigin;
+    }
+    link.onload = function(){cssLoaded();};
+    cssToLoad++;
+    head.appendChild(link);
+}
 
 /**
  * Append a CSS link to the header
@@ -4852,6 +4924,11 @@ function linkCss(head:HTMLHeadElement, relPath:string) {
     head.appendChild(link);
 }
 
+/**
+ * Each CSS file that is delay-linked needs time to load.
+ * Decrement the count after each one.
+ * When complete, call final setup step.
+ */
 function cssLoaded() {
     if (--cssToLoad == 0) {
         setupAfterCss(boiler as BoilerPlateData);
@@ -4924,6 +5001,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.subway) {
         linkCss(head, safariDetails.cssRoot + 'Subway.css');
+        // Don't setupSubways() until all styles have applied, so CSS-derived locations are final
     }
     if (data.notes) {
         setupNotes(margins);
@@ -4942,6 +5020,10 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     cssLoaded();
 }
 
+/**
+ * All delay-linked CSS files are now loaded. Layout should be complete.
+ * @param bp The global boilerplate
+ */
 function setupAfterCss(bp: BoilerPlateData) {
     if (bp.abilities) {
         if (bp.abilities.subway) {

@@ -73,6 +73,13 @@ export function isRestart() {
     return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
 }
 
+type LinkDetails = {
+    rel: string;  // 'preconnect', 'stylesheet', ...
+    href: string;
+    type?: string;  // example: 'text/css'
+    crossorigin?: string;  // if anything, ''
+}
+
 type PuzzleEventDetails = {
     title: string;
     logo: string;  // path from root
@@ -80,6 +87,20 @@ type PuzzleEventDetails = {
     puzzleList: string;
     cssRoot: string;  // path from root
     fontCss: string;  // path from root
+    links: LinkDetails[];
+}
+
+const safariSingleDetails:PuzzleEventDetails = {
+    'title': 'Puzzle',
+    'logo': './Images/Sample_Logo.png',
+    'icon': './Images/Sample_Icon.png',
+    'puzzleList': '',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts.css',
+    'links': [
+//        { rel:'preconnect', href:'https://fonts.googleapis.com' },
+//        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
+    ]
 }
 
 const safariSampleDetails:PuzzleEventDetails = {
@@ -88,7 +109,8 @@ const safariSampleDetails:PuzzleEventDetails = {
     'icon': './Images/Sample_Icon.png',
     'puzzleList': './index.html',
     'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css'
+    'fontCss': './Css/Fonts.css',
+    'links': []
 }
 
 const safari20Details:PuzzleEventDetails = {
@@ -97,11 +119,13 @@ const safari20Details:PuzzleEventDetails = {
     'icon': './Images/Beaker_icon.png',
     'puzzleList': './indexx.html',
     'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts20.css'
+    'fontCss': './Css/Fonts20.css',
+    'links': []
 }
 
 const pastSafaris = {
     'Sample': safariSampleDetails,
+    'Single': safariSingleDetails,
     '20': safari20Details,
 }
 
@@ -154,9 +178,15 @@ function preSetup(bp:BoilerPlateData) {
         bodies[0].classList.add('iframe');
     }
     if (bp.pathToRoot) {
-        safariDetails.logo = bp.pathToRoot + '/' + safariDetails.logo;
-        safariDetails.icon = bp.pathToRoot + '/' + safariDetails.icon;
-        safariDetails.puzzleList = bp.pathToRoot + '/' + safariDetails.puzzleList;
+        if (safariDetails.logo) { 
+            safariDetails.logo = bp.pathToRoot + '/' + safariDetails.logo;
+        }
+        if (safariDetails.icon) { 
+            safariDetails.icon = bp.pathToRoot + '/' + safariDetails.icon;
+        }
+        if (safariDetails.puzzleList) { 
+            safariDetails.puzzleList = bp.pathToRoot + '/' + safariDetails.puzzleList;
+        }
     }
 }
 
@@ -282,12 +312,18 @@ function boilerplate(bp: BoilerPlateData) {
     
     html.lang = bp['lang'] || 'en-us';
 
+    for (var i = 0; i < safariDetails.links.length; i++) {
+        addLink(head, safariDetails.links[i]);
+    }
+
     const viewport = document.createElement('META') as HTMLMetaElement;
     viewport.name = 'viewport';
     viewport.content = 'width=device-width, initial-scale=1'
     head.appendChild(viewport);
 
-    linkCss(head, safariDetails.fontCss);
+    if (safariDetails.fontCss) {
+        linkCss(head, safariDetails.fontCss);
+    }
     linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
     linkCss(head, safariDetails.cssRoot + 'TextInput.css');
     if (!bp['paperSize']) {
@@ -338,6 +374,26 @@ function boilerplate(bp: BoilerPlateData) {
  * Count-down before we know all delay-linked CSS have been loaded
  */
 let cssToLoad = 1;
+
+/**
+ * Append a any link to the header
+ * @param head the head tag
+ * @param det the attributes of the link tag
+ */
+function addLink(head:HTMLHeadElement, det:LinkDetails) {
+    const link = document.createElement('link');
+    link.href = det.href;
+    link.rel = det.rel;
+    if (det.type) {
+        link.type = det.type;
+    }
+    if (det.crossorigin) {
+        link.crossOrigin = det.crossorigin;
+    }
+    link.onload = function(){cssLoaded();};
+    cssToLoad++;
+    head.appendChild(link);
+}
 
 /**
  * Append a CSS link to the header

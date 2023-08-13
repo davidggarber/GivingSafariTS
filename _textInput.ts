@@ -231,7 +231,7 @@ export function onLetterKey(event:KeyboardEvent) {
         return;
     }
     else if (code == 'Home') {
-        moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 10) as HTMLInputElement);
+        moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 1) as HTMLInputElement);
         return;
     }
     else if (code == 'End') {
@@ -352,9 +352,15 @@ function UpdateExtraction(extractedId:string|null) {
         if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        const inp = inputs[i] as HTMLInputElement;
-        var letter = inp.value || '';
-        letter = letter.trim();
+        let letter = '';
+        if (hasClass(inputs[i], 'extract-literal')) {
+            letter = getOptionalStyle(inputs[i], 'data-extract-value') || '';
+        }
+        else {
+            const inp = inputs[i] as HTMLInputElement;
+            letter = inp.value || '';
+            letter = letter.trim();    
+        }
         if (letter.length == 0) {
             extraction += '_';
         }
