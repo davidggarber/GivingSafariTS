@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Evolution',
+        'author': 'Rorke Haining',
+        'copyright': '2020',
+        'type': 'word',
+        'textInput': true,
+        'abilities': {
+          'notes': true
+        }
+      };
+    </script>
+    <style>
+      #clues p {
+        text-align: center;
+      }
+      #clues .note-input.note-right {
+        height: 1.5em;
+        right: 1.4in;
+      }
+      #branches {
+        stroke: black;
+        stroke-width: 3px;
+        fill: none;
+      }
+      #nodes path {
+        stroke: none;
+        fill: black;
+      }
+      #nodes ellipse {
+        stroke: black;
+        stroke-width: 1px;
+        fill: #ccc;
+      }
+      #nodes text {
+        text-anchor:middle;
+        font-size: 16pt;
+      }
+      #nodes foreignObject {
+        width: 70px;
+        height: 50px;
+        position: relative;
+      }
+      #nodes .note-input.note-above {
+        top: 2px;
+        height: 1.5em;
+        width: 50px;
+        left: 7.5px;
+      }
+    </style>
+  </head>
+  <body id="__puzzle_name">
+    <div id="pageBody">
+      <div id="clues">
+        <p class="notes-right">College student housing, in brief</p>
+        <p class="notes-right">Company of lawyers</p>
+        <p class="notes-right">Detest</p>
+        <p class="notes-right">Golf warning</p>
+        <p class="notes-right">Leftward, to a sailor</p>
+        <p class="notes-right">Movie</p>
+        <p class="notes-right">Printed document with boxes to fill</p>
+        <p class="notes-right">Rabbit</p>
+        <p class="notes-right">Sweat opening</p>
+        <p class="notes-right">Taxi client</p>
+      </div>
+
+      <svg id="graph" width="700" height="600">
+        <path id="branches" d="M100,100 l300,300 M400,200 l-100,100 M600,200 l-300,300 M100,300 l200,200"></path>
+
+        <g id="nodes">
+          <!-- organized by row -->
+          <g transform="translate(100,100)">
+            <path d="M35,35 l6,-6 l0,12 l-12,0 Z"></path>
+            <path d="M45,45 l6,-6 l0,12 l-12,0 Z"></path>
+            <path d="M55,55 l6,-6 l0,12 l-12,0 Z"></path>
+            <path d="M65,65 l6,-6 l0,12 l-12,0 Z"></path>
+            <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
+            <text x="0" y="9">3</text>
+            <foreignObject x="-45" y="25" class="notes-above"></foreignObject>
+          </g>
+
+          <g transform="translate(200,200)">
+            <path d="M35,35 l6,-6 l0,12 l-12,0 Z"></path>
+            <path d="M45,45 l6,-6 l0,12 l-12,0 Z"></path>
+            <path d="M55,55 l6,-6 l0,12 l-12,0 Z"></path>
+            <path d="M65,65 l6,-6 l0,12 l-12,0 Z"></path>
+            <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
+            <text x="0" y="9">2</text>
+            <foreignObject x="-45" y="25" class="notes-above"></foreignObject>
+          </g>
+          <g transform="translate(400,200)">
+            <path d="M-40,40 l6,6 l-12,0 l0,-12 Z"></path>
+            <path d="M-50,50 l6,6 l-12,0 l0,-12 Z"></path>
+            <path d="M-60,60 l6,6 l-12,0 l0,-12 Z"></path>
+            <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
+            <text x="0" y="9">2</text>
+            <foreignObject x="-25" y="25" class="notes-above"></foreignObject>
+          </g>
+          <g transform="translate(600,200)">
+            <path d="M-45,45 l6,6 l-12,0 l0,-12 Z"></path>
+            <path d="M-55,55 l6,6 l-12,0 l0,-12 Z"></path>
+            <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
+            <text x="0" y="9">4</text>
+            <foreignObject x="-25" y="25" class="notes-above"></foreignObject>
+          </g>
+
+          <g transform="translate(100,300)">
+            <path d="M50,50 l6,-6 l0,12 l-12,0 Z"></path>
+            <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
+            <text x="0" y="9">3</text>
+            <foreignObject x="-45" y="25" class="notes-above"></foreignObject>
+          </g>
+          <g transform="translate(300,300)">
+            <path d="M35,35 l6,-6 l0,12 l-12,0 Z"></path>
+            <path d="M45,45 l6,-6 l0,12 l-12,0 Z"></path>
+            <path d="M55,55 l6,-6 l0,12 l-12,0 Z"></path>
+            <path d="M65,65 l6,-6 l0,12 l-12,0 Z"></path>
+            <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
+            <text x="0" y="9">1</text>
+            <foreignObject x="-45" y="25" class="notes-above"></foreignObject>
+          </g>
+          <g transform="translate(500,300)">
+            <path d="M-45,45 l6,6 l-12,0 l0,-12 Z"></path>
+            <path d="M-55,55 l6,6 l-12,0 l0,-12 Z"></path>
+            <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
+            <text x="0" y="9">3</text>
+            <foreignObject x="-25" y="25" class="notes-above"></foreignObject>
+          </g>
+
+          <g transform="translate(200,400)">
+            <path d="M50,50 l6,-6 l0,12 l-12,0 Z"></path>
+            <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
+            <text x="0" y="9">1</text>
+            <foreignObject x="-45" y="25" class="notes-above"></foreignObject>
+          </g>
+
+          <g transform="translate(400,400)">
+            <path d="M-45,45 l6,6 l-12,0 l0,-12 Z"></path>
+            <path d="M-55,55 l6,6 l-12,0 l0,-12 Z"></path>
+            <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
+            <text x="0" y="9">4</text>
+            <foreignObject x="-25" y="25" class="notes-above"></foreignObject>
+          </g>
+
+          <g transform="translate(300,500)">
+            <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
+            <text x="0" y="9">4</text>
+            <foreignObject x="-35" y="25" class="notes-above"></foreignObject>
+          </g>
+        </g>
+      </svg>
+
+
+    </div>
+  </body>
+</html>

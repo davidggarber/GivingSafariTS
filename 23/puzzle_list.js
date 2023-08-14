@@ -35,7 +35,7 @@ var puzzles = [
     { title: 'Complex Molecules', author: 'Philippe Nicolle', type: types.word, group: group.pending },
     { title: 'Engineering', author: 'Dana Young', type: types.logic, group: group.portrait },
     { title: 'Zoology', author: 'David Garber', type: types.rebus, group: group.portrait },
-    { title: 'Evolution', author: 'Rorke Haining', type: types.word, group: group.pending },
+    { title: 'Evolution', author: 'Rorke Haining', type: types.word, group: group.portrait },
     { title: 'Lifecycle', author: 'Rorke Haining', type: types.word, group: group.pending },
     { title: 'Tipping Point', author: 'Ken Pacquer', type: types.math, group: group.pending },
     { title: 'Archaeological Science', author: 'Cele Wolman', type: types.logic, group: group.pending },
