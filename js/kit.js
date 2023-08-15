@@ -1491,6 +1491,12 @@ function onLetterKeyDown(event) {
                 }
                 else {
                     prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel);
+                    if (!prior) {
+                        var loop = findParentOfClass(input, 'loop-navigation');
+                        if (loop) {
+                            prior = findFirstChildOfClass(loop, 'letter-input', 'letter-non-input', dxDel);
+                        }
+                    }
                 }
                 ExtractFromInput(input);
                 if (prior !== null) {
@@ -1908,6 +1914,7 @@ exports.onWordChange = onWordChange;
  */
 function findNextInput(start, dx, dy, cls, clsSkip) {
     var root2d = findParentOfClass(start, 'letter-grid-2d');
+    var loop = findParentOfClass(start, 'loop-navigation');
     var find = null;
     if (root2d != null) {
         find = findNext2dInput(root2d, start, dx, dy, cls, clsSkip);
@@ -1935,7 +1942,14 @@ function findNextInput(start, dx, dy, cls, clsSkip) {
         }
     }
     var back = dx == -plusX || dy < 0;
-    return findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1);
+    var next = findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1);
+    if (loop != null && findParentOfClass(next, 'loop-navigation') != loop) {
+        find = findFirstChildOfClass(loop, cls, clsSkip, back ? -1 : 1);
+        if (find) {
+            return find;
+        }
+    }
+    return next;
 }
 /**
  * Find the next element with a desired class, within a parent defined by its class.

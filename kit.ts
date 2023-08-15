@@ -1641,6 +1641,12 @@ export function onLetterKeyDown(event: KeyboardEvent) {
                 }
                 else {
                     prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel) as HTMLInputElement;
+                    if (!prior) {
+                        const loop = findParentOfClass(input, 'loop-navigation');
+                        if (loop) {
+                            prior = findFirstChildOfClass(loop, 'letter-input', 'letter-non-input', dxDel) as HTMLInputElement;
+                        }
+                    }
                 }
                 ExtractFromInput(input);
                 if (prior !== null) {
@@ -2092,7 +2098,8 @@ function findNextInput( start: Element,
                         cls: string, 
                         clsSkip: string)
                         : HTMLInputElement {
-    var root2d = findParentOfClass(start, 'letter-grid-2d');
+    const root2d = findParentOfClass(start, 'letter-grid-2d');
+    const loop = findParentOfClass(start, 'loop-navigation');
     let find:HTMLInputElement|null = null;
     if (root2d != null) {
         find = findNext2dInput(root2d, start, dx, dy, cls, clsSkip);
@@ -2100,7 +2107,7 @@ function findNextInput( start: Element,
             return find;
         }
     }
-    var discoverRoot = findParentOfClass(start, 'letter-grid-discover');
+    const discoverRoot = findParentOfClass(start, 'letter-grid-discover');
     if (discoverRoot != null) {
         find = findNextByPosition(discoverRoot, start, dx, dy, cls, clsSkip);
         if (find != null) {
@@ -2119,8 +2126,15 @@ function findNextInput( start: Element,
             return find;
         }
     }
-    var back = dx == -plusX || dy < 0;
-    return findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1) as HTMLInputElement;
+    const back = dx == -plusX || dy < 0;
+    const next = findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1) as HTMLInputElement;
+    if (loop != null && findParentOfClass(next, 'loop-navigation') != loop) {
+        find = findFirstChildOfClass(loop, cls, clsSkip, back ? -1 : 1) as HTMLInputElement;
+        if (find) {
+            return find;
+        }
+    }
+    return next;
 }
 
 /**

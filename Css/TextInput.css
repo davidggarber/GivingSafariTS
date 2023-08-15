@@ -55,6 +55,8 @@
   width: 100%;
   text-align: center;
   color: black;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 10pt;
 }
 
 .extract-box {
