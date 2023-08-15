@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Single',
+        'title': 'Fingerprints',
+        'author': 'Ryan Berry',
+        'copyright': '2014',
+        'type': '',
+        'googleFonts': 'Cherry+Bomb+One',
+        'textInput': true,
+        'abilities': {
+          'notes': true
+        }
+      };
+    </script>
+    <style>
+      #Fingerprints .title {
+        font-family: 'Cherry Bomb One';
+      }
+
+      table {
+        border-spacing: 0px;
+      }
+      td {
+        border: solid 1px black;
+        position: relative;
+        text-align: center;
+      }
+      td img {
+        margin-bottom: 0.5in;
+      }
+      .index {
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        width: 100%;
+      }
+      .row1 img {
+        height: 2.5in;
+      }
+      .row2 img {
+        height: 1.4in;
+      }
+      .row3 img {
+        height: 2.1in;
+      }
+      #Fingerprints .note-input.note-below {
+        bottom: 0.25in;
+        left: 25%;
+        width: 50%;
+      }
+      #final {
+        text-align: center;
+        margin-top: 0.5in;
+      }
+    </style>
+  </head>
+  <body id="Fingerprints">
+    <div id="pageBody">
+      <table>
+        <tr>
+          <td class="notes-below row1">
+            <img src="Images/Finger/a.png">
+            <div class="index">1, 13</div>
+          </td>
+          <td class="notes-below row1" colspan="2">
+            <img src="Images/Finger/b.png">
+            <div class="index">2</div>
+          </td>
+          <td class="notes-below row1">
+            <img src="Images/Finger/c.png">
+            <div class="index">3, 7</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="notes-below row2" colspan="2">
+            <img src="Images/Finger/d.png">
+            <div class="index">4, 8, 11</div>
+          </td>
+          <td class="notes-below row2" colspan="2">
+            <img src="Images/Finger/e.png">
+            <div class="index">5</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="notes-below row3" colspan="2">
+            <img src="Images/Finger/f.png">
+            <div class="index">6, 9, 10</div>
+          </td>
+          <td class="notes-below row3" colspan="2">
+            <img src="Images/Finger/g.png">
+            <div class="index">12</div>
+          </td>
+        </tr>
+      </table>
+
+
+      <div id="final" class="letter-cell-block create-from-pattern" data-letter-pattern="13" data-number-assignments="1=1 2=2 3=3 4=4 5=5 6=6 7=7 8=8 9=9 10=10 11=1 12=12 13=13"></div>
+
+    </div>
+  </body>
+</html>
