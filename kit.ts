@@ -4692,6 +4692,9 @@ type BoilerPlateData = {
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
+    preSetup?: () => void;
+    postSetup?: () => void;
+    googleFonts?: string;  // A list of fonts, separated by commas
 }
 
 /**
@@ -4827,8 +4830,8 @@ function boilerplate(bp: BoilerPlateData) {
      *   </html>
      */
 
-    if (bp['tableBuilder']) {
-        constructTable(bp['tableBuilder']);
+    if (bp.tableBuilder) {
+        constructTable(bp.tableBuilder);
     }
 
     const html:HTMLHtmlElement = document.getElementsByTagName('HTML')[0] as HTMLHtmlElement;
@@ -4836,9 +4839,9 @@ function boilerplate(bp: BoilerPlateData) {
     const body:HTMLBodyElement = document.getElementsByTagName('BODY')[0] as HTMLBodyElement;
     const pageBody:HTMLDivElement = document.getElementById('pageBody') as HTMLDivElement;
 
-    document.title = bp['title'];
+    document.title = bp.title;
     
-    html.lang = bp['lang'] || 'en-us';
+    html.lang = bp.lang || 'en-us';
 
     for (var i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
@@ -4852,25 +4855,33 @@ function boilerplate(bp: BoilerPlateData) {
     if (safariDetails.fontCss) {
         linkCss(head, safariDetails.fontCss);
     }
+    if (bp.googleFonts) {
+        const fonts = bp.googleFonts.split(',');
+        const link = {
+            'href': 'https://fonts.googleapis.com/css2?family=' + fonts.join('&family=') + '&display=swap',
+            'rel': 'stylesheet'
+        }
+        addLink(head, link);
+    }
     linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
     linkCss(head, safariDetails.cssRoot + 'TextInput.css');
-    if (!bp['paperSize']) {
-        bp['paperSize'] = 'letter';
+    if (!bp.paperSize) {
+        bp.paperSize = 'letter';
     }
-    if (!bp['orientation']) {
-        bp['orientation'] = 'portrait';
+    if (!bp.orientation) {
+        bp.orientation = 'portrait';
     }
-    toggleClass(body, bp['paperSize']);
-    toggleClass(body, bp['orientation']);
-    toggleClass(body, '_' + bp['safari']);  // So event fonts can trump defaults
+    toggleClass(body, bp.paperSize);
+    toggleClass(body, bp.orientation);
+    toggleClass(body, '_' + bp.safari);  // So event fonts can trump defaults
 
     const page: HTMLDivElement = createSimpleDiv({id:'page', cls:'printedPage'});
     const margins: HTMLDivElement = createSimpleDiv({cls:'pageWithinMargins'});
     body.appendChild(page);
     page.appendChild(margins);
     margins.appendChild(pageBody);
-    margins.appendChild(createSimpleDiv({cls:'title', html:bp['title']}));
-    margins.appendChild(createSimpleDiv({id:'copyright', html:'&copy; ' + bp['copyright'] + ' ' + bp['author']}));
+    margins.appendChild(createSimpleDiv({cls:'title', html:bp.title}));
+    margins.appendChild(createSimpleDiv({id:'copyright', html:'&copy; ' + bp.copyright + ' ' + bp.author}));
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:'Puzzle list'}));
     }
@@ -4883,14 +4894,19 @@ function boilerplate(bp: BoilerPlateData) {
     head.appendChild(tabIcon);
 
 
-    if (bp['type']) {
-        margins.appendChild(createTypeIcon(bp['type']));
+    if (bp.type) {
+        margins.appendChild(createTypeIcon(bp.type));
     }
 
-    if (bp['textInput']) {
+    // If the puzzle has a pre-setup method they'd like to run before abilities and contents are processed, do so now
+    if (bp.preSetup) {
+        bp.preSetup();
+    }
+
+    if (bp.textInput) {
         textSetup()
     }
-    setupAbilities(head, margins, bp['abilities'] || {});
+    setupAbilities(head, margins, bp.abilities || {});
 
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);
@@ -5043,6 +5059,11 @@ function setupAfterCss(bp: BoilerPlateData) {
         if (bp.abilities.subway) {
             setupSubways();
         }
+    }
+
+    // If the puzzle has a post-setup method they'd like to run after all abilities and contents are processed, do so now
+    if (bp.postSetup) {
+        bp.postSetup();
     }
 }
 

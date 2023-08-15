@@ -4317,15 +4317,15 @@ function boilerplate(bp) {
      *    </body>
      *   </html>
      */
-    if (bp['tableBuilder']) {
-        constructTable(bp['tableBuilder']);
+    if (bp.tableBuilder) {
+        constructTable(bp.tableBuilder);
     }
     var html = document.getElementsByTagName('HTML')[0];
     var head = document.getElementsByTagName('HEAD')[0];
     var body = document.getElementsByTagName('BODY')[0];
     var pageBody = document.getElementById('pageBody');
-    document.title = bp['title'];
-    html.lang = bp['lang'] || 'en-us';
+    document.title = bp.title;
+    html.lang = bp.lang || 'en-us';
     for (var i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
@@ -4336,24 +4336,32 @@ function boilerplate(bp) {
     if (safariDetails.fontCss) {
         linkCss(head, safariDetails.fontCss);
     }
+    if (bp.googleFonts) {
+        var fonts = bp.googleFonts.split(',');
+        var link = {
+            'href': 'https://fonts.googleapis.com/css2?family=' + fonts.join('&family=') + '&display=swap',
+            'rel': 'stylesheet'
+        };
+        addLink(head, link);
+    }
     linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
     linkCss(head, safariDetails.cssRoot + 'TextInput.css');
-    if (!bp['paperSize']) {
-        bp['paperSize'] = 'letter';
+    if (!bp.paperSize) {
+        bp.paperSize = 'letter';
     }
-    if (!bp['orientation']) {
-        bp['orientation'] = 'portrait';
+    if (!bp.orientation) {
+        bp.orientation = 'portrait';
     }
-    toggleClass(body, bp['paperSize']);
-    toggleClass(body, bp['orientation']);
-    toggleClass(body, '_' + bp['safari']); // So event fonts can trump defaults
+    toggleClass(body, bp.paperSize);
+    toggleClass(body, bp.orientation);
+    toggleClass(body, '_' + bp.safari); // So event fonts can trump defaults
     var page = createSimpleDiv({ id: 'page', cls: 'printedPage' });
     var margins = createSimpleDiv({ cls: 'pageWithinMargins' });
     body.appendChild(page);
     page.appendChild(margins);
     margins.appendChild(pageBody);
-    margins.appendChild(createSimpleDiv({ cls: 'title', html: bp['title'] }));
-    margins.appendChild(createSimpleDiv({ id: 'copyright', html: '&copy; ' + bp['copyright'] + ' ' + bp['author'] }));
+    margins.appendChild(createSimpleDiv({ cls: 'title', html: bp.title }));
+    margins.appendChild(createSimpleDiv({ id: 'copyright', html: '&copy; ' + bp.copyright + ' ' + bp.author }));
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({ id: 'backlink', href: safariDetails.puzzleList, friendly: 'Puzzle list' }));
     }
@@ -4363,13 +4371,17 @@ function boilerplate(bp) {
     tabIcon.type = 'image/png';
     tabIcon.href = safariDetails.icon;
     head.appendChild(tabIcon);
-    if (bp['type']) {
-        margins.appendChild(createTypeIcon(bp['type']));
+    if (bp.type) {
+        margins.appendChild(createTypeIcon(bp.type));
     }
-    if (bp['textInput']) {
+    // If the puzzle has a pre-setup method they'd like to run before abilities and contents are processed, do so now
+    if (bp.preSetup) {
+        bp.preSetup();
+    }
+    if (bp.textInput) {
         textSetup();
     }
-    setupAbilities(head, margins, bp['abilities'] || {});
+    setupAbilities(head, margins, bp.abilities || {});
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);
     }
@@ -4513,6 +4525,10 @@ function setupAfterCss(bp) {
         if (bp.abilities.subway) {
             setupSubways();
         }
+    }
+    // If the puzzle has a post-setup method they'd like to run after all abilities and contents are processed, do so now
+    if (bp.postSetup) {
+        bp.postSetup();
     }
 }
 window.onload = function () { boilerplate(boiler); }; // error if boiler still undefined

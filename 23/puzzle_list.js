@@ -37,7 +37,7 @@ var puzzles = [
     { title: 'Zoology', author: 'David Garber', type: types.rebus, group: group.portrait },
     { title: 'Evolution', author: 'Rorke Haining', type: types.word, group: group.portrait },
     { title: 'Lifecycle', author: 'Rorke Haining', type: types.word, group: group.portrait },
-    { title: 'Tipping Point', author: 'Ken Pacquer', type: types.math, group: group.pending },
+    { title: 'Tipping Point', author: 'Ken Pacquer', type: types.math, group: group.landscape },
     { title: 'Archaeological Science', author: 'Cele Wolman', type: types.logic, group: group.pending },
     { title: 'Mudoku', author: 'Jeffrey Lin', type: types.logic, group: group.pending },
     { title: 'X-Ray Crystallography', author: 'Colin Robertson', type: types.construction, group: group.pending },
