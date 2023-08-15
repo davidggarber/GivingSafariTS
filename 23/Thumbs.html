@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Printable packet of all portrait-oriented puzzles">
+    <meta name="author" content="David Garber">
+    <link href="../Css/Print.css" rel="Stylesheet" type="text/css"></link>
+    <link rel="shortcut icon" type="image/png" href="Images/Beaker_icon.png">
+
+    <title>Giving Safari 2023 - All Portrait Puzzles</title>
+
+    <script src="puzzle_list.js"></script>
+    <style>
+      .print-portrait {
+        margin: 0.2in;
+        width: 1.7in;
+        height: 2.2in;
+        transform: scale(20%);
+      }
+      .print-landscape {
+        margin: 0.2in;
+        width: 2.2in;
+        height: 1.7in;
+        transform: scale(20%);
+      }
+    </style>
+    <script>
+      function onLoad() {
+        var list = document.getElementById('thumb-list');
+        var div = document.createElement('div');
+        var iframe = document.createElement('iframe');
+
+        for (var i = 0; i < puzzles.length; i++) {
+          var puz = puzzles[i];
+          if (puz.group == '' || puz.group == 'feeder') {
+            continue;
+          }
+          var orientation = 'print-' + ((puz.group == 'meta') ? 'portrait' : puz.group);
+
+          var div = document.createElement('div');
+          div.classList.add('nail');
+          var iframe = document.createElement('iframe');
+          div.classList.add('page');
+          div.classList.add(orientation);
+
+          iframe.src = puzzleHref(puz) + '?iframe&print';
+
+          div.appendChild(iframe);
+          list.appendChild(div);
+        }
+      }
+
+    </script>
+  </head> 
+  <body id="Thumbs" class="portrait landscape feeders" onload="onLoad()">
+    <div id="thumb-list"></div>
+  </body>
+</html>
