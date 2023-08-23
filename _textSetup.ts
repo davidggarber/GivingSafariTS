@@ -1,4 +1,4 @@
-import { hasClass, toggleClass, applyAllClasses, getOptionalStyle } from "./_classUtil";
+import { hasClass, toggleClass, applyAllClasses, getOptionalStyle, findParentOfClass } from "./_classUtil";
 import { onLetterKeyDown, onLetterKey, onLetterChange, onWordKey, onWordChange } from "./_textInput";
 import { indexAllInputFields } from "./_storage"
 
@@ -19,7 +19,7 @@ export function textSetup() {
  * Look for elements of class 'create-from-pattern'.
  * When found, use the pattern, as well as other inputs, to build out a sequence of text inputs inside that element.
  * Secondary attributes:
- *   letter-cell-table: A table with this class is will expect every cell
+ *   letter-cell-table: A table with this class will expect every cell
  *   data-letter-pattern: A string specifying the number of input, and any decorative text.
  *                        Example: "2-2-4" would create _ _ - _ _ - _ _ _ _
  *                        Special case: The character '¤' is reserved for a solid block, like you might see in a crossword.
@@ -318,11 +318,12 @@ function parsePattern2( elmt: Element,
  *   "literal" - format that cell as read-only, and overlay the literal text or whitespace
  */
 function setupLetterCells() {
-    var cells = document.getElementsByClassName('letter-cell');
+    const cells = document.getElementsByClassName('letter-cell');
     let extracteeIndex:number = 1;
     let extractorIndex:number = 1;
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell:HTMLElement = cells[i] as HTMLElement;
+        const navLiterals = findParentOfClass(cell, 'navigate-literals') != null;
 
         // Place a small text input field in each cell
         const inp:HTMLInputElement = document.createElement('input');
@@ -361,14 +362,22 @@ function setupLetterCells() {
         }
 
         if (hasClass(cell, 'literal')) {
-            inp.setAttribute('disabled', '');
             toggleClass(inp, 'letter-non-input');
-            inp.setAttribute('data-literal', cell.innerText == '\xa0' ? ' ' : cell.innerText);
-            var span = document.createElement('span');
-            toggleClass(span, 'letter-literal');
-            span.innerText = cell.innerText;
+            const val = cell.innerText;
             cell.innerHTML = '';
-            cell.appendChild(span);
+
+            inp.setAttribute('data-literal', val == '\xa0' ? ' ' : val);
+            if (navLiterals) {
+                inp.setAttribute('readonly', '');
+                inp.value = val;
+            }
+            else {
+                inp.setAttribute('disabled', '');
+                var span = document.createElement('span');
+                toggleClass(span, 'letter-literal');
+                span.innerText = val;
+                cell.appendChild(span);        
+            }
         }
         cell.appendChild(inp);
     }

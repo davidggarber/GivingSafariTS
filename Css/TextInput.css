@@ -37,6 +37,13 @@
   margin-left: -1px;
 }
 
+.literal-grid {
+  width: 4ex;
+  height: 4ex;
+  border: solid 1px black;
+  margin-left: -1px;
+}
+
 .literal-gridgap {
   width: 4ex;
   height: 4ex;
@@ -173,7 +180,7 @@ input[type=number]::-webkit-outer-spin-button {
 
 .note-input {
   display: none;
-  height: 0.28in;
+  height: 1.5ex;
   background-color: transparent;
   font-weight: 100;
   font-style: italic;

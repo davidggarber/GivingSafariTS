@@ -50,7 +50,10 @@ export function onLetterKeyDown(event: KeyboardEvent) {
     }
 
     var inpClass = hasClass(input, 'word-input') ? 'word-input' : 'letter-input';
-    var skipClass = hasClass(input, 'word-input') ? 'word-non-input' : 'letter-non-input';
+    let skipClass:string|undefined;
+    if (!findParentOfClass(input, 'navigate-literals')) {
+        skipClass = hasClass(input, 'word-input') ? 'word-non-input' : 'letter-non-input';
+    }
 
     let prior:HTMLInputElement|null = null;
 
@@ -568,7 +571,7 @@ function findNextInput( start: Element,
                         dx: number, 
                         dy: number, 
                         cls: string, 
-                        clsSkip: string)
+                        clsSkip: string|undefined)
                         : HTMLInputElement {
     const root2d = findParentOfClass(start, 'letter-grid-2d');
     const loop = findParentOfClass(start, 'loop-navigation');
@@ -620,7 +623,7 @@ function findNextInput( start: Element,
  */
 function findNextOfClassGroup(  start: Element,
                                 cls: string, 
-                                clsSkip: string, 
+                                clsSkip: string|undefined, 
                                 clsGroup: string, 
                                 dir:number = 1)
                                 : Element|null {
@@ -647,7 +650,7 @@ function findNext2dInput(   root: Element,
                             dx: number, 
                             dy: number, 
                             cls: string, 
-                            clsSkip: string)
+                            clsSkip: string|undefined)
                             : HTMLInputElement {
   // TODO: root
     if (dy != 0) {
@@ -657,7 +660,7 @@ function findNext2dInput(   root: Element,
         var nextParent = findNextOfClass(parent as Element, 'letter-cell-block', 'letter-grid-2d', dy);
         while (nextParent != null) {
             var dest:HTMLInputElement = childAtIndex(nextParent, cls, index) as HTMLInputElement;
-            if (dest != null && !hasClass(dest, 'letter-non-input')) {
+            if (dest != null && !hasClass(dest, clsSkip)) {
                 return dest;
             }
             nextParent = findNextOfClass(nextParent, 'letter-cell-block', 'letter-grid-2d', dy);
@@ -682,7 +685,7 @@ function findNextByPosition(root: Element,
                             dx: number, 
                             dy: number, 
                             cls: string, 
-                            clsSkip: string)
+                            clsSkip: string|undefined)
                             : HTMLInputElement|null {
     let rect = start.getBoundingClientRect();
     let pos = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };

@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = void 0;
+exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isRestart = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -332,24 +332,25 @@ function constructTable(details) {
     }
 }
 exports.constructTable = constructTable;
+exports.svg_xmlns = 'http://www.w3.org/2000/svg';
 function constructSvgTextCell(val, dx, dy, cls, stampable) {
     if (val == ' ') {
         return null;
     }
-    var vg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    var vg = document.createElementNS(exports.svg_xmlns, 'g');
     vg.classList.add('vertex-g');
     if (cls) {
         applyAllClasses(vg, cls);
     }
     vg.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
-    var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    var r = document.createElementNS(exports.svg_xmlns, 'rect');
     r.classList.add('vertex');
-    var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    var t = document.createElementNS(exports.svg_xmlns, 'text');
     t.appendChild(document.createTextNode(val));
     vg.appendChild(r);
     vg.appendChild(t);
     if (stampable) {
-        var fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+        var fo = document.createElementNS(exports.svg_xmlns, 'foreignObject');
         fo.classList.add('stampable');
         vg.appendChild(fo);
     }
@@ -357,15 +358,15 @@ function constructSvgTextCell(val, dx, dy, cls, stampable) {
 }
 exports.constructSvgTextCell = constructSvgTextCell;
 function constructSvgImageCell(img, dx, dy, cls) {
-    var vg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    var vg = document.createElementNS(exports.svg_xmlns, 'g');
     vg.classList.add('vertex-g');
     if (cls) {
         applyAllClasses(vg, cls);
     }
     vg.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
-    var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    var r = document.createElementNS(exports.svg_xmlns, 'rect');
     r.classList.add('vertex');
-    var i = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+    var i = document.createElementNS(exports.svg_xmlns, 'image');
     i.setAttributeNS('', 'href', img);
     vg.appendChild(r);
     vg.appendChild(i);
@@ -373,7 +374,7 @@ function constructSvgImageCell(img, dx, dy, cls) {
 }
 exports.constructSvgImageCell = constructSvgImageCell;
 function constructSvgStampable() {
-    var foreign = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    var foreign = document.createElementNS(exports.svg_xmlns, 'foreignObject');
     foreign.classList.add('stampable');
     return foreign;
 }
@@ -1431,7 +1432,10 @@ function onLetterKeyDown(event) {
         code = event.key; // Mobile doesn't use code
     }
     var inpClass = hasClass(input, 'word-input') ? 'word-input' : 'letter-input';
-    var skipClass = hasClass(input, 'word-input') ? 'word-non-input' : 'letter-non-input';
+    var skipClass;
+    if (!findParentOfClass(input, 'navigate-literals')) {
+        skipClass = hasClass(input, 'word-input') ? 'word-non-input' : 'letter-non-input';
+    }
     var prior = null;
     if (hasClass(input.parentNode, 'multiple-letter') || hasClass(input, 'word-input')) {
         // Multi-character fields still want the ability to arrow between cells.
@@ -1988,7 +1992,7 @@ function findNext2dInput(root, start, dx, dy, cls, clsSkip) {
         var nextParent = findNextOfClass(parent, 'letter-cell-block', 'letter-grid-2d', dy);
         while (nextParent != null) {
             var dest = childAtIndex(nextParent, cls, index);
-            if (dest != null && !hasClass(dest, 'letter-non-input')) {
+            if (dest != null && !hasClass(dest, clsSkip)) {
                 return dest;
             }
             nextParent = findNextOfClass(nextParent, 'letter-cell-block', 'letter-grid-2d', dy);
@@ -2111,7 +2115,7 @@ exports.textSetup = textSetup;
  * Look for elements of class 'create-from-pattern'.
  * When found, use the pattern, as well as other inputs, to build out a sequence of text inputs inside that element.
  * Secondary attributes:
- *   letter-cell-table: A table with this class is will expect every cell
+ *   letter-cell-table: A table with this class will expect every cell
  *   data-letter-pattern: A string specifying the number of input, and any decorative text.
  *                        Example: "2-2-4" would create _ _ - _ _ - _ _ _ _
  *                        Special case: The character '¤' is reserved for a solid block, like you might see in a crossword.
@@ -2376,6 +2380,7 @@ function setupLetterCells() {
     var extractorIndex = 1;
     for (var i = 0; i < cells.length; i++) {
         var cell = cells[i];
+        var navLiterals = findParentOfClass(cell, 'navigate-literals') != null;
         // Place a small text input field in each cell
         var inp = document.createElement('input');
         inp.type = 'text';
@@ -2411,14 +2416,21 @@ function setupLetterCells() {
             inp.id = 'extractor-' + extractorIndex++;
         }
         if (hasClass(cell, 'literal')) {
-            inp.setAttribute('disabled', '');
             toggleClass(inp, 'letter-non-input');
-            inp.setAttribute('data-literal', cell.innerText == '\xa0' ? ' ' : cell.innerText);
-            var span = document.createElement('span');
-            toggleClass(span, 'letter-literal');
-            span.innerText = cell.innerText;
+            var val = cell.innerText;
             cell.innerHTML = '';
-            cell.appendChild(span);
+            inp.setAttribute('data-literal', val == '\xa0' ? ' ' : val);
+            if (navLiterals) {
+                inp.setAttribute('readonly', '');
+                inp.value = val;
+            }
+            else {
+                inp.setAttribute('disabled', '');
+                var span = document.createElement('span');
+                toggleClass(span, 'letter-literal');
+                span.innerText = val;
+                cell.appendChild(span);
+            }
         }
         cell.appendChild(inp);
     }

@@ -57,25 +57,27 @@ export function constructTable(details: TableDetails) {
   }
 }
 
+export const svg_xmlns = 'http://www.w3.org/2000/svg';
+
 export function constructSvgTextCell(val:string, dx:number, dy:number, cls:string, stampable?:boolean) {
   if (val == ' ') {
     return null;
   }
-  var vg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  var vg = document.createElementNS(svg_xmlns, 'g');
   vg.classList.add('vertex-g');
   if (cls) {
     applyAllClasses(vg, cls);
   }
   vg.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
-  var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  var r = document.createElementNS(svg_xmlns, 'rect');
   r.classList.add('vertex');
-  var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  var t = document.createElementNS(svg_xmlns, 'text');
   t. appendChild(document.createTextNode(val));
   vg.appendChild(r);
   vg.appendChild(t);
 
   if (stampable) {
-    var fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    var fo = document.createElementNS(svg_xmlns, 'foreignObject');
     fo.classList.add('stampable');
     vg. appendChild(fo);  
   }
@@ -83,15 +85,15 @@ export function constructSvgTextCell(val:string, dx:number, dy:number, cls:strin
 }
 
 export function constructSvgImageCell(img:string, dx:number, dy:number, cls:string) {
-  var vg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  var vg = document.createElementNS(svg_xmlns, 'g');
   vg.classList.add('vertex-g');
   if (cls) {
     applyAllClasses(vg, cls);
   }
   vg.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
-  var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  var r = document.createElementNS(svg_xmlns, 'rect');
   r.classList.add('vertex');
-  var i = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+  var i = document.createElementNS(svg_xmlns, 'image');
   i.setAttributeNS('', 'href', img);
   vg.appendChild(r);
   vg.appendChild(i);
@@ -99,7 +101,7 @@ export function constructSvgImageCell(img:string, dx:number, dy:number, cls:stri
 }
 
 export function constructSvgStampable() {
-  var foreign = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+  var foreign = document.createElementNS(svg_xmlns, 'foreignObject');
   foreign.classList.add('stampable');
   return foreign;
 }

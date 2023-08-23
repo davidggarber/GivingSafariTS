@@ -379,25 +379,27 @@ export function constructTable(details: TableDetails) {
   }
 }
 
+export const svg_xmlns = 'http://www.w3.org/2000/svg';
+
 export function constructSvgTextCell(val:string, dx:number, dy:number, cls:string, stampable?:boolean) {
   if (val == ' ') {
     return null;
   }
-  var vg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  var vg = document.createElementNS(svg_xmlns, 'g');
   vg.classList.add('vertex-g');
   if (cls) {
     applyAllClasses(vg, cls);
   }
   vg.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
-  var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  var r = document.createElementNS(svg_xmlns, 'rect');
   r.classList.add('vertex');
-  var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  var t = document.createElementNS(svg_xmlns, 'text');
   t. appendChild(document.createTextNode(val));
   vg.appendChild(r);
   vg.appendChild(t);
 
   if (stampable) {
-    var fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    var fo = document.createElementNS(svg_xmlns, 'foreignObject');
     fo.classList.add('stampable');
     vg. appendChild(fo);  
   }
@@ -405,15 +407,15 @@ export function constructSvgTextCell(val:string, dx:number, dy:number, cls:strin
 }
 
 export function constructSvgImageCell(img:string, dx:number, dy:number, cls:string) {
-  var vg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  var vg = document.createElementNS(svg_xmlns, 'g');
   vg.classList.add('vertex-g');
   if (cls) {
     applyAllClasses(vg, cls);
   }
   vg.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
-  var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  var r = document.createElementNS(svg_xmlns, 'rect');
   r.classList.add('vertex');
-  var i = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+  var i = document.createElementNS(svg_xmlns, 'image');
   i.setAttributeNS('', 'href', img);
   vg.appendChild(r);
   vg.appendChild(i);
@@ -421,7 +423,7 @@ export function constructSvgImageCell(img:string, dx:number, dy:number, cls:stri
 }
 
 export function constructSvgStampable() {
-  var foreign = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+  var foreign = document.createElementNS(svg_xmlns, 'foreignObject');
   foreign.classList.add('stampable');
   return foreign;
 }
@@ -1578,7 +1580,10 @@ export function onLetterKeyDown(event: KeyboardEvent) {
     }
 
     var inpClass = hasClass(input, 'word-input') ? 'word-input' : 'letter-input';
-    var skipClass = hasClass(input, 'word-input') ? 'word-non-input' : 'letter-non-input';
+    let skipClass:string|undefined;
+    if (!findParentOfClass(input, 'navigate-literals')) {
+        skipClass = hasClass(input, 'word-input') ? 'word-non-input' : 'letter-non-input';
+    }
 
     let prior:HTMLInputElement|null = null;
 
@@ -2096,7 +2101,7 @@ function findNextInput( start: Element,
                         dx: number, 
                         dy: number, 
                         cls: string, 
-                        clsSkip: string)
+                        clsSkip: string|undefined)
                         : HTMLInputElement {
     const root2d = findParentOfClass(start, 'letter-grid-2d');
     const loop = findParentOfClass(start, 'loop-navigation');
@@ -2148,7 +2153,7 @@ function findNextInput( start: Element,
  */
 function findNextOfClassGroup(  start: Element,
                                 cls: string, 
-                                clsSkip: string, 
+                                clsSkip: string|undefined, 
                                 clsGroup: string, 
                                 dir:number = 1)
                                 : Element|null {
@@ -2175,7 +2180,7 @@ function findNext2dInput(   root: Element,
                             dx: number, 
                             dy: number, 
                             cls: string, 
-                            clsSkip: string)
+                            clsSkip: string|undefined)
                             : HTMLInputElement {
   // TODO: root
     if (dy != 0) {
@@ -2185,7 +2190,7 @@ function findNext2dInput(   root: Element,
         var nextParent = findNextOfClass(parent as Element, 'letter-cell-block', 'letter-grid-2d', dy);
         while (nextParent != null) {
             var dest:HTMLInputElement = childAtIndex(nextParent, cls, index) as HTMLInputElement;
-            if (dest != null && !hasClass(dest, 'letter-non-input')) {
+            if (dest != null && !hasClass(dest, clsSkip)) {
                 return dest;
             }
             nextParent = findNextOfClass(nextParent, 'letter-cell-block', 'letter-grid-2d', dy);
@@ -2210,7 +2215,7 @@ function findNextByPosition(root: Element,
                             dx: number, 
                             dy: number, 
                             cls: string, 
-                            clsSkip: string)
+                            clsSkip: string|undefined)
                             : HTMLInputElement|null {
     let rect = start.getBoundingClientRect();
     let pos = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
@@ -2320,7 +2325,7 @@ export function textSetup() {
  * Look for elements of class 'create-from-pattern'.
  * When found, use the pattern, as well as other inputs, to build out a sequence of text inputs inside that element.
  * Secondary attributes:
- *   letter-cell-table: A table with this class is will expect every cell
+ *   letter-cell-table: A table with this class will expect every cell
  *   data-letter-pattern: A string specifying the number of input, and any decorative text.
  *                        Example: "2-2-4" would create _ _ - _ _ - _ _ _ _
  *                        Special case: The character '¤' is reserved for a solid block, like you might see in a crossword.
@@ -2619,11 +2624,12 @@ function parsePattern2( elmt: Element,
  *   "literal" - format that cell as read-only, and overlay the literal text or whitespace
  */
 function setupLetterCells() {
-    var cells = document.getElementsByClassName('letter-cell');
+    const cells = document.getElementsByClassName('letter-cell');
     let extracteeIndex:number = 1;
     let extractorIndex:number = 1;
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell:HTMLElement = cells[i] as HTMLElement;
+        const navLiterals = findParentOfClass(cell, 'navigate-literals') != null;
 
         // Place a small text input field in each cell
         const inp:HTMLInputElement = document.createElement('input');
@@ -2662,14 +2668,22 @@ function setupLetterCells() {
         }
 
         if (hasClass(cell, 'literal')) {
-            inp.setAttribute('disabled', '');
             toggleClass(inp, 'letter-non-input');
-            inp.setAttribute('data-literal', cell.innerText == '\xa0' ? ' ' : cell.innerText);
-            var span = document.createElement('span');
-            toggleClass(span, 'letter-literal');
-            span.innerText = cell.innerText;
+            const val = cell.innerText;
             cell.innerHTML = '';
-            cell.appendChild(span);
+
+            inp.setAttribute('data-literal', val == '\xa0' ? ' ' : val);
+            if (navLiterals) {
+                inp.setAttribute('readonly', '');
+                inp.value = val;
+            }
+            else {
+                inp.setAttribute('disabled', '');
+                var span = document.createElement('span');
+                toggleClass(span, 'letter-literal');
+                span.innerText = val;
+                cell.appendChild(span);        
+            }
         }
         cell.appendChild(inp);
     }
