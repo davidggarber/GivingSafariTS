@@ -50,23 +50,28 @@
         rect.setAttributeNS('', 'y', 0);
         rect.setAttributeNS('', 'width', 50);
         rect.setAttributeNS('', 'height', 50);
+        g.appendChild(rect);
         var fo = document.createElementNS(svg_xmlns, 'foreignObject');
         var inp = document.createElement('input');
         inp.classList.add('letter-input')
 
-        if (val == ' ') {
-          g.classList.add('input');
-          inp.classList.add('letter-input')
+        g.classList.add('input');
+        inp.classList.add('letter-input')
+
+        if (val != ' ') {
+          g.classList.add('gray');
+          var t = document.createElementNS(svg_xmlns, 'text');
+          t.appendChild(document.createTextNode(val));
+          t.setAttributeNS('', 'x', 25);
+          t.setAttributeNS('', 'y', 33);
+          g.appendChild(t);
+          inp.setAttribute('required', true);
+          inp.setAttribute('title', '');
         }
         else {
-          g.classList.add('literal');
-          inp.classList.add('letter-non-input')
-          inp.classList.add('literal');
-          inp.setAttribute('value', val);
-          inp.readOnly = true;
+          g.classList.add('white');
         }
 
-        g.appendChild(rect);
         fo.appendChild(inp);
         g.appendChild(fo);
         return g;
@@ -111,17 +116,26 @@
         color: red;
       }
 
-      #sudoku .literal.letter-input {
+      input:required {
+        background-color: #e7e6e6d0;
+      }
+
+      input:required:invalid {
+        background-color: transparent;
+      }
+
+      #sudoku text {
         font-family: 'Verdana';
         font-size: 14pt;
         font-weight: bold;
         color: black;
+        text-anchor: middle;
       }
 
-      .input rect {
+      .white rect {
         fill: white;
       }
-      .literal rect {
+      .gray rect {
         fill: #e7e6e6;
       }
 
