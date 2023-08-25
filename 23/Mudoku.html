@@ -13,6 +13,7 @@
         'type': 'logic',
         'textInput': true,
         'abilities': {
+          'highlights': true
         },
         'tableBuilder': {
           'rootId': 'grid-root',
@@ -60,6 +61,7 @@
 
         if (val != ' ') {
           g.classList.add('gray');
+          g.classList.add('can-highlight');
           var t = document.createElementNS(svg_xmlns, 'text');
           t.appendChild(document.createTextNode(val));
           t.setAttributeNS('', 'x', 25);
@@ -117,7 +119,7 @@
       }
 
       input:required {
-        background-color: #e7e6e6d0;
+        background-color: #ffff00d0;
       }
 
       input:required:invalid {
@@ -137,6 +139,9 @@
       }
       .gray rect {
         fill: #e7e6e6;
+      }
+      .gray.highlighted rect {
+        fill: yellow;
       }
 
     </style>
