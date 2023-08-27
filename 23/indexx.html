@@ -106,6 +106,9 @@
             var metas = document.getElementById('meta_list');
             for (var i = 0; i < puzzles.length; i++) {
                 var puz = puzzles[i];
+                if (!puz.group == group.cut) {
+                    continue;
+                }
 
                 var tr = document.createElement('tr');
                 var thIcon = document.createElement('td');
