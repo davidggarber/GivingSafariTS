@@ -120,8 +120,13 @@
                 tdAuthor.classList.add('author');
                 var imgIcon = document.createElement('img');
                 var aTitle = document.createElement('a');
-                imgIcon.src = 'Icons/' + puz.type.icon + '.png';
-                imgIcon.title = puz.type.alt;
+                if (puz.icon) {
+                    imgIcon.src = 'Icons/' + puz.icon + '.png';
+                }
+                else {
+                    imgIcon.src = 'Icons/' + puz.type.icon + '.png';
+                    imgIcon.title = puz.type.alt;
+                }
                 if (puz.group != group.pending) {
                     aTitle.href = puzzleHref(puz);
                 }
@@ -194,7 +199,7 @@
             </tr>
             <tr>
                 <th>&nbsp;</th>
-                <th class="title" style="text-align: left;">Meta-Puzzles</th>
+                <th class="html" style="text-align: left;">Meta-Puzzles</th>
                 <th class="author" style="text-align: left;">Author</th>
             </tr>    
         </tfoot>

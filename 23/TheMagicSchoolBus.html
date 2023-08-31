@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'The Magic School Bus',
+        'author': 'Philippe Nicolle',
+        'copyright': '2020',
+        'feeder': 'Bus',
+        'textInput': true,
+        'abilities': {
+        }
+      };
+    </script>
+    <style>
+      #TheMagicSchoolBus #icons {
+        top: -0.25in;
+      }
+      #TheMagicSchoolBus #icons img {
+        box-shadow: none;
+      }
+      .flavor {
+        width: 5.6in;
+      }
+      #frizzle {
+        position: absolute;
+        top: 0.1in;
+        right: 0px;
+        height: 2.7in;
+      }
+      #overlays {
+        position: relative;
+      }
+      .feeder {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 7.5in;
+      }
+    </style>
+  </head>
+  <body id="TheMagicSchoolBus">
+    <div id="pageBody">
+      <p class="flavor">
+        Here, at The Magic School Bus, we are all about learning and collaboration.  
+        For this final experiment we will be working in pairs.  
+        Get your materials by solving the four other puzzles.
+        As Ms. Frizzle likes to say, “Take chances, make mistakes, get messy!”
+      </p>
+      <img id="frizzle" src="Images/Bus/Frizzle.gif">
+
+      <div id="overlays">
+        <img class="feeder" src="Images/Bus/bumper.png">
+        <img class="feeder" src="Images/Bus/door.png">
+        <img class="feeder" src="Images/Bus/fins.png">
+        <img class="feeder" src="Images/Bus/tire.png">
+      </div>
+
+    </div>
+  </body>
+</html>

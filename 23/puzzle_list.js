@@ -16,6 +16,10 @@ var group = {
     pending: '',
     cut: undefined
 };
+var feeder = {
+    science: 'Science',
+    bus: 'Bus',
+}
 
 var puzzles = [
     { title: 'Aaaaaaaa!', file: 'Aaaaaaaa', author: 'Jeff Lin', type: types.math, group: group.portrait },
@@ -42,7 +46,8 @@ var puzzles = [
     { title: 'Weird Maths', author: 'Martyn Lovell', type: types.logic, group: group.portrait },
     { title: 'Weird, You Nits', file: 'WeirdYouNits', author: 'Martyn Lovell', type: types.rebus, group: group.portrait },
     { title: 'Zoology', author: 'David Garber', type: types.rebus, group: group.portrait },
-    { title: 'Weird Science', author: 'Martyn Lovell', type: types.meta, group: group.meta },  // meta
+    { title: 'The Magic School Bus', author: 'Philippe Nicolle', type: types.meta, group: group.meta, icon: feeder.bus },
+    { title: 'Weird Science', author: 'Martyn Lovell', type: types.meta, group: group.meta, icon: feeder.science },
     { title: 'Archaeological Science', author: 'Cele Wolman', type: types.logic, group: group.cut },
     { title: 'X-Ray Crystallography', author: 'Colin Robertson', type: types.construction, group: group.cut },
     { title: 'Mathematics', author: 'David Garber', type: types.word, group: group.cut },
