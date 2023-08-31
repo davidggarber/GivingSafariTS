@@ -10,21 +10,398 @@
         'title': 'Weird Science',
         'author': 'Martyn Lovell',
         'copyright': '2020',
-        'type': 'meta',
+        'feeder': 'Science',
         'textInput': true,
         'abilities': {
-        }
+          'stamping': true
+        },
+        'preSetup': makeStampables
       };
+      function makeStampables() {
+        const xmlns = 'http://www.w3.org/2000/svg';
+        var subgrids = document.getElementsByClassName('subgrid');
+        for (var i = 0; i < subgrids.length; i++) {
+          var subgrid = subgrids[i];
+          for (var y = 0; y < 5; y++) {
+            for (var x = 0; x < 5; x++) {
+              var fo = document.createElementNS(xmlns, 'foreignObject');
+              fo.setAttributeNS(null, 'x', x * 24);
+              fo.setAttributeNS(null, 'y', y * 24);
+              fo.setAttributeNS(null, 'draggable', false);
+              fo.classList.add('stampable');
+              subgrid.appendChild(fo);
+            }
+          }
+        }
+      }
     </script>
     <style>
+      #WeirdScience #icons {
+        top: -0.25in;
+      }
+      #WeirdScience #icons img {
+        box-shadow: none;
+      }
+      .flavor {
+        margin: 0px 0px 12px 0px;
+      }
+      #conclusions {
+        border: solid 2px black;
+        border-spacing: 0px;
+        margin-left: 0.2in;
+      }
+      #conclusions th {
+        text-align: left;
+        padding-left: 6px;
+        padding-right: 20px;
+        vertical-align: top;
+        border-right: solid 1px black;
+        border-bottom: solid 1px black;
+      }
+      #conclusions td {
+        position: relative;
+        text-align: left;
+        padding-left: 6px;
+        padding-right: 6px;
+        vertical-align: middle;
+        border-right: solid 1px black;
+        border-bottom: solid 1px black;
+      }
+      .extraction_info {
+        font-size: 8pt;
+      }
+      .extraction_info .red {
+        color: red;
+      }
+      #conclusions .word-input {
+        padding: 6px 0px 6px 0px;
+      }
+      #conclusions .goals .word-input {
+        padding: 0px;
+      }
+      #final {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        left: 0px;
+        text-align: center;
+      }
+      .extractions td {
+        text-transform: capitalize;
+        border-bottom: solid 1px black;
+        color: blue;
+        font-family: 'Kalam', cursive;
+        font-size: 16pt;
+        width: 1em;
+      }
+      .labels td {
+        color: red;
+        font-size: 8pt;
+      }
+      #grid {
+        margin-left: 0.75in;
+      }
+      #grid .line {
+        fill: none;
+        stroke: black;
+        stroke-width: 1px;
+      }
+      #grid .thick {
+        fill: none;
+        stroke: black;
+        stroke-width: 2px;
+      }
+      #grid .group {
+        font-weight: bold;
+        text-anchor: middle;
+      }
+      #grid .vertical {
+        transform: rotate(-90deg);
+      }
+      #grid .row.label {
+        text-anchor: middle;
+      }
+      #grid .column.label {
+        transform: rotate(-90deg);
+        font-size: 9pt;
+      }
+      #grid foreignObject {
+        width: 24px;
+        height: 24px;
+      }
+      #WeirdScience .stampTool {
+        width: 64px;
+        height: 64px;
+      }
+      .stampTool div.stampIcon {
+        position: relative;
+        width: 64px;
+        height: 64px;
+      }
+      .stampTool div.stampIcon img {
+        position: absolute;
+        left: 8px;
+        bottom: 8px;
+      }
+      #grid text {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .stampedObject {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
     </style>
   </head>
   <body id="WeirdScience">
     <div id="pageBody">
       <p class="flavor">
-        Hello!
+        This puzzle is a metapuzzle. The input comes from 4 other puzzles. When you solve them, you will be given facts for this puzzle. 
+      </p>
+      <p class="flavor">
+        We&lsquo;re planning next year&lsquo;s research. we tried to use our home computer to create a science research budget from nothing.
+        Can you help us reconstruct the plan? Each researcher only works at one lab, and only uses one research approach, but each is simultaneously researching two goals.
       </p>
 
+      <svg id="grid" width="562" height="512" ondragstart="return false;" ondrop="return false;">
+        <g transform="translate(200,0)">
+          <g transform="translate(60,16)">
+            <text class="group">Laboratory</text>
+          </g>
+          <g transform="translate(16,145)">
+            <text class="column label">Beijing, China</text>
+          </g>
+          <g transform="translate(40,145)">
+            <text class="column label">Bengaluru, India</text>
+          </g>
+          <g transform="translate(64,145)">
+            <text class="column label">Nairobi, Kenya</text>
+          </g>
+          <g transform="translate(88,145)">
+            <text class="column label">Oxford, England</text>
+          </g>
+          <g transform="translate(112,145)">
+            <text class="column label">Stanford, USA</text>
+          </g>
+          <path class="line" d="M24,24 v486 M48,24 v486 M72,24 v486 M96,24 v486"></path>
+          <path class="thick" d="M0,0 v510 M120,0 v510"></path>
+        </g>
+        <g transform="translate(320,0)">
+          <g transform="translate(60,16)">
+            <text class="group">Research Goal</text>
+          </g>
+          <g transform="translate(16,145)">
+            <text class="column label">Cold Fusion</text>
+          </g>
+          <g transform="translate(40,145)">
+            <text class="column label">Flux Capacity</text>
+          </g>
+          <g transform="translate(64,145)">
+            <text class="column label">Generalised AI</text>
+          </g>
+          <g transform="translate(88,145)">
+            <text class="column label">Genetic Devolution</text>
+          </g>
+          <g transform="translate(112,145)">
+            <text class="column label">Quantum Filament</text>
+          </g>
+          <path class="line" d="M24,24 v366 M48,24 v366 M72,24 v366 M96,24 v366"></path>
+          <path class="thick" d="M0,0 v390 M120,0 v390"></path>
+        </g>
+        <g transform="translate(440,0)">
+          <g transform="translate(60,16)">
+            <text class="group">Approach</text>
+          </g>
+          <g transform="translate(16,145)">
+            <text class="column label">Artificial Gravity</text>
+          </g>
+          <g transform="translate(40,145)">
+            <text class="column label">Mind Meld</text>
+          </g>
+          <g transform="translate(64,145)">
+            <text class="column label">Pea Hacking</text>
+          </g>
+          <g transform="translate(88,145)">
+            <text class="column label">Reverse Polarity</text>
+          </g>
+          <g transform="translate(112,145)">
+            <text class="column label">Transcend Existence</text>
+          </g>
+          <path class="line" d="M24,24 v246 M48,24 v246 M72,24 v246 M96,24 v246"></path>
+          <path class="thick" d="M0,0 v270 M120,0 v270"></path>
+        </g>
+  
+        <g transform="translate(0,150)">
+          <g transform="translate(20,60)">
+            <text class="group vertical">Scientists</text>
+          </g>
+          <text x="110" y="20" class="row label">Dr Alpha</text>
+          <text x="110" y="43" class="row label">Dr Beta</text>
+          <text x="110" y="66" class="row label">Dr Gamma</text>
+          <text x="110" y="89" class="row label">Dr Delta</text>
+          <text x="110" y="112" class="row label">Dr Epsilon</text>
+          <path class="line" d="M30,96 h530 M30,72 h530 M30,48 h530 M30,24 h530"></path>
+          <path class="thick" d="M1,0 h560 M1,120 h560"></path>
+        </g>
+        <g transform="translate(0,270)">
+          <g transform="translate(20,60)">
+            <text class="group vertical">Approach</text>
+          </g>
+          <text x="110" y="20" class="row label">Artificial Gravity</text>
+          <text x="110" y="43" class="row label">Mind Meld</text>
+          <text x="110" y="66" class="row label">Pea Hacking</text>
+          <text x="110" y="89" class="row label">Reverse Polarity</text>
+          <text x="110" y="112" class="row label">Transcend Existence</text>
+          <path class="line" d="M30,96 h410 M30,72 h410 M30,48 h410 M30,24 h410"></path>
+          <path class="thick" d="M1,120 h440"></path>
+        </g>
+        <g transform="translate(0,390)">
+          <g transform="translate(20,60)">
+            <text class="group vertical">Research Goal</text>
+          </g>
+          <text x="110" y="20" class="row label">Cold Fusion</text>
+          <text x="110" y="43" class="row label">Flux Capacity</text>
+          <text x="110" y="66" class="row label">Generalised AI</text>
+          <text x="110" y="89" class="row label">Genetic Devolution</text>
+          <text x="110" y="112" class="row label">Quantum Filament</text>
+          <path class="line" d="M30,96 h290 M30,72 h290 M30,48 h290 M30,24 h290"></path>
+          <path class="thick" d="M1,120 h320"></path>
+        </g>
+        <g class="subgrid" transform="translate(200, 150)"></g>
+        <g class="subgrid" transform="translate(320, 150)"></g>
+        <g class="subgrid" transform="translate(440, 150)"></g>
+        <g class="subgrid" transform="translate(200, 270)"></g>
+        <g class="subgrid" transform="translate(320, 270)"></g>
+        <g class="subgrid" transform="translate(200, 390)"></g>
+        <path class="thick" d="M1,1 v510 M30,150 v360 M1,1 h560 M200,24 h360"></path>
+      </svg>
+
+      <div id="stampPalette" data-tool-count="5" data-tool-erase="erase-stamp" style="position: absolute; right:0in; top: 5.25in;">
+        <p style="padding-left: 24px; margin:0px;">&#x2712;&#xfe0f; Logic tools:</p>
+        <div class="stampTool" data-template-id="check-stamp" data-click-modifier="ctrl" title="ctrl + stamp" style="display:inline-block; ">
+          <div class="stampIcon"><img src="../Css/Check.png" style="width: 48px;"></div>
+        </div>
+        <div class="stampTool" data-template-id="x-stamp" data-click-modifier="shift" title="shift + stamp" style="display:inline-block; ">
+          <div class="stampIcon"><img src="../Css/X.png" style="width: 48px;"></div>
+        </div>
+        <div class="stampTool" data-template-id="erase-stamp" style="display:inline-block; ">
+          <div class="stampIcon"></div>
+        </div>
+      </div>
+      <div class="stampToolTemplates" id="drawTool1">
+        <template id="check-stamp">
+          <img src="../Css/Check.png" style="width: 24px;" class="stampedObject" data-template-id="check-stamp" data-next-template-id="x-stamp">
+        </template>
+        <template id="x-stamp">
+          <img src="../Css/X.png" style="width: 24px;" class="stampedObject" data-template-id="x-stamp" data-next-template-id="erase-stamp">
+        </template>
+      </div>  
+
+
+      <table id="conclusions" data-word-style="none">
+        <tr>
+          <th>Scientist</th>
+          <th>Laboratory</th>
+          <th>Research Goals</th>
+          <th>Approach</th>
+        </tr>
+        <tr>
+          <th>Dr Alpha</th>
+          <td><span class="word-cell" data-extract-index="1" data-extracted-id="H"></span><span class="extraction_info">(1:<span class="red">H</span>)</span></td>
+          <td class="goals">
+            <span class="word-cell" data-extract-index="2" data-extracted-id="C"></span><span class="extraction_info">(2:<span class="red">C</span>)</span>
+            <br>
+            <span class="word-cell" data-extract-index=""></span>
+          </td>
+          <td><span class="word-cell" data-extract-index="5" data-extracted-id="O"></span><span class="extraction_info">(5:<span class="red">O</span>)</span></td>
+        </tr>
+        <tr>
+          <th>Dr Beta</th>
+          <td><span class="word-cell" data-extract-index="2" data-extracted-id="D"></span><span class="extraction_info">(2:<span class="red">D</span>)</span></td>
+          <td class="goals">
+            <span class="word-cell" data-extract-index=""></span>
+            <br>
+            <span class="word-cell" data-extract-index="2" data-extracted-id="B"></span><span class="extraction_info">(2:<span class="red">B</span>)
+          </td>
+          <td><span class="word-cell" data-extract-index="5" data-extracted-id="O"></span><span class="extraction_info">(5:<span class="red">O</span>)</span></td>
+        </tr>
+        <tr>
+          <th>Dr Gamma</th>
+          <td><span class="word-cell" data-extract-index="2" data-extracted-id="J"></span><span class="extraction_info">(2:<span class="red">J</span>)</span></td>
+          <td class="goals">
+            <span class="word-cell" data-extract-index="2" data-extracted-id="M"></span><span class="extraction_info">(2:<span class="red">M</span>)
+            <br>
+            <span class="word-cell" data-extract-index=""></span>
+          </td>
+          <td><span class="word-cell" data-extract-index="1" data-extracted-id="A"></span><span class="extraction_info">(1:<span class="red">A</span>)</span></td>
+        </tr>
+        <tr>
+          <th>Dr Delta</th>
+          <td><span class="word-cell" data-extract-index="3" data-extracted-id="E"></span><span class="extraction_info">(3:<span class="red">E</span>)</span></td>
+          <td class="goals">
+            <span class="word-cell" data-extract-index=""></span>
+            <br>
+            <span class="word-cell" data-extract-index="9" data-extracted-id="K"></span><span class="extraction_info">(9:<span class="red">K</span>)
+          </td>
+          <td><span class="word-cell" data-extract-index="2" data-extracted-id="N"></span><span class="extraction_info">(2:<span class="red">N</span>)</span></td>
+        </tr>
+        <tr>
+          <th>Dr Epsilon</th>
+          <td><span class="word-cell" data-extract-index="4" data-extracted-id="G"></span><span class="extraction_info">(4:<span class="red">G</span>)</span></td>
+          <td class="goals">
+            <span class="word-cell" data-extract-index=""></span>
+            <br>
+            <span class="word-cell" data-extract-index="7" data-extracted-id="I"></span><span class="extraction_info">(7:<span class="red">I</span>)
+          </td>
+          <td><span class="word-cell" data-extract-index="1" data-extracted-id="F"></span><span class="extraction_info">(1:<span class="red">F</span>)</span></td>
+        </tr>
+      </table>
+
+      <p class="flavor">
+        Extract indicated letters. Research goals are always listed in alphabetical order within their scientist row.
+      </p>
+      <div id="final">
+        <table style="display:inline-block;">
+          <tr class="extractions">
+            <td id="extracted-A"></td>
+            <td id="extracted-B"></td>
+            <td id="extracted-C"></td>
+            <td id="extracted-D"></td>
+            <td id="extracted-E"></td>
+            <td id="extracted-F"></td>
+            <td id="extracted-G"></td>
+            <td id="extracted-H"></td>
+            <td id="extracted-I"></td>
+            <td id="extracted-J"></td>
+            <td id="extracted-K"></td>
+            <td id="extracted-L"></td>
+            <td id="extracted-M"></td>
+            <td id="extracted-N"></td>
+            <td id="extracted-O"></td>
+          </tr>
+          <tr class="labels">
+            <td>A</td>
+            <td>B</td>
+            <td>C</td>
+            <td>D</td>
+            <td>E</td>
+            <td>F</td>
+            <td>G</td>
+            <td>H</td>
+            <td>I</td>
+            <td>J</td>
+            <td>K</td>
+            <td>L</td>
+            <td>M</td>
+            <td>N</td>
+            <td>O</td>
+          </tr>
+        </table>
+      </div>
 
     </div>
   </body>

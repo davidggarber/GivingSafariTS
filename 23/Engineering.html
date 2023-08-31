@@ -151,6 +151,12 @@
         height: 48px;
         margin-top: 6px;
       }
+      .stampedObject {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
     </style>
   </head>
   <body id="Engineering">
@@ -171,7 +177,7 @@
         <img src="Images/Eng/example.png">
       </div>
 
-      <svg width="720" height="720">
+      <svg width="720" height="720" ondragstart="return false;" ondrop="return false;">
         <g id="grid-root">
           <g transform="translate(30, 115)">
             <text class="exit">A</text>

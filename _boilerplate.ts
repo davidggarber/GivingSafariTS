@@ -157,6 +157,7 @@ type BoilerPlateData = {
     author: string;
     copyright: string;
     type: string;  // todo: enum
+    feeder?: string;
     lang?: string;  // en-us by default
     paperSize?: string;  // letter by default
     orientation?: string;  // portrait by default
@@ -249,15 +250,19 @@ const iconTypeAltText = {
 /**
  * Create an icon appropriate for this puzzle type
  * @param puzzleType the name of the puzzle type
+ * @param icon_use the purpose of the icon
  * @returns A div element, to be appended to the pageWithinMargins
  */
-function createTypeIcon(puzzleType:string):HTMLDivElement {
+function createTypeIcon(puzzleType:string, icon_use:string=''):HTMLDivElement {
+    if (!icon_use) {
+        icon_use = 'puzzle';
+    }
     const iconDiv = document.createElement('div');
-    iconDiv.id = 'icons';    
+    iconDiv.id = 'icons';
     const icon = document.createElement('img');
     icon.id = 'icons-' + iconDiv.childNodes.length;
     icon.src = './Icons/' + puzzleType + '.png';
-    icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' puzzle');
+    icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' ' + icon_use);
     iconDiv.appendChild(icon);
     return iconDiv;
 }
@@ -368,6 +373,9 @@ function boilerplate(bp: BoilerPlateData) {
 
     if (bp.type) {
         margins.appendChild(createTypeIcon(bp.type));
+    }
+    if (bp.feeder) {
+        margins.appendChild(createTypeIcon(bp.feeder, 'feeder'));
     }
 
     // If the puzzle has a pre-setup method they'd like to run before abilities and contents are processed, do so now
