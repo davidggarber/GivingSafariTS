@@ -15,6 +15,21 @@
         'abilities': {
         }
       };
+
+      function toggleFeeder(id, btn) {
+        var img = document.getElementById(id);
+        if (img.src != '') {
+          var showing = img.classList.contains('show');
+          if (showing) {
+            img.classList.remove('show');
+            btn.classList.remove('on');
+          }
+          else {
+            img.classList.add('show');
+            btn.classList.add('on');
+          }
+        }
+      }
     </script>
     <style>
       #TheMagicSchoolBus #icons {
@@ -34,13 +49,23 @@
       }
       #overlays {
         position: relative;
+        height: 6in;
       }
       .feeder {
         position: absolute;
         left: 0px;
         top: 0px;
         width: 7.5in;
+        opacity: 5%;
       }
+      .feeder.show {
+        opacity: 100%;
+      }
+      .toggle.on {
+        border-color: greenyellow;
+        background-color: #c6e893;
+      }
+
     </style>
   </head>
   <body id="TheMagicSchoolBus">
@@ -54,11 +79,24 @@
       <img id="frizzle" src="Images/Bus/Frizzle.gif">
 
       <div id="overlays">
-        <img class="feeder" src="Images/Bus/bumper.png">
-        <img class="feeder" src="Images/Bus/door.png">
-        <img class="feeder" src="Images/Bus/fins.png">
-        <img class="feeder" src="Images/Bus/tire.png">
+        <img id="f1" class="feeder" src="Images/Bus/bumper.png">
+        <img id="f2" class="feeder" src="Images/Bus/door.png">
+        <img id="f3" class="feeder" src="Images/Bus/fins.png">
+        <img id="f4" class="feeder" src="Images/Bus/tire.png">
       </div>
+
+      <div style="text-align: center;">
+        <button class="toggle" onclick="toggleFeeder('f1', this)">Toggle<br>layer<br>#1</button>
+        <button class="toggle" onclick="toggleFeeder('f2', this)">Toggle<br>layer<br>#2</button>
+        <button class="toggle" onclick="toggleFeeder('f3', this)">Toggle<br>layer<br>#3</button>
+        <button class="toggle" onclick="toggleFeeder('f4', this)">Toggle<br>layer<br>#4</button>
+
+        <div id="final">
+          <span class="letter-cell-block create-from-pattern" data-letter-pattern="7"></span>
+  
+        </div>
+      </div>
+
 
     </div>
   </body>
