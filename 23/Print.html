@@ -13,22 +13,22 @@
     <script src="puzzle_list.js"></script>
     <script>
       function onLoad() {
-          expandIFrames(group.portrait, 'block');
-          expandIFrames(group.landscape, 'none');
-          expandIFrames(group.meta, 'none');
-          expandIFrames(group.feeder, 'none');
+          expandIFrames(orient.portrait, 'block');
+          expandIFrames(orient.landscape, 'none');
+          //expandIFrames(group.meta, 'none');
+          //expandIFrames(group.feeder, 'none');
           switchLayout('portrait');
       }
 
-      function expandIFrames(grp, vis) {
-          var list = document.getElementById(grp + '_list');
+      function expandIFrames(ort, vis) {
+          var list = document.getElementById(ort + '_list');
           list.style.display = vis;
-          var orientation = 'print-' + ((grp == 'feeder') ? 'portrait' : grp);
-          var other = grp == 'feeder' ? grp : '';
+          var orientation = 'print-' + ort;
+          var other = ort == 'feeder' ? ort : '';
           var count = 0;
           for (var i = 0; i < puzzles.length; i++) {
               var puz = puzzles[i];
-              if (puz.group != grp) {
+              if (puz.orientation != ort) {
                 continue;
               }
 
@@ -48,19 +48,19 @@
           }
 
           if (count == 0) {
-            var btn = document.getElementById(grp+'s');
+            var btn = document.getElementById(ort+'s');
             btn.style.display = 'none';
           }
       }
 
-      function switchLayout(grp) {
+      function switchLayout(ort) {
         // Buttons and lists must be in the same order
         var buttons = document.getElementsByClassName('layout-btn');
         var lists = document.getElementsByClassName('group-list');
         for (var i = 0; i < lists.length; i++) {
           var btn = buttons[i];
           var list = lists[i];
-          if (list.id == grp + '_list') {
+          if (list.id == ort + '_list') {
             list.style.display = 'block';
             btn.classList.add('current');
             var count = list.getElementsByTagName('iframe').length;
@@ -73,15 +73,46 @@
         }
       }
 
+      function toggleThumbs(chk) {
+        var body = document.getElementById('print-view');
+        var chk = document.getElementById('thumb-check');
+        var cur = body.classList.contains('thumbnails');
+        if (cur) {
+          body.classList.remove('thumbnails');
+          chk.checked = false;
+        }
+        else {
+          body.classList.add('thumbnails');
+          chk.checked = true;
+        }
+      }
+
     </script>
+    <style>
+      .thumbnails .page {
+        display: inline-block;
+        transform: scale(10%);
+      }
+      .thumbnails .page.print-portrait {
+        width:0.85in;
+        height:1.1in;
+      }
+      .thumbnails .page.print-landscape {
+        height:0.85in;
+        width:1.1in;
+      }
+    </style>
   </head> 
   <body id="print-view" class="portrait landscape feeders" onload="onLoad()">
     <div id="layout">
       <button id="portraits" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('portrait')">Portrait</button>
       <button id="landscapes" class="layout-btn" style="width:1.1in; height: 0.85in;" onclick="switchLayout('landscape')">Landscape</button>
-      <button id="metas" class="layout-btn" style="width:1in; height: 1in;" onclick="switchLayout('meta')">Meta Puzzles</button>  
-      <button id="feeders" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('feeder')">Meta Feeders</button>  
-      <a href="indexx.html" style="color:cornflowerblue">Puzzle index</a>
+      <div style="display:inline-block; width:0.8in; height:0.8in; color:white; text-align: center; cursor: default;" onclick="toggleThumbs()"><input id="thumb-check" type="checkbox" value="thumbnails"><br>Thumbnails</div>
+      <!--
+        <button id="metas" class="layout-btn" style="width:1in; height: 1in;" onclick="switchLayout('meta')">Meta Puzzles</button>  
+        <button id="feeders" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('feeder')">Meta Feeders</button>  
+      -->
+      <a href="indexx.html" style="color:cornflowerblue; margin-left: 1in;">Puzzle index</a>
       <p style="color:wheat; background-color: dark-gray;">
         When printing. Make sure margins are set to NONE, and background graphics is checked.
         <br>There may be an extra blank page. Recommend printing explicitly pages 1-<span id="page-count">21</span>.
@@ -89,7 +120,7 @@
     </div>
     <div id="portrait_list" class="group-list"></div>
     <div id="landscape_list" class="group-list"></div>
-    <div id="meta_list" class="group-list"></div>
-    <div id="feeder_list" class="group-list"></div>
+    <div id="meta_list" class="x-group-list"></div>
+    <div id="feeder_list" class="x-group-list"></div>
   </body>
 </html>
