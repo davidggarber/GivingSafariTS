@@ -1,12 +1,12 @@
 var types = {
-    word: { icon: 'Word', alt: 'Word puzzle' },
-    logic: { icon: 'Logic', alt: 'Logic puzzle' },
-    math: { icon: 'Math', alt: 'Math puzzle' },
-    rebus: { icon: 'Rebus', alt: 'Rebus puzzle' },
-    trivia: { icon: 'Trivia', alt: 'Trivia puzzle' },
-    code: { icon: 'Code', alt: 'Encoded puzzle' },
-    construction: { icon: 'Construction', alt: 'Construction puzzle' },
-    meta: { icon: 'Meta', alt: 'Meta-puzzle' },
+    word: { icon: 'word', alt: 'Word puzzle' },
+    logic: { icon: 'logic', alt: 'Logic puzzle' },
+    math: { icon: 'math', alt: 'Math puzzle' },
+    rebus: { icon: 'rebus', alt: 'Rebus puzzle' },
+    trivia: { icon: 'trivia', alt: 'Trivia puzzle' },
+    code: { icon: 'code', alt: 'Encoded puzzle' },
+    construction: { icon: 'construction', alt: 'Construction puzzle' },
+    meta: { icon: 'meta', alt: 'Meta-puzzle' },
 };
 var group = {
     puzzle: 'puzzle',
@@ -21,8 +21,8 @@ var orient = {
     landscape: 'landscape',
 };
 var feeder = {
-    science: 'Science',
-    bus: 'Bus',
+    science: 'science',
+    bus: 'bus',
 }
 
 var puzzles = [

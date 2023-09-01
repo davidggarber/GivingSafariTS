@@ -261,7 +261,7 @@ function createTypeIcon(puzzleType:string, icon_use:string=''):HTMLDivElement {
     iconDiv.id = 'icons';
     const icon = document.createElement('img');
     icon.id = 'icons-' + iconDiv.childNodes.length;
-    icon.src = './Icons/' + puzzleType + '.png';
+    icon.src = './Icons/' + puzzleType.toLocaleLowerCase() + '.png';
     icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' ' + icon_use);
     iconDiv.appendChild(icon);
     return iconDiv;
