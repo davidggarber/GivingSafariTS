@@ -106,7 +106,7 @@
             var metas = document.getElementById('meta_list');
             for (var i = 0; i < puzzles.length; i++) {
                 var puz = puzzles[i];
-                if (!puz.group == group.cut) {
+                if (puz.group == group.cut) {
                     continue;
                 }
 
@@ -157,6 +157,9 @@
             var order = [];
             for (var i = rows.length - 1; i >= 0; i--) {
                 var row = rows[i];
+                if (row.parentNode != tbody) {
+                    continue;
+                }
                 var cols = row.getElementsByTagName('td');
                 var cell = cols[col - 1];
                 var prevOrder = String(i).padStart(2, '0');
@@ -255,7 +258,7 @@
         </tr>
         <tr>
             <td style="height: 0.3in;">Printing <span style="text-shadow: 0 0 10px yellow;">&#x1f5a8;&#xfe0f;</span></td>
-            <td style="line-height:normal;"><b>Import steps to print</b>
+            <td style="line-height:normal;"><b>Important steps to print</b>
                 <br>Puzzles printed from this site require two settings to render correctly.
                 <br>&nbsp; &bullet; &nbsp; Margins = None
                 <br>&nbsp; &bullet; &nbsp; Background graphics = checked
