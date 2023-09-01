@@ -2114,6 +2114,10 @@ function findNextInput( start: Element,
     }
     const discoverRoot = findParentOfClass(start, 'letter-grid-discover');
     if (discoverRoot != null) {
+        find = findNextDiscover(discoverRoot, start, dx, dy, cls, clsSkip) as HTMLInputElement|null;
+        if (find != null) {
+            return find;
+        }
         find = findNextByPosition(discoverRoot, start, dx, dy, cls, clsSkip);
         if (find != null) {
             return find;
@@ -2302,6 +2306,139 @@ function findNextByPosition(root: Element,
     return nearest != null ? nearest : wrap;
 }
 
+/**
+ * Smallest rectangle that bounds both inputs
+ */
+function union(rect1:DOMRect, rect2:DOMRect) :DOMRect {
+    const left = Math.min(rect1.left, rect2.left);
+    const right = Math.max(rect1.right, rect2.right);
+    const top = Math.min(rect1.top, rect2.top);
+    const bottom = Math.max(rect1.bottom, rect2.bottom);
+    return new DOMRect(left, top, right - left, bottom - top);
+  }
+
+/**
+ * Distort a distance by a sympathetic factor
+ * @param delta An actual distance (either horizontal or vertical)
+ * @param bias A desired direction of travel, within that axis
+ * @returns Shrinks delta, when it aligns with bias, stretches when orthogonal, and -1 when in the wrong direction
+ */
+function bias(delta:number, bias:number) {
+    if (bias != 0) {
+        if (delta * bias > 0) {
+            return Math.abs(delta * 0.8);  // sympathetic bias shrinks distance
+        }
+        else {
+            return -1;  // anti-bias invalidates distance
+        }
+    }
+    return Math.abs(delta) * 1.2;  // orthogonal bias stretches distance
+}
+
+/**
+ * Measure the distance from one point to another, given a biased travel direction
+ * @param from the starting point
+ * @param toward the destination point
+ * @param bx the desired x movement
+ * @param by the desired y movement
+ * @returns a skewed distance, where some objects seem nearer and some farther.
+ * A negative distance indicates an object in the wrong direction.
+ */
+function biasedDistance(from:DOMPoint, toward:DOMPoint, bx:number, by:number) :number {
+    let dx = bias(toward.x - from.x, bx);
+    let dy = bias(toward.y - from.y, by);
+    if (dx < 0 || dy < 0) {
+        return -1;  // Invalid target
+    }
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
+ * When moving off the edge of a world, what is a position on the far side, where we might resume?
+ * @param world the boundary rectangle of the world
+ * @param pos the starting point
+ * @param dx the movement of x travel
+ * @param dy the movement of y travel
+ * @returns A position aligned with pos, but on the side away from dx,dy
+ */
+function wrapAround(world:DOMRect, pos:DOMPoint, dx:number, dy:number) :DOMPoint {
+    if (dx > 0) {  // wrap around right to far left
+        return new DOMPoint(world.left - dx, pos.y);
+    }
+    if (dx < 0) {  // wrap around left to far right
+        return new DOMPoint(world.right - dx, pos.y);
+    }
+    if (dy > 0) {  // wrap around bottom to far top
+        return new DOMPoint(pos.x, world.top - dy);
+    }
+    if (dy < 0) {  // wrap around top to far bottom
+        return new DOMPoint(pos.x, world.bottom - dy);
+    }
+    return pos;
+}
+
+/**
+ * Find the input that the user likely means when navigating through a jumbled 2d grid
+ * @param root - The root ancestor of the entire grid
+ * @param start - The current input
+ * @param dx - A horizontal direction to look
+ * @param dy - A vertical direction to look
+ * @param cls - a class to look for
+ * @param clsSkip - a class to skip
+ * @returns Another input within the grid
+ */
+function findNextDiscover(root: Element,
+                            start: Element, 
+                            dx: number, 
+                            dy: number, 
+                            cls: string, 
+                            clsSkip: string|undefined)
+                            : HTMLElement|null {
+    let rect = start.getBoundingClientRect();
+    let bounds = rect;
+    let pos = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    const elements = document.getElementsByClassName(cls);
+    let distance = -1;
+    let nearest:HTMLElement|null = null;
+    for (let i = 0; i < elements.length; i++) {
+        const elmt = elements[i] as HTMLElement;
+        if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
+            continue;
+        }
+        if (root != null && root != findParentOfClass(elmt, 'letter-grid-discover')) {
+            continue;
+        }
+        rect = elmt.getBoundingClientRect();
+        bounds = union(bounds, rect);
+        let center = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        let d2 = biasedDistance(pos, center, dx, dy);
+        if (d2 > 0 && (nearest == null || d2 < distance)) {
+            nearest = elmt;
+            distance = d2;
+        }
+    }
+    if (nearest == null) {
+        // Wrap around
+        pos = wrapAround(bounds, pos, dx, dy);
+        for (let i = 0; i < elements.length; i++) {
+            const elmt = elements[i] as HTMLElement;
+            if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
+                continue;
+            }
+            if (root != null && root != findParentOfClass(elmt, 'letter-grid-discover')) {
+                continue;
+            }
+            rect = elmt.getBoundingClientRect();
+            let center = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+            let d2 = biasedDistance(pos, center, dx, dy);
+            if (d2 > 0 && (nearest == null || d2 < distance)) {
+                nearest = elmt;
+                distance = d2;
+            }
+        }
+    }
+    return nearest;
+}
 
 /*-----------------------------------------------------------
  * _textSetup.ts

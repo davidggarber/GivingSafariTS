@@ -14,7 +14,8 @@
         'textInput': true,
         'abilities': {
           'checkMarks': true,
-          'subway': true
+          'subway': true,
+          'notes': true
         }
       };
     </script>
@@ -27,7 +28,7 @@
       }
       .clue {
         position: relative;
-        width: 1.05in;
+        width: 1in;
         height: 1.2in;
         text-align: center;
         -webkit-user-select: none;
@@ -39,6 +40,12 @@
         top: 0.25in;
         left: 0px;
       }
+      .clue .note-input.note-below {
+        bottom: -12px;
+        width: 60%;
+        left: 20%;
+        height: 1.9ex;
+      }
       .tall {
         height: 0.9in;
       }
@@ -49,15 +56,22 @@
         position: absolute;
         top: 0.75in;
         right: -24px;
-        width: 3in;
+        width: 3.4in;
       }
       .row-space {
         position: relative;
         height:0.3in;
       }
-      #Zoology .letter-grid,.literal-gridgap {
-        width: 2.8ex;
-        height: 2.8ex;
+      #Zoology .letter-cell {
+        font-size: 14pt;
+      }
+      #Zoology .letter-grid {
+        width: 2.4ex;
+        height: 2.4ex;
+      }
+      #Zoology .literal-gridgap {
+        width: 2ex;
+        height: 2.4ex;
       }
       #extracted {
         position: absolute;
@@ -72,108 +86,108 @@
       <table id="table">
         <tr>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/a1.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/a1.png"></div>
           </td>
           <td class="gap">&nbsp;</td>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="tall" src="Images/Zoo/c1.png"></div>
+            <div class="cross-off notes-below"><img class="tall" src="Images/Zoo/c1.png"></div>
           </td>
           <td class="gap">&nbsp;</td>
         </tr>
         <tr>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/b1.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/b1.png"></div>
           </td>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/d1.png"></div>
-          </td>
-        </tr>
-        <tr>
-          <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="tall" src="Images/Zoo/a2.png"></div>
-          </td>
-          <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="tall" src="Images/Zoo/c2.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/d1.png"></div>
           </td>
         </tr>
         <tr>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/b2.png"></div>
+            <div class="cross-off notes-below"><img class="tall" src="Images/Zoo/a2.png"></div>
           </td>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/d2.png"></div>
-          </td>
-        </tr>
-        <tr>
-          <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/a3.png"></div>
-          </td>
-          <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/c3.png"></div>
+            <div class="cross-off notes-below"><img class="tall" src="Images/Zoo/c2.png"></div>
           </td>
         </tr>
         <tr>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/b3.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/b2.png"></div>
           </td>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/d3.png"></div>
-          </td>
-        </tr>
-        <tr>
-          <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/a4.png"></div>
-          </td>
-          <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="tall" src="Images/Zoo/c4.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/d2.png"></div>
           </td>
         </tr>
         <tr>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/b4.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/a3.png"></div>
           </td>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="tall" src="Images/Zoo/d4.png"></div>
-          </td>
-        </tr>
-        <tr>
-          <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/a5.png"></div>
-          </td>
-          <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/c5.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/c3.png"></div>
           </td>
         </tr>
         <tr>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/b5.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/b3.png"></div>
           </td>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="tall" src="Images/Zoo/d5.png"></div>
-          </td>
-        </tr>
-        <tr>
-          <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="tall" src="Images/Zoo/a6.png"></div>
-          </td>
-          <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/c6.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/d3.png"></div>
           </td>
         </tr>
         <tr>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="tall" src="Images/Zoo/b6.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/a4.png"></div>
           </td>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="wide" src="Images/Zoo/d6.png"></div>
+            <div class="cross-off notes-below"><img class="tall" src="Images/Zoo/c4.png"></div>
           </td>
         </tr>
         <tr>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="tall" src="Images/Zoo/a7.png"></div>
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/b4.png"></div>
           </td>
           <td class="clue" rowspan="2">
-            <div class="cross-off"><img class="tall" src="Images/Zoo/c7.png"></div>
+            <div class="cross-off notes-below"><img class="tall" src="Images/Zoo/d4.png"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="clue" rowspan="2">
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/a5.png"></div>
+          </td>
+          <td class="clue" rowspan="2">
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/c5.png"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="clue" rowspan="2">
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/b5.png"></div>
+          </td>
+          <td class="clue" rowspan="2">
+            <div class="cross-off notes-below"><img class="tall" src="Images/Zoo/d5.png"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="clue" rowspan="2">
+            <div class="cross-off notes-below"><img class="tall" src="Images/Zoo/a6.png"></div>
+          </td>
+          <td class="clue" rowspan="2">
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/c6.png"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="clue" rowspan="2">
+            <div class="cross-off notes-below"><img class="tall" src="Images/Zoo/b6.png"></div>
+          </td>
+          <td class="clue" rowspan="2">
+            <div class="cross-off notes-below"><img class="wide" src="Images/Zoo/d6.png"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="clue" rowspan="2">
+            <div class="cross-off notes-below"><img class="tall" src="Images/Zoo/a7.png"></div>
+          </td>
+          <td class="clue" rowspan="2">
+            <div class="cross-off notes-below"><img class="tall" src="Images/Zoo/c7.png"></div>
           </td>
         </tr>
         <tr>
