@@ -55,12 +55,14 @@
       }
 
       function buildClueCards(index, materials) {
+        var group = document.getElementById('cg' + index);
+        var flask = document.getElementById('flask' + index);
         var card0 = document.getElementById('clue' + (2 * index - 2));
         var card1 = document.getElementById('clue' + (2 * index - 1));
-        card0.classList.remove('blank');
-        card1.classList.remove('blank');
+        group.classList.remove('blank');
         card0.innerHTML = materials[0];
         card1.innerHTML = materials[1];
+        flask.src = 'Images/Science/green_flask.png';
       }
 
     </script>
@@ -218,7 +220,7 @@
         font-size: 14pt;
         text-align: center;
       }
-      #materials .blank {
+      #materials .blank .clue {
         font-size: 36pt;
       }
       .clue-group {
@@ -240,8 +242,11 @@
         position: absolute;
         left: 3.15in;
         top: 0.95in;
-        color: pink;
+        color: #29FF89;
         font-size: 12pt;
+      }
+      .clue-group.blank sub {
+        color: black;
       }
     </style>
   </head>
@@ -493,30 +498,30 @@
 
       <div id="materials">
         <p>Unlocked facts:</p>
-        <div class="clue-group">
-          <div id="clue0" class="clue blank">?</div>
-          <div id="clue1" class="clue blank">?</div>  
-          <img src="Icons/flask.png"><sub>1</sub>
+        <div id="cg1" class="clue-group blank">
+          <div id="clue0" class="clue">?</div>
+          <div id="clue1" class="clue">?</div>  
+          <img id="flask1" src="Images/Science/empty_flask.png"><sub>1</sub>
         </div>
-        <div class="clue-group">
-          <div id="clue2" class="clue blank">?</div>
-          <div id="clue3" class="clue blank">?</div>  
-          <img src="Icons/flask.png"><sub>2</sub>
+        <div id="cg2" class="clue-group blank">
+          <div id="clue2" class="clue">?</div>
+          <div id="clue3" class="clue">?</div>  
+          <img id="flask2" src="Images/Science/empty_flask.png"><sub>2</sub>
         </div>
-        <div class="clue-group">
-          <div id="clue4" class="clue blank">?</div>
-          <div id="clue5" class="clue blank">?</div>  
-          <img src="Icons/flask.png"><sub>3</sub>
+        <div id="cg3" class="clue-group blank">
+          <div id="clue4" class="clue">?</div>
+          <div id="clue5" class="clue">?</div>  
+          <img id="flask3" src="Images/Science/empty_flask.png"><sub>3</sub>
         </div>
-        <div class="clue-group">
-          <div id="clue6" class="clue blank">?</div>
-          <div id="clue7" class="clue blank">?</div>  
-          <img src="Icons/flask.png"><sub>4</sub>
+        <div id="cg4" class="clue-group blank">
+          <div id="clue6" class="clue">?</div>
+          <div id="clue7" class="clue">?</div>  
+          <img id="flask4" src="Images/Science/empty_flask.png"><sub>4</sub>
         </div>
-        <div class="clue-group">
-          <div id="clue8" class="clue blank">?</div>
-          <div id="clue9" class="clue blank">?</div>  
-          <img src="Icons/flask.png"><sub>5</sub>
+        <div id="cg5" class="clue-group blank">
+          <div id="clue8" class="clue">?</div>
+          <div id="clue9" class="clue">?</div>  
+          <img id="flask5" src="Images/Science/empty_flask.png"><sub>5</sub>
         </div>
       </div>
 
