@@ -201,6 +201,9 @@ body, p, td {
       box-shadow:0px 0px 5px orange; 
       z-index: 1;
   }
+  .print #notes-toggle {
+    display: none;
+  }
 
   .enable-notes #notes-toggle {
       box-shadow:none; 
@@ -216,9 +219,15 @@ body, p, td {
       right: 0px;
       box-shadow:0px 0px 5px fuchsia; 
   }
+  .print #decoder-toggle {
+    display: none;
+  }
 
   #backlink {
       bottom: -14pt
+  }
+  .print #backlink {
+    display: none;
   }
 
   #ability {
@@ -229,9 +238,18 @@ body, p, td {
       font-size: 14pt;
       cursor: help;
   }
-  
+  .print #ability {
+    display: none;
+  }
+
   #qr {
       display: none;
+  }
+  .print #qr {
+    display: block;
+  }
+  .thumb.print #qr {
+    display: none;
   }
 
   #decoder-frame {

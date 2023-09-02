@@ -66,6 +66,14 @@
         background-color: #c6e893;
       }
 
+      @media print {
+        #toggleButtons, #overlays {
+          display: none;
+        }
+      }
+      .print #toggleButtons, .print #overlays {
+        display: none;
+      }
     </style>
   </head>
   <body id="TheMagicSchoolBus">
@@ -85,7 +93,7 @@
         <img id="f4" class="feeder" src="Images/Bus/tire.png">
       </div>
 
-      <div style="text-align: center;">
+      <div id="toggleButtons" style="text-align: center;">
         <button class="toggle" onclick="toggleFeeder('f1', this)">Toggle<br>layer<br>#1</button>
         <button class="toggle" onclick="toggleFeeder('f2', this)">Toggle<br>layer<br>#2</button>
         <button class="toggle" onclick="toggleFeeder('f3', this)">Toggle<br>layer<br>#3</button>

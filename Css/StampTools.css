@@ -2,6 +2,9 @@
   #stampPalette {
       display: block;
   }
+  .print #stampPalette {
+    display: none;
+  }
 }
 @media print {
   #stampPalette {

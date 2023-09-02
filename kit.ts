@@ -4745,6 +4745,15 @@ export function isIFrame() {
 }
 
 /**
+ * Determines if this document's URL was tagged with ?print
+ * This is intended to as an alternative way to get a print-look, other than CSS's @media print
+ * @returns true if this page's URL contains a print argument (other than false)
+ */
+export function isPrint() {
+    return urlArgs['print'] != undefined && urlArgs['print'] !== false;
+}
+
+/**
  * Special url arg to override any cached storage. Always restarts.
  * @returns true if this page's URL contains a restart argument (other than =false)
  */
@@ -4858,9 +4867,12 @@ type BoilerPlateData = {
 function preSetup(bp:BoilerPlateData) {
     safariDetails = pastSafaris[bp.safari];
     debugSetup();
+    var bodies = document.getElementsByTagName('BODY');
     if (isIFrame()) {
-        var bodies = document.getElementsByTagName('BODY');
         bodies[0].classList.add('iframe');
+    }
+    if (isPrint()) {
+        bodies[0].classList.add('print');
     }
     if (bp.pathToRoot) {
         if (safariDetails.logo) { 
