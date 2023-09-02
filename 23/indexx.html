@@ -97,11 +97,12 @@
         }
         img.thumb {
             vertical-align: middle;
+            margin-left: 0.35in;
             max-height: 0.25in;
             max-width: 0.25in;
             border: solid 1px #ccc;
         }
-        img.thumb.big {
+        .big img.thumb {
             transform: scale(4);
             transform-origin: bottom;
             border: solid 0.5px #ddd;
@@ -144,13 +145,13 @@
                     aTitle.href = puzzleHref(puz);
                 }
                 aTitle.target = '_blank';
-                aTitle.innerText = puz.title + ' ';
+                aTitle.innerText = puz.title;
                 tdAuthor.innerText = puz.author;
                 var imgThumb = document.createElement('img');
                 imgThumb.classList.add('thumb');
                 imgThumb.src = 'Thumbs/' + puz.thumb + '.png';
-                imgThumb.onmouseover=function(e){bigThumb(e)};
-                imgThumb.onmouseout=function(e){littleThumb(e)};
+                aTitle.onmouseover=function(e){bigThumb(e)};
+                aTitle.onmouseout=function(e){littleThumb(e)};
                 aTitle.appendChild(imgThumb);
 
                 tr.appendChild(thIcon);
@@ -200,10 +201,18 @@
         }
 
         function bigThumb(evt) {
-            evt.target.classList.add('big');
+            var td = evt.target;
+            if (td.tagName != 'A') {
+                td = td.parentNode;
+            }
+            td.classList.add('big');
         }
         function littleThumb(evt) {
-            evt.target.classList.remove('big');
+            var td = evt.target;
+            if (td.tagName != 'A') {
+                td = td.parentNode;
+            }
+            td.classList.remove('big');
         }
 
     </script>
