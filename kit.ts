@@ -4766,6 +4766,7 @@ type PuzzleEventDetails = {
     puzzleList: string;
     cssRoot: string;  // path from root
     fontCss: string;  // path from root
+    googleFonts?: string;  // comma-delimeted list
     links: LinkDetails[];
 }
 
@@ -4799,6 +4800,7 @@ const safari20Details:PuzzleEventDetails = {
     'puzzleList': './indexx.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
+    'googleFonts': 'Architects+Daughter',
     'links': []
 }
 
@@ -4940,7 +4942,7 @@ function createTypeIcon(puzzleType:string, icon_use:string=''):HTMLDivElement {
     iconDiv.id = 'icons';
     const icon = document.createElement('img');
     icon.id = 'icons-' + iconDiv.childNodes.length;
-    icon.src = './Icons/' + puzzleType + '.png';
+    icon.src = './Icons/' + puzzleType.toLocaleLowerCase() + '.png';
     icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' ' + icon_use);
     iconDiv.appendChild(icon);
     return iconDiv;
@@ -5011,8 +5013,12 @@ function boilerplate(bp: BoilerPlateData) {
     if (safariDetails.fontCss) {
         linkCss(head, safariDetails.fontCss);
     }
-    if (bp.googleFonts) {
-        const fonts = bp.googleFonts.split(',');
+    let gFonts = bp.googleFonts;
+    if (safariDetails.googleFonts) {
+        gFonts = safariDetails.googleFonts + (gFonts ? (',' + gFonts) : '');
+    }
+    if (gFonts) {
+        const fonts = gFonts.split(',');
         const link = {
             'href': 'https://fonts.googleapis.com/css2?family=' + fonts.join('&family=') + '&display=swap',
             'rel': 'stylesheet'

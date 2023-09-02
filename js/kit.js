@@ -4326,6 +4326,7 @@ var safari20Details = {
     'puzzleList': './indexx.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
+    'googleFonts': 'Architects+Daughter',
     'links': []
 };
 var pastSafaris = {
@@ -4419,7 +4420,7 @@ function createTypeIcon(puzzleType, icon_use) {
     iconDiv.id = 'icons';
     var icon = document.createElement('img');
     icon.id = 'icons-' + iconDiv.childNodes.length;
-    icon.src = './Icons/' + puzzleType + '.png';
+    icon.src = './Icons/' + puzzleType.toLocaleLowerCase() + '.png';
     icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' ' + icon_use);
     iconDiv.appendChild(icon);
     return iconDiv;
@@ -4480,8 +4481,12 @@ function boilerplate(bp) {
     if (safariDetails.fontCss) {
         linkCss(head, safariDetails.fontCss);
     }
-    if (bp.googleFonts) {
-        var fonts = bp.googleFonts.split(',');
+    var gFonts = bp.googleFonts;
+    if (safariDetails.googleFonts) {
+        gFonts = safariDetails.googleFonts + (gFonts ? (',' + gFonts) : '');
+    }
+    if (gFonts) {
+        var fonts = gFonts.split(',');
         var link = {
             'href': 'https://fonts.googleapis.com/css2?family=' + fonts.join('&family=') + '&display=swap',
             'rel': 'stylesheet'
