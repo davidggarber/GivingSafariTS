@@ -11,11 +11,13 @@
         'author': 'Martyn Lovell',
         'copyright': '2020',
         'feeder': 'Science',
+        'googleFonts': 'Caveat',
         'textInput': true,
         'abilities': {
           'stamping': true
         },
-        'preSetup': makeStampables
+        'preSetup': makeStampables,
+        'postSetup': initMaterials
       };
       function makeStampables() {
         const xmlns = 'http://www.w3.org/2000/svg';
@@ -34,6 +36,33 @@
           }
         }
       }
+
+      var clues = {};
+
+      function initMaterials() {
+        if (!isIFrame()) {
+          for (var i = 1; i <= 5; i++) {
+            if (i in clues) {
+              continue;
+            }
+            var materials = loadMetaMaterials('Science', 0, i);
+            if (materials != null) {
+              clues[i] = materials;
+              buildClueCards(i, materials);
+            }
+          }
+        }
+      }
+
+      function buildClueCards(index, materials) {
+        var card0 = document.getElementById('clue' + (2 * index - 2));
+        var card1 = document.getElementById('clue' + (2 * index - 1));
+        card0.classList.remove('blank');
+        card1.classList.remove('blank');
+        card0.innerHTML = materials[0];
+        card1.innerHTML = materials[1];
+      }
+
     </script>
     <style>
       #WeirdScience #icons {
@@ -100,6 +129,10 @@
       }
       #grid {
         margin-left: 0.75in;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
       }
       #grid .line {
         fill: none;
@@ -143,6 +176,13 @@
         left: 8px;
         bottom: 8px;
       }
+      .check-mark {
+        width: 24px;
+      }
+      .x-mark {
+        width: 18px;
+        margin: 3px;
+      }
       #grid text {
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -155,15 +195,63 @@
         -ms-user-select: none;
         user-select: none;
       }
+      #materials {
+        position: absolute;
+        left: 8.25in;
+        top: -1in;
+      }
+      @media print {
+        #materials {
+          display: none;
+        }
+      }
+      .print #materials {
+        display: none;
+      }
+      #materials .clue {
+        width: 2.5in;
+        height: 0.75in;
+        margin: 0.1in;
+        padding: 0.1in;
+        background-color: beige;
+        font-family: 'Caveat';
+        font-size: 14pt;
+        text-align: center;
+      }
+      #materials .blank {
+        font-size: 36pt;
+      }
+      .clue-group {
+        position: relative;
+      }
+      .clue-group .clue:nth-child(1) {
+        transform: rotate(1.5deg);
+      }
+      .clue-group .clue:nth-child(2) {
+        transform: rotate(-1.5deg);
+      }
+      .clue-group img {
+        position: absolute;
+        left: 2.8in;
+        top: 0.4in;
+        height: 1in;
+      }
+      .clue-group sub {
+        position: absolute;
+        left: 3.15in;
+        top: 0.95in;
+        color: pink;
+        font-size: 12pt;
+      }
     </style>
   </head>
   <body id="WeirdScience">
     <div id="pageBody">
       <p class="flavor">
-        This puzzle is a metapuzzle. The input comes from 4 other puzzles. When you solve them, you will be given facts for this puzzle. 
+        This puzzle is a metapuzzle. The input comes from 5 other puzzles. When you solve them, you will be given facts for this puzzle. 
       </p>
       <p class="flavor">
-        We&lsquo;re planning next year&lsquo;s research. we tried to use our home computer to create a science research budget from nothing.
+        We&rsquo;re planning next year&rsquo;s research. we tried to use our home computer to create a science research budget from nothing.
         Can you help us reconstruct the plan? Each researcher only works at one lab, and only uses one research approach, but each is simultaneously researching two goals.
       </p>
 
@@ -294,10 +382,10 @@
       </div>
       <div class="stampToolTemplates" id="drawTool1">
         <template id="check-stamp">
-          <img src="../Css/Check.png" style="width: 24px;" class="stampedObject" data-template-id="check-stamp" data-next-template-id="x-stamp">
+          <img class="check-mark" src="../Css/Check.png" class="stampedObject" data-template-id="check-stamp" data-next-template-id="x-stamp">
         </template>
         <template id="x-stamp">
-          <img src="../Css/X.png" style="width: 24px;" class="stampedObject" data-template-id="x-stamp" data-next-template-id="erase-stamp">
+          <img class="x-mark" src="../Css/X.png" style="width: 18px; margin-left: 3px;" class="stampedObject" data-template-id="x-stamp" data-next-template-id="erase-stamp">
         </template>
       </div>  
 
@@ -325,15 +413,15 @@
           <td class="goals">
             <span class="word-cell" data-extract-index=""></span>
             <br>
-            <span class="word-cell" data-extract-index="2" data-extracted-id="B"></span><span class="extraction_info">(2:<span class="red">B</span>)
+            <span class="word-cell" data-extract-index="2" data-extracted-id="B"></span><span class="extraction_info">(2:<span class="red">B</span>)</span>
           </td>
-          <td><span class="word-cell" data-extract-index="5" data-extracted-id="O"></span><span class="extraction_info">(5:<span class="red">O</span>)</span></td>
+          <td><span class="word-cell" data-extract-index="6" data-extracted-id="L"></span><span class="extraction_info">(6:<span class="red">L</span>)</span></td>
         </tr>
         <tr>
           <th>Dr Gamma</th>
           <td><span class="word-cell" data-extract-index="2" data-extracted-id="J"></span><span class="extraction_info">(2:<span class="red">J</span>)</span></td>
           <td class="goals">
-            <span class="word-cell" data-extract-index="2" data-extracted-id="M"></span><span class="extraction_info">(2:<span class="red">M</span>)
+            <span class="word-cell" data-extract-index="2" data-extracted-id="M"></span><span class="extraction_info">(2:<span class="red">M</span>)</span>
             <br>
             <span class="word-cell" data-extract-index=""></span>
           </td>
@@ -345,7 +433,7 @@
           <td class="goals">
             <span class="word-cell" data-extract-index=""></span>
             <br>
-            <span class="word-cell" data-extract-index="9" data-extracted-id="K"></span><span class="extraction_info">(9:<span class="red">K</span>)
+            <span class="word-cell" data-extract-index="9" data-extracted-id="K"></span><span class="extraction_info">(9:<span class="red">K</span>)</span>
           </td>
           <td><span class="word-cell" data-extract-index="2" data-extracted-id="N"></span><span class="extraction_info">(2:<span class="red">N</span>)</span></td>
         </tr>
@@ -401,6 +489,35 @@
             <td>O</td>
           </tr>
         </table>
+      </div>
+
+      <div id="materials">
+        <p>Unlocked facts:</p>
+        <div class="clue-group">
+          <div id="clue0" class="clue blank">?</div>
+          <div id="clue1" class="clue blank">?</div>  
+          <img src="Icons/flask.png"><sub>1</sub>
+        </div>
+        <div class="clue-group">
+          <div id="clue2" class="clue blank">?</div>
+          <div id="clue3" class="clue blank">?</div>  
+          <img src="Icons/flask.png"><sub>2</sub>
+        </div>
+        <div class="clue-group">
+          <div id="clue4" class="clue blank">?</div>
+          <div id="clue5" class="clue blank">?</div>  
+          <img src="Icons/flask.png"><sub>3</sub>
+        </div>
+        <div class="clue-group">
+          <div id="clue6" class="clue blank">?</div>
+          <div id="clue7" class="clue blank">?</div>  
+          <img src="Icons/flask.png"><sub>4</sub>
+        </div>
+        <div class="clue-group">
+          <div id="clue8" class="clue blank">?</div>
+          <div id="clue9" class="clue blank">?</div>  
+          <img src="Icons/flask.png"><sub>5</sub>
+        </div>
       </div>
 
     </div>

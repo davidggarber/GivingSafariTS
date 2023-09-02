@@ -7,29 +7,26 @@
     <script>
       const boiler = {
         'safari': '20',
-        'title': 'The Magic School Bus -- Materials #1',
+        'title': 'Weird Science -- Forget',
         'author': '',
         'copyright': '2020',
         'type': '',
         'abilities': {
         },
-        'postSetup': unlockFeeder
+        'postSetup': forgetFeeders
       };
 
-      function unlockFeeder() {
-        saveMetaMaterials('Schoolbus', 0, 3, 'fins');
+      function forgetFeeders() {
+        for (var page = 1; page <= 5; page++) {
+          saveMetaMaterials('Science', 0, page, null);
+        }
       }
     </script>
     <style>
-      .flavor img {
-        position: relative;
-        height: 0.3in;
-        top: 0.05in;
-        margin-left: 0.1in;
-      }      
-      .layer {
-        margin-top: 1in;
+      .faded {
+        margin-top: 1.5in;
         width: 7.5in;
+        opacity: 10%;
       }
       #Materials #copyright {
         display: none;
@@ -41,10 +38,8 @@
   </head>
   <body id="Materials">
     <div id="pageBody">
-      <p class="flavor">
-        You have unlocked a layer of <a href="TheMagicSchoolBus.html">The Magic School Bus<img src="Icons/bus.png"></a>.
-      </p>
-      <img class="layer" src="Images/Bus/fins.png">
+      <h1>All unlocked materials have been forgotten.</h1>
+      <img class="faded" src="Icons/science.png">
     </div>
   </body>
 </html>
