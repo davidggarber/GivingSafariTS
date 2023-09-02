@@ -13,20 +13,49 @@
         'feeder': 'Bus',
         'textInput': true,
         'abilities': {
-        }
+        },
+        'postSetup': initMaterials
       };
 
-      function toggleFeeder(id, btn) {
-        var img = document.getElementById(id);
-        if (img.src != '') {
-          var showing = img.classList.contains('show');
-          if (showing) {
-            img.classList.remove('show');
-            btn.classList.remove('on');
+      var layers = {};
+
+      function initMaterials() {
+        if (!isIFrame()) {
+          for (var i = 1; i <= 4; i++) {
+            if (i in layers) {
+              continue;
+            }
+            var materials = loadMetaMaterials('Schoolbus', 0, i);
+            if (materials != null) {
+              layers[i] = materials;
+              buildLayer(i, materials);
+            }
           }
-          else {
-            img.classList.add('show');
-            btn.classList.add('on');
+        }
+      }
+
+      function buildLayer(index, src) {
+        var img = document.getElementById('f' + index);
+        var btn = document.getElementById('b' + index);
+        var span = document.getElementById('bt' + index);
+        btn.classList.remove('disabled');
+        span.innerHTML = 'Toggle<br>layer<br>#' + index;
+        img.src = 'Images/Bus/' + src + '.png';
+      }
+
+      function toggleFeeder(id, btn) {
+        if (!btn.classList.contains('disabled')) {
+          var img = document.getElementById(id);
+          if (img.src != '') {
+            var showing = img.classList.contains('show');
+            if (showing) {
+              img.classList.remove('show');
+              btn.classList.remove('on');
+            }
+            else {
+              img.classList.add('show');
+              btn.classList.add('on');
+            }
           }
         }
       }
@@ -61,7 +90,25 @@
       .feeder.show {
         opacity: 100%;
       }
-      .toggle.on {
+      .toggle {
+        position: relative;
+        width: 0.7in;
+        height: 0.7in;
+      }
+      .btntext {
+        position: absolute;
+        width: 0.7in;
+        left: 0px;
+        top: 0px;
+        text-align: center;
+        line-height: 16pt;
+      }
+      .disabled .btntext {
+        font-size: 44pt;
+        font-style: italic;
+        line-height: 0.7in;
+      }
+      button.on {
         border-color: greenyellow;
         background-color: #c6e893;
       }
@@ -81,23 +128,23 @@
       <p class="flavor">
         Here, at The Magic School Bus, we are all about learning and collaboration.  
         For this final experiment we will be working in pairs.  
-        Get your materials by solving the four other puzzles.
+        Get your materials by solving four other puzzles tagged with Magic School Bus icons.
         As Ms. Frizzle likes to say, “Take chances, make mistakes, get messy!”
       </p>
       <img id="frizzle" src="Images/Bus/Frizzle.gif">
 
       <div id="overlays">
-        <img id="f1" class="feeder" src="Images/Bus/bumper.png">
-        <img id="f2" class="feeder" src="Images/Bus/door.png">
-        <img id="f3" class="feeder" src="Images/Bus/fins.png">
-        <img id="f4" class="feeder" src="Images/Bus/tire.png">
+        <img id="f1" class="feeder" src="Images/Bus/blank.png">
+        <img id="f2" class="feeder" src="Images/Bus/blank.png">
+        <img id="f3" class="feeder" src="Images/Bus/blank.png">
+        <img id="f4" class="feeder" src="Images/Bus/blank.png">
       </div>
 
       <div id="toggleButtons" style="text-align: center;">
-        <button class="toggle" onclick="toggleFeeder('f1', this)">Toggle<br>layer<br>#1</button>
-        <button class="toggle" onclick="toggleFeeder('f2', this)">Toggle<br>layer<br>#2</button>
-        <button class="toggle" onclick="toggleFeeder('f3', this)">Toggle<br>layer<br>#3</button>
-        <button class="toggle" onclick="toggleFeeder('f4', this)">Toggle<br>layer<br>#4</button>
+        <button id="b1" class="toggle disabled" onclick="toggleFeeder('f1', this)"><span id="bt1" class="btntext">?</span></button>
+        <button id="b2" class="toggle disabled" onclick="toggleFeeder('f2', this)"><span id="bt2" class="btntext">?</span></button>
+        <button id="b3" class="toggle disabled" onclick="toggleFeeder('f3', this)"><span id="bt3" class="btntext">?</span></button>
+        <button id="b4" class="toggle disabled" onclick="toggleFeeder('f4', this)"><span id="bt4" class="btntext">?</span></button>
 
         <div id="final">
           <span class="letter-cell-block create-from-pattern" data-letter-pattern="7"></span>

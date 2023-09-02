@@ -44,13 +44,13 @@
             text-align: left; 
         }
 
-        .feeder {
+        .feeders {
             text-align: center;
         }
-        .feeder img {
+        .feeders img {
             height: 0.25in;
         }
-        .feeder sub {
+        .feeders sub {
             color:blue; font-weight: bold;
             -moz-user-select: -moz-none;
             -khtml-user-select: none;
@@ -58,8 +58,8 @@
             -o-user-select: none;
             user-select: none;
         }
-        .feeder a:link {
-            text-decoration: none;
+        .feeders a:link {
+            xtext-decoration: none;
         }
         sub {
             position: relative;
@@ -67,6 +67,16 @@
             top: -.5em;
             padding: 0px;
             font-size: 6pt;
+        }
+        .bus {
+            position: relative;
+        }
+        .bus sub {
+            position: absolute;
+            left: 9px;
+            top: -4px;
+            color: black;
+            text-shadow: 0 0 5px yellow;
         }
         #logo {
             position: absolute;
@@ -80,12 +90,12 @@
             left: .7in;
             top: 0in;
         }
-        .feeder sub.car {
+        .feeders sub.car {
             color: white;
             left: -19.5px;
             top: -11px;
         }
-        .feeder sub.seven {
+        .feeders sub.seven {
             cursor: pointer;
         }
         #legend td {
@@ -120,7 +130,7 @@
             var metas = document.getElementById('meta_list');
             for (var i = 0; i < puzzles.length; i++) {
                 var puz = puzzles[i];
-                if (puz.group == group.cut || puz.group == group.feeder) {
+                if (puz.group != group.puzzle) {
                     continue;
                 }
 
@@ -243,6 +253,32 @@
                 <th class="html" style="text-align: left;">Meta-Puzzles</th>
                 <th class="author" style="text-align: left;">Author</th>
             </tr>    
+            <tr>
+                <td class="icons"><img src="Icons/bus.png"></td>
+                <td class="html"><a href="TheMagicSchoolBus.html" target="_blank" class="">The Magic School Bus<img class="thumb" src="Thumbs/Tmsb.png"></a></td>
+                <td class="author">Philippe Nicolle</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td class="feeders">
+                    <a class="bus" href="TMSB_Bumper.html" target="_blank" title="Materials #1"><img src="Images/Bus/Front.png"><sub>1</sub></a>
+                    <a class="bus" href="TMSB_DoOoRr.html" target="_blank" title="Materials #2"><img src="Images/Bus/Front.png"><sub>2</sub></a>
+                    <a class="bus" href="TMSB_FiNnsS.html" target="_blank" title="Materials #3"><img src="Images/Bus/Front.png"><sub>3</sub></a>
+                    <a class="bus" href="TMSB_TirREe.html" target="_blank" title="Materials #4"><img src="Images/Bus/Front.png"><sub>4</sub></a>
+                </td>
+                <td><a href="TMSB_Forget.html" target="_blank" style="font-size: smaller;">Forget materials</a></td>
+            </tr>
+            <tr>
+                <td class="icons"><img src="Icons/science.png"></td>
+                <td class="html"><a href="WeirdScience.html" target="_blank" class="">Weird Science<img class="thumb" src="Thumbs/Ws.png"></a></td>
+                <td class="author">Martyn Lovell</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+
+                </td>
+                <td>Forget materials</td>
+            </tr>
         </tfoot>
     </table>
 
