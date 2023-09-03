@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Excerpts from Puzzle Safari 20: Safari Labs</title>
+    <title>Giving Safari 2023: Safari Labs</title>
     <meta charset="UTF-8">
     <script> var exports = {}; </script>
     <script src="../js/kit.js"></script>
@@ -35,8 +35,12 @@
             text-align: center;
         }
         .html {
-            width: 3in; 
+            width: 2.2in; 
             text-align: left;
+        }
+        .challenge {
+            width: 1in;
+            text-align: center;
         }
         .author {
             width: 1.5in; 
@@ -45,9 +49,12 @@
         }
 
         .feeders {
+            position: relative;
             text-align: center;
         }
         .feeders img {
+            position: relative;
+            top: 2px;
             height: 0.25in;
         }
         .feeders sub {
@@ -59,24 +66,21 @@
             -o-user-select: none;
             user-select: none;
         }
-        .bus {
+        .feeders .bus sub {
             position: relative;
-        }
-        .bus sub {
-            position: absolute;
-            left: 9px;
-            top: -4px;
+            left: -16px;
+            top: -8px;
             color: black;
             text-shadow: 0 0 5px yellow;
         }
-        .flask {
+        .feeders .science sub {
             position: relative;
+            left: -14px;
+            top: -6px;
+            color: black;
         }
-        .flask sub {
-            position: absolute;
-            left: 6px;
-            top: 0px;
-            color: pink;
+        .feeders .science.unlocked sub {
+            color: white;
         }
         #logo {
             position: absolute;
@@ -89,14 +93,6 @@
         .check {
             left: .7in;
             top: 0in;
-        }
-        .feeders sub.car {
-            color: white;
-            left: -19.5px;
-            top: -11px;
-        }
-        .feeders sub.seven {
-            cursor: pointer;
         }
         #legend td {
             vertical-align: top;
@@ -123,6 +119,12 @@
         function onLoad() {
             simpleSetup();
             expandPuzzles();
+            updateProgress();
+        }
+
+        var feeders = {
+            'science': { locked: 'Images/Science/bubbling.png', unlocked: 'Images/Science/green_flask.png' },
+            'bus': { locked: 'Images/Bus/front.png', unlocked: 'Images/Bus/unlocked.png' }
         }
 
         function expandPuzzles() {
@@ -138,10 +140,14 @@
                 var thIcon = document.createElement('td');
                 var tdTitle = document.createElement('td');
                 var tdAuthor = document.createElement('td');
+                var tdFeeder = document.createElement('td');
+                var tdChallenge = document.createElement('td');
                 tr.classList.add('sortable');
                 thIcon.classList.add('icons');
                 tdTitle.classList.add('html');
                 tdAuthor.classList.add('author');
+                tdFeeder.classList.add('feeders');
+                tdChallenge.classList.add('challenge');
                 var imgIcon = document.createElement('img');
                 var aTitle = document.createElement('a');
                 if (puz.icon) {
@@ -163,8 +169,14 @@
                 imgThumb.src = 'Thumbs/' + puz.thumb + '.png';
                 aTitle.appendChild(imgThumb);
 
+                if (puz.feeder) {
+                    tdFeeder.appendChild(createFeeder(puz.feeder, false));
+                }
+
                 tr.appendChild(thIcon);
                 tr.appendChild(tdTitle);
+                tr.appendChild(tdFeeder);
+                tr.appendChild(tdChallenge);
                 tr.appendChild(tdAuthor);
                 thIcon.appendChild(imgIcon);
                 tdTitle.appendChild(aTitle);
@@ -182,6 +194,44 @@
                 var aTitle = hovers[i];
                 aTitle.onmouseover=function(e){bigThumb(e)};
                 aTitle.onmouseout=function(e){littleThumb(e)};
+            }
+        }
+
+        function createFeeder(feed, unlocked) {
+            var spanFeed = document.createElement('span');
+            spanFeed.classList.add(feed[0]);
+            var imgFeed = document.createElement('img');
+            var subFeed = document.createElement('sub');
+            subFeed.innerText = feed[1];
+
+            if (unlocked) {
+                imgFeed.src = feeders[feed[0]].unlocked;
+                spanFeed.classList.add('unlocked');
+            }
+            else {
+                imgFeed.src = feeders[feed[0]].locked;
+                spanFeed.classList.add('locked');
+            }
+            spanFeed.appendChild(imgFeed);
+            spanFeed.appendChild(subFeed);
+            return spanFeed;
+        }
+
+        function updateProgress() {
+            var td = document.getElementById('science-unlocked');
+            for (var i = 1; i <= 5; i++) {
+                var materials = loadMetaMaterials('Science', 0, i);
+                if (materials != null) {
+                    td.appendChild(createFeeder(['science', i], true));
+                }
+            }
+
+            td = document.getElementById('bus-unlocked');
+            for (var i = 1; i <= 4; i++) {
+                var materials = loadMetaMaterials('Schoolbus', 0, i);
+                if (materials != null) {
+                    td.appendChild(createFeeder(['bus', i], true));
+                }
             }
         }
 
@@ -234,15 +284,17 @@
     </script>
 </head>
 <body style="background-color: #D1D6D7;" onload="onLoad()">
-    <table id="table" style="border-collapse: collapse; width:5in">
+    <table id="table" style="border-collapse: collapse">
         <thead>
-            <tr colspan="3" class="title" style="text-align: center;">
-                <th colspan="3" class="title" style="text-align: center;">Giving Safari 2023</th>
+            <tr class="title" style="text-align: center;">
+                <th colspan="5" class="title" style="text-align: center;">Giving Safari 2023</th>
             </tr>
             <tr id="sortHeader">
                 <th class="icon" onclick="sortTable(1)">Type</th>
                 <th class="html" onclick="sortTable(2)">Puzzle</th>
-                <th class="author" onclick="sortTable(3)">Author
+                <th class="feeder" onclick="sortTable(3)">Feeder</th>
+                <th class="challenge" onclick="sortTable(4)">Challenge</th>
+                <th class="author" onclick="sortTable(5)">Author
                     <img id="logo" src="Images/PS20 logo.png" style="width: 440px; height: 569px;">
                 </th>
             </tr>    
@@ -257,38 +309,20 @@
             <tr>
                 <th>&nbsp;</th>
                 <th class="html" style="text-align: left;">Meta-Puzzles</th>
+                <th colspan="2">Unlocked</th>
                 <th class="author" style="text-align: left;">Author</th>
             </tr>    
             <tr>
                 <td class="icons"><img src="Icons/bus.png"></td>
                 <td class="html"><a href="TheMagicSchoolBus.html" target="_blank" class="hover">The Magic School Bus<img class="thumb" src="Thumbs/Tmsb.png"></a></td>
+                <td id="bus-unlocked" class="feeders" colspan="2"></td>
                 <td class="author">Philippe Nicolle</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td class="feeders">
-                    <a class="bus" href="TMSB_Bumper.html" target="_blank" title="Materials #1"><img src="Images/Bus/Front.png"><sub>1</sub></a>
-                    <a class="bus" href="TMSB_DoOoRr.html" target="_blank" title="Materials #2"><img src="Images/Bus/Front.png"><sub>2</sub></a>
-                    <a class="bus" href="TMSB_FiNnsS.html" target="_blank" title="Materials #3"><img src="Images/Bus/Front.png"><sub>3</sub></a>
-                    <a class="bus" href="TMSB_TirREe.html" target="_blank" title="Materials #4"><img src="Images/Bus/Front.png"><sub>4</sub></a>
-                </td>
-                <td><a href="TMSB_Forget.html" target="_blank" style="font-size: smaller;">Forget materials</a></td>
             </tr>
             <tr>
                 <td class="icons"><img src="Icons/science.png"></td>
                 <td class="html"><a href="WeirdScience.html" target="_blank" class="hover">Weird Science<img class="thumb" src="Thumbs/Ws.png"></a></td>
+                <td id="science-unlocked" class="feeders" colspan="2"></td>
                 <td class="author">Martyn Lovell</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td class="feeders">
-                    <a class="flask" href="WS_Dipterology.html" target="_blank" title="Materials #1"><img src="Images/Science/flask_v1.png"><sub>1</sub></a><!--flies-->
-                    <a class="flask" href="WS_Hippology.html" target="_blank" title="Materials #2"><img src="Images/Science/flask_v1.png"><sub>2</sub></a><!--horses-->
-                    <a class="flask" href="WS_Pogonology.html" target="_blank" title="Materials #3"><img src="Images/Science/flask_v1.png"><sub>3</sub></a><!--beards-->
-                    <a class="flask" href="WS_Rhinology.html" target="_blank" title="Materials #4"><img src="Images/Science/flask_v1.png"><sub>4</sub></a><!--noses-->
-                    <a class="flask" href="WS_Xylology.html" target="_blank" title="Materials #5"><img src="Images/Science/flask_v1.png"><sub>5</sub></a><!--wood-->
-                </td>
-                <td><a href="WS_Forget.html" target="_blank" style="font-size: smaller;">Forget materials</a></td>
             </tr>
         </tfoot>
     </table>
