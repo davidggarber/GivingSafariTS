@@ -80,8 +80,11 @@
         }
         #logo {
             position: absolute;
-            height: 7.12in;
             right: -4.8in;
+            text-align: center;
+        }
+        #logo img {
+            height: 7.12in;
         }
         tr {
             position: relative;
@@ -237,13 +240,17 @@
     <table id="table" style="border-collapse: collapse; width:5in">
         <thead>
             <tr colspan="3" class="title" style="text-align: center;">
-                <th colspan="3" class="title" style="text-align: center;">Giving Safari 2023</th>
+                <th colspan="3" class="title" style="text-align: center;">Safari 23</th>
             </tr>
             <tr id="sortHeader">
                 <th class="icon" onclick="sortTable(1)">Type</th>
                 <th class="html" onclick="sortTable(2)">Puzzle</th>
                 <th class="author" onclick="sortTable(3)">Author
-                    <img id="logo" src="Images/PS20 logo.png" style="width: 440px; height: 569px;">
+                    <div id="logo">
+                        <img src="Images/PS20 logo.png" style="width: 440px; height: 569px;">
+                        <br>
+                        <a href="index.html" target="_blank">Giving Safari home page</a>
+                    </div>
                 </th>
             </tr>    
         </thead>

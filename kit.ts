@@ -4806,7 +4806,7 @@ const safari20Details:PuzzleEventDetails = {
     'title': 'Safari Labs',
     'logo': './Images/PS20 logo.png',
     'icon': './Images/Beaker_icon.png',
-    'puzzleList': './indexx.html',
+    'puzzleList': './index.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
     'googleFonts': 'Architects+Daughter',
