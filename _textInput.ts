@@ -355,15 +355,28 @@ function UpdateExtraction(extractedId:string|null) {
         return;
     }
     
-    var inputs = document.getElementsByClassName('extract-input');
-    var extraction = '';
+    const delayLiterals = DelayLiterals(extractedId);
+    const inputs = document.getElementsByClassName('extract-input');
+    let extraction = '';
     for (var i = 0; i < inputs.length; i++) {
         if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
         let letter = '';
         if (hasClass(inputs[i], 'extract-literal')) {
-            letter = getOptionalStyle(inputs[i], 'data-extract-value') || '';
+            // Several ways to extract literals:
+            const de = getOptionalStyle(inputs[i], 'data-extract-delay');  // placeholder value to extract, until player has finished other work
+            const ev = getOptionalStyle(inputs[i], 'data-extract-value');  // always extract this value
+            const ec = getOptionalStyle(inputs[i], 'data-extract-copy');  // this extraction is a copy of another
+            if (delayLiterals && de) {
+                letter = de;
+            }
+            else if (ec) {
+                letter = extraction[parseInt(ec) - 1];
+            }
+            else {
+                letter = ev || '';
+            }
         }
         else {
             const inp = inputs[i] as HTMLInputElement;
@@ -379,6 +392,37 @@ function UpdateExtraction(extractedId:string|null) {
     }
 
     ApplyExtraction(extraction, extracted);
+}
+
+/**
+ * Puzzles can specify delayed literals within their extraction, 
+ * which only show up if all non-literal cells are filled in.
+ * @param extractedId The id of an element that collects extractions
+ * @returns true if this puzzle uses this technique, and the non-literals are not yet done
+ */
+function DelayLiterals(extractedId:string|null) :boolean {
+    let delayedLiterals = false;
+    let isComplete = true;
+    var inputs = document.getElementsByClassName('extract-input');
+    for (var i = 0; i < inputs.length; i++) {
+        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            continue;
+        }
+        if (hasClass(inputs[i], 'extract-literal')) {
+            if (getOptionalStyle(inputs[i], 'data-extract-delay')) {
+                delayedLiterals = true;
+            }
+        }
+        else {
+            const inp = inputs[i] as HTMLInputElement;
+            let letter = inp.value || '';
+            letter = letter.trim();
+            if (letter.length == 0) {
+                isComplete = false;
+            }
+        }
+    }
+    return delayedLiterals && !isComplete;
 }
 
 /**

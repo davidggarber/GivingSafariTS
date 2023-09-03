@@ -1719,6 +1719,7 @@ function UpdateExtraction(extractedId) {
         UpdateNumbered(extractedId);
         return;
     }
+    var delayLiterals = DelayLiterals(extractedId);
     var inputs = document.getElementsByClassName('extract-input');
     var extraction = '';
     for (var i = 0; i < inputs.length; i++) {
@@ -1727,7 +1728,19 @@ function UpdateExtraction(extractedId) {
         }
         var letter = '';
         if (hasClass(inputs[i], 'extract-literal')) {
-            letter = getOptionalStyle(inputs[i], 'data-extract-value') || '';
+            // Several ways to extract literals:
+            var de = getOptionalStyle(inputs[i], 'data-extract-delay'); // placeholder value to extract, until player has finished other work
+            var ev = getOptionalStyle(inputs[i], 'data-extract-value'); // always extract this value
+            var ec = getOptionalStyle(inputs[i], 'data-extract-copy'); // this extraction is a copy of another
+            if (delayLiterals && de) {
+                letter = de;
+            }
+            else if (ec) {
+                letter = extraction[parseInt(ec) - 1];
+            }
+            else {
+                letter = ev || '';
+            }
         }
         else {
             var inp = inputs[i];
@@ -1742,6 +1755,36 @@ function UpdateExtraction(extractedId) {
         }
     }
     ApplyExtraction(extraction, extracted);
+}
+/**
+ * Puzzles can specify delayed literals within their extraction,
+ * which only show up if all non-literal cells are filled in.
+ * @param extractedId The id of an element that collects extractions
+ * @returns true if this puzzle uses this technique, and the non-literals are not yet done
+ */
+function DelayLiterals(extractedId) {
+    var delayedLiterals = false;
+    var isComplete = true;
+    var inputs = document.getElementsByClassName('extract-input');
+    for (var i = 0; i < inputs.length; i++) {
+        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            continue;
+        }
+        if (hasClass(inputs[i], 'extract-literal')) {
+            if (getOptionalStyle(inputs[i], 'data-extract-delay')) {
+                delayedLiterals = true;
+            }
+        }
+        else {
+            var inp = inputs[i];
+            var letter = inp.value || '';
+            letter = letter.trim();
+            if (letter.length == 0) {
+                isComplete = false;
+            }
+        }
+    }
+    return delayedLiterals && !isComplete;
 }
 /**
  * Check whether a collection of extracted text is more than blanks and underlines
