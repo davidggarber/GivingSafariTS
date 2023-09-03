@@ -17,7 +17,9 @@
       };
 
       function unlockFeeder() {
-        saveMetaMaterials('Schoolbus', 0, 2, 'door');
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials('Schoolbus', 0, 2, 'door');
+        }
       }
     </script>
     <style>

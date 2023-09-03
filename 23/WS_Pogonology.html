@@ -18,9 +18,11 @@
       };
 
       function unlockFeeder() {
-        saveMetaMaterials('Science', 0, 3, [
-          'Pea Hacking is useful for AI and Devolution.',
-          'Dr Delta chose to live in Beijing, while Dr Beta refuses to live in Europe or India.']);
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials('Science', 0, 3, [
+            'Pea Hacking is useful for AI and Devolution.',
+            'Dr Delta chose to live in Beijing, while Dr Beta refuses to live in Europe or India.']);
+        }
       }
     </script>
     <style>

@@ -7,7 +7,7 @@
     <script>
       const boiler = {
         'safari': '20',
-        'title': 'The Magic School Bus -- Materials #1',
+        'title': 'The Magic School Bus -- Materials #4',
         'author': '',
         'copyright': '2020',
         'type': '',
@@ -17,7 +17,9 @@
       };
 
       function unlockFeeder() {
-        saveMetaMaterials('Schoolbus', 0, 4, 'tire');
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials('Schoolbus', 0, 4, 'tire');
+        }
       }
     </script>
     <style>

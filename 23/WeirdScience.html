@@ -17,7 +17,7 @@
           'stamping': true
         },
         'preSetup': makeStampables,
-        'postSetup': initMaterials
+        'postSetup': prepMaterials
       };
       function makeStampables() {
         const xmlns = 'http://www.w3.org/2000/svg';
@@ -38,6 +38,19 @@
       }
 
       var clues = {};
+
+      function prepMaterials() {
+        // Refresh materials every time the user switches back to this page
+        document.addEventListener('visibilitychange', function (event) {
+          if (!document.hidden) {
+            initMaterials();
+          }
+        });
+        var body = document.getElementById('WeirdScience');
+        body.onfocus = function(e){initMaterials()};
+
+        initMaterials();
+      }
 
       function initMaterials() {
         if (!isIFrame()) {

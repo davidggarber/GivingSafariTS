@@ -18,9 +18,11 @@
       };
 
       function unlockFeeder() {
-        saveMetaMaterials('Science', 0, 1, [
-          'Dr Epsilon found Pea Hacking useful in Nairobi.',
-          'Generalised AI got help from Artificial Gravity in Beijing.']);
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials('Science', 0, 1, [
+            'Dr Epsilon found Pea Hacking useful in Nairobi.',
+            'Generalised AI got help from Artificial Gravity in Beijing.']);
+        }
       }
     </script>
     <style>

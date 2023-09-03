@@ -18,9 +18,11 @@
       };
 
       function unlockFeeder() {
-        saveMetaMaterials('Science', 0, 5, [
-          'Stanford and Oxford both have Quantum Filaments.',
-          'Everyone at Oxford refuses to work on Cold Fusion or Genetic Devolution because they claim it is bunk.']);
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials('Science', 0, 5, [
+            'Stanford and Oxford both have Quantum Filaments.',
+            'Everyone at Oxford refuses to work on Cold Fusion or Genetic Devolution because they claim it is bunk.']);
+        }
       }
     </script>
     <style>

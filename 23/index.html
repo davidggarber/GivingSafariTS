@@ -120,11 +120,12 @@
             simpleSetup();
             expandPuzzles();
             updateProgress();
+            document.getElementById('index').onfocus = function(e){updateProgress()};
         }
 
         var feeders = {
-            'science': { locked: 'Images/Science/bubbling.png', unlocked: 'Images/Science/green_flask.png' },
-            'bus': { locked: 'Images/Bus/front.png', unlocked: 'Images/Bus/unlocked.png' }
+            'science': { locked: 'Images/Science/bubbling.png', unlocked: 'Images/Science/green_flask.png', materials:{} },
+            'bus': { locked: 'Images/Bus/front.png', unlocked: 'Images/Bus/unlocked.png', materials:{} }
         }
 
         function expandPuzzles() {
@@ -220,17 +221,25 @@
         function updateProgress() {
             var td = document.getElementById('science-unlocked');
             for (var i = 1; i <= 5; i++) {
+                if (i in feeders['science'].materials) {
+                    continue;
+                }
                 var materials = loadMetaMaterials('Science', 0, i);
                 if (materials != null) {
                     td.appendChild(createFeeder(['science', i], true));
+                    feeders['science'].materials[i] = materials;
                 }
             }
 
             td = document.getElementById('bus-unlocked');
             for (var i = 1; i <= 4; i++) {
+                if (i in feeders['bus'].materials) {
+                    continue;
+                }
                 var materials = loadMetaMaterials('Schoolbus', 0, i);
                 if (materials != null) {
                     td.appendChild(createFeeder(['bus', i], true));
+                    feeders['bus'].materials[i] = materials;
                 }
             }
         }
@@ -283,7 +292,7 @@
 
     </script>
 </head>
-<body style="background-color: #D1D6D7;" onload="onLoad()">
+<body id="index" style="background-color: #D1D6D7;" onload="onLoad()">
     <table id="table" style="border-collapse: collapse">
         <thead>
             <tr class="title" style="text-align: center;">

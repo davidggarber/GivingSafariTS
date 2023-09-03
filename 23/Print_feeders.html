@@ -3,20 +3,43 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Printable packet of all puzzles">
+    <meta name="description" content="Printable packet of meta feeders">
     <meta name="author" content="David Garber">
     <link href="../Css/Print.css" rel="Stylesheet" type="text/css"></link>
     <link rel="shortcut icon" type="image/png" href="Images/Beaker_icon.png">
 
-    <title>Giving Safari 2023 - All Portrait Puzzles</title>
+    <title>Giving Safari 2023 - All Feeders</title>
 
-    <script src="puzzle_list.js"></script>
     <script>
+
+      var orient = {
+          portrait: 'portrait',
+          landscape: 'landscape',
+      };
+      var metas = {
+        science: 'WS_',
+        bus: 'TMSB_',
+      }
+
+      var feeders = [
+        { prefix: metas.bus, suffix: 'Bumper', orientation: orient.portrait },
+        { prefix: metas.bus, suffix: 'DoOoRr', orientation: orient.portrait },
+        { prefix: metas.bus, suffix: 'FiNnsS', orientation: orient.portrait },
+        { prefix: metas.bus, suffix: 'TirREe', orientation: orient.portrait },
+        { prefix: metas.science, suffix: 'Dipterology', orientation: orient.portrait },
+        { prefix: metas.science, suffix: 'Hippology', orientation: orient.portrait },
+        { prefix: metas.science, suffix: 'Pogonology', orientation: orient.portrait },
+        { prefix: metas.science, suffix: 'Rhinology', orientation: orient.portrait },
+        { prefix: metas.science, suffix: 'Xylology', orientation: orient.portrait },
+      ];
+
+      function puzzleHref(puz) {
+        return puz.prefix + puz.suffix + '.html';
+      }
+
       function onLoad() {
           expandIFrames(orient.portrait, 'block');
-          expandIFrames(orient.landscape, 'none');
-          //expandIFrames(group.meta, 'none');
-          //expandIFrames(group.feeder, 'none');
+          //expandIFrames(orient.landscape, 'none');
           switchLayout('portrait');
       }
 
@@ -26,8 +49,8 @@
           var orientation = 'print-' + ort;
           var other = ort == 'feeder' ? ort : '';
           var count = 0;
-          for (var i = 0; i < puzzles.length; i++) {
-              var puz = puzzles[i];
+          for (var i = 0; i < feeders.length; i++) {
+              var puz = feeders[i];
               if (puz.orientation != ort) {
                 continue;
               }
@@ -108,10 +131,6 @@
       <button id="portraits" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('portrait')">Portrait</button>
       <button id="landscapes" class="layout-btn" style="width:1.1in; height: 0.85in;" onclick="switchLayout('landscape')">Landscape</button>
       <div style="display:inline-block; width:0.8in; height:0.8in; color:white; text-align: center; cursor: default;" onclick="toggleThumbs()"><input id="thumb-check" type="checkbox" value="thumbnails"><br>Thumbnails</div>
-      <!--
-        <button id="metas" class="layout-btn" style="width:1in; height: 1in;" onclick="switchLayout('meta')">Meta Puzzles</button>  
-        <button id="feeders" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('feeder')">Meta Feeders</button>  
-      -->
       <a href="indexx.html" style="color:cornflowerblue; margin-left: 1in;">Puzzle index</a>
       <p style="color:wheat; background-color: dark-gray;">
         When printing. Make sure margins are set to NONE, and background graphics is checked.
@@ -120,7 +139,5 @@
     </div>
     <div id="portrait_list" class="group-list"></div>
     <div id="landscape_list" class="group-list"></div>
-    <div id="meta_list" class="x-group-list"></div>
-    <div id="feeder_list" class="x-group-list"></div>
   </body>
 </html>

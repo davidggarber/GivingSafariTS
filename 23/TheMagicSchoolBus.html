@@ -14,16 +14,29 @@
         'textInput': true,
         'abilities': {
         },
-        'postSetup': initMaterials
+        'postSetup': prepMaterials
       };
 
       var layers = {};
+
+      function prepMaterials() {
+        // Refresh materials every time the user switches back to this page
+        document.addEventListener('visibilitychange', function (event) {
+          if (!document.hidden) {
+            initMaterials();
+          }
+        });
+        var body = document.getElementById('TheMagicSchoolBus');
+        body.onfocus = function(e){initMaterials()};
+
+        initMaterials();
+      }
 
       function initMaterials() {
         if (!isIFrame()) {
           for (var i = 1; i <= 4; i++) {
             if (i in layers) {
-              continue;
+              continue;  // Already loaded
             }
             var materials = loadMetaMaterials('Schoolbus', 0, i);
             if (materials != null) {
