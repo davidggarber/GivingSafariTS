@@ -2,11 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Promises vs. Observables</title>
+    <title>Puzzyl.net</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Cherry+Bomb+One&family=Tilt+Prism&family=Rubik+Maze&family=Foldit&family=Henny+Penny&display=swap" rel="stylesheet">
+    <script>
+        var arts=[
+            'cat_crossword',
+            'elephant_puzzle',
+            'fox_crossword',
+            'macaws_puzzle',
+            'octopus_puzzle',
+            'panda_puzzle'
+        ];
+
+        var fonts=[
+            'Cherry Bomb One',
+            'Foldit',
+            'Fredericka the Great',
+            'Henny Penny',
+            //'Rubik 80s Fade',
+            'Rubik Maze',
+            //'Srisakdi',
+            'Tilt Prism',
+        ]
+
+        var colors=[
+            'red',
+            'yellow',
+            'lime',
+            'blue',
+            'blueviolet'
+        ]
+
+        function onLoad() {
+            var art = arts[Math.floor(Math.random() * arts.length)];
+            var font = fonts[Math.floor(Math.random() * fonts.length)];
+            var color = colors[Math.floor(Math.random() * colors.length)];
+
+            var title = document.getElementById('title');
+            title.style.fontFamily = '' + font;
+            title.style.textShadow = '0 0 12px ' + color;
+            //title.innerText = font;
+            var image = document.getElementById('image');
+            image.src = 'Art/' + art + '.png';
+        }
+    </script>
+    <style>
+        #div {
+            width: 10.5in;
+            height: 10.5in;
+            max-width: 100%;
+            max-height: 80%;
+        }
+        #title {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            width: 50%;
+        }
+        #title span {
+            font-size: 90pt;
+        }
+        #image {
+            width: 10.5in;
+            height: 10.5in;
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
 </head>
-<body>
-<div id="app">
-    <script src="./js/index.js"></script>
-</div>
+<body onload="onLoad()">
+    <div id="div" style="position: relative;">
+        <img id="image">
+        <p id="title"><span>Puzzyl.net</span></p>    
+    </div>
 </body>
 </html>
