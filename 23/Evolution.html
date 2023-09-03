@@ -48,15 +48,21 @@
         height: 50px;
         position: relative;
       }
-      #nodes .note-input.note-above {
-        top: 2px;
-        height: 1.5em;
-        width: 50px;
-        left: 7.5px;
+      #Evolution .word-input {
+        width: 0.6in;
+        height: 3ex;
+      }
+      .extracted {
+        text-transform: capitalize;
+      }
+      @media print {
+        #Evolution .word-input {
+          border-bottom: none;
+        }
       }
     </style>
   </head>
-  <body id="__puzzle_name">
+  <body id="Evolution">
     <div id="pageBody">
       <div id="clues">
         <p class="notes-right">College student housing, in brief</p>
@@ -83,7 +89,8 @@
             <path d="M65,65 l6,-6 l0,12 l-12,0 Z"></path>
             <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
             <text x="0" y="9">3</text>
-            <foreignObject x="-45" y="25" class="notes-above"></foreignObject>
+            <foreignObject x="-45" y="-15"><span id="extracted-1" class="extracted"></span></foreignObject>
+            <foreignObject x="-45" y="35" class="word-cell" data-extract-index="3" data-extracted-id="1"></foreignObject>
           </g>
 
           <g transform="translate(200,200)">
@@ -93,7 +100,8 @@
             <path d="M65,65 l6,-6 l0,12 l-12,0 Z"></path>
             <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
             <text x="0" y="9">2</text>
-            <foreignObject x="-45" y="25" class="notes-above"></foreignObject>
+            <foreignObject x="-45" y="-15"><span id="extracted-2" class="extracted"></span></foreignObject>
+            <foreignObject x="-45" y="35" class="word-cell" data-extract-index="2" data-extracted-id="2"></foreignObject>
           </g>
           <g transform="translate(400,200)">
             <path d="M-40,40 l6,6 l-12,0 l0,-12 Z"></path>
@@ -101,21 +109,24 @@
             <path d="M-60,60 l6,6 l-12,0 l0,-12 Z"></path>
             <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
             <text x="0" y="9">2</text>
-            <foreignObject x="-25" y="25" class="notes-above"></foreignObject>
+            <foreignObject x="30" y="-15"><span id="extracted-3" class="extracted"></span></foreignObject>
+            <foreignObject x="-25" y="35" class="word-cell" data-extract-index="2" data-extracted-id="3"></foreignObject>
           </g>
           <g transform="translate(600,200)">
             <path d="M-45,45 l6,6 l-12,0 l0,-12 Z"></path>
             <path d="M-55,55 l6,6 l-12,0 l0,-12 Z"></path>
             <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
             <text x="0" y="9">4</text>
-            <foreignObject x="-25" y="25" class="notes-above"></foreignObject>
+            <foreignObject x="30" y="-15"><span id="extracted-4" class="extracted"></span></foreignObject>
+            <foreignObject x="-25" y="35" class="word-cell" data-extract-index="4" data-extracted-id="4"></foreignObject>
           </g>
 
           <g transform="translate(100,300)">
             <path d="M50,50 l6,-6 l0,12 l-12,0 Z"></path>
             <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
             <text x="0" y="9">3</text>
-            <foreignObject x="-45" y="25" class="notes-above"></foreignObject>
+            <foreignObject x="-45" y="-15"><span id="extracted-5" class="extracted"></span></foreignObject>
+            <foreignObject x="-45" y="35" class="word-cell" data-extract-index="3" data-extracted-id="5"></foreignObject>
           </g>
           <g transform="translate(300,300)">
             <path d="M35,35 l6,-6 l0,12 l-12,0 Z"></path>
@@ -124,21 +135,24 @@
             <path d="M65,65 l6,-6 l0,12 l-12,0 Z"></path>
             <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
             <text x="0" y="9">1</text>
-            <foreignObject x="-45" y="25" class="notes-above"></foreignObject>
+            <foreignObject x="-45" y="-15"><span id="extracted-6" class="extracted"></span></foreignObject>
+            <foreignObject x="-45" y="35" class="word-cell" data-extract-index="1" data-extracted-id="6"></foreignObject>
           </g>
           <g transform="translate(500,300)">
             <path d="M-45,45 l6,6 l-12,0 l0,-12 Z"></path>
             <path d="M-55,55 l6,6 l-12,0 l0,-12 Z"></path>
             <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
             <text x="0" y="9">3</text>
-            <foreignObject x="-25" y="25" class="notes-above"></foreignObject>
+            <foreignObject x="30" y="-15"><span id="extracted-7" class="extracted"></span></foreignObject>
+            <foreignObject x="-25" y="35" class="word-cell" data-extract-index="3" data-extracted-id="7"></foreignObject>
           </g>
 
           <g transform="translate(200,400)">
             <path d="M50,50 l6,-6 l0,12 l-12,0 Z"></path>
             <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
             <text x="0" y="9">1</text>
-            <foreignObject x="-45" y="25" class="notes-above"></foreignObject>
+            <foreignObject x="-45" y="-15"><span id="extracted-8" class="extracted"></span></foreignObject>
+            <foreignObject x="-45" y="35" class="word-cell" data-extract-index="1" data-extracted-id="8"></foreignObject>
           </g>
 
           <g transform="translate(400,400)">
@@ -146,13 +160,15 @@
             <path d="M-55,55 l6,6 l-12,0 l0,-12 Z"></path>
             <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
             <text x="0" y="9">4</text>
-            <foreignObject x="-25" y="25" class="notes-above"></foreignObject>
+            <foreignObject x="30" y="-15"><span id="extracted-9" class="extracted"></span></foreignObject>
+            <foreignObject x="-25" y="35" class="word-cell" data-extract-index="4" data-extracted-id="9"></foreignObject>
           </g>
 
           <g transform="translate(300,500)">
             <ellipse cx="0" cy="0" rx="20" ry="20"></ellipse>
             <text x="0" y="9">4</text>
-            <foreignObject x="-35" y="25" class="notes-above"></foreignObject>
+            <foreignObject x="30" y="-15"><span id="extracted-10" class="extracted"></span></foreignObject>
+            <foreignObject x="-35" y="35" class="word-cell" data-extract-index="4" data-extracted-id="10"></foreignObject>
           </g>
         </g>
       </svg>

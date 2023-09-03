@@ -1749,6 +1749,9 @@ function UpdateExtraction(extractedId) {
  * @returns true if text contains anything other than spaces and underlines
  */
 function ExtractionIsInteresting(text) {
+    if (text == undefined) {
+        return false;
+    }
     return text.length > 0 && text.match(/[^_]/) != null;
 }
 /**
