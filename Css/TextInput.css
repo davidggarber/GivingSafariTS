@@ -179,12 +179,12 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .note-input {
-  display: none;
+  display: inline-block;
   height: 1.5ex;
   background-color: transparent;
   font-weight: 100;
   font-style: italic;
-  border: none;
+  border: solid 1px transparent;
   color: #b97800;
   cursor: alias;
 }
@@ -211,8 +211,8 @@ input[type=number]::-webkit-outer-spin-button {
   width: 1in;
 }
 
-.enable-notes .note-input {
-  display: inline-block;
+.disabled-notes .note-input {
+  display: none;
 }
 
 .show-notes .note-input {

@@ -484,10 +484,11 @@ function onNoteChange(event) {
  * Notes can be toggled on or off, and when on, can also be lit up to make them easier to see.
  */
 var NoteState = {
-    Disabled: 0,
+    Disabled: -1,
+    Unmarked: 0,
     Visible: 1,
     Subdued: 2,
-    MAX: 3,
+    MOD: 3,
 };
 /**
  * The note visibility state is tracked by a a class in the body tag.
@@ -498,8 +499,10 @@ function getNoteState() {
     if (hasClass(body, 'show-notes')) {
         return NoteState.Visible;
     }
-    return hasClass(body, 'enable-notes')
-        ? NoteState.Subdued : NoteState.Disabled;
+    if (hasClass(body, 'enable-notes')) {
+        return NoteState.Subdued;
+    }
+    return hasClass(body, 'disabled-notes') ? NoteState.Disabled : NoteState.Unmarked;
 }
 /**
  * Update the body tag to be the desired visibility state
@@ -509,6 +512,7 @@ function setNoteState(state) {
     var body = document.getElementsByTagName('body')[0];
     toggleClass(body, 'show-notes', state == NoteState.Visible);
     toggleClass(body, 'enable-notes', state == NoteState.Subdued);
+    toggleClass(body, 'disable-notes', state == NoteState.Disabled);
 }
 /**
  * There is a Notes link in the bottom corner of the page.
@@ -523,14 +527,15 @@ function setupNotesToggle(margins) {
         margins.appendChild(toggle);
     }
     var state = getNoteState();
-    if (state == NoteState.Disabled) {
+    if (state == NoteState.Disabled || state == NoteState.Unmarked) {
         toggle.innerText = 'Show Notes';
     }
-    else if (state == NoteState.Subdued) {
-        toggle.innerText = 'Disable Notes';
-    }
-    else { // NoteState.Visible
+    else if (state == NoteState.Visible) {
         toggle.innerText = 'Dim Notes';
+    }
+    else { // state == NoteState.Subdued
+        // toggle.innerText = 'Disable Notes';
+        toggle.innerText = 'Un-mark Notes';
     }
     toggle.href = 'javascript:toggleNotes()';
 }
@@ -539,7 +544,7 @@ function setupNotesToggle(margins) {
  */
 function toggleNotes() {
     var state = getNoteState();
-    setNoteState((state + 1) % NoteState.MAX);
+    setNoteState((state + 1) % NoteState.MOD);
     setupNotesToggle(null);
 }
 exports.toggleNotes = toggleNotes;

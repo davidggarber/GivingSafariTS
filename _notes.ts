@@ -116,10 +116,11 @@ function onNoteChange(event:Event) {
  * Notes can be toggled on or off, and when on, can also be lit up to make them easier to see.
  */
 var NoteState = {
-    Disabled: 0,
+    Disabled: -1,
+    Unmarked: 0,
     Visible: 1,
     Subdued: 2,  // Enabled but not highlighted
-    MAX: 3,
+    MOD: 3,
 };
 
 /**
@@ -131,8 +132,10 @@ function getNoteState() {
     if (hasClass(body, 'show-notes')) {
         return NoteState.Visible;
     }
-    return hasClass(body, 'enable-notes')
-        ? NoteState.Subdued : NoteState.Disabled;
+    if (hasClass(body, 'enable-notes')) {
+        return NoteState.Subdued;
+    }
+    return hasClass(body, 'disabled-notes') ? NoteState.Disabled : NoteState.Unmarked;
 }
 
 /**
@@ -143,6 +146,7 @@ function setNoteState(state:number) {
     var body = document.getElementsByTagName('body')[0];
     toggleClass(body, 'show-notes', state == NoteState.Visible);
     toggleClass(body, 'enable-notes', state == NoteState.Subdued);
+    toggleClass(body, 'disable-notes', state == NoteState.Disabled);
 }
 
 /**
@@ -158,14 +162,15 @@ function setupNotesToggle(margins:HTMLDivElement|null) {
         margins.appendChild(toggle);
     }
     const state = getNoteState();
-    if (state == NoteState.Disabled) {
+    if (state == NoteState.Disabled || state == NoteState.Unmarked) {
         toggle.innerText = 'Show Notes';
     }
-    else if (state == NoteState.Subdued) {
-        toggle.innerText = 'Disable Notes';
-    }
-    else {  // NoteState.Visible
+    else if (state == NoteState.Visible) {
         toggle.innerText = 'Dim Notes';
+    }
+    else {  // state == NoteState.Subdued
+        // toggle.innerText = 'Disable Notes';
+        toggle.innerText = 'Un-mark Notes';
     }
     toggle.href = 'javascript:toggleNotes()';
 }
@@ -175,7 +180,7 @@ function setupNotesToggle(margins:HTMLDivElement|null) {
  */
 export function toggleNotes() {
     const state = getNoteState();
-    setNoteState((state + 1) % NoteState.MAX);
+    setNoteState((state + 1) % NoteState.MOD);
     setupNotesToggle(null);
 }
 
