@@ -54,6 +54,9 @@ function setupLetterPatterns() {
         for (let j = 0; j < cells.length; j++) {
             const td = cells[j];
             // Skip cells with existing contents
+            if (hasClass(td, 'no-cell')) {
+                continue;
+            }
             if (td.innerHTML == '') {
                 toggleClass(td, 'create-from-pattern', true);
                 if (!getOptionalStyle(td, 'data-letter-pattern')) {
@@ -62,9 +65,19 @@ function setupLetterPatterns() {
                 // Make sure every row that contains any cells with inputs is tagged as a block
                 const tr = td.parentNode;
                 toggleClass(tr, 'letter-cell-block', true);
+                // Any cells tagged extract need to clarify what to extract
+                if (hasClass(td, 'extract')) {
+                    td.setAttributeNS(null, 'data-extract-indeces', '1');
+                }
             }
             else {
                 toggleClass(td, 'literal', true);
+                // Any cells tagged extract need to clarify what to extract
+                if (hasClass(td, 'extract')) {
+                    toggleClass(td, 'extract-input', true);
+                    toggleClass(td, 'extract-literal', true);
+                    td.setAttributeNS(null, 'data-extract-value', td.innerText);
+                }
             }
         }
     }

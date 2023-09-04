@@ -328,13 +328,13 @@ export function afterInputUpdate(input:HTMLInputElement) {
  */
 function ExtractFromInput(input:HTMLInputElement) {
     var extractedId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
-    if (hasClass(input.parentNode, 'extract')) {
+    if (findParentOfClass(input, 'extract')) {
         UpdateExtraction(extractedId);
     }
-    else if (hasClass(input.parentNode, 'extractor')) {  // can also be numbered
+    else if (findParentOfClass(input, 'extractor')) {  // can also be numbered
         UpdateExtractionSource(input);
     }
-    else if (hasClass(input.parentNode, 'numbered')) {
+    else if (findParentOfClass(input, 'numbered')) {
         UpdateNumbered(extractedId);
     }
 }
@@ -344,11 +344,12 @@ function ExtractFromInput(input:HTMLInputElement) {
  * @param extractedId The id of an element that collects extractions
  */
 function UpdateExtraction(extractedId:string|null) {
-    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
+    const extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
 
     if (extracted == null) {
         return;
     }
+    const join = getOptionalStyle(extracted, 'data-extract-join') || '';
     
     if (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null) {
         UpdateNumbered(extractedId);
@@ -382,6 +383,9 @@ function UpdateExtraction(extractedId:string|null) {
             const inp = inputs[i] as HTMLInputElement;
             letter = inp.value || '';
             letter = letter.trim();    
+        }
+        if (extraction.length > 0) {
+            extraction += join;
         }
         if (letter.length == 0) {
             extraction += '_';

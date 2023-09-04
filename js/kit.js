@@ -1696,13 +1696,13 @@ exports.afterInputUpdate = afterInputUpdate;
  */
 function ExtractFromInput(input) {
     var extractedId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
-    if (hasClass(input.parentNode, 'extract')) {
+    if (findParentOfClass(input, 'extract')) {
         UpdateExtraction(extractedId);
     }
-    else if (hasClass(input.parentNode, 'extractor')) { // can also be numbered
+    else if (findParentOfClass(input, 'extractor')) { // can also be numbered
         UpdateExtractionSource(input);
     }
-    else if (hasClass(input.parentNode, 'numbered')) {
+    else if (findParentOfClass(input, 'numbered')) {
         UpdateNumbered(extractedId);
     }
 }
@@ -1715,6 +1715,7 @@ function UpdateExtraction(extractedId) {
     if (extracted == null) {
         return;
     }
+    var join = getOptionalStyle(extracted, 'data-extract-join') || '';
     if (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null) {
         UpdateNumbered(extractedId);
         return;
@@ -1746,6 +1747,9 @@ function UpdateExtraction(extractedId) {
             var inp = inputs[i];
             letter = inp.value || '';
             letter = letter.trim();
+        }
+        if (extraction.length > 0) {
+            extraction += join;
         }
         if (letter.length == 0) {
             extraction += '_';
@@ -2323,6 +2327,9 @@ function setupLetterPatterns() {
         for (var j = 0; j < cells.length; j++) {
             var td = cells[j];
             // Skip cells with existing contents
+            if (hasClass(td, 'no-cell')) {
+                continue;
+            }
             if (td.innerHTML == '') {
                 toggleClass(td, 'create-from-pattern', true);
                 if (!getOptionalStyle(td, 'data-letter-pattern')) {
@@ -2331,9 +2338,19 @@ function setupLetterPatterns() {
                 // Make sure every row that contains any cells with inputs is tagged as a block
                 var tr = td.parentNode;
                 toggleClass(tr, 'letter-cell-block', true);
+                // Any cells tagged extract need to clarify what to extract
+                if (hasClass(td, 'extract')) {
+                    td.setAttributeNS(null, 'data-extract-indeces', '1');
+                }
             }
             else {
                 toggleClass(td, 'literal', true);
+                // Any cells tagged extract need to clarify what to extract
+                if (hasClass(td, 'extract')) {
+                    toggleClass(td, 'extract-input', true);
+                    toggleClass(td, 'extract-literal', true);
+                    td.setAttributeNS(null, 'data-extract-value', td.innerText);
+                }
             }
         }
     }

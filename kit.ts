@@ -1858,13 +1858,13 @@ export function afterInputUpdate(input:HTMLInputElement) {
  */
 function ExtractFromInput(input:HTMLInputElement) {
     var extractedId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
-    if (hasClass(input.parentNode, 'extract')) {
+    if (findParentOfClass(input, 'extract')) {
         UpdateExtraction(extractedId);
     }
-    else if (hasClass(input.parentNode, 'extractor')) {  // can also be numbered
+    else if (findParentOfClass(input, 'extractor')) {  // can also be numbered
         UpdateExtractionSource(input);
     }
-    else if (hasClass(input.parentNode, 'numbered')) {
+    else if (findParentOfClass(input, 'numbered')) {
         UpdateNumbered(extractedId);
     }
 }
@@ -1874,11 +1874,12 @@ function ExtractFromInput(input:HTMLInputElement) {
  * @param extractedId The id of an element that collects extractions
  */
 function UpdateExtraction(extractedId:string|null) {
-    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
+    const extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
 
     if (extracted == null) {
         return;
     }
+    const join = getOptionalStyle(extracted, 'data-extract-join') || '';
     
     if (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null) {
         UpdateNumbered(extractedId);
@@ -1912,6 +1913,9 @@ function UpdateExtraction(extractedId:string|null) {
             const inp = inputs[i] as HTMLInputElement;
             letter = inp.value || '';
             letter = letter.trim();    
+        }
+        if (extraction.length > 0) {
+            extraction += join;
         }
         if (letter.length == 0) {
             extraction += '_';
@@ -2544,6 +2548,9 @@ function setupLetterPatterns() {
         for (let j = 0; j < cells.length; j++) {
             const td = cells[j];
             // Skip cells with existing contents
+            if (hasClass(td, 'no-cell')) {
+                continue;
+            }
             if (td.innerHTML == '') {
                 toggleClass(td, 'create-from-pattern', true);
                 if (!getOptionalStyle(td, 'data-letter-pattern')) {
@@ -2552,9 +2559,19 @@ function setupLetterPatterns() {
                 // Make sure every row that contains any cells with inputs is tagged as a block
                 const tr = td.parentNode;
                 toggleClass(tr, 'letter-cell-block', true);
+                // Any cells tagged extract need to clarify what to extract
+                if (hasClass(td, 'extract')) {
+                    td.setAttributeNS(null, 'data-extract-indeces', '1');
+                }
             }
             else {
                 toggleClass(td, 'literal', true);
+                // Any cells tagged extract need to clarify what to extract
+                if (hasClass(td, 'extract')) {
+                    toggleClass(td, 'extract-input', true);
+                    toggleClass(td, 'extract-literal', true);
+                    td.setAttributeNS(null, 'data-extract-value', td.innerText);
+                }
             }
         }
     }
