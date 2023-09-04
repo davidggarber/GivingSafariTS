@@ -4695,7 +4695,11 @@ function setupAbilities(head, margins, data) {
         count++;
     }
     if (data.highlights) {
-        fancy += '<span id="highlight-ability" title="Ctrl+` to highlight cells" style="text-shadow: 0 0 3px black;">💡</span>';
+        var instructions = "Ctrl+click to highlight cells";
+        if (boiler === null || boiler === void 0 ? void 0 : boiler.textInput) {
+            instructions = "Type ` or ctrl+click to highlight cells";
+        }
+        fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">💡</span>';
         setupHighlights();
         count++;
     }
