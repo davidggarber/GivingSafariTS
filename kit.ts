@@ -1193,6 +1193,26 @@ export function getGlobalIndex(elmt:HTMLElement, suffix?:string):number {
 }
 
 /**
+ * At page initialization, every element that can be cached gets an index attached to it.
+ * Possibly more than one, if it can cache multiple traits.
+ * Find the element with the desired global index.
+ * @param cls A class, to narrow down the set of possible elements
+ * @param index The index
+ * @param suffix The name of the index (optional)
+ * @returns The element
+ */
+export function findGlobalIndex(cls: string, index: number, suffix?:string) :HTMLElement|null {
+    const elements = document.getElementsByClassName(cls);
+    for (let i = 0; i < elements.length; i++) {
+        const elmt = elements[i] as HTMLElement;
+        if (index == getGlobalIndex(elmt, suffix)) {
+            return elmt;
+        }
+    }
+    return null;
+}
+
+/**
  * Create a dictionary, mapping global indeces to the corresponding elements
  * @param cls the class tag on all applicable elements
  * @param suffix the optional suffix of the global indeces
@@ -1377,20 +1397,18 @@ function restoreContainers(containers:object) {
     localCache.containers = containers;
     var movers = document.getElementsByClassName('moveable');
     var targets = document.getElementsByClassName('drop-target');
-    // Each time an element is moved, the movers structure recalcs. So pre-fetch.
-    const moved:HTMLElement[] = [];
+    // Each time an element is moved, the containers structure changes out from under us. So pre-fetch.
+    const moving:number[] = [];
     for (let key in containers) {
-        moved.push(movers[key]);
+        moving[parseInt(key)] = parseInt(containers[key]);
     }
-    for (var i = 0; i < moved.length; i++) {
-        const mover = moved[i];
-        // Movers can move, and thus get re-ordered. Don't trust i to be the index.
-        const index = getGlobalIndex(mover);
-        var j = containers[index] as number;
-        if (j != undefined) {
-            quickMove(mover, targets[j] as HTMLElement);
+    for (let key in moving) {
+        const mover = findGlobalIndex('moveable', parseInt(key));
+        const target = findGlobalIndex('drop-target', moving[key]);
+        if (mover && target) {
+            quickMove(mover, target);
         }
-    }
+    }    
 }
 
 /**

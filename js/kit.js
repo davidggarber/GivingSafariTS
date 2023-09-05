@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = void 0;
+exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -1074,6 +1074,26 @@ function getGlobalIndex(elmt, suffix) {
 }
 exports.getGlobalIndex = getGlobalIndex;
 /**
+ * At page initialization, every element that can be cached gets an index attached to it.
+ * Possibly more than one, if it can cache multiple traits.
+ * Find the element with the desired global index.
+ * @param cls A class, to narrow down the set of possible elements
+ * @param index The index
+ * @param suffix The name of the index (optional)
+ * @returns The element
+ */
+function findGlobalIndex(cls, index, suffix) {
+    var elements = document.getElementsByClassName(cls);
+    for (var i = 0; i < elements.length; i++) {
+        var elmt = elements[i];
+        if (index == getGlobalIndex(elmt, suffix)) {
+            return elmt;
+        }
+    }
+    return null;
+}
+exports.findGlobalIndex = findGlobalIndex;
+/**
  * Create a dictionary, mapping global indeces to the corresponding elements
  * @param cls the class tag on all applicable elements
  * @param suffix the optional suffix of the global indeces
@@ -1251,18 +1271,16 @@ function restoreContainers(containers) {
     localCache.containers = containers;
     var movers = document.getElementsByClassName('moveable');
     var targets = document.getElementsByClassName('drop-target');
-    // Each time an element is moved, the movers structure recalcs. So pre-fetch.
-    var moved = [];
+    // Each time an element is moved, the containers structure changes out from under us. So pre-fetch.
+    var moving = [];
     for (var key in containers) {
-        moved.push(movers[key]);
+        moving[parseInt(key)] = parseInt(containers[key]);
     }
-    for (var i = 0; i < moved.length; i++) {
-        var mover = moved[i];
-        // Movers can move, and thus get re-ordered. Don't trust i to be the index.
-        var index = getGlobalIndex(mover);
-        var j = containers[index];
-        if (j != undefined) {
-            quickMove(mover, targets[j]);
+    for (var key in moving) {
+        var mover = findGlobalIndex('moveable', parseInt(key));
+        var target = findGlobalIndex('drop-target', moving[key]);
+        if (mover && target) {
+            quickMove(mover, target);
         }
     }
 }
