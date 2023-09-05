@@ -35,6 +35,12 @@
   color: #ff0099;
 }
 
+#extracted .letter-cell {
+  font-family: 'Kalam', cursive;
+  font-size: 20pt;
+  color: #ff0099;
+}
+
 #extracted .letter-input {
   font-family: 'Kalam', cursive;
   font-size: 20pt;
