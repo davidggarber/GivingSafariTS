@@ -30,6 +30,34 @@ let _eraseTool:string|null = null;
  * Scan the page for anything marked stampable or a draw tool
  */
 export function preprocessStampObjects() {
+    const containers = document.getElementsByClassName('stampable-container');
+    for (let i = 0; i < containers.length; i++) {
+        const container = containers[i] as HTMLElement;
+        const rules = getOptionalStyle(container, 'data-stampable-rules');
+        if (rules) {
+            const list = rules.split(' ');
+            for (let r = 0; r < list.length; r++) {
+                const rule = list[r];
+                if (rule[0] == '.') {
+                    const children = container.getElementsByClassName(rule.substring(1));
+                    for (let i = 0; i < children.length; i++) {
+                        toggleClass(children[i], 'stampable', true);
+                    }
+                }
+                else if (rule[0] == '#') {
+                    const child = document.getElementById(rule.substring(1));
+                    toggleClass(child, 'stampable', true);
+                }
+                else {
+                    const children = container.getElementsByTagName(rule.toLowerCase());
+                    for (let i = 0; i < children.length; i++) {
+                        toggleClass(children[i], 'stampable', true);
+                    }
+                }
+            }
+        }
+    }
+
     let elems = document.getElementsByClassName('stampable');
     for (let i = 0; i < elems.length; i++) {
         const elmt = elems[i] as HTMLElement;

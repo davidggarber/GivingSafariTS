@@ -3419,6 +3419,33 @@ var _eraseTool = null;
  * Scan the page for anything marked stampable or a draw tool
  */
 function preprocessStampObjects() {
+    var containers = document.getElementsByClassName('stampable-container');
+    for (var i = 0; i < containers.length; i++) {
+        var container = containers[i];
+        var rules = getOptionalStyle(container, 'data-stampable-rules');
+        if (rules) {
+            var list = rules.split(' ');
+            for (var r = 0; r < list.length; r++) {
+                var rule = list[r];
+                if (rule[0] == '.') {
+                    var children = container.getElementsByClassName(rule.substring(1));
+                    for (var i_3 = 0; i_3 < children.length; i_3++) {
+                        toggleClass(children[i_3], 'stampable', true);
+                    }
+                }
+                else if (rule[0] == '#') {
+                    var child = document.getElementById(rule.substring(1));
+                    toggleClass(child, 'stampable', true);
+                }
+                else {
+                    var children = container.getElementsByTagName(rule.toLowerCase());
+                    for (var i_4 = 0; i_4 < children.length; i_4++) {
+                        toggleClass(children[i_4], 'stampable', true);
+                    }
+                }
+            }
+        }
+    }
     var elems = document.getElementsByClassName('stampable');
     for (var i = 0; i < elems.length; i++) {
         var elmt = elems[i];

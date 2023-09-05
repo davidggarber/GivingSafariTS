@@ -89,20 +89,6 @@
         width: 72px;
         margin-top: 40px;
       }
-      .stampTool {
-        width: .5in;
-        height: .5in;
-        margin: 0px;
-      }
-      .stampTool div {
-        width:.5in; 
-        height:.5in; 
-        text-align: center;
-        border-radius: 5px;
-      }
-      .stampTool.selected div {
-        border-radius: 5px;
-      }
       .stampedObject {
         position: relative;
         width: 100%; 
@@ -223,21 +209,21 @@
         </tr>
       </table>
 
-      <div id="stampPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; right:2.5in; bottom: -0.7in;">
+      <div id="stampPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; right:2.5in; bottom: -0.8in;">
         <p style="text-align: center; margin:4px;">&#x2712;&#xfe0f; Draw tools:</p>
-        <div class="stampTool" data-template-id="drawHead" data-click-modifier="ctrl" title="ctrl + draw" style="display:inline-block; ">
+        <div class="stampTool small" data-template-id="drawHead" data-click-modifier="ctrl" title="ctrl + draw" style="display:inline-block; ">
           <div class="head-positive">
-            <span class="label" style="position:relative;top:0.15in;">HEAD<br>&plus;</span>
+            <span class="label" style="position:relative;top:0.1in;">HEAD<br>&plus;</span>
           </div>
         </div>
-        <div class="stampTool" data-template-id="drawTail" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
+        <div class="stampTool small" data-template-id="drawTail" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
           <div class="tail-negative">
-            <span class="label" style="position:relative;top:0.15in;">TAIL<br>&minus;</span>
+            <span class="label" style="position:relative;top:0.1in;">TAIL<br>&minus;</span>
           </div>
         </div>
-        <div class="stampTool" data-template-id="drawErase" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
+        <div class="stampTool small" data-template-id="drawErase" data-click-modifier="shift" title="shift + draw" style="display:inline-block;">
           <div style="background-color: #eee;">
-            <span class="label" style="position:relative;top:0.15in;">erase<br>&nbsp;</span>
+            <span class="label" style="position:relative;top:0.1in;">erase<br>&nbsp;</span>
           </div>
         </div>
       </div>
