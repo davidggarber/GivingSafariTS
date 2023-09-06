@@ -82,6 +82,17 @@ export function isRestart() {
     return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
 }
 
+/**
+ * Do we want to skip the UI that offers to reload?
+ * @returns 
+ */
+export function forceReload(): boolean|undefined {
+    if (urlArgs['reload'] != undefined) {
+        return urlArgs['reload'] !== false;
+    }
+    return undefined;
+}
+
 type LinkDetails = {
     rel: string;  // 'preconnect', 'stylesheet', ...
     href: string;

@@ -845,14 +845,28 @@ var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {
 let checkStorage:any = null;
 
 /**
+ * Saved state uses local storage, keyed off this page's URL
+ * minus any parameters
+ */
+export function storageKey() {
+    return window.location.origin + window.location.pathname;
+}
+
+/**
  * If storage exists from a previous visit to this puzzle, offer to reload.
  */
 export function checkLocalStorage() {
     // Each puzzle is cached within localStorage by its URL
-    if (!isIFrame() && !isRestart() && window.location.href in localStorage){
-        const item = localStorage.getItem(window.location.href);
+    const key = storageKey();
+    if (!isIFrame() && !isRestart() && key in localStorage){
+        const item = localStorage.getItem(key);
         if (item != null) {
-            checkStorage = JSON.parse(item);
+            try {
+                checkStorage = JSON.parse(item);
+            }
+            catch {
+                checkStorage = {};
+            }
             let empty = true;  // It's possible to cache all blanks, which are uninteresting
             for (let key in checkStorage) {
                 if (checkStorage[key] != null && checkStorage[key] != '') {
@@ -861,7 +875,16 @@ export function checkLocalStorage() {
                 }
             }
             if (!empty) {
-                createReloadUI(checkStorage.time);
+                const force = forceReload();
+                if (force == undefined) {
+                    createReloadUI(checkStorage.time);
+                }
+                else if (force) {
+                    doLocalReload(false);
+                }
+                else {
+                    cancelLocalReload(false);
+                }
             }
         }
     }
@@ -991,7 +1014,7 @@ function cancelLocalReload(hide:boolean) {
     }
     // Clear cached storage
     checkStorage = null;
-    localStorage.removeItem(window.location.href);
+    localStorage.removeItem(storageKey());
 }
 
 //////////////////////////////////////////////////////////
@@ -1004,7 +1027,7 @@ function cancelLocalReload(hide:boolean) {
 function saveCache() {
     if (!reloading) {
         localCache.time = new Date(); 
-        localStorage.setItem(window.location.href, JSON.stringify(localCache));
+        localStorage.setItem(storageKey(), JSON.stringify(localCache));
     }
 }
 
@@ -1509,14 +1532,15 @@ function loadMetaMaterials(puzzle, up, page): object|undefined {
 // Convert the absolute href of the current window to a relative href
 // levels: 1=just this file, 2=parent folder + fiole, etc.
 function getRelFileHref(levels) {
-    var bslash = window.location.href.lastIndexOf('\\');
-    var fslash = window.location.href.lastIndexOf('/');
-    var delim = '/';
+    const key = storageKey();
+    const bslash = key.lastIndexOf('\\');
+    const fslash = key.lastIndexOf('/');
+    let delim = '/';
     if (fslash < 0 || bslash > fslash) {
         delim = '\\';
     }
 
-    var parts = window.location.href.split(delim);
+    const parts = key.split(delim);
     parts.splice(0, parts.length - levels)
     return parts.join(delim);
 }
@@ -1529,9 +1553,10 @@ function getRelFileHref(levels) {
  * @returns a path to the other file
  */
 function getOtherFileHref(file:string, up?:number, rel?:number):string {
-    var bslash = window.location.href.lastIndexOf('\\');
-    var fslash = window.location.href.lastIndexOf('/');
-    var delim = '/';
+    const key = storageKey();
+    const bslash = key.lastIndexOf('\\');
+    const fslash = key.lastIndexOf('/');
+    let delim = '/';
     if (fslash < 0 || bslash > fslash) {
         delim = '\\';
     }
@@ -1544,7 +1569,7 @@ function getOtherFileHref(file:string, up?:number, rel?:number):string {
         up += 1;
     }
 
-    var parts = window.location.href.split(delim);
+    var parts = key.split(delim);
     parts.splice(parts.length - up, up, file);
 
     if (rel) {
@@ -4874,6 +4899,17 @@ export function isPrint() {
  */
 export function isRestart() {
     return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
+}
+
+/**
+ * Do we want to skip the UI that offers to reload?
+ * @returns 
+ */
+export function forceReload(): boolean|undefined {
+    if (urlArgs['reload'] != undefined) {
+        return urlArgs['reload'] !== false;
+    }
+    return undefined;
 }
 
 type LinkDetails = {

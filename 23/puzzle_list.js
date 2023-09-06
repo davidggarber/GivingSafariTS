@@ -57,9 +57,13 @@ var puzzles = [
     { title: 'Mathematics', thumb: 'Math', author: 'David Garber', type: types.word, group: group.cut },
 ];
 
-function puzzleHref(puz) {
+function puzzleFile(puz) {
     if (puz['file']) {
-        return puz['file'] + '.html';
+        return puz['file'];
     }
-    return puz.title.replaceAll(' ', '') + '.html';
+    return puz.title.replaceAll(' ', '');
+}
+
+function puzzleHref(puz) {
+    return puzzleFile(puz) + '.html';
 }

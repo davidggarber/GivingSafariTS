@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>State &amp; Layout Tests</title>
+
+    <script src="../puzzle_list.js"></script>
+    <script src="wmq.js"></script>
+    <script>
+      function onLoad() {
+        initPuzzleList();
+      }
+
+      function initPuzzleList() {
+        // var select = document.getElementById('select');
+        var radios = document.getElementById('radios');
+        for (var i = 0; i < puzzles.length; i++) {
+          var puz = puzzles[i];
+          if (puz.group != group.cut) {
+            //var opt = document.createElement('option');
+            //opt.value = i;
+            //opt.innerText = puz.title;
+            //select.appendChild(opt);
+            
+            var span = document.createElement('span');
+            var radio = document.createElement('input');
+            var label = document.createElement('label');
+            radio.id = 'r' + i;
+            radio.type = 'radio';
+            radio.name = 'radios';
+            radio.value = i;
+            radio.onchange = function(e) { onPuzzleRadio(e); }
+            label.setAttribute('for', radio.id);
+            label.innerText = puz.title;
+            span.appendChild(radio);
+            span.appendChild(label);
+            radios.appendChild(span);
+          }
+        }
+      }
+
+      var lastIndex = 0;
+      function loadPuzzle(index) {
+        if (index == undefined) {
+          index = lastIndex;
+        }
+        else {
+          lastIndex = index;
+        }
+        var puz = puzzles[index];
+        var load = JSON.stringify(wmq[puzzleFile(puz)]);
+        var iframe = document.getElementById('iframe');
+        if (puz.orientation == orient.landscape) {
+          iframe.classList.add('landscape');
+        }
+        else {
+          iframe.classList.remove('landscape');
+        }
+
+        iframe.src = '../' + puzzleHref(puz);
+        storageKey = iframe.src;
+        localStorage.setItem(storageKey, load)
+        iframe.src = '../' + puzzleHref(puz) + "?reload=true";
+      }
+
+      function onPuzzleSelect(select) {
+        if (!select) {
+          select = document.getElementById('select');
+        }
+        var index = parseInt(select.item(select.selectedIndex).value);
+        loadPuzzle(index);
+      }
+
+      function onPuzzleRadio(evt) {
+        var radio = evt.target;
+        var index = parseInt(radio.value);
+        loadPuzzle(index);
+        setTimeout(function () { radio.focus(); }, 500);
+      }
+
+    </script>
+    <style>
+      td {
+        vertical-align: top;
+      }
+      #iframe {
+        display: inline-block;
+        width: 9in;
+        height: 11.5in;
+      }
+      #iframe.landscape {
+        width: 12in;
+        height: 9in;
+      }
+      #radios span {
+        display: block;
+        cursor: pointer;
+      }
+    </style>
+  </head> 
+  <body onload="onLoad()">
+    <table>
+      <tr>
+        <td>
+          Puzzles:
+          <div id="radios"></div>
+          <button onclick="loadPuzzle()">Reload</button>
+        </td>
+        <td>
+          <iframe id="iframe"></iframe>
+        </td>
+      </tr>
+    </table>
+    <p>
+    </p>
+    </div>
+  </body>
+</html>

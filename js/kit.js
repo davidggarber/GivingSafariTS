@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = void 0;
+exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -735,23 +735,46 @@ var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}
 //
 var checkStorage = null;
 /**
+ * Saved state uses local storage, keyed off this page's URL
+ * minus any parameters
+ */
+function storageKey() {
+    return window.location.origin + window.location.pathname;
+}
+exports.storageKey = storageKey;
+/**
  * If storage exists from a previous visit to this puzzle, offer to reload.
  */
 function checkLocalStorage() {
     // Each puzzle is cached within localStorage by its URL
-    if (!isIFrame() && !isRestart() && window.location.href in localStorage) {
-        var item = localStorage.getItem(window.location.href);
+    var key = storageKey();
+    if (!isIFrame() && !isRestart() && key in localStorage) {
+        var item = localStorage.getItem(key);
         if (item != null) {
-            checkStorage = JSON.parse(item);
+            try {
+                checkStorage = JSON.parse(item);
+            }
+            catch (_a) {
+                checkStorage = {};
+            }
             var empty = true; // It's possible to cache all blanks, which are uninteresting
-            for (var key in checkStorage) {
-                if (checkStorage[key] != null && checkStorage[key] != '') {
+            for (var key_1 in checkStorage) {
+                if (checkStorage[key_1] != null && checkStorage[key_1] != '') {
                     empty = false;
                     break;
                 }
             }
             if (!empty) {
-                createReloadUI(checkStorage.time);
+                var force = forceReload();
+                if (force == undefined) {
+                    createReloadUI(checkStorage.time);
+                }
+                else if (force) {
+                    doLocalReload(false);
+                }
+                else {
+                    cancelLocalReload(false);
+                }
             }
         }
     }
@@ -877,7 +900,7 @@ function cancelLocalReload(hide) {
     }
     // Clear cached storage
     checkStorage = null;
-    localStorage.removeItem(window.location.href);
+    localStorage.removeItem(storageKey());
 }
 //////////////////////////////////////////////////////////
 // Utilities for saving to local cache
@@ -888,7 +911,7 @@ function cancelLocalReload(hide) {
 function saveCache() {
     if (!reloading) {
         localCache.time = new Date();
-        localStorage.setItem(window.location.href, JSON.stringify(localCache));
+        localStorage.setItem(storageKey(), JSON.stringify(localCache));
     }
 }
 /**
@@ -1375,13 +1398,14 @@ function loadMetaMaterials(puzzle, up, page) {
 // Convert the absolute href of the current window to a relative href
 // levels: 1=just this file, 2=parent folder + fiole, etc.
 function getRelFileHref(levels) {
-    var bslash = window.location.href.lastIndexOf('\\');
-    var fslash = window.location.href.lastIndexOf('/');
+    var key = storageKey();
+    var bslash = key.lastIndexOf('\\');
+    var fslash = key.lastIndexOf('/');
     var delim = '/';
     if (fslash < 0 || bslash > fslash) {
         delim = '\\';
     }
-    var parts = window.location.href.split(delim);
+    var parts = key.split(delim);
     parts.splice(0, parts.length - levels);
     return parts.join(delim);
 }
@@ -1393,8 +1417,9 @@ function getRelFileHref(levels) {
  * @returns a path to the other file
  */
 function getOtherFileHref(file, up, rel) {
-    var bslash = window.location.href.lastIndexOf('\\');
-    var fslash = window.location.href.lastIndexOf('/');
+    var key = storageKey();
+    var bslash = key.lastIndexOf('\\');
+    var fslash = key.lastIndexOf('/');
     var delim = '/';
     if (fslash < 0 || bslash > fslash) {
         delim = '\\';
@@ -1406,7 +1431,7 @@ function getOtherFileHref(file, up, rel) {
     else {
         up += 1;
     }
-    var parts = window.location.href.split(delim);
+    var parts = key.split(delim);
     parts.splice(parts.length - up, up, file);
     if (rel) {
         parts.splice(0, parts.length - rel);
@@ -4420,6 +4445,17 @@ function isRestart() {
     return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
 }
 exports.isRestart = isRestart;
+/**
+ * Do we want to skip the UI that offers to reload?
+ * @returns
+ */
+function forceReload() {
+    if (urlArgs['reload'] != undefined) {
+        return urlArgs['reload'] !== false;
+    }
+    return undefined;
+}
+exports.forceReload = forceReload;
 var safariSingleDetails = {
     'title': 'Puzzle',
     'logo': './Images/Sample_Logo.png',
