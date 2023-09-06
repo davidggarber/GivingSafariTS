@@ -3272,28 +3272,28 @@ function horizontalSubway(subway:HTMLElement) :SubwayPath|undefined {
   const xBottoms:number[] = [];
 
   // top-side spurs
-  const bottoms = sBottoms.split(' ');
-  for (let i = 0; i < bottoms.length; i++) {
-      const pt = getAnchor(bottoms[i], 'top');
-      bounds = bounding(pt, bounds);
-      xBottoms.push(dec(pt.x - origin.left));
+  if (sBottoms.length > 0) {
+    const bottoms = sBottoms.split(' ');
+    for (let i = 0; i < bottoms.length; i++) {
+        const pt = getAnchor(bottoms[i], 'top');
+        bounds = bounding(pt, bounds);
+        xBottoms.push(dec(pt.x - origin.left));
+    }  
   }
 
   // bottom-side spurs
-  const tops = sTops.split(' ');
-  for (let i = 0; i < tops.length; i++) {
-      const pt = getAnchor(tops[i], 'bottom');
-      bounds = bounding(pt, bounds);
-      xTops.push(dec(pt.x - origin.left));
+  if (sTops.length > 0) {
+    const tops = sTops.split(' ');
+    for (let i = 0; i < tops.length; i++) {
+        const pt = getAnchor(tops[i], 'bottom');
+        bounds = bounding(pt, bounds);
+        xTops.push(dec(pt.x - origin.left));
+    }  
   }
 
   if (!bounds) {
     return;  // ERROR
   }
-  // align the boundaries
-  const shift_top = minn(0, bounds.top - origin.top);  // zero or negative
-  const top = maxx(0, dec(bounds.top - origin.top - shift_top));
-  const bottom = dec(bounds.top + bounds.height - origin.top - shift_top);
 
   // belatedly calculate the middle
   const sMiddle = subway.getAttributeNS('', 'data-center-line');
@@ -3306,36 +3306,38 @@ function horizontalSubway(subway:HTMLElement) :SubwayPath|undefined {
   }
   else {
       middle = parseInt(sMiddle);
+      if (bounds.height <= middle) {
+        if (xTops.length == 0) {
+          bounds.y -= middle + 1;
+        }
+        bounds.height = middle + 1;
+      }
   }
+  
+  // align the boundaries
+  const shift_top = minn(0, bounds.top - origin.top);  // zero or negative
+  const top = maxx(0, dec(bounds.top - origin.top - shift_top));
+  const bottom = dec(bounds.top + bounds.height - origin.top - shift_top);
   
   let d = '';
   if (bounds.width <= 2.5 && xTops.length == 1 && xBottoms.length == 1) {
+    // Special case (nearly) vertical connectors
     d = 'M' + xTops[0] + ',' + top  
       + ' L' + xBottoms[0] + ',' + bottom;
   }
   else {
-    // Draw the first top to the last bottom
-    d = 'M' + xTops[0] + ',' + top  
-        + ' L' + xTops[0] + ',' + middle
-        + ' L' + xBottoms[xBottoms.length - 1] + ',' + middle
-        + ' L' + xBottoms[xBottoms.length - 1] + ',' + bottom;
-    if (xTops.length > 0 || xBottoms.length > 0) {
-        // Draw the last top to the first bottom
-        d += 'M' + xTops[xTops.length - 1] + ',' + top
-            + ' L' + xTops[xTops.length - 1] + ',' + middle
-            + ' L' + xBottoms[0] + ',' + middle
-            + ' L' + xBottoms[0] + ',' + bottom;
+    // Draw the horizontal bar
+    d = 'M' + dec(bounds.left - origin.left) + ',' + middle
+      + ' h' + dec(bounds.width);
+    // Draw all up-facing spurs
+    for (let i = 0; i < xTops.length; i++) {
+        d += ' M' + xTops[i] + ',' + middle
+          + ' v' + -middle;
     }
-    // Add any middle spurs
-    for (let i = 1; i < xTops.length - 1; i++) {
-        d += 'M' + xTops[i] + ',' + top
-            + ' L' + xTops[i] + ',' + middle
-            + ' L' + xBottoms[0] + ',' + middle;
-    }
-    for (let i = 1; i < xBottoms.length - 1; i++) {
-        d += 'M' + xBottoms[i] + ',' + bottom
-            + ' L' + xBottoms[i] + ',' + middle
-            + ' L' + xTops[0] + ',' + middle;
+    // Draw all down-facing spurs
+    for (let i = 0; i < xBottoms.length; i++) {
+        d += ' M' + xBottoms[i] + ',' + middle
+          + ' v' + dec(bounds.height - middle);
     }
   }
 
