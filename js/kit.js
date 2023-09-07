@@ -4482,7 +4482,7 @@ var safari20Details = {
     'title': 'Safari Labs',
     'logo': './Images/PS20 logo.png',
     'icon': './Images/Beaker_icon.png',
-    'puzzleList': './index.html',
+    'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
     'googleFonts': 'Architects+Daughter',
