@@ -1,13 +1,19 @@
 <html>
-<head>
+<head id="head">
     <title>Giving Safari 2023: Safari Labs</title>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; URL=safari.html" />
-
+    <script>
+        var url = window.location.href;
+        url = url.replace('index.html', 'safari.html');
+        var meta = document.createElement('meta');
+        meta.setAttribute('http-equiv', 'refresh');
+        meta.setAttribute('content', '0; URL=' + url);
+        document.getElementById('head').appendChild(meta);
+    </script>
 </head>
 <body>
     <p>
-        <a href="safari.html">Giving Safari 23's home page is at safari.html</a>
+        Giving Safari 23's home page is at <a href="safari.html">safari.html</a>
     </p>
 </body>
 </html>
