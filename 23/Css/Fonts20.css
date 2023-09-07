@@ -7,9 +7,10 @@
   font-family: 'Architects Daughter';
 }
 
-.letter-cell {
+._20 .letter-cell {
   font-family: 'Kalam', cursive;
   font-size: 14pt;
+  width: 1.05em;
 }
 
 .word-cell {
