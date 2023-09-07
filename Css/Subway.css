@@ -27,3 +27,6 @@
 .subway.purple path {
   stroke: rgb(159, 0, 159);
 }
+.subway.pink path {
+  stroke: rgb(255, 80, 255);
+}
