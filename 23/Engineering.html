@@ -142,7 +142,7 @@
       #Engineering .stampTool img {
         width: 48px;
         height: 48px;
-        margin-top: 6px;
+        margin-top: 3px;
       }
       .stampedObject {
         -webkit-user-select: none;
@@ -201,6 +201,9 @@
         <div class="stampTool medium" data-template-id="drawNW">
           <div><img src="Images/Eng/TrackNW.png"></div>
         </div>
+        <div class="stampTool medium" data-template-id="drawX">
+          <div><img src="Images/Eng/X.png" style="width:24px;height:24px; margin:12px; margin-top:15px;"></div>
+        </div>
         <div class="stampTool medium" data-template-id="drawErase">
           <div style="background-color: #eee;"><img src="Images/transparent-pixel.png"><span class="label" style="position:absolute; left:6px; top:0.2in; width:48px; text-align: center;">erase</span></div>
         </div>
@@ -232,8 +235,13 @@
           </div>
         </template>
         <template id="drawNW">
-          <div class="stampedObject track" data-template-id="drawNW" data-next-template-id="drawErase">
+          <div class="stampedObject track" data-template-id="drawNW" data-next-template-id="drawX">
             <img src="Images/Eng/BlueNW.png">
+          </div>
+        </template>
+        <template id="drawX">
+          <div class="stampedObject track" data-template-id="drawX" data-next-template-id="drawErase">
+            <img src="Images/Eng/X.png" style="width:24px;height:24px; margin:17px;">
           </div>
         </template>
       </div>  
