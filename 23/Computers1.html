@@ -12,7 +12,7 @@
         'copyright': '2020',
         'type': 'logic',
         'abilities': {
-          'stamping': true
+          'highlights': true
         }
       };
     </script>
@@ -35,12 +35,9 @@
         stroke-width: 3px;
         cursor: pointer;
       }
-      .circuit-gate.on-stamp,.circuit-diode.on-stamp {
+      .circuit-gate.highlighted,.circuit-diode.highlighted {
         fill: lime;
         stroke: green;
-      }
-      .circuit-gate.off-stamp,.circuit-diode.off-stamp {
-        fill: #333;
       }
       #diagram text {
         font-family: Arial;
@@ -65,12 +62,9 @@
         stroke-width: 0.5px;
         cursor: pointer;
       }
-      .display-diode.on-stamp {
+      .display-diode.highlighted {
         fill: lime;
         stroke: green;
-      }
-      .display-diode.off-stamp {
-        fill: #333;
       }
 
       #display text {
@@ -95,18 +89,9 @@
         font-size: 10pt;
         padding: 10px;
       }
-      .stampTool img {
-        position: relative;
-        top: 9px;
-        width: 0.3in;
-        height: 0.3in;
-      }
-      #Computers .stampTool.selected div {
-        border: solid 3px #77f;
-      }
     </style>
   </head>
-  <body id="Computers">
+  <body>
     <div id="pageBody">
       <p class="flavor" style="margin-top: 0.6in; width: 2.17in;">
         Truth tables for digital logic gates, for your reference:
@@ -203,7 +188,7 @@
         </tr>
       </table>
 
-      <svg id="display" style="position: absolute; left: 0px; bottom: 0px; width:4in; height: 1.5in;" class="stampable-container" data-stampable-rules=".display-diode">
+      <svg id="display" style="position: absolute; left: 0px; bottom: 0px; width:4in; height: 1.5in;" class="highlight-container" data-highlight-rules=".display-diode">
         <g transform="translate(0,0)">
           <path d="M8,12 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
           <path d="M8,53 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode"></path>
@@ -247,7 +232,7 @@
       </svg>
 
 
-      <svg id="diagram" style="position: absolute; right: -0.25in; top: 0px; width: 4.5in; height: 9.1in;" class="stampable-container" data-stampable-rules=".circuit-gate .circuit-diode">
+      <svg id="diagram" style="position: absolute; right: -0.25in; top: 0px; width: 4.5in; height: 9.1in;" class="highlight-container" data-highlight-rules=".circuit-gate .circuit-diode">
         <!--starts-->
         <g class="circuit-gate">
           <rect x="103" y="4.5" width="35" height="35" rx="9" class="start"></rect>
@@ -332,25 +317,9 @@
         <path d="M281.5,579 v188 h-44" class="circuit-wire"></path>
       </svg>
 
-      <div id="stampPalette" data-tool-count="5" data-tool-erase="erase-stamp" style="position: absolute; right:0in; top: 7.25in;">
-        <div class="stampTool small" data-template-id="on-stamp" data-click-modifier="ctrl" title="ctrl + stamp" style="display:block;">
-          <div class="stampIcon power-on" style="background-color: #99ff99;"><img src="Images/Comp/lightbulb.png"></div>
-        </div>
-        <div class="stampTool small" data-template-id="off-stamp" data-click-modifier="shift" title="shift + stamp" style="display:block;">
-          <div class="stampIcon power-off" style="background-color: #333;"><img src="Images/Comp/open-circuit.png"></div>
-        </div>
-        <div class="stampTool small" data-template-id="erase-stamp" style="display:block;">
-          <div class="stampIcon" style="background-color: #ccc;"><img src="Images/Comp/undo.png"></div>
-        </div>
-      </div>
-      <div class="stampToolTemplates" id="drawTool1">
-        <template id="on-stamp">
-          <g class="stampedObject on" class="stampedObject" data-template-id="on-stamp" data-next-template-id="off-stamp">
-        </template>
-        <template id="off-stamp">
-          <g class="stampedObject off" class="stampedObject" data-template-id="off-stamp" data-next-template-id="erase-stamp">
-        </template>
-      </div>  
+      <p class="flavor screen-only" style="position: absolute; bottom: -20px; right: 1.25in;">
+        Click on circuits to highlight.
+      </p>
 
     </div>
   </body>

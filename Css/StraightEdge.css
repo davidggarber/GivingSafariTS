@@ -1,3 +1,6 @@
+.straight-edge-area {
+  touch-action: none;
+}
 .straight-edge-area .vertex {
   fill:black;
   stroke:none;

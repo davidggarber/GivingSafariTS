@@ -5,6 +5,9 @@
   z-index: 101;
 }
 
+.word-select-area {
+  touch-action: none;
+}
 .word-select-area .vertex {
   fill:none;
 }
