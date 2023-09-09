@@ -8,46 +8,46 @@
 }
 
 .input-font {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat';
 }
 
 ._20 .letter-cell {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat';
   font-size: 14pt;
   width: 1.05em;
 }
 
 .word-cell {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat';
   font-size: 14pt;
 }
 
 #final .letter-cell {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat';
   font-size: 20pt;
   color: #ff0099;
 }
 
 #extracted {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat';
   font-size: 20pt;
   color: #ff0099;
 }
 
 .extracted {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat';
   font-size: 20pt;
   color: #ff0099;
 }
 
 #extracted .letter-cell {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat';
   font-size: 20pt;
   color: #ff0099;
 }
 
 #extracted .letter-input {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat';
   font-size: 20pt;
   color: #ff0099;
 }
