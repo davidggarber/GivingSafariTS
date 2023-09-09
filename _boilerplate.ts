@@ -118,6 +118,7 @@ const safariSingleDetails:PuzzleEventDetails = {
     'puzzleList': '',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
+    'googleFonts': 'Caveat',
     'links': [
 //        { rel:'preconnect', href:'https://fonts.googleapis.com' },
 //        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
@@ -131,6 +132,7 @@ const safariSampleDetails:PuzzleEventDetails = {
     'puzzleList': './index.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
+    'googleFonts': 'Caveat',
     'links': []
 }
 
@@ -141,7 +143,7 @@ const safari20Details:PuzzleEventDetails = {
     'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
-    'googleFonts': 'Architects+Daughter',
+    'googleFonts': 'Architects+Daughter,Caveat',
     'links': []
 }
 
@@ -362,6 +364,18 @@ function boilerplate(bp: BoilerPlateData) {
         gFonts = safariDetails.googleFonts + (gFonts ? (',' + gFonts) : '');
     }
     if (gFonts) {
+        //<link rel="preconnect" href="https://fonts.googleapis.com">
+        const gapis = {
+            'rel': 'preconnect',
+            'href': 'https://fonts.googleapis.com'
+        };
+        //<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        const gstatic = {
+            'rel': 'preconnect',
+            'href': 'https://fonts.gstatic.com',
+            'crossorogin': ''
+        };
+
         const fonts = gFonts.split(',');
         const link = {
             'href': 'https://fonts.googleapis.com/css2?family=' + fonts.join('&family=') + '&display=swap',

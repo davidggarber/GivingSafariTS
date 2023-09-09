@@ -53,6 +53,7 @@
         rect.setAttributeNS('', 'height', 50);
         g.appendChild(rect);
         var fo = document.createElementNS(svg_xmlns, 'foreignObject');
+        fo.classList.add('input-font');
         var inp = document.createElement('input');
         inp.classList.add('letter-input')
 
@@ -101,6 +102,7 @@
       }
 
       #sudoku foreignObject {
+        position: relative;
         width: 50px;
         height: 50px;
       }
@@ -113,7 +115,6 @@
       }
 
       #sudoku .letter-input {
-        font-family: 'Kalam', cursive;
         font-size: 20pt;
         color: red;
       }

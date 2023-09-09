@@ -7,43 +7,47 @@
   font-family: 'Architects Daughter';
 }
 
+.input-font {
+  font-family: 'Caveat', cursive;
+}
+
 ._20 .letter-cell {
-  font-family: 'Kalam', cursive;
+  font-family: 'Caveat', cursive;
   font-size: 14pt;
   width: 1.05em;
 }
 
 .word-cell {
-  font-family: 'Kalam', cursive;
+  font-family: 'Caveat', cursive;
   font-size: 14pt;
 }
 
 #final .letter-cell {
-  font-family: 'Kalam', cursive;
+  font-family: 'Caveat', cursive;
   font-size: 20pt;
   color: #ff0099;
 }
 
 #extracted {
-  font-family: 'Kalam', cursive;
+  font-family: 'Caveat', cursive;
   font-size: 20pt;
   color: #ff0099;
 }
 
 .extracted {
-  font-family: 'Kalam', cursive;
+  font-family: 'Caveat', cursive;
   font-size: 20pt;
   color: #ff0099;
 }
 
 #extracted .letter-cell {
-  font-family: 'Kalam', cursive;
+  font-family: 'Caveat', cursive;
   font-size: 20pt;
   color: #ff0099;
 }
 
 #extracted .letter-input {
-  font-family: 'Kalam', cursive;
+  font-family: 'Caveat', cursive;
   font-size: 20pt;
   color: #ff0099;
 }

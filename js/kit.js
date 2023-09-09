@@ -4485,7 +4485,7 @@ var safari20Details = {
     'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
-    'googleFonts': 'Architects+Daughter',
+    'googleFonts': 'Architects+Daughter,Kalam',
     'links': []
 };
 var pastSafaris = {
@@ -4648,6 +4648,17 @@ function boilerplate(bp) {
         gFonts = safariDetails.googleFonts + (gFonts ? (',' + gFonts) : '');
     }
     if (gFonts) {
+        //<link rel="preconnect" href="https://fonts.googleapis.com">
+        var gapis = {
+            'rel': 'preconnect',
+            'href': 'https://fonts.googleapis.com'
+        };
+        //<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        var gstatic = {
+            'rel': 'preconnect',
+            'href': 'https://fonts.gstatic.com',
+            'crossorogin': ''
+        };
         var fonts = gFonts.split(',');
         var link = {
             'href': 'https://fonts.googleapis.com/css2?family=' + fonts.join('&family=') + '&display=swap',
