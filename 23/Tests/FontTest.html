@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      .caveat {
+        font-family: Caveat;
+      }
+      .cursive {
+        font-family: cursive;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Normal <input type="text"></p>
+    <p class="caveat">Caveat <input class="caveat" style="font-weight: 100;" type="text"></p>
+    <p class="caveat" style="font-weight: 500;">Caveat @500 <input class="caveat" style="font-weight: 500" type="text"></p>
+    <p class="caveat" style="font-weight: 600;">Caveat @600 <input class="caveat" style="font-weight: 600" type="text"></p>
+    <p class="cursive">Cursive <input class="cursive" style="font-weight: 100;" type="text"></p>
+    <p class="cursive" style="font-weight: 500;">Cursive @500 <input class="cursive" style="font-weight: 500" type="text"></p>
+    <p class="cursive" style="font-weight: 600;">Cursive @600 <input class="cursive" style="font-weight: 600" type="text"></p>
+    <svg width="500" height="300">
+      <text x="10" y="30">Normal text in an SVG</text>
+      <text x="210" y="30">Caveat text</text>
+      <text x="310" y="30">Cursive text</text>
+      <foreignObject x="10" y="40" width="500" height="60">
+        <p class="caveat">Caveat <input class="caveat" style="font-weight: 100;" type="text">
+          <span class="cursive">Cursive <input class="cursive" style="font-weight: 100;" type="text"></span>
+        </p>
+      </foreignObject>
+    </svg>
+  </body>
+</html>
