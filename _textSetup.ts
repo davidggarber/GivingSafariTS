@@ -44,12 +44,20 @@ export function textSetup() {
  *                       - box: renders each input as a box, using the same spacing as underlines
  *   data-extract-image: Specifies an image to be rendered behind extractable inputs.
  *                       Example: "Icons/Circle.png" will render a circle behind the input, in addition to any other extract styles
+ * 
  *   NOTE: the -style and -image fields can be placed on the affected pattern tag, or on any parent below the <BODY>.
+ * 
+ * ---- STYLES ----
+ *   letter-grid-2d:       Simple arrow navigation in all directions. At left/right edges, wrap
+ *   letter-grid-discover: Subtler arrow navigation, accounts for offsets by finding nearest likely target
+ *   loop-navigation:      When set, arrowing off top or bottom loops around
+ *   navigate-literals:    A table with this class will allow the cursor to land on literals, but not over-type them.
  */
 function setupLetterPatterns() {
     const tables:HTMLCollectionOf<Element> = document.getElementsByClassName('letter-cell-table');
     for (let i = 0; i < tables.length; i++) {
         const table = tables[i];
+        const navLiterals = findParentOfClass(table, 'navigate-literals') != null;
         const cells = table.getElementsByTagName('td');
         for (let j = 0; j < cells.length; j++) {
             const td = cells[j];
@@ -77,6 +85,14 @@ function setupLetterPatterns() {
                     toggleClass(td, 'extract-input', true);
                     toggleClass(td, 'extract-literal', true);
                     td.setAttributeNS(null, 'data-extract-value', td.innerText);
+                }
+                if (navLiterals) {
+                    var span = document.createElement('span');
+                    toggleClass(span, 'letter-cell', true);
+                    toggleClass(span, 'literal', true);
+                    toggleClass(span, 'read-only-overlay', true);
+                    // Don't copy contents into span. Only used for cursor position
+                    td.appendChild(span);
                 }
             }
         }
@@ -376,7 +392,7 @@ function setupLetterCells() {
 
         if (hasClass(cell, 'literal')) {
             toggleClass(inp, 'letter-non-input');
-            const val = cell.innerText;
+            const val = cell.innerText || cell.innerHTML;
             cell.innerHTML = '';
 
             inp.setAttribute('data-literal', val == '\xa0' ? ' ' : val);

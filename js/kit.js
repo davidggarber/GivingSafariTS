@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = void 0;
+exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -184,6 +184,15 @@ function findEndInContainer(current, matchClass, skipClass, containerClass, dir)
 }
 exports.findEndInContainer = findEndInContainer;
 /**
+ * Determine the tag type, based on the tag name (case-insenstive)
+ * @param elmt An HTML element
+ * @param tag a tag name
+ */
+function isTag(elmt, tag) {
+    return elmt.tagName.toUpperCase() == tag.toUpperCase();
+}
+exports.isTag = isTag;
+/**
  * Find the nearest containing node that contains the desired class.
  * @param elmt - An existing element
  * @param parentClass - A class name of a parent element
@@ -311,6 +320,9 @@ exports.newTR = newTR;
  */
 function constructTable(details) {
     var root = document.getElementById(details.rootId);
+    if (details.onRoot) {
+        details.onRoot(root);
+    }
     var height = (details.data) ? details.data.length : details.height;
     for (var y = 0; y < height; y++) {
         var row = root;
@@ -1622,6 +1634,9 @@ exports.onLetterKeyDown = onLetterKeyDown;
  * @returns
  */
 function matchInputRules(input, evt) {
+    if (input.readOnly) {
+        return false;
+    }
     if (evt.key.length != 1 || evt.ctrlKey || evt.altKey) {
         return false;
     }
@@ -1861,19 +1876,24 @@ function ApplyExtraction(text, dest) {
     else if (hasClass(dest, 'all-caps')) {
         text = text.toLocaleUpperCase();
     }
-    var destInp = (dest.tagName != 'INPUT') ? null : dest;
-    var current = (destInp === null) ? dest.innerText : destInp.value;
+    var destInp = isTag(dest, 'INPUT') ? dest : null;
+    var destText = isTag(dest, 'TEXT') ? dest : null;
+    var current = (destInp !== null) ? destInp.value : (destText !== null) ? destText.innerHTML : dest.innerText;
     if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
         return;
     }
     if (!ExtractionIsInteresting(text) && ExtractionIsInteresting(current)) {
         text = '';
     }
-    if (!destInp) {
-        dest.innerText = text;
+    if (destInp) {
+        destInp.value = text;
+    }
+    else if (destText) {
+        destText.innerHTML = '';
+        destText.appendChild(document.createTextNode(text));
     }
     else {
-        destInp.value = text;
+        dest.innerText = text;
     }
 }
 /**
@@ -2365,12 +2385,20 @@ exports.textSetup = textSetup;
  *                       - box: renders each input as a box, using the same spacing as underlines
  *   data-extract-image: Specifies an image to be rendered behind extractable inputs.
  *                       Example: "Icons/Circle.png" will render a circle behind the input, in addition to any other extract styles
+ *
  *   NOTE: the -style and -image fields can be placed on the affected pattern tag, or on any parent below the <BODY>.
+ *
+ * ---- STYLES ----
+ *   letter-grid-2d:       Simple arrow navigation in all directions. At left/right edges, wrap
+ *   letter-grid-discover: Subtler arrow navigation, accounts for offsets by finding nearest likely target
+ *   loop-navigation:      When set, arrowing off top or bottom loops around
+ *   navigate-literals:    A table with this class will allow the cursor to land on literals, but not over-type them.
  */
 function setupLetterPatterns() {
     var tables = document.getElementsByClassName('letter-cell-table');
     for (var i = 0; i < tables.length; i++) {
         var table = tables[i];
+        var navLiterals = findParentOfClass(table, 'navigate-literals') != null;
         var cells = table.getElementsByTagName('td');
         for (var j = 0; j < cells.length; j++) {
             var td = cells[j];
@@ -2398,6 +2426,14 @@ function setupLetterPatterns() {
                     toggleClass(td, 'extract-input', true);
                     toggleClass(td, 'extract-literal', true);
                     td.setAttributeNS(null, 'data-extract-value', td.innerText);
+                }
+                if (navLiterals) {
+                    var span = document.createElement('span');
+                    toggleClass(span, 'letter-cell', true);
+                    toggleClass(span, 'literal', true);
+                    toggleClass(span, 'read-only-overlay', true);
+                    // Don't copy contents into span. Only used for cursor position
+                    td.appendChild(span);
                 }
             }
         }
@@ -2655,7 +2691,7 @@ function setupLetterCells() {
         }
         if (hasClass(cell, 'literal')) {
             toggleClass(inp, 'letter-non-input');
-            var val = cell.innerText;
+            var val = cell.innerText || cell.innerHTML;
             cell.innerHTML = '';
             inp.setAttribute('data-literal', val == '\xa0' ? ' ' : val);
             if (navLiterals) {

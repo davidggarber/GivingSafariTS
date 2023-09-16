@@ -17,6 +17,7 @@ export type TableDetails = {
   width?: number;   // number of columns, indexed [0..width)
   data?: string[];  // array of strings, where each string is one row and each character is one cell
                         // if set, height and width can be omitted, and derived from this array
+  onRoot?: (root: HTMLElement|null) => undefined;  // if provided, callback once on the table root, before any rows or cells
   onRow?: (y: number) => HTMLElement|null;
   onCell: (val: string, x: number, y: number) => HTMLElement|null;
 }
@@ -35,6 +36,9 @@ export function newTR(y:number) {
  */
 export function constructTable(details: TableDetails) {
   const root = document.getElementById(details.rootId);
+  if (details.onRoot) {
+    details.onRoot(root);
+  }
   const height = (details.data) ? details.data.length : (details.height as number);
   for (let y = 0; y < height; y++) {
     let row = root;

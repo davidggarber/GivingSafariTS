@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Weird Maths',
+        'author': 'Martyn Lovell',
+        'copyright': '2020',
+        'type': 'Math',
+        'textInput': true,
+        'abilities': {
+          'decoder': true,
+          'decoderMode': 'Ascii'
+        },
+        'tableBuilder': {
+          'rootId': 'grid-root',
+          'height': 9,
+          'width': 9,
+          'onRoot': drawTable,
+          'onRow': buildRow,
+          'onCell': buildCell,
+        }
+      };
+      var table = [
+        ['5  ...   ', '23'],
+        [' 4 1 583 ', '169'],
+        ['  9 8 7  ', '389'],
+        ['.5 839 6.', '234'],
+        ['.  671 5.', '28'],
+        ['39 524 7.', '478'],
+        ['  8 1 59 ', '1'],
+        [' 3 4 8 1 ', '5'],
+        ['2  ...  6', '78'],
+      ]
+      const svg_xmlns = 'http://www.w3.org/2000/svg';
+      var size = 64;
+      var offset = 4;
+
+      var boxes = [
+        [1,1,'black'],
+        [5,1,'black'],
+        [1,5,'black'],
+        [5,5,'black'],
+        [0,0,'red'],
+        [6,0,'red'],
+        [0,6,'red'],
+        [6,6,'red'],
+      ]
+
+      function drawTable(root) {
+        root = document.getElementById('border-root');
+        var horzD = '';
+        var vertD = '';
+        for (var i = 0; i < 10; i++) {
+          horzD += ' M0,' + (i * size) + ' h' + (size * 9);
+          vertD += ' M' + (i * size) + ',0 v' + (size * 9);
+        }
+        var horz = document.createElementNS(svg_xmlns, 'path');
+        horz.setAttributeNS('', 'd', horzD)
+        horz.classList.add('mini-borders')
+        root.appendChild(horz);
+        var vert = document.createElementNS(svg_xmlns, 'path');
+        vert.setAttributeNS('', 'd', vertD)
+        vert.classList.add('mini-borders')
+        root.appendChild(vert);
+
+        var boxD = ' h' + (3 * size) + ' v' + (3 * size) + ' h' + (-3 * size) + ' Z';
+        for (var i = 0; i < boxes.length; i++) {
+          var box = boxes[i];
+          var path = document.createElementNS(svg_xmlns, 'path');
+          var d = 'M' + (box[0] * size) + ',' + (box[1] * size) + boxD;
+          path.setAttributeNS('', 'd', d)
+          path.classList.add(box[2] +  '-borders')
+          root.appendChild(path);
+        }
+      }
+
+      function buildRow(y) {
+        var g = document.createElementNS(svg_xmlns, 'g');
+        g.setAttributeNS('', 'data-extracted-id', y + 1);
+        var text = document.createElementNS(svg_xmlns, 'text');
+        text.setAttributeNS('', 'x', size * 9.25);
+        text.setAttributeNS('', 'y', size * (y + .7));
+        text.id = 'extracted-' + (y + 1);
+        text.classList.add('sum-eq');
+        text.setAttributeNS('', 'data-extract-join', '+');
+        g.appendChild(text);
+        return g;
+      }
+
+      function buildCell(val, x, y) {
+        val = table[y][0][x];
+        var black = val == '.';
+        var gray = table[y][1].indexOf(x + 1) >= 0;
+        var x0 = offset + x * size;
+        var y0 = offset + y * size;
+        var g = document.createElementNS(svg_xmlns, 'g');
+        g.setAttributeNS('', 'transform', 'translate(' + x0 + ', ' + y0 + ')');
+
+        var rect = document.createElementNS(svg_xmlns, 'rect');
+        rect.setAttributeNS('', 'x', 0);
+        rect.setAttributeNS('', 'y', 0);
+        rect.setAttributeNS('', 'width', size);
+        rect.setAttributeNS('', 'height', size);
+        g.appendChild(rect);
+
+        if (black) {
+          rect.classList.add('black');
+        }
+        else {
+          rect.classList.add(gray ? 'gray' : 'white');
+
+          var fo = document.createElementNS(svg_xmlns, 'foreignObject');
+          fo.classList.add('letter-cell');
+          fo.classList.add('numeric')
+          if (gray) {
+            fo.classList.add('extract')
+          }
+
+          if (val != ' ') {
+            g.classList.add('given');
+            fo.classList.add('literal');
+            fo.appendChild(document.createTextNode(val));
+          }
+
+          g.appendChild(fo);
+        }
+        return g;
+      }
+
+
+    </script>
+    <style>
+      .flavor {
+        font-style: italic;
+      }
+      #sudoku {
+        margin-left: 0.7in;
+      }
+      rect.white {
+        fill: white;
+      }
+      rect.gray {
+        fill: #d4d4d4;
+      }
+      rect.black {
+        fill: black;
+      }
+      .mini-borders {
+        stroke: black;
+        stroke-width: 0.5px;
+      }
+      .red-borders {
+        stroke: #00bb00;
+        stroke-width: 3px;
+        fill: none;
+      }
+      .black-borders {
+        stroke: black;
+        stroke-width: 3px;
+        fill: none;
+      }
+      #sudoku foreignObject {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        font-size: 25pt;
+      }
+      #sudoku .sum-eq {
+        fill: #ff0099;
+      }
+      #WeirdMaths .letter-cell.literal {
+        font-family: 'Calibri';
+        font-size: 25pt;
+      }
+      #WeirdMaths .letter-cell.literal .letter-input {
+        color: black;
+      }
+    </style>
+  </head>
+  <body id="WeirdMaths">
+    <div id="pageBody">
+      <p class="flavor">
+        This grid works like Sudoku. 
+        Each large 3x3 square that is outlined <span style="color:#00bb00"><b>green</b></span> or <b>black</b> square should contain each of the digits 1-9 once. 
+        There may be no repeated digits in any column or row, even where the row or column includes filled black squares. 
+        Filled black squares contain no digit. Ignore the light grey squares until you have solved the grid.
+      </p>
+
+      <svg id="sudoku" width="700" height="600">
+        <g id="grid-root" class="letter-grid-discover navigate-literals">
+        </g>
+        <g id="border-root" transform="translate(4,4)">
+        </g>
+      </svg>
+
+      <p class="flavor">
+        Once you have completed the puzzle, sum the light grey shaded digits in each of the nine rows, 
+        and convert those numbers to letters. Read off in order, top to bottom.
+      </p>
+
+      <p>
+        Final Answer: <span id="final" class="create-from-pattern" data-letter-pattern="9" ex></span>
+      </p>
+
+    </div>
+  </body>
+</html>

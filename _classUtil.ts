@@ -196,6 +196,15 @@ export function findEndInContainer( current: Element,
 }
 
 /**
+ * Determine the tag type, based on the tag name (case-insenstive)
+ * @param elmt An HTML element
+ * @param tag a tag name
+ */
+export function isTag(elmt: Element, tag: string) {
+    return elmt.tagName.toUpperCase() == tag.toUpperCase();
+}
+
+/**
  * Find the nearest containing node that contains the desired class.
  * @param elmt - An existing element
  * @param parentClass - A class name of a parent element
