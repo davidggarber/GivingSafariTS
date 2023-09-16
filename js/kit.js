@@ -4720,7 +4720,7 @@ function boilerplate(bp) {
  */
 var cssToLoad = 1;
 /**
- * Append a any link to the header
+ * Append any link tag to the header
  * @param head the head tag
  * @param det the attributes of the link tag
  */
@@ -4734,8 +4734,10 @@ function addLink(head, det) {
     if (det.crossorigin != undefined) {
         link.crossOrigin = det.crossorigin;
     }
-    link.onload = function () { cssLoaded(); };
-    cssToLoad++;
+    if (det.rel.toLowerCase() == "stylesheet") {
+        link.onload = function () { cssLoaded(); };
+        cssToLoad++;
+    }
     head.appendChild(link);
 }
 /**
