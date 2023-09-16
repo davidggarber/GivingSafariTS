@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Mudoku',
+        'author': 'Jeffrey Lin',
+        'copyright': '2020',
+        'type': 'logic',
+        'textInput': true,
+        'abilities': {
+          'highlights': true
+        },
+        'tableBuilder': {
+          'rootId': 'grid-root',
+          'data': [
+            ' U PC SR ',
+            'U R   PU ',
+            'P CO T   ',
+            'UE MS CP ',
+            ' C  PE S ',
+            ' TP EC MO',
+            '   SMER T',
+            ' PT     C',
+            'ROR   M  ',
+          ],
+          'onCell': buildCell,
+          'onRow': buildRow
+        }
+      };
+
+      const svg_xmlns = 'http://www.w3.org/2000/svg';
+
+      function buildRow(y) {
+        var g = document.createElementNS(svg_xmlns, 'g');
+        g.classList.add('letter-cell-block');
+        return g;
+      }
+      function buildCell(val, x, y) {
+        var dx = x * 50;
+        var dy = y * 50;
+        var g = document.createElementNS(svg_xmlns, 'g');
+        g.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
+
+        var rect = document.createElementNS(svg_xmlns, 'rect');
+        rect.setAttributeNS('', 'x', 0);
+        rect.setAttributeNS('', 'y', 0);
+        rect.setAttributeNS('', 'width', 50);
+        rect.setAttributeNS('', 'height', 50);
+        g.appendChild(rect);
+        var fo = document.createElementNS(svg_xmlns, 'foreignObject');
+        fo.classList.add('input-font');
+        var inp = document.createElement('input');
+        inp.classList.add('letter-input')
+
+        g.classList.add('input');
+        inp.classList.add('letter-input')
+
+        if (val != ' ') {
+          g.classList.add('gray');
+          g.classList.add('can-highlight');
+          var t = document.createElementNS(svg_xmlns, 'text');
+          t.appendChild(document.createTextNode(val));
+          t.setAttributeNS('', 'x', 25);
+          t.setAttributeNS('', 'y', 33);
+          g.appendChild(t);
+          inp.setAttribute('required', true);
+          inp.setAttribute('title', '');
+        }
+        else {
+          g.classList.add('white');
+        }
+
+        fo.appendChild(inp);
+        g.appendChild(fo);
+        return g;
+      }
+    </script>
+    <style>
+      #sudoku {
+        position: relative;
+        margin-top: 0.5in;
+        margin-left: 1in;
+        border-spacing: 0px;
+      }
+      .mini-borders {
+        stroke: black;
+        stroke-width: 0.5px;
+      }
+      .region-borders {
+        stroke: black;
+        stroke-width: 2px;
+      }
+      .outer-border {
+        stroke: black;
+        stroke-width: 4px;
+        fill: none;
+      }
+
+      #sudoku foreignObject {
+        position: relative;
+        width: 50px;
+        height: 50px;
+      }
+
+      #sudoku .letter-input {
+        width: 90%;
+        height: 90%;
+        margin-left: 5%;
+        margin-top: 5%;
+      }
+
+      #sudoku .letter-input {
+        font-size: 20pt;
+        color: red;
+      }
+
+      input:required {
+        background-color: #ffff00d0;
+      }
+
+      input:required:invalid {
+        background-color: transparent;
+      }
+
+      #sudoku text {
+        font-family: 'Verdana';
+        font-size: 14pt;
+        font-weight: bold;
+        color: black;
+        text-anchor: middle;
+      }
+
+      .white rect {
+        fill: white;
+      }
+      .gray rect {
+        fill: #e7e6e6;
+      }
+      .gray.highlighted rect {
+        fill: yellow;
+      }
+
+    </style>
+  </head>
+  <body id="Mudoku">
+    <div id="pageBody">
+      <p class="flavor">
+        The COMPUTERS have been infected, and now they are mutating!!! 
+        We ran it through some tests and found that the infection has resulted in one extra set of 
+        incorrect COMPUTERS to be shown in the grid (There is 1 incorrect C, 1 incorrect O … etc.). 
+        True to its sudoku roots though, the infection would occur exactly once in each row, column, and 3x3 grid. 
+        Could you help us identify the infected cells and get rid of the infection?
+      </p>
+
+      <svg id="sudoku" width="500" height="500">
+        <g id="grid-root" class="letter-grid-2d navigate-literals" transform="translate(40 10)">
+        </g>
+        <g id="border-root" transform="translate(40 10)">
+          <path class="mini-borders" d="M50,0 v450 M100,0 v450 M200,0 v450 M250,0 v450 M350,0 v450 M400,0 v450"></path>
+          <path class="mini-borders" d="M0,50 h450 M0,100 h450 M0,200 h450 M0,250 h450 M0,350 h450 M0,400 h450"></path>
+          <path class="region-borders" d="M150,0 v450 M300,0 v450 M0,150 h450 M0,300 h450"></path>
+          <rect class="outer-border" x="0" y="0" width="450" height="450"></rect>
+        </g>
+      </svg>
+
+
+    </div>
+  </body>
+</html>
