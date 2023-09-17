@@ -18,7 +18,9 @@
 
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('Schoolbus', 0, 4, 'tire');
+          saveMetaMaterials('Schoolbus', 0, 4, {
+            'img': 'tire',
+            'src': window.location.href});
         }
       }
     </script>

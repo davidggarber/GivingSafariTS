@@ -40,8 +40,8 @@
             }
             var materials = loadMetaMaterials('Schoolbus', 0, i);
             if (materials != null) {
-              layers[i] = materials;
-              buildLayer(i, materials);
+              layers[i] = materials['img'];
+              buildLayer(i, layers[i]);
             }
           }
         }

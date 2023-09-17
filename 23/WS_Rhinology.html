@@ -19,9 +19,11 @@
 
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('Science', 0, 4, [
-            'Dr Gamma is known for melding minds, while Dr Delta splits between Flux Capacity and Generalised AI.',
-            'Bengaluru and Beijing forbid transcending existence.']);
+          saveMetaMaterials('Science', 0, 4, {
+            'clues': [
+              'Dr Gamma is known for melding minds, while Dr Delta splits between Flux Capacity and Generalised AI.',
+              'Bengaluru and Beijing forbid transcending existence.'],
+            'src': window.location.href });
         }
       }
     </script>
