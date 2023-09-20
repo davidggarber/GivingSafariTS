@@ -3154,7 +3154,7 @@ exports.preprocessDragFunctions = preprocessDragFunctions;
  */
 function preprocessMoveable(elem) {
     elem.setAttribute('draggable', 'true');
-    elem.onmousedown = function (e) { onClickDrag(e); };
+    elem.onpointerdown = function (e) { onClickDrag(e); };
     elem.ondrag = function (e) { onDrag(e); };
     elem.ondragend = function (e) { onDragDrop(e); };
 }
@@ -3163,16 +3163,17 @@ function preprocessMoveable(elem) {
  * @param elem a drop-target element
  */
 function preprocessDropTarget(elem) {
-    elem.onmouseup = function (e) { onClickDrop(e); };
+    elem.onpointerup = function (e) { onClickDrop(e); };
     elem.ondragenter = function (e) { onDropAllowed(e); };
     elem.ondragover = function (e) { onDropAllowed(e); };
+    elem.onpointermove = function (e) { onTouchDrag(e); };
 }
 /**
  * Hook up the necessary mouse events to each free drop target
  * @param elem a free-drop element
  */
 function preprocessFreeDrop(elem) {
-    elem.onmousedown = function (e) { doFreeDrop(e); };
+    elem.onpointerdown = function (e) { doFreeDrop(e); };
     elem.ondragenter = function (e) { onDropAllowed(e); };
     elem.ondragover = function (e) { onDropAllowed(e); };
 }
@@ -3374,6 +3375,16 @@ function onClickDrop(event) {
     }
     if (_dragSelected != null) {
         var dest = findParentOfClass(target, 'drop-target');
+        if (event.pointerType == 'touch') {
+            // Touch events' target is really the source. Need to find target
+            var pos = document.elementFromPoint(event.clientX, event.clientY);
+            if (pos) {
+                pos = findParentOfClass(pos, 'drop-target');
+                if (pos) {
+                    dest = pos;
+                }
+            }
+        }
         doDrop(dest);
     }
 }
@@ -3412,6 +3423,16 @@ function onDrag(event) {
             toggleClass(dest, 'drop-hover', true);
             _dropHover = dest;
         }
+    }
+}
+/**
+ * Touch move events should behave like drag.
+ * @param event Any pointer move, but since we filter to touch, they must be dragging
+ */
+function onTouchDrag(event) {
+    if (event.pointerType == 'touch') {
+        console.log('touch-drag to ' + event.x + ',' + event.y);
+        onDrag(event);
     }
 }
 /**
@@ -3815,9 +3836,9 @@ function preprocessEndpoint(elem) {
  * @param elem a moveable element
  */
 function preprocessRulerRange(elem) {
-    elem.onmousemove = function (e) { onRulerHover(e); };
-    elem.onmousedown = function (e) { onLineStart(e); };
-    elem.onmouseup = function (e) { onLineUp(e); };
+    elem.onpointermove = function (e) { onRulerHover(e); };
+    elem.onpointerdown = function (e) { onLineStart(e); };
+    elem.onpointerup = function (e) { onLineUp(e); };
 }
 /**
  * Supported kinds of straight edges.

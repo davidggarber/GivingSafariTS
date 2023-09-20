@@ -3477,7 +3477,7 @@ export function preprocessDragFunctions() {
  */
 function preprocessMoveable(elem:HTMLElement) {
     elem.setAttribute('draggable', 'true');
-    elem.onmousedown=function(e){onClickDrag(e)};
+    elem.onpointerdown=function(e){onClickDrag(e)};
     elem.ondrag=function(e){onDrag(e)};
     elem.ondragend=function(e){onDragDrop(e)};
 }
@@ -3487,9 +3487,10 @@ function preprocessMoveable(elem:HTMLElement) {
  * @param elem a drop-target element
  */
 function preprocessDropTarget(elem:HTMLElement) {
-    elem.onmouseup=function(e){onClickDrop(e)};
+    elem.onpointerup=function(e){onClickDrop(e)};
     elem.ondragenter=function(e){onDropAllowed(e)};
     elem.ondragover=function(e){onDropAllowed(e)};
+    elem.onpointermove=function(e){onTouchDrag(e)};
 }
 
 /**
@@ -3497,7 +3498,7 @@ function preprocessDropTarget(elem:HTMLElement) {
  * @param elem a free-drop element
  */
 function preprocessFreeDrop(elem:HTMLElement) {
-    elem.onmousedown=function(e){doFreeDrop(e)};
+    elem.onpointerdown=function(e){doFreeDrop(e)};
     elem.ondragenter=function(e){onDropAllowed(e)};
     elem.ondragover=function(e){onDropAllowed(e)};
 }
@@ -3704,13 +3705,23 @@ function onClickDrag(event:MouseEvent) {
  * Conclude a drag with the mouse up
  * @param event A mouse up event
  */
-function onClickDrop(event:MouseEvent) {
+function onClickDrop(event:PointerEvent) {
     const target = event.target as HTMLElement;
     if (!target || target.tagName == 'INPUT') {
         return;
     }
     if (_dragSelected != null) {
-        const dest = findParentOfClass(target, 'drop-target') as HTMLElement;
+        let dest = findParentOfClass(target, 'drop-target') as HTMLElement;
+        if (event.pointerType == 'touch') {
+            // Touch events' target is really the source. Need to find target
+            let pos = document.elementFromPoint(event.clientX, event.clientY);
+            if (pos) {
+                pos = findParentOfClass(pos, 'drop-target');
+                if (pos) {
+                    dest = pos as HTMLElement;
+                }
+            }    
+        }
         doDrop(dest);
     }
 }
@@ -3753,6 +3764,17 @@ function onDrag(event:MouseEvent) {
             _dropHover = dest;
         }
     }    
+}
+
+/**
+ * Touch move events should behave like drag.
+ * @param event Any pointer move, but since we filter to touch, they must be dragging
+ */
+function onTouchDrag(event:PointerEvent) {
+    if (event.pointerType == 'touch') {
+        console.log('touch-drag to ' + event.x + ',' + event.y);
+        onDrag(event);
+    }
 }
 
 /**
@@ -4183,9 +4205,9 @@ function preprocessEndpoint(elem:HTMLElement) {
  * @param elem a moveable element
  */
 function preprocessRulerRange(elem:HTMLElement) {
-    elem.onmousemove=function(e){onRulerHover(e)};
-    elem.onmousedown=function(e){onLineStart(e)};
-    elem.onmouseup=function(e){onLineUp(e)};
+    elem.onpointermove=function(e){onRulerHover(e)};
+    elem.onpointerdown=function(e){onLineStart(e)};
+    elem.onpointerup=function(e){onLineUp(e)};
 }
 
 /**
