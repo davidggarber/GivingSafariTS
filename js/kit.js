@@ -345,6 +345,7 @@ function constructTable(details) {
 }
 exports.constructTable = constructTable;
 exports.svg_xmlns = 'http://www.w3.org/2000/svg';
+var html_xmlns = 'http://www.w3.org/2000/xmlns';
 function constructSvgTextCell(val, dx, dy, cls, stampable) {
     if (val == ' ') {
         return null;
@@ -363,8 +364,12 @@ function constructSvgTextCell(val, dx, dy, cls, stampable) {
     vg.appendChild(t);
     if (stampable) {
         var fo = document.createElementNS(exports.svg_xmlns, 'foreignObject');
-        fo.classList.add('stampable');
+        fo.classList.add('fo-stampable');
         vg.appendChild(fo);
+        var fod = document.createElement('div');
+        fod.setAttribute('xmlns', html_xmlns);
+        fod.classList.add('stampable');
+        fo.appendChild(fod);
     }
     return vg;
 }
@@ -386,9 +391,13 @@ function constructSvgImageCell(img, dx, dy, cls) {
 }
 exports.constructSvgImageCell = constructSvgImageCell;
 function constructSvgStampable() {
-    var foreign = document.createElementNS(exports.svg_xmlns, 'foreignObject');
-    foreign.classList.add('stampable');
-    return foreign;
+    var fo = document.createElementNS(exports.svg_xmlns, 'foreignObject');
+    fo.classList.add('fo-stampable');
+    var fod = document.createElement('div');
+    fod.setAttribute('xmlns', html_xmlns);
+    fod.classList.add('stampable');
+    fo.appendChild(fod);
+    return fo;
 }
 exports.constructSvgStampable = constructSvgStampable;
 /*-----------------------------------------------------------
