@@ -413,13 +413,16 @@ export function constructSvgTextCell(val:string, dx:number, dy:number, cls:strin
   vg.appendChild(t);
 
   if (stampable) {
+    var fog = document.createElementNS(svg_xmlns, 'g'); 
+    fog.classList.add('fo-stampable');
     var fo = document.createElementNS(svg_xmlns, 'foreignObject');
-    fo.classList.add('fo-stampable');
-    vg. appendChild(fo);
     var fod = document.createElement('div');
     fod.setAttribute('xmlns', html_xmlns);
     fod.classList.add('stampable');
+
     fo.appendChild(fod);
+    fog.appendChild(fo);
+    vg.appendChild(fog);
   }
   return vg;
 }

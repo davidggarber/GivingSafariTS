@@ -363,13 +363,15 @@ function constructSvgTextCell(val, dx, dy, cls, stampable) {
     vg.appendChild(r);
     vg.appendChild(t);
     if (stampable) {
+        var fog = document.createElementNS(exports.svg_xmlns, 'g');
+        fog.classList.add('fo-stampable');
         var fo = document.createElementNS(exports.svg_xmlns, 'foreignObject');
-        fo.classList.add('fo-stampable');
-        vg.appendChild(fo);
         var fod = document.createElement('div');
         fod.setAttribute('xmlns', html_xmlns);
         fod.classList.add('stampable');
         fo.appendChild(fod);
+        fog.appendChild(fo);
+        vg.appendChild(fog);
     }
     return vg;
 }
