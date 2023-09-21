@@ -34,6 +34,7 @@
       };
 
       const svg_xmlns = 'http://www.w3.org/2000/svg';
+      const html_xmlns="http://www.w3.org/1999/xhtml";
 
       function buildRow(y) {
         var g = document.createElementNS(svg_xmlns, 'g');
@@ -54,6 +55,9 @@
         g.appendChild(rect);
         var fo = document.createElementNS(svg_xmlns, 'foreignObject');
         fo.classList.add('input-font');
+        var fod = document.createElement('div');
+        fod.setAttribute('xmlns', html_xmlns);
+        fod.classList.add('debug');
         var inp = document.createElement('input');
         inp.classList.add('letter-input')
 
@@ -75,7 +79,8 @@
           g.classList.add('white');
         }
 
-        fo.appendChild(inp);
+        fod.appendChild(inp);
+        fo.appendChild(fod);
         g.appendChild(fo);
         return g;
       }
@@ -106,8 +111,14 @@
         width: 50px;
         height: 50px;
       }
-      foreignObject input {
+      foreignObject div {
         position: fixed;
+        width: 100%;
+        height: 100%;
+      }
+      .debug {
+        background-color: pink;
+        border: solid 1px red;
       }
 
       #sudoku .letter-input {
