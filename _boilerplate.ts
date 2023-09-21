@@ -393,6 +393,10 @@ function boilerplate(bp: BoilerPlateData) {
     if (!bp.orientation) {
         bp.orientation = 'portrait';
     }
+    if (bp.paperSize.indexOf('|') > 0) {
+        const ps = bp.paperSize.split('|');
+        bp.paperSize = isPrint() ? ps[1] : ps[0];
+    }
     toggleClass(body, bp.paperSize);
     toggleClass(body, bp.orientation);
     toggleClass(body, '_' + bp.safari);  // So event fonts can trump defaults

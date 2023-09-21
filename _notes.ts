@@ -64,6 +64,11 @@ function setupNotesCells(findClass:string, tagInput:string|undefined, index:numb
         let inp = document.createElement('input');
         inp.type = 'text';
         inp.classList.add('note-input');
+        if (hasClass(cell, 'numeric')) {
+            // Trigger the mobile numeric keyboard
+            inp.pattern = '[0-9]*';  // iOS
+            inp.inputMode = 'numeric';  // Android
+        }
         if (tagInput != undefined) {
             inp.classList.add(tagInput);
         }
