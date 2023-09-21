@@ -3904,10 +3904,10 @@ export function preprocessStampObjects() {
     let elems = document.getElementsByClassName('stampable');
     for (let i = 0; i < elems.length; i++) {
         const elmt = elems[i] as HTMLElement;
-        elmt.onmousedown=function(e){onClickStamp(e)};
+        elmt.onpointerdown=function(e){onClickStamp(e)};
         //elmt.ondrag=function(e){onMoveStamp(e)};
-        elmt.onmouseenter=function(e){onMoveStamp(e)}; 
-        elmt.onmouseleave=function(e){preMoveStamp(e)};
+        elmt.onpointerenter=function(e){onMoveStamp(e)}; 
+        elmt.onpointerleave=function(e){preMoveStamp(e)};
     }
 
     elems = document.getElementsByClassName('stampTool');

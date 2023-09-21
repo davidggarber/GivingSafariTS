@@ -3555,10 +3555,10 @@ function preprocessStampObjects() {
     var elems = document.getElementsByClassName('stampable');
     for (var i = 0; i < elems.length; i++) {
         var elmt = elems[i];
-        elmt.onmousedown = function (e) { onClickStamp(e); };
+        elmt.onpointerdown = function (e) { onClickStamp(e); };
         //elmt.ondrag=function(e){onMoveStamp(e)};
-        elmt.onmouseenter = function (e) { onMoveStamp(e); };
-        elmt.onmouseleave = function (e) { preMoveStamp(e); };
+        elmt.onpointerenter = function (e) { onMoveStamp(e); };
+        elmt.onpointerleave = function (e) { preMoveStamp(e); };
     }
     elems = document.getElementsByClassName('stampTool');
     for (var i = 0; i < elems.length; i++) {
