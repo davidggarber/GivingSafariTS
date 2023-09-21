@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Complex Molecules',
+        'author': 'Philippe Nicolle',
+        'copyright': '2020',
+        'type': 'word',
+        'textInput': true,
+        'abilities': {
+          'notes': true
+        }
+      };
+    </script>
+    <style>
+      path {
+        fill: none;
+        stroke: black;
+        stroke-width: 1px;
+      }
+      circle {
+        fill: white;
+        stroke: black;
+        stroke-width: 1px;
+      }
+      .first circle, circle.first {
+        stroke-width: 3px;
+      }
+      .extract circle {
+        fill:#ccc;
+      }
+      text {
+        font-family: 'Verdana';
+        font-size: 10pt;
+        transform: translate(0, 85px);
+        text-anchor: middle;
+      }
+      .atom g.fo-letter-cell {
+        transform: translate(-24px, -24px);
+      }
+      g.fo-letter-cell foreignObject {
+        width: 48px;
+        height: 48px;
+      }
+      g.fo-letter-cell div.letter-cell {
+        position: fixed;
+        width: 48px;
+        height: 48px;
+        text-align: center;
+      }
+      g.fo-notes-in {
+        transform: translate(-58px, 88px);
+      }
+      g.fo-notes-in foreignObject {
+        width: 116px;
+        height: 34px;
+      }
+      g.fo-notes-in div {
+        position: fixed;
+        width: 116px;
+        height: 34px;
+      }
+      .notes-in .note-input {
+        margin-left: 8px;
+        margin-top: 4px;
+        width: 96px;
+        height: 2ex;
+        text-align: center;
+      }
+
+      .atom input {
+        font-size: 20pt;
+      }
+      #ComplexMolecules #extracted {
+        width: 100%;
+        text-align: center;
+        font-size: 24pt;
+      }
+    </style>
+  </head>
+  <body id="ComplexMolecules">
+    <div id="pageBody">
+      <svg id="svg" width="720" height="820" class="letter-grid-discover loop-navigation">
+        <path d="M360,172 L585,302 L585,562 L360,692 L135,562 L135,302 Z"></path>
+        <!-- center: 360,432 -->
+        <!-- radius: ~250 -->
+        <g id="digit" class="letter-cell-block" transform="translate(360, 172)">
+          <circle class="molecule first" r="120"></circle>
+          <text y="-10">Decimal Digit</text>
+          <g class="fo-notes-in"><foreignObject><div class="notes-in" xmlns="http://www.w3.org/2000/xmlns"><input type="input" class="note-input"></input></div></foreignObject></g>
+          <path d="M-80,0 L-4,0 L-4,-70 L4,-70 L4,0 L80,0"></path>
+          <g class="atom" transform="translate(0,-70)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom first" transform="translate(-80,0)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(0,0)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom extract" transform="translate(80,0)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell extract" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+        </g>
+
+        <g id="day" transform="translate(585, 302)"><!--360+225,432-130-->
+          <circle class="molecule" r="120"></circle>
+          <text y="10">Day of the week</text>
+          <foreignObject class="notes-in" style="transform: translate(-58px, 92px);"><input type="input" class="note-input"></input></foreignObject>
+          <path d="M-60,52 L0,52 L60,52 L30,0 L0,52 L-30,0 L30,0 L0,-52 L60,-52"></path>
+          <g class="atom" transform="translate(0,-52)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(60,-52)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(-30,0)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(30,0)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom first" transform="translate(-60,52)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom extract" transform="translate(0,52)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell extract" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(60,52)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+        </g>
+
+        <g id="element" transform="translate(585, 562)"><!--360+225,432+130-->
+          <circle class="molecule" r="120"></circle>
+          <text y="-10">Nonmetal Element</text>
+          <g class="fo-notes-in"><foreignObject><div class="notes-in" xmlns="http://www.w3.org/2000/xmlns"><input type="input" class="note-input"></input></div></foreignObject></g>
+          <path d="M-0,20 L70,20 L70,-50 L0,-50 L0,20 L-75,20 L-75,-45 L0,-45 L0,-55 L-65,-55 L-65,20"></path>
+          <g class="atom" transform="translate(-70,-50)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(0,-50)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(70,-50)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom first" transform="translate(-70,20)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(0,20)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom extract" transform="translate(70,20)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell extract" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+        </g>
+
+        <g id="planet" transform="translate(360, 692)">
+          <circle class="molecule" r="120"></circle>
+          <text y="-20">Planet of the Solar System</text>
+          <g class="fo-notes-in"><foreignObject><div class="notes-in" xmlns="http://www.w3.org/2000/xmlns"><input type="input" class="note-input"></input></div></foreignObject></g>
+          <path d="M-40,25 L40,25 M40,15 L-40,15 M-40,20 L-60,-40 L0,-80 L60,-40 L40,20"></path>
+          <g class="atom extract" transform="translate(0,-80)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell extract" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(-60,-40)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(60,-40)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom first" transform="translate(-40,20)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(40,20)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+        </g>
+
+        <g id="month" transform="translate(135, 562)"><!--360-225,432+130-->
+          <circle class="molecule" r="120"></circle>
+          <text>Month of the Year</text>
+          <g class="fo-notes-in"><foreignObject><div class="notes-in" xmlns="http://www.w3.org/2000/xmlns"><input type="input" class="note-input"></input></div></foreignObject></g>
+          <path d="M-80,-20 L0,-20 L-40,-70 L40,-70 L0,-20 L-40,30 L40,30 L0,-20 L80,-20"></path>
+          <g class="atom" transform="translate(-40,-70)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(40,-70)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom first" transform="translate(-80,-20)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(0,-20)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom extract" transform="translate(80,-20)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell extract" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(-40,30)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(40,30)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+        </g>
+
+        <g id="color" transform="translate(135, 302)"><!--360-225,432-130-->
+          <circle class="molecule" r="120"></circle>
+          <text>Color of the Rainbow</text>
+          <g class="fo-notes-in"><foreignObject><div class="notes-in" xmlns="http://www.w3.org/2000/xmlns"><input type="input" class="note-input"></input></div></foreignObject></g>
+          <path d="M90,0 L30,0 L-30,0 L-75,40 L-75,-40 L-30,0"></path>
+          <g class="atom" transform="translate(-75,-40)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom first" transform="translate(-30,0)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(30,0)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom extract" transform="translate(90,0)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell extract" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+          <g class="atom" transform="translate(-75,40)">
+            <circle r="24"></circle>
+            <g class="fo-letter-cell"><foreignObject><div class="letter-cell" xmlns="http://www.w3.org/2000/xmlns"></div></foreignObject></g>
+          </g>
+        </g>
+      </svg>
+
+      <div style="display: none;" class="extract-input extract-literal" data-extract-delay="_" data-extract-copy="1"></div>
+      <div id="extracted"></div>
+
+    </div>
+  </body>
+</html>
