@@ -160,14 +160,14 @@ body, p, td {
   position: absolute;
   right: 0px;
   top: 0px;
-  height: 0.5in;
+  height: 0.3in;
 }
 .debug #icons {
   box-shadow:0px 0px 15px #aa0000; 
 }
 
 #icons img {
-  height:0.5in;
+  height:0.3in;
   box-shadow:0px 0px 10px black; 
 }
 
