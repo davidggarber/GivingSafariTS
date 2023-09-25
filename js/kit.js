@@ -4561,7 +4561,9 @@ var safari20Details = {
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
     'googleFonts': 'Architects+Daughter,Caveat',
-    'links': []
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
 };
 var pastSafaris = {
     'Sample': safariSampleDetails,
@@ -4642,6 +4644,45 @@ var iconTypeAltText = {
     'Meta': 'Meta puzzle',
     'Reassemble': 'Assembly'
 };
+/**
+ * Create an icon appropriate for this puzzle type
+ * @param data Base64 image data
+ * @returns An img element, with inline base-64 data
+ */
+function createPrintQrBase64(data) {
+    var qr = document.createElement('img');
+    qr.id = 'qr';
+    qr.src = 'data:image/png;base64,' + data;
+    qr.alt = 'QR code to online page';
+    return qr;
+}
+function getQrPath() {
+    if (safariDetails.qr_folders) {
+        var url = window.location.href;
+        for (var _i = 0, _a = Object.keys(safariDetails.qr_folders); _i < _a.length; _i++) {
+            var key = _a[_i];
+            if (url.indexOf(key) == 0) {
+                var folder = safariDetails.qr_folders[key];
+                var names = window.location.pathname.split('/'); // trim off path before last slash
+                var name_3 = names[names.length - 1].split('.')[0]; // trim off extension
+                return folder + '/' + name_3 + '.png';
+            }
+        }
+    }
+    return undefined;
+}
+function createPrintQr() {
+    // Find relevant folder:
+    var path = getQrPath();
+    if (path) {
+        var qr = document.createElement('img');
+        qr.id = 'qr';
+        qr.src = path;
+        qr.alt = 'QR code to online page';
+        return qr;
+    }
+    return null;
+}
 /**
  * Create an icon appropriate for this puzzle type
  * @param puzzleType the name of the puzzle type
@@ -4774,6 +4815,15 @@ function boilerplate(bp) {
     tabIcon.type = 'image/png';
     tabIcon.href = safariDetails.icon;
     head.appendChild(tabIcon);
+    if (bp.qr_base64) {
+        margins.appendChild(createPrintQrBase64(bp.qr_base64));
+    }
+    else if (bp.print_qr) {
+        var qrImg = createPrintQr();
+        if (qrImg) {
+            margins.appendChild(qrImg);
+        }
+    }
     if (bp.type) {
         margins.appendChild(createTypeIcon(bp.type));
     }
