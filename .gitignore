@@ -1,3 +1,4 @@
 js/_*.js
 js/_*.js.map
 node_modules/*
+.batch/*

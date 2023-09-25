@@ -5006,6 +5006,7 @@ type PuzzleEventDetails = {
     fontCss: string;  // path from root
     googleFonts?: string;  // comma-delimeted list
     links: LinkDetails[];
+    qr_folders?: {};  // folder lookup
 }
 
 const safariSingleDetails:PuzzleEventDetails = {
@@ -5041,7 +5042,9 @@ const safari20Details:PuzzleEventDetails = {
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
     'googleFonts': 'Architects+Daughter,Caveat',
-    'links': []
+    'links': [],
+    'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+                   'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
 }
 
 const pastSafaris = {
@@ -5075,6 +5078,8 @@ type AbilityData = {
 type BoilerPlateData = {
     safari: string;  // key for Safari details
     title: string;
+    qr_base64: string;
+    print_qr: boolean;
     author: string;
     copyright: string;
     type: string;  // todo: enum
@@ -5169,6 +5174,47 @@ const iconTypeAltText = {
     'Trivia': 'Trivia puzzle',
     'Meta': 'Meta puzzle',
     'Reassemble': 'Assembly'
+}
+
+/**
+ * Create an icon appropriate for this puzzle type
+ * @param data Base64 image data
+ * @returns An img element, with inline base-64 data
+ */
+function createPrintQrBase64(data:string):HTMLImageElement {
+    const qr = document.createElement('img');
+    qr.id = 'qr';
+    qr.src = 'data:image/png;base64,' + data;
+    qr.alt = 'QR code to online page';
+    return qr;
+}
+
+function getQrPath():string|undefined {
+    if (safariDetails.qr_folders) {
+        const url = window.location.href;
+        for (const key of Object.keys(safariDetails.qr_folders)) {
+            if (url.indexOf(key) == 0) {
+                const folder = safariDetails.qr_folders[key];
+                const names = window.location.pathname.split('/');  // trim off path before last slash
+                const name = names[names.length - 1].split('.')[0];  // trim off extension
+                return folder + '/' + name + '.png';
+            }
+        }
+    }
+    return undefined;
+}
+
+function createPrintQr():HTMLImageElement|null {
+    // Find relevant folder:
+    const path = getQrPath();
+    if (path) {
+        const qr = document.createElement('img');
+        qr.id = 'qr';
+        qr.src = path;
+        qr.alt = 'QR code to online page';
+        return qr;
+    }
+    return null;
 }
 
 /**
@@ -5316,6 +5362,16 @@ function boilerplate(bp: BoilerPlateData) {
     tabIcon.href = safariDetails.icon;
     head.appendChild(tabIcon);
 
+
+    if (bp.qr_base64) {
+        margins.appendChild(createPrintQrBase64(bp.qr_base64, ));
+    }
+    else if (bp.print_qr) {
+        const qrImg = createPrintQr();
+        if (qrImg) {
+            margins.appendChild(qrImg);
+        }
+    }
 
     if (bp.type) {
         margins.appendChild(createTypeIcon(bp.type));
