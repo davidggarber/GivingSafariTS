@@ -17,6 +17,7 @@ export type TableDetails = {
   width?: number;   // number of columns, indexed [0..width)
   data?: string[];  // array of strings, where each string is one row and each character is one cell
                         // if set, height and width can be omitted, and derived from this array
+  onRoot?: (root: HTMLElement|null) => undefined;  // if provided, callback once on the table root, before any rows or cells
   onRow?: (y: number) => HTMLElement|null;
   onCell: (val: string, x: number, y: number) => HTMLElement|null;
 }
@@ -35,6 +36,9 @@ export function newTR(y:number) {
  */
 export function constructTable(details: TableDetails) {
   const root = document.getElementById(details.rootId);
+  if (details.onRoot) {
+    details.onRoot(root);
+  }
   const height = (details.data) ? details.data.length : (details.height as number);
   for (let y = 0; y < height; y++) {
     let row = root;
@@ -58,6 +62,7 @@ export function constructTable(details: TableDetails) {
 }
 
 export const svg_xmlns = 'http://www.w3.org/2000/svg';
+const html_xmlns = 'http://www.w3.org/2000/xmlns';
 
 export function constructSvgTextCell(val:string, dx:number, dy:number, cls:string, stampable?:boolean) {
   if (val == ' ') {
@@ -77,9 +82,16 @@ export function constructSvgTextCell(val:string, dx:number, dy:number, cls:strin
   vg.appendChild(t);
 
   if (stampable) {
+    var fog = document.createElementNS(svg_xmlns, 'g'); 
+    fog.classList.add('fo-stampable');
     var fo = document.createElementNS(svg_xmlns, 'foreignObject');
-    fo.classList.add('stampable');
-    vg. appendChild(fo);  
+    var fod = document.createElement('div');
+    fod.setAttribute('xmlns', html_xmlns);
+    fod.classList.add('stampable');
+
+    fo.appendChild(fod);
+    fog.appendChild(fo);
+    vg.appendChild(fog);
   }
   return vg;
 }
@@ -101,7 +113,11 @@ export function constructSvgImageCell(img:string, dx:number, dy:number, cls:stri
 }
 
 export function constructSvgStampable() {
-  var foreign = document.createElementNS(svg_xmlns, 'foreignObject');
-  foreign.classList.add('stampable');
-  return foreign;
+  var fo = document.createElementNS(svg_xmlns, 'foreignObject');
+  fo.classList.add('fo-stampable');
+  var fod = document.createElement('div');
+  fod.setAttribute('xmlns', html_xmlns);
+  fod.classList.add('stampable');
+  fo.appendChild(fod);
+  return fo;
 }

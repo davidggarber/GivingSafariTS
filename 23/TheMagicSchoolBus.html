@@ -8,6 +8,7 @@
       const boiler = {
         'safari': '20',
         'title': 'The Magic School Bus',
+        'print_qr': true,
         'author': 'Philippe Nicolle',
         'copyright': '2020',
         'feeder': 'Bus',
@@ -40,8 +41,8 @@
             }
             var materials = loadMetaMaterials('Schoolbus', 0, i);
             if (materials != null) {
-              layers[i] = materials;
-              buildLayer(i, materials);
+              layers[i] = materials['img'];
+              buildLayer(i, layers[i]);
             }
           }
         }

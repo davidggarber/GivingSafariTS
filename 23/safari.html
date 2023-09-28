@@ -51,6 +51,10 @@
         .feeders {
             position: relative;
             text-align: center;
+            width: 1.5in;
+        }
+        .feeders a {
+            text-decoration: none;
         }
         .feeders img {
             position: relative;
@@ -124,8 +128,11 @@
         }
 
         var feeders = {
-            'science': { locked: 'Images/Science/bubbling.png', unlocked: 'Images/Science/green_flask.png', materials:{} },
-            'bus': { locked: 'Images/Bus/locked.png', unlocked: 'Images/Bus/unlocked.png', materials:{} }
+            'science': { locked: 'Images/Science/bubbling.png', unlocked: 'Images/Science/green_flask.png', tooltip: 'Weird Science feeder piece', materials: {} },
+            'bus': { locked: 'Images/Bus/locked.png', unlocked: 'Images/Bus/unlocked.png', tooltip: 'Magic Schoolbus feeder piece', materials: {} },
+            'exp-cosmos': { locked: 'Icons/exp-cosmos-locked.png', unlocked: 'Icons/exp-cosmos.png', tooltip: 'Challenge ticket: Cosmos', materials: {} },
+            'exp-trivia': { locked: 'Icons/exp-trivia-locked.png', unlocked: 'Icons/exp-trivia.png', tooltip: 'Challenge ticket: Science Trivia', materials: {} },
+            'exp-tunes': { locked: 'Icons/exp-tunes-locked.png', unlocked: 'Icons/exp-tunes.png', tooltip: 'Challenge ticket: Name That Tune', materials: {} },
         }
 
         function expandPuzzles() {
@@ -142,13 +149,11 @@
                 var tdTitle = document.createElement('td');
                 var tdAuthor = document.createElement('td');
                 var tdFeeder = document.createElement('td');
-                var tdChallenge = document.createElement('td');
                 tr.classList.add('sortable');
                 thIcon.classList.add('icons');
                 tdTitle.classList.add('html');
                 tdAuthor.classList.add('author');
                 tdFeeder.classList.add('feeders');
-                tdChallenge.classList.add('challenge');
                 var imgIcon = document.createElement('img');
                 var aTitle = document.createElement('a');
                 if (puz.icon) {
@@ -177,7 +182,6 @@
                 tr.appendChild(thIcon);
                 tr.appendChild(tdTitle);
                 tr.appendChild(tdFeeder);
-                tr.appendChild(tdChallenge);
                 tr.appendChild(tdAuthor);
                 thIcon.appendChild(imgIcon);
                 tdTitle.appendChild(aTitle);
@@ -198,23 +202,32 @@
             }
         }
 
-        function createFeeder(feed, unlocked) {
-            var spanFeed = document.createElement('span');
+        // feed is a struct: [0] is the feeder name, [1] is the index (or 0 if indexes are used)
+        function createFeeder(feed, unlocked, altImg) {
+            var spanFeed = document.createElement(unlocked ? 'a' : 'span');
             spanFeed.classList.add(feed[0]);
+            spanFeed.title = feeders[feed[0]].tooltip;
             var imgFeed = document.createElement('img');
-            var subFeed = document.createElement('sub');
-            subFeed.innerText = feed[1];
 
             if (unlocked) {
                 imgFeed.src = feeders[feed[0]].unlocked;
                 spanFeed.classList.add('unlocked');
+                spanFeed.target = '_blank';
+                spanFeed.href = feeders[feed[0]].materials[feed[1]];
             }
             else {
                 imgFeed.src = feeders[feed[0]].locked;
                 spanFeed.classList.add('locked');
             }
+            if (altImg) {
+                imgFeed.src = altImg;
+            }
             spanFeed.appendChild(imgFeed);
-            spanFeed.appendChild(subFeed);
+            if (feed.length > 1 && feed[1] > 0) {
+                var subFeed = document.createElement('sub');
+                subFeed.innerText = feed[1];
+                spanFeed.appendChild(subFeed);
+            }
             return spanFeed;
         }
 
@@ -226,8 +239,8 @@
                 }
                 var materials = loadMetaMaterials('Science', 0, i);
                 if (materials != null) {
+                    feeders['science'].materials[i] = materials['src'];
                     td.appendChild(createFeeder(['science', i], true));
-                    feeders['science'].materials[i] = materials;
                 }
             }
 
@@ -238,8 +251,22 @@
                 }
                 var materials = loadMetaMaterials('Schoolbus', 0, i);
                 if (materials != null) {
+                    feeders['bus'].materials[i] = materials['src'];
                     td.appendChild(createFeeder(['bus', i], true));
-                    feeders['bus'].materials[i] = materials;
+                }
+            }
+
+            challenges = ['exp-cosmos', 'exp-trivia', 'exp-tunes'];
+            for (var i = 0; i < challenges.length; i++) {
+                var chal = challenges[i];  
+                td = document.getElementById(chal + '-unlocked');
+                if (Object.keys(feeders[chal].materials).length > 0) {
+                    continue;
+                }
+                var materials = loadMetaMaterials(chal, 0, 1);
+                if (materials != null) {
+                    feeders[chal].materials[0] = materials['src'];
+                    td.appendChild(createFeeder([chal, 0], true, 'Icons/ticket.png'));
                 }
             }
         }
@@ -296,14 +323,13 @@
     <table id="table" style="border-collapse: collapse">
         <thead>
             <tr class="title" style="text-align: center;">
-                <th colspan="5" class="title" style="text-align: center;">Giving Safari 2023</th>
+                <th colspan="4" class="title" style="text-align: center;">Giving Safari 2023</th>
             </tr>
             <tr id="sortHeader">
-                <th class="icon" onclick="sortTable(1)">Type</th>
+                <th class="icons" onclick="sortTable(1)">Type</th>
                 <th class="html" onclick="sortTable(2)">Puzzle</th>
-                <th class="feeder" onclick="sortTable(3)">Feeder</th>
-                <th class="challenge" onclick="sortTable(4)">Challenge</th>
-                <th class="author" onclick="sortTable(5)">Author
+                <th class="feeders" onclick="sortTable(3)">Feeder</th>
+                <th class="author" onclick="sortTable(4)">Author
                     <img id="logo" src="Images/PS20 logo.png" style="width: 440px; height: 569px;">
                 </th>
             </tr>    
@@ -313,25 +339,52 @@
         </tbody>
         <tfoot id="meta_list">
             <tr>
-                <td colspan="3" style="background-color: #D1D6D7">&nbsp;</th>
+                <td colspan="4" style="background-color: #D1D6D7">&nbsp;</th>
             </tr>
             <tr>
                 <th>&nbsp;</th>
                 <th class="html" style="text-align: left;">Meta-Puzzles</th>
-                <th colspan="2">Unlocked</th>
+                <th>Unlocked</th>
                 <th class="author" style="text-align: left;">Author</th>
             </tr>    
             <tr>
                 <td class="icons"><img src="Icons/bus.png"></td>
                 <td class="html"><a href="TheMagicSchoolBus.html" target="_blank" class="hover">The Magic School Bus<img class="thumb" src="Thumbs/Tmsb.png"></a></td>
-                <td id="bus-unlocked" class="feeders" colspan="2"></td>
+                <td id="bus-unlocked" class="feeders"></td>
                 <td class="author">Philippe Nicolle</td>
             </tr>
             <tr>
                 <td class="icons"><img src="Icons/science.png"></td>
                 <td class="html"><a href="WeirdScience.html" target="_blank" class="hover">Weird Science<img class="thumb" src="Thumbs/Ws.png"></a></td>
-                <td id="science-unlocked" class="feeders" colspan="2"></td>
+                <td id="science-unlocked" class="feeders"></td>
                 <td class="author">Martyn Lovell</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="background-color: #D1D6D7">&nbsp;</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th class="html" style="text-align: left;">Challenges</th>
+                <th>Ticket</th>
+                <th class="author" style="text-align: left;">Author</th>
+            </tr>    
+            <tr>
+                <td class="icons"><img src="Icons/exp-cosmos.png"></td>
+                <td class="html">Cosmos</td>
+                <td id="exp-cosmos-unlocked" class="feeders"></td>
+                <td class="author">Rorke Haining</td>
+            </tr>
+            <tr>
+                <td class="icons"><img src="Icons/exp-trivia.png"></td>
+                <td class="html">Science Trivia</td>
+                <td id="exp-trivia-unlocked" class="feeders"></td>
+                <td class="author">Cele Wolman</td>
+            </tr>
+            <tr>
+                <td class="icons"><img src="Icons/exp-tunes.png"></td>
+                <td class="html">Name That Tune</td>
+                <td id="exp-tunes-unlocked" class="feeders"></td>
+                <td class="author">Arwen Pond</td>
             </tr>
         </tfoot>
     </table>

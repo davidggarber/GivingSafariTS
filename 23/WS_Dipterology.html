@@ -8,6 +8,7 @@
       const boiler = {
         'safari': '20',
         'title': 'Weird Science -- Materials #1',
+        'print_qr': true,
         'author': '',
         'copyright': '2020',
         'type': '',
@@ -19,9 +20,11 @@
 
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('Science', 0, 1, [
-            'Dr Epsilon found Pea Hacking useful in Nairobi.',
-            'Generalised AI got help from Artificial Gravity in Beijing.']);
+          saveMetaMaterials('Science', 0, 1, {
+            'clues': [
+              'Dr Epsilon found Pea Hacking useful in Nairobi.',
+              'Generalised AI got help from Artificial Gravity in Beijing.'],
+            'src': window.location.href });
         }
       }
     </script>

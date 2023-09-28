@@ -8,6 +8,7 @@
       const boiler = {
         'safari': '20',
         'title': 'Weird Science -- Materials #2',
+        'print_qr': true,
         'author': '',
         'copyright': '2020',
         'type': '',
@@ -19,9 +20,11 @@
 
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('Science', 0, 2, [
-            "Dr Beta's work in Stanford on Cold Fusion was fundamentally changed by his reversal of neutron polarity.",
-            'Artificial Gravity is useless for Filaments or Fusion.']);
+          saveMetaMaterials('Science', 0, 2, {
+            'clues': [
+              "Dr Beta's work in Stanford on Cold Fusion was fundamentally changed by his reversal of neutron polarity.",
+              'Artificial Gravity is useless for Filaments or Fusion.'],
+            'src': window.location.href });
         }
       }
     </script>

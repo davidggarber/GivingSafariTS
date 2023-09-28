@@ -202,6 +202,15 @@ export function findEndInContainer( current: Element,
 }
 
 /**
+ * Determine the tag type, based on the tag name (case-insenstive)
+ * @param elmt An HTML element
+ * @param tag a tag name
+ */
+export function isTag(elmt: Element, tag: string) {
+    return elmt.tagName.toUpperCase() == tag.toUpperCase();
+}
+
+/**
  * Find the nearest containing node that contains the desired class.
  * @param elmt - An existing element
  * @param parentClass - A class name of a parent element
@@ -339,6 +348,7 @@ export type TableDetails = {
   width?: number;   // number of columns, indexed [0..width)
   data?: string[];  // array of strings, where each string is one row and each character is one cell
                         // if set, height and width can be omitted, and derived from this array
+  onRoot?: (root: HTMLElement|null) => undefined;  // if provided, callback once on the table root, before any rows or cells
   onRow?: (y: number) => HTMLElement|null;
   onCell: (val: string, x: number, y: number) => HTMLElement|null;
 }
@@ -357,6 +367,9 @@ export function newTR(y:number) {
  */
 export function constructTable(details: TableDetails) {
   const root = document.getElementById(details.rootId);
+  if (details.onRoot) {
+    details.onRoot(root);
+  }
   const height = (details.data) ? details.data.length : (details.height as number);
   for (let y = 0; y < height; y++) {
     let row = root;
@@ -380,6 +393,7 @@ export function constructTable(details: TableDetails) {
 }
 
 export const svg_xmlns = 'http://www.w3.org/2000/svg';
+const html_xmlns = 'http://www.w3.org/2000/xmlns';
 
 export function constructSvgTextCell(val:string, dx:number, dy:number, cls:string, stampable?:boolean) {
   if (val == ' ') {
@@ -399,9 +413,16 @@ export function constructSvgTextCell(val:string, dx:number, dy:number, cls:strin
   vg.appendChild(t);
 
   if (stampable) {
+    var fog = document.createElementNS(svg_xmlns, 'g'); 
+    fog.classList.add('fo-stampable');
     var fo = document.createElementNS(svg_xmlns, 'foreignObject');
-    fo.classList.add('stampable');
-    vg. appendChild(fo);  
+    var fod = document.createElement('div');
+    fod.setAttribute('xmlns', html_xmlns);
+    fod.classList.add('stampable');
+
+    fo.appendChild(fod);
+    fog.appendChild(fo);
+    vg.appendChild(fog);
   }
   return vg;
 }
@@ -423,9 +444,13 @@ export function constructSvgImageCell(img:string, dx:number, dy:number, cls:stri
 }
 
 export function constructSvgStampable() {
-  var foreign = document.createElementNS(svg_xmlns, 'foreignObject');
-  foreign.classList.add('stampable');
-  return foreign;
+  var fo = document.createElementNS(svg_xmlns, 'foreignObject');
+  fo.classList.add('fo-stampable');
+  var fod = document.createElement('div');
+  fod.setAttribute('xmlns', html_xmlns);
+  fod.classList.add('stampable');
+  fo.appendChild(fod);
+  return fo;
 }
 
 /*-----------------------------------------------------------
@@ -493,6 +518,11 @@ function setupNotesCells(findClass:string, tagInput:string|undefined, index:numb
         let inp = document.createElement('input');
         inp.type = 'text';
         inp.classList.add('note-input');
+        if (hasClass(cell, 'numeric')) {
+            // Trigger the mobile numeric keyboard
+            inp.pattern = '[0-9]*';  // iOS
+            inp.inputMode = 'numeric';  // Android
+        }
         if (tagInput != undefined) {
             inp.classList.add(tagInput);
         }
@@ -1777,6 +1807,9 @@ export function onLetterKeyDown(event: KeyboardEvent) {
  * @returns 
  */
 function matchInputRules(input:HTMLInputElement, evt:KeyboardEvent) {
+    if (input.readOnly) {
+        return false;
+    }
     if (evt.key.length != 1 || evt.ctrlKey || evt.altKey) {
         return false;
     }
@@ -2033,19 +2066,24 @@ function ApplyExtraction(   text:string,
         text = text.toLocaleUpperCase();
     }
 
-    const destInp:HTMLInputElement|null = (dest.tagName != 'INPUT') ? null : dest as HTMLInputElement;
-    var current = (destInp === null) ? dest.innerText : destInp.value;
+    const destInp:HTMLInputElement|null = isTag(dest, 'INPUT') ? dest as HTMLInputElement : null;
+    const destText:HTMLElement|null = isTag(dest, 'TEXT') ? dest as HTMLElement : null;
+    var current = (destInp !== null) ? destInp.value : (destText !== null) ? destText.innerHTML : dest.innerText;
     if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
         return;
     }
     if (!ExtractionIsInteresting(text) && ExtractionIsInteresting(current)) {
         text = '';
     }
-    if (!destInp) {
-        dest.innerText = text;
+    if (destInp) {
+        destInp.value = text;    
+    }
+    else if (destText) {
+        destText.innerHTML = '';
+        destText.appendChild(document.createTextNode(text));
     }
     else {
-        destInp.value = text;    
+        dest.innerText = text;
     }
 }
 
@@ -2586,12 +2624,20 @@ export function textSetup() {
  *                       - box: renders each input as a box, using the same spacing as underlines
  *   data-extract-image: Specifies an image to be rendered behind extractable inputs.
  *                       Example: "Icons/Circle.png" will render a circle behind the input, in addition to any other extract styles
+ * 
  *   NOTE: the -style and -image fields can be placed on the affected pattern tag, or on any parent below the <BODY>.
+ * 
+ * ---- STYLES ----
+ *   letter-grid-2d:       Simple arrow navigation in all directions. At left/right edges, wrap
+ *   letter-grid-discover: Subtler arrow navigation, accounts for offsets by finding nearest likely target
+ *   loop-navigation:      When set, arrowing off top or bottom loops around
+ *   navigate-literals:    A table with this class will allow the cursor to land on literals, but not over-type them.
  */
 function setupLetterPatterns() {
     const tables:HTMLCollectionOf<Element> = document.getElementsByClassName('letter-cell-table');
     for (let i = 0; i < tables.length; i++) {
         const table = tables[i];
+        const navLiterals = findParentOfClass(table, 'navigate-literals') != null;
         const cells = table.getElementsByTagName('td');
         for (let j = 0; j < cells.length; j++) {
             const td = cells[j];
@@ -2619,6 +2665,14 @@ function setupLetterPatterns() {
                     toggleClass(td, 'extract-input', true);
                     toggleClass(td, 'extract-literal', true);
                     td.setAttributeNS(null, 'data-extract-value', td.innerText);
+                }
+                if (navLiterals) {
+                    var span = document.createElement('span');
+                    toggleClass(span, 'letter-cell', true);
+                    toggleClass(span, 'literal', true);
+                    toggleClass(span, 'read-only-overlay', true);
+                    // Don't copy contents into span. Only used for cursor position
+                    td.appendChild(span);
                 }
             }
         }
@@ -2918,7 +2972,7 @@ function setupLetterCells() {
 
         if (hasClass(cell, 'literal')) {
             toggleClass(inp, 'letter-non-input');
-            const val = cell.innerText;
+            const val = cell.innerText || cell.innerHTML;
             cell.innerHTML = '';
 
             inp.setAttribute('data-literal', val == '\xa0' ? ' ' : val);
@@ -3440,7 +3494,7 @@ export function preprocessDragFunctions() {
  */
 function preprocessMoveable(elem:HTMLElement) {
     elem.setAttribute('draggable', 'true');
-    elem.onmousedown=function(e){onClickDrag(e)};
+    elem.onpointerdown=function(e){onClickDrag(e)};
     elem.ondrag=function(e){onDrag(e)};
     elem.ondragend=function(e){onDragDrop(e)};
 }
@@ -3450,9 +3504,10 @@ function preprocessMoveable(elem:HTMLElement) {
  * @param elem a drop-target element
  */
 function preprocessDropTarget(elem:HTMLElement) {
-    elem.onmouseup=function(e){onClickDrop(e)};
+    elem.onpointerup=function(e){onClickDrop(e)};
     elem.ondragenter=function(e){onDropAllowed(e)};
     elem.ondragover=function(e){onDropAllowed(e)};
+    elem.onpointermove=function(e){onTouchDrag(e)};
 }
 
 /**
@@ -3460,7 +3515,7 @@ function preprocessDropTarget(elem:HTMLElement) {
  * @param elem a free-drop element
  */
 function preprocessFreeDrop(elem:HTMLElement) {
-    elem.onmousedown=function(e){doFreeDrop(e)};
+    elem.onpointerdown=function(e){doFreeDrop(e)};
     elem.ondragenter=function(e){onDropAllowed(e)};
     elem.ondragover=function(e){onDropAllowed(e)};
 }
@@ -3667,13 +3722,23 @@ function onClickDrag(event:MouseEvent) {
  * Conclude a drag with the mouse up
  * @param event A mouse up event
  */
-function onClickDrop(event:MouseEvent) {
+function onClickDrop(event:PointerEvent) {
     const target = event.target as HTMLElement;
     if (!target || target.tagName == 'INPUT') {
         return;
     }
     if (_dragSelected != null) {
-        const dest = findParentOfClass(target, 'drop-target') as HTMLElement;
+        let dest = findParentOfClass(target, 'drop-target') as HTMLElement;
+        if (event.pointerType == 'touch') {
+            // Touch events' target is really the source. Need to find target
+            let pos = document.elementFromPoint(event.clientX, event.clientY);
+            if (pos) {
+                pos = findParentOfClass(pos, 'drop-target');
+                if (pos) {
+                    dest = pos as HTMLElement;
+                }
+            }    
+        }
         doDrop(dest);
     }
 }
@@ -3716,6 +3781,17 @@ function onDrag(event:MouseEvent) {
             _dropHover = dest;
         }
     }    
+}
+
+/**
+ * Touch move events should behave like drag.
+ * @param event Any pointer move, but since we filter to touch, they must be dragging
+ */
+function onTouchDrag(event:PointerEvent) {
+    if (event.pointerType == 'touch') {
+        console.log('touch-drag to ' + event.x + ',' + event.y);
+        onDrag(event);
+    }
 }
 
 /**
@@ -3840,10 +3916,10 @@ export function preprocessStampObjects() {
     let elems = document.getElementsByClassName('stampable');
     for (let i = 0; i < elems.length; i++) {
         const elmt = elems[i] as HTMLElement;
-        elmt.onmousedown=function(e){onClickStamp(e)};
+        elmt.onpointerdown=function(e){onClickStamp(e)};
         //elmt.ondrag=function(e){onMoveStamp(e)};
-        elmt.onmouseenter=function(e){onMoveStamp(e)}; 
-        elmt.onmouseleave=function(e){preMoveStamp(e)};
+        elmt.onpointerenter=function(e){onMoveStamp(e)}; 
+        elmt.onpointerleave=function(e){preMoveStamp(e)};
     }
 
     elems = document.getElementsByClassName('stampTool');
@@ -4146,9 +4222,9 @@ function preprocessEndpoint(elem:HTMLElement) {
  * @param elem a moveable element
  */
 function preprocessRulerRange(elem:HTMLElement) {
-    elem.onmousemove=function(e){onRulerHover(e)};
-    elem.onmousedown=function(e){onLineStart(e)};
-    elem.onmouseup=function(e){onLineUp(e)};
+    elem.onpointermove=function(e){onRulerHover(e)};
+    elem.onpointerdown=function(e){onLineStart(e)};
+    elem.onpointerup=function(e){onLineUp(e)};
 }
 
 /**
@@ -4930,6 +5006,7 @@ type PuzzleEventDetails = {
     fontCss: string;  // path from root
     googleFonts?: string;  // comma-delimeted list
     links: LinkDetails[];
+    qr_folders?: {};  // folder lookup
 }
 
 const safariSingleDetails:PuzzleEventDetails = {
@@ -4965,7 +5042,9 @@ const safari20Details:PuzzleEventDetails = {
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
     'googleFonts': 'Architects+Daughter,Caveat',
-    'links': []
+    'links': [],
+    'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+                   'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
 }
 
 const pastSafaris = {
@@ -4999,6 +5078,8 @@ type AbilityData = {
 type BoilerPlateData = {
     safari: string;  // key for Safari details
     title: string;
+    qr_base64: string;
+    print_qr: boolean;
     author: string;
     copyright: string;
     type: string;  // todo: enum
@@ -5093,6 +5174,47 @@ const iconTypeAltText = {
     'Trivia': 'Trivia puzzle',
     'Meta': 'Meta puzzle',
     'Reassemble': 'Assembly'
+}
+
+/**
+ * Create an icon appropriate for this puzzle type
+ * @param data Base64 image data
+ * @returns An img element, with inline base-64 data
+ */
+function createPrintQrBase64(data:string):HTMLImageElement {
+    const qr = document.createElement('img');
+    qr.id = 'qr';
+    qr.src = 'data:image/png;base64,' + data;
+    qr.alt = 'QR code to online page';
+    return qr;
+}
+
+function getQrPath():string|undefined {
+    if (safariDetails.qr_folders) {
+        const url = window.location.href;
+        for (const key of Object.keys(safariDetails.qr_folders)) {
+            if (url.indexOf(key) == 0) {
+                const folder = safariDetails.qr_folders[key];
+                const names = window.location.pathname.split('/');  // trim off path before last slash
+                const name = names[names.length - 1].split('.')[0];  // trim off extension
+                return folder + '/' + name + '.png';
+            }
+        }
+    }
+    return undefined;
+}
+
+function createPrintQr():HTMLImageElement|null {
+    // Find relevant folder:
+    const path = getQrPath();
+    if (path) {
+        const qr = document.createElement('img');
+        qr.id = 'qr';
+        qr.src = path;
+        qr.alt = 'QR code to online page';
+        return qr;
+    }
+    return null;
 }
 
 /**
@@ -5214,6 +5336,10 @@ function boilerplate(bp: BoilerPlateData) {
     if (!bp.orientation) {
         bp.orientation = 'portrait';
     }
+    if (bp.paperSize.indexOf('|') > 0) {
+        const ps = bp.paperSize.split('|');
+        bp.paperSize = isPrint() ? ps[1] : ps[0];
+    }
     toggleClass(body, bp.paperSize);
     toggleClass(body, bp.orientation);
     toggleClass(body, '_' + bp.safari);  // So event fonts can trump defaults
@@ -5236,6 +5362,16 @@ function boilerplate(bp: BoilerPlateData) {
     tabIcon.href = safariDetails.icon;
     head.appendChild(tabIcon);
 
+
+    if (bp.qr_base64) {
+        margins.appendChild(createPrintQrBase64(bp.qr_base64, ));
+    }
+    else if (bp.print_qr) {
+        const qrImg = createPrintQr();
+        if (qrImg) {
+            margins.appendChild(qrImg);
+        }
+    }
 
     if (bp.type) {
         margins.appendChild(createTypeIcon(bp.type));
@@ -5266,7 +5402,7 @@ function boilerplate(bp: BoilerPlateData) {
 let cssToLoad = 1;
 
 /**
- * Append a any link to the header
+ * Append any link tag to the header
  * @param head the head tag
  * @param det the attributes of the link tag
  */
@@ -5280,8 +5416,10 @@ function addLink(head:HTMLHeadElement, det:LinkDetails) {
     if (det.crossorigin != undefined) {
         link.crossOrigin = det.crossorigin;
     }
-    link.onload = function(){cssLoaded();};
-    cssToLoad++;
+    if (det.rel.toLowerCase() == "stylesheet") {
+        link.onload = function(){cssLoaded();};
+        cssToLoad++;
+    }
     head.appendChild(link);
 }
 

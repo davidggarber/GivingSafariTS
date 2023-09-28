@@ -1,4 +1,4 @@
-import { hasClass, getOptionalStyle,
+import { isTag, hasClass, getOptionalStyle,
     findParentOfClass, findFirstChildOfClass, findNextOfClass, 
     findInNextContainer, findEndInContainer,
     indexInContainer, childAtIndex, moveFocus } from "./_classUtil";
@@ -199,6 +199,9 @@ export function onLetterKeyDown(event: KeyboardEvent) {
  * @returns 
  */
 function matchInputRules(input:HTMLInputElement, evt:KeyboardEvent) {
+    if (input.readOnly) {
+        return false;
+    }
     if (evt.key.length != 1 || evt.ctrlKey || evt.altKey) {
         return false;
     }
@@ -455,19 +458,24 @@ function ApplyExtraction(   text:string,
         text = text.toLocaleUpperCase();
     }
 
-    const destInp:HTMLInputElement|null = (dest.tagName != 'INPUT') ? null : dest as HTMLInputElement;
-    var current = (destInp === null) ? dest.innerText : destInp.value;
+    const destInp:HTMLInputElement|null = isTag(dest, 'INPUT') ? dest as HTMLInputElement : null;
+    const destText:HTMLElement|null = isTag(dest, 'TEXT') ? dest as HTMLElement : null;
+    var current = (destInp !== null) ? destInp.value : (destText !== null) ? destText.innerHTML : dest.innerText;
     if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
         return;
     }
     if (!ExtractionIsInteresting(text) && ExtractionIsInteresting(current)) {
         text = '';
     }
-    if (!destInp) {
-        dest.innerText = text;
+    if (destInp) {
+        destInp.value = text;    
+    }
+    else if (destText) {
+        destText.innerHTML = '';
+        destText.appendChild(document.createTextNode(text));
     }
     else {
-        destInp.value = text;    
+        dest.innerText = text;
     }
 }
 

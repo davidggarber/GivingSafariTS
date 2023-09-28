@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = void 0;
+exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -184,6 +184,15 @@ function findEndInContainer(current, matchClass, skipClass, containerClass, dir)
 }
 exports.findEndInContainer = findEndInContainer;
 /**
+ * Determine the tag type, based on the tag name (case-insenstive)
+ * @param elmt An HTML element
+ * @param tag a tag name
+ */
+function isTag(elmt, tag) {
+    return elmt.tagName.toUpperCase() == tag.toUpperCase();
+}
+exports.isTag = isTag;
+/**
  * Find the nearest containing node that contains the desired class.
  * @param elmt - An existing element
  * @param parentClass - A class name of a parent element
@@ -311,6 +320,9 @@ exports.newTR = newTR;
  */
 function constructTable(details) {
     var root = document.getElementById(details.rootId);
+    if (details.onRoot) {
+        details.onRoot(root);
+    }
     var height = (details.data) ? details.data.length : details.height;
     for (var y = 0; y < height; y++) {
         var row = root;
@@ -333,6 +345,7 @@ function constructTable(details) {
 }
 exports.constructTable = constructTable;
 exports.svg_xmlns = 'http://www.w3.org/2000/svg';
+var html_xmlns = 'http://www.w3.org/2000/xmlns';
 function constructSvgTextCell(val, dx, dy, cls, stampable) {
     if (val == ' ') {
         return null;
@@ -350,9 +363,15 @@ function constructSvgTextCell(val, dx, dy, cls, stampable) {
     vg.appendChild(r);
     vg.appendChild(t);
     if (stampable) {
+        var fog = document.createElementNS(exports.svg_xmlns, 'g');
+        fog.classList.add('fo-stampable');
         var fo = document.createElementNS(exports.svg_xmlns, 'foreignObject');
-        fo.classList.add('stampable');
-        vg.appendChild(fo);
+        var fod = document.createElement('div');
+        fod.setAttribute('xmlns', html_xmlns);
+        fod.classList.add('stampable');
+        fo.appendChild(fod);
+        fog.appendChild(fo);
+        vg.appendChild(fog);
     }
     return vg;
 }
@@ -374,9 +393,13 @@ function constructSvgImageCell(img, dx, dy, cls) {
 }
 exports.constructSvgImageCell = constructSvgImageCell;
 function constructSvgStampable() {
-    var foreign = document.createElementNS(exports.svg_xmlns, 'foreignObject');
-    foreign.classList.add('stampable');
-    return foreign;
+    var fo = document.createElementNS(exports.svg_xmlns, 'foreignObject');
+    fo.classList.add('fo-stampable');
+    var fod = document.createElement('div');
+    fod.setAttribute('xmlns', html_xmlns);
+    fod.classList.add('stampable');
+    fo.appendChild(fod);
+    return fo;
 }
 exports.constructSvgStampable = constructSvgStampable;
 /*-----------------------------------------------------------
@@ -437,6 +460,11 @@ function setupNotesCells(findClass, tagInput, index) {
         var inp = document.createElement('input');
         inp.type = 'text';
         inp.classList.add('note-input');
+        if (hasClass(cell, 'numeric')) {
+            // Trigger the mobile numeric keyboard
+            inp.pattern = '[0-9]*'; // iOS
+            inp.inputMode = 'numeric'; // Android
+        }
         if (tagInput != undefined) {
             inp.classList.add(tagInput);
         }
@@ -1622,6 +1650,9 @@ exports.onLetterKeyDown = onLetterKeyDown;
  * @returns
  */
 function matchInputRules(input, evt) {
+    if (input.readOnly) {
+        return false;
+    }
     if (evt.key.length != 1 || evt.ctrlKey || evt.altKey) {
         return false;
     }
@@ -1861,19 +1892,24 @@ function ApplyExtraction(text, dest) {
     else if (hasClass(dest, 'all-caps')) {
         text = text.toLocaleUpperCase();
     }
-    var destInp = (dest.tagName != 'INPUT') ? null : dest;
-    var current = (destInp === null) ? dest.innerText : destInp.value;
+    var destInp = isTag(dest, 'INPUT') ? dest : null;
+    var destText = isTag(dest, 'TEXT') ? dest : null;
+    var current = (destInp !== null) ? destInp.value : (destText !== null) ? destText.innerHTML : dest.innerText;
     if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
         return;
     }
     if (!ExtractionIsInteresting(text) && ExtractionIsInteresting(current)) {
         text = '';
     }
-    if (!destInp) {
-        dest.innerText = text;
+    if (destInp) {
+        destInp.value = text;
+    }
+    else if (destText) {
+        destText.innerHTML = '';
+        destText.appendChild(document.createTextNode(text));
     }
     else {
-        destInp.value = text;
+        dest.innerText = text;
     }
 }
 /**
@@ -2365,12 +2401,20 @@ exports.textSetup = textSetup;
  *                       - box: renders each input as a box, using the same spacing as underlines
  *   data-extract-image: Specifies an image to be rendered behind extractable inputs.
  *                       Example: "Icons/Circle.png" will render a circle behind the input, in addition to any other extract styles
+ *
  *   NOTE: the -style and -image fields can be placed on the affected pattern tag, or on any parent below the <BODY>.
+ *
+ * ---- STYLES ----
+ *   letter-grid-2d:       Simple arrow navigation in all directions. At left/right edges, wrap
+ *   letter-grid-discover: Subtler arrow navigation, accounts for offsets by finding nearest likely target
+ *   loop-navigation:      When set, arrowing off top or bottom loops around
+ *   navigate-literals:    A table with this class will allow the cursor to land on literals, but not over-type them.
  */
 function setupLetterPatterns() {
     var tables = document.getElementsByClassName('letter-cell-table');
     for (var i = 0; i < tables.length; i++) {
         var table = tables[i];
+        var navLiterals = findParentOfClass(table, 'navigate-literals') != null;
         var cells = table.getElementsByTagName('td');
         for (var j = 0; j < cells.length; j++) {
             var td = cells[j];
@@ -2398,6 +2442,14 @@ function setupLetterPatterns() {
                     toggleClass(td, 'extract-input', true);
                     toggleClass(td, 'extract-literal', true);
                     td.setAttributeNS(null, 'data-extract-value', td.innerText);
+                }
+                if (navLiterals) {
+                    var span = document.createElement('span');
+                    toggleClass(span, 'letter-cell', true);
+                    toggleClass(span, 'literal', true);
+                    toggleClass(span, 'read-only-overlay', true);
+                    // Don't copy contents into span. Only used for cursor position
+                    td.appendChild(span);
                 }
             }
         }
@@ -2655,7 +2707,7 @@ function setupLetterCells() {
         }
         if (hasClass(cell, 'literal')) {
             toggleClass(inp, 'letter-non-input');
-            var val = cell.innerText;
+            var val = cell.innerText || cell.innerHTML;
             cell.innerHTML = '';
             inp.setAttribute('data-literal', val == '\xa0' ? ' ' : val);
             if (navLiterals) {
@@ -3118,7 +3170,7 @@ exports.preprocessDragFunctions = preprocessDragFunctions;
  */
 function preprocessMoveable(elem) {
     elem.setAttribute('draggable', 'true');
-    elem.onmousedown = function (e) { onClickDrag(e); };
+    elem.onpointerdown = function (e) { onClickDrag(e); };
     elem.ondrag = function (e) { onDrag(e); };
     elem.ondragend = function (e) { onDragDrop(e); };
 }
@@ -3127,16 +3179,17 @@ function preprocessMoveable(elem) {
  * @param elem a drop-target element
  */
 function preprocessDropTarget(elem) {
-    elem.onmouseup = function (e) { onClickDrop(e); };
+    elem.onpointerup = function (e) { onClickDrop(e); };
     elem.ondragenter = function (e) { onDropAllowed(e); };
     elem.ondragover = function (e) { onDropAllowed(e); };
+    elem.onpointermove = function (e) { onTouchDrag(e); };
 }
 /**
  * Hook up the necessary mouse events to each free drop target
  * @param elem a free-drop element
  */
 function preprocessFreeDrop(elem) {
-    elem.onmousedown = function (e) { doFreeDrop(e); };
+    elem.onpointerdown = function (e) { doFreeDrop(e); };
     elem.ondragenter = function (e) { onDropAllowed(e); };
     elem.ondragover = function (e) { onDropAllowed(e); };
 }
@@ -3338,6 +3391,16 @@ function onClickDrop(event) {
     }
     if (_dragSelected != null) {
         var dest = findParentOfClass(target, 'drop-target');
+        if (event.pointerType == 'touch') {
+            // Touch events' target is really the source. Need to find target
+            var pos = document.elementFromPoint(event.clientX, event.clientY);
+            if (pos) {
+                pos = findParentOfClass(pos, 'drop-target');
+                if (pos) {
+                    dest = pos;
+                }
+            }
+        }
         doDrop(dest);
     }
 }
@@ -3376,6 +3439,16 @@ function onDrag(event) {
             toggleClass(dest, 'drop-hover', true);
             _dropHover = dest;
         }
+    }
+}
+/**
+ * Touch move events should behave like drag.
+ * @param event Any pointer move, but since we filter to touch, they must be dragging
+ */
+function onTouchDrag(event) {
+    if (event.pointerType == 'touch') {
+        console.log('touch-drag to ' + event.x + ',' + event.y);
+        onDrag(event);
     }
 }
 /**
@@ -3493,10 +3566,10 @@ function preprocessStampObjects() {
     var elems = document.getElementsByClassName('stampable');
     for (var i = 0; i < elems.length; i++) {
         var elmt = elems[i];
-        elmt.onmousedown = function (e) { onClickStamp(e); };
+        elmt.onpointerdown = function (e) { onClickStamp(e); };
         //elmt.ondrag=function(e){onMoveStamp(e)};
-        elmt.onmouseenter = function (e) { onMoveStamp(e); };
-        elmt.onmouseleave = function (e) { preMoveStamp(e); };
+        elmt.onpointerenter = function (e) { onMoveStamp(e); };
+        elmt.onpointerleave = function (e) { preMoveStamp(e); };
     }
     elems = document.getElementsByClassName('stampTool');
     for (var i = 0; i < elems.length; i++) {
@@ -3779,9 +3852,9 @@ function preprocessEndpoint(elem) {
  * @param elem a moveable element
  */
 function preprocessRulerRange(elem) {
-    elem.onmousemove = function (e) { onRulerHover(e); };
-    elem.onmousedown = function (e) { onLineStart(e); };
-    elem.onmouseup = function (e) { onLineUp(e); };
+    elem.onpointermove = function (e) { onRulerHover(e); };
+    elem.onpointerdown = function (e) { onLineStart(e); };
+    elem.onpointerup = function (e) { onLineUp(e); };
 }
 /**
  * Supported kinds of straight edges.
@@ -4488,7 +4561,9 @@ var safari20Details = {
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
     'googleFonts': 'Architects+Daughter,Caveat',
-    'links': []
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
 };
 var pastSafaris = {
     'Sample': safariSampleDetails,
@@ -4569,6 +4644,45 @@ var iconTypeAltText = {
     'Meta': 'Meta puzzle',
     'Reassemble': 'Assembly'
 };
+/**
+ * Create an icon appropriate for this puzzle type
+ * @param data Base64 image data
+ * @returns An img element, with inline base-64 data
+ */
+function createPrintQrBase64(data) {
+    var qr = document.createElement('img');
+    qr.id = 'qr';
+    qr.src = 'data:image/png;base64,' + data;
+    qr.alt = 'QR code to online page';
+    return qr;
+}
+function getQrPath() {
+    if (safariDetails.qr_folders) {
+        var url = window.location.href;
+        for (var _i = 0, _a = Object.keys(safariDetails.qr_folders); _i < _a.length; _i++) {
+            var key = _a[_i];
+            if (url.indexOf(key) == 0) {
+                var folder = safariDetails.qr_folders[key];
+                var names = window.location.pathname.split('/'); // trim off path before last slash
+                var name_3 = names[names.length - 1].split('.')[0]; // trim off extension
+                return folder + '/' + name_3 + '.png';
+            }
+        }
+    }
+    return undefined;
+}
+function createPrintQr() {
+    // Find relevant folder:
+    var path = getQrPath();
+    if (path) {
+        var qr = document.createElement('img');
+        qr.id = 'qr';
+        qr.src = path;
+        qr.alt = 'QR code to online page';
+        return qr;
+    }
+    return null;
+}
 /**
  * Create an icon appropriate for this puzzle type
  * @param puzzleType the name of the puzzle type
@@ -4678,6 +4792,10 @@ function boilerplate(bp) {
     if (!bp.orientation) {
         bp.orientation = 'portrait';
     }
+    if (bp.paperSize.indexOf('|') > 0) {
+        var ps = bp.paperSize.split('|');
+        bp.paperSize = isPrint() ? ps[1] : ps[0];
+    }
     toggleClass(body, bp.paperSize);
     toggleClass(body, bp.orientation);
     toggleClass(body, '_' + bp.safari); // So event fonts can trump defaults
@@ -4697,6 +4815,15 @@ function boilerplate(bp) {
     tabIcon.type = 'image/png';
     tabIcon.href = safariDetails.icon;
     head.appendChild(tabIcon);
+    if (bp.qr_base64) {
+        margins.appendChild(createPrintQrBase64(bp.qr_base64));
+    }
+    else if (bp.print_qr) {
+        var qrImg = createPrintQr();
+        if (qrImg) {
+            margins.appendChild(qrImg);
+        }
+    }
     if (bp.type) {
         margins.appendChild(createTypeIcon(bp.type));
     }
@@ -4720,7 +4847,7 @@ function boilerplate(bp) {
  */
 var cssToLoad = 1;
 /**
- * Append a any link to the header
+ * Append any link tag to the header
  * @param head the head tag
  * @param det the attributes of the link tag
  */
@@ -4734,8 +4861,10 @@ function addLink(head, det) {
     if (det.crossorigin != undefined) {
         link.crossOrigin = det.crossorigin;
     }
-    link.onload = function () { cssLoaded(); };
-    cssToLoad++;
+    if (det.rel.toLowerCase() == "stylesheet") {
+        link.onload = function () { cssLoaded(); };
+        cssToLoad++;
+    }
     head.appendChild(link);
 }
 /**

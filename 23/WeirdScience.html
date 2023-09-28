@@ -8,6 +8,7 @@
       const boiler = {
         'safari': '20',
         'title': 'Weird Science',
+        'print_qr': true,
         'author': 'Martyn Lovell',
         'copyright': '2020',
         'feeder': 'Science',
@@ -60,8 +61,8 @@
             }
             var materials = loadMetaMaterials('Science', 0, i);
             if (materials != null) {
-              clues[i] = materials;
-              buildClueCards(i, materials);
+              clues[i] = materials['clues'];
+              buildClueCards(i, clues[i]);
             }
           }
         }

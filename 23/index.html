@@ -2,9 +2,22 @@
 <head id="head">
     <title>Giving Safari 2023: Safari Labs</title>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; URL=/23/safari.html">
+    <xmeta http-equiv="refresh" content="0; URL=/23/safari.html">
+    <script>
+        function redirect() {
+            var meta = document.createElement('meta');
+            meta.setAttribute('http-equiv', 'refresh');
+            if (window.location.href.indexOf('.html') > 0) {
+                meta.setAttribute('content', '0; URL=./safari.html');
+            }
+            else {
+                meta.setAttribute('content', '0; URL=./23/safari.html');
+            }
+            document.getElementById('head').appendChild(meta);
+        }
+    </script>
 </head>
-<body>
+<body onload="redirect()">
     <p>
         Giving Safari 23's home page is at <a href="safari.html">safari.html</a>
     </p>

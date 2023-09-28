@@ -8,6 +8,7 @@
       const boiler = {
         'safari': '20',
         'title': 'Weird Science -- Materials #3',
+        'print_qr': true,
         'author': '',
         'copyright': '2020',
         'type': '',
@@ -19,9 +20,11 @@
 
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('Science', 0, 3, [
-            'Pea Hacking is useful for AI and Devolution.',
-            'Dr Delta chose to live in Beijing, while Dr Beta refuses to live in Europe or India.']);
+          saveMetaMaterials('Science', 0, 3, {
+            'clues': [
+              'Pea Hacking is useful for AI and Devolution.',
+              'Dr Delta chose to live in Beijing, while Dr Beta refuses to live in Europe or India.'],
+            'src': window.location.href });
         }
       }
     </script>

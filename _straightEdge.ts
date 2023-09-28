@@ -78,9 +78,9 @@ function preprocessEndpoint(elem:HTMLElement) {
  * @param elem a moveable element
  */
 function preprocessRulerRange(elem:HTMLElement) {
-    elem.onmousemove=function(e){onRulerHover(e)};
-    elem.onmousedown=function(e){onLineStart(e)};
-    elem.onmouseup=function(e){onLineUp(e)};
+    elem.onpointermove=function(e){onRulerHover(e)};
+    elem.onpointerdown=function(e){onLineStart(e)};
+    elem.onpointerup=function(e){onLineUp(e)};
 }
 
 /**

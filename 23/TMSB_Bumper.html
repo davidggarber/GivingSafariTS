@@ -8,6 +8,7 @@
       const boiler = {
         'safari': '20',
         'title': 'The Magic School Bus -- Materials #1',
+        'print_qr': true,
         'author': '',
         'copyright': '2020',
         'type': '',
@@ -18,7 +19,9 @@
 
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('Schoolbus', 0, 1, 'bumper');
+          saveMetaMaterials('Schoolbus', 0, 1, {
+            'img': 'bumper',
+            'src': window.location.href });
         }
       }
     </script>

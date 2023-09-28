@@ -51,6 +51,14 @@
   margin-left: -1px;
 }
 
+.letter-cell.read-only-overlay {
+  position: absolute;
+  left: 5%;
+  top: 5%;
+  width: 90%;
+  height: 90%;
+}
+
 .block {
   background-color: #7f7f7f;
 }

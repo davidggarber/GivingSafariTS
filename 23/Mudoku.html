@@ -9,6 +9,7 @@
         'safari': '20',
         'title': 'Mudoku',
         'author': 'Jeffrey Lin',
+        'print_qr': true,
         'copyright': '2020',
         'type': 'logic',
         'textInput': true,
@@ -54,6 +55,8 @@
         g.appendChild(rect);
         var fo = document.createElementNS(svg_xmlns, 'foreignObject');
         fo.classList.add('input-font');
+        var fod = document.createElement('div');
+        fod.setAttribute('xmlns', html_xmlns);
         var inp = document.createElement('input');
         inp.classList.add('letter-input')
 
@@ -75,7 +78,8 @@
           g.classList.add('white');
         }
 
-        fo.appendChild(inp);
+        fod.appendChild(inp);
+        fo.appendChild(fod);
         g.appendChild(fo);
         return g;
       }
@@ -102,7 +106,12 @@
       }
 
       #sudoku foreignObject {
-        position: relative;
+        width: 50px;
+        height: 50px;
+      }
+
+      foreignObject div {
+        position: fixed;
         width: 50px;
         height: 50px;
       }

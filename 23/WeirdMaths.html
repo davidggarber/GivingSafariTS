@@ -8,6 +8,7 @@
       const boiler = {
         'safari': '20',
         'title': 'Weird Maths',
+        'print_qr': true,
         'author': 'Martyn Lovell',
         'copyright': '2020',
         'type': 'Math',
@@ -26,6 +27,7 @@
         border-spacing: 0px;
       }
       #sudoku td {
+        position: relative;
         width: 0.6in;
         height: 0.6in;
         vertical-align: middle;
@@ -38,28 +40,28 @@
         font-size: 25pt;
       }
       #sudoku td.rt {
-        border-top: solid 2.25px red;
+        border-top: solid 2.25px #00bb00;
       }
       #sudoku td.rl {
-        border-left: solid 2.25px red;
+        border-left: solid 2.25px #00bb00;
       }
       #sudoku td.rr {
-        border-right: solid 2.25px red;
+        border-right: solid 2.25px #00bb00;
       }
       #sudoku td.rb {
-        border-bottom: solid 2.25px red;
+        border-bottom: solid 2.25px #00bb00;
       }
       #sudoku td.rt2 {
-        border-top: solid 4.5px red;
+        border-top: solid 4.5px #00bb00;
       }
       #sudoku td.rl2 {
-        border-left: solid 4.5px red;
+        border-left: solid 4.5px #00bb00;
       }
       #sudoku td.rr2 {
-        border-right: solid 4.5px red;
+        border-right: solid 4.5px #00bb00;
       }
       #sudoku td.rb2 {
-        border-bottom: solid 4.5px red;
+        border-bottom: solid 4.5px #00bb00;
       }
       #sudoku td.bt {
         border-top: solid 2.25px black;
@@ -96,10 +98,10 @@
         color: #ff0099;
       }
       #WeirdMaths .letter-cell {
-        font-size: 20pt;
+        font-size: 25pt;
       }
       #WeirdMaths .letter-input {
-        color: deepskyblue;
+        xcolor: #0054b4;
       }
     </style>
   </head>
@@ -107,14 +109,14 @@
     <div id="pageBody">
       <p class="flavor">
         This grid works like Sudoku. 
-        Each large 3x3 square that is outlined red or black square should contain each of the digits 1-9 once. 
+        Each large 3x3 square that is outlined <span style="color:#00bb00"><b>green</b></span> or <b>black</b> square should contain each of the digits 1-9 once. 
         There may be no repeated digits in any column or row, even where the row or column includes filled black squares. 
         Filled black squares contain no digit. Ignore the light grey squares until you have solved the grid.
       </p>
 
-      <table id="sudoku" class="letter-cell-table letter-grid-discover" data-input-style="none" style="margin-left: 0.8in;">
+      <table id="sudoku" class="letter-cell-table navigate-literals letter-grid-2d" data-input-style="none" style="margin-left: 0.8in;">
         <tr data-extracted-id="1"> <!--row 1-->
-          <td class="given rl2 rt2">5</td>
+          <td class="literal given rl2 rt2">5</td>
           <td class="numeric gray extract rt2 bb"></td>
           <td class="numeric gray extract rt2 rr bb"></td>
           <td class="black rl bb">&nbsp;</td>
@@ -122,42 +124,42 @@
           <td class="black rr bb">&nbsp;</td>
           <td class="numeric rt2 rl bb"></td>
           <td class="numeric rt2 bb"></td>
-          <td class="given rt2 rr2"></td>
+          <td class="literal given rt2 rr2">1</td>
           <td id="extracted-1" class="no-cell" data-extract-join="+"></td>
         </tr>
         <tr data-extracted-id="2"> <!--row 2-->
           <td class="numeric gray extract rl2 br"></td>
-          <td class="given bl bt">4</td>
+          <td class="literal given bl bt">4</td>
           <td class="numeric bt rr"></td>
-          <td class="given bt br rl">1</td>
+          <td class="literal given bt br rl">1</td>
           <td class="numeric bt bl br"></td>
-          <td class="given gray extract rr bl bt" data-extract-value="5">5</td>
-          <td class="given rl bt">8</td>
-          <td class="given bt br">3</td>
+          <td class="literal given gray extract rr bl bt" data-extract-value="5">5</td>
+          <td class="literal given rl bt">8</td>
+          <td class="literal given bt br">3</td>
           <td class="numeric gray extract rr2 bl"></td>
           <td id="extracted-2" class="no-cell" data-extract-join="+"></td>
         </tr>
         <tr data-extracted-id="3"> <!--row 3-->
           <td class="numeric rl2 rb br"></td>
           <td class="numeric bl rb"></td>
-          <td class="given gray extract rr rb">9</td>
+          <td class="literal given gray extract rr rb">9</td>
           <td class="numeric rl br"></td>
-          <td class="given bl br">8</td>
+          <td class="literal given bl br">8</td>
           <td class="numeric bl rr"></td>
-          <td class="given rl rb">7</td>
+          <td class="literal given rl rb">7</td>
           <td class="numeric gray extract rb br"></td>
           <td class="numeric gray extract rr2 rb bl"></td>
           <td id="extracted-3" class="no-cell" data-extract-join="+"></td>
         </tr>
         <tr data-extracted-id="4"> <!--row 4-->
           <td class="black rt">&nbsp;</td>
-          <td class="given gray extract bl bb rt">5</td>
+          <td class="literal given gray extract bl bb rt">5</td>
           <td class="numeric gray extract bb rt"></td>
-          <td class="given gray extract br bb">8</td>
-          <td class="given bl br">3</td>
-          <td class="given bl bb">9</td>
+          <td class="literal given gray extract br bb">8</td>
+          <td class="literal given bl br">3</td>
+          <td class="literal given bl bb">9</td>
           <td class="numeric bb rt"></td>
-          <td class="given bb br rt">6</td>
+          <td class="literal given bb br rt">6</td>
           <td class="black rt">&nbsp;</td>
           <td id="extracted-4" class="no-cell" data-extract-join="+"></td>
         </tr>
@@ -165,52 +167,52 @@
           <td class="black">&nbsp;</td>
           <td class="numeric gray extract bl bt bb"></td>
           <td class="numeric bt bb"></td>
-          <td class="given bt bb">6</td>
-          <td class="given ">7</td>
-          <td class="given bt bb">1</td>
+          <td class="literal given bt bb">6</td>
+          <td class="literal given ">7</td>
+          <td class="literal given bt bb">1</td>
           <td class="numeric bt bb"></td>
-          <td class="given gray extract bt br bb">5</td>
+          <td class="literal given gray extract bt br bb">5</td>
           <td class="black">&nbsp;</td>
           <td id="extracted-5" class="no-cell" data-extract-join="+"></td>
         </tr>
         <tr data-extracted-id="6"> <!--row 6-->
           <td class="black rb">&nbsp;</td>
-          <td class="given rb bl bt">9</td>
+          <td class="literal given rb bl bt">9</td>
           <td class="numeric rb bt"></td>
-          <td class="given gray extract br bt">5</td>
-          <td class="given bl br">2</td>
-          <td class="given bl bt">4</td>
+          <td class="literal given gray extract br bt">5</td>
+          <td class="literal given bl br">2</td>
+          <td class="literal given bl bt">4</td>
           <td class="numeric gray extract rb bt"></td>
-          <td class="given gray extract rb bt br">7</td>
+          <td class="literal given gray extract rb bt br">7</td>
           <td class="black rb">&nbsp;</td>
           <td id="extracted-6" class="no-cell" data-extract-join="+"></td>
         </tr>
         <tr data-extracted-id="7"> <!--row 7-->
           <td class="numeric gray extract rl2 rt br"></td>
           <td class="numeric bl rt"></td>
-          <td class="given rr rt">8</td>
+          <td class="literal given rr rt">8</td>
           <td class="numeric rl br"></td>
-          <td class="given bl br">1</td>
+          <td class="literal given bl br">1</td>
           <td class="numeric bl rr"></td>
-          <td class="given rl rt">5</td>
-          <td class="given rt br">9</td>
+          <td class="literal given rl rt">5</td>
+          <td class="literal given rt br">9</td>
           <td class="numeric rr2 rt bl"></td>
           <td id="extracted-7" class="no-cell" data-extract-join="+"></td>
         </tr>
         <tr data-extracted-id="8"> <!--row 8-->
           <td class="numeric rl2 br"></td>
-          <td class="given bl bb">3</td>
+          <td class="literal given bl bb">3</td>
           <td class="numeric bb rr"></td>
-          <td class="given bb br rl">4</td>
+          <td class="literal given bb br rl">4</td>
           <td class="numeric gray extract bl br bb"></td>
-          <td class="given rr bl bb">8</td>
+          <td class="literal given rr bl bb">8</td>
           <td class="numeric rl bb"></td>
-          <td class="given bb br">1</td>
+          <td class="literal given bb br">1</td>
           <td class="numeric rr2 bl"></td>
           <td id="extracted-8" class="no-cell" data-extract-join="+"></td>
         </tr>
         <tr data-extracted-id="9"> <!--row 9-->
-          <td class="given rl2 rb2">2</td>
+          <td class="literal given rl2 rb2">2</td>
           <td class="numeric rb2 bt"></td>
           <td class="numeric rb2 bt rr"></td>
           <td class="black rl">&nbsp;</td>
@@ -218,7 +220,7 @@
           <td class="black rr">&nbsp;</td>
           <td class="numeric gray extract rb2 bt rl"></td>
           <td class="numeric gray extract rb2 bt"></td>
-          <td class="given rb2 rr2">6</td>
+          <td class="literal given rb2 rr2">6</td>
           <td id="extracted-9" class="no-cell" data-extract-join="+"></td>
         </tr>
       </table>

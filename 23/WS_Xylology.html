@@ -8,6 +8,7 @@
       const boiler = {
         'safari': '20',
         'title': 'Weird Science -- Materials #5',
+        'print_qr': true,
         'author': '',
         'copyright': '2020',
         'type': '',
@@ -19,9 +20,11 @@
 
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('Science', 0, 5, [
-            'Stanford and Oxford both have Quantum Filaments.',
-            'Everyone at Oxford refuses to work on Cold Fusion or Genetic Devolution because they claim it is bunk.']);
+          saveMetaMaterials('Science', 0, 5, {
+            'clues': [
+              'Stanford and Oxford both have Quantum Filaments.',
+              'Everyone at Oxford refuses to work on Cold Fusion or Genetic Devolution because they claim it is bunk.'],
+            'src': window.location.href });
         }
       }
     </script>
