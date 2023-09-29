@@ -16,13 +16,22 @@
         'textInput': true,
         'googleFonts': 'Architects+Daughter',
         'abilities': {
-          'notes': true
+          'notes': true,
+          'decoder': true,
+          'decoderMode': 'Ascii'
         },
-        'preSetup': buildGraphPaper
+        'preSetup': buildSvg,
+        'onInputChange': weightChange,
+        'onRestore': weightsRestored
       };
+      const xmlns = 'http://www.w3.org/2000/svg';
+      function buildSvg() {
+        buildGraphPaper();
+        var root = document.getElementById('graph-root');
+        root.appendChild(buildGraph('', graph, 0, 0));
+      }
       function buildGraphPaper() {
-        const xmlns = 'http://www.w3.org/2000/svg';
-        var graph = document.getElementById('graph');
+        var graph = document.getElementById('graph-paper');
         for (var y = 0; y <= 80; y++) {
           var path=document.createElementNS(xmlns, 'path');
           var d = "M-375," + (y * 10) + " h1110";
@@ -40,6 +49,269 @@
           graph.appendChild(path);
         }
       }
+
+      var graph = {
+          left: {
+            dist: 15, hang: {
+              left: {
+                dist: 13, hang: {
+                  skip: 1,
+                  left: {
+                    dist: 5, hang: { letter: 'a', count: 1 }
+                  },
+                  right: {
+                    dist: 1, hang: { letter: 'f', count: 3 }
+                  }
+                }
+              },
+              middle: {
+                hang: {
+                  left: {
+                    dist: 5, hang: {
+                      left: {
+                        dist: 2, hang: { letter: 'a', count: 7 }
+                      },
+                      right: {
+                        dist: 3, hang: { letter: 'b', count: 2 }
+                      }
+                    }
+                  },
+                  right: {
+                    dist: 7, hang: {
+                      left: {
+                        dist: 1, hang: { letter: 'c', count: 5 }
+                      },
+                      right: {
+                        dist: 4, hang: { letter: 'f', count: 1 }
+                      }
+                    },
+                  }
+                }
+              },
+              right: {
+                dist: 13, hang: { skip: 3, letter: 'e', count: 3 }
+              }
+            }
+          },
+          middle: {
+            hang: { skip: 3, letter: 'g', count: 1 }
+          },
+          right: {
+            dist: 40,
+            hang: {
+              left: {
+                dist: 8,
+                hang: {
+                  left: {
+                    dist: 20,
+                    hang: {
+                      left: {
+                        dist: 8, hang: { letter: 'd', count: 1 }
+                      },
+                      middle: {
+                        hang: { letter: 'c', count: 3 }
+                      },
+                      right: {
+                        dist: 8, hang: { letter: 'd', count: 1 }
+                      }
+                    }
+                  },
+                  right: {
+                    dist: 20, hang: { skip: 1, letter: 'b', count: 2 }
+                  }
+                }
+              },
+              right: {
+                dist: 28,
+                hang: {
+                  left: {
+                    dist: 5, hang: { skip: 1, letter: 'a', count: 1 }
+                  },
+                  right: {
+                    dist: 3, hang: { skip: 1, letter: 'f', count: 1 }
+                  }
+                }
+              }
+            }
+          }
+        };
+
+      var canStacks = [];
+
+      function buildGraph(id, node, x, y) {
+        var gNode = document.createElementNS(xmlns, 'g');
+        gNode.id = 'branch' + id;
+        gNode.classList.add('node');
+        var nextY = (1 + (node['skip'] || 0)) * 50;
+        var rope = document.createElementNS(xmlns, 'path');
+        rope.classList.add('rope');
+        rope.setAttributeNS('', 'd', 'M0,0 v' + nextY);
+        var gDrop = document.createElementNS(xmlns, 'g');
+        gDrop.setAttributeNS('', 'transform', 'translate(0, ' + nextY + ')');
+        gNode.appendChild(gDrop);
+        gNode.appendChild(rope);
+
+        var contents = '';
+        if (node['letter']) {
+          var letter = node['letter'];
+          var count = node['count'];
+          for (var i = count - 1; i >= 0; i--) {  // bottom to top, for z-order
+            var use = document.createElementNS(xmlns, 'use');
+            var single = count <= 3 || (i == 0 && count % 2 == 1);
+            var x = single ? 0
+              : (i % 2 == 0) ? -16 : 16;
+            var row = count <= 3 ? i
+              : Math.trunc((i + count % 2) / 2);
+            var y = row * 30;
+            use.setAttributeNS('','x', x);
+            use.setAttributeNS('','y', y);
+            use.setAttributeNS('', 'href', '#can-' + node['letter'])
+            gDrop.appendChild(use);
+            contents += letter;
+          }
+          canStacks.push(contents);
+        }
+        else {
+          var gPivot = document.createElementNS(xmlns, 'g');
+          gPivot.classList.add('pivot');
+          gDrop.appendChild(gPivot);
+
+          var xLeft = parseInt(node['left']['dist']) * -10;
+          var xRight = parseInt(node['right']['dist']) * 10;
+          var arm = document.createElementNS(xmlns, 'path');
+          arm.classList.add('arms');
+          arm.setAttributeNS('', 'd', 'M0,0 h' + xLeft + ' M0,0 h' + xRight);
+          gPivot.appendChild(arm);
+
+          var tLeft = document.createElementNS(xmlns, 'text');
+          tLeft.classList.add('left');
+          tLeft.setAttributeNS('', 'x', -5);
+          tLeft.setAttributeNS('', 'y', -5);
+          tLeft.appendChild(document.createTextNode(node['left']['dist']));
+          var tRight = document.createElementNS(xmlns, 'text');
+          tRight.classList.add('right');
+          tRight.setAttributeNS('', 'x', 5);
+          tRight.setAttributeNS('', 'y', -5);
+          tRight.appendChild(document.createTextNode(node['right']['dist']));
+          gPivot.appendChild(tLeft);
+          gPivot.appendChild(tRight);
+
+          var contents = '';
+          // left
+          var gL = document.createElementNS(xmlns, 'g');
+          gL.setAttributeNS('', 'transform', 'translate(' + xLeft + ',0)');
+          gL.classList.add('hanger');
+          var nLeft = buildGraph(id + '_L', node['left']['hang']);
+          gL.appendChild(nLeft);
+          gPivot.appendChild(gL);
+          contents += nLeft.getAttributeNS('', 'data-contents');
+          gPivot.setAttributeNS('', 'data-left-contents', nLeft.getAttributeNS('', 'data-contents'));
+          gPivot.setAttributeNS('', 'data-left-length', node['left']['dist']);
+
+          // middle
+          if (node['middle']) {
+            var gM = document.createElementNS(xmlns, 'g');
+            gM.classList.add('hanger');
+            var nMid = buildGraph(id + '_M', node['middle']['hang']);
+            gM.appendChild(nMid);
+            gPivot.appendChild(gM);
+            contents += nMid.getAttributeNS('', 'data-contents');
+          }
+
+          // right
+          var gR = document.createElementNS(xmlns, 'g');
+          gR.setAttributeNS('', 'transform', 'translate(' + xRight + ',0)');
+          gR.classList.add('hanger');
+          var nRight = buildGraph(id + '_R', node['right']['hang']);
+          gR.appendChild(nRight);
+          gPivot.appendChild(gR);
+          contents += nRight.getAttributeNS('', 'data-contents');
+          gPivot.setAttributeNS('', 'data-right-contents', nRight.getAttributeNS('', 'data-contents'));
+          gPivot.setAttributeNS('', 'data-right-length', node['right']['dist']);
+
+          gDrop.appendChild(gPivot);
+        }
+        gNode.setAttributeNS('', 'data-contents', contents);
+        return gNode;
+      }
+
+      var weights = {
+        a:0, b:0, c:0, d:0, e:0, f:0, g:0
+      };
+
+      function weightChange(inp) {
+        var span = findParentOfClass(inp, 'weight');
+        var id = span ? span.id : null;
+        if (id && id.indexOf('weight-') == 0) {
+          var letter = id.substring(7, 8);
+          weights[letter] = parseInt(inp.value) || 0;
+
+          // If player balances the scales, using positive integers, short-cut the sums
+          if (rebalance() == 0 && weights.a * weights.b * weights.c * weights.d * weights.e * weights.f * weights.g > 0) {
+            showSums(true);
+          }
+          else {
+            showSums(false);
+          }
+        }
+      }
+
+      function weightsRestored() {
+        // Re-read all inputs after restoring
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+          weightChange(inputs[i]);
+        }
+      }
+
+      function rebalance() {
+        var pivots = document.getElementsByClassName('pivot');
+        var unbalanced = 0;
+        for (var i = 0; i < pivots.length; i++) {
+          var piv = pivots[i];
+          var left = weigh(piv, 'left');
+          var right = weigh(piv, 'right');
+          if (left > right) {
+            piv.classList.add('tilt-left');
+            unbalanced++;
+          }
+          else {
+            piv.classList.remove('tilt-left');
+          }
+          if (right > left) {
+            piv.classList.add('tilt-right');
+            unbalanced++;
+          }
+          else {
+            piv.classList.remove('tilt-right');
+          }
+        }
+        return unbalanced;
+      }
+
+      function weigh(piv, side) {
+        var contents = piv.getAttributeNS('', 'data-' + side + '-contents');
+        var length = parseInt(piv.getAttributeNS('', 'data-' + side + '-length'));
+        var sum = sumCans(contents);
+        return sum * length;
+      }
+
+      function sumCans(contents) {
+        var sum = 0;
+        for (var i = 0; i < contents.length; i++) {
+          sum += weights[contents[i]];
+        }
+        return sum;
+      }
+
+      function showSums(show) {
+        var phrase = document.getElementById('phrase');
+        var notes = phrase.getElementsByClassName('note-below');
+        for (var i = 0; i < notes.length; i++) {
+          var sum = sumCans(canStacks[i]);
+          notes[i].value = show ? sum : '';
+        }
+      }
     </script>
     <style>
       .flavor {
@@ -48,20 +320,31 @@
       }
       #cans {
         position: absolute;
-        top: 0.25in;
+        top: 0.75in;
         right: 0px;
       }
       #cans .notes-below {
         width: 0.5in;
         margin: 0.1in;
       }
+      #cans .weight {
+        position: relative;
+        width: 0.4in;
+      }
+      #cans .letter-cell {
+        width: 0.4in;
+      }
       #cans svg {
+        position: absolute;
+        left: 2px;
+        top: -0.6in;
         width: 35px;
         height: 55px;
       }
-      .note-input.note-below {
+      #TippingPoint .note-input.note-below {
         height: 1.5em;
-        bottom: -1em;
+        bottom: -2em;
+        left: -4px;
       }
       #can-defs text {
         font-family: 'Architects Daughter';
@@ -78,13 +361,31 @@
         stroke: #b0b0b0;
         stroke-width: 0.5px;
       }
-      #arms {
+      .rope {
         stroke: black;
         stroke-width: 3px;
         fill: none;
         stroke-linecap: square;
       }
-      #arms text {
+      .arms {
+        stroke: black;
+        stroke-width: 3px;
+        fill: none;
+        stroke-linecap: square;
+      }
+      .tilt-left {
+        transform: rotate(-5deg);
+      }
+      .tilt-right {
+        transform: rotate(5deg);
+      }
+      .tilt-left>.hanger>.node {
+        transform: rotate(5deg);
+      }
+      .tilt-right>.hanger>.node {
+        transform: rotate(-5deg);
+      }
+      .pivot text {
         fill: black;
         stroke: none;
         font-family: 'Architects Daughter';
@@ -118,25 +419,32 @@
       <p class="flavor">
         Canisters A to G contain objects with weights 1 to 7, in some order.
         <div id="cans">
-          <span class="notes-below numeric">
+          <span id="weight-a" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
             <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-a"/></svg>
           </span>
-          <span class="notes-below numeric">
+          <span id="weight-b" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
             <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-b"/></svg>
           </span>
-          <span class="notes-below numeric">
+          <span id="weight-c" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
             <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-c"/></svg>
           </span>
-          <span class="notes-below numeric">
+          <span id="weight-d" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
             <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-d"/></svg>
           </span>
-          <span class="notes-below numeric">
+          <span id="weight-e" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
             <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-e"/></svg>
           </span>
-          <span class="notes-below numeric">
+          <span id="weight-f" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
             <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-f"/></svg>
           </span>
-          <span class="notes-below numeric">
+          <span id="weight-g" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
             <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-g"/></svg>
           </span>
         </div>
@@ -181,93 +489,8 @@
         </defs>
         
         <g id="origin">
-          <g id="graph"></g>
-          <g id="weights" transform="translate(0,250)">
-            <use x="-330" y="0" href="#can-a"></use>
-
-            <use x="-270" y="60" href="#can-f"></use>
-            <use x="-270" y="30" href="#can-f"></use>
-            <use x="-270" y="0" href="#can-f"></use>
-
-            <use x="-234" y="90" href="#can-a"></use>
-            <use x="-234" y="60" href="#can-a"></use>
-            <use x="-234" y="30" href="#can-a"></use>
-            <use x="-206" y="90" href="#can-a"></use>
-            <use x="-206" y="60" href="#can-a"></use>
-            <use x="-206" y="30" href="#can-a"></use>
-            <use x="-220" y="0" href="#can-a"></use>
-
-            <use x="-170" y="30" href="#can-b"></use>
-            <use x="-170" y="0" href="#can-b"></use>
-
-            <use x="-104" y="60" href="#can-c"></use>
-            <use x="-104" y="30" href="#can-c"></use>
-            <use x="-76" y="60" href="#can-c"></use>
-            <use x="-76" y="30" href="#can-c"></use>
-            <use x="-90" y="0" href="#can-c"></use>
-
-            <use x="-40" y="0" href="#can-f"></use>
-
-            <use x="-20" y="110" href="#can-e"></use>
-            <use x="-20" y="80" href="#can-e"></use>
-            <use x="-20" y="50" href="#can-e"></use>
-
-            <use x="-0" y="0" href="#can-g"></use>
-
-            <use x="40" y="0" href="#can-d"></use>
-
-            <use x="120" y="60" href="#can-c"></use>
-            <use x="120" y="30" href="#can-c"></use>
-            <use x="120" y="0" href="#can-c"></use>
-
-            <use x="200" y="0" href="#can-d"></use>
-
-            <use x="520" y="30" href="#can-b"></use>
-            <use x="520" y="0" href="#can-b"></use>
-
-            <use x="630" y="0" href="#can-a"></use>
-
-            <use x="710" y="0" href="#can-f"></use>
-          </g>
-          <g id="arms">
-            <!-- row-1 crossbars -->
-            <path d="M0,0 v250 M-150,50 h550"></path>
-              <text x="-5" y="45" class="left">15</text>
-              <text x="5" y="45" class="right">40</text>
-            <!-- row-2 crossbars -->
-            <path d="M-150,50 v100 M-280,100 h260"></path>
-              <text x="-155" y="95" class="left">13</text>
-              <text x="-145" y="95" class="right">13</text>
-            <path d="M400,50 v50 M320,100 h360"></path>
-              <text x="395" y="95" class="left">8</text>
-              <text x="405" y="95" class="right">28</text>
-            <!-- row-3 crossbars -->
-            <path d="M-200,150 h120"></path>
-              <text x="-155" y="145" class="left">5</text>
-              <text x="-145" y="145" class="right">7</text>
-            <path d="M320,100 v50 M120,150 h400"></path>
-              <text x="315" y="145" class="left">20</text>
-              <text x="325" y="145" class="right">20</text>
-            <path d="M680,100 v50 M630,150 h80"></path>
-              <text x="675" y="145" class="left">5</text>
-              <text x="685" y="145" class="right">3</text>
-            <!-- row-4 crossbars -->
-            <path d="M-280,100 v100 M-330,200 h60"></path>
-              <text x="-285" y="195" class="left">5</text>
-              <text x="-275" y="195" class="right">1</text>
-            <path d="M-200,150 v50 M-220,200 h50"></path>
-              <text x="-205" y="195" class="left">2</text>
-              <text x="-195" y="195" class="right">3</text>
-            <path d="M-80,150 v50 M-90,200 h50"></path>
-              <text x="-85" y="195" class="left">1</text>
-              <text x="-75" y="195" class="right">4</text>
-            <path d="M120,150 v100 M40,200 h160"></path>
-              <text x="115" y="195" class="left">8</text>
-              <text x="125" y="195" class="right">8</text>
-            <!-- row-5 hangers -->
-            <path d="M-330,200 v50 M-270,200 v50 M-220,200 v50 M-170,200 v50 M-90,200 v50 M-40,200 v50 M-20,100 v200"></path>
-            <path d="M40,200 v50 M200,200 v50 M520,150 v100 M630,150 v100 M710,150 v100"></path>
-          </g>
+          <g id="graph-paper"></g>
+          <g id="graph-root"></g>
         </g>
       </svg>
 

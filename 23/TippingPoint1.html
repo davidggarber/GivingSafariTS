@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Tipping Point',
+        'print_qr': true,
+        'author': 'Ken Pacquer',
+        'copyright': '2020',
+        'orientation': 'landscape',
+        'type': 'math',
+        'textInput': true,
+        'googleFonts': 'Architects+Daughter',
+        'abilities': {
+          'notes': true
+        },
+        'preSetup': buildGraphPaper
+      };
+      function buildGraphPaper() {
+        const xmlns = 'http://www.w3.org/2000/svg';
+        var graph = document.getElementById('graph');
+        for (var y = 0; y <= 80; y++) {
+          var path=document.createElementNS(xmlns, 'path');
+          var d = "M-375," + (y * 10) + " h1110";
+          path.setAttributeNS(null, 'd', d);
+          var cls = (y % 5 == 0) ? 'major' : 'minor';
+          path.classList.add(cls);
+          graph.appendChild(path);
+        }
+        for (var x = -37; x < 74; x++) {
+          var path=document.createElementNS(xmlns, 'path');
+          var d = "M"+ (x * 10) + ",0 v400";
+          path.setAttributeNS(null, 'd', d);
+          var cls = (x % 5 == 0) ? 'major' : 'minor';
+          path.classList.add(cls);
+          graph.appendChild(path);
+        }
+      }
+    </script>
+    <style>
+      .flavor {
+        position: relative;
+        margin-top: 0.5in;
+      }
+      #cans {
+        position: absolute;
+        top: 0.25in;
+        right: 0px;
+      }
+      #cans .notes-below {
+        width: 0.5in;
+        margin: 0.1in;
+      }
+      #cans svg {
+        width: 35px;
+        height: 55px;
+      }
+      .note-input.note-below {
+        height: 1.5em;
+        bottom: -1em;
+      }
+      #can-defs text {
+        font-family: 'Architects Daughter';
+        font-size: 12pt;
+        stroke: none;
+        font-weight: normal;
+        text-anchor: middle;
+      }
+      .major {
+        stroke:#5B9999;
+        stroke-width: 1px;
+      }
+      .minor {
+        stroke: #b0b0b0;
+        stroke-width: 0.5px;
+      }
+      #arms {
+        stroke: black;
+        stroke-width: 3px;
+        fill: none;
+        stroke-linecap: square;
+      }
+      #arms text {
+        fill: black;
+        stroke: none;
+        font-family: 'Architects Daughter';
+        font-size: 14pt;
+        font-weight: normal;
+      }
+      text.left {
+        text-anchor: end;
+      }
+      text.right {
+        text-anchor: start;
+      }
+      #weights image {
+        width: 30px;
+      }
+      #phrase {
+        position: relative;
+      }
+      #TippingPoint #phrase .letter-cell {
+        position: absolute;
+        font-size: 12pt;
+        margin-left: 5px;
+      }
+      #phrase .letter-underline {
+        border-bottom: solid 2px black;
+      }
+    </style>
+  </head>
+  <body id="TippingPoint">
+    <div id="pageBody">
+      <p class="flavor">
+        Canisters A to G contain objects with weights 1 to 7, in some order.
+        <div id="cans">
+          <span class="notes-below numeric">
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-a"/></svg>
+          </span>
+          <span class="notes-below numeric">
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-b"/></svg>
+          </span>
+          <span class="notes-below numeric">
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-c"/></svg>
+          </span>
+          <span class="notes-below numeric">
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-d"/></svg>
+          </span>
+          <span class="notes-below numeric">
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-e"/></svg>
+          </span>
+          <span class="notes-below numeric">
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-f"/></svg>
+          </span>
+          <span class="notes-below numeric">
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-g"/></svg>
+          </span>
+        </div>
+      </p>
+      <svg id="graphPaper" width="960" height="347" viewBox="-375 -1 1110 401" style="margin-top: 0.35in;">
+        <defs id="can-defs">
+          <g id="can-a" fill="#993366" stroke="#f07e2a" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#f07e2a">A</text>
+          </g>
+          <g id="can-b" fill="#b35e25" stroke="#ffe08c" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#ffe08c">B</text>
+          </g>
+          <g id="can-c" fill="#ffc000" stroke="#b35e25" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#b35e25">C</text>
+          </g>
+          <g id="can-d" fill="#00b050" stroke="#b3cdbc" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#b3cdbc">D</text>
+          </g>
+          <g id="can-e" fill="#0070c0" stroke="#cddcea" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#cddcea">E</text>
+          </g>
+          <g id="can-f" fill="#808080" stroke="#d9d9d9" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#d9d9d9">F</text>
+          </g>
+          <g id="can-g" fill="#d7aec2" stroke="#4d1933" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#4d1933">G</text>
+          </g>
+        </defs>
+        
+        <g id="origin">
+          <g id="graph"></g>
+          <g id="weights" transform="translate(0,250)">
+            <use x="-330" y="0" href="#can-a"></use>
+
+            <use x="-270" y="60" href="#can-f"></use>
+            <use x="-270" y="30" href="#can-f"></use>
+            <use x="-270" y="0" href="#can-f"></use>
+
+            <use x="-234" y="90" href="#can-a"></use>
+            <use x="-234" y="60" href="#can-a"></use>
+            <use x="-234" y="30" href="#can-a"></use>
+            <use x="-206" y="90" href="#can-a"></use>
+            <use x="-206" y="60" href="#can-a"></use>
+            <use x="-206" y="30" href="#can-a"></use>
+            <use x="-220" y="0" href="#can-a"></use>
+
+            <use x="-170" y="30" href="#can-b"></use>
+            <use x="-170" y="0" href="#can-b"></use>
+
+            <use x="-104" y="60" href="#can-c"></use>
+            <use x="-104" y="30" href="#can-c"></use>
+            <use x="-76" y="60" href="#can-c"></use>
+            <use x="-76" y="30" href="#can-c"></use>
+            <use x="-90" y="0" href="#can-c"></use>
+
+            <use x="-40" y="0" href="#can-f"></use>
+
+            <use x="-20" y="110" href="#can-e"></use>
+            <use x="-20" y="80" href="#can-e"></use>
+            <use x="-20" y="50" href="#can-e"></use>
+
+            <use x="-0" y="0" href="#can-g"></use>
+
+            <use x="40" y="0" href="#can-d"></use>
+
+            <use x="120" y="60" href="#can-c"></use>
+            <use x="120" y="30" href="#can-c"></use>
+            <use x="120" y="0" href="#can-c"></use>
+
+            <use x="200" y="0" href="#can-d"></use>
+
+            <use x="520" y="30" href="#can-b"></use>
+            <use x="520" y="0" href="#can-b"></use>
+
+            <use x="630" y="0" href="#can-a"></use>
+
+            <use x="710" y="0" href="#can-f"></use>
+          </g>
+          <g id="arms">
+            <!-- row-1 crossbars -->
+            <path d="M0,0 v250 M-150,50 h550"></path>
+              <text x="-5" y="45" class="left">15</text>
+              <text x="5" y="45" class="right">40</text>
+            <!-- row-2 crossbars -->
+            <path d="M-150,50 v100 M-280,100 h260"></path>
+              <text x="-155" y="95" class="left">13</text>
+              <text x="-145" y="95" class="right">13</text>
+            <path d="M400,50 v50 M320,100 h360"></path>
+              <text x="395" y="95" class="left">8</text>
+              <text x="405" y="95" class="right">28</text>
+            <!-- row-3 crossbars -->
+            <path d="M-200,150 h120"></path>
+              <text x="-155" y="145" class="left">5</text>
+              <text x="-145" y="145" class="right">7</text>
+            <path d="M320,100 v50 M120,150 h400"></path>
+              <text x="315" y="145" class="left">20</text>
+              <text x="325" y="145" class="right">20</text>
+            <path d="M680,100 v50 M630,150 h80"></path>
+              <text x="675" y="145" class="left">5</text>
+              <text x="685" y="145" class="right">3</text>
+            <!-- row-4 crossbars -->
+            <path d="M-280,100 v100 M-330,200 h60"></path>
+              <text x="-285" y="195" class="left">5</text>
+              <text x="-275" y="195" class="right">1</text>
+            <path d="M-200,150 v50 M-220,200 h50"></path>
+              <text x="-205" y="195" class="left">2</text>
+              <text x="-195" y="195" class="right">3</text>
+            <path d="M-80,150 v50 M-90,200 h50"></path>
+              <text x="-85" y="195" class="left">1</text>
+              <text x="-75" y="195" class="right">4</text>
+            <path d="M120,150 v100 M40,200 h160"></path>
+              <text x="115" y="195" class="left">8</text>
+              <text x="125" y="195" class="right">8</text>
+            <!-- row-5 hangers -->
+            <path d="M-330,200 v50 M-270,200 v50 M-220,200 v50 M-170,200 v50 M-90,200 v50 M-40,200 v50 M-20,100 v200"></path>
+            <path d="M40,200 v50 M200,200 v50 M520,150 v100 M630,150 v100 M710,150 v100"></path>
+          </g>
+        </g>
+      </svg>
+
+      <div id="phrase" class="letter-cell-block">
+        <span class="letter-cell letter-underline notes-below" style="left: 26px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 78px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 120px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 165px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 233px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 274px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 293px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 312px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 346px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 415px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 485px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 763px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 857px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 925px;"></span>
+      </div>
+
+    </div>
+  </body>
+</html>

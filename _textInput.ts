@@ -3,7 +3,7 @@ import { isTag, hasClass, getOptionalStyle,
     findInNextContainer, findEndInContainer,
     indexInContainer, childAtIndex, moveFocus } from "./_classUtil";
 import { toggleHighlight } from "./_notes";
-import { isDebug } from "./_boilerplate";
+import { isDebug, theBoiler } from "./_boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./_storage";
 
 /**
@@ -323,6 +323,7 @@ export function afterInputUpdate(input:HTMLInputElement) {
         //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
     saveLetterLocally(input);
+    inputChangeCallback(input);
 }
 
 /**
@@ -602,6 +603,7 @@ export function onLetterChange(event:KeyboardEvent) {
 
     const input = findParentOfClass(event.currentTarget as Element, 'letter-input') as HTMLInputElement;
     saveLetterLocally(input);
+    inputChangeCallback(input);
 }
 
 /**
@@ -615,6 +617,18 @@ export function onWordChange(event:KeyboardEvent) {
 
     const input = findParentOfClass(event.currentTarget as Element, 'word-input') as HTMLInputElement;
     saveWordLocally(input);
+    inputChangeCallback(input);
+}
+
+/**
+ * Anytime any note changes, inform any custom callback
+ * @param inp The affected input
+ */
+function inputChangeCallback(inp: HTMLInputElement) {
+    const fn = theBoiler().onInputChange;
+    if (fn) {
+        fn(inp);
+    }
 }
 
 /**

@@ -1,4 +1,4 @@
-import { forceReload, getSafariDetails, isIFrame, isRestart } from "./_boilerplate";
+import { forceReload, getSafariDetails, isIFrame, isRestart, theBoiler } from "./_boilerplate";
 import { hasClass, toggleClass, getOptionalStyle, findFirstChildOfClass } from "./_classUtil";
 import { afterInputUpdate, updateWordExtraction } from "./_textInput";
 import { quickMove, quickFreeMove, Position, positionFromStyle } from "./_dragDrop";
@@ -526,6 +526,11 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
     reloading = false;
+
+    const fn = theBoiler().onRestore;
+    if (fn) {
+        fn();
+    }
 }
 
 /**

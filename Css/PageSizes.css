@@ -302,6 +302,10 @@ body, p, td {
       height: 7.5in;
       box-shadow:0px 0px 5px fuchsia;    
   }
+
+  .landscape #decoder-frame {
+    left: 11.5in;
+  }
 }
 
 @media print {
