@@ -32,7 +32,7 @@
       }
       function buildGraphPaper() {
         var graph = document.getElementById('graph-paper');
-        for (var y = 0; y <= 42; y++) {
+        for (var y = 0; y <= 44; y++) {
           var path=document.createElementNS(xmlns, 'path');
           var d = "M-375," + (y * 10) + " h1110";
           path.setAttributeNS(null, 'd', d);
@@ -42,7 +42,7 @@
         }
         for (var x = -37; x < 74; x++) {
           var path=document.createElementNS(xmlns, 'path');
-          var d = "M"+ (x * 10) + ",0 v420";
+          var d = "M"+ (x * 10) + ",0 v440";
           path.setAttributeNS(null, 'd', d);
           var cls = (x % 5 == 0) ? 'major' : 'minor';
           path.classList.add(cls);
@@ -522,7 +522,7 @@
           </span>
         </div>
       </p>
-      <svg id="graphPaper" width="960" height="397" viewBox="-375 -1 1110 401" style="margin-top: 0.15in;">
+      <svg id="graphPaper" width="960" height="380" viewBox="-375 -1 1110 440" style="margin-top: 0.25in;">
         <defs id="can-defs">
           <g id="can-a" fill="#993366" stroke="#eaa2c5" stroke-width="2">
             <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
