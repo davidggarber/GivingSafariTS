@@ -271,20 +271,14 @@
           var piv = pivots[i];
           var left = weigh(piv, 'left');
           var right = weigh(piv, 'right');
-          if (left > right) {
-            piv.classList.add('tilt-left');
-            unbalanced++;
-          }
-          else {
-            piv.classList.remove('tilt-left');
-          }
-          if (right > left) {
-            piv.classList.add('tilt-right');
-            unbalanced++;
-          }
-          else {
-            piv.classList.remove('tilt-right');
-          }
+
+          var prevTilt = hasClass(piv, 'tilt-left') ? -1 : hasClass(piv, 'tilt-right') ? 1 : 0;
+          var tilt = left > right ? -1 : right > left ? 1 : 0;
+          toggleClass(piv, 'from-left', prevTilt < 0 && tilt >= 0);
+          toggleClass(piv, 'from-right', prevTilt > 0 && tilt <= 0);
+          toggleClass(piv, 'tilt-left', tilt < 0);
+          toggleClass(piv, 'tilt-right', tilt > 0);
+          toggleClass(piv, 'tilt-flat', tilt == 0);
         }
         return unbalanced;
       }
@@ -373,18 +367,7 @@
         fill: none;
         stroke-linecap: square;
       }
-      .tilt-left {
-        transform: rotate(-5deg);
-      }
-      .tilt-right {
-        transform: rotate(5deg);
-      }
-      .tilt-left>.hanger>.node {
-        transform: rotate(5deg);
-      }
-      .tilt-right>.hanger>.node {
-        transform: rotate(-5deg);
-      }
+
       .pivot text {
         fill: black;
         stroke: none;
@@ -412,6 +395,61 @@
       #phrase .letter-underline {
         border-bottom: solid 2px black;
       }
+
+      @keyframes left-to-right {
+        from { transform: rotate(-5deg); }
+        to { transform: rotate(5deg); }
+      }
+      @keyframes right-to-left {
+        from { transform: rotate(5deg); }
+        to { transform: rotate(-5deg); }
+      }
+      @keyframes left-to-flat {
+        0% { transform: rotate(-5deg); }
+        100% { transform: rotate(0deg); }
+      }
+      @keyframes right-to-flat {
+        0% { transform: rotate(5deg); }
+        100% { transform: rotate(0deg); }
+      }
+
+      .tilt-left {
+        transform: rotate(-5deg);
+        animation-name: right-to-left;
+        animation-duration: 1s;
+      }
+      .tilt-right {
+        transform: rotate(5deg);
+        animation-name: left-to-right;
+        animation-duration: 1s;
+      }
+      .tilt-left>.hanger>.node {
+        transform: rotate(5deg);
+        animation-name: left-to-right;
+        animation-duration: 1s;
+      }
+      .tilt-right>.hanger>.node {
+        transform: rotate(-5deg);
+        animation-name: right-to-left;
+        animation-duration: 1s;
+      }
+      .tilt-flat.from-left {
+        animation-name: left-to-flat;
+        animation-duration: 0.5s;
+      }
+      .tilt-right.from-right {
+        animation-name: right-to-flat;
+        animation-duration: 0.5s;
+      }
+      .tilt-flat.from-left>.hanger>.node {
+        animation-name: right-to-flat;
+        animation-duration: 0.5s;
+      }
+      .tilt-right.from-right>.hanger>.node {
+        animation-name: left-to-flat;
+        animation-duration: 0.5s;
+      }
+
     </style>
   </head>
   <body id="TippingPoint">
