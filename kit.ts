@@ -375,12 +375,13 @@ export function constructTable(details: TableDetails) {
     let row = root;
     if (details.onRow) {
       const rr = details.onRow(y);
-      if (rr) {
-        root?.appendChild(rr);
-        row = rr;
+      if (!rr) {
+        continue;
       }
+      root?.appendChild(rr);
+      row = rr;
     }
-
+    
     const width = (details.data) ? details.data[y].length : (details.width as number);
     for (let x = 0; x < width; x++) {
       const val:string = (details.data) ? details.data[y][x] : '';
@@ -555,6 +556,7 @@ function onNoteArrowKey(event:KeyboardEvent) {
         moveFocus(findNextOfClass(input, 'note-input') as HTMLInputElement);
         return;
     }
+    noteChangeCallback(input as HTMLInputElement);
 }
 
 /**
@@ -569,6 +571,18 @@ function onNoteChange(event:Event) {
     const input = event.currentTarget as Element;
     const note =  findParentOfClass(input, 'note-input') as HTMLInputElement;
     saveNoteLocally(note);
+    noteChangeCallback(note);
+}
+
+/**
+ * Anytime any note changes, inform any custom callback
+ * @param inp The affected input
+ */
+function noteChangeCallback(inp: HTMLInputElement) {
+    const fn = theBoiler().onNoteChange;
+    if (fn) {
+        fn(inp);
+    }
 }
 
 /**
@@ -1366,6 +1380,11 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
     reloading = false;
+
+    const fn = theBoiler().onRestore;
+    if (fn) {
+        fn();
+    }
 }
 
 /**
@@ -1931,6 +1950,7 @@ export function afterInputUpdate(input:HTMLInputElement) {
         //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
     saveLetterLocally(input);
+    inputChangeCallback(input);
 }
 
 /**
@@ -2210,6 +2230,7 @@ export function onLetterChange(event:KeyboardEvent) {
 
     const input = findParentOfClass(event.currentTarget as Element, 'letter-input') as HTMLInputElement;
     saveLetterLocally(input);
+    inputChangeCallback(input);
 }
 
 /**
@@ -2223,6 +2244,18 @@ export function onWordChange(event:KeyboardEvent) {
 
     const input = findParentOfClass(event.currentTarget as Element, 'word-input') as HTMLInputElement;
     saveWordLocally(input);
+    inputChangeCallback(input);
+}
+
+/**
+ * Anytime any note changes, inform any custom callback
+ * @param inp The affected input
+ */
+function inputChangeCallback(inp: HTMLInputElement) {
+    const fn = theBoiler().onInputChange;
+    if (fn) {
+        fn(inp);
+    }
 }
 
 /**
@@ -5094,6 +5127,9 @@ type BoilerPlateData = {
     preSetup?: () => void;
     postSetup?: () => void;
     googleFonts?: string;  // A list of fonts, separated by commas
+    onNoteChange?: (inp:HTMLInputElement) => void;
+    onInputChange?: (inp:HTMLInputElement) => void;
+    onRestore?: () => void;
 }
 
 /**
@@ -5557,4 +5593,13 @@ function setupAfterCss(bp: BoilerPlateData) {
 
 
 declare let boiler: BoilerPlateData | undefined;
+
+/**
+ * Expose the boilerplate as an export
+ * Only called by code which is triggered by a boilerplate, so safely not null
+ */
+export function theBoiler():BoilerPlateData {
+    return boiler!;
+}
+
 window.onload = function(){boilerplate(boiler as BoilerPlateData)};  // error if boiler still undefined

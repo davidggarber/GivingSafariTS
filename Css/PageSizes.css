@@ -13,7 +13,8 @@ Use class="letter portrait"       for 8½  x 11
 Use class="letter landscape"      for 11" x 8½"
 Use class="legal portrait"        for 8½  x 14"
 Use class="ledger portrait"       for 11" x 17"
-Use class="scrapbook scrapbook"   for 12" x 12"
+Use class="scrapbook portrait"    for 12" x 12" except when printing, when it's simple letter portrait
+Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's simple letter landscape
 */
 .letter.landscape .printedPage {
   width:10in;
@@ -37,45 +38,62 @@ Use class="scrapbook scrapbook"   for 12" x 12"
   width:16in;
   height:10in; 
 }
-.scrapbook.scrapbook .printedPage {
+.scrapbook .printedPage {
+  width:11in;
+  height:11in; 
+}
+.scrapbook.portrait .printedPage {
+  width:11in;
+  height:11in; 
+}
+.scrapbook.landscape .printedPage {
   width:11in;
   height:11in; 
 }
 
 @media screen {
   .printedPage {
-      margin-top:0.25in;
-      margin-left:0.25in;
-      padding-left:0.5in;
-      padding-right:0.5in;
-      padding-top:0.5in;
-      padding-bottom:0.5in;
-      position:relative; 
-      box-shadow:5px 5px 25px #888888; 
+    margin-top:0.25in;
+    margin-left:0.25in;
+    padding-left:0.5in;
+    padding-right:0.5in;
+    padding-top:0.5in;
+    padding-bottom:0.5in;
+    position:relative; 
+    box-shadow:5px 5px 25px #888888; 
   }
 
   .iframe .printedPage {
-      margin: 0px;
-      padding: 0.5in;
-      box-shadow: none;
+    margin: 0px;
+    padding: 0.5in;
+    box-shadow: none;
   }
 }
 @media print {
   .printedPage {
-      margin-top:0.5in; 
-      margin-left:0.5in;
-      margin-right:0.5in; 
-      margin-bottom:0in; 
-      padding:0px; 
-      position:relative; 
-      page-break-after:always; 
-      page-break-inside:avoid; 
+    margin-top:0.5in; 
+    margin-left:0.5in;
+    margin-right:0.5in; 
+    margin-bottom:0in; 
+    padding:0px; 
+    position:relative; 
+    page-break-after:always; 
+    page-break-inside:avoid; 
   }
 
   .iframe .printedPage {
-      margin: 0.25in;
-      padding: 0.25in;
-      page-break-after: avoid; 
+    margin: 0.25in;
+    padding: 0.25in;
+    page-break-after: avoid; 
+  }
+
+  .scrapbook.portrait .printedPage {
+    width:7.5in;
+    height:10in; 
+  }
+  .scrapbook.landscape .printedPage {
+    width:10in;
+    height:7.5in; 
   }
 }
 
@@ -122,9 +140,24 @@ Use class="scrapbook scrapbook"   for 12" x 12"
 .scrapbook #pageBody {
   height: 11.75in;
 }    
+.scrapbook.portrait #pageBody {
+  height: 11.75in;
+}    
+.scrapbook.landscape #pageBody {
+  height: 11.75in;
+}    
 
 .debug #pageBody {
   box-shadow:0px 0px 15px #33cc66; 
+}
+
+@media print {
+  .scrapbook.portrait #pageBody {
+    height: 9.25in;
+  }    
+  .scrapbook.landscape #pageBody {
+    height: 6.75in;
+  }    
 }
 
 #copyright {
@@ -268,6 +301,10 @@ body, p, td {
       width: 7.5in;
       height: 7.5in;
       box-shadow:0px 0px 5px fuchsia;    
+  }
+
+  .landscape #decoder-frame {
+    left: 11.5in;
   }
 }
 

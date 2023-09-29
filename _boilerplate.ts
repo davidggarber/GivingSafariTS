@@ -197,6 +197,9 @@ type BoilerPlateData = {
     preSetup?: () => void;
     postSetup?: () => void;
     googleFonts?: string;  // A list of fonts, separated by commas
+    onNoteChange?: (inp:HTMLInputElement) => void;
+    onInputChange?: (inp:HTMLInputElement) => void;
+    onRestore?: () => void;
 }
 
 /**
@@ -660,4 +663,13 @@ function setupAfterCss(bp: BoilerPlateData) {
 
 
 declare let boiler: BoilerPlateData | undefined;
+
+/**
+ * Expose the boilerplate as an export
+ * Only called by code which is triggered by a boilerplate, so safely not null
+ */
+export function theBoiler():BoilerPlateData {
+    return boiler!;
+}
+
 window.onload = function(){boilerplate(boiler as BoilerPlateData)};  // error if boiler still undefined

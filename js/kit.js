@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = void 0;
+exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -328,10 +328,11 @@ function constructTable(details) {
         var row = root;
         if (details.onRow) {
             var rr = details.onRow(y);
-            if (rr) {
-                root === null || root === void 0 ? void 0 : root.appendChild(rr);
-                row = rr;
+            if (!rr) {
+                continue;
             }
+            root === null || root === void 0 ? void 0 : root.appendChild(rr);
+            row = rr;
         }
         var width = (details.data) ? details.data[y].length : details.width;
         for (var x = 0; x < width; x++) {
@@ -495,6 +496,7 @@ function onNoteArrowKey(event) {
         moveFocus(findNextOfClass(input, 'note-input'));
         return;
     }
+    noteChangeCallback(input);
 }
 /**
  * Each time a note is modified, save
@@ -507,6 +509,17 @@ function onNoteChange(event) {
     var input = event.currentTarget;
     var note = findParentOfClass(input, 'note-input');
     saveNoteLocally(note);
+    noteChangeCallback(note);
+}
+/**
+ * Anytime any note changes, inform any custom callback
+ * @param inp The affected input
+ */
+function noteChangeCallback(inp) {
+    var fn = theBoiler().onNoteChange;
+    if (fn) {
+        fn(inp);
+    }
 }
 /**
  * Notes can be toggled on or off, and when on, can also be lit up to make them easier to see.
@@ -1243,6 +1256,10 @@ function loadLocalStorage(storage) {
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
     reloading = false;
+    var fn = theBoiler().onRestore;
+    if (fn) {
+        fn();
+    }
 }
 /**
  * Restore any saved letter input values
@@ -1767,6 +1784,7 @@ function afterInputUpdate(input) {
         //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
     saveLetterLocally(input);
+    inputChangeCallback(input);
 }
 exports.afterInputUpdate = afterInputUpdate;
 /**
@@ -2027,6 +2045,7 @@ function onLetterChange(event) {
     }
     var input = findParentOfClass(event.currentTarget, 'letter-input');
     saveLetterLocally(input);
+    inputChangeCallback(input);
 }
 exports.onLetterChange = onLetterChange;
 /**
@@ -2039,8 +2058,19 @@ function onWordChange(event) {
     }
     var input = findParentOfClass(event.currentTarget, 'word-input');
     saveWordLocally(input);
+    inputChangeCallback(input);
 }
 exports.onWordChange = onWordChange;
+/**
+ * Anytime any note changes, inform any custom callback
+ * @param inp The affected input
+ */
+function inputChangeCallback(inp) {
+    var fn = theBoiler().onInputChange;
+    if (fn) {
+        fn(inp);
+    }
+}
 /**
  * Find the input that the user likely means when navigating from start in a given x,y direction
  * @param start - The current input
@@ -4993,5 +5023,13 @@ function setupAfterCss(bp) {
         bp.postSetup();
     }
 }
+/**
+ * Expose the boilerplate as an export
+ * Only called by code which is triggered by a boilerplate, so safely not null
+ */
+function theBoiler() {
+    return boiler;
+}
+exports.theBoiler = theBoiler;
 window.onload = function () { boilerplate(boiler); }; // error if boiler still undefined
 //# sourceMappingURL=kit.js.map

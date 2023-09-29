@@ -1,4 +1,4 @@
-import { isBodyDebug } from "./_boilerplate";
+import { isBodyDebug, theBoiler } from "./_boilerplate";
 import { hasClass, toggleClass,     
     moveFocus, findNextOfClass, findParentOfClass, getOptionalStyle } from "./_classUtil";
 import { indexAllNoteFields, indexAllCheckFields, indexAllHighlightableFields, 
@@ -101,6 +101,7 @@ function onNoteArrowKey(event:KeyboardEvent) {
         moveFocus(findNextOfClass(input, 'note-input') as HTMLInputElement);
         return;
     }
+    noteChangeCallback(input as HTMLInputElement);
 }
 
 /**
@@ -115,6 +116,18 @@ function onNoteChange(event:Event) {
     const input = event.currentTarget as Element;
     const note =  findParentOfClass(input, 'note-input') as HTMLInputElement;
     saveNoteLocally(note);
+    noteChangeCallback(note);
+}
+
+/**
+ * Anytime any note changes, inform any custom callback
+ * @param inp The affected input
+ */
+function noteChangeCallback(inp: HTMLInputElement) {
+    const fn = theBoiler().onNoteChange;
+    if (fn) {
+        fn(inp);
+    }
 }
 
 /**
