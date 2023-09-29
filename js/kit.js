@@ -328,10 +328,11 @@ function constructTable(details) {
         var row = root;
         if (details.onRow) {
             var rr = details.onRow(y);
-            if (rr) {
-                root === null || root === void 0 ? void 0 : root.appendChild(rr);
-                row = rr;
+            if (!rr) {
+                continue;
             }
+            root === null || root === void 0 ? void 0 : root.appendChild(rr);
+            row = rr;
         }
         var width = (details.data) ? details.data[y].length : details.width;
         for (var x = 0; x < width; x++) {

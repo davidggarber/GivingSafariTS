@@ -375,12 +375,13 @@ export function constructTable(details: TableDetails) {
     let row = root;
     if (details.onRow) {
       const rr = details.onRow(y);
-      if (rr) {
-        root?.appendChild(rr);
-        row = rr;
+      if (!rr) {
+        continue;
       }
+      root?.appendChild(rr);
+      row = rr;
     }
-
+    
     const width = (details.data) ? details.data[y].length : (details.width as number);
     for (let x = 0; x < width; x++) {
       const val:string = (details.data) ? details.data[y][x] : '';
