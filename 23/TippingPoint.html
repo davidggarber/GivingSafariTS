@@ -32,7 +32,7 @@
       }
       function buildGraphPaper() {
         var graph = document.getElementById('graph-paper');
-        for (var y = 0; y <= 80; y++) {
+        for (var y = 0; y <= 42; y++) {
           var path=document.createElementNS(xmlns, 'path');
           var d = "M-375," + (y * 10) + " h1110";
           path.setAttributeNS(null, 'd', d);
@@ -42,7 +42,7 @@
         }
         for (var x = -37; x < 74; x++) {
           var path=document.createElementNS(xmlns, 'path');
-          var d = "M"+ (x * 10) + ",0 v400";
+          var d = "M"+ (x * 10) + ",0 v420";
           path.setAttributeNS(null, 'd', d);
           var cls = (x % 5 == 0) ? 'major' : 'minor';
           path.classList.add(cls);
@@ -274,8 +274,8 @@
 
           var prevTilt = hasClass(piv, 'tilt-left') ? -1 : hasClass(piv, 'tilt-right') ? 1 : 0;
           var tilt = left > right ? -1 : right > left ? 1 : 0;
-          toggleClass(piv, 'from-left', prevTilt < 0 && tilt >= 0);
-          toggleClass(piv, 'from-right', prevTilt > 0 && tilt <= 0);
+          toggleClass(piv, 'from-left', prevTilt < 0);
+          toggleClass(piv, 'from-right', prevTilt > 0);
           toggleClass(piv, 'tilt-left', tilt < 0);
           toggleClass(piv, 'tilt-right', tilt > 0);
           toggleClass(piv, 'tilt-flat', tilt == 0);
@@ -324,6 +324,7 @@
       #cans .weight {
         position: relative;
         width: 0.4in;
+        margin-right: 0.1in;
       }
       #cans .letter-cell {
         width: 0.4in;
@@ -396,6 +397,14 @@
         border-bottom: solid 2px black;
       }
 
+      @keyframes flat-to-right {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(5deg); }
+      }
+      @keyframes flat-to-left {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(-5deg); }
+      }
       @keyframes left-to-right {
         from { transform: rotate(-5deg); }
         to { transform: rotate(5deg); }
@@ -415,39 +424,65 @@
 
       .tilt-left {
         transform: rotate(-5deg);
-        animation-name: right-to-left;
-        animation-duration: 1s;
-      }
-      .tilt-right {
-        transform: rotate(5deg);
-        animation-name: left-to-right;
+        animation-name: flat-to-left;
         animation-duration: 1s;
       }
       .tilt-left>.hanger>.node {
         transform: rotate(5deg);
+        animation-name: flat-to-right;
+        animation-duration: 1s;
+      }
+      .tilt-left.from-right {
+        animation-name: right-to-left;
+      }
+      .tilt-left.from-right>.hanger>.node {
         animation-name: left-to-right;
+      }
+      .tilt-left.from-left {
+        animation-name: none;
+      }
+      .tilt-left.from-left>.hanger>.node {
+        animation-name: none;
+      }
+
+      .tilt-right {
+        transform: rotate(5deg);
+        animation-name: flat-to-right;
         animation-duration: 1s;
       }
       .tilt-right>.hanger>.node {
         transform: rotate(-5deg);
-        animation-name: right-to-left;
+        animation-name: flat-to-left;
         animation-duration: 1s;
       }
-      .tilt-flat.from-left {
-        animation-name: left-to-flat;
-        animation-duration: 0.5s;
+      .tilt-right.from-left {
+        animation-name: left-to-right;
+      }
+      .tilt-right.from-left>.hanger>.node {
+        animation-name: right-to-left;
       }
       .tilt-right.from-right {
+        animation-name: none;
+      }
+      .tilt-right.from-right>.hanger>.node {
+        animation-name: none;
+      }
+
+      .tilt-flat.from-left {
+        animation-name: left-to-flat;
+        animation-duration: 1s;
+      }
+      .tilt-flat.from-right {
         animation-name: right-to-flat;
-        animation-duration: 0.5s;
+        animation-duration: 1s;
       }
       .tilt-flat.from-left>.hanger>.node {
         animation-name: right-to-flat;
-        animation-duration: 0.5s;
+        animation-duration: 1s;
       }
-      .tilt-right.from-right>.hanger>.node {
+      .tilt-flat.from-right>.hanger>.node {
         animation-name: left-to-flat;
-        animation-duration: 0.5s;
+        animation-duration: 1s;
       }
 
     </style>
@@ -487,7 +522,7 @@
           </span>
         </div>
       </p>
-      <svg id="graphPaper" width="960" height="347" viewBox="-375 -1 1110 401" style="margin-top: 0.35in;">
+      <svg id="graphPaper" width="960" height="397" viewBox="-375 -1 1110 401" style="margin-top: 0.15in;">
         <defs id="can-defs">
           <g id="can-a" fill="#993366" stroke="#f07e2a" stroke-width="2">
             <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
