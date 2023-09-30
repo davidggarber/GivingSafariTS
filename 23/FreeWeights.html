@@ -7,7 +7,7 @@
     <script>
       const boiler = {
         'safari': '20',
-        'title': 'Tipping Point',
+        'title': 'Free Weights',
         'print_qr': true,
         'author': 'Ken Pacquer',
         'copyright': '2020',
@@ -34,13 +34,13 @@
         var graph = document.getElementById('graph-paper');
         for (var y = 0; y <= 44; y++) {
           var path=document.createElementNS(xmlns, 'path');
-          var d = "M-420," + (y * 10) + " h1110";
+          var d = "M-600," + (y * 10) + " h1110";
           path.setAttributeNS(null, 'd', d);
           var cls = (y % 5 == 0) ? 'major' : 'minor';
           path.classList.add(cls);
           graph.appendChild(path);
         }
-        for (var x = -37; x < 74; x++) {
+        for (var x = -57; x < 74; x++) {
           var path=document.createElementNS(xmlns, 'path');
           var d = "M"+ (x * 11) + ",0 v440";
           path.setAttributeNS(null, 'd', d);
@@ -51,90 +51,98 @@
       }
 
       var graph = {
-          left: {
-            dist: 15, hang: {
-              left: {
-                dist: 13, hang: {
-                  skip: 1,
-                  left: {
-                    dist: 5, hang: { letter: 'd', count: 3 }
-                  },
-                  right: {
-                    dist: 1, hang: { letter: 'f', count: 3 }
-                  }
-                }
-              },
-              middle: {
-                hang: {
-                  left: {
-                    dist: 5, hang: {
-                      left: {
-                        dist: 2, hang: { letter: 'a', count: 7 }
+        left: {
+          dist: 9, hang: {
+            left: {
+              dist: 8, hang: {
+                left: {
+                  dist: 21, hang: {
+                    left: {
+                      dist: 4, hang: { 
+                        left: {
+                          dist: 2, hang: { 
+                            left: {
+                              dist: 3, hang: { letter: 'b', count: 3 }
+                              },
+                            right: {
+                              dist: 4, hang: { letter: 'g', count: 3 }
+                              }
+                            }
+                          },
+                        right: {
+                          dist: 6, hang: { skip: 1, letter: 'e', count: 1 }
+                          }
+                        }
                       },
-                      right: {
-                        dist: 3, hang: { letter: 'b', count: 2 }
+                    right: {
+                      dist: 14, hang: { skip: 2, letter: 'f', count: 4  }
                       }
                     }
                   },
-                  right: {
-                    dist: 7, hang: {
-                      left: {
-                        dist: 1, hang: { letter: 'c', count: 5 }
+                right: {  
+                  dist: 12, hang: {
+                    skip: 1, 
+                    left: {
+                      dist: 8, hang: {
+                        left: {
+                          dist: 1, hang: { letter: 'b', count: 5 }
+                            },
+                        right: {  
+                          dist: 4, hang: { letter: 'd', count: 5 }
+                          }  
+                        }
                       },
-                      right: {
-                        dist: 4, hang: { letter: 'f', count: 1 }
+                    middle: {
+                      hang: { skip: 1, letter: 'a', count: 3 }
+                      },
+                    right: {
+                      dist: 10, hang: { skip: 1, letter: 'c', count: 4 }
                       }
+                    }
+                  }  
+                }
+              },
+            right: {  
+              dist: 33, hang: {
+                skip: 2, 
+                left: {
+                  dist: 6, hang: { skip: 1, letter: 'f', count: 4 }
+                },
+                right: {  
+                  dist: 3, hang: {
+                    left: {
+                      dist: 4, hang: { letter: 'd', count: 1 }
+                      },
+                    middle: {
+                      hang: { letter: 'e', count: 2 }
                     },
+                    right: {  
+                      dist: 4, hang: { letter: 'd', count: 1 }
+                    }  
                   }
-                }
-              },
-              right: {
-                dist: 13, hang: { skip: 3, letter: 'e', count: 3 }
-              }
-            }
-          },
-          middle: {
-            hang: { skip: 3, letter: 'g', count: 1 }
-          },
-          right: {
-            dist: 40,
-            hang: {
-              left: {
-                dist: 4,
-                hang: {
-                  left: {
-                    dist: 8,
-                    hang: {
-                      left: {
-                        dist: 8, hang: { letter: 'd', count: 1 }
-                      },
-                      middle: {
-                        hang: { letter: 'c', count: 3 }
-                      },
-                      right: {
-                        dist: 8, hang: { letter: 'd', count: 1 }
-                      }
-                    }
-                  },
-                  right: {
-                    dist: 8, hang: { skip: 1, letter: 'g', count: 7 }
-                  }
-                }
-              },
-              right: {
-                dist: 14,
-                hang: {
-                  left: {
-                    dist: 5, hang: { skip: 1, letter: 'a', count: 1 }
-                  },
-                  right: {
-                    dist: 3, hang: { skip: 1, letter: 'f', count: 1 }
-                  }
-                }
+                }  
               }
             }
           }
+        },
+        right: {  
+          dist: 41, hang: { 
+            skip: 4,
+            left: {
+              dist: 4, hang: { letter: 'g', count: 3 }
+              },
+            right: {  
+              dist: 2, hang: { letter: 'a', count: 3 }
+              }  
+            }
+          }
         };
+
+
+
+
+
+
 
       var canStacks = [];
 
@@ -162,7 +170,7 @@
               : (i % 2 == 0) ? -16 : 16;
             var row = count <= 3 ? i
               : Math.trunc((i + count % 2) / 2);
-            var y = row * 30;
+            var y = row * 25;
             use.setAttributeNS('','x', x);
             use.setAttributeNS('','y', y);
             use.setAttributeNS('', 'href', '#can-' + node['letter'])
@@ -522,7 +530,8 @@
           </span>
         </div>
       </p>
-      <svg id="graphPaper" width="960" height="380" viewBox="-420 -1 1110 440" style="margin-top: 0.25in;">
+      <svg id="graphPaper" width="960" height="380" viewBox="-600 -1 1110 440" style="margin-top: 0.25in;"> 
+        <!--Origin of graph is now at x=-420. Total of 1110 virtual pixels, squeezed into 960 HTML pixels, which themselves aren't real pixels.-->
         <defs id="can-defs">
           <g id="can-a" fill="#993366" stroke="#eaa2c5" stroke-width="2">
             <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
@@ -568,20 +577,20 @@
       </svg>
 
       <div id="phrase" class="letter-cell-block">
-        <span class="letter-cell letter-underline notes-below" style="left: 32px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 90px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 135px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 185px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 250px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 304px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 326px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 348px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 540px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 615px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 690px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 763px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 815px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 885px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 60px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 120px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 160px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 280px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 360px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 420px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 460px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 548px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 680px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 720px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 760px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 800px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 860px;"></span>
+        <span class="letter-cell letter-underline notes-below" style="left: 920px;"></span>
       </div>
 
     </div>
