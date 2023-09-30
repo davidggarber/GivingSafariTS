@@ -279,6 +279,9 @@
           toggleClass(piv, 'tilt-left', tilt < 0);
           toggleClass(piv, 'tilt-right', tilt > 0);
           toggleClass(piv, 'tilt-flat', tilt == 0);
+          if (tilt == 0) {
+            unbalanced++;
+          }
         }
         return unbalanced;
       }
