@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script>
+
+      const xmlns = 'http://www.w3.org/2000/svg';
+      function setup() {
+        var svg = document.getElementById('svg');
+        var canvas = document.getElementById('canvas');
+        for (var y = 0; y < 15; y++) {
+          for (var x = 0; x < 15; x++) {
+            var rect = document.createElementNS(xmlns, 'rect');
+            rect.classList.add('alive');
+            rect.setAttributeNS('', 'x', x * 48);
+            rect.setAttributeNS('', 'y', y * 48);
+            svg.appendChild(rect);
+          }
+        }
+
+        canvas.onpointermove = function(e){onMove(e)};
+        canvas.onpointerout = function(e){onMove(e)};
+      }
+
+      function pointInRect(x, y, rect) {
+        return x >= rect.left && x < rect.right
+          && y >= rect.top && y < rect.bottom;
+      }
+
+      function mouseOver(evt, cls) {
+        var nodes = document.getElementsByClassName(cls);
+        var over = null;
+        for (var i = 0; i < nodes.length; i++) {
+          var node = nodes[i];
+          var bounds = node.getBoundingClientRect();
+          if (pointInRect(evt.clientX, evt.clientY, bounds)) {
+            if (!over || over.style.zIndex < node.zIndex) {
+              over = node;
+            }
+          }
+        }
+        return over;
+      }
+
+      var hover = null;
+      function onMove(evt) {
+        var r = mouseOver(evt, 'alive');
+        if (hover && hover != r) {
+          hover.classList.remove('hover');
+          hover = null;
+        }
+        if (r) {
+          r.classList.add('hover');
+          hover = r;
+          document.getElementById('button').innerText = 'button = ' + evt.button;
+          document.getElementById('buttons').innerText = 'buttons = ' + evt.buttons;
+          if (evt.buttons > 0) {
+            r.classList.add('draw');
+          }
+        }
+      }
+    </script>
+    <style>
+      #surface {
+        position: relative;
+        width: 7.5in;
+        height: 7.5in;
+        border: solid 2px purple;
+      }
+      .surface-layer {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 7.5in;
+        height: 7.5in;
+        touch-action: none;
+      }
+      rect {
+        fill: none;
+        stroke: black;
+        stroke-width: 1px;
+        width: 48px;
+        height: 48px;
+      }
+      rect.hover {
+        fill: pink;
+      }
+      rect.draw {
+        fill: red;
+      }
+      rect.draw.hover {
+        fill: darkred;
+      }
+    </style>
+  </head>
+  <body id="__puzzle_name" onload="setup()">
+    <div id="pageBody">
+      <p class="flavor">
+        Hello!
+      </p>
+
+      <div id="surface">
+        <svg id="svg" class="surface-layer"></svg>
+        <canvas id="canvas" class="surface-layer"></canvas>
+      </div>
+
+      <p id="button"></p>
+      <p id="buttons"></p>
+
+    </div>
+  </body>
+</html>
