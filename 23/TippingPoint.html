@@ -29,6 +29,7 @@
         buildGraphPaper();
         var root = document.getElementById('graph-root');
         root.appendChild(buildGraph('', graph, 0, 0));
+        layoutPhrase();
       }
       function buildGraphPaper() {
         var graph = document.getElementById('graph-paper');
@@ -100,10 +101,10 @@
             dist: 40,
             hang: {
               left: {
-                dist: 8,
+                dist: 4,
                 hang: {
                   left: {
-                    dist: 20,
+                    dist: 8,
                     hang: {
                       left: {
                         dist: 8, hang: { letter: 'd', count: 1 }
@@ -117,12 +118,12 @@
                     }
                   },
                   right: {
-                    dist: 20, hang: { skip: 1, letter: 'g', count: 7 }
+                    dist: 8, hang: { skip: 1, letter: 'g', count: 7 }
                   }
                 }
               },
               right: {
-                dist: 28,
+                dist: 14,
                 hang: {
                   left: {
                     dist: 5, hang: { skip: 1, letter: 'a', count: 1 }
@@ -153,6 +154,7 @@
 
         var contents = '';
         if (node['letter']) {
+          gNode.classList.add('cans');
           var letter = node['letter'];
           var count = node['count'];
           for (var i = count - 1; i >= 0; i--) {  // bottom to top, for z-order
@@ -279,7 +281,7 @@
           toggleClass(piv, 'tilt-left', tilt < 0);
           toggleClass(piv, 'tilt-right', tilt > 0);
           toggleClass(piv, 'tilt-flat', tilt == 0);
-          if (tilt == 0) {
+          if (tilt != 0) {
             unbalanced++;
           }
         }
@@ -293,6 +295,20 @@
         return sum * length;
       }
 
+      function layoutPhrase() {
+        var phrase = document.getElementById('phrase');
+        var cans = document.getElementsByClassName('cans');
+        var letters = phrase.getElementsByClassName('letter-cell');
+        var left_edge = document.getElementById('graphPaper').getBoundingClientRect().left;
+        var width = cans[0].getBoundingClientRect().width;
+        for (var i = 0; i < cans.length; i++) {
+          var can = cans[i];
+          var let = letters[i];
+          var rect = can.getBoundingClientRect();
+          var dx = rect.left + (rect.width - width) / 2 - left_edge;
+          let.style.left = dx + 'px';
+        }
+      }
       function sumCans(contents) {
         var sum = 0;
         for (var i = 0; i < contents.length; i++) {
@@ -525,7 +541,7 @@
           </span>
         </div>
       </p>
-      <svg id="graphPaper" width="960" height="380" viewBox="-375 -1 1110 440" style="margin-top: 0.25in;">
+      <svg id="graphPaper" width="960" height="440" viewBox="-365 -1 960 440" style="margin-top: 0.25in;">
         <defs id="can-defs">
           <g id="can-a" fill="#993366" stroke="#f07e2a" stroke-width="2">
             <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
@@ -571,20 +587,20 @@
       </svg>
 
       <div id="phrase" class="letter-cell-block">
-        <span class="letter-cell letter-underline notes-below" style="left: 26px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 78px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 120px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 165px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 233px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 274px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 293px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 312px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 346px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 415px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 485px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 763px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 857px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 925px;"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
       </div>
 
     </div>
