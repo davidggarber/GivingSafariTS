@@ -146,7 +146,6 @@
         var g = document.getElementById('g-' + id);
         if (g) {
           erase(coord);
-          renderImage(coord[0], coord[1], 'Bulb', 'track bulb');
           toggleClass(g, 'highlight', true);
         }
       }
@@ -647,7 +646,7 @@
         stroke-width: 3px;
       }
       #grid-root .highlight rect {
-        fill: #ff6;
+        fill: #ffff33;
       }
       .message text {
         font-family: 'Lucida Console', Courier, monospace;
@@ -658,6 +657,10 @@
         -moz-user-select: none; /* Firefox */
         -ms-user-select: none; /* IE10+/Edge */
         z-index: 2;
+      }
+      #grid-root .highlight.message text {
+        font-size: 36pt;
+        transform: translate(15px, 44px);
       }
       .count text {
         font-family: 'Lucida Console', Courier, monospace;
@@ -752,7 +755,7 @@
         <div class="stampTool medium" data-template-id="drawX" title="Draw X's where tracks aren't">
           <div><img src="Images/Eng/X.png" style="width:24px;height:24px; margin:12px; margin-top:15px;"></div>
         </div>
-        <div class="stampTool medium" data-template-id="drawHighlight" title="Draw highlights">
+        <div class="stampTool medium" data-template-id="drawHighlight" title="Highlight letters">
           <div><img src="Images/Eng/Bulb.png" style="width:36px;height:36px; margin:6px; margin-top:9px;"></div>
         </div>
         <div class="stampTool medium" data-template-id="drawErase" title="Eraser">
