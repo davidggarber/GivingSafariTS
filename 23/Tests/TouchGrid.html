@@ -18,8 +18,8 @@
           }
         }
 
-        canvas.onpointermove = function(e){onMove(e)};
-        canvas.onpointerout = function(e){onMove(e)};
+        svg.onpointermove = function(e){onMove(e)};
+        svg.onpointerout = function(e){onMove(e)};
       }
 
       function pointInRect(x, y, rect) {
@@ -100,8 +100,8 @@
       </p>
 
       <div id="surface">
+        <div id="canvas" class="surface-layer"></div>
         <svg id="svg" class="surface-layer"></svg>
-        <canvas id="canvas" class="surface-layer"></canvas>
       </div>
 
       <p id="button"></p>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Engineering',
+        'print_qr': true,
+        'author': 'Dana Young',
+        'copyright': '2020',
+        'type': 'logic',
+        'textInput': true,
+        'abilities': {
+          'stamping': true
+        },
+        'tableBuilder': {
+          'rootId': 'grid-root',
+          'data': [
+            '7745563757 ',
+            'RLUCTAURNE3',
+            '┐ITEFDWOAL3',
+            '_MOKNHEJMP4',
+            'ESTUTCQL_I4',
+            'ELM_ERUH└_9',
+            'I__┘T┌_RAZ7',
+            '_┘┌____┐EF0',
+            'AN_K│RA_FR7',
+            'ZOU___CTEH6',
+            'IGT│_┘BEPS3',
+        ],
+          'onCell': buildCell
+        }    
+      };
+
+      var tracks = '┐└┘┌│─';
+      var track_images = [ 'SW', 'NE', 'NW', 'SE', 'NS', 'EW' ];
+
+      function buildCell(val, x, y) {
+        var dx = (x + 1) * 60;
+        var dy = (y) * 60 - 30;
+        var t = tracks.indexOf(val);
+        if (t >= 0 && t < 6) {
+          var img = 'Images/Eng/Black' + track_images[t] + '.png';
+          return constructSvgImageCell(img, dx, dy, undefined, 'track');
+        }
+
+        var cls = 'letter';
+        var stampable = true;
+        if (val == '_') {
+          cls = 'gray';
+          val = '';
+        }
+        else if (val[0] >= '0' && val[0] <= '9') {
+          if (val == '0') {
+            val = '10';
+          }
+          cls = y == 0 ? 'col count' : 'row count';
+          stampable = false;
+        }
+        return constructSvgTextCell(val, dx, dy, cls, stampable);
+      }
+
+    </script>
+    <style>
+      .flavor {
+        position: relative;
+      }
+      .flavor p {
+        width: 5in;
+      }
+      .flavor img {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 2.25in;
+      }
+      .track image {
+        width: 57px;
+        height: 57px;
+        transform: translate(1.5px, 1.5px);
+      }
+      .letter rect {
+        width: 60px;
+        height: 60px;
+        fill: white;
+        stroke: black;
+        stroke-width: 3px;
+      }
+      .letter text {
+        font-family: 'Lucida Console', Courier, monospace;
+        font-size: 10pt;
+        transform: translate(5px, 15px);
+        user-select: none; 
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+      }
+      .count rect {
+        width: 60px;
+        height: 60px;
+        fill: none;
+        stroke: none;
+      }
+      .count text {
+        font-family: 'Lucida Console', Courier, monospace;
+        font-size: 14pt;
+      }
+      .count.col text {
+        transform: translate(30px, 52px);
+        text-anchor: middle;
+      }
+      .count.row text {
+        transform: translate(5px, 40px);
+      }
+      .gray rect {
+        fill: #c0c0c0;
+        stroke: black;
+        stroke-width: 3px;
+      }
+      text.exit {
+        font-family: 'Lucida Console', Courier, monospace;
+        font-weight: bold;
+        font-size: 18pt;
+      }
+      .fo-stampable {
+        transform: translate(1.5px, 1.5px);
+      }
+      foreignObject {
+        width: 60px;
+        height: 60px;
+      }
+      foreignObject div {
+        position: fixed;
+        width: 60px;
+        height: 60px;
+      }
+      foreignObject .stampedObject img {
+        width: 57px;
+        height: 57px;
+      }
+      #Engineering .stampTool {
+        margin: 0px;
+      }
+      #Engineering .stampTool div {
+        background-color: #999;
+      }
+      #Engineering .stampTool img {
+        width: 48px;
+        height: 48px;
+        margin-top: 3px;
+      }
+      .stampedObject {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body id="Engineering">
+    <div id="pageBody">
+      <div class="flavor">
+        <p>
+          The train makes a single continuous path thaat starts at <b>A</b>, connects all the given pieces, and ends at <b>B</b>.
+          The numbers indicate how many segments of track are in their row or column.
+          Track pieces can be straight or make a 90 degree turn.
+          The track cannot cross itself.
+          Gray squares must contain a piece of track.
+        </p>
+        <p>
+          Read the six letters that are in the completely enclosed squares from left to right and top to bottom to get the answer.
+          In the example, circles show which squares are part of the answer.
+          The squares with an X are not considered completely enclosed.
+        </p>
+        <img src="Images/Eng/example.png">
+      </div>
+
+      <svg width="720" height="720" ondragstart="return false;" ondrop="return false;">
+        <g id="grid-root">
+          <g transform="translate(30, 115)">
+            <text class="exit">A</text>
+          </g>
+          <g transform="translate(258, 640)">
+            <text class="exit">B</text>
+          </g>
+        </g>
+      </svg>
+
+      <div id="stampPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; right:0.5in; bottom: -0.5in;">
+        <p style="text-align: center; margin:4px;"><img src="Icons/stamp.png" style="height:2ex;"> Draw tools:</p>
+        <div class="stampTool medium" data-template-id="drawNS">
+          <div><img src="Images/Eng/TrackNS.png"></div>
+        </div>
+        <div class="stampTool medium" data-template-id="drawEW">
+          <div><img src="Images/Eng/TrackEW.png"></div>
+        </div>
+        <div class="stampTool medium" data-template-id="drawNE">
+          <div><img src="Images/Eng/TrackNE.png"></div>
+        </div>
+        <div class="stampTool medium" data-template-id="drawSE">
+          <div><img src="Images/Eng/TrackSE.png"></div>
+        </div>
+        <div class="stampTool medium" data-template-id="drawSW">
+          <div><img src="Images/Eng/TrackSW.png"></div>
+        </div>
+        <div class="stampTool medium" data-template-id="drawNW">
+          <div><img src="Images/Eng/TrackNW.png"></div>
+        </div>
+        <div class="stampTool medium" data-template-id="drawX">
+          <div><img src="Images/Eng/X.png" style="width:24px;height:24px; margin:12px; margin-top:15px;"></div>
+        </div>
+        <div class="stampTool medium" data-template-id="drawErase">
+          <div style="background-color: #eee;"><img src="Images/transparent-pixel.png"><span class="label" style="position:absolute; left:6px; top:0.2in; width:48px; text-align: center;">erase</span></div>
+        </div>
+      </div>
+      <div class="stampToolTemplates" id="drawTool1">
+        <template id="drawNS">
+          <div class="stampedObject track" data-template-id="drawNS" data-next-template-id="drawEW">
+            <img src="Images/Eng/BlueNS.png">
+          </div>
+        </template>
+        <template id="drawEW">
+          <div class="stampedObject track" data-template-id="drawEW" data-next-template-id="drawNE">
+            <img src="Images/Eng/BlueEW.png">
+          </div>
+        </template>
+        <template id="drawNE">
+          <div class="stampedObject track" data-template-id="drawNE" data-next-template-id="drawSE">
+            <img src="Images/Eng/BlueNE.png">
+          </div>
+        </template>
+        <template id="drawSE">
+          <div class="stampedObject track" data-template-id="drawSE" data-next-template-id="drawSW">
+            <img src="Images/Eng/BlueSE.png">
+          </div>
+        </template>
+        <template id="drawSW">
+          <div class="stampedObject track" data-template-id="drawSW" data-next-template-id="drawNW">
+            <img src="Images/Eng/BlueSW.png">
+          </div>
+        </template>
+        <template id="drawNW">
+          <div class="stampedObject track" data-template-id="drawNW" data-next-template-id="drawX">
+            <img src="Images/Eng/BlueNW.png">
+          </div>
+        </template>
+        <template id="drawX">
+          <div class="stampedObject track" data-template-id="drawX" data-next-template-id="drawErase">
+            <img src="Images/Eng/X.png" style="width:24px;height:24px; margin:17px;">
+          </div>
+        </template>
+      </div>  
+
+    </div>
+  </body>
+</html>
