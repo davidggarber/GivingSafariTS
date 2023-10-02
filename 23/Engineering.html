@@ -18,7 +18,14 @@
         },
         'tableBuilder': {
           'rootId': 'grid-root',
-          'data': [
+          'width': 11,
+          'height': 11,
+          'onCell': buildCell
+        },
+        postSetup: postSetup,
+      };
+
+      var initialData = [
             '7745563757 ',
             'RLUCTAURNE3',
             '┐ITEFDWOAL3',
@@ -30,37 +37,562 @@
             'AN_K│RA_FR7',
             'ZOU___CTEH6',
             'IGT│_┘BEPS3',
-        ],
-          'onCell': buildCell
-        }    
-      };
+        ];
+
+        // A list of lists of coordinate. Consecutive coordinates must be neighbors
+      var chains_ = [];
 
       var tracks = '┐└┘┌│─';
-      var track_images = [ 'SW', 'NE', 'NW', 'SE', 'NS', 'EW' ];
+      var track_images = [ 'SW', 'NE', 'NW', 'SE', 'NS', 'EW' ];  // within each two-letter pair, order must be NSEW
+
+      const xmlns = 'http://www.w3.org/2000/svg';
 
       function buildCell(val, x, y) {
-        var dx = (x + 1) * 60;
-        var dy = (y) * 60 - 30;
-        var t = tracks.indexOf(val);
-        if (t >= 0 && t < 6) {
-          var img = 'Images/Eng/Black' + track_images[t] + '.png';
-          return constructSvgImageCell(img, dx, dy, 'track');
-        }
-
-        var cls = 'letter';
-        var stampable = true;
-        if (val == '_') {
-          cls = 'gray';
+        val = (x >= 0 && y < 11) ? initialData[y][x] : '';
+        var trk = val != '' ? tracks.indexOf(val) : -1;
+        if (trk >= 0 && trk < 6) {
+          initChain(x, y, track_images[trk]);
           val = '';
         }
-        else if (val[0] >= '0' && val[0] <= '9') {
+
+        var id = 'r' + y + 'c' + x;
+        var g = document.createElementNS(xmlns, 'g');
+        g.id = 'g-' + id;
+
+        var dx = (x + 1) * 60;
+        var dy = (y) * 60;
+        g.setAttributeNS('', 'transform', 'translate(' + dx + ', ' + dy + ')');
+
+        if (y == 0 || x == 10) {
           if (val == '0') {
             val = '10';
           }
-          cls = y == 0 ? 'col count' : 'row count';
-          stampable = false;
+          g.classList.add(y == 0 ? 'col' : 'row');
+          g.classList.add('count');
         }
-        return constructSvgTextCell(val, dx, dy, cls, stampable);
+        else {
+          var rect = document.createElementNS(xmlns, 'rect');
+          if (val == '_') {
+            rect.classList.add('gray');
+            val = '';
+          }
+          else if (val != '') {
+            g.classList.add('message');
+          }
+          g.appendChild(rect);
+        }
+        if (val != '') {
+          var text = document.createElementNS(xmlns, 'text');
+          text.appendChild(document.createTextNode(val));
+          g.appendChild(text);
+        }
+        return g;
+      }
+
+      // Initialize a cell with known image as a chain linking in both directions
+      function initChain(x, y, dirs) {
+        var dest = [x, y];
+        if (dirs.indexOf('N') >= 0) {
+          var from = [x, y - 1];
+          addChainLink(dest, from, null);
+        }
+        if (dirs.indexOf('S') >= 0) {
+          var from = [x, y + 1];
+          addChainLink(dest, from, null);
+        }
+        if (dirs.indexOf('W') >= 0) {
+          var from = [x - 1, y];
+          addChainLink(dest, from, null);
+        }
+        if (dirs.indexOf('E') >= 0) {
+          var from = [x + 1, y];
+          addChainLink(dest, from, null);
+        }
+      }
+
+      // A list of coordinates which need to be re-rendered
+      var invalidated_ = [];
+      function invalidateCell(coord) {
+        invalidated_.push(coord);
+      }
+      function invalidateChain(chain, index, count) {
+        if (index < 0) {
+          count += index;
+          index = 0;
+        }
+        else if (index + count > chain.length) {
+          count = chain.length - index;
+        }
+        while (count-- > 0) {
+          invalidateCell(chain[index++]);
+        }
+      }
+
+      // Erase current rendering for this coordinate
+      function erase(coord) {
+        var id = 'r' + coord[1] + 'c' + coord[0];
+        var g = document.getElementById('g-' + id);
+        if (g) {
+          var cell = document.getElementById('img-' + id);
+          if (cell) {
+            g.removeChild(cell);
+          }
+          toggleClass(g, 'highlight', false);
+        }
+      }
+
+      function drawBulb(coord) {
+        var id = 'r' + coord[1] + 'c' + coord[0];
+        var g = document.getElementById('g-' + id);
+        if (g) {
+          erase(coord);
+          toggleClass(g, 'highlight', true);
+        }
+      }
+
+      // Draw appropriate images to indicate chain
+      function rerender() {
+        var svgRoot = document.getElementById('grid-root');
+        for (var i = 0; i < invalidated_.length; i++) {
+          var coord = invalidated_[i];
+          erase(coord);
+          var info = findInChain(coord);
+          if (info == null) {
+            continue;
+          }
+          var dirs = dirFromNeighbors(info);
+          if (dirs != '') {
+            var locked = isLocked(coord);
+            var imgName = (dirs.length == 1) ? ('Start' + dirs) : locked ? ('Black' + dirs) : ('Blue' + dirs);
+            renderImage(coord[0], coord[1], imgName, 'track');
+          }
+        }
+        invalidated_ = [];
+      }
+
+      function renderImage(x, y, imgName, cls) {
+        var id = 'r' + y + 'c' + x;
+        var g = document.getElementById('g-' + id);
+        if (g) {
+          var dx = (x + 1) * 60;
+          var dy = y * 60;
+          var img = document.createElementNS(xmlns, 'image');
+          img.id = 'img-' + id;
+          applyAllClasses(img, cls);
+          img.setAttributeNS('', 'href', 'Images/Eng/' + imgName + '.png');
+          g.appendChild(img);
+        }
+      }
+
+      function stampX(coord) {
+        erase(coord);
+        renderImage(coord[0], coord[1], 'X', 'track x');
+      }
+
+      function dirFromNeighbors(info) {
+        var x = info.chain[info.index][0];
+        var y = info.chain[info.index][1];
+        var n = [x, y-1];
+        var s = [x, y+1];
+        var w = [x-1, y];
+        var e = [x+1, y];
+        var prev = info.index > 0 ? info.chain[info.index - 1] : null;
+        var next = info.index < info.chain.length - 1 ? info.chain[info.index + 1] : null;
+        var dirs = '';
+        if (areEqual(prev, n) || areEqual(next, n)) {
+          dirs += 'N';
+        }
+        if (areEqual(prev, s) || areEqual(next, s)) {
+          dirs += 'S';
+        }
+        if (areEqual(prev, e) || areEqual(next, e)) {
+          dirs += 'E';
+        }
+        if (areEqual(prev, w) || areEqual(next, w)) {
+          dirs += 'W';
+        }
+        return dirs;
+      }
+
+      function postSetup() {
+        rerender();
+        var svg = document.getElementById('svg-grid');
+        //svg.ontouchstart = function(e){onTouch(e)};
+        svg.addEventListener('touchstart', function(e){e.preventDefault()});
+        svg.onpointermove = function(e){onMove(e)};
+        svg.onpointerout = function(e){onMove(e)};
+        svg.onpointerup = function(e){onClick(e)};
+      }
+
+      function gridCoord(evt) {
+        var ref = document.getElementById('coord-reference');
+        var refBounds = ref.getBoundingClientRect();
+        var x = (evt.clientX - refBounds.left) / refBounds.width;
+        var y = (evt.clientY - refBounds.top) / refBounds.height;
+        if (x < 0 || x >= 1 || y < 0 || y >= 1) {
+          return null;
+        }
+        // y indices starts at 1, because of header row
+        var coord = [Math.floor(x * 10), Math.floor(y * 10) + 1];
+        return coord;
+      }
+
+      // Do two coordinate structures describe adjacent 2D positions (horizontally or vertically)
+      function areNeighbors(a, b) {
+        if (a == null || b == null) {
+          return false;
+        }
+        var dx = a[0] - b[0];
+        var dy = a[1] - b[1];
+        return dx * dx + dy * dy == 1;
+      }
+
+      // Do two coordinate structures describe the same 2D position
+      function areEqual(a, b) {
+        if (a == null || b == null) {
+          return false;  // null == null isn't interesting here
+        }
+        return a[0] == b[0] && a[1] == b[1];
+      }
+
+      // Is this coordinate within the 11x11 grid?
+      function isInBounds(coord) {
+        return coord[0] >= 0 && coord[0] < 10  // cols 0-10 (11 is header)
+          && coord[1] >= 1 && coord[1] < 11;  // rows 1-11 (0 is header)
+      }
+
+      var exitA = [-1, 2];  // out of bounds
+      var exitB = [3,11];
+      var edgeA = [0, 2];  // points of exit
+      var edgeB = [3,10];
+      // Is this one of the designated exits?
+      function isExit(coord) {
+        return areEqual(coord, exitA) || areEqual(coord, exitB);
+      }
+
+      // Is this coordinate locked by initial data?
+      function isLocked(coord) {
+        if (!isInBounds(coord)) {
+          return true;
+        }
+        var val = initialData[coord[1]][coord[0]];
+        var t = tracks.indexOf(val);
+        return t >= 0 && t < 6;
+      }
+
+      function isGray(coord) {
+        if (!isInBounds(coord)) {
+          return false;
+        }
+        var val = initialData[coord[1]][coord[0]];
+        return val == '_';
+      }
+
+      function findInChain(coord) {
+        for (var c = 0; c < chains_.length; c++) {
+          var chain = chains_[c];
+          for (var i = 0; i < chain.length; i++) {
+            if (areEqual(chain[i], coord)) {
+              return { chain_id: c, index: i, chain: chain };
+            }
+          }
+        }
+        return null;  // Not found
+      }
+
+      // Both ends of a chain are extentable. How close to an end is this coord?
+      // Hard-coded cells cannot be changed, so if one is adjacent, the end must be in the other direction.
+      // If keepLink is specified, treat it the same as a hard-coded cell.
+      function calcEndnessWithinChain(info, keepLink) {
+        if (info == null) {  // not in a chain
+          return false;
+        }
+        if (info.index == 0 || info.index == info.chain.length - 1) {
+          // We are at the end
+          info['endIndex'] = info.index;
+          info['endNess'] = 0;
+          return true;
+        }
+
+        if (isLocked(info.chain[info.index])) {
+          return false;
+        }
+        // Indeces on both sides of index are valid
+        if (isLocked(info.chain[info.index - 1])) {
+          // Prev cell is locked, so link is unbreakable. The end is the other way
+          info['endIndex'] = info.chain.length - 1;
+          info['endNess'] = info.chain.length - 1 - info.index;
+        }
+        else if (isLocked(info.chain[info.index + 1]) || areEqual(info.chain[info.index + 1], keepLink)) {
+          // Next cell is either locked or keep, so link is unbreakable. The end is toward the front
+          info['endIndex'] = 0;
+          info['endNess'] = info.index;
+        }
+        else if (areEqual(info.chain[info.index - 1], keepLink)) {
+          // Prev cell is keep. The end is the other way
+          info['endIndex'] = info.chain.length - 1;
+          info['endNess'] = info.chain.length - 1 - info.index;
+        }
+        // We aren't at the end, and neither neighbor is interesting.
+        // Offer to prune the shorter end (most interesting when rerouting the N-1th cell)
+        else if (info.chain.length - 1 - info.index <= info.index) {
+          info['endIndex'] = info.chain.length - 1;
+          info['endNess'] = info.chain.length - 1 - info.index;
+        }
+        else {
+          info['endIndex'] = 0;
+          info['endNess'] = info.index;
+        }
+        return true;
+      }
+
+      function invertEndness(info) {
+        if (info.endIndex > 0) {
+          info.endIndex = 0;
+          info.endNess = info.index;
+        }
+        else {
+          info.endIndex = info.chain.length - 1;
+          info.endNess = info.chain.length - 1 - info.index;
+        }
+      }
+
+      // Create a new chain from two coordinates
+      function createChain(from, dest) {
+        var chain = [from, dest];
+        chains_.push(chain);
+        invalidateChain(chain, 0, 2);
+      }
+
+      // Shorten an existing chain, discarding the trimmings
+      function trimChain(info) {
+        if (isLocked(info.chain[info.index])) {
+          return false;
+        }
+        var steps = info.endNess;
+        if (info.endIndex == 0) {
+          invalidateChain(info.chain, 0, info.endNess + 1);
+          info.chain.splice(0, info.endNess);
+          info.index = 0;
+          info.endNess = 0;
+        }
+        else {
+          invalidateChain(info.chain, info.index, info.endNess + 1);
+          info.chain.splice(info.index + 1, info.endNess);
+          info.endNess = 0;
+        }
+      }
+
+      // Split one chain into three, removing all the indexed link and both neighbors
+      function splitChain(info) {
+        var chain = [];
+        if (info.endIndex == 0) {
+          invalidateChain(info.chain, info.index - 2, 3);
+          chain = info.chain.slice(0, info.index);  // new chain loses index-1
+          info.chain.splice(0, info.index);
+          info.index = 0;
+          info.endNess = 0;
+        }
+        else {
+          invalidateChain(info.chain, info.index, 3);
+          chain = info.chain.slice(info.index + 1);  // new chain loses index+1
+          info.chain.splice(info.index + 1, info.endNess);
+          info.endIndex = info.index;
+          info.endNess = 0;
+        }
+        if (chain.length > 1) {
+          chains_.push(chain);
+        }
+      }
+
+      // Append a new coordinate onto one end of a chain
+      function growChain(info, coord) {
+        if (info.endIndex == 0) {
+          // prepend
+          info.chain.splice(0, 0, coord);
+          invalidateChain(info.chain, 0, 2);
+        }
+        else {
+          // append
+          info.chain.push(coord);
+          invalidateChain(info.chain, info.chain.length - 2, 2);
+        }
+      }
+
+      // Combine two chains at their ends
+      function mergeChain(dest, src) {
+        invalidateCell(dest.chain[dest.index]);
+        invalidateCell(src.chain[src.index]);
+        // Clone the src chain onto the dest chain
+        var chain = [];
+        if (dest.endIndex > 0) {
+          if (src.endIndex == 0) {
+            chain = dest.chain.concat(src.chain);
+          }
+          else {
+            chain = dest.chain.concat(src.chain.reverse());
+          }
+        }
+        else if (src.endIndex > 0) {
+          chain = src.chain.concat(dest.chain);
+        }
+        else {
+          chain = dest.chain.reverse().concat(src.chain);
+        }
+        // Update dest's chain
+        chains_[dest.chain_id] = chain;
+        // Then remove the src chain
+        chains_.splice(src.chain_id, 1);
+      }
+
+      function addChainLink(dest, from, hist) {        
+        var destChain = findInChain(dest);
+        var fromChain = findInChain(from);
+        
+        if (fromChain != null) {
+          if (!calcEndnessWithinChain(fromChain, hist)) {
+            // Can't free up an end
+            return false;
+          }
+          
+          if (!calcEndnessWithinChain(destChain, from)) {
+            if (isLocked(dest)) {
+              return false;  // Can't link anything (new) to a locked cell
+            }
+          }
+
+          if (destChain != null && fromChain.chain_id == destChain.chain_id) {
+            if (fromChain.endIndex != destChain.endIndex) {
+              invertEndness(destChain);
+            }
+            if (fromChain.endNess == 0 && destChain.endNess == 1 
+                && !isLocked(from) && !isLocked(dest)) {
+              // Dragging backward causes an undo
+              return trimChain(destChain);
+            }
+            if (Math.abs(fromChain.index - destChain.index) == 1) {
+              // This link already exists
+              return true;
+            }
+            // Any other connects are invalid - chains may not cause loops
+            return false;
+          }
+          
+          if (fromChain.endNess == 1) {
+            // Re-routing a chain
+            if (!trimChain(fromChain)) {
+              return false;
+            }
+          }
+          else if (fromChain.endNess > 1) {
+            // Starting a drag mid-chain is hard to interpret
+            splitChain(fromChain, hist);
+          }
+          // endNess is now 0
+          // Extending from the end of a chain...
+          if (destChain == null) {
+            // ... to a free cell
+            growChain(fromChain, dest);
+          }
+          else if (destChain.endNess == 0) {
+            // ... to the end of another chain
+            mergeChain(fromChain, destChain);
+          }
+          else {
+            // ... into the middle of another chain
+            splitChain(destChain);
+            mergeChain(fromChain, destChain);
+          }
+          return true;
+        }
+        else if (destChain != null) {
+          // from is free, but dest is already in a chain
+          if (calcEndnessWithinChain(destChain, null) && destChain.endNess == 0) {
+            growChain(destChain, from);
+            return true;
+          }
+          else {
+            return false;
+          }
+        }
+        else {
+          // dest and from are both free
+          createChain(from, dest);
+          return true;
+        }
+      }
+
+      function breakChain(coord) {
+        if (isLocked(coord)) {
+          return false;
+        }
+        var info = findInChain(coord);
+        if (!info) {
+          return true;
+        }
+        if (!calcEndnessWithinChain(info, null)
+            || (info.index > 0 && isLocked(info.chain[info.index - 1]))
+            || (info.index < (info.chain.length - 1) && isLocked(info.chain[info.index + 1]))) {
+          return false;
+        }
+
+        splitChain(info);
+        return true;
+      }
+
+      var prevDrag = null;
+      var prevPrev = null;
+      function processEvent(evt, drag) {
+        var coord = gridCoord(evt);
+        if (!coord) {
+          return;
+        }
+        var stamper = getCurrentStampToolId();
+        if (stamper == '' || stamper == 'drawTrack') {
+          if (areEqual(prevPrev, coord)) {
+            // User dragged and came back. Likely an undo.
+            prevPrev = null;
+          }
+          if (areNeighbors(coord, prevDrag)) {
+            addChainLink(coord, prevDrag, prevPrev);
+            prevPrev = prevDrag;
+            prevDrag = coord;
+            rerender();
+          }
+          else {
+            // Start a new drag
+            prevPrev = null;
+            prevDrag = coord;
+          }
+        }
+        else {
+          if (breakChain(coord)) {
+            if (stamper == 'drawX') {
+              stampX(coord);
+            }
+            if (stamper == 'drawHighlight') {
+              if (!drag || !areEqual(coord, prevDrag)) {
+                drawBulb(coord);
+              }
+            }
+            else if (stamper == 'drawErase') {
+              erase(coord);            
+            }
+            prevPrev = null;
+            prevDrag = coord;
+          }
+        } 
+      }
+
+      function onMove(evt) {
+        if (evt.buttons > 0) {
+          processEvent(evt, true);
+          evt.preventDefault();
+        }
+      }
+
+      function onClick(evt) {
+        processEvent(evt, false);
       }
 
     </script>
@@ -77,19 +609,46 @@
         right: 0px;
         width: 2.25in;
       }
-      .track image {
+      image.track {
         width: 57px;
         height: 57px;
         transform: translate(1.5px, 1.5px);
+        z-index: 10;
       }
-      .letter rect {
+      image.track.x {
+        width:24px;
+        height:24px;
+        transform: translate(18px, 18px);
+      }
+      image.track.bulb {
+        width:36px;
+        height:36px;
+        transform: translate(12px, 12px);
+      }
+      #grid-root {
+        position: fixed;
+      }
+      #coord-reference {
+        fill: none;
+        stroke: none;
+      }
+      #grid-root rect {
         width: 60px;
         height: 60px;
-        fill: white;
+        fill: none;
+        stroke: black;
+        stroke-width: 3px;
+        z-index: 1;
+      }
+      #grid-root rect.gray {
+        fill: #c0c0c080;
         stroke: black;
         stroke-width: 3px;
       }
-      .letter text {
+      #grid-root .highlight rect {
+        fill: #ffff33;
+      }
+      .message text {
         font-family: 'Lucida Console', Courier, monospace;
         font-size: 10pt;
         transform: translate(5px, 15px);
@@ -97,16 +656,19 @@
         -webkit-user-select: none; /* Safari */        
         -moz-user-select: none; /* Firefox */
         -ms-user-select: none; /* IE10+/Edge */
+        z-index: 2;
       }
-      .count rect {
-        width: 60px;
-        height: 60px;
-        fill: none;
-        stroke: none;
+      #grid-root .highlight.message text {
+        font-size: 36pt;
+        transform: translate(15px, 44px);
       }
       .count text {
         font-family: 'Lucida Console', Courier, monospace;
         font-size: 14pt;
+        user-select: none; 
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
       }
       .count.col text {
         transform: translate(30px, 52px);
@@ -114,11 +676,6 @@
       }
       .count.row text {
         transform: translate(5px, 40px);
-      }
-      .gray rect {
-        fill: #c0c0c0;
-        stroke: black;
-        stroke-width: 3px;
       }
       text.exit {
         font-family: 'Lucida Console', Courier, monospace;
@@ -164,7 +721,7 @@
     <div id="pageBody">
       <div class="flavor">
         <p>
-          The train makes a single continuous path thaat starts at <b>A</b>, connects all the given pieces, and ends at <b>B</b>.
+          The train makes a single continuous path that starts at <b>A</b>, connects all the given pieces, and ends at <b>B</b>.
           The numbers indicate how many segments of track are in their row or column.
           Track pieces can be straight or make a 90 degree turn.
           The track cannot cross itself.
@@ -178,81 +735,33 @@
         <img src="Images/Eng/example.png">
       </div>
 
-      <svg width="720" height="720" ondragstart="return false;" ondrop="return false;">
+      <svg id="svg-grid" width="720" height="720" viewBox="0 30 720 720"  ondragstart="return false;" ondrop="return false;">
+        <rect id="coord-reference" x="60" y="60" width="600" height="600"></rect>
         <g id="grid-root">
-          <g transform="translate(30, 115)">
-            <text class="exit">A</text>
+          <g id="g-r2c-1" transform="translate(00, 120)">
+            <text class="exit" transform="translate(30, 38)">A</text>
           </g>
-          <g transform="translate(258, 640)">
-            <text class="exit">B</text>
+          <g id="g-r11c3" transform="translate(240, 660)">
+            <text class="exit" transform="translate(30, 30)" style="text-anchor:middle">B</text>
           </g>
         </g>
       </svg>
 
       <div id="stampPalette" data-tool-count="3" data-tool-erase="drawErase" style="position: absolute; right:0.5in; bottom: -0.5in;">
         <p style="text-align: center; margin:4px;"><img src="Icons/stamp.png" style="height:2ex;"> Draw tools:</p>
-        <div class="stampTool medium" data-template-id="drawNS">
-          <div><img src="Images/Eng/TrackNS.png"></div>
+        <div class="stampTool medium" data-template-id="drawTrack" title="Draw tracks">
+          <div><img src="Images/Eng/TrackStamp.png"></div>
         </div>
-        <div class="stampTool medium" data-template-id="drawEW">
-          <div><img src="Images/Eng/TrackEW.png"></div>
-        </div>
-        <div class="stampTool medium" data-template-id="drawNE">
-          <div><img src="Images/Eng/TrackNE.png"></div>
-        </div>
-        <div class="stampTool medium" data-template-id="drawSE">
-          <div><img src="Images/Eng/TrackSE.png"></div>
-        </div>
-        <div class="stampTool medium" data-template-id="drawSW">
-          <div><img src="Images/Eng/TrackSW.png"></div>
-        </div>
-        <div class="stampTool medium" data-template-id="drawNW">
-          <div><img src="Images/Eng/TrackNW.png"></div>
-        </div>
-        <div class="stampTool medium" data-template-id="drawX">
+        <div class="stampTool medium" data-template-id="drawX" title="Draw X's where tracks aren't">
           <div><img src="Images/Eng/X.png" style="width:24px;height:24px; margin:12px; margin-top:15px;"></div>
         </div>
-        <div class="stampTool medium" data-template-id="drawErase">
+        <div class="stampTool medium" data-template-id="drawHighlight" title="Highlight letters">
+          <div><img src="Images/Eng/Bulb.png" style="width:36px;height:36px; margin:6px; margin-top:9px;"></div>
+        </div>
+        <div class="stampTool medium" data-template-id="drawErase" title="Eraser">
           <div style="background-color: #eee;"><img src="Images/transparent-pixel.png"><span class="label" style="position:absolute; left:6px; top:0.2in; width:48px; text-align: center;">erase</span></div>
         </div>
       </div>
-      <div class="stampToolTemplates" id="drawTool1">
-        <template id="drawNS">
-          <div class="stampedObject track" data-template-id="drawNS" data-next-template-id="drawEW">
-            <img src="Images/Eng/BlueNS.png">
-          </div>
-        </template>
-        <template id="drawEW">
-          <div class="stampedObject track" data-template-id="drawEW" data-next-template-id="drawNE">
-            <img src="Images/Eng/BlueEW.png">
-          </div>
-        </template>
-        <template id="drawNE">
-          <div class="stampedObject track" data-template-id="drawNE" data-next-template-id="drawSE">
-            <img src="Images/Eng/BlueNE.png">
-          </div>
-        </template>
-        <template id="drawSE">
-          <div class="stampedObject track" data-template-id="drawSE" data-next-template-id="drawSW">
-            <img src="Images/Eng/BlueSE.png">
-          </div>
-        </template>
-        <template id="drawSW">
-          <div class="stampedObject track" data-template-id="drawSW" data-next-template-id="drawNW">
-            <img src="Images/Eng/BlueSW.png">
-          </div>
-        </template>
-        <template id="drawNW">
-          <div class="stampedObject track" data-template-id="drawNW" data-next-template-id="drawX">
-            <img src="Images/Eng/BlueNW.png">
-          </div>
-        </template>
-        <template id="drawX">
-          <div class="stampedObject track" data-template-id="drawX" data-next-template-id="drawErase">
-            <img src="Images/Eng/X.png" style="width:24px;height:24px; margin:17px;">
-          </div>
-        </template>
-      </div>  
 
     </div>
   </body>

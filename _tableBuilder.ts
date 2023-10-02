@@ -97,8 +97,11 @@ export function constructSvgTextCell(val:string, dx:number, dy:number, cls:strin
   return vg;
 }
 
-export function constructSvgImageCell(img:string, dx:number, dy:number, cls:string) {
+export function constructSvgImageCell(img:string, dx:number, dy:number, id?:string, cls?:string) {
   var vg = document.createElementNS(svg_xmlns, 'g');
+  if (id) {
+    vg.id = id;
+  }
   vg.classList.add('vertex-g');
   if (cls) {
     applyAllClasses(vg, cls);

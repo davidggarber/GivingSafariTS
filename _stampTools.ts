@@ -133,6 +133,17 @@ function getStampTool(event:MouseEvent, toolFromErase:string|null):string|null {
 }
 
 /**
+ * Expose current stamp tool, in case other features want to react
+ */
+export function getCurrentStampToolId() {
+    if (_selectedTool == null) {
+        return '';
+    }
+    var id = _selectedTool.getAttributeNS('', 'data-template-id');
+    return id || '';
+}
+
+/**
  * A stampable element can be the eventual container of the stamp. (example: TD)
  * Or it can assign another element to be the stamp container, with the data-stamp-parent attribute.
  * If present, that field specifies the ID of an element.
