@@ -13,22 +13,27 @@
     <script src="puzzle_list.js"></script>
     <script>
       function onLoad() {
-          expandIFrames(orient.portrait, 'block');
-          expandIFrames(orient.landscape, 'none');
+          expandIFrames(orient.portrait, false, 'block');
+          expandIFrames(orient.portrait, true, 'none');
+          //expandIFrames(orient.landscape, 'none');
           //expandIFrames(group.meta, 'none');
           //expandIFrames(group.feeder, 'none');
-          switchLayout('portrait');
+          switchLayout('puzzle_list');
       }
 
-      function expandIFrames(ort, vis) {
-          var list = document.getElementById(ort + '_list');
+      function expandIFrames(ort, bonus, vis) {
+          var list = document.getElementById(bonus ? 'bonus_list' : 'puzzle_list');
           list.style.display = vis;
           var orientation = 'print-' + ort;
           var other = ort == 'feeder' ? ort : '';
           var count = 0;
           for (var i = 0; i < puzzles.length; i++) {
               var puz = puzzles[i];
-              if (puz.orientation != ort) {
+              // if (puz.orientation != ort) {
+              //   continue;
+              // }
+              var isBonus = puz.group == group.feeder || puz.group == group.challenge;
+              if (bonus != isBonus) {
                 continue;
               }
 
@@ -53,14 +58,14 @@
           }
       }
 
-      function switchLayout(ort) {
+      function switchLayout(list_id) {
         // Buttons and lists must be in the same order
         var buttons = document.getElementsByClassName('layout-btn');
         var lists = document.getElementsByClassName('group-list');
         for (var i = 0; i < lists.length; i++) {
           var btn = buttons[i];
           var list = lists[i];
-          if (list.id == ort + '_list') {
+          if (list.id == list_id) {
             list.style.display = 'block';
             btn.classList.add('current');
             var count = list.getElementsByTagName('iframe').length;
@@ -105,8 +110,8 @@
   </head> 
   <body id="print-view" class="portrait landscape feeders" onload="onLoad()">
     <div id="layout">
-      <button id="portraits" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('portrait')">Portrait</button>
-      <button id="landscapes" class="layout-btn" style="width:1.1in; height: 0.85in;" onclick="switchLayout('landscape')">Landscape</button>
+      <button id="puzzles" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('puzzle_list')">Puzzles</button>
+      <button id="bonus" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('bonus_list')">Bonus</button>
       <div style="display:inline-block; width:0.8in; height:0.8in; color:white; text-align: center; cursor: default;" onclick="toggleThumbs()"><input id="thumb-check" type="checkbox" value="thumbnails"><br>Thumbnails</div>
       <!--
         <button id="metas" class="layout-btn" style="width:1in; height: 1in;" onclick="switchLayout('meta')">Meta Puzzles</button>  
@@ -118,9 +123,7 @@
         <br>There may be an extra blank page. Recommend printing explicitly pages 1-<span id="page-count">21</span>.
       </p>
     </div>
-    <div id="portrait_list" class="group-list"></div>
-    <div id="landscape_list" class="group-list"></div>
-    <div id="meta_list" class="x-group-list"></div>
-    <div id="feeder_list" class="x-group-list"></div>
+    <div id="puzzle_list" class="group-list"></div>
+    <div id="bonus_list" class="group-list"></div>
   </body>
 </html>

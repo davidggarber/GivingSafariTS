@@ -58,9 +58,9 @@ var puzzles = [
     { title: 'Zoology', thumb: 'Zoo', author: 'David Garber', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.trivia] },
     { title: 'The Magic School Bus', thumb: 'Tmsb', author: 'Philippe Nicolle', type: types.meta, group: group.meta, icon: meta.bus, orientation: orient.portrait },
     { title: 'Weird Science', thumb: 'Ws', author: 'Martyn Lovell', type: types.meta, group: group.meta, icon: meta.science, orientation: orient.portrait },
-    { title: 'Cosmos', thumb: 'Cos', author: 'Rorke Haining', type: types.challenge, group: group.challenge, icon: challenge.cosmos, orientation: orient.portrait },
-    { title: 'Trivia', thumb: 'Tri', author: 'Cele Wolman', type: types.challenge, group: group.challenge, icon: challenge.trivia, orientation: orient.portrait },
-    { title: 'Name That Tune', thumb: 'Ntt', author: 'Arwen Pond', type: types.challenge, group: group.challenge, icon: challenge.tunes, orientation: orient.portrait },
+    { title: 'Cosmos', file: 'Experiment_Cosmos', thumb: 'Cos', author: 'Rorke Haining', type: types.challenge, group: group.challenge, icon: challenge.cosmos, orientation: orient.portrait },
+    { title: 'Trivia', file: 'Experiment_Trivia', thumb: 'Tri', author: 'Cele Wolman', type: types.challenge, group: group.challenge, icon: challenge.trivia, orientation: orient.portrait },
+    { title: 'Name That Tune', file: 'Experiment_Tunes', thumb: 'Ntt', author: 'Arwen Pond', type: types.challenge, group: group.challenge, icon: challenge.tunes, orientation: orient.portrait },
 ];
 
 function puzzleFile(puz) {
