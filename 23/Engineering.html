@@ -113,7 +113,6 @@
       // A list of coordinates which need to be re-rendered
       var invalidated_ = [];
       function invalidateCell(coord) {
-        console.log(coord);
         invalidated_.push(coord);
       }
       function invalidateChain(chain, index, count) {
@@ -157,9 +156,6 @@
         var svgRoot = document.getElementById('grid-root');
         for (var i = 0; i < invalidated_.length; i++) {
           var coord = invalidated_[i];
-          //if (!isInBounds(coord)) {
-            //continue;
-          //}
           erase(coord);
           var info = findInChain(coord);
           if (info == null) {
@@ -221,12 +217,9 @@
 
       function postSetup() {
         rerender();
-        //buildCell('', exitA[0], exitA[1]);
-        //buildCell('', exitB[0], exitB[1]);
-        //invalidateCell(exitA);
-        //invalidateCell(exitB);
-        //rerender();
         var svg = document.getElementById('svg-grid');
+        //svg.ontouchstart = function(e){onTouch(e)};
+        svg.addEventListener('touchstart', function(e){e.preventDefault()});
         svg.onpointermove = function(e){onMove(e)};
         svg.onpointerout = function(e){onMove(e)};
         svg.onpointerup = function(e){onClick(e)};
@@ -341,11 +334,6 @@
           info['endIndex'] = info.chain.length - 1;
           info['endNess'] = info.chain.length - 1 - info.index;
         }
-        // else if (keepLink != null) {
-          // Keep is neither existing neighbor, 
-          // We are likely dragging backwards in our chain
-          // return false;
-        //}
         // We aren't at the end, and neither neighbor is interesting.
         // Offer to prune the shorter end (most interesting when rerouting the N-1th cell)
         else if (info.chain.length - 1 - info.index <= info.index) {
@@ -600,6 +588,7 @@
       function onMove(evt) {
         if (evt.buttons > 0) {
           processEvent(evt, true);
+          evt.preventDefault();
         }
       }
 
@@ -636,6 +625,9 @@
         width:36px;
         height:36px;
         transform: translate(12px, 12px);
+      }
+      #grid-root {
+        position: fixed;
       }
       #coord-reference {
         fill: none;
