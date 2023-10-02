@@ -387,16 +387,16 @@
       function splitChain(info) {
         var chain = [];
         if (info.endIndex == 0) {
-          invalidateChain(info.chain, info.index - 2, 3);
-          chain = info.chain.slice(0, info.index);  // new chain loses index-1
+          invalidateChain(info.chain, info.index - 1, 3);
+          chain = info.chain.slice(0, info.index);  // new chain starts before index
           info.chain.splice(0, info.index);
           info.index = 0;
           info.endNess = 0;
         }
         else {
-          invalidateChain(info.chain, info.index, 3);
-          chain = info.chain.slice(info.index + 1);  // new chain loses index+1
-          info.chain.splice(info.index + 1, info.endNess);
+          invalidateChain(info.chain, info.index - 1, 3);
+          chain = info.chain.slice(info.index + 1);  // new chain starts after index
+          info.chain.splice(info.index + 1);
           info.endIndex = info.index;
           info.endNess = 0;
         }
@@ -530,10 +530,28 @@
         if (!info) {
           return true;
         }
-        if (!calcEndnessWithinChain(info, null)
-            || (info.index > 0 && isLocked(info.chain[info.index - 1]))
-            || (info.index < (info.chain.length - 1) && isLocked(info.chain[info.index + 1]))) {
+        if (!calcEndnessWithinChain(info, null)) {
           return false;
+        }
+
+        // Special case breaks adjacent to locks, since those cannot be deleted
+        if (info.index > 0 && isLocked(info.chain[info.index - 1])) {
+          invalidateChain(info.chain, info.index, 2);
+          var chain = info.chain.slice(info.index + 1);
+          info.chain.splice(info.index + 1);
+          if (chain.length > 1) {
+            chains_.push(chain);
+          }
+          return false;  // broken, but can't draw here
+        }
+        if (info.index < (info.chain.length - 1) && isLocked(info.chain[info.index + 1])) {
+          invalidateChain(info.chain, info.index - 1, 2);
+          var chain = info.chain.slice(0, info.index);
+          info.chain.splice(0, info.index);
+          if (chain.length > 1) {
+            chains_.push(chain);
+          }
+          return false;  // broken, but can't draw here
         }
 
         splitChain(info);
@@ -581,6 +599,7 @@
             prevPrev = null;
             prevDrag = coord;
           }
+          rerender();
         } 
       }
 
@@ -739,10 +758,10 @@
         <rect id="coord-reference" x="60" y="60" width="600" height="600"></rect>
         <g id="grid-root">
           <g id="g-r2c-1" transform="translate(00, 120)">
-            <text class="exit" transform="translate(30, 38)">A</text>
+            <text class="exit" transform="translate(20, 38)">A</text>
           </g>
           <g id="g-r11c3" transform="translate(240, 660)">
-            <text class="exit" transform="translate(30, 30)" style="text-anchor:middle">B</text>
+            <text class="exit" transform="translate(30, 40)" style="text-anchor:middle">B</text>
           </g>
         </g>
       </svg>
