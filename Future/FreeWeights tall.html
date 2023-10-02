@@ -29,12 +29,14 @@
         buildGraphPaper();
         var root = document.getElementById('graph-root');
         root.appendChild(buildGraph('', graph, 0, 0));
+        layoutPhrase();
       }
       function buildGraphPaper() {
         var graph = document.getElementById('graph-paper');
         for (var y = 0; y <= 44; y++) {
           var path=document.createElementNS(xmlns, 'path');
           var d = "M-600," + (y * 10) + " h1110";
+          // Origin point of graph paper
           path.setAttributeNS(null, 'd', d);
           var cls = (y % 5 == 0) ? 'major' : 'minor';
           path.classList.add(cls);
@@ -52,62 +54,61 @@
 
       var graph = {
         left: {
-          dist: 9, hang: {
+          dist: 17, hang: {
             left: {
-              dist: 8, hang: {
+              dist: 21, hang: {
                 left: {
-                  dist: 21, hang: {
+                  dist: 4, hang: { 
                     left: {
-                      dist: 4, hang: { 
+                      dist: 2, hang: { 
                         left: {
-                          dist: 2, hang: { 
-                            left: {
-                              dist: 3, hang: { letter: 'b', count: 3 }
-                              },
-                            right: {
-                              dist: 4, hang: { letter: 'g', count: 3 }
-                              }
-                            }
+                          dist: 3, hang: { letter: 'b', count: 3 }
                           },
                         right: {
-                          dist: 6, hang: { skip: 1, letter: 'e', count: 1 }
+                          dist: 4, hang: { letter: 'g', count: 3 }
                           }
                         }
                       },
                     right: {
-                      dist: 14, hang: { skip: 2, letter: 'f', count: 4  }
+                      dist: 6, hang: { skip: 1, letter: 'e', count: 1 }
                       }
                     }
                   },
-                right: {  
-                  dist: 12, hang: {
-                    skip: 1, 
-                    left: {
-                      dist: 8, hang: {
-                        left: {
-                          dist: 1, hang: { letter: 'b', count: 5 }
-                            },
-                        right: {  
-                          dist: 4, hang: { letter: 'd', count: 5 }
-                          }  
-                        }
-                      },
-                    middle: {
-                      hang: { skip: 1, letter: 'a', count: 3 }
-                      },
-                    right: {
-                      dist: 10, hang: { skip: 1, letter: 'c', count: 4 }
-                      }
-                    }
-                  }  
+                right: {
+                  dist: 14, hang: { skip: 2, letter: 'f', count: 4  }
+                  }
                 }
               },
             right: {  
-              dist: 33, hang: {
-                skip: 2, 
+              dist: 12, hang: {
+                skip: 1, 
+                left: {
+                  dist: 8, hang: {
+                    left: {
+                      dist: 1, hang: { letter: 'b', count: 5 }
+                        },
+                    right: {  
+                      dist: 4, hang: { letter: 'd', count: 5 }
+                      }  
+                    }
+                  },
+                middle: {
+                  hang: { skip: 1, letter: 'a', count: 3 }
+                  },
+                right: {
+                  dist: 10, hang: { skip: 1, letter: 'c', count: 4 }
+                  }
+                }
+              }  
+            }
+          },
+        right: {  
+          dist: 33, hang: { 
+            left: {
+              dist: 9, hang: { 
                 left: {
                   dist: 6, hang: { skip: 1, letter: 'f', count: 4 }
-                },
+                  },
                 right: {  
                   dist: 3, hang: {
                     left: {
@@ -115,34 +116,27 @@
                       },
                     middle: {
                       hang: { letter: 'e', count: 2 }
-                    },
+                      },
                     right: {  
                       dist: 4, hang: { letter: 'd', count: 1 }
-                    }  
-                  }
+                      }  
+                    }
+                  }  
+                }
+              },
+            right: {
+              dist: 8, hang: {
+                left: {
+                  dist: 4, hang: { letter: 'g', count: 3 }
+                  },
+                right: {  
+                  dist: 2, hang: { letter: 'a', count: 3 }
+                  }  
                 }  
               }
             }
           }
-        },
-        right: {  
-          dist: 41, hang: { 
-            skip: 4,
-            left: {
-              dist: 4, hang: { letter: 'g', count: 3 }
-              },
-            right: {  
-              dist: 2, hang: { letter: 'a', count: 3 }
-              }  
-            }
-          }
         };
-
-
-
-
-
-
 
       var canStacks = [];
 
@@ -161,6 +155,7 @@
 
         var contents = '';
         if (node['letter']) {
+gNode.classList.add('cans');
           var letter = node['letter'];
           var count = node['count'];
           for (var i = count - 1; i >= 0; i--) {  // bottom to top, for z-order
@@ -170,7 +165,7 @@
               : (i % 2 == 0) ? -16 : 16;
             var row = count <= 3 ? i
               : Math.trunc((i + count % 2) / 2);
-            var y = row * 25;
+            var y = row * 30;
             use.setAttributeNS('','x', x);
             use.setAttributeNS('','y', y);
             use.setAttributeNS('', 'href', '#can-' + node['letter'])
@@ -287,6 +282,9 @@
           toggleClass(piv, 'tilt-left', tilt < 0);
           toggleClass(piv, 'tilt-right', tilt > 0);
           toggleClass(piv, 'tilt-flat', tilt == 0);
+if (tilt != 0) {
+            unbalanced++;
+          }
         }
         return unbalanced;
       }
@@ -298,6 +296,21 @@
         return sum * length;
       }
 
+function layoutPhrase() {
+       // Layout the phrase letters over the cans
+        var phrase = document.getElementById('phrase');
+        var cans = document.getElementsByClassName('cans');
+        var letters = phrase.getElementsByClassName('letter-cell');
+        var left_edge = document.getElementById('graphPaper').getBoundingClientRect().left;
+        var width = cans[0].getBoundingClientRect().width;
+        for (var i = 0; i < cans.length; i++) {
+          var can = cans[i];
+          var let = letters[i];
+          var rect = can.getBoundingClientRect();
+          var dx = rect.left + (rect.width - width) / 2 - left_edge;
+          let.style.left = dx + 'px';
+        }
+      }
       function sumCans(contents) {
         var sum = 0;
         for (var i = 0; i < contents.length; i++) {
@@ -530,8 +543,8 @@
           </span>
         </div>
       </p>
-      <svg id="graphPaper" width="960" height="380" viewBox="-600 -1 1110 440" style="margin-top: 0.25in;"> 
-        <!--Origin of graph is now at x=-420. Total of 1110 virtual pixels, squeezed into 960 HTML pixels, which themselves aren't real pixels.-->
+      <svg id="graphPaper" width="960" height="440" viewBox="-600 -1 1100 440" style="margin-top: 0.25in;"> 
+        <!-- Starting point: Viewbox {x,_,_,_} gives left-right origin point of cans. Viewbox {_,_,x,_} gives total virtual width of , squeezed into 960 HTML pixels, which themselves aren't real pixels.-->
         <defs id="can-defs">
           <g id="can-a" fill="#993366" stroke="#eaa2c5" stroke-width="2">
             <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
@@ -577,20 +590,20 @@
       </svg>
 
       <div id="phrase" class="letter-cell-block">
-        <span class="letter-cell letter-underline notes-below" style="left: 60px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 120px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 160px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 280px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 360px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 420px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 460px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 548px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 680px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 720px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 760px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 800px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 860px;"></span>
-        <span class="letter-cell letter-underline notes-below" style="left: 920px;"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
       </div>
 
     </div>

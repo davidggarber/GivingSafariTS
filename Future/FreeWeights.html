@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Free Weights',
+        'print_qr': true,
+        'author': 'Ken Pacquer and David Garber',
+        'copyright': '2024',
+        'orientation': 'landscape',
+        'type': 'math',
+        'textInput': true,
+        'googleFonts': 'Architects+Daughter',
+        'abilities': {
+          'notes': true,
+          'decoder': true,
+          'decoderMode': 'Ascii'
+        },
+        'preSetup': buildSvg,
+        'onInputChange': weightChange,
+        'onRestore': weightsRestored
+      };
+      const xmlns = 'http://www.w3.org/2000/svg';
+      function buildSvg() {
+        buildGraphPaper();
+        var root = document.getElementById('graph-root');
+        root.appendChild(buildGraph('', graph, 0, 0));
+        layoutPhrase();
+      }
+      function buildGraphPaper() {
+        var graph = document.getElementById('graph-paper');
+        for (var y = 0; y <= 44; y++) {
+          var path=document.createElementNS(xmlns, 'path');
+          var d = "M-600," + (y * 10) + " h1110";
+          // Origin point of graph paper
+          path.setAttributeNS(null, 'd', d);
+          var cls = (y % 5 == 0) ? 'major' : 'minor';
+          path.classList.add(cls);
+          graph.appendChild(path);
+        }
+        for (var x = -62; x < 74; x++) {
+          var path=document.createElementNS(xmlns, 'path');
+          var d = "M"+ (x * 11) + ",0 v440";
+          path.setAttributeNS(null, 'd', d);
+          var cls = (x % 5 == 0) ? 'major' : 'minor';
+          path.classList.add(cls);
+          graph.appendChild(path);
+        }
+      }
+
+      var graph = {
+        left: {
+          dist: 17, hang: {
+            left: {
+              dist: 28, hang: {
+                    left: {
+                      dist: 10, hang: { 
+                        left: {
+                          dist: 3, hang: { letter: 'b', count: 3 }
+                          },
+                        right: {
+                          dist: 4, hang: { letter: 'g', count: 3 }
+                          }
+                        }
+                      },
+                    right: {
+                      dist: 14, hang: { 
+                        left: {
+                          dist: 8, hang: { letter: 'e', count: 1 }
+                          },
+                        right: {
+                          dist: 7, hang: { letter: 'f', count: 4 }
+                          }
+                        }
+                      }
+                    }
+              },
+            right: {  
+              dist: 16, hang: {
+                left: {
+                  dist: 8, hang: {
+                    left: {
+                      dist: 1, hang: { letter: 'b', count: 5 }
+                        },
+                    right: {  
+                      dist: 4, hang: { letter: 'd', count: 5 }
+                      }  
+                    }
+                  },
+                middle: {
+                  hang: { skip: 1, letter: 'a', count: 3 }
+                  },
+                right: {
+                  dist: 10, hang: { skip: 1, letter: 'c', count: 4 }
+                  }
+                }
+              }  
+            }
+          },
+        right: {  
+          dist: 33, hang: { 
+            left: {
+              dist: 9, hang: { 
+                left: {
+                  dist: 6, hang: { skip: 1, letter: 'f', count: 4 }
+                  },
+                right: {  
+                  dist: 3, hang: {
+                    left: {
+                      dist: 4, hang: { letter: 'd', count: 1 }
+                      },
+                    middle: {
+                      hang: { letter: 'e', count: 2 }
+                      },
+                    right: {  
+                      dist: 4, hang: { letter: 'd', count: 1 }
+                      }  
+                    }
+                  }  
+                }
+              },
+            right: {
+              dist: 8, hang: {
+                left: {
+                  dist: 4, hang: { letter: 'g', count: 3 }
+                  },
+                right: {  
+                  dist: 2, hang: { letter: 'a', count: 3 }
+                  }  
+                }  
+              }
+            }
+          }
+        };
+
+      var canStacks = [];
+
+      function buildGraph(id, node, x, y) {
+        var gNode = document.createElementNS(xmlns, 'g');
+        gNode.id = 'branch' + id;
+        gNode.classList.add('node');
+        var nextY = (1 + (node['skip'] || 0)) * 50;
+        var rope = document.createElementNS(xmlns, 'path');
+        rope.classList.add('rope');
+        rope.setAttributeNS('', 'd', 'M0,0 v' + nextY);
+        var gDrop = document.createElementNS(xmlns, 'g');
+        gDrop.setAttributeNS('', 'transform', 'translate(0, ' + nextY + ')');
+        gNode.appendChild(gDrop);
+        gNode.appendChild(rope);
+
+        var contents = '';
+        if (node['letter']) {
+gNode.classList.add('cans');
+          var letter = node['letter'];
+          var count = node['count'];
+          for (var i = count - 1; i >= 0; i--) {  // bottom to top, for z-order
+            var use = document.createElementNS(xmlns, 'use');
+            var single = count <= 3 || (i == 0 && count % 2 == 1);
+            var x = single ? 0
+              : (i % 2 == 0) ? -16 : 16;
+            var row = count <= 3 ? i
+              : Math.trunc((i + count % 2) / 2);
+            var y = row * 30;
+            use.setAttributeNS('','x', x);
+            use.setAttributeNS('','y', y);
+            use.setAttributeNS('', 'href', '#can-' + node['letter'])
+            gDrop.appendChild(use);
+            contents += letter;
+          }
+          canStacks.push(contents);
+        }
+        else {
+          var gPivot = document.createElementNS(xmlns, 'g');
+          gPivot.classList.add('pivot');
+          gDrop.appendChild(gPivot);
+
+          var xLeft = parseInt(node['left']['dist']) * -11;
+          var xRight = parseInt(node['right']['dist']) * 11;
+          var arm = document.createElementNS(xmlns, 'path');
+          arm.classList.add('arms');
+          arm.setAttributeNS('', 'd', 'M0,0 h' + xLeft + ' M0,0 h' + xRight);
+          gPivot.appendChild(arm);
+
+          var tLeft = document.createElementNS(xmlns, 'text');
+          tLeft.classList.add('left');
+          tLeft.setAttributeNS('', 'x', -5);
+          tLeft.setAttributeNS('', 'y', -5);
+          tLeft.appendChild(document.createTextNode(node['left']['dist']));
+          var tRight = document.createElementNS(xmlns, 'text');
+          tRight.classList.add('right');
+          tRight.setAttributeNS('', 'x', 5);
+          tRight.setAttributeNS('', 'y', -5);
+          tRight.appendChild(document.createTextNode(node['right']['dist']));
+          gPivot.appendChild(tLeft);
+          gPivot.appendChild(tRight);
+
+          var contents = '';
+          // left
+          var gL = document.createElementNS(xmlns, 'g');
+          gL.setAttributeNS('', 'transform', 'translate(' + xLeft + ',0)');
+          gL.classList.add('hanger');
+          var nLeft = buildGraph(id + '_L', node['left']['hang']);
+          gL.appendChild(nLeft);
+          gPivot.appendChild(gL);
+          contents += nLeft.getAttributeNS('', 'data-contents');
+          gPivot.setAttributeNS('', 'data-left-contents', nLeft.getAttributeNS('', 'data-contents'));
+          gPivot.setAttributeNS('', 'data-left-length', node['left']['dist']);
+
+          // middle
+          if (node['middle']) {
+            var gM = document.createElementNS(xmlns, 'g');
+            gM.classList.add('hanger');
+            var nMid = buildGraph(id + '_M', node['middle']['hang']);
+            gM.appendChild(nMid);
+            gPivot.appendChild(gM);
+            contents += nMid.getAttributeNS('', 'data-contents');
+          }
+
+          // right
+          var gR = document.createElementNS(xmlns, 'g');
+          gR.setAttributeNS('', 'transform', 'translate(' + xRight + ',0)');
+          gR.classList.add('hanger');
+          var nRight = buildGraph(id + '_R', node['right']['hang']);
+          gR.appendChild(nRight);
+          gPivot.appendChild(gR);
+          contents += nRight.getAttributeNS('', 'data-contents');
+          gPivot.setAttributeNS('', 'data-right-contents', nRight.getAttributeNS('', 'data-contents'));
+          gPivot.setAttributeNS('', 'data-right-length', node['right']['dist']);
+
+          gDrop.appendChild(gPivot);
+        }
+        gNode.setAttributeNS('', 'data-contents', contents);
+        return gNode;
+      }
+
+      var weights = {
+        a:0, b:0, c:0, d:0, e:0, f:0, g:0
+      };
+
+      function weightChange(inp) {
+        var span = findParentOfClass(inp, 'weight');
+        var id = span ? span.id : null;
+        if (id && id.indexOf('weight-') == 0) {
+          var letter = id.substring(7, 8);
+          weights[letter] = parseInt(inp.value) || 0;
+
+          // If player balances the scales, using positive integers, short-cut the sums
+          if (rebalance() == 0 && weights.a * weights.b * weights.c * weights.d * weights.e * weights.f * weights.g > 0) {
+            showSums(true);
+          }
+          else {
+            showSums(false);
+          }
+        }
+      }
+
+      function weightsRestored() {
+        // Re-read all inputs after restoring
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+          weightChange(inputs[i]);
+        }
+      }
+
+      function rebalance() {
+        var pivots = document.getElementsByClassName('pivot');
+        var unbalanced = 0;
+        for (var i = 0; i < pivots.length; i++) {
+          var piv = pivots[i];
+          var left = weigh(piv, 'left');
+          var right = weigh(piv, 'right');
+
+          var prevTilt = hasClass(piv, 'tilt-left') ? -1 : hasClass(piv, 'tilt-right') ? 1 : 0;
+          var tilt = left > right ? -1 : right > left ? 1 : 0;
+          toggleClass(piv, 'from-left', prevTilt < 0);
+          toggleClass(piv, 'from-right', prevTilt > 0);
+          toggleClass(piv, 'tilt-left', tilt < 0);
+          toggleClass(piv, 'tilt-right', tilt > 0);
+          toggleClass(piv, 'tilt-flat', tilt == 0);
+if (tilt != 0) {
+            unbalanced++;
+          }
+        }
+        return unbalanced;
+      }
+
+      function weigh(piv, side) {
+        var contents = piv.getAttributeNS('', 'data-' + side + '-contents');
+        var length = parseInt(piv.getAttributeNS('', 'data-' + side + '-length'));
+        var sum = sumCans(contents);
+        return sum * length;
+      }
+
+function layoutPhrase() {
+       // Layout the phrase letters over the cans
+        var phrase = document.getElementById('phrase');
+        var cans = document.getElementsByClassName('cans');
+        var letters = phrase.getElementsByClassName('letter-cell');
+        var left_edge = document.getElementById('graphPaper').getBoundingClientRect().left;
+        var width = cans[0].getBoundingClientRect().width;
+        for (var i = 0; i < cans.length; i++) {
+          var can = cans[i];
+          var let = letters[i];
+          var rect = can.getBoundingClientRect();
+          var dx = rect.left + (rect.width - width) / 2 - left_edge;
+          let.style.left = dx + 'px';
+        }
+      }
+      function sumCans(contents) {
+        var sum = 0;
+        for (var i = 0; i < contents.length; i++) {
+          sum += weights[contents[i]];
+        }
+        return sum;
+      }
+
+      function showSums(show) {
+        var phrase = document.getElementById('phrase');
+        var notes = phrase.getElementsByClassName('note-below');
+        for (var i = 0; i < notes.length; i++) {
+          var sum = sumCans(canStacks[i]);
+          notes[i].value = show ? sum : '';
+        }
+      }
+    </script>
+    <style>
+      .flavor {
+        position: relative;
+        margin-top: 0.5in;
+      }
+      #cans {
+        position: absolute;
+        top: 0.75in;
+        right: 0px;
+      }
+      #cans .notes-below {
+        width: 0.5in;
+        margin: 0.1in;
+      }
+      #cans .weight {
+        position: relative;
+        width: 0.4in;
+        margin-right: 0.1in;
+      }
+      #cans .letter-cell {
+        width: 0.4in;
+      }
+      #cans svg {
+        position: absolute;
+        left: 2px;
+        top: -0.6in;
+        width: 35px;
+        height: 55px;
+      }
+      #TippingPoint .note-input.note-below {
+        height: 1.5em;
+        bottom: -2em;
+        left: -4px;
+      }
+      #can-defs text {
+        font-family: 'Architects Daughter';
+        font-size: 12pt;
+        stroke: none;
+        font-weight: normal;
+        text-anchor: middle;
+      }
+      .major {
+        stroke:#5B9999;
+        stroke-width: 1px;
+      }
+      .minor {
+        stroke: #b0b0b0;
+        stroke-width: 0.5px;
+      }
+      .rope {
+        stroke: black;
+        stroke-width: 3px;
+        fill: none;
+        stroke-linecap: square;
+      }
+      .arms {
+        stroke: black;
+        stroke-width: 3px;
+        fill: none;
+        stroke-linecap: square;
+      }
+
+      .pivot text {
+        fill: black;
+        stroke: none;
+        font-family: 'Architects Daughter';
+        font-size: 14pt;
+        font-weight: normal;
+      }
+      text.left {
+        text-anchor: end;
+      }
+      text.right {
+        text-anchor: start;
+      }
+      #weights image {
+        width: 30px;
+      }
+      #phrase {
+        position: relative;
+      }
+      #TippingPoint #phrase .letter-cell {
+        position: absolute;
+        font-size: 12pt;
+        margin-left: 5px;
+      }
+      #phrase .letter-underline {
+        border-bottom: solid 2px black;
+      }
+
+      @keyframes flat-to-right {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(5deg); }
+      }
+      @keyframes flat-to-left {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(-5deg); }
+      }
+      @keyframes left-to-right {
+        from { transform: rotate(-5deg); }
+        to { transform: rotate(5deg); }
+      }
+      @keyframes right-to-left {
+        from { transform: rotate(5deg); }
+        to { transform: rotate(-5deg); }
+      }
+      @keyframes left-to-flat {
+        0% { transform: rotate(-5deg); }
+        100% { transform: rotate(0deg); }
+      }
+      @keyframes right-to-flat {
+        0% { transform: rotate(5deg); }
+        100% { transform: rotate(0deg); }
+      }
+
+      .tilt-left {
+        transform: rotate(-5deg);
+        animation-name: flat-to-left;
+        animation-duration: 1s;
+      }
+      .tilt-left>.hanger>.node {
+        transform: rotate(5deg);
+        animation-name: flat-to-right;
+        animation-duration: 1s;
+      }
+      .tilt-left.from-right {
+        animation-name: right-to-left;
+      }
+      .tilt-left.from-right>.hanger>.node {
+        animation-name: left-to-right;
+      }
+      .tilt-left.from-left {
+        animation-name: none;
+      }
+      .tilt-left.from-left>.hanger>.node {
+        animation-name: none;
+      }
+
+      .tilt-right {
+        transform: rotate(5deg);
+        animation-name: flat-to-right;
+        animation-duration: 1s;
+      }
+      .tilt-right>.hanger>.node {
+        transform: rotate(-5deg);
+        animation-name: flat-to-left;
+        animation-duration: 1s;
+      }
+      .tilt-right.from-left {
+        animation-name: left-to-right;
+      }
+      .tilt-right.from-left>.hanger>.node {
+        animation-name: right-to-left;
+      }
+      .tilt-right.from-right {
+        animation-name: none;
+      }
+      .tilt-right.from-right>.hanger>.node {
+        animation-name: none;
+      }
+
+      .tilt-flat.from-left {
+        animation-name: left-to-flat;
+        animation-duration: 1s;
+      }
+      .tilt-flat.from-right {
+        animation-name: right-to-flat;
+        animation-duration: 1s;
+      }
+      .tilt-flat.from-left>.hanger>.node {
+        animation-name: right-to-flat;
+        animation-duration: 1s;
+      }
+      .tilt-flat.from-right>.hanger>.node {
+        animation-name: left-to-flat;
+        animation-duration: 1s;
+      }
+
+    </style>
+  </head>
+  <body id="TippingPoint">
+    <div id="pageBody">
+      <p class="flavor">
+        Canisters A to G contain objects with weights 1 to 7, in some order.
+        <div id="cans">
+          <span id="weight-a" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-a"/></svg>
+          </span>
+          <span id="weight-b" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-b"/></svg>
+          </span>
+          <span id="weight-c" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-c"/></svg>
+          </span>
+          <span id="weight-d" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-d"/></svg>
+          </span>
+          <span id="weight-e" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-e"/></svg>
+          </span>
+          <span id="weight-f" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-f"/></svg>
+          </span>
+          <span id="weight-g" class="weight">
+            <span class="letter-cell numeric letter-underline"></span>
+            <svg viewBox="-17 -10 35 55"><use x="0" y="0" href="#can-g"/></svg>
+          </span>
+        </div>
+      </p>
+      <svg id="graphPaper" width="960" height="440" viewBox="-700 -1 1200 440" style="margin-top: 0.25in;"> 
+        <!-- Starting point: Viewbox {x,_,_,_} gives left-right origin point of cans. Viewbox {_,_,x,_} gives total virtual width of , squeezed into 960 HTML pixels, which themselves aren't real pixels.-->
+        <defs id="can-defs">
+          <g id="can-a" fill="#993366" stroke="#eaa2c5" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#eaa2c5">A</text>
+          </g>
+          <g id="can-b" fill="#b35e25" stroke="#ffe08c" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#ffe08c">B</text>
+          </g>
+          <g id="can-c" fill="#ffc000" stroke="#b35e25" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#b35e25">C</text>
+          </g>
+          <g id="can-d" fill="#00b050" stroke="#93f2be" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#93f2be">D</text>
+          </g>
+          <g id="can-e" fill="#0070c0" stroke="#cddcea" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#cddcea">E</text>
+          </g>
+          <g id="can-f" fill="#808080" stroke="#d9d9d9" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#d9d9d9">F</text>
+          </g>
+          <g id="can-g" fill="#d7aec2" stroke="#4d1933" stroke-width="2">
+            <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
+            <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
+            <text x="0" y="25" fill="#4d1933">G</text>
+          </g>
+        </defs>
+        
+        <g id="origin">
+          <g id="graph-paper"></g>
+          <g id="graph-root"></g>
+        </g>
+      </svg>
+
+      <div id="phrase" class="letter-cell-block">
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+        <span class="letter-cell letter-underline notes-below"></span>
+      </div>
+
+    </div>
+  </body>
+</html>
