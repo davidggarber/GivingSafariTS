@@ -23,6 +23,7 @@
           'onCell': buildCell
         },
         postSetup: postSetup,
+        onStampChange: trackStamp,
       };
 
       var initialData = [
@@ -128,26 +129,54 @@
         }
       }
 
+      function coordId(coord) {
+        return 'r' + coord[1] + 'c' + coord[0];
+      }
+
+      function coordG(coord) {
+        return coord ? document.getElementById('g-' + coordId(coord)) : null;
+      }
+
       // Erase current rendering for this coordinate
       function erase(coord) {
-        var id = 'r' + coord[1] + 'c' + coord[0];
-        var g = document.getElementById('g-' + id);
+        var g = coordG(coord);
         if (g) {
-          var cell = document.getElementById('img-' + id);
+          var cell = document.getElementById('img-' + coordId(coord));
           if (cell) {
             g.removeChild(cell);
           }
+          toggleClass(g, 'compass', false);
+          toggleClass(g, 'no-track', false);
           toggleClass(g, 'highlight', false);
         }
       }
 
       function drawBulb(coord) {
-        var id = 'r' + coord[1] + 'c' + coord[0];
-        var g = document.getElementById('g-' + id);
+        var g = coordG(coord);
         if (g) {
           erase(coord);
           toggleClass(g, 'highlight', true);
         }
+      }
+
+      function coordStamp(coord) {
+        var g = coordG(coord);
+        if (!g) {
+          return null;
+        }
+        if (hasClass(g, 'highlight')) {
+          return 'drawHighlight';
+        }
+        if (hasClass(g, 'no-track')) {
+          return 'drawX';
+        }
+        if (hasClass(g, 'compass')) {
+          return 'compass';
+        }
+        if (hasClass(g, 'track')) {  // true of X too, so test X first
+          return 'drawTrack';
+        }
+        return null;
       }
 
       // Draw appropriate images to indicate chain
@@ -155,29 +184,44 @@
         var svgRoot = document.getElementById('grid-root');
         for (var i = 0; i < invalidated_.length; i++) {
           var coord = invalidated_[i];
-          erase(coord);
           var info = findInChain(coord);
           if (info == null) {
+            var curStamp = coordStamp(coord);
+            var g = coordG(coord);
+            if (g) {
+              erase(coord);
+              if (curStamp == 'drawX') {
+                renderImage(coord, 'X', 'track x');
+                toggleClass(g, 'no-track', true);
+              }
+              else if (curStamp == 'compass') {
+                renderImage(coord, 'Compass', 'track compass');
+                toggleClass(g, 'compass', true);
+              }
+              else if (curStamp == 'drawHighlight') {
+                toggleClass(g, 'highlight', true);
+              }
+            }
             continue;
           }
+          erase(coord);
           var dirs = dirFromNeighbors(info);
           if (dirs != '') {
             var locked = isLocked(coord);
             var imgName = (dirs.length == 1) ? ('Start' + dirs) : locked ? ('Black' + dirs) : ('Blue' + dirs);
-            renderImage(coord[0], coord[1], imgName, 'track');
+            renderImage(coord, imgName, 'track');
           }
         }
         invalidated_ = [];
       }
 
-      function renderImage(x, y, imgName, cls) {
-        var id = 'r' + y + 'c' + x;
-        var g = document.getElementById('g-' + id);
+      function renderImage(coord, imgName, cls) {
+        var g = coordG(coord);
         if (g) {
-          var dx = (x + 1) * 60;
-          var dy = y * 60;
+          var dx = (coord[0] + 1) * 60;
+          var dy = coord[1] * 60;
           var img = document.createElementNS(xmlns, 'image');
-          img.id = 'img-' + id;
+          img.id = 'img-' + coordId(coord);
           applyAllClasses(img, cls);
           img.setAttributeNS('', 'href', 'Images/Eng/' + imgName + '.png');
           g.appendChild(img);
@@ -186,7 +230,16 @@
 
       function stampX(coord) {
         erase(coord);
-        renderImage(coord[0], coord[1], 'X', 'track x');
+        var g = coordG(coord);
+        toggleClass(g, 'no-track', true);
+        renderImage(coord, 'X', 'track x');
+      }
+
+      function stampCompass(coord) {
+        erase(coord);
+        var g = coordG(coord);
+        toggleClass(g, 'compass', true);
+        renderImage(coord, 'Compass', 'track compass');
       }
 
       function dirFromNeighbors(info) {
@@ -219,9 +272,11 @@
         var svg = document.getElementById('svg-grid');
         //svg.ontouchstart = function(e){onTouch(e)};
         svg.addEventListener('touchstart', function(e){e.preventDefault()});
+        svg.onpointerdown = function(e){onClick(e, true)};
         svg.onpointermove = function(e){onMove(e)};
         svg.onpointerout = function(e){onMove(e)};
-        svg.onpointerup = function(e){onClick(e)};
+        svg.onpointerup = function(e){onClick(e, false)};
+        window.onkeydown = function(e){onArrowKey(e)};
       }
 
       function gridCoord(evt) {
@@ -522,6 +577,9 @@
         }
       }
 
+      // User is trying to draw a non-track at this coord.
+      // Break any existing chain.
+      // Return true if drawing is now allowed. Else false (i.e. locked as a track)
       function breakChain(coord) {
         if (isLocked(coord)) {
           return false;
@@ -558,60 +616,184 @@
         return true;
       }
 
-      var prevDrag = null;
-      var prevPrev = null;
-      function processEvent(evt, drag) {
+      function processPointer(evt, action) {
         var coord = gridCoord(evt);
-        if (!coord) {
-          return;
-        }
-        var stamper = getCurrentStampToolId();
-        if (stamper == '' || stamper == 'drawTrack') {
-          if (areEqual(prevPrev, coord)) {
-            // User dragged and came back. Likely an undo.
-            prevPrev = null;
+        processEvent(coord, action);
+      }
+
+      var downCoord = null;
+      var caretCoord = null;
+      var downStamp = null;
+
+      function processEvent(coord, action) {
+        // if click
+        //   if a new coord, place caret
+        //   else, toggle caret off
+        // if drag
+        //   if same coord, no-op
+        //   else if neighbor, connect
+        //   else same as click
+        // if key
+        //   move caret only
+
+        var curStamp = coordStamp(coord);
+        var stamper = getCurrentStampToolId() || 'drawTrack';
+
+        var g = coordG(coord);
+        var gCaret = coordG(caretCoord);
+
+        if (action == 'toggle') {
+          // toggle
+          if (curStamp == stamper) {
+            action = 'up';  // will erase
           }
-          if (areNeighbors(coord, prevDrag)) {
-            addChainLink(coord, prevDrag, prevPrev);
-            prevPrev = prevDrag;
-            prevDrag = coord;
-            rerender();
+          // else fall through to 'drag'
+        }
+        if (action == 'up') {
+          if (areEqual(downCoord, coord)) {
+            // a click
+            if (downStamp != 'drawTrack' && (downStamp == stamper || downStamp == 'compass')) {
+              // on anything other than a legit track, toggle that stamp off
+              action = 'escape';
+            }
+            else {
+              action = 'drag';
+              // fall through: drag can apply new content
+            }
+            downCoord = null;
+          }
+        }
+        if (action == 'down') {
+          // start of click or drag
+          if (curStamp != stamper) {
+            action = 'drag';
+            // fall through: drag can apply new content
+          }
+          downCoord = coord;
+          downStamp = curStamp;
+        }
+        if (action == 'escape') {
+          // Clear any arrow-key UI
+          invalidateCell(coord);
+          toggleClass(g, 'caret', false);
+          toggleClass(gCaret, 'compass', false);
+          caretCoord = null;
+        }
+        if (action == 'key') {
+          // arrow keys don't apply all stamps, just tracks
+          toggleClass(gCaret, 'caret', false);
+          toggleClass(g, 'caret', true);
+          if (stamper == 'drawTrack') {
+            action = 'drag';
           }
           else {
-            // Start a new drag
-            prevPrev = null;
-            prevDrag = coord;
+            caretCoord = coord;
+            toggleClass(g, 'caret', true);
           }
         }
-        else {
-          if (breakChain(coord)) {
-            if (stamper == 'drawX') {
-              stampX(coord);
-            }
-            if (stamper == 'drawHighlight') {
-              if (!drag || !areEqual(coord, prevDrag)) {
-                drawBulb(coord);
+        if (action == 'drag' || action == 'toggle') {
+          // effective a drag (even if technically another action)
+          if (!areEqual(coord, downCoord)) {
+            downCoord = null;  // Not a click anymore
+          }
+          if (areEqual(coord, caretCoord) && action == 'drag') {
+            // no-op
+          }
+          else {
+            toggleClass(gCaret, 'caret', false);
+            toggleClass(gCaret, 'compass', false);
+            invalidateCell(caretCoord);
+
+            if (stamper == 'drawTrack') {
+              // Draw a track at this new coordinate
+
+              if (areNeighbors(coord, caretCoord)) {
+                // Connect this cell to the previous
+                addChainLink(coord, caretCoord);
+              }
+              else {
+                var info = findInChain(coord);
+                if (!info) {
+                  // New cell, not currently a track. Make it a compass (a length-1 track).
+                  stampCompass(coord);
+                }
               }
             }
-            else if (stamper == 'drawErase') {
-              erase(coord);            
+            else {
+              // Apply the stamper at this new coordinate
+              if (coord && breakChain(coord)) {
+                if (stamper == 'drawX') {
+                  stampX(coord);
+                }
+                else if (stamper == 'drawHighlight') {
+                  drawBulb(coord);
+                }
+                else if (stamper == 'drawErase') {
+                  erase(coord);            
+                }
+              }
             }
-            prevPrev = null;
-            prevDrag = coord;
           }
-          rerender();
-        } 
+
+          // Caret follows to new coordinate
+          caretCoord = coord;
+          toggleClass(g, 'caret', true);              
+        }
+
+        rerender();
       }
 
       function onMove(evt) {
         if (evt.buttons > 0) {
-          processEvent(evt, true);
+          processPointer(evt, 'drag');
           evt.preventDefault();
+        }
+        // else 'hover'
+      }
+
+      function onClick(evt, down) {
+        processPointer(evt, down ? 'down' : 'up');
+      }
+
+      function onArrowKey(evt) {
+        if (caretCoord) {
+          var code = event.code;
+          var coord = null;
+          var action = 'key';
+          if (code == 'ArrowUp') {
+            coord = [caretCoord[0], caretCoord[1] - 1];
+          }
+          else if (code == 'ArrowDown') {
+            coord = [caretCoord[0], caretCoord[1] + 1];
+          }
+          else if (code == 'ArrowLeft') {
+            coord = [caretCoord[0] - 1, caretCoord[1]];
+          }
+          else if (code == 'ArrowRight') {
+            coord = [caretCoord[0] + 1, caretCoord[1]];
+          }
+          else if (code == 'Space' || code == 'Enter') {
+            processEvent(caretCoord, 'toggle');
+            return;
+          }
+          else if (code == 'Escape') {
+            processEvent(caretCoord, 'escape');
+          }
+          if (coord && isInBounds(coord)) {
+            processEvent(coord, action);
+          }
         }
       }
 
-      function onClick(evt) {
-        processEvent(evt, false);
+      // When stamp mode changes
+      function trackStamp(cur, prev) {
+        var grid = document.getElementById('grid-root');
+        if (prev) {
+          grid.classList.remove(prev);
+        }
+        if (cur) {
+          grid.classList.add(cur);
+        }
       }
 
     </script>
@@ -644,6 +826,11 @@
         height:36px;
         transform: translate(12px, 12px);
       }
+      image.track.compass {
+        width:36px;
+        height:36px;
+        transform: translate(12px, 12px);
+      }
       #grid-root {
         position: fixed;
       }
@@ -667,6 +854,19 @@
       #grid-root .highlight rect {
         fill: #ffff33;
       }
+      #grid-root .caret rect {
+        fill: #aaf;
+      }
+      #grid-root.drawX .caret rect {
+        fill: #faa;
+      }
+      #grid-root.drawHighlight .caret rect {
+        fill: #cf9;
+      }
+      #grid-root.drawHighlight .caret.highlight rect {
+        fill: #cf3;
+      }
+
       .message text {
         font-family: 'Lucida Console', Courier, monospace;
         font-size: 10pt;

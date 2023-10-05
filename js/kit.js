@@ -3623,6 +3623,7 @@ exports.preprocessStampObjects = preprocessStampObjects;
  */
 function onSelectStampTool(event) {
     var tool = findParentOfClass(event.target, 'stampTool');
+    var prevToolId = getCurrentStampToolId();
     if (tool != null) {
         for (var i = 0; i < _stampTools.length; i++) {
             toggleClass(_stampTools[i], 'selected', false);
@@ -3634,6 +3635,10 @@ function onSelectStampTool(event) {
         else {
             _selectedTool = null;
         }
+    }
+    var fn = theBoiler().onStampChange;
+    if (fn) {
+        fn(getCurrentStampToolId(), prevToolId);
     }
 }
 /**

@@ -3978,6 +3978,7 @@ export function preprocessStampObjects() {
  */
 function onSelectStampTool(event:MouseEvent) {
     const tool = findParentOfClass(event.target as HTMLElement, 'stampTool') as HTMLElement;
+    const prevToolId = getCurrentStampToolId();
     if (tool != null) {
         for (let i = 0; i < _stampTools.length; i++) {
             toggleClass(_stampTools[i], 'selected', false);
@@ -3989,6 +3990,11 @@ function onSelectStampTool(event:MouseEvent) {
         else {
             _selectedTool = null;
         }
+    }
+
+    const fn = theBoiler().onStampChange;
+    if (fn) {
+        fn(getCurrentStampToolId(), prevToolId);
     }
 }
 
@@ -5143,6 +5149,7 @@ type BoilerPlateData = {
     googleFonts?: string;  // A list of fonts, separated by commas
     onNoteChange?: (inp:HTMLInputElement) => void;
     onInputChange?: (inp:HTMLInputElement) => void;
+    onStampChange?: (newTool:string, prevTool:string) => void;
     onRestore?: () => void;
 }
 

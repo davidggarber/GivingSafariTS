@@ -199,6 +199,7 @@ type BoilerPlateData = {
     googleFonts?: string;  // A list of fonts, separated by commas
     onNoteChange?: (inp:HTMLInputElement) => void;
     onInputChange?: (inp:HTMLInputElement) => void;
+    onStampChange?: (newTool:string, prevTool:string) => void;
     onRestore?: () => void;
 }
 

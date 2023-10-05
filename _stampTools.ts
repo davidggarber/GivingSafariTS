@@ -1,3 +1,4 @@
+import { theBoiler } from "./_boilerplate";
 import { findFirstChildOfClass, findParentOfClass, getOptionalStyle, toggleClass } from "./_classUtil";
 import { saveStampingLocally } from "./_storage";
 
@@ -87,6 +88,7 @@ export function preprocessStampObjects() {
  */
 function onSelectStampTool(event:MouseEvent) {
     const tool = findParentOfClass(event.target as HTMLElement, 'stampTool') as HTMLElement;
+    const prevToolId = getCurrentStampToolId();
     if (tool != null) {
         for (let i = 0; i < _stampTools.length; i++) {
             toggleClass(_stampTools[i], 'selected', false);
@@ -98,6 +100,11 @@ function onSelectStampTool(event:MouseEvent) {
         else {
             _selectedTool = null;
         }
+    }
+
+    const fn = theBoiler().onStampChange;
+    if (fn) {
+        fn(getCurrentStampToolId(), prevToolId);
     }
 }
 
