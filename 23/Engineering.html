@@ -611,6 +611,23 @@
           }
           return false;  // broken, but can't draw here
         }
+        if (info.chain.length == 2) {
+          // Special case size-2 chains. Breaking out one kills both
+          invalidateChain(info.chain, 0, 2);
+          chains_.splice(info.chain_id, 1);
+          return true;
+        }
+        if (info.endNess == 0) {
+          if (info.endIndex == 0) {
+            invalidateChain(info.chain, 0, 2);
+            info.chain.splice(0, 1);
+          }
+          else {
+            invalidateChain(info.chain, info.index - 1, 2);
+            info.chain.splice(info.index, 1);
+          }
+          return true;
+        }
 
         splitChain(info);
         return true;
@@ -793,6 +810,16 @@
         }
         if (cur) {
           grid.classList.add(cur);
+        }
+        if (prev != cur) {
+          if (caretCoord) {
+            var gCaret = coordG(caretCoord);
+            toggleClass(gCaret, 'caret', false);
+            toggleClass(gCaret, 'compass', false);
+            invalidateCell(caretCoord);
+            caretCoord = null;
+            rerender();
+          }
         }
       }
 
