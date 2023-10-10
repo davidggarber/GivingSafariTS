@@ -617,6 +617,11 @@
           chains_.splice(info.chain_id, 1);
           return true;
         }
+
+        if (info.endNess > 0) {
+          splitChain(info);
+        }
+
         if (info.endNess == 0) {
           if (info.endIndex == 0) {
             invalidateChain(info.chain, 0, 2);
@@ -629,7 +634,6 @@
           return true;
         }
 
-        splitChain(info);
         return true;
       }
 
