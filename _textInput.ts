@@ -579,10 +579,9 @@ export function updateWordExtraction(extractedId:string|null) {
         var index = getOptionalStyle(inputs[i], 'data-extract-index', '') as string;
         const indeces = index.split(' ');
         for (var j = 0; j < indeces.length; j++) {
-            var extractIndex = parseInt(indeces[j]);
-            if (extractIndex > 0) {  // indeces start at 1
-                const inp = inputs[i] as HTMLInputElement;  
-                var letter = inp.value.length >= extractIndex ? inp.value[extractIndex - 1] : '_';
+            const inp = inputs[i] as HTMLInputElement;  
+            const letter = extractWordIndex(inp.value, indeces[j]);
+            if (letter) {
                 extraction += letter;
                 partial = partial || (letter != '_');
             }
@@ -590,6 +589,41 @@ export function updateWordExtraction(extractedId:string|null) {
     }
 
     ApplyExtraction(extraction, extracted);
+}
+
+/**
+ * Extract a single letter from an input. Either using an absolute index, or else a word.letter index.
+ * @param input User's input string
+ * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
+ */
+export function extractWordIndex(input:string, index:string) {
+    const dot = index.split('.');
+    let letter_index:number;
+    if (dot.length == 2) {
+        let word_index = parseInt(dot[0]);
+        letter_index = parseInt(dot[1]) - 1;
+        const words = input.split(' ');
+        input = '';
+        for (var i = 0; i < words.length; i++) {
+            const word = words[i];
+            if (words[i].length > 0) {
+                if (--word_index == 0) {
+                    input = word;
+                    break;
+                }
+            }
+        }
+    }
+    else {
+        letter_index = parseInt(index) - 1;
+    }
+    if (letter_index < 0) {
+        return null;  // bogus index
+    }
+    if (letter_index < input.length) {
+        return input[letter_index];
+    }
+    return '_';
 }
 
 /**

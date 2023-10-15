@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = void 0;
+exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -2026,10 +2026,9 @@ function updateWordExtraction(extractedId) {
         var index = getOptionalStyle(inputs[i], 'data-extract-index', '');
         var indeces = index.split(' ');
         for (var j = 0; j < indeces.length; j++) {
-            var extractIndex = parseInt(indeces[j]);
-            if (extractIndex > 0) { // indeces start at 1
-                var inp = inputs[i];
-                var letter = inp.value.length >= extractIndex ? inp.value[extractIndex - 1] : '_';
+            var inp = inputs[i];
+            var letter = extractWordIndex(inp.value, indeces[j]);
+            if (letter) {
                 extraction += letter;
                 partial = partial || (letter != '_');
             }
@@ -2038,6 +2037,41 @@ function updateWordExtraction(extractedId) {
     ApplyExtraction(extraction, extracted);
 }
 exports.updateWordExtraction = updateWordExtraction;
+/**
+ * Extract a single letter from an input. Either using an absolute index, or else a word.letter index.
+ * @param input User's input string
+ * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
+ */
+function extractWordIndex(input, index) {
+    var dot = index.split('.');
+    var letter_index;
+    if (dot.length == 2) {
+        var word_index = parseInt(dot[0]);
+        letter_index = parseInt(dot[1]) - 1;
+        var words = input.split(' ');
+        input = '';
+        for (var i = 0; i < words.length; i++) {
+            var word = words[i];
+            if (words[i].length > 0) {
+                if (--word_index == 0) {
+                    input = word;
+                    break;
+                }
+            }
+        }
+    }
+    else {
+        letter_index = parseInt(index) - 1;
+    }
+    if (letter_index < 0) {
+        return null; // bogus index
+    }
+    if (letter_index < input.length) {
+        return input[letter_index];
+    }
+    return '_';
+}
+exports.extractWordIndex = extractWordIndex;
 /**
  * Callback when user has changed the text in a letter-input
  * @param event A keyboard event
