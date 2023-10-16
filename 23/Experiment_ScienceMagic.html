@@ -7,11 +7,11 @@
     <script>
       const boiler = {
         'safari': '20',
-        'title': 'Experiment: Science Trivia',
+        'title': 'Experiment: Science or Magic',
         'print_qr': true,
-        'author': 'Cele Wolman',
-        'copyright': '2020',
-        'feeder': 'exp-trivia',
+        'author': 'David Garber',
+        'copyright': '2023',
+        'feeder': 'exp-magic',
         'textInput': true,
         'abilities': {
         },
@@ -25,7 +25,7 @@
       }
     </script>
     <style>
-      #Trivia .word-input {
+      #Magic .word-input {
         width: 3in;
         height: 2.5em;
       }
@@ -35,26 +35,39 @@
       .flavor a {
         white-space: nowrap;
       }
+      #big-icon {
+        margin-top: 1in;
+        text-align: center;
+      }
+      #big-icon img {
+        width: 4in;
+        height: 4in;
+      }
     </style>
   </head>
-  <body id="Trivia">
+  <body id="Magic">
     <div id="pageBody">
       <p class="flavor">
-        Your team is invited to participate in the Science Trivia challenge.
+        Your team is invited to participate in a test of either your Scientific or Magical prowess.
       </p>
       <p class="flavor">
-        If playing in person, have Safari staff point you to the Trivia station.
+        <b>Magical Tryout:</b> 
+        Teams playing in person should contact Safari staff, who will schedule your magical atunement test.
+        You may send one or more team members to participate.
       </p>
       <p class="flavor">
-        If playing online, contact Safari game control 
+        <b>Science Exam:</b> 
+        Teams playing online should contact Safari game control
         at <a href="mailto:givingps@microsoft.com">📧 givingps@microsoft.com</a>
         or <a href="Aka.ms/GivingPuzzleSafari"><img src="Icons/ms-teams.png"> aka.ms/GivingPuzzleSafari</a>,
-        and send a link to your Teams group.
+        who will schedule you for a full-team science exam.
       </p>
       <p style="margin-top: 1in;">
         Once you have succeeded at this challenge, you will earn an answer phrase:
         <br><span class="word-cell"></span>
       </p>
+
+      <div id="big-icon"><img src="Icons/exp-magic.png"></div>
 
     </div>
   </body>

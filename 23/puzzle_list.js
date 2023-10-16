@@ -27,13 +27,13 @@ var meta = {
 };
 var challenge = {
     cosmos: 'exp-cosmos',
-    trivia: 'exp-trivia',
+    magic: 'exp-magic',
     cartrip: 'exp-cartrip',
 }
 
 var puzzles = [
     { title: 'Aaaaaaaa!', file: 'Aaaaaaaa', thumb: 'Aa', author: 'Jeffrey Lin', type: types.math, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.cartrip] },
-    { title: 'Animal Magnetism', thumb: 'Am', author: 'Dana Young', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.trivia] },
+    { title: 'Animal Magnetism', thumb: 'Am', author: 'Dana Young', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.magic] },
     { title: 'At The Waterworks', thumb: 'Atw', author: 'Philippe Nicolle', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.bus,1] },
     { title: 'Buried Logic', thumb: 'Bl', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,1]  },
     { title: 'Chemical Compounds', thumb: 'Cc', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,3] },
@@ -55,12 +55,12 @@ var puzzles = [
     { title: 'Tipping Point', thumb: 'Tp', author: 'Ken Pacquer', type: types.math, group: group.puzzle, orientation: orient.landscape, feeder: [meta.science,3] },
     { title: 'Weird Maths', thumb: 'Wm', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,4] },
     { title: 'Weird, You Nits', file: 'WeirdYouNits', thumb: 'Wyn', author: 'Martyn Lovell', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,5] },
-    { title: 'Zoology', thumb: 'Zoo', author: 'David Garber', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.trivia] },
+    { title: 'Zoology', thumb: 'Zoo', author: 'David Garber', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.magic] },
     { title: 'The Magic School Bus', thumb: 'Tmsb', author: 'Philippe Nicolle', type: types.meta, group: group.meta, icon: meta.bus, orientation: orient.portrait },
     { title: 'Weird Science', thumb: 'Ws', author: 'Martyn Lovell', type: types.meta, group: group.meta, icon: meta.science, orientation: orient.portrait },
     { title: 'Cosmos', file: 'Experiment_Cosmos', thumb: 'Cos', author: 'Rorke Haining', type: types.challenge, group: group.challenge, icon: challenge.cosmos, orientation: orient.portrait },
-    { title: 'Trivia', file: 'Experiment_Trivia', thumb: 'Tri', author: 'Cele Wolman', type: types.challenge, group: group.challenge, icon: challenge.trivia, orientation: orient.portrait },
-    { title: 'Car Trip', file: 'Experiment_CarTrip', thumb: 'Ct', author: 'Adrian Mercer-Garber', type: types.challenge, group: group.challenge, icon: challenge.ascent, orientation: orient.portrait },
+    { title: 'Science or Magic', file: 'Experiment_ScienceMagic', thumb: 'Sm', author: 'Ken Showman', type: types.challenge, group: group.challenge, icon: challenge.magic, orientation: orient.portrait },
+    { title: 'Car Trip', file: 'Experiment_CarTrip', thumb: 'Ct', author: 'David Garber', type: types.challenge, group: group.challenge, icon: challenge.ascent, orientation: orient.portrait },
 ];
 
 function puzzleFile(puz) {
