@@ -262,11 +262,14 @@
                 imgFeed.src = altImg;
             }
             spanFeed.appendChild(imgFeed);
+            var subFeed = document.createElement('sub');
             if (feed.length > 1 && feed[1] > 0) {
-                var subFeed = document.createElement('sub');
                 subFeed.innerText = feed[1];
-                spanFeed.appendChild(subFeed);
             }
+            else {
+                subFeed.innerText = ' ';  // need something, or else rows with subs will be taller
+            }
+            spanFeed.appendChild(subFeed);
             return spanFeed;
         }
 
@@ -380,7 +383,7 @@
                 <th class="html" onclick="sortTable(2)">Puzzle</th>
                 <th class="feeders" onclick="sortTable(3)">Feeder</th>
                 <th class="author" onclick="sortTable(4)">Author</th>
-                <th class="submital" onclick="sortTable(4)">Submit</th>
+                <th class="submital">Submit</th>
             </tr>    
         </thead>
         <tbody id="puzzle_list">

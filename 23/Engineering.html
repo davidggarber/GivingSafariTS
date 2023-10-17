@@ -209,7 +209,8 @@
           if (dirs != '') {
             var locked = isLocked(coord);
             var imgName = (dirs.length == 1) ? ('Start' + dirs) : locked ? ('Black' + dirs) : ('Blue' + dirs);
-            renderImage(coord, imgName, 'track');
+            locked = locked && dirs.length == 2;  // StartX is also blue
+            renderImage(coord, imgName, locked ? 'track' : 'track blue');
           }
         }
         invalidated_ = [];
@@ -861,6 +862,14 @@
         width:36px;
         height:36px;
         transform: translate(12px, 12px);
+      }
+      .print image.track.blue {
+        display: none;
+      }
+      @media print {
+        image.track.blue {
+          display: none;
+        }
       }
       #grid-root {
         position: fixed;

@@ -1,4 +1,4 @@
-import { isBodyDebug, theBoiler } from "./_boilerplate";
+import { isBodyDebug, isPrint, theBoiler } from "./_boilerplate";
 import { hasClass, toggleClass,     
     moveFocus, findNextOfClass, findParentOfClass, getOptionalStyle } from "./_classUtil";
 import { indexAllNoteFields, indexAllCheckFields, indexAllHighlightableFields, 
@@ -43,7 +43,10 @@ export function setupNotes(margins:HTMLDivElement) {
     index = setupNotesCells('notes-abs', undefined, index);
     setupNotesToggle(margins);
     indexAllNoteFields();
-    if (isBodyDebug()) {
+    if (isPrint()) {
+        setNoteState(NoteState.Disabled);
+    }
+    else if (isBodyDebug()) {
         setNoteState(NoteState.Visible);
     }
 }

@@ -219,7 +219,7 @@ input[type=number]::-webkit-outer-spin-button {
   width: 1in;
 }
 
-.disabled-notes .note-input {
+.disable-notes .note-input {
   display: none;
 }
 

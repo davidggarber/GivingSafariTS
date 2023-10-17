@@ -501,7 +501,10 @@ export function setupNotes(margins:HTMLDivElement) {
     index = setupNotesCells('notes-abs', undefined, index);
     setupNotesToggle(margins);
     indexAllNoteFields();
-    if (isBodyDebug()) {
+    if (isPrint()) {
+        setNoteState(NoteState.Disabled);
+    }
+    else if (isBodyDebug()) {
         setNoteState(NoteState.Visible);
     }
 }
