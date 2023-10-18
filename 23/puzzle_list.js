@@ -59,8 +59,8 @@ var puzzles = [
     { title: 'The Magic School Bus', thumb: 'Tmsb', author: 'Philippe Nicolle', type: types.meta, group: group.meta, icon: meta.bus, orientation: orient.portrait },
     { title: 'Weird Science', thumb: 'Ws', author: 'Martyn Lovell', type: types.meta, group: group.meta, icon: meta.science, orientation: orient.portrait },
     { title: 'Cosmos', file: 'Experiment_Cosmos', thumb: 'Cos', author: 'Rorke Haining', type: types.challenge, group: group.challenge, icon: challenge.cosmos, orientation: orient.portrait },
-    { title: 'Science or Magic', file: 'Experiment_ScienceMagic', thumb: 'Sm', author: 'Ken Showman', type: types.challenge, group: group.challenge, icon: challenge.magic, orientation: orient.portrait },
     { title: 'Car Trip', file: 'Experiment_CarTrip', thumb: 'Ct', author: 'David Garber', type: types.challenge, group: group.challenge, icon: challenge.ascent, orientation: orient.portrait },
+    { title: 'Science or Magic', file: 'Experiment_ScienceMagic', thumb: 'Sm', author: 'Ken Showman', type: types.challenge, group: group.challenge, icon: challenge.magic, orientation: orient.portrait },
 ];
 
 function puzzleFile(puz) {
@@ -74,9 +74,9 @@ function puzzleHref(puz) {
     return puzzleFile(puz) + '.html';
 }
 
-var first_puzzle_solve_id_ = 93;
-var first_meta_solve_id_ = 91;
-var first_challenge_solve_id_ = 88;
+var first_puzzle_solve_id_ = 151;
+var first_meta_solve_id_ = 149;
+var first_challenge_solve_id_ = 146;
 function puzzleSolveId(puz) {
     // Each group is in a separate id range
     var id = puz.group == group.puzzle ? first_puzzle_solve_id_ 
