@@ -74,7 +74,7 @@ function puzzleHref(puz) {
     return puzzleFile(puz) + '.html';
 }
 
-var first_puzzle_solve_id_ = 442;
+var first_puzzle_solve_id_ = 500;
 var first_meta_solve_id_ = first_puzzle_solve_id_ - 2;
 var first_challenge_solve_id_ = first_puzzle_solve_id_ - 5;
 function puzzleSolveId(puz) {
