@@ -5179,9 +5179,9 @@ var ResponseType = {
     Error: 0,
     Correct: 1,
     Partial: 2,
+    Unlock: 4,
     Navigate: 3,
-    Ticket: 4,
-    Unlock: 5,
+    Ticket: 5,
     Save: 6,
 };
 /**
@@ -5191,9 +5191,9 @@ var ResponseTypeClasses = [
     'rt-error',
     'rt-correct',
     'rt-partial',
+    'rt-unlock',
     'rt-navigate',
     'rt-ticket',
-    'rt-unlock',
     'rt-save',
 ];
 /**
@@ -5214,7 +5214,8 @@ var default_responses = [
 var response_img = [
     "../Css/X.png",
     "../Css/Check.png",
-    "../Css/Thinking.png", // Partial
+    "../Css/Thinking.png",
+    "../Css/Unlocked.png", // Navigate
 ];
 /**
  * This puzzle has a validation block, so there must be either a place for the
@@ -5340,17 +5341,49 @@ function appendGuess(hist, guess) {
 function appendResponse(block, response) {
     var type = parseInt(response[0]);
     response = response.substring(1);
-    if (response.length == 0) {
+    if (response.length == 0 && type < default_responses.length) {
         response = default_responses[type];
+    }
+    else {
+        response = rot13(response);
     }
     var div = document.createElement('div');
     div.classList.add('response');
     div.classList.add(ResponseTypeClasses[type]);
-    div.appendChild(document.createTextNode(response));
-    var img = document.createElement('img');
-    img.classList.add('rt-img');
-    img.src = response_img[type];
-    div.appendChild(img);
+    if (type == ResponseType.Unlock) {
+        // Create a link to a newly unlocked page.
+        // The (decrypted) response is either just a URL, 
+        // or else URL^Friendly (separated by a caret)
+        var caret = response.indexOf('^');
+        var friendly = caret < 0 ? response : response.substring(caret + 1);
+        if (caret >= 0) {
+            response = response.substring(0, caret);
+        }
+        var parts = response.split('^'); // caret now allowed in a URL
+        div.appendChild(document.createTextNode('You have unlocked '));
+        var link = document.createElement('a');
+        link.href = response;
+        link.target = '_blank';
+        link.appendChild(document.createTextNode(friendly));
+        div.appendChild(link);
+    }
+    else if (type == ResponseType.Navigate) {
+        // Use an iframe to navigate immediately to the response URL.
+        // The iframe will be hidden, but any scripts will run immediately.
+        var iframe = document.createElement('iframe');
+        iframe.src = response;
+        div.appendChild(iframe);
+    }
+    else {
+        // The response (which may be canned) is displayed verbatim.
+        div.appendChild(document.createTextNode(response));
+    }
+    if (type < response_img.length) {
+        var img = document.createElement('img');
+        img.classList.add('rt-img');
+        img.src = response_img[type];
+        div.appendChild(img);
+    }
     block.appendChild(div);
     if (type == ResponseType.Correct) {
         // Tag this puzzle as solved
@@ -5372,7 +5405,7 @@ function rot13(source) {
             r = String.fromCharCode(((ch.charCodeAt(0) - 52) % 26) + 65);
         }
         else if (ch >= 'a' && ch <= 'z') {
-            r = String.fromCharCode(((ch.charCodeAt(0) - 82) % 26) + 97);
+            r = String.fromCharCode(((ch.charCodeAt(0) - 84) % 26) + 97);
         }
         rot += r;
     }

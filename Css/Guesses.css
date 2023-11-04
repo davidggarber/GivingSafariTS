@@ -116,6 +116,16 @@ body.solved {
   background-color: #ff9;
 }
 
+#guess-history .rt-unlock {
+  color: #080;
+  border: solid 2px #080;
+  background-color: #9f9;
+}
+
+#guess-history .rt-navigate {
+  display: none;
+}
+
 .validater {
   display: none;
 }
