@@ -8,6 +8,7 @@ import { preprocessDragFunctions } from "./_dragDrop";
 import { EdgeTypes, preprocessRulerFunctions } from "./_straightEdge";
 import { TableDetails, constructTable } from "./_tableBuilder";
 import { setupSubways } from "./_subway";
+import { setupValidation } from "./_confirmation";
 
 
 /**
@@ -193,6 +194,7 @@ type BoilerPlateData = {
     textInput?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
+    validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
     preSetup?: () => void;
     postSetup?: () => void;
@@ -496,6 +498,12 @@ function boilerplate(bp: BoilerPlateData) {
         textSetup()
     }
     setupAbilities(head, margins, bp.abilities || {});
+
+    if (bp.validation) {
+        linkCss(head, safariDetails.cssRoot + 'Guesses.css');
+        setupValidation();
+    }
+
 
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);

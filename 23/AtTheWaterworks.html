@@ -16,6 +16,9 @@
         'abilities': {
           'notes': true,
           'checkMarks': true,
+        },
+        'validation': {
+          'extracted': { 'ENVASNYY': '1', 'ENVAONYY': '2' }
         }
       };
     </script>
@@ -48,12 +51,14 @@
         text-align: center;
         z-index: 5;
       }
-      #extracted {
+      #extract-and-submit {
         position: absolute;
-        left: 2in;
+        left: 2.4in;
         width: 3.5in;
         top: 9in;
-        text-align: center;
+      }
+      #extracted {
+        display: inline-block;
       }
     </style>
   </head>
@@ -194,7 +199,10 @@
         </svg>
       </div>
 
-      <div id="extracted" data-number-pattern="8"></div>
+      <div id="extract-and-submit">
+        <div id="extracted" data-number-pattern="8" data-show-ready="submit-extracted"></div>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
 
     </div>
   </body>

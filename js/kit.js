@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = void 0;
+exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -1826,6 +1826,7 @@ function UpdateExtraction(extractedId) {
     var delayLiterals = DelayLiterals(extractedId);
     var inputs = document.getElementsByClassName('extract-input');
     var extraction = '';
+    var ready = true;
     for (var i = 0; i < inputs.length; i++) {
         if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -1856,12 +1857,13 @@ function UpdateExtraction(extractedId) {
         }
         if (letter.length == 0) {
             extraction += '_';
+            ready = false;
         }
         else {
             extraction += letter;
         }
     }
-    ApplyExtraction(extraction, extracted);
+    ApplyExtraction(extraction, extracted, ready);
 }
 /**
  * Puzzles can specify delayed literals within their extraction,
@@ -1909,7 +1911,7 @@ function ExtractionIsInteresting(text) {
  * @param text The current extraction
  * @param dest The container for the extraction. Can be a div or an input
  */
-function ApplyExtraction(text, dest) {
+function ApplyExtraction(text, dest, ready) {
     if (hasClass(dest, 'lower-case')) {
         text = text.toLocaleLowerCase();
     }
@@ -1935,13 +1937,16 @@ function ApplyExtraction(text, dest) {
     else {
         dest.innerText = text;
     }
+    updateExtractionData(dest, text, ready);
 }
 /**
  * Update an extraction that uses numbered indicators
  * @param extractedId The id of an extraction area
  */
 function UpdateNumbered(extractedId) {
+    var div = document.getElementById(extractedId || 'extracted');
     var inputs = document.getElementsByClassName('extract-input');
+    var concat = '';
     for (var i = 0; i < inputs.length; i++) {
         var inp = inputs[i];
         var index = inputs[i].getAttribute('data-number');
@@ -1951,6 +1956,10 @@ function UpdateNumbered(extractedId) {
         if (letter.length > 0 || extractCell.value.length > 0) {
             extractCell.value = letter;
         }
+        concat += letter;
+    }
+    if (div) {
+        div.setAttribute('data-extraction', concat);
     }
 }
 /**
@@ -1974,12 +1983,35 @@ function UpdateExtractionSource(input) {
         return;
     }
     var sources = document.getElementsByClassName('extract-input');
+    var extractId;
+    var extraction = [];
     for (var i = 0; i < sources.length; i++) {
         var src = sources[i];
         var dataNumber = getOptionalStyle(src, 'data-number');
-        if (dataNumber != null && dataNumber == index) {
-            src.value = input.value;
-            return;
+        if (dataNumber != null) {
+            if (dataNumber == index) {
+                src.value = input.value;
+                extractId = getOptionalStyle(src, 'data-extracted-id', undefined, 'extracted-');
+            }
+            extraction[parseInt(dataNumber)] = src.value;
+        }
+    }
+    // Update data-extraction when the user type directly into an extraction element
+    var extractionText = extraction.join('');
+    updateExtractionData(extractId, extractionText, extractionText.length == sources.length);
+}
+function updateExtractionData(extracted, value, ready) {
+    var container = !extracted
+        ? document.getElementById('extracted')
+        : (typeof extracted === "string")
+            ? document.getElementById(extracted)
+            : extracted;
+    if (container) {
+        container.setAttribute('data-extraction', value);
+        var btnId = container.getAttribute('data-show-ready');
+        if (btnId) {
+            var btn = document.getElementById(btnId);
+            toggleClass(btn, 'ready', ready);
         }
     }
 }
@@ -2037,7 +2069,7 @@ function updateWordExtraction(extractedId) {
             }
         }
     }
-    ApplyExtraction(extraction, extracted);
+    ApplyExtraction(extraction, extracted, !partial);
 }
 exports.updateWordExtraction = updateWordExtraction;
 /**
@@ -3294,6 +3326,10 @@ var _priorDrag = null;
  */
 var _dragSelected = null;
 /**
+ * Additional objects being moved together
+ */
+var _dragMultiSelected;
+/**
  * The drop-target over which we are dragging
  */
 var _dropHover = null;
@@ -3304,8 +3340,14 @@ var _dragPoint = null;
 /**
  * Pick up an object
  * @param obj A moveable object
+ * @param multi If true, add this object to a multi-select.
+ *              Or, if already in multi-select, remove it.
  */
-function pickUp(obj) {
+function pickUp(obj, multi) {
+    if (multi && _dragSelected != null) {
+        addToMultiSelect(obj);
+        return;
+    }
     _priorDrag = _dragSelected;
     if (_dragSelected != null && _dragSelected != obj) {
         toggleClass(_dragSelected, 'drag-selected', false);
@@ -3338,6 +3380,7 @@ function doDrop(dest) {
         // 2nd click on src is equivalent to dropping no-op
         dest = null;
     }
+    // Identify any existing objects at the destination
     var other = null;
     if (dest != null) {
         other = findFirstChildOfClass(dest, 'moveable', undefined, 0);
@@ -3440,8 +3483,17 @@ function onClickDrag(event) {
     }
     var obj = findParentOfClass(target, 'moveable');
     if (obj != null) {
-        if (_dragSelected == null) {
-            pickUp(obj);
+        if (event.shiftKey) {
+            // shift key always toggles selection. Never drops (i.e. 2-click drag)
+            if (isInMultiSelect(obj)) {
+                removeFromMultiSelect(obj);
+            }
+            else {
+                pickUp(obj, true);
+            }
+        }
+        else if (_dragSelected == null) {
+            pickUp(obj, true);
             _dragPoint = { x: event.clientX, y: event.clientY };
         }
         else if (obj == _dragSelected) {
@@ -3535,6 +3587,31 @@ function onDropAllowed(event) {
         event.preventDefault();
     }
 }
+function isInMultiSelect(elmt) {
+    return _dragMultiSelected.indexOf(elmt) >= 0;
+}
+function addToMultiSelect(elmt) {
+    _dragMultiSelected.push(elmt);
+    toggleClass(elmt, 'displaced', false); // in case from earlier
+    toggleClass(elmt, 'placed', false);
+    toggleClass(elmt, 'drag-selected', true);
+}
+function removeFromMultiSelect(elmt) {
+    toggleClass(elmt, 'drag-selected', false);
+    var i = _dragMultiSelected.indexOf(elmt);
+    if (i >= 0) {
+        _dragMultiSelected.splice(i, 1);
+    }
+    if (_dragSelected == elmt) {
+        // This was the primary. Either make another primary, or state is now no-selection
+        if (_dragMultiSelected.length > 0) {
+            _dragSelected = _dragMultiSelected[0];
+        }
+        else {
+            _dragSelected = null;
+        }
+    }
+}
 /**
  * Find a drag-source that is currently empty.
  * Called when a moved object needs to eject another occupant.
@@ -3557,7 +3634,7 @@ function findEmptySource() {
  */
 function quickMove(moveable, destination) {
     if (moveable != null && destination != null) {
-        pickUp(moveable);
+        pickUp(moveable, false);
         doDrop(destination);
     }
 }
@@ -4924,6 +5001,10 @@ function boilerplate(bp) {
         textSetup();
     }
     setupAbilities(head, margins, bp.abilities || {});
+    if (bp.validation) {
+        linkCss(head, safariDetails.cssRoot + 'Guesses.css');
+        setupValidation();
+    }
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);
     }
@@ -5088,4 +5169,224 @@ function theBoiler() {
 }
 exports.theBoiler = theBoiler;
 window.onload = function () { boilerplate(boiler); }; // error if boiler still undefined
+/*-----------------------------------------------------------
+ * _confirmation.ts
+ *-----------------------------------------------------------*/
+/**
+ * Response codes for different kinds of responses
+ */
+var ResponseType = {
+    Error: 0,
+    Correct: 1,
+    Partial: 2,
+    Navigate: 3,
+    Ticket: 4,
+    Unlock: 5,
+    Save: 6,
+};
+/**
+ * CSS classes for each response type
+ */
+var ResponseTypeClasses = [
+    'rt-error',
+    'rt-correct',
+    'rt-partial',
+    'rt-navigate',
+    'rt-ticket',
+    'rt-unlock',
+    'rt-save',
+];
+/**
+ * The generic response for unknown submissions
+ */
+var no_match_response = "0";
+/**
+ * Default response text, if the validation block only specifies a type
+ */
+var default_responses = [
+    "Incorrect",
+    "Correct!",
+    "Keep going", // Partial
+];
+/**
+ * img src= URLs for icons to further indicate whether guesses were correct or not
+ */
+var response_img = [
+    "../Css/X.png",
+    "../Css/Check.png",
+    "../Css/Thinking.png", // Partial
+];
+/**
+ * This puzzle has a validation block, so there must be either a place for the
+ * player to propose an answer, or an automatic extraction for other elements.
+ */
+function setupValidation() {
+    var _a;
+    var buttons = document.getElementsByClassName('validater');
+    if (buttons.length > 0) {
+        var hist = getHistoryDiv('');
+        if (!hist) {
+            // Create a standard <div id="guess-log"> to track the all guesses
+            var log = document.createElement('div');
+            log.id = 'guess-log';
+            var div = document.createElement('div');
+            div.id = 'guess-history';
+            var span = document.createElement('span');
+            span.id = 'guess-titlebar';
+            span.appendChild(document.createTextNode('Guesses'));
+            log.appendChild(span);
+            log.appendChild(div);
+            (_a = document.getElementById('pageBody')) === null || _a === void 0 ? void 0 : _a.appendChild(log);
+        }
+    }
+    for (var i = 0; i < buttons.length; i++) {
+        var btn = buttons[i];
+        if (isTag(btn, 'button')) {
+            btn.onclick = function (e) { clickValidationButton(e); };
+        }
+    }
+}
+exports.setupValidation = setupValidation;
+function getHistoryDiv(id) {
+    return document.getElementById('guess-history');
+}
+/**
+ * The user has clicked a "Submit" button next to their answer.
+ * @param evt The click event on the button
+ * The button can have parameters pointing to the extraction.
+ */
+function clickValidationButton(evt) {
+    var id = getOptionalStyle(evt.target, 'data-extracted-id', 'extracted');
+    if (!id) {
+        return;
+    }
+    var ext = document.getElementById(id);
+    if (!ext) {
+        return;
+    }
+    var hist = getHistoryDiv(id);
+    var value = ext.getAttribute('data-extraction');
+    if (!value) {
+        if (isTag(ext, 'input')) {
+            value = ext.value;
+        }
+    }
+    if (value) {
+        decodeAndValidate(id, value, hist);
+    }
+}
+/**
+ * Validate a user's input against the encoded set of validations
+ * @param key the input field that is being validated
+ * @param value the user's submission (possibly an aggregation of sub-components)
+ * @package hist the container to track the history of guesses
+ */
+function decodeAndValidate(key, value, hist) {
+    var validation = theBoiler().validation;
+    if (validation && key in validation) {
+        var obj = validation[key];
+        var hash = rot13(value); // TODO: more complicated hashing
+        var block = appendGuess(hist, value);
+        if (hash in obj) {
+            var encoded = obj[hash];
+            // TODO: decode
+            var decoded = encoded;
+            // Guess was expected. It may have multiple responses.
+            var multi = decoded.split('|');
+            for (var i = 0; i < multi.length; i++) {
+                appendResponse(block, multi[i]);
+            }
+        }
+        else {
+            // Guess does not match any hashes
+            appendResponse(block, no_match_response);
+        }
+        // TODO: cache guesses. Don't need to cache responses
+    }
+}
+/**
+ * Build a guess/response block, initialized with the guess
+ * @param hist The container
+ * @param guess The user's guess
+ * @returns The block, to which responses can be appended
+ */
+function appendGuess(hist, guess) {
+    var block = document.createElement('div');
+    block.classList.add('rt-block');
+    // TODO: ask hist for rules abour rendering key
+    var div = document.createElement('div');
+    div.classList.add('rt-guess');
+    div.appendChild(document.createTextNode(guess));
+    var now = new Date();
+    var time = now.getHours() + ":"
+        + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes() + ":"
+        + (now.getSeconds() < 10 ? "0" : "") + now.getSeconds();
+    var span = document.createElement('span');
+    span.classList.add('rt-time');
+    span.appendChild(document.createTextNode(time));
+    div.appendChild(span);
+    block.appendChild(div);
+    hist.insertAdjacentElement('afterbegin', block);
+    return block;
+}
+/**
+ * Append a response to a guess block.
+ * @param block The div containing the guess, and any other responses to the same guess
+ * @param response The response, prefixed with the response type
+ * The type is pulled off, and dictates the formatting.
+ * Some types have side-effects, in addition to text.
+ * If the response is only the type, pre-canned text is used instead.
+ */
+function appendResponse(block, response) {
+    var type = parseInt(response[0]);
+    response = response.substring(1);
+    if (response.length == 0) {
+        response = default_responses[type];
+    }
+    var div = document.createElement('div');
+    div.classList.add('response');
+    div.classList.add(ResponseTypeClasses[type]);
+    div.appendChild(document.createTextNode(response));
+    var img = document.createElement('img');
+    img.classList.add('rt-img');
+    img.src = response_img[type];
+    div.appendChild(img);
+    block.appendChild(div);
+    if (type == ResponseType.Correct) {
+        // Tag this puzzle as solved
+        toggleClass(document.getElementsByTagName('body')[0], 'solved', true);
+        // TODO: cache that the puzzle is solved, to be indicated in tables of contents
+    }
+}
+/**
+ * Rot-13 cipher, maintaining case.
+ * Chars other than A-Z are preserved as-is
+ * @param source Text to be encoded, or encoded text to be decoded
+ */
+function rot13(source) {
+    var rot = '';
+    for (var i = 0; i < source.length; i++) {
+        var ch = source[i];
+        var r = ch;
+        if (ch >= 'A' && ch <= 'Z') {
+            r = String.fromCharCode(((ch.charCodeAt(0) - 52) % 26) + 65);
+        }
+        else if (ch >= 'a' && ch <= 'z') {
+            r = String.fromCharCode(((ch.charCodeAt(0) - 82) % 26) + 97);
+        }
+        rot += r;
+    }
+    return rot;
+}
+/**
+ * Calculate the 256-bit (32-byte) SHA hash of any input string
+ * @param source An input string
+ * @returns A 32-character string
+ */
+// async function sha256(source) {
+//     const sourceBytes = new TextEncoder().encode(source);
+//     const digest = await window.crypto.subtle.digest("SHA-256", sourceBytes);
+//     const resultBytes = [...new Uint8Array(digest)];
+//     return resultBytes.map(x => x.toString(16).padStart(2, '0')).join("");
+// }
 //# sourceMappingURL=kit.js.map

@@ -1,7 +1,7 @@
 import { isTag, hasClass, getOptionalStyle,
     findParentOfClass, findFirstChildOfClass, findNextOfClass, 
     findInNextContainer, findEndInContainer,
-    indexInContainer, childAtIndex, moveFocus } from "./_classUtil";
+    indexInContainer, childAtIndex, moveFocus, toggleClass } from "./_classUtil";
 import { toggleHighlight } from "./_notes";
 import { isDebug, theBoiler } from "./_boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./_storage";
@@ -363,6 +363,7 @@ function UpdateExtraction(extractedId:string|null) {
     const delayLiterals = DelayLiterals(extractedId);
     const inputs = document.getElementsByClassName('extract-input');
     let extraction = '';
+    let ready = true;
     for (var i = 0; i < inputs.length; i++) {
         if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -393,13 +394,14 @@ function UpdateExtraction(extractedId:string|null) {
         }
         if (letter.length == 0) {
             extraction += '_';
+            ready = false;
         }
         else {
             extraction += letter;
         }
     }
 
-    ApplyExtraction(extraction, extracted);
+    ApplyExtraction(extraction, extracted, ready);
 }
 
 /**
@@ -451,7 +453,8 @@ function ExtractionIsInteresting(text:string): boolean {
  * @param dest The container for the extraction. Can be a div or an input
  */
 function ApplyExtraction(   text:string, 
-                            dest:HTMLElement) {
+                            dest:HTMLElement,
+                            ready:boolean) {
     if (hasClass(dest, 'lower-case')) {
         text = text.toLocaleLowerCase();
     }
@@ -478,6 +481,8 @@ function ApplyExtraction(   text:string,
     else {
         dest.innerText = text;
     }
+
+    updateExtractionData(dest, text, ready);
 }
 
 /**
@@ -485,7 +490,9 @@ function ApplyExtraction(   text:string,
  * @param extractedId The id of an extraction area
  */
 function UpdateNumbered(extractedId:string|null) {
+    const div = document.getElementById(extractedId || 'extracted');
     var inputs = document.getElementsByClassName('extract-input');
+    let concat = '';
     for (var i = 0; i < inputs.length; i++) {
         const inp = inputs[i] as HTMLInputElement
         const index = inputs[i].getAttribute('data-number');
@@ -495,6 +502,10 @@ function UpdateNumbered(extractedId:string|null) {
         if (letter.length > 0 || extractCell.value.length > 0) {
             extractCell.value = letter;
         }
+        concat += letter;
+    }
+    if (div) {
+        div.setAttribute('data-extraction', concat);
     }
 }
 
@@ -518,15 +529,42 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     if (index === null) {
         return;
     }
+    
     var sources = document.getElementsByClassName('extract-input');
+    let extractId:any;
+    const extraction:string[] = [];
     for (var i = 0; i < sources.length; i++) {
         var src = sources[i] as HTMLInputElement;
         var dataNumber = getOptionalStyle(src, 'data-number');
-        if (dataNumber != null && dataNumber == index) {
-            src.value = input.value;
-            return;
+        if (dataNumber != null) {
+            if (dataNumber == index) {
+                src.value = input.value;
+                extractId = getOptionalStyle(src, 'data-extracted-id', undefined, 'extracted-');
+            }
+            extraction[parseInt(dataNumber)] = src.value;
         }
     }
+
+    // Update data-extraction when the user type directly into an extraction element
+    const extractionText = extraction.join('');
+    updateExtractionData(extractId, extractionText, extractionText.length == sources.length);
+}
+
+function updateExtractionData(extracted:string|HTMLElement, value:string, ready:boolean) {
+    const container = !extracted
+        ? document.getElementById('extracted')
+        : (typeof extracted === "string")
+            ? document.getElementById(extracted as string)
+            : extracted;
+    if (container) {
+        container.setAttribute('data-extraction', value);
+        const btnId = container.getAttribute('data-show-ready');
+        if (btnId) {
+            const btn = document.getElementById(btnId);
+            toggleClass(btn, 'ready', ready);
+        }
+    }
+
 }
 
 /**
@@ -588,7 +626,7 @@ export function updateWordExtraction(extractedId:string|null) {
         }
     }
 
-    ApplyExtraction(extraction, extracted);
+    ApplyExtraction(extraction, extracted, !partial);
 }
 
 /**
