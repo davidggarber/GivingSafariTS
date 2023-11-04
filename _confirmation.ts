@@ -7,11 +7,11 @@ import { getOptionalStyle, isTag, toggleClass } from "./_classUtil";
 const ResponseType = {
     Error: 0,
     Correct: 1,  // aka solved
-    Partial: 2,
-    Unlock: 4,
-    Navigate: 3,
-    Ticket: 5,
-    Save: 6,
+    Confirm: 2,  // confirm an intermediate step
+    Hint: 3,     // a wrong guess that deserves a hint
+    Unlock: 4,   // offer players a link to a hidden page
+    Load: 5,     // load another page in a hidden iframe
+//    Save: 6,     // write a key/value directly to storage
 };
 
 /**
@@ -20,11 +20,11 @@ const ResponseType = {
 const ResponseTypeClasses = [
     'rt-error',
     'rt-correct',
-    'rt-partial',
+    'rt-confirm',
+    'rt-hint',
     'rt-unlock',
-    'rt-navigate',
-    'rt-ticket',
-    'rt-save',
+    'rt-load',
+//    'rt-save',
 ];
 
 /**
@@ -38,7 +38,8 @@ const no_match_response = "0";
 const default_responses = [
     "Incorrect",    // Error
     "Correct!",     // Correct
-    "Keep going",   // Partial
+    "Confirmed",    // Confirmation
+    "Keep going",   // Hint
 ];
 
 /**
@@ -47,7 +48,8 @@ const default_responses = [
 const response_img = [
     "../Css/X.png",         // Error
     "../Css/Check.png",     // Correct
-    "../Css/Thinking.png",  // Partial
+    "../Css/Thumb.png",     // Confirmation
+    "../Css/Thinking.png",  // Hint
     "../Css/Unlocked.png",  // Navigate
 ];
 

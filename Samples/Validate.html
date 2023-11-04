@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script src="demoTools.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Sample',
+        'title': 'Validation',
+        'author': 'David Garber',
+        'copyright': '2023',
+        'type': 'Word',
+        'textInput': true,
+        'abilities': {
+        },
+        'preSetup': init,
+        'validation': {},
+      };
+
+      var icons = [
+        "../Css/X.png",         // Error
+        "../Css/Check.png",     // Correct
+        "../Css/Thumb.png",     // Confirmation
+        "../Css/Thinking.png",  // Hint
+        "../Css/Unlocked.png",  // Navigate
+        "../Css/Magic.png",     // Load
+      ];
+
+      function init() {
+        var table = document.getElementById('guesses');
+        var rows = table.getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+          initRow(rows[i]);
+        }
+      }
+
+      function addRow() {
+        let temp = document.getElementById('newRow');
+        let row = temp.content.cloneNode(true);
+        var table = document.getElementById('guesses');
+        table.appendChild(row);
+        var rows = table.getElementsByClassName('row')
+        row = rows[rows.length - 1];
+        initRow(row);
+      }
+
+
+      function initRow(row) {
+        var guess = row.getElementsByClassName('guess')[0];
+        var select = row.getElementsByClassName('type')[0];
+        var response = row.getElementsByClassName('response')[0];
+        guess.onchange = function(e) { onChange(e); }
+        select.onchange = function(e) { onChange(e); }
+        response.onchange = function(e) { onChange(e); }
+      }
+
+      function onChange(evt) {
+        var row = findParentOfTag(evt.target, 'tr');
+        var info = encode(row);
+
+        if (info[0]) {
+          var type = parseInt(row.getElementsByClassName('type')[0].value);
+          var img = row.getElementsByClassName('icon')[0];
+          img.src = icons[type];
+
+          var rot = row.getElementsByClassName('rot')[0];
+          var obj = {};
+          obj[info[0]] = info[1];
+          rot.value = JSON.stringify(obj);
+
+          combine();
+        }
+      }
+
+      function encode(row) {
+        var guess = row.getElementsByClassName('guess')[0];
+        var type = row.getElementsByClassName('type')[0];
+        var response = row.getElementsByClassName('response')[0];
+
+        guess = rot13(guess.value);
+        type = type.value;
+        response = rot13(response.value);
+        
+        return [guess, type + response, parseInt(type)];
+      }
+
+      function makeJson(row) {
+        var info = encode(row);
+        var obj = {};
+        obj[info[0]] = info[1];
+        return JSON.stringify(obj);
+      }
+
+      function combine() {
+        var obj = {}
+        var rows = document.getElementById('guesses').getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+          var info = encode(rows[i]);
+          var key = info[0];
+          if (key) {
+            var val = info[1];
+            if (key in obj) {
+              obj[key] += '|' + val;
+            }
+            else {
+              obj[key] = val;
+            }
+          }
+        }
+        var extracted = { 'extracted': obj };
+        document.getElementById('containerHTML').innerText = JSON.stringify(extracted);
+      }
+
+      /**
+       * Rot-13 cipher, maintaining case.
+       * Chars other than A-Z are preserved as-is
+       * @param source Text to be encoded, or encoded text to be decoded
+       */
+      function rot13(source) {
+          let rot = '';
+          for (var i = 0; i < source.length; i++) {
+              const ch = source[i];
+              let r = ch;
+              if (ch >= 'A' && ch <= 'Z') {
+                  r = String.fromCharCode(((ch.charCodeAt(0) - 52) % 26) + 65);
+              }
+              else if (ch >= 'a' && ch <= 'z') {
+                  r = String.fromCharCode(((ch.charCodeAt(0) - 84) % 26) + 97);
+              }
+              rot += r;
+          }
+          return rot;
+      }
+
+    </script>
+    <style>
+      td {
+        vertical-align: middle;
+      }
+      .guess {
+        height: 0.25in;
+      }
+      .type {
+        height: 0.3in;
+      }
+      .icon {
+        height: 0.25in;
+        vertical-align:middle
+      }
+    </style>
+  </head>
+  <body>
+    <div id="pageBody">
+      <p class="flavor">
+        Demo of validation encoding.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Player's guess</th>
+            <th>Response type</th>
+            <th>Response text</th>
+            <th>Encoded</th>
+          </tr>
+        </thead>
+        <tbody id="guesses">
+          <tr class="row" data-type="1">
+            <td><input class="guess"></textarea></td>
+            <td>
+              <select class="type">
+                <option value="0">Error</option>
+                <option value="1" selected>Correct</option>
+                <option value="2">Confirm</option>
+                <option value="3">Hint</option>
+                <option value="4">Unlock</option>
+                <option value="5">Load</option>
+              </select>
+              <img class="icon">
+            </td>
+            <td><textarea class="response"></textarea></td>
+            <td><textarea class="rot"></textarea></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td><button onclick="addRow()">Add...</button></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <p>
+        <span id="containerHTML" style="position: absolute; top:7.5in; display: inline-block; border: solid 2px blue; padding:0.1in">
+        </span>
+      </p>
+
+      <template id="newRow">
+        <tr class="row">
+          <td><input class="guess"></textarea></td>
+          <td>
+            <select class="type">
+              <option value="0">Error</option>
+              <option value="1" selected>Correct</option>
+              <option value="2">Confirm</option>
+              <option value="3">Hint</option>
+              <option value="4">Unlock</option>
+              <option value="5">Load</option>
+            </select>
+            <img class="icon">
+          </td>
+          <td><textarea class="response"></textarea></td>
+          <td><textarea class="rot"></textarea></td>
+        </tr>
+      </template>
+
+    </div>
+  </body>
+</html>

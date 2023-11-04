@@ -110,10 +110,16 @@ body.solved {
   background-color: #9f9;
 }
 
-#guess-history .rt-partial {
+#guess-history .rt-confirm {
+  color: #088;
+  border: solid 2px #088;
+  background-color: #9ff;
+}
+
+#guess-history .rt-hint {
   color: rgb(136, 104, 0);
   border: solid 2px rgb(136, 104, 0);
-  background-color: #ff9;
+  background-color: #fff599;
 }
 
 #guess-history .rt-unlock {
@@ -122,7 +128,7 @@ body.solved {
   background-color: #9f9;
 }
 
-#guess-history .rt-navigate {
+#guess-history .rt-load {
   display: none;
 }
 
