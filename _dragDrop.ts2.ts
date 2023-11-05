@@ -113,6 +113,10 @@ let _priorDrag:HTMLElement|null = null;
  */
 let _dragSelected:HTMLElement|null = null;
 /**
+ * Additional objects being moved together
+ */
+let _dragMultiSelected:HTMLElement[];
+/**
  * The drop-target over which we are dragging
  */
 let _dropHover:HTMLElement|null = null;
@@ -124,8 +128,15 @@ let _dragPoint:Position|null = null;
 /**
  * Pick up an object
  * @param obj A moveable object
+ * @param multi If true, add this object to a multi-select.
+ *              Or, if already in multi-select, remove it.
  */
-function pickUp(obj:HTMLElement) {
+function pickUp(obj:HTMLElement, multi:boolean) {
+    if (multi && _dragSelected != null) {
+        addToMultiSelect(obj);
+        return;
+    }
+
     _priorDrag = _dragSelected;
     if (_dragSelected != null && _dragSelected != obj) {
         toggleClass(_dragSelected, 'drag-selected', false);
@@ -161,6 +172,7 @@ function doDrop(dest:HTMLElement|null) {
         dest = null;
     }
 
+    // Identify any existing objects at the destination
     let other:Element|null = null;
     if (dest != null) {
         other = findFirstChildOfClass(dest, 'moveable', undefined, 0);
@@ -270,8 +282,17 @@ function onClickDrag(event:MouseEvent) {
     }
     const obj = findParentOfClass(target, 'moveable') as HTMLElement;
     if (obj != null) {
-        if (_dragSelected == null) {
-            pickUp(obj);
+        if (event.shiftKey) {
+            // shift key always toggles selection. Never drops (i.e. 2-click drag)
+            if (isInMultiSelect(obj)) {
+                removeFromMultiSelect(obj);
+            }
+            else {
+                pickUp(obj, true);
+            }
+        }
+        else if (_dragSelected == null) {
+            pickUp(obj, true);
             _dragPoint = {x: event.clientX, y: event.clientY};
         }
         else if (obj == _dragSelected) {
@@ -372,6 +393,34 @@ function onDropAllowed(event:MouseEvent) {
     }
 }
 
+function isInMultiSelect(elmt:HTMLElement) {
+    return _dragMultiSelected.indexOf(elmt) >= 0;
+}
+
+function addToMultiSelect(elmt:HTMLElement) {
+    _dragMultiSelected.push(elmt);
+    toggleClass(elmt, 'displaced', false);  // in case from earlier
+    toggleClass(elmt, 'placed', false);
+    toggleClass(elmt, 'drag-selected', true);
+}
+
+function removeFromMultiSelect(elmt: HTMLElement) {
+    toggleClass(elmt, 'drag-selected', false);
+    const i = _dragMultiSelected.indexOf(elmt);
+    if (i >= 0) {
+        _dragMultiSelected.splice(i, 1);
+    }
+    if (_dragSelected == elmt) {
+        // This was the primary. Either make another primary, or state is now no-selection
+        if (_dragMultiSelected.length > 0) {
+            _dragSelected = _dragMultiSelected[0];
+        }
+        else {
+            _dragSelected = null;
+        }
+    }
+}
+
 /**
  * Find a drag-source that is currently empty.
  * Called when a moved object needs to eject another occupant.
@@ -395,7 +444,7 @@ function findEmptySource():HTMLElement|null {
  */
 export function quickMove(moveable:HTMLElement, destination:HTMLElement) {
     if (moveable != null && destination != null) {
-        pickUp(moveable);
+        pickUp(moveable, false);
         doDrop(destination);    
     }
 }
