@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.decodeAndValidate = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = void 0;
+exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.decodeAndValidate = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.getPuzzleStatus = exports.updatePuzzleList = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -1442,6 +1442,75 @@ function restoreGuesses(guesses) {
     }
 }
 ////////////////////////////////////////////////////////////////////////
+// Utils for working with the shared puzzle list
+//
+/**
+ * A limited list of meaningful puzzle statuses
+ */
+exports.PuzzleStatus = {
+    Hidden: 'hidden',
+    Locked: 'locked',
+    Unlocked: 'unlocked',
+    Loaded: 'loaded',
+    Solved: 'solved', // A puzzle which is fully solved
+};
+/**
+ * Update the master list of puzzles for this event
+ * @param puzzle The name of this puzzle (not the filename)
+ * @param status One of the statuses in PuzzleStatus
+ */
+function updatePuzzleList(puzzle, status) {
+    var key = getOtherFileHref('puzzle_list', 0);
+    var pList = {};
+    if (key in localStorage) {
+        var item = localStorage.getItem(key);
+        if (item) {
+            pList = JSON.parse(item);
+        }
+    }
+    pList[puzzle] = status;
+    localStorage.setItem(key, JSON.stringify(pList));
+}
+exports.updatePuzzleList = updatePuzzleList;
+/**
+ * Lookup the status of a puzzle
+ * @param puzzle The name of a puzzle
+ * @param defaultStatus The initial status, before a player updates it
+ * @returns The saved status
+ */
+function getPuzzleStatus(puzzle, defaultStatus) {
+    var key = getOtherFileHref('puzzle_list', 0);
+    var pList = {};
+    if (key in localStorage) {
+        var item = localStorage.getItem(key);
+        if (item) {
+            pList = JSON.parse(item);
+            if (pList && puzzle in pList) {
+                return pList[puzzle];
+            }
+        }
+    }
+    return defaultStatus;
+}
+exports.getPuzzleStatus = getPuzzleStatus;
+/**
+ * Clear the list of which puzzles have been saved, unlocked, etc.
+ */
+function resetAllPuzzleStatus() {
+    var key = getOtherFileHref('puzzle_list', 0);
+    localStorage.setItem(key, JSON.stringify(null));
+}
+exports.resetAllPuzzleStatus = resetAllPuzzleStatus;
+/**
+ * Clear any saved progress on this puzzle
+ * @param puzzleFile a puzzle filename
+ */
+function resetPuzzleProgress(puzzleFile) {
+    var key = getOtherFileHref(puzzleFile, 0);
+    localStorage.setItem(key, JSON.stringify(null));
+}
+exports.resetPuzzleProgress = resetPuzzleProgress;
+////////////////////////////////////////////////////////////////////////
 // Utils for sharing data between puzzles
 //
 /**
@@ -1473,7 +1542,7 @@ function loadMetaMaterials(puzzle, up, page) {
     return undefined;
 }
 // Convert the absolute href of the current window to a relative href
-// levels: 1=just this file, 2=parent folder + fiole, etc.
+// levels: 1=just this file, 2=parent folder + file, etc.
 function getRelFileHref(levels) {
     var key = storageKey();
     var bslash = key.lastIndexOf('\\');
@@ -4708,6 +4777,7 @@ var safari20Details = {
     'links': [],
     'qr_folders': { 'https://www.puzzyl.net/23/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
+    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 };
 var pastSafaris = {
     'Sample': safariSampleDetails,
@@ -5398,7 +5468,8 @@ function appendResponse(block, response) {
     if (type == ResponseType.Correct) {
         // Tag this puzzle as solved
         toggleClass(document.getElementsByTagName('body')[0], 'solved', true);
-        // TODO: cache that the puzzle is solved, to be indicated in tables of contents
+        // Cache that the puzzle is solved, to be indicated in tables of contents
+        updatePuzzleList(theBoiler().title, exports.PuzzleStatus.Solved);
     }
 }
 /**

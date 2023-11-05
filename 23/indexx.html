@@ -234,6 +234,17 @@
             td.classList.remove('big');
         }
 
+        /**
+         * Reset all cached data in each puzzle,
+         * as well as for the list as a whole.
+         */
+        function resetAll() {
+            for (var i = 0; i < puzzles.length; i++) {
+                var puz = puzzles[i];
+                resetPuzzleProgress(puzzleHref(puz));
+            }
+            resetAllPuzzleStatus();
+        }
     </script>
 </head>
 <body style="background-color: #D1D6D7;" onload="onLoad()">
@@ -327,6 +338,11 @@
                 <td class="icons">&nbsp;</td>
                 <td class="html">&nbsp;</td>
                 <td><a href="Exp_Forget.html" target="_blank" style="font-size: smaller;">Forget tickets</a></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align: center;">
+                    <a href="javascript:resetAll()">Reset all puzzle progress</a>
+                </td>
             </tr>
         </tfoot>
     </table>

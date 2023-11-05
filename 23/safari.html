@@ -24,6 +24,13 @@
             background-color: #ECEEEE;
         }
 
+        #table tr.solved:nth-child(odd) {
+            background-color: #afa;
+        }
+        #table tr.solved:nth-child(even) {
+            background-color: #8d8;
+        }
+
         td {
             position: relative;
             line-height: 8pt;
@@ -100,6 +107,18 @@
         .submital {
             text-align: center;
         }
+        .no-solver .if-solver {
+            display: none;
+        }
+        .if-no-solver {
+            display: none;
+        }
+        .no-solver .if-no-solver {
+            display: inline;
+        }
+        img.solve-check {
+            height: 0.25in;
+        }
         tr {
             position: relative;
         }
@@ -140,6 +159,8 @@
     </style>
     <script src="puzzle_list.js"></script>
     <script>
+        const theSafariDetails = safari20Details;
+
         function onLoad() {
             simpleSetup();
             expandPuzzles();
@@ -156,6 +177,7 @@
         }
 
         function expandPuzzles() {
+            toggleClass(document.getElementById('table'), 'no-solver', !theSafariDetails.solverSite);
             var list = document.getElementById('puzzle_list');
             var metas = document.getElementById('meta_list');
             for (var i = 0; i < puzzles.length; i++) {
@@ -227,17 +249,25 @@
             }
         }
 
-        var solverSite = 'https://givingsafari2023.azurewebsites.net/Solver';
-
         function addSolverLink(puz) {
             var tr = document.getElementById(puzzleFile(puz));
             if (tr) {
                 var td = tr.getElementsByClassName('submital')[0];
-                var aSubmit = document.createElement('a');
-                aSubmit.href = solverSite + '/Solve?id=' + puzzleSolveId(puz);
-                aSubmit.target = '_blank';
-                aSubmit.appendChild(document.createTextNode('submit'));
-                td.appendChild(aSubmit);
+                if (theSafariDetails.solverSite) {
+                    var aSubmit = document.createElement('a');
+                    aSubmit.href = theSafariDetails.solverSite + '/Solve?id=' + puzzleSolveId(puz);
+                    aSubmit.target = '_blank';
+                    aSubmit.appendChild(document.createTextNode('submit'));
+                    td.appendChild(aSubmit);
+                }
+                var pStatus = getPuzzleStatus(puz.title);
+                if (pStatus == 'solved') {
+                    var check = document.createElement('img');
+                    check.src = '../Css/Check.png';
+                    toggleClass(check, 'solve-check', true);
+                    td.appendChild(check);
+                    toggleClass(tr, 'solved', true);
+                }
             }
         }
 
@@ -383,7 +413,8 @@
                 <th class="html" onclick="sortTable(2)">Puzzle</th>
                 <th class="feeders" onclick="sortTable(3)">Feeder</th>
                 <th class="author" onclick="sortTable(4)">Author</th>
-                <th class="submital">Submit</th>
+                <th class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Css/Check.png"></span></th>
+
             </tr>    
         </thead>
         <tbody id="puzzle_list">
@@ -398,7 +429,8 @@
                 <th class="html" style="text-align: left;">Meta-Puzzles</th>
                 <th>Unlocked</th>
                 <th class="author" style="text-align: left;">Author</th>
-                <th class="submital">Submit</th>
+                <th class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Css/Check.png"></span></th>
+
             </tr>    
             <tr id="TheMagicSchoolBus">
                 <td class="icons"><img src="Icons/bus.png"></td>
@@ -422,7 +454,7 @@
                 <th class="html" style="text-align: left;">Challenges</th>
                 <th>Ticket</th>
                 <th class="author" style="text-align: left;">Author</th>
-                <th class="submital">Submit</th>
+                <th class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Css/Check.png"></span></th>
             </tr>    
             <tr id="Cosmos">
                 <td class="icons"><img src="Icons/exp-cosmos.png"></td>

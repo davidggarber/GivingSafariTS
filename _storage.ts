@@ -720,6 +720,77 @@ function restoreGuesses(guesses:GuessLog[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////
+// Utils for working with the shared puzzle list
+//
+
+/**
+ * A limited list of meaningful puzzle statuses
+ */
+export const PuzzleStatus = {
+    Hidden: 'hidden',  // A puzzle the player should not even see
+    Locked: 'locked',  // A puzzle the player should not have a link to
+    Unlocked: 'unlocked',  // A puzzle that the player can now reach
+    Loaded: 'loaded',  // A puzzle which has been loaded, possibly triggering secondary storage
+    Solved: 'solved',  // A puzzle which is fully solved
+}
+
+/**
+ * Update the master list of puzzles for this event
+ * @param puzzle The name of this puzzle (not the filename)
+ * @param status One of the statuses in PuzzleStatus
+ */
+export function updatePuzzleList(puzzle:string, status:string) {
+    var key = getOtherFileHref('puzzle_list', 0);
+    let pList = {};
+    if (key in localStorage) {
+        const item = localStorage.getItem(key);
+        if (item) {
+            pList = JSON.parse(item);
+        }
+    }
+    pList[puzzle] = status;
+    localStorage.setItem(key, JSON.stringify(pList));
+}
+
+/**
+ * Lookup the status of a puzzle
+ * @param puzzle The name of a puzzle
+ * @param defaultStatus The initial status, before a player updates it
+ * @returns The saved status
+ */
+export function getPuzzleStatus(puzzle:string, defaultStatus?:string): string|undefined {
+    var key = getOtherFileHref('puzzle_list', 0);
+    let pList = {};
+    if (key in localStorage) {
+        const item = localStorage.getItem(key);
+        if (item) {
+            pList = JSON.parse(item);
+            if (pList && puzzle in pList) {
+                return pList[puzzle];
+            }
+        }
+    }
+    return defaultStatus;
+}
+
+/**
+ * Clear the list of which puzzles have been saved, unlocked, etc.
+ */
+export function resetAllPuzzleStatus() {
+    var key = getOtherFileHref('puzzle_list', 0);
+    localStorage.setItem(key, JSON.stringify(null));
+}
+
+/**
+ * Clear any saved progress on this puzzle
+ * @param puzzleFile a puzzle filename
+ */
+export function resetPuzzleProgress(puzzleFile:string) {
+    var key = getOtherFileHref(puzzleFile, 0);
+    localStorage.setItem(key, JSON.stringify(null));
+}
+
+////////////////////////////////////////////////////////////////////////
 // Utils for sharing data between puzzles
 //
 
@@ -754,7 +825,7 @@ function loadMetaMaterials(puzzle, up, page): object|undefined {
 }
 
 // Convert the absolute href of the current window to a relative href
-// levels: 1=just this file, 2=parent folder + fiole, etc.
+// levels: 1=just this file, 2=parent folder + file, etc.
 function getRelFileHref(levels) {
     const key = storageKey();
     const bslash = key.lastIndexOf('\\');

@@ -111,6 +111,7 @@ type PuzzleEventDetails = {
     googleFonts?: string;  // comma-delimeted list
     links: LinkDetails[];
     qr_folders?: {};  // folder lookup
+    solverSite?: string;  // URL to another website
 }
 
 const safariSingleDetails:PuzzleEventDetails = {
@@ -149,6 +150,7 @@ const safari20Details:PuzzleEventDetails = {
     'links': [],
     'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
                    'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
+    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 }
 
 const pastSafaris = {

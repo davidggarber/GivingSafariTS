@@ -1,6 +1,6 @@
 import { theBoiler } from "./_boilerplate";
 import { getOptionalStyle, isTag, toggleClass } from "./_classUtil";
-import { saveGuessHistory } from "./_storage";
+import { PuzzleStatus, saveGuessHistory, updatePuzzleList } from "./_storage";
 
 /**
  * Response codes for different kinds of responses
@@ -276,7 +276,8 @@ function appendResponse(block:HTMLDivElement, response:string) {
     if (type == ResponseType.Correct) {
         // Tag this puzzle as solved
         toggleClass(document.getElementsByTagName('body')[0], 'solved', true);
-        // TODO: cache that the puzzle is solved, to be indicated in tables of contents
+        // Cache that the puzzle is solved, to be indicated in tables of contents
+        updatePuzzleList(theBoiler().title, PuzzleStatus.Solved);
     }
 }
 
