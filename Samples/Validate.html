@@ -9,11 +9,13 @@
       const boiler = {
         'safari': 'Sample',
         'title': 'Validation',
-        'author': 'David Garber',
+        'author': '',
         'copyright': '2023',
         'type': 'Word',
         'textInput': true,
         'abilities': {
+          'decoder': true,
+          'decoderMode': 'RotCipher'
         },
         'preSetup': init,
         'validation': {},
@@ -45,6 +47,7 @@
         var rows = table.getElementsByClassName('row')
         row = rows[rows.length - 1];
         initRow(row);
+        return row;
       }
 
 
@@ -54,9 +57,13 @@
         var response = row.getElementsByClassName('response')[0];
         var up = row.getElementsByClassName('up')[0];
         var down = row.getElementsByClassName('down')[0];
+        var checkbox = row.getElementsByClassName('new_field')[0];
         guess.onchange = function(e) { onChange(e); }
         select.onchange = function(e) { onChange(e); }
         response.onchange = function(e) { onChange(e); }
+        checkbox.onchange = function(e) { onChange(e); }
+        guess.onkeyup = function(e) { onChange(e); }
+        response.onkeyup = function(e) { onChange(e); }
         up.onclick = function(e) { moveRow(e, -1); }
         down.onclick = function(e) { moveRow(e, 1); }
       }
@@ -86,6 +93,10 @@
 
       function onChange(evt) {
         var row = findParentOfTag(evt.target, 'tr');
+        rebuild(row);
+      }
+
+      function rebuild(row) {
         var info = encode(row);
 
         if (info[0]) {
@@ -106,12 +117,13 @@
         var guess = row.getElementsByClassName('guess')[0];
         var type = row.getElementsByClassName('type')[0];
         var response = row.getElementsByClassName('response')[0];
+        var checkbox = row.getElementsByClassName('new_field')[0];
 
         guess = rot13(guess.value);
         type = type.value;
         response = rot13(response.value);
         
-        return [guess, type + response, parseInt(type)];
+        return [guess, type + response, parseInt(type), checkbox.checked];
       }
 
       function makeJson(row) {
@@ -122,10 +134,20 @@
       }
 
       function combine() {
-        var obj = {}
+        var multi = {};
+        var obj = {};
+        var dest = 'extracted';
+        var destIndex = 1;
         var rows = document.getElementById('guesses').getElementsByTagName('tr');
         for (var i = 0; i < rows.length; i++) {
           var info = encode(rows[i]);
+          if (info[3] === true) {
+            if (Object.keys(obj).length > 0) {
+              multi[dest] = obj;
+              obj = {};
+              dest = 'extracted' + ++destIndex;
+            }
+          }
           var key = info[0];
           if (key) {
             var val = info[1];
@@ -137,8 +159,12 @@
             }
           }
         }
-        var extracted = { 'extracted': obj };
-        document.getElementById('containerHTML').innerText = JSON.stringify(extracted);
+        if (Object.keys(obj).length > 0) {
+          multi[dest] = obj;
+        }
+        document.getElementById('containerHTML').innerText = '"validation":' + JSON.stringify(multi);
+        theBoiler().validation = multi;
+        document.getElementById('body').classList.remove('solved');
       }
 
       /**
@@ -162,10 +188,67 @@
           return rot;
       }
 
+      function importJson() {
+        // Parse
+        var txt = document.getElementById('importJSON').value.trim();
+        txt = txt.replaceAll("'", '\"');
+        if (txt.substring(0, 13) == '"validation":') {
+          txt = txt.substring(13).trim();
+        }
+        var imp;
+        try {
+          imp = JSON.parse(txt);
+        }
+        catch {
+          return;
+        }
+
+        // Delete all existing rows
+        var hist = document.getElementById('guesses');
+        hist.innerHTML = '';
+
+        var dests = Object.keys(imp);
+        for (var d = 0; d < dests.length; d++) {
+          var dest = dests[d];
+          var obj = imp[dest];
+          var newField = true;
+          var keys = Object.keys(obj);
+          for (var k = 0; k < keys.length; k++) {
+            var key = keys[k];
+            var val = obj[key];
+            var multi = val.split('|');
+            for (var i = 0; i < multi.length; i++) {
+              var resp = multi[i];
+              var type = parseInt(resp[0]);
+              resp = resp.substring(1);
+              var row = addRow();
+              fillRow(row, key, type, resp, newField);
+              newField = false;
+            }
+          }
+        }
+      }
+
+      function fillRow(row, key, typ, resp, newField) {
+        var guess = row.getElementsByClassName('guess')[0];
+        var type = row.getElementsByClassName('type')[0];
+        var response = row.getElementsByClassName('response')[0];
+        var checkbox = row.getElementsByClassName('new_field')[0];
+        
+        guess.value = rot13(key);
+        type.value = typ;
+        response.value = rot13(resp);
+        if (newField) {
+          checkbox.checked = true;
+        }
+        rebuild(row);
+      }
+
     </script>
     <style>
       td {
         vertical-align: middle;
+        text-align: center;
       }
       .guess {
         height: 0.25in;
@@ -175,6 +258,7 @@
       }
       .icon {
         height: 0.25in;
+        min-width: 0.2in;
         vertical-align:middle
       }
       .up, .down {
@@ -182,7 +266,7 @@
       }
     </style>
   </head>
-  <body>
+  <body id="body">
     <div id="pageBody">
       <p class="flavor">
         Demo of validation encoding.
@@ -195,6 +279,8 @@
             <th>Response type</th>
             <th>Response text</th>
             <th>Encoded</th>
+            <th></th>
+            <th>New field?</th>
           </tr>
         </thead>
         <tbody id="guesses">
@@ -215,6 +301,7 @@
             <td><textarea class="response"></textarea></td>
             <td><textarea class="rot"></textarea></td>
             <td><img class="up" src="../Css/Up.png"><br><img class="down" src="../Css/Down.png"></td>
+            <td><input class="new_field" type="checkbox" checked></td>
           </tr>
         </tbody>
         <tfoot>
@@ -224,10 +311,17 @@
         </tfoot>
       </table>
 
-      <p>
-        <span id="containerHTML" style="position: absolute; top:7.5in; display: inline-block; border: solid 2px blue; padding:0.1in">
-        </span>
-      </p>
+      <div id="containerHTML" style="position: absolute; top:7.5in; border: solid 2px blue; padding:0.1in; max-width: 5.5in;">
+      </div>
+      <div style="position: absolute; top:7.5in; right: 0px; text-align: right;">
+        Import JSON<br>
+        <textarea id="importJSON" style="width: 1.5in; height: 1in; border: solid 2px lime; padding:0.1in;" onkeyup="importJson()"></textarea>
+      </div>
+
+      <div id="testing" style="position: absolute; top: 9in; left: 2in; ">
+        Try it! <input id="extracted" type="text" data-show-ready="submit-extracted">
+        <button class="validater ready" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
 
       <template id="newRow">
         <tr class="row">
@@ -247,6 +341,7 @@
           <td><textarea class="response"></textarea></td>
           <td><textarea class="rot"></textarea></td>
           <td><img class="up" src="../Css/Up.png"><br><img class="down" src="../Css/Down.png"></td>
+          <td><input class="new_field" type="checkbox"></td>
         </tr>
       </template>
 
