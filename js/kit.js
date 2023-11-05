@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.decodeAndValidate = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.getPuzzleStatus = exports.updatePuzzleList = void 0;
+exports.decodeAndValidate = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -1460,6 +1460,9 @@ exports.PuzzleStatus = {
  * @param status One of the statuses in PuzzleStatus
  */
 function updatePuzzleList(puzzle, status) {
+    if (!puzzle) {
+        puzzle = getCurFileName();
+    }
     var key = getOtherFileHref('puzzle_list', 0);
     var pList = {};
     if (key in localStorage) {
@@ -1467,6 +1470,9 @@ function updatePuzzleList(puzzle, status) {
         if (item) {
             pList = JSON.parse(item);
         }
+    }
+    if (!pList) {
+        pList = {};
     }
     pList[puzzle] = status;
     localStorage.setItem(key, JSON.stringify(pList));
@@ -1479,6 +1485,9 @@ exports.updatePuzzleList = updatePuzzleList;
  * @returns The saved status
  */
 function getPuzzleStatus(puzzle, defaultStatus) {
+    if (!puzzle) {
+        puzzle = getCurFileName();
+    }
     var key = getOtherFileHref('puzzle_list', 0);
     var pList = {};
     if (key in localStorage) {
@@ -1493,6 +1502,31 @@ function getPuzzleStatus(puzzle, defaultStatus) {
     return defaultStatus;
 }
 exports.getPuzzleStatus = getPuzzleStatus;
+/**
+ * Return a list of puzzles we are tracking, which currently have the indicated status
+ * @param status one of the valid status strings
+ */
+function listPuzzlesOfStatus(status) {
+    var list = [];
+    var key = getOtherFileHref('puzzle_list', 0);
+    if (key in localStorage) {
+        var item = localStorage.getItem(key);
+        if (item) {
+            var pList = JSON.parse(item);
+            if (pList) {
+                var names = Object.keys(pList);
+                for (var i = 0; i < names.length; i++) {
+                    var name_3 = names[i];
+                    if (pList[name_3] === status) {
+                        list.push(name_3);
+                    }
+                }
+            }
+        }
+    }
+    return list;
+}
+exports.listPuzzlesOfStatus = listPuzzlesOfStatus;
 /**
  * Clear the list of which puzzles have been saved, unlocked, etc.
  */
@@ -1541,6 +1575,25 @@ function loadMetaMaterials(puzzle, up, page) {
     }
     return undefined;
 }
+/**
+ * Get the last level of the URL's pathname
+ */
+function getCurFileName(no_extension) {
+    if (no_extension === void 0) { no_extension = true; }
+    var key = window.location.pathname;
+    var bslash = key.lastIndexOf('\\');
+    var fslash = key.lastIndexOf('/');
+    var parts = key.split(fslash >= bslash ? '/' : '\\');
+    var name = parts[parts.length - 1];
+    if (no_extension) {
+        var dot = name.split('.');
+        if (dot.length > 1) {
+            name = name.substring(0, name.length - 1 - dot[dot.length - 1].length);
+        }
+    }
+    return name;
+}
+exports.getCurFileName = getCurFileName;
 // Convert the absolute href of the current window to a relative href
 // levels: 1=just this file, 2=parent folder + file, etc.
 function getRelFileHref(levels) {
@@ -4878,8 +4931,8 @@ function getQrPath() {
             if (url.indexOf(key) == 0) {
                 var folder = safariDetails.qr_folders[key];
                 var names = window.location.pathname.split('/'); // trim off path before last slash
-                var name_3 = names[names.length - 1].split('.')[0]; // trim off extension
-                return folder + '/' + name_3 + '.png';
+                var name_4 = names[names.length - 1].split('.')[0]; // trim off extension
+                return folder + '/' + name_4 + '.png';
             }
         }
     }
@@ -5469,7 +5522,7 @@ function appendResponse(block, response) {
         // Tag this puzzle as solved
         toggleClass(document.getElementsByTagName('body')[0], 'solved', true);
         // Cache that the puzzle is solved, to be indicated in tables of contents
-        updatePuzzleList(theBoiler().title, exports.PuzzleStatus.Solved);
+        updatePuzzleList(getCurFileName(), exports.PuzzleStatus.Solved);
     }
 }
 /**

@@ -238,6 +238,7 @@
                     }
                 }
                 addSolverLink(puz);
+                markAsSolved(puzzleFile(puz));
             }
 
             var hovers = document.getElementsByClassName('hover');
@@ -260,11 +261,19 @@
                     aSubmit.appendChild(document.createTextNode('submit'));
                     td.appendChild(aSubmit);
                 }
-                var pStatus = getPuzzleStatus(puz.title);
+            }
+        }
+
+        function markAsSolved(puzFile) {
+            var tr = document.getElementById(puzFile);
+            if (tr && !hasClass(tr, 'solved')) {
+                var pStatus = getPuzzleStatus(puzFile);
                 if (pStatus == 'solved') {
                     var check = document.createElement('img');
                     check.src = '../Css/Check.png';
                     toggleClass(check, 'solve-check', true);
+
+                    var td = tr.getElementsByClassName('submital')[0];
                     td.appendChild(check);
                     toggleClass(tr, 'solved', true);
                 }
@@ -340,6 +349,12 @@
                     feeders[chal].materials[0] = materials['src'];
                     td.appendChild(createFeeder([chal, 0], true, 'Icons/ticket.png'));
                 }
+            }
+
+            var solved = listPuzzlesOfStatus('solved');
+            for (var i = 0; i < solved.length; i++) {
+                var name = solved[i];
+                markAsSolved(name);
             }
         }
 

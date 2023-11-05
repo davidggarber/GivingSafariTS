@@ -739,7 +739,10 @@ export const PuzzleStatus = {
  * @param puzzle The name of this puzzle (not the filename)
  * @param status One of the statuses in PuzzleStatus
  */
-export function updatePuzzleList(puzzle:string, status:string) {
+export function updatePuzzleList(puzzle:string|null, status:string) {
+    if (!puzzle) {
+        puzzle = getCurFileName();
+    }
     var key = getOtherFileHref('puzzle_list', 0);
     let pList = {};
     if (key in localStorage) {
@@ -747,6 +750,9 @@ export function updatePuzzleList(puzzle:string, status:string) {
         if (item) {
             pList = JSON.parse(item);
         }
+    }
+    if (!pList) {
+        pList = {};
     }
     pList[puzzle] = status;
     localStorage.setItem(key, JSON.stringify(pList));
@@ -758,7 +764,10 @@ export function updatePuzzleList(puzzle:string, status:string) {
  * @param defaultStatus The initial status, before a player updates it
  * @returns The saved status
  */
-export function getPuzzleStatus(puzzle:string, defaultStatus?:string): string|undefined {
+export function getPuzzleStatus(puzzle:string|null, defaultStatus?:string): string|undefined {
+    if (!puzzle) {
+        puzzle = getCurFileName();
+    }
     var key = getOtherFileHref('puzzle_list', 0);
     let pList = {};
     if (key in localStorage) {
@@ -771,6 +780,31 @@ export function getPuzzleStatus(puzzle:string, defaultStatus?:string): string|un
         }
     }
     return defaultStatus;
+}
+
+/**
+ * Return a list of puzzles we are tracking, which currently have the indicated status
+ * @param status one of the valid status strings
+ */
+export function listPuzzlesOfStatus(status:string): string[] {
+    const list:string[] = [];
+    var key = getOtherFileHref('puzzle_list', 0);
+    if (key in localStorage) {
+        const item = localStorage.getItem(key);
+        if (item) {
+            const pList = JSON.parse(item);
+            if (pList) {
+                const names = Object.keys(pList);
+                for (let i = 0; i < names.length; i++) {
+                    const name = names[i];
+                    if (pList[name] === status) {
+                        list.push(name);
+                    }
+                }
+            }
+        }
+    }
+    return list;
 }
 
 /**
@@ -822,6 +856,24 @@ function loadMetaMaterials(puzzle, up, page): object|undefined {
         }
     }
     return undefined;
+}
+
+/**
+ * Get the last level of the URL's pathname
+ */
+export function getCurFileName(no_extension:boolean = true) {
+    const key = window.location.pathname;
+    const bslash = key.lastIndexOf('\\');
+    const fslash = key.lastIndexOf('/');
+    const parts = key.split(fslash >= bslash ? '/' : '\\');
+    let name = parts[parts.length - 1];
+    if (no_extension) {
+        const dot = name.split('.');
+        if (dot.length > 1) {
+            name = name.substring(0, name.length - 1 - dot[dot.length - 1].length);
+        }
+    }
+    return name;
 }
 
 // Convert the absolute href of the current window to a relative href

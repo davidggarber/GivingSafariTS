@@ -243,6 +243,10 @@
                 var puz = puzzles[i];
                 resetPuzzleProgress(puzzleHref(puz));
             }
+            var loaded = listPuzzlesOfStatus('loaded');
+            for (var i = 0; i < loaded.length; i++) {
+                resetPuzzleProgress(loaded[i]);
+            }
             resetAllPuzzleStatus();
         }
     </script>
