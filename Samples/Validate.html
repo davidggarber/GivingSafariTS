@@ -52,9 +52,36 @@
         var guess = row.getElementsByClassName('guess')[0];
         var select = row.getElementsByClassName('type')[0];
         var response = row.getElementsByClassName('response')[0];
+        var up = row.getElementsByClassName('up')[0];
+        var down = row.getElementsByClassName('down')[0];
         guess.onchange = function(e) { onChange(e); }
         select.onchange = function(e) { onChange(e); }
         response.onchange = function(e) { onChange(e); }
+        up.onclick = function(e) { moveRow(e, -1); }
+        down.onclick = function(e) { moveRow(e, 1); }
+      }
+
+      function moveRow(evt, dir) {
+        var row = findParentOfTag(evt.target, 'tr');
+        var table = document.getElementById('guesses');
+        var rows = table.getElementsByClassName('row')
+        var index = -1;
+        for (var i = 0; i < rows.length; i++) {
+          if (row == rows[i]) {
+            index = i;
+            break;
+          }
+        }
+        if (index > 0 && dir < 0) {
+          var sib = rows[index - 1];
+          table.removeChild(row);
+          sib.insertAdjacentElement('beforebegin', row);
+        }
+        else if (index >= 0 && index < rows.length - 1) {
+          table.removeChild(row);
+          var sib = rows[index];
+          sib.insertAdjacentElement('afterend', row);
+        }
       }
 
       function onChange(evt) {
@@ -150,6 +177,9 @@
         height: 0.25in;
         vertical-align:middle
       }
+      .up, .down {
+        height: 0.17in;
+      }
     </style>
   </head>
   <body>
@@ -184,6 +214,7 @@
             </td>
             <td><textarea class="response"></textarea></td>
             <td><textarea class="rot"></textarea></td>
+            <td><img class="up" src="../Css/Up.png"><br><img class="down" src="../Css/Down.png"></td>
           </tr>
         </tbody>
         <tfoot>
@@ -215,6 +246,7 @@
           </td>
           <td><textarea class="response"></textarea></td>
           <td><textarea class="rot"></textarea></td>
+          <td><img class="up" src="../Css/Up.png"><br><img class="down" src="../Css/Down.png"></td>
         </tr>
       </template>
 
