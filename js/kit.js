@@ -5178,11 +5178,12 @@ window.onload = function () { boilerplate(boiler); }; // error if boiler still u
 var ResponseType = {
     Error: 0,
     Correct: 1,
-    Partial: 2,
+    Confirm: 2,
+    Hint: 3,
     Unlock: 4,
-    Navigate: 3,
-    Ticket: 5,
-    Save: 6,
+    Load: 5,
+    Show: 6, // cause another cell to show
+    //    Save: 7,     // write a key/value directly to storage
 };
 /**
  * CSS classes for each response type
@@ -5190,11 +5191,11 @@ var ResponseType = {
 var ResponseTypeClasses = [
     'rt-error',
     'rt-correct',
-    'rt-partial',
+    'rt-confirm',
+    'rt-hint',
     'rt-unlock',
-    'rt-navigate',
-    'rt-ticket',
-    'rt-save',
+    'rt-load',
+    //    'rt-save',
 ];
 /**
  * The generic response for unknown submissions
@@ -5206,7 +5207,8 @@ var no_match_response = "0";
 var default_responses = [
     "Incorrect",
     "Correct!",
-    "Keep going", // Partial
+    "Confirmed",
+    "Keep going", // Hint
 ];
 /**
  * img src= URLs for icons to further indicate whether guesses were correct or not
@@ -5214,8 +5216,9 @@ var default_responses = [
 var response_img = [
     "../Css/X.png",
     "../Css/Check.png",
+    "../Css/Thumb.png",
     "../Css/Thinking.png",
-    "../Css/Unlocked.png", // Navigate
+    "../Css/Unlocked.png", // Unlock
 ];
 /**
  * This puzzle has a validation block, so there must be either a place for the
@@ -5257,7 +5260,9 @@ function getHistoryDiv(id) {
  * The button can have parameters pointing to the extraction.
  */
 function clickValidationButton(evt) {
-    var id = getOptionalStyle(evt.target, 'data-extracted-id', 'extracted');
+    var _a;
+    var btn = evt.target;
+    var id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
     if (!id) {
         return;
     }
@@ -5273,6 +5278,13 @@ function clickValidationButton(evt) {
         }
     }
     if (value) {
+        var tt = (_a = btn.getAttribute('data-text-transform')) === null || _a === void 0 ? void 0 : _a.toLowerCase();
+        if (tt === 'uppercase') {
+            value = value.toUpperCase();
+        }
+        else if (tt === 'lowercase') {
+            value = value.toLowerCase();
+        }
         decodeAndValidate(id, value, hist);
     }
 }
@@ -5367,12 +5379,24 @@ function appendResponse(block, response) {
         link.appendChild(document.createTextNode(friendly));
         div.appendChild(link);
     }
-    else if (type == ResponseType.Navigate) {
+    else if (type == ResponseType.Load) {
         // Use an iframe to navigate immediately to the response URL.
         // The iframe will be hidden, but any scripts will run immediately.
         var iframe = document.createElement('iframe');
         iframe.src = response;
         div.appendChild(iframe);
+    }
+    else if (type == ResponseType.Show) {
+        var parts = response.split('^'); // caret now allowed in a URL
+        var elmt = document.getElementById(parts[0]);
+        if (elmt) {
+            if (parts.length > 1) {
+                toggleClass(elmt, parts[1]);
+            }
+            else {
+                elmt.style.display = 'block';
+            }
+        }
     }
     else {
         // The response (which may be canned) is displayed verbatim.

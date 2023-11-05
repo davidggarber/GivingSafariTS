@@ -11,7 +11,8 @@ const ResponseType = {
     Hint: 3,     // a wrong guess that deserves a hint
     Unlock: 4,   // offer players a link to a hidden page
     Load: 5,     // load another page in a hidden iframe
-//    Save: 6,     // write a key/value directly to storage
+    Show: 6,     // cause another cell to show
+//    Save: 7,     // write a key/value directly to storage
 };
 
 /**
@@ -50,7 +51,7 @@ const response_img = [
     "../Css/Check.png",     // Correct
     "../Css/Thumb.png",     // Confirmation
     "../Css/Thinking.png",  // Hint
-    "../Css/Unlocked.png",  // Navigate
+    "../Css/Unlocked.png",  // Unlock
 ];
 
 /**
@@ -93,7 +94,8 @@ function getHistoryDiv(id:string): HTMLDivElement {
  * The button can have parameters pointing to the extraction.
  */
 function clickValidationButton(evt:MouseEvent) {
-    const id = getOptionalStyle(evt.target as Element, 'data-extracted-id', 'extracted');
+    const btn = evt.target as HTMLButtonElement;
+    const id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
     if (!id) {
         return;
     }
@@ -111,6 +113,14 @@ function clickValidationButton(evt:MouseEvent) {
         }    
     }
     if (value) {
+        const tt = btn.getAttribute('data-text-transform')?.toLowerCase();
+        if (tt === 'uppercase') {
+            value = value.toUpperCase();
+        }
+        else if (tt === 'lowercase') {
+            value = value.toLowerCase();
+        }
+
         decodeAndValidate(id, value, hist);
     }
 }
@@ -215,12 +225,24 @@ function appendResponse(block:HTMLDivElement, response:string) {
         link.appendChild(document.createTextNode(friendly));
         div.appendChild(link);
     }
-    else if (type == ResponseType.Navigate) {
+    else if (type == ResponseType.Load) {
         // Use an iframe to navigate immediately to the response URL.
         // The iframe will be hidden, but any scripts will run immediately.
         const iframe = document.createElement('iframe');
         iframe.src = response;
         div.appendChild(iframe);
+    }
+    else if (type == ResponseType.Show) {
+        const parts = response.split('^');  // caret now allowed in a URL
+        const elmt = document.getElementById(parts[0]);
+        if (elmt) {
+            if (parts.length > 1) {
+                toggleClass(elmt, parts[1]);
+            }
+            else {
+                elmt.style.display = 'block';
+            }    
+        }
     }
     else {
         // The response (which may be canned) is displayed verbatim.
