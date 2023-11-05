@@ -195,11 +195,15 @@
         if (txt.substring(0, 13) == '"validation":') {
           txt = txt.substring(13).trim();
         }
+        if (txt.substring(txt.length - 1) == ',') {
+          txt = txt.substring(0, txt.length - 1).trim();
+        }
         var imp;
         try {
           imp = JSON.parse(txt);
         }
-        catch {
+        catch(ex) {
+          console.log(ex);
           return;
         }
 

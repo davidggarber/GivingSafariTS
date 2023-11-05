@@ -74,8 +74,17 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
     padding: 0.5in;
     box-shadow: none;
   }
+
+  .print .no-print {
+    display: none;
+  }
 }
+
 @media print {
+  .no-print {
+    display: none;
+  }
+
   .printedPage {
     background-color: white;
     margin-top:0.5in; 

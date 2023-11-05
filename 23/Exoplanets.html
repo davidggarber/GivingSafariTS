@@ -15,7 +15,8 @@
         'textInput': true,
         'abilities': {
           "notes": true
-        }
+        },
+        "validation":{"extracted":{"BEOVGNY":"1"}}
       };
     </script>
     <style>
@@ -286,7 +287,11 @@
             </span>
           </p>
         </div>
-
+        <p id="answer-area" class="no-print" style="margin:0px;">
+          Final answer: <input id="extracted" type="text" data-show-ready="submit-extracted" style="text-transform:uppercase; border: none; border-bottom: solid 1px black; width:16ex;">
+          <button class="validater ready" id="submit-extracted" data-extracted-id="extracted" data-text-transform="uppercase" >Submit</button>
+        </p>
+  
       </div>
 
     </div>
