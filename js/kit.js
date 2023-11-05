@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = void 0;
+exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.decodeAndValidate = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -776,7 +776,7 @@ function toggleDecoder() {
     setupDecoderToggle(null);
 }
 exports.toggleDecoder = toggleDecoder;
-var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], time: null };
+var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], guesses: [], time: null };
 ////////////////////////////////////////////////////////////////////////
 // User interface
 //
@@ -1100,6 +1100,15 @@ function saveStraightEdge(vertexList, add) {
     saveCache();
 }
 exports.saveStraightEdge = saveStraightEdge;
+/**
+ * Update the local cache with the full set of guesses for this puzzle
+ * @param guesses An array of guesses, in time order
+ */
+function saveGuessHistory(guesses) {
+    localCache.guesses = guesses;
+    saveCache();
+}
+exports.saveGuessHistory = saveGuessHistory;
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -1261,6 +1270,7 @@ function loadLocalStorage(storage) {
     restoreStamps(storage.stamps);
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
+    restoreGuesses(storage.guesses);
     reloading = false;
     var fn = theBoiler().onRestore;
     if (fn) {
@@ -1413,6 +1423,22 @@ function restoreEdges(vertexLists) {
     localCache.edges = vertexLists;
     for (var i = 0; i < vertexLists.length; i++) {
         createFromVertexList(vertexLists[i]);
+    }
+}
+/**
+ * Recreate any saved guesses and their responses
+ * @param guesses A list of guess structures
+ */
+function restoreGuesses(guesses) {
+    if (!guesses) {
+        guesses = [];
+    }
+    for (var i = 0; i < guesses.length; i++) {
+        var src = guesses[i];
+        // Rebuild the GuessLog, to convert the string back to a DateTime
+        var gl = { field: src.field, guess: src.guess, time: new Date(String(src.time)) };
+        decodeAndValidate(gl);
+        // Decoding will rebuild the localCache
     }
 }
 ////////////////////////////////////////////////////////////////////////
@@ -3326,10 +3352,6 @@ var _priorDrag = null;
  */
 var _dragSelected = null;
 /**
- * Additional objects being moved together
- */
-var _dragMultiSelected;
-/**
  * The drop-target over which we are dragging
  */
 var _dropHover = null;
@@ -3340,14 +3362,8 @@ var _dragPoint = null;
 /**
  * Pick up an object
  * @param obj A moveable object
- * @param multi If true, add this object to a multi-select.
- *              Or, if already in multi-select, remove it.
  */
-function pickUp(obj, multi) {
-    if (multi && _dragSelected != null) {
-        addToMultiSelect(obj);
-        return;
-    }
+function pickUp(obj) {
     _priorDrag = _dragSelected;
     if (_dragSelected != null && _dragSelected != obj) {
         toggleClass(_dragSelected, 'drag-selected', false);
@@ -3380,7 +3396,6 @@ function doDrop(dest) {
         // 2nd click on src is equivalent to dropping no-op
         dest = null;
     }
-    // Identify any existing objects at the destination
     var other = null;
     if (dest != null) {
         other = findFirstChildOfClass(dest, 'moveable', undefined, 0);
@@ -3483,17 +3498,8 @@ function onClickDrag(event) {
     }
     var obj = findParentOfClass(target, 'moveable');
     if (obj != null) {
-        if (event.shiftKey) {
-            // shift key always toggles selection. Never drops (i.e. 2-click drag)
-            if (isInMultiSelect(obj)) {
-                removeFromMultiSelect(obj);
-            }
-            else {
-                pickUp(obj, true);
-            }
-        }
-        else if (_dragSelected == null) {
-            pickUp(obj, true);
+        if (_dragSelected == null) {
+            pickUp(obj);
             _dragPoint = { x: event.clientX, y: event.clientY };
         }
         else if (obj == _dragSelected) {
@@ -3587,31 +3593,6 @@ function onDropAllowed(event) {
         event.preventDefault();
     }
 }
-function isInMultiSelect(elmt) {
-    return _dragMultiSelected.indexOf(elmt) >= 0;
-}
-function addToMultiSelect(elmt) {
-    _dragMultiSelected.push(elmt);
-    toggleClass(elmt, 'displaced', false); // in case from earlier
-    toggleClass(elmt, 'placed', false);
-    toggleClass(elmt, 'drag-selected', true);
-}
-function removeFromMultiSelect(elmt) {
-    toggleClass(elmt, 'drag-selected', false);
-    var i = _dragMultiSelected.indexOf(elmt);
-    if (i >= 0) {
-        _dragMultiSelected.splice(i, 1);
-    }
-    if (_dragSelected == elmt) {
-        // This was the primary. Either make another primary, or state is now no-selection
-        if (_dragMultiSelected.length > 0) {
-            _dragSelected = _dragMultiSelected[0];
-        }
-        else {
-            _dragSelected = null;
-        }
-    }
-}
 /**
  * Find a drag-source that is currently empty.
  * Called when a moved object needs to eject another occupant.
@@ -3634,7 +3615,7 @@ function findEmptySource() {
  */
 function quickMove(moveable, destination) {
     if (moveable != null && destination != null) {
-        pickUp(moveable, false);
+        pickUp(moveable);
         doDrop(destination);
     }
 }
@@ -5221,6 +5202,10 @@ var response_img = [
     "../Css/Unlocked.png", // Unlock
 ];
 /**
+ * The full history of guesses on the current puzzle
+ */
+var guess_history = [];
+/**
  * This puzzle has a validation block, so there must be either a place for the
  * player to propose an answer, or an automatic extraction for other elements.
  */
@@ -5270,7 +5255,6 @@ function clickValidationButton(evt) {
     if (!ext) {
         return;
     }
-    var hist = getHistoryDiv(id);
     var value = ext.getAttribute('data-extraction');
     if (!value) {
         if (isTag(ext, 'input')) {
@@ -5285,27 +5269,25 @@ function clickValidationButton(evt) {
         else if (tt === 'lowercase') {
             value = value.toLowerCase();
         }
-        decodeAndValidate(id, value, hist);
+        var now = new Date();
+        var gl = { field: id, guess: value, time: now };
+        decodeAndValidate(gl);
     }
 }
 /**
  * Validate a user's input against the encoded set of validations
- * @param key the input field that is being validated
- * @param value the user's submission (possibly an aggregation of sub-components)
- * @package hist the container to track the history of guesses
+ * @param gl the guess information, but not the response
  */
-function decodeAndValidate(key, value, hist) {
+function decodeAndValidate(gl) {
     var validation = theBoiler().validation;
-    if (validation && key in validation) {
-        var obj = validation[key];
-        var hash = rot13(value); // TODO: more complicated hashing
-        var block = appendGuess(hist, value);
+    if (validation && gl.field in validation) {
+        var obj = validation[gl.field];
+        var hash = rot13(gl.guess); // TODO: more complicated hashing
+        var block = appendGuess(gl);
         if (hash in obj) {
             var encoded = obj[hash];
-            // TODO: decode
-            var decoded = encoded;
             // Guess was expected. It may have multiple responses.
-            var multi = decoded.split('|');
+            var multi = encoded.split('|');
             for (var i = 0; i < multi.length; i++) {
                 appendResponse(block, multi[i]);
             }
@@ -5314,23 +5296,26 @@ function decodeAndValidate(key, value, hist) {
             // Guess does not match any hashes
             appendResponse(block, no_match_response);
         }
-        // TODO: cache guesses. Don't need to cache responses
     }
 }
+exports.decodeAndValidate = decodeAndValidate;
 /**
  * Build a guess/response block, initialized with the guess
- * @param hist The container
- * @param guess The user's guess
+ * @param gl The user's guess info
  * @returns The block, to which responses can be appended
  */
-function appendGuess(hist, guess) {
+function appendGuess(gl) {
+    // Save
+    guess_history.push(gl);
+    saveGuessHistory(guess_history);
+    // Build a block for the guess and any connected responses
+    var hist = getHistoryDiv(gl.field);
     var block = document.createElement('div');
     block.classList.add('rt-block');
-    // TODO: ask hist for rules abour rendering key
     var div = document.createElement('div');
     div.classList.add('rt-guess');
-    div.appendChild(document.createTextNode(guess));
-    var now = new Date();
+    div.appendChild(document.createTextNode(gl.guess));
+    var now = gl.time;
     var time = now.getHours() + ":"
         + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes() + ":"
         + (now.getSeconds() < 10 ? "0" : "") + now.getSeconds();
@@ -5339,6 +5324,7 @@ function appendGuess(hist, guess) {
     span.appendChild(document.createTextNode(time));
     div.appendChild(span);
     block.appendChild(div);
+    // Newer guesses are inserted at the top
     hist.insertAdjacentElement('afterbegin', block);
     return block;
 }

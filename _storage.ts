@@ -4,6 +4,7 @@ import { afterInputUpdate, updateWordExtraction } from "./_textInput";
 import { quickMove, quickFreeMove, Position, positionFromStyle } from "./_dragDrop";
 import { doStamp, getStampParent } from "./_stampTools";
 import { createFromVertexList } from "./_straightEdge";
+import { GuessLog, decodeAndValidate } from "./_confirmation";
 
 ////////////////////////////////////////////////////////////////////////
 // Types
@@ -20,13 +21,14 @@ type LocalCacheStruct = {
     checks: object;     // number => boolean
     containers: object; // number => number
     positions: object;  // number => Position
-    stamps: object;   // number => string
+    stamps: object;     // number => string
     highlights: object; // number => boolean
-    edges: string[]; // strings
+    edges: string[];    // strings
+    guesses: GuessLog[];
     time: Date|null;
 }
 
-var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], time: null };
+var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], guesses: [], time: null };
 
 ////////////////////////////////////////////////////////////////////////
 // User interface
@@ -360,6 +362,15 @@ export function saveStraightEdge(vertexList: string, add:boolean) {
     saveCache();
 }
 
+/**
+ * Update the local cache with the full set of guesses for this puzzle
+ * @param guesses An array of guesses, in time order
+ */
+export function saveGuessHistory(guesses: GuessLog[]) {
+    localCache.guesses = guesses;
+    saveCache();
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -525,6 +536,7 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreStamps(storage.stamps);
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
+    restoreGuesses(storage.guesses);
     reloading = false;
 
     const fn = theBoiler().onRestore;
@@ -687,6 +699,23 @@ function restoreEdges(vertexLists:string[]) {
     localCache.edges = vertexLists;
     for (var i = 0; i < vertexLists.length; i++) {
         createFromVertexList(vertexLists[i]);
+    }
+}
+
+/**
+ * Recreate any saved guesses and their responses
+ * @param guesses A list of guess structures
+ */
+function restoreGuesses(guesses:GuessLog[]) {
+    if (!guesses) {
+        guesses = [];
+    }
+    for (var i = 0; i < guesses.length; i++) {
+        const src = guesses[i];
+        // Rebuild the GuessLog, to convert the string back to a DateTime
+        const gl:GuessLog = { field:src.field, guess:src.guess, time:new Date(String(src.time)) };
+        decodeAndValidate(gl);
+        // Decoding will rebuild the localCache
     }
 }
 

@@ -1,5 +1,6 @@
 import { theBoiler } from "./_boilerplate";
 import { getOptionalStyle, isTag, toggleClass } from "./_classUtil";
+import { saveGuessHistory } from "./_storage";
 
 /**
  * Response codes for different kinds of responses
@@ -55,6 +56,20 @@ const response_img = [
 ];
 
 /**
+ * A single guess submitted by a player, noting also when it was submitted
+ */
+export type GuessLog = {
+    field: string;  // Which field did the user guess on
+    guess: string;  // What the user guessed
+    time: Date;     // When the guess was submitted
+};
+
+/**
+ * The full history of guesses on the current puzzle
+ */
+let guess_history:GuessLog[] = [];
+
+/**
  * This puzzle has a validation block, so there must be either a place for the
  * player to propose an answer, or an automatic extraction for other elements.
  */
@@ -104,8 +119,6 @@ function clickValidationButton(evt:MouseEvent) {
         return;
     }
 
-    const hist = getHistoryDiv(id);
-
     let value = ext.getAttribute('data-extraction');
     if (!value) {
         if (isTag(ext, 'input')) {
@@ -121,29 +134,28 @@ function clickValidationButton(evt:MouseEvent) {
             value = value.toLowerCase();
         }
 
-        decodeAndValidate(id, value, hist);
+        const now = new Date();
+        const gl:GuessLog = { field:id, guess: value, time: now };
+    
+        decodeAndValidate(gl);
     }
 }
 
 /**
  * Validate a user's input against the encoded set of validations
- * @param key the input field that is being validated
- * @param value the user's submission (possibly an aggregation of sub-components)
- * @package hist the container to track the history of guesses
+ * @param gl the guess information, but not the response
  */
-function decodeAndValidate(key: string, value: string, hist:HTMLDivElement) {
+export function decodeAndValidate(gl:GuessLog) {
     const validation = theBoiler().validation;
-    if (validation && key in validation) {
-        const obj = validation[key];
-        const hash = rot13(value);  // TODO: more complicated hashing
-        const block = appendGuess(hist, value);
+    if (validation && gl.field in validation) {
+        const obj = validation[gl.field];
+        const hash = rot13(gl.guess);  // TODO: more complicated hashing
+        const block = appendGuess(gl);
         if (hash in obj) {
             const encoded = obj[hash];
-            // TODO: decode
-            const decoded = encoded;
     
             // Guess was expected. It may have multiple responses.
-            const multi = decoded.split('|');
+            const multi = encoded.split('|');
             for (let i = 0; i < multi.length; i++) {
                 appendResponse(block, multi[i]);
             }
@@ -152,26 +164,29 @@ function decodeAndValidate(key: string, value: string, hist:HTMLDivElement) {
             // Guess does not match any hashes
             appendResponse(block, no_match_response);
         }
-        // TODO: cache guesses. Don't need to cache responses
     }
 }
 
 /**
  * Build a guess/response block, initialized with the guess
- * @param hist The container
- * @param guess The user's guess
+ * @param gl The user's guess info
  * @returns The block, to which responses can be appended
  */
-function appendGuess(hist:HTMLDivElement, guess:string): HTMLDivElement {
+function appendGuess(gl:GuessLog): HTMLDivElement {
+    // Save
+    guess_history.push(gl);
+    saveGuessHistory(guess_history);
+
+    // Build a block for the guess and any connected responses
+    const hist = getHistoryDiv(gl.field);
     const block = document.createElement('div');
     block.classList.add('rt-block');
 
-    // TODO: ask hist for rules abour rendering key
     const div = document.createElement('div');
     div.classList.add('rt-guess');
-    div.appendChild(document.createTextNode(guess));
+    div.appendChild(document.createTextNode(gl.guess));
 
-    const now = new Date();
+    const now = gl.time;
     const time = now.getHours() + ":" 
         + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes() + ":"
         + (now.getSeconds() < 10 ? "0" : "") + now.getSeconds();
@@ -181,8 +196,8 @@ function appendGuess(hist:HTMLDivElement, guess:string): HTMLDivElement {
     div.appendChild(span);
     block.appendChild(div);
 
+    // Newer guesses are inserted at the top
     hist.insertAdjacentElement('afterbegin', block);
-
     return block;
 }
 

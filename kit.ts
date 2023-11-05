@@ -880,13 +880,14 @@ type LocalCacheStruct = {
     checks: object;     // number => boolean
     containers: object; // number => number
     positions: object;  // number => Position
-    stamps: object;   // number => string
+    stamps: object;     // number => string
     highlights: object; // number => boolean
-    edges: string[]; // strings
+    edges: string[];    // strings
+    guesses: GuessLog[];
     time: Date|null;
 }
 
-var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], time: null };
+var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], guesses: [], time: null };
 
 ////////////////////////////////////////////////////////////////////////
 // User interface
@@ -1220,6 +1221,15 @@ export function saveStraightEdge(vertexList: string, add:boolean) {
     saveCache();
 }
 
+/**
+ * Update the local cache with the full set of guesses for this puzzle
+ * @param guesses An array of guesses, in time order
+ */
+export function saveGuessHistory(guesses: GuessLog[]) {
+    localCache.guesses = guesses;
+    saveCache();
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -1385,6 +1395,7 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreStamps(storage.stamps);
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
+    restoreGuesses(storage.guesses);
     reloading = false;
 
     const fn = theBoiler().onRestore;
@@ -1547,6 +1558,23 @@ function restoreEdges(vertexLists:string[]) {
     localCache.edges = vertexLists;
     for (var i = 0; i < vertexLists.length; i++) {
         createFromVertexList(vertexLists[i]);
+    }
+}
+
+/**
+ * Recreate any saved guesses and their responses
+ * @param guesses A list of guess structures
+ */
+function restoreGuesses(guesses:GuessLog[]) {
+    if (!guesses) {
+        guesses = [];
+    }
+    for (var i = 0; i < guesses.length; i++) {
+        const src = guesses[i];
+        // Rebuild the GuessLog, to convert the string back to a DateTime
+        const gl:GuessLog = { field:src.field, guess:src.guess, time:new Date(String(src.time)) };
+        decodeAndValidate(gl);
+        // Decoding will rebuild the localCache
     }
 }
 
@@ -3661,10 +3689,6 @@ let _priorDrag:HTMLElement|null = null;
  */
 let _dragSelected:HTMLElement|null = null;
 /**
- * Additional objects being moved together
- */
-let _dragMultiSelected:HTMLElement[];
-/**
  * The drop-target over which we are dragging
  */
 let _dropHover:HTMLElement|null = null;
@@ -3676,15 +3700,8 @@ let _dragPoint:Position|null = null;
 /**
  * Pick up an object
  * @param obj A moveable object
- * @param multi If true, add this object to a multi-select.
- *              Or, if already in multi-select, remove it.
  */
-function pickUp(obj:HTMLElement, multi:boolean) {
-    if (multi && _dragSelected != null) {
-        addToMultiSelect(obj);
-        return;
-    }
-
+function pickUp(obj:HTMLElement) {
     _priorDrag = _dragSelected;
     if (_dragSelected != null && _dragSelected != obj) {
         toggleClass(_dragSelected, 'drag-selected', false);
@@ -3720,7 +3737,6 @@ function doDrop(dest:HTMLElement|null) {
         dest = null;
     }
 
-    // Identify any existing objects at the destination
     let other:Element|null = null;
     if (dest != null) {
         other = findFirstChildOfClass(dest, 'moveable', undefined, 0);
@@ -3830,17 +3846,8 @@ function onClickDrag(event:MouseEvent) {
     }
     const obj = findParentOfClass(target, 'moveable') as HTMLElement;
     if (obj != null) {
-        if (event.shiftKey) {
-            // shift key always toggles selection. Never drops (i.e. 2-click drag)
-            if (isInMultiSelect(obj)) {
-                removeFromMultiSelect(obj);
-            }
-            else {
-                pickUp(obj, true);
-            }
-        }
-        else if (_dragSelected == null) {
-            pickUp(obj, true);
+        if (_dragSelected == null) {
+            pickUp(obj);
             _dragPoint = {x: event.clientX, y: event.clientY};
         }
         else if (obj == _dragSelected) {
@@ -3941,34 +3948,6 @@ function onDropAllowed(event:MouseEvent) {
     }
 }
 
-function isInMultiSelect(elmt:HTMLElement) {
-    return _dragMultiSelected.indexOf(elmt) >= 0;
-}
-
-function addToMultiSelect(elmt:HTMLElement) {
-    _dragMultiSelected.push(elmt);
-    toggleClass(elmt, 'displaced', false);  // in case from earlier
-    toggleClass(elmt, 'placed', false);
-    toggleClass(elmt, 'drag-selected', true);
-}
-
-function removeFromMultiSelect(elmt: HTMLElement) {
-    toggleClass(elmt, 'drag-selected', false);
-    const i = _dragMultiSelected.indexOf(elmt);
-    if (i >= 0) {
-        _dragMultiSelected.splice(i, 1);
-    }
-    if (_dragSelected == elmt) {
-        // This was the primary. Either make another primary, or state is now no-selection
-        if (_dragMultiSelected.length > 0) {
-            _dragSelected = _dragMultiSelected[0];
-        }
-        else {
-            _dragSelected = null;
-        }
-    }
-}
-
 /**
  * Find a drag-source that is currently empty.
  * Called when a moved object needs to eject another occupant.
@@ -3992,7 +3971,7 @@ function findEmptySource():HTMLElement|null {
  */
 export function quickMove(moveable:HTMLElement, destination:HTMLElement) {
     if (moveable != null && destination != null) {
-        pickUp(moveable, false);
+        pickUp(moveable);
         doDrop(destination);    
     }
 }
@@ -5815,6 +5794,20 @@ const response_img = [
 ];
 
 /**
+ * A single guess submitted by a player, noting also when it was submitted
+ */
+export type GuessLog = {
+    field: string;  // Which field did the user guess on
+    guess: string;  // What the user guessed
+    time: Date;     // When the guess was submitted
+};
+
+/**
+ * The full history of guesses on the current puzzle
+ */
+let guess_history:GuessLog[] = [];
+
+/**
  * This puzzle has a validation block, so there must be either a place for the
  * player to propose an answer, or an automatic extraction for other elements.
  */
@@ -5864,8 +5857,6 @@ function clickValidationButton(evt:MouseEvent) {
         return;
     }
 
-    const hist = getHistoryDiv(id);
-
     let value = ext.getAttribute('data-extraction');
     if (!value) {
         if (isTag(ext, 'input')) {
@@ -5881,29 +5872,28 @@ function clickValidationButton(evt:MouseEvent) {
             value = value.toLowerCase();
         }
 
-        decodeAndValidate(id, value, hist);
+        const now = new Date();
+        const gl:GuessLog = { field:id, guess: value, time: now };
+    
+        decodeAndValidate(gl);
     }
 }
 
 /**
  * Validate a user's input against the encoded set of validations
- * @param key the input field that is being validated
- * @param value the user's submission (possibly an aggregation of sub-components)
- * @package hist the container to track the history of guesses
+ * @param gl the guess information, but not the response
  */
-function decodeAndValidate(key: string, value: string, hist:HTMLDivElement) {
+export function decodeAndValidate(gl:GuessLog) {
     const validation = theBoiler().validation;
-    if (validation && key in validation) {
-        const obj = validation[key];
-        const hash = rot13(value);  // TODO: more complicated hashing
-        const block = appendGuess(hist, value);
+    if (validation && gl.field in validation) {
+        const obj = validation[gl.field];
+        const hash = rot13(gl.guess);  // TODO: more complicated hashing
+        const block = appendGuess(gl);
         if (hash in obj) {
             const encoded = obj[hash];
-            // TODO: decode
-            const decoded = encoded;
     
             // Guess was expected. It may have multiple responses.
-            const multi = decoded.split('|');
+            const multi = encoded.split('|');
             for (let i = 0; i < multi.length; i++) {
                 appendResponse(block, multi[i]);
             }
@@ -5912,26 +5902,29 @@ function decodeAndValidate(key: string, value: string, hist:HTMLDivElement) {
             // Guess does not match any hashes
             appendResponse(block, no_match_response);
         }
-        // TODO: cache guesses. Don't need to cache responses
     }
 }
 
 /**
  * Build a guess/response block, initialized with the guess
- * @param hist The container
- * @param guess The user's guess
+ * @param gl The user's guess info
  * @returns The block, to which responses can be appended
  */
-function appendGuess(hist:HTMLDivElement, guess:string): HTMLDivElement {
+function appendGuess(gl:GuessLog): HTMLDivElement {
+    // Save
+    guess_history.push(gl);
+    saveGuessHistory(guess_history);
+
+    // Build a block for the guess and any connected responses
+    const hist = getHistoryDiv(gl.field);
     const block = document.createElement('div');
     block.classList.add('rt-block');
 
-    // TODO: ask hist for rules abour rendering key
     const div = document.createElement('div');
     div.classList.add('rt-guess');
-    div.appendChild(document.createTextNode(guess));
+    div.appendChild(document.createTextNode(gl.guess));
 
-    const now = new Date();
+    const now = gl.time;
     const time = now.getHours() + ":" 
         + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes() + ":"
         + (now.getSeconds() < 10 ? "0" : "") + now.getSeconds();
@@ -5941,8 +5934,8 @@ function appendGuess(hist:HTMLDivElement, guess:string): HTMLDivElement {
     div.appendChild(span);
     block.appendChild(div);
 
+    // Newer guesses are inserted at the top
     hist.insertAdjacentElement('afterbegin', block);
-
     return block;
 }
 
