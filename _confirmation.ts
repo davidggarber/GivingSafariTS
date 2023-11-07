@@ -48,11 +48,11 @@ const default_responses = [
  * img src= URLs for icons to further indicate whether guesses were correct or not
  */
 const response_img = [
-    "../Css/X.png",         // Error
-    "../Css/Check.png",     // Correct
-    "../Css/Thumb.png",     // Confirmation
-    "../Css/Thinking.png",  // Hint
-    "../Css/Unlocked.png",  // Unlock
+    "../Icons/X.png",         // Error
+    "../Icons/Check.png",     // Correct
+    "../Icons/Thumb.png",     // Confirmation
+    "../Icons/Thinking.png",  // Hint
+    "../Icons/Unlocked.png",  // Unlock
 ];
 
 /**

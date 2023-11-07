@@ -5318,11 +5318,11 @@ var default_responses = [
  * img src= URLs for icons to further indicate whether guesses were correct or not
  */
 var response_img = [
-    "../Css/X.png",
-    "../Css/Check.png",
-    "../Css/Thumb.png",
-    "../Css/Thinking.png",
-    "../Css/Unlocked.png", // Unlock
+    "../Icons/X.png",
+    "../Icons/Check.png",
+    "../Icons/Thumb.png",
+    "../Icons/Thinking.png",
+    "../Icons/Unlocked.png", // Unlock
 ];
 /**
  * The full history of guesses on the current puzzle
