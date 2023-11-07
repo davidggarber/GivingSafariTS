@@ -17,7 +17,8 @@
           'checkMarks': true,
           'subway': true,
           'notes': true
-        }
+        },
+        "validation":{"extracted":{"PUNHIVAVFGCVT":"1"}}
       };
     </script>
     <style>
@@ -81,11 +82,10 @@
       #Zoology #phrases .letter-cell-block {
         white-space: nowrap;
       }
-      #extracted {
+      #extract-and-submit {
         position: absolute;
         bottom: 0px;
         left: 3in;
-        width: 3in;
       }
     </style>
   </head>
@@ -282,8 +282,10 @@
         </div>
       </div>
 
-      <div id="extracted"></div>
-    
+      <div id="extract-and-submit">
+        <span id="extracted" data-show-ready="submit-extracted"></span>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
 
     </div>
   </body>
