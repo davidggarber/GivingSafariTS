@@ -7,10 +7,10 @@
     <script>
       const boiler = {
         'safari': '20',
-        'title': 'Tipping Point',
+        'title': 'Free Weights',
         'print_qr': true,
-        'author': 'Ken Pacquer',
-        'copyright': '2020',
+        'author': 'Ken Pacquer and David Garber',
+        'copyright': '2024',
         'orientation': 'landscape',
         'type': 'math',
         'textInput': true,
@@ -35,13 +35,14 @@
         var graph = document.getElementById('graph-paper');
         for (var y = 0; y <= 44; y++) {
           var path=document.createElementNS(xmlns, 'path');
-          var d = "M-420," + (y * 10) + " h1110";
+          var d = "M-600," + (y * 10) + " h1110";
+          // Origin point of graph paper
           path.setAttributeNS(null, 'd', d);
           var cls = (y % 5 == 0) ? 'major' : 'minor';
           path.classList.add(cls);
           graph.appendChild(path);
         }
-        for (var x = -37; x < 74; x++) {
+        for (var x = -62; x < 74; x++) {
           var path=document.createElementNS(xmlns, 'path');
           var d = "M"+ (x * 11) + ",0 v440";
           path.setAttributeNS(null, 'd', d);
@@ -52,86 +53,85 @@
       }
 
       var graph = {
-          left: {
-            dist: 15, hang: {
-              left: {
-                dist: 13, hang: {
-                  skip: 1,
-                  left: {
-                    dist: 5, hang: { letter: 'd', count: 3 }
-                  },
-                  right: {
-                    dist: 1, hang: { letter: 'f', count: 3 }
-                  }
-                }
-              },
-              middle: {
-                hang: {
-                  left: {
-                    dist: 5, hang: {
-                      left: {
-                        dist: 2, hang: { letter: 'a', count: 7 }
+        left: {
+          dist: 17, hang: {
+            left: {
+              dist: 28, hang: {
+                    left: {
+                      dist: 10, hang: { 
+                        left: {
+                          dist: 3, hang: { letter: 'b', count: 3 }
+                          },
+                        right: {
+                          dist: 4, hang: { letter: 'g', count: 3 }
+                          }
+                        }
                       },
-                      right: {
-                        dist: 3, hang: { letter: 'b', count: 2 }
+                    right: {
+                      dist: 14, hang: { 
+                        left: {
+                          dist: 8, hang: { letter: 'e', count: 1 }
+                          },
+                        right: {
+                          dist: 7, hang: { letter: 'f', count: 4 }
+                          }
+                        }
                       }
                     }
+              },
+            right: {  
+              dist: 16, hang: {
+                left: {
+                  dist: 8, hang: {
+                    left: {
+                      dist: 1, hang: { letter: 'b', count: 5 }
+                        },
+                    right: {  
+                      dist: 4, hang: { letter: 'd', count: 5 }
+                      }  
+                    }
                   },
-                  right: {
-                    dist: 7, hang: {
-                      left: {
-                        dist: 1, hang: { letter: 'c', count: 5 }
-                      },
-                      right: {
-                        dist: 4, hang: { letter: 'f', count: 1 }
-                      }
-                    },
+                middle: {
+                  hang: { skip: 1, letter: 'a', count: 3 }
+                  },
+                right: {
+                  dist: 10, hang: { skip: 1, letter: 'c', count: 4 }
                   }
                 }
-              },
-              right: {
-                dist: 13, hang: { skip: 3, letter: 'e', count: 3 }
-              }
+              }  
             }
           },
-          middle: {
-            hang: { skip: 3, letter: 'g', count: 1 }
-          },
-          right: {
-            dist: 40,
-            hang: {
-              left: {
-                dist: 4,
-                hang: {
-                  left: {
-                    dist: 8,
-                    hang: {
-                      left: {
-                        dist: 8, hang: { letter: 'd', count: 1 }
-                      },
-                      middle: {
-                        hang: { letter: 'c', count: 3 }
-                      },
-                      right: {
-                        dist: 8, hang: { letter: 'd', count: 1 }
-                      }
-                    }
+        right: {  
+          dist: 33, hang: { 
+            left: {
+              dist: 9, hang: { 
+                left: {
+                  dist: 6, hang: { skip: 1, letter: 'f', count: 4 }
                   },
-                  right: {
-                    dist: 8, hang: { skip: 1, letter: 'g', count: 7 }
-                  }
+                right: {  
+                  dist: 3, hang: {
+                    left: {
+                      dist: 4, hang: { letter: 'd', count: 1 }
+                      },
+                    middle: {
+                      hang: { letter: 'e', count: 2 }
+                      },
+                    right: {  
+                      dist: 4, hang: { letter: 'd', count: 1 }
+                      }  
+                    }
+                  }  
                 }
               },
-              right: {
-                dist: 14,
-                hang: {
-                  left: {
-                    dist: 5, hang: { skip: 1, letter: 'a', count: 1 }
+            right: {
+              dist: 8, hang: {
+                left: {
+                  dist: 4, hang: { letter: 'g', count: 3 }
                   },
-                  right: {
-                    dist: 3, hang: { skip: 1, letter: 'f', count: 1 }
-                  }
-                }
+                right: {  
+                  dist: 2, hang: { letter: 'a', count: 3 }
+                  }  
+                }  
               }
             }
           }
@@ -154,7 +154,7 @@
 
         var contents = '';
         if (node['letter']) {
-          gNode.classList.add('cans');
+gNode.classList.add('cans');
           var letter = node['letter'];
           var count = node['count'];
           for (var i = count - 1; i >= 0; i--) {  // bottom to top, for z-order
@@ -281,7 +281,7 @@
           toggleClass(piv, 'tilt-left', tilt < 0);
           toggleClass(piv, 'tilt-right', tilt > 0);
           toggleClass(piv, 'tilt-flat', tilt == 0);
-          if (tilt != 0) {
+if (tilt != 0) {
             unbalanced++;
           }
         }
@@ -295,7 +295,8 @@
         return sum * length;
       }
 
-      function layoutPhrase() {
+function layoutPhrase() {
+       // Layout the phrase letters over the cans
         var phrase = document.getElementById('phrase');
         var cans = document.getElementsByClassName('cans');
         var letters = phrase.getElementsByClassName('letter-cell');
@@ -541,8 +542,8 @@
           </span>
         </div>
       </p>
-      <svg id="graphPaper" width="960" height="440" viewBox="-365 -1 960 440" style="margin-top: 0.25in;">
-                <!--Origin of graph is now at x=-420. Total of 1110 virtual pixels, squeezed into 960 HTML pixels, which themselves aren't real pixels.-->
+      <svg id="graphPaper" width="960" height="440" viewBox="-700 -1 1200 440" style="margin-top: 0.25in;"> 
+        <!-- Starting point: Viewbox {x,_,_,_} gives left-right origin point of cans. Viewbox {_,_,x,_} gives total virtual width of , squeezed into 960 HTML pixels, which themselves aren't real pixels.-->
         <defs id="can-defs">
           <g id="can-a" fill="#993366" stroke="#eaa2c5" stroke-width="2">
             <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
