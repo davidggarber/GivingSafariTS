@@ -2274,7 +2274,8 @@ function ApplyExtraction(   text:string,
  * @param extractedId The id of an extraction area
  */
 function UpdateNumbered(extractedId:string|null) {
-    const div = document.getElementById(extractedId || 'extracted');
+    extractedId = extractedId || 'extracted';
+    const div = document.getElementById(extractedId);
     var inputs = document.getElementsByClassName('extract-input');
     let concat = '';
     for (var i = 0; i < inputs.length; i++) {
@@ -2289,8 +2290,9 @@ function UpdateNumbered(extractedId:string|null) {
         concat += letter;
     }
     if (div) {
-        div.setAttribute('data-extraction', concat);
+        updateExtractionData(extractedId, concat, concat.length == inputs.length);
     }
+
 }
 
 /**
