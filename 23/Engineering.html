@@ -16,6 +16,7 @@
         'abilities': {
           'stamping': true
         },
+        "validation":{"final-answer":{"NZGENX":"1|4JF_Klybybtl.ugzy^n zrgn cvrpr sbe Jrveq Fpvrapr|5JF_Klybybtl.ugzy"}},
         'tableBuilder': {
           'rootId': 'grid-root',
           'width': 11,
@@ -1020,6 +1021,11 @@
         <div class="stampTool medium" data-template-id="drawErase" title="Eraser">
           <div style="background-color: #eee;"><img src="Images/transparent-pixel.png"><span class="label" style="position:absolute; left:6px; top:0.2in; width:48px; text-align: center;">erase</span></div>
         </div>
+      </div>
+
+      <div class="no-print" style="position:absolute; bottom: -1in; left: 1.2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:2in; text-transform: uppercase;"></input>
+        <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
       </div>
 
     </div>

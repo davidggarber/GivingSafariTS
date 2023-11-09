@@ -5393,24 +5393,58 @@ function setupValidation() {
             (_a = document.getElementById('pageBody')) === null || _a === void 0 ? void 0 : _a.appendChild(log);
         }
     }
-    for (var i = 0; i < buttons.length; i++) {
+    var _loop_1 = function (i) {
         var btn = buttons[i];
         if (isTag(btn, 'button')) {
-            btn.onclick = function (e) { clickValidationButton(e); };
+            btn.onclick = function (e) { clickValidationButton(e.target); };
+            var srcId = getOptionalStyle(btn, 'data-extracted-id') || 'extracted';
+            var src = document.getElementById(srcId);
+            // If button is connected to a text field, hook up ENTER to submit
+            if (src && ((isTag(src, 'input') && src.type == 'text')
+                || isTag(src, 'textarea'))) { // TODO: not multiline
+                src.onkeyup = function (e) { validateInputReady(btn, e); };
+            }
         }
+    };
+    for (var i = 0; i < buttons.length; i++) {
+        _loop_1(i);
     }
 }
 exports.setupValidation = setupValidation;
+/**
+ * When typing in an input connect to a validate button,
+ * Any non-empty string indicates ready (TODO: add other rules)
+ * and ENTER triggers a button click
+ * @param btn
+ * @param evt
+ */
+function validateInputReady(btn, evt) {
+    var input = evt.target;
+    var value = '';
+    if (isTag(input, 'input')) {
+        value = input.value;
+    }
+    else if (isTag(input, 'textarea')) {
+        value = input.value;
+    }
+    toggleClass(btn, 'ready', value.length > 0);
+    if (value.length > 0 && evt.key == 'Enter') {
+        clickValidationButton(btn);
+    }
+}
+/**
+ * There should be a singleton guess history, which we likely created above
+ * @param id The ID, or 'guess-history' by default
+ */
 function getHistoryDiv(id) {
     return document.getElementById('guess-history');
 }
 /**
  * The user has clicked a "Submit" button next to their answer.
- * @param evt The click event on the button
+ * @param btn The target of the click event
  * The button can have parameters pointing to the extraction.
  */
-function clickValidationButton(evt) {
-    var btn = evt.target;
+function clickValidationButton(btn) {
     var id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
     if (!id) {
         return;

@@ -6002,22 +6002,54 @@ export function setupValidation() {
     for (let i = 0; i < buttons.length; i++) {
         const btn = buttons[i] as HTMLElement;
         if (isTag(btn, 'button')) {
-            btn.onclick=function(e){clickValidationButton(e)};
+            btn.onclick=function(e){clickValidationButton(e.target as HTMLButtonElement)};
+            const srcId = getOptionalStyle(btn, 'data-extracted-id') || 'extracted';
+            const src = document.getElementById(srcId);
+            // If button is connected to a text field, hook up ENTER to submit
+            if (src && ((isTag(src, 'input') && (src as HTMLInputElement).type == 'text')
+                        || isTag(src, 'textarea'))) {  // TODO: not multiline
+                src.onkeyup=function(e){validateInputReady(btn as HTMLButtonElement, e)};
+            }
         }
     }
 }
 
+/**
+ * When typing in an input connect to a validate button,
+ * Any non-empty string indicates ready (TODO: add other rules)
+ * and ENTER triggers a button click
+ * @param btn 
+ * @param evt 
+ */
+function validateInputReady(btn:HTMLButtonElement, evt:KeyboardEvent) {
+    const input = evt.target as HTMLElement;
+    let value = '';
+    if (isTag(input, 'input')) {
+        value = (input as HTMLInputElement).value;
+    }
+    else if (isTag(input, 'textarea')) {
+        value = (input as HTMLTextAreaElement).value;
+    }
+    toggleClass(btn, 'ready', value.length > 0);
+    if (value.length > 0 && evt.key == 'Enter') {
+        clickValidationButton(btn as HTMLButtonElement); 
+    }
+}
+
+/**
+ * There should be a singleton guess history, which we likely created above
+ * @param id The ID, or 'guess-history' by default
+ */
 function getHistoryDiv(id:string): HTMLDivElement {
     return document.getElementById('guess-history') as HTMLDivElement;
 }
 
 /**
  * The user has clicked a "Submit" button next to their answer.
- * @param evt The click event on the button
+ * @param btn The target of the click event
  * The button can have parameters pointing to the extraction.
  */
-function clickValidationButton(evt:MouseEvent) {
-    const btn = evt.target as HTMLButtonElement;
+function clickValidationButton(btn:HTMLButtonElement) {
     const id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
     if (!id) {
         return;
