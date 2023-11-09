@@ -362,18 +362,20 @@ function UpdateExtraction(extractedId:string|null) {
     
     const delayLiterals = DelayLiterals(extractedId);
     const inputs = document.getElementsByClassName('extract-input');
+    const sorted_inputs = SortExtraction(inputs);
     let extraction = '';
     let ready = true;
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
         let letter = '';
-        if (hasClass(inputs[i], 'extract-literal')) {
+        if (hasClass(input, 'extract-literal')) {
             // Several ways to extract literals:
-            const de = getOptionalStyle(inputs[i], 'data-extract-delay');  // placeholder value to extract, until player has finished other work
-            const ev = getOptionalStyle(inputs[i], 'data-extract-value');  // always extract this value
-            const ec = getOptionalStyle(inputs[i], 'data-extract-copy');  // this extraction is a copy of another
+            const de = getOptionalStyle(input, 'data-extract-delay');  // placeholder value to extract, until player has finished other work
+            const ev = getOptionalStyle(input, 'data-extract-value');  // always extract this value
+            const ec = getOptionalStyle(input, 'data-extract-copy');  // this extraction is a copy of another
             if (delayLiterals && de) {
                 letter = de;
             }
@@ -385,7 +387,7 @@ function UpdateExtraction(extractedId:string|null) {
             }
         }
         else {
-            const inp = inputs[i] as HTMLInputElement;
+            const inp = input as HTMLInputElement;
             letter = inp.value || '';
             letter = letter.trim();    
         }
@@ -405,6 +407,41 @@ function UpdateExtraction(extractedId:string|null) {
 }
 
 /**
+ * Sort a collection of elements into an array
+ * @param src A collection of elements, as from document.getElementsByClassName
+ * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
+ * @returns An array of the same elements, either sorted, or else in original document order
+ */
+function SortExtraction(src:HTMLCollectionOf<Element>, sort_attr:string = 'data-extract-order'): Element[] {
+    const lookup = {};
+    const indeces:number[] = [];
+    const sorted:Element[] = [];
+    for (let i = 0; i < src.length; i++) {
+        const elmt = src[i];
+        const order = getOptionalStyle(elmt, sort_attr);
+        if (order) {
+            // track order values we've seen
+            indeces.push(parseInt(order));
+            // make elements findable by their order
+            lookup[order] = elmt;
+        }
+        else {
+            // elements without an explicit order go document order
+            sorted.push(elmt);
+        }
+    }
+
+    // Sort indeces, then build array from them
+    indeces.sort();
+    for (let i = 0; i < indeces.length; i++) {
+        const order = '' + indeces[i];
+        sorted.push(lookup[order]);
+    }
+
+    return sorted;
+}
+
+/**
  * Puzzles can specify delayed literals within their extraction, 
  * which only show up if all non-literal cells are filled in.
  * @param extractedId The id of an element that collects extractions
@@ -414,17 +451,19 @@ function DelayLiterals(extractedId:string|null) :boolean {
     let delayedLiterals = false;
     let isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    const sorted_inputs = SortExtraction(inputs);
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        if (hasClass(inputs[i], 'extract-literal')) {
-            if (getOptionalStyle(inputs[i], 'data-extract-delay')) {
+        if (hasClass(input, 'extract-literal')) {
+            if (getOptionalStyle(input, 'data-extract-delay')) {
                 delayedLiterals = true;
             }
         }
         else {
-            const inp = inputs[i] as HTMLInputElement;
+            const inp = input as HTMLInputElement;
             let letter = inp.value || '';
             letter = letter.trim();
             if (letter.length == 0) {
@@ -493,10 +532,12 @@ function UpdateNumbered(extractedId:string|null) {
     extractedId = extractedId || 'extracted';
     const div = document.getElementById(extractedId);
     var inputs = document.getElementsByClassName('extract-input');
+    const sorted_inputs = SortExtraction(inputs);
     let concat = '';
-    for (var i = 0; i < inputs.length; i++) {
-        const inp = inputs[i] as HTMLInputElement
-        const index = inputs[i].getAttribute('data-number');
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        const inp = input as HTMLInputElement
+        const index = input.getAttribute('data-number');
         const extractCell = document.getElementById('extractor-' + index) as HTMLInputElement;
         let letter = inp.value || '';
         letter = letter.trim();
@@ -610,16 +651,18 @@ export function updateWordExtraction(extractedId:string|null) {
     }
     
     var inputs = document.getElementsByClassName('word-input');
+    const sorted_inputs = SortExtraction(inputs);
     var extraction = '';
     var partial = false;
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        var index = getOptionalStyle(inputs[i], 'data-extract-index', '') as string;
+        var index = getOptionalStyle(input, 'data-extract-index', '') as string;
         const indeces = index.split(' ');
         for (var j = 0; j < indeces.length; j++) {
-            const inp = inputs[i] as HTMLInputElement;  
+            const inp = input as HTMLInputElement;  
             const letter = extractWordIndex(inp.value, indeces[j]);
             if (letter) {
                 extraction += letter;

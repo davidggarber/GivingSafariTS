@@ -1973,18 +1973,20 @@ function UpdateExtraction(extractedId) {
     }
     var delayLiterals = DelayLiterals(extractedId);
     var inputs = document.getElementsByClassName('extract-input');
+    var sorted_inputs = SortExtraction(inputs);
     var extraction = '';
     var ready = true;
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        var input = sorted_inputs[i];
+        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
         var letter = '';
-        if (hasClass(inputs[i], 'extract-literal')) {
+        if (hasClass(input, 'extract-literal')) {
             // Several ways to extract literals:
-            var de = getOptionalStyle(inputs[i], 'data-extract-delay'); // placeholder value to extract, until player has finished other work
-            var ev = getOptionalStyle(inputs[i], 'data-extract-value'); // always extract this value
-            var ec = getOptionalStyle(inputs[i], 'data-extract-copy'); // this extraction is a copy of another
+            var de = getOptionalStyle(input, 'data-extract-delay'); // placeholder value to extract, until player has finished other work
+            var ev = getOptionalStyle(input, 'data-extract-value'); // always extract this value
+            var ec = getOptionalStyle(input, 'data-extract-copy'); // this extraction is a copy of another
             if (delayLiterals && de) {
                 letter = de;
             }
@@ -1996,7 +1998,7 @@ function UpdateExtraction(extractedId) {
             }
         }
         else {
-            var inp = inputs[i];
+            var inp = input;
             letter = inp.value || '';
             letter = letter.trim();
         }
@@ -2014,6 +2016,39 @@ function UpdateExtraction(extractedId) {
     ApplyExtraction(extraction, extracted, ready);
 }
 /**
+ * Sort a collection of elements into an array
+ * @param src A collection of elements, as from document.getElementsByClassName
+ * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
+ * @returns An array of the same elements, either sorted, or else in original document order
+ */
+function SortExtraction(src, sort_attr) {
+    if (sort_attr === void 0) { sort_attr = 'data-extract-order'; }
+    var lookup = {};
+    var indeces = [];
+    var sorted = [];
+    for (var i = 0; i < src.length; i++) {
+        var elmt = src[i];
+        var order = getOptionalStyle(elmt, sort_attr);
+        if (order) {
+            // track order values we've seen
+            indeces.push(parseInt(order));
+            // make elements findable by their order
+            lookup[order] = elmt;
+        }
+        else {
+            // elements without an explicit order go document order
+            sorted.push(elmt);
+        }
+    }
+    // Sort indeces, then build array from them
+    indeces.sort();
+    for (var i = 0; i < indeces.length; i++) {
+        var order = '' + indeces[i];
+        sorted.push(lookup[order]);
+    }
+    return sorted;
+}
+/**
  * Puzzles can specify delayed literals within their extraction,
  * which only show up if all non-literal cells are filled in.
  * @param extractedId The id of an element that collects extractions
@@ -2023,17 +2058,19 @@ function DelayLiterals(extractedId) {
     var delayedLiterals = false;
     var isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    var sorted_inputs = SortExtraction(inputs);
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        var input = sorted_inputs[i];
+        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        if (hasClass(inputs[i], 'extract-literal')) {
-            if (getOptionalStyle(inputs[i], 'data-extract-delay')) {
+        if (hasClass(input, 'extract-literal')) {
+            if (getOptionalStyle(input, 'data-extract-delay')) {
                 delayedLiterals = true;
             }
         }
         else {
-            var inp = inputs[i];
+            var inp = input;
             var letter = inp.value || '';
             letter = letter.trim();
             if (letter.length == 0) {
@@ -2095,10 +2132,12 @@ function UpdateNumbered(extractedId) {
     extractedId = extractedId || 'extracted';
     var div = document.getElementById(extractedId);
     var inputs = document.getElementsByClassName('extract-input');
+    var sorted_inputs = SortExtraction(inputs);
     var concat = '';
-    for (var i = 0; i < inputs.length; i++) {
-        var inp = inputs[i];
-        var index = inputs[i].getAttribute('data-number');
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        var input = sorted_inputs[i];
+        var inp = input;
+        var index = input.getAttribute('data-number');
         var extractCell = document.getElementById('extractor-' + index);
         var letter = inp.value || '';
         letter = letter.trim();
@@ -2201,16 +2240,18 @@ function updateWordExtraction(extractedId) {
         return;
     }
     var inputs = document.getElementsByClassName('word-input');
+    var sorted_inputs = SortExtraction(inputs);
     var extraction = '';
     var partial = false;
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        var input = sorted_inputs[i];
+        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        var index = getOptionalStyle(inputs[i], 'data-extract-index', '');
+        var index = getOptionalStyle(input, 'data-extract-index', '');
         var indeces = index.split(' ');
         for (var j = 0; j < indeces.length; j++) {
-            var inp = inputs[i];
+            var inp = input;
             var letter = extractWordIndex(inp.value, indeces[j]);
             if (letter) {
                 extraction += letter;
