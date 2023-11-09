@@ -20,6 +20,16 @@ body.solved {
   box-shadow: 0px 0px 5px gray;
 }
 
+.letter.landscape #guess-log {
+  background-color: white;
+  position: absolute;
+  width: 10in;
+  left: -0.25in;
+  top: 7.75in;
+  padding: 0.25in;
+  box-shadow: 0px 0px 5px gray;
+}
+
 .print #guess-log {
   display: none;
 }
