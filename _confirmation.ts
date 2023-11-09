@@ -126,17 +126,8 @@ function clickValidationButton(evt:MouseEvent) {
         }    
     }
     if (value) {
-        const tt = btn.getAttribute('data-text-transform')?.toLowerCase();
-        if (tt === 'uppercase') {
-            value = value.toUpperCase();
-        }
-        else if (tt === 'lowercase') {
-            value = value.toLowerCase();
-        }
-
         const now = new Date();
         const gl:GuessLog = { field:id, guess: value, time: now };
-    
         decodeAndValidate(gl);
     }
 }
@@ -149,7 +140,14 @@ export function decodeAndValidate(gl:GuessLog) {
     const validation = theBoiler().validation;
     if (validation && gl.field in validation) {
         const obj = validation[gl.field];
-        const hash = rot13(gl.guess);  // TODO: more complicated hashing
+
+        // Normalize guesses
+        // TODO: make this optional, in theBoiler, if a puzzle needs
+        gl.guess = gl.guess.toUpperCase();  // All caps (permanent)
+        let guess = gl.guess.replace(/ /g, '');  // Remove spaces for hashing - keep in UI
+        // Keep all other punctuation
+
+        const hash = rot13(guess);  // TODO: more complicated hashing
         const block = appendGuess(gl);
         if (hash in obj) {
             const encoded = obj[hash];

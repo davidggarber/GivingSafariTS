@@ -119,11 +119,17 @@
         var response = row.getElementsByClassName('response')[0];
         var checkbox = row.getElementsByClassName('new_field')[0];
 
-        guess = rot13(guess.value);
+        // Normalize guesses
+        // If this becomes undesirable, add a checkbox to disable
+        var norm = guess.value;
+        norm = norm.toUpperCase();
+        norm = norm.replaceAll(' ', '');
+
+        norm = rot13(norm);
         type = type.value;
         response = rot13(response.value);
         
-        return [guess, type + response, parseInt(type), checkbox.checked];
+        return [norm, type + response, parseInt(type), checkbox.checked];
       }
 
       function makeJson(row) {

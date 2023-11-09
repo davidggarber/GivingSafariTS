@@ -154,13 +154,13 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
 }    
 
 .scrapbook #pageBody {
-  height: 11.75in;
+  height: 10.5in;
 }    
 .scrapbook.portrait #pageBody {
-  height: 11.75in;
+  height: 10.5in;
 }    
 .scrapbook.landscape #pageBody {
-  height: 11.75in;
+  height: 10.5in;
 }    
 
 .debug #pageBody {

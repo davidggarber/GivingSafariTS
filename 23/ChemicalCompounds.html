@@ -16,6 +16,11 @@
         'abilities': {
           'dragDrop': true
         },
+        "validation":{"final-answer":{
+          "REYRAZRLRESYNFX":"1|4JF_Cbtbabybtl.ugzy^n zrgn cvrpr sbe Jrveq Fpvrapr|5JF_Cbtbabybtl.ugzy","REYRAZRLRE":"3Xrrc tbvat. Gur svany nafjre vf 2 jbeqf.",
+          "PBAVPNYSYNFX":"1|4JF_Cbtbabybtl.ugzy^n zrgn cvrpr sbe Jrveq Fpvrapr|5JF_Cbtbabybtl.ugzy","PBAVPNY":"3Xrrc tbvat. Gur svany nafjre vf 2 jbeqf.",
+          "GVGENGVBASYNFX":"1|4JF_Cbtbabybtl.ugzy^n zrgn cvrpr sbe Jrveq Fpvrapr|5JF_Cbtbabybtl.ugzy","GVGENGVBA":"3Xrrc tbvat. Gur svany nafjre vf 2 jbeqf.",
+          "SYNFX":"3Xrrc tbvat. Gur svany nafjre vf 2 jbeqf."}},
         'tableBuilder': {
           'rootId': 'table',
           'height': 11,
@@ -194,7 +199,6 @@
         font-size: 9pt;
       }
 
-
     </style>
   </head>
   <body>
@@ -209,6 +213,10 @@
       <table id="table">
       </table>
 
+      <div class="no-print" style="position:absolute; bottom: -0.3in; left: 3in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:3in; text-transform: uppercase;"></input>
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
 
     </div>
   </body>

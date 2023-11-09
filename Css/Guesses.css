@@ -30,6 +30,16 @@ body.solved {
   box-shadow: 0px 0px 5px gray;
 }
 
+.scrapbook #guess-log {
+  background-color: white;
+  position: absolute;
+  width: 11in;
+  left: -0.25in;
+  top: 11.25in;
+  padding: 0.25in;
+  box-shadow: 0px 0px 5px gray;
+}
+
 .print #guess-log {
   display: none;
 }

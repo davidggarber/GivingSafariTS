@@ -5410,7 +5410,6 @@ function getHistoryDiv(id) {
  * The button can have parameters pointing to the extraction.
  */
 function clickValidationButton(evt) {
-    var _a;
     var btn = evt.target;
     var id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
     if (!id) {
@@ -5427,13 +5426,6 @@ function clickValidationButton(evt) {
         }
     }
     if (value) {
-        var tt = (_a = btn.getAttribute('data-text-transform')) === null || _a === void 0 ? void 0 : _a.toLowerCase();
-        if (tt === 'uppercase') {
-            value = value.toUpperCase();
-        }
-        else if (tt === 'lowercase') {
-            value = value.toLowerCase();
-        }
         var now = new Date();
         var gl = { field: id, guess: value, time: now };
         decodeAndValidate(gl);
@@ -5447,7 +5439,12 @@ function decodeAndValidate(gl) {
     var validation = theBoiler().validation;
     if (validation && gl.field in validation) {
         var obj = validation[gl.field];
-        var hash = rot13(gl.guess); // TODO: more complicated hashing
+        // Normalize guesses
+        // TODO: make this optional, in theBoiler, if a puzzle needs
+        gl.guess = gl.guess.toUpperCase(); // All caps (permanent)
+        var guess = gl.guess.replace(/ /g, ''); // Remove spaces for hashing - keep in UI
+        // Keep all other punctuation
+        var hash = rot13(guess); // TODO: more complicated hashing
         var block = appendGuess(gl);
         if (hash in obj) {
             var encoded = obj[hash];
