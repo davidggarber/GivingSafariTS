@@ -127,7 +127,13 @@
 
         norm = rot13(norm);
         type = type.value;
-        response = rot13(response.value);
+        response = response.value;
+        // smart quotes
+        response = response.replaceAll(' \'', ' ‘');  // ❛
+        response = response.replaceAll('\'', '’');  // ❜
+        response = response.replaceAll(' \"', ' “');  // ❝
+        response = response.replaceAll('\"', '”');  // ❞
+        response = rot13(response);
         
         return [norm, type + response, parseInt(type), checkbox.checked];
       }
@@ -142,7 +148,8 @@
       function combine() {
         var multi = {};
         var obj = {};
-        var dest = 'extracted';
+        var destRoot = document.getElementById('extracted-id').value;
+        var dest = destRoot;
         var destIndex = 1;
         var rows = document.getElementById('guesses').getElementsByTagName('tr');
         for (var i = 0; i < rows.length; i++) {
@@ -151,7 +158,7 @@
             if (Object.keys(obj).length > 0) {
               multi[dest] = obj;
               obj = {};
-              dest = 'extracted' + ++destIndex;
+              dest = destRoot + ++destIndex;
             }
           }
           var key = info[0];
@@ -220,6 +227,9 @@
         var dests = Object.keys(imp);
         for (var d = 0; d < dests.length; d++) {
           var dest = dests[d];
+          if (d == 0) {
+            document.getElementById('extracted-id').value = dest;
+          }
           var obj = imp[dest];
           var newField = true;
           var keys = Object.keys(obj);
@@ -279,7 +289,7 @@
   <body id="body">
     <div id="pageBody">
       <p class="flavor">
-        Demo of validation encoding.
+        Field to validate: <input id="extracted-id" type="text" value="extracted"></p>
       </p>
 
       <table>

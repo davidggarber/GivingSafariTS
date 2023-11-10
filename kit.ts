@@ -5917,7 +5917,7 @@ const ResponseType = {
     Error: 0,
     Correct: 1,  // aka solved
     Confirm: 2,  // confirm an intermediate step
-    Hint: 3,     // a wrong guess that deserves a hint
+    KeepGoing: 3,// a wrong guess that deserves a hint
     Unlock: 4,   // offer players a link to a hidden page
     Load: 5,     // load another page in a hidden iframe
     Show: 6,     // cause another cell to show
@@ -5931,7 +5931,7 @@ const ResponseTypeClasses = [
     'rt-error',
     'rt-correct',
     'rt-confirm',
-    'rt-hint',
+    'rt-keepgoing',
     'rt-unlock',
     'rt-load',
 //    'rt-save',
@@ -5949,7 +5949,7 @@ const default_responses = [
     "Incorrect",    // Error
     "Correct!",     // Correct
     "Confirmed",    // Confirmation
-    "Keep going",   // Hint
+    "Keep going",   // Keep Going
 ];
 
 /**
@@ -5959,7 +5959,7 @@ const response_img = [
     "../Icons/X.png",         // Error
     "../Icons/Check.png",     // Correct
     "../Icons/Thumb.png",     // Confirmation
-    "../Icons/Thinking.png",  // Hint
+    "../Icons/Thinking.png",  // Keep Going
     "../Icons/Unlocked.png",  // Unlock
 ];
 

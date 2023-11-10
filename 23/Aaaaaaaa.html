@@ -18,7 +18,8 @@
           'notes': true,
           'decoder': true,
           'decoderMode': 'Ascii'
-        }
+        },
+        "validation":{"final-answer":{"YE03":"1","NYXNYVARNNNVRPANZR":"3","E03":"3Qba’g sbetrg nyxnyvar"}}
       };
     </script>
     <style>
@@ -881,6 +882,11 @@
             </td>
           </tr>
         </table>
+      </div>
+
+      <div class="no-print" style="position:absolute; bottom: -0.5in; left: 2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:1.5in; text-transform: uppercase;"></input>
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
       </div>
 
     </div>

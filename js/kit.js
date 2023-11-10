@@ -5325,7 +5325,7 @@ var ResponseType = {
     Error: 0,
     Correct: 1,
     Confirm: 2,
-    Hint: 3,
+    KeepGoing: 3,
     Unlock: 4,
     Load: 5,
     Show: 6, // cause another cell to show
@@ -5338,7 +5338,7 @@ var ResponseTypeClasses = [
     'rt-error',
     'rt-correct',
     'rt-confirm',
-    'rt-hint',
+    'rt-keepgoing',
     'rt-unlock',
     'rt-load',
     //    'rt-save',
@@ -5354,7 +5354,7 @@ var default_responses = [
     "Incorrect",
     "Correct!",
     "Confirmed",
-    "Keep going", // Hint
+    "Keep going", // Keep Going
 ];
 /**
  * img src= URLs for icons to further indicate whether guesses were correct or not
