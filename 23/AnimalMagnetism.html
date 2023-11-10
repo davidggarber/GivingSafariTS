@@ -14,7 +14,8 @@
         'type': 'Logic',
         'abilities': {
           'stamping': true
-        }
+        },
+        "validation":{"final-answer":{"BJY":"1"}}
       };
     </script>
     <style>
@@ -240,6 +241,11 @@
           </div>
         </template>
       </div>  
+
+      <div class="no-print" style="position:absolute; bottom: -0.5in; left: 5.75in; width:3in;">
+        Answer:<br><input id="final-answer" class="extracted" type="text" style="width:1.25in; text-transform: uppercase;"></input>
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
 
     </div>
   </body>
