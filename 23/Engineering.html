@@ -138,6 +138,12 @@
         return coord ? document.getElementById('g-' + coordId(coord)) : null;
       }
 
+      function coordFromId(id) {
+        var r = id.indexOf('r');
+        var c = id.indexOf('c');
+        return {r:parseInt(id.substring(r+1, c)), c:parseInt(id.substring(c+1))};
+      }
+
       // Erase current rendering for this coordinate
       function erase(coord) {
         var g = coordG(coord);
@@ -215,6 +221,7 @@
           }
         }
         invalidated_ = [];
+        extractBulbs();
       }
 
       function renderImage(coord, imgName, cls) {
@@ -826,6 +833,22 @@
             caretCoord = null;
             rerender();
           }
+        }
+      }
+
+      function extractBulbs() {
+        var bulbs = document.getElementsByClassName('highlight');
+        var message = '';
+        for (var i = 0; i < bulbs.length; i++) {
+          var coord = coordFromId(bulbs[i].id);
+          var letter = initialData[coord.r][coord.c];
+          if (letter >= 'A' && letter <= 'Z') {
+            message += letter;
+          }
+        }
+
+        if (message.length > 0) {
+          document.getElementById('final-answer').value = message;
         }
       }
 
