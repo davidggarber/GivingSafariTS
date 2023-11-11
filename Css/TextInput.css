@@ -78,6 +78,21 @@
   border: solid 1px black;
 }
 
+#fontExtents {
+  position: absolute;
+  top: 0px;
+  color: transparent;
+}
+
+.print #fontExtents {
+  display: none;
+}
+
+.horzScaleBox {
+  position: relative; 
+  display: inline-block; 
+}
+
 @media screen {
   .extract-highlight {
       background-color: #cccccc;
@@ -86,6 +101,10 @@
 @media print {
   .extract-highlight {
       background-color: #999999;
+  }
+
+  #fontExtents {
+    display: none;
   }
 }
 

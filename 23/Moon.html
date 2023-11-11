@@ -18,6 +18,10 @@
           'notes': true,
           'wordSearch': true
         },
+        "validation":{"final-answer":{
+          "WCY":"1|4GZFO_QbBbEe.ugzy^n zrgn cvrpr sbe Gur Zntvp Fpubby Ohf|5GZFO_QbBbEe.ugzy",
+          "WRGCEBCHYFVBAYNOBENGBEL":"1|4GZFO_QbBbEe.ugzy^n zrgn cvrpr sbe Gur Zntvp Fpubby Ohf|5GZFO_QbBbEe.ugzy",
+          "WBVAZBBAFQBGGBQBGPYHRBEQREGUERRFRGF":"3 Xrrc tbvat. Svaq gur zbbaf sbe rnpu pyhr. Wbva gurz va qbg-gb-qbg snfuvba, va guerr frcnengr frgf qbja rnpu pbyhza, gb fcryy gur svany nafjre."}},
         'tableBuilder': {
           'rootId': 'grid-root',
           'data': [
@@ -138,6 +142,14 @@
           </td>
         </tr>
       </table>
+
+      <div class="no-print" style="position:absolute; bottom: -0.5in; left: 2in;">
+        Final answer: <span class="horzScaleBox" style="width: 2.6in;">
+          <input id="final-answer" class="extracted" type="text" style="position: relative; width:2.5in; text-transform: uppercase;"></input>
+        </span>
+        <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+
     </div>
   </body>
 </html>

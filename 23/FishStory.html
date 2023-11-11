@@ -17,6 +17,10 @@
           'checkMarks': true,
           'wordSearch': true
         },
+        "validation":{"final-answer":{
+          "ENVAOBJ":"1|4GZFO_Ohzcre.ugzy^n zrgn cvrpr sbe Gur Zntvp Fpubby Ohf|5GZFO_Ohzcre.ugzy",
+          "ENVAOBJSVFU":"1|4GZFO_Ohzcre.ugzy^n zrgn cvrpr sbe Gur Zntvp Fpubby Ohf|5GZFO_Ohzcre.ugzy",
+          "GURENVAOBJSVFU":"1|4GZFO_Ohzcre.ugzy^n zrgn cvrpr sbe Gur Zntvp Fpubby Ohf|5GZFO_Ohzcre.ugzy"}},        
         'tableBuilder': {
           'rootId': 'grid-root',
           'data': [
@@ -128,6 +132,11 @@
           <div class="cross-off"><img src="Images/Fish/c5.png"></div>
           <div class="cross-off"><img src="Images/Fish/c6.png"></div>
         </div>
+      </div>
+
+      <div class="no-print" style="position:absolute; bottom: -0.5in; left: 2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:2.5in; text-transform: uppercase;"></input>
+        <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
       </div>
 
     </div>

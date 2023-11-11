@@ -5411,6 +5411,88 @@ function setupValidation() {
     }
 }
 exports.setupValidation = setupValidation;
+function calculateTextExtents(src, value) {
+    var fe = document.getElementById('fontExtents');
+    if (!fe) {
+        fe = document.createElement('span');
+        fe.id = 'fontExtents';
+        fe.style.position = 'absolute';
+        document.getElementsByTagName('body')[0].appendChild(fe);
+    }
+    fe.innerText = value;
+    var styles = window.getComputedStyle(src, null);
+    fe.style.fontFamily = styles.getPropertyValue('font-family');
+    fe.style.fontSize = styles.getPropertyValue('font-size');
+    fe.style.fontWeight = styles.getPropertyValue('font-weight');
+    fe.style.fontStretch = styles.getPropertyValue('font-stretch');
+    fe.style.textTransform = styles.getPropertyValue('text-transform');
+    //    fe.style.transform = styles.getPropertyValue('transform');
+    return fe.scrollWidth;
+}
+/**
+ * When a user types an over-long value into an input, shrink the font
+ * @param input An input or textarea element
+ * @param value The current text
+ */
+function horzScaleToFit(input, value) {
+    var widthPx = parseFloat(input.getAttribute('data-original-width') || '');
+    if (!widthPx) {
+        widthPx = calcPxStyle(input, 'width');
+        input.setAttribute('data-original-width', '' + widthPx);
+    }
+    if (value.length == 0) {
+        input.style.transform = 'scale(100%, 100%)';
+        input.style.width = widthPx + 'px';
+    }
+    var curScale = calcTransform(input, 'scale', matrix.scaleX, 1);
+    var needPx = calculateTextExtents(input, value + '|'); // account for borders
+    if (needPx * curScale > widthPx) {
+        var wantPx = calculateTextExtents(input, value + ' 12345678'); // one more word
+        var newScalePct = Math.floor(widthPx * 100 / wantPx);
+        if (newScalePct > 33) { // Maximum compression before unreadable
+            input.style.transformOrigin = 'left';
+            input.style.transform = 'scale(' + newScalePct + '%, 100%)';
+            input.style.width = Math.floor(widthPx * 100 / newScalePct) + 'px';
+        }
+        var test = calculateTextExtents(input, value);
+    }
+}
+function calcPxStyle(elmt, prop) {
+    var val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
+    return parseFloat(val.substring(0, val.length - 2)); // px
+}
+function calcPctStyle(elmt, prop) {
+    var val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
+    return parseFloat(val.substring(0, val.length - 1)); // %
+}
+var matrix = {
+    scaleX: 0,
+    rotX: 1,
+    rotY: 2,
+    scaleY: 3,
+    translateX: 4,
+    translateY: 5
+};
+function calcTransform(elmt, prop, index, defValue) {
+    var trans = window.getComputedStyle(elmt, null).getPropertyValue('transform');
+    var matrix = '1, 0, 0, 0, 1, 0'; // unit transform
+    if (trans && trans.substring(0, 7) == 'matrix(') {
+        matrix = trans.substring(7, trans.length - 8);
+    }
+    var split = matrix.split(',');
+    if (index < split.length) {
+        var val = split[index];
+        if (val.substring(val.length - 1) == '%') {
+            return parseFloat(val.substring(0, val.length - 1)) * 0.01;
+        }
+        else if (val.substring(val.length - 2) == 'px') {
+            return parseFloat(val.substring(0, val.length - 2));
+        }
+        else
+            return parseFloat(val);
+    }
+    return defValue;
+}
 /**
  * When typing in an input connect to a validate button,
  * Any non-empty string indicates ready (TODO: add other rules)
@@ -5430,6 +5512,9 @@ function validateInputReady(btn, evt) {
     toggleClass(btn, 'ready', value.length > 0);
     if (value.length > 0 && evt.key == 'Enter') {
         clickValidationButton(btn);
+    }
+    else {
+        horzScaleToFit(input, value);
     }
 }
 /**
