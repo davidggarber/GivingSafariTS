@@ -32,6 +32,10 @@
       ];
 
       function init() {
+        var field = document.getElementById('extracted-id');
+        field.onchange = function(e) { combine(); }
+        field.onkeyup = function(e) { combine(); }
+        
         var table = document.getElementById('guesses');
         var rows = table.getElementsByTagName('tr');
         for (var i = 0; i < rows.length; i++) {
@@ -210,6 +214,9 @@
         }
         if (txt.substring(txt.length - 1) == ',') {
           txt = txt.substring(0, txt.length - 1).trim();
+        }
+        if (txt[0] != '{') {
+          txt = '{' + txt + '}';
         }
         var imp;
         try {
