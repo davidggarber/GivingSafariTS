@@ -1,7 +1,7 @@
 import { isTag, hasClass, getOptionalStyle,
     findParentOfClass, findFirstChildOfClass, findNextOfClass, 
     findInNextContainer, findEndInContainer,
-    indexInContainer, childAtIndex, moveFocus, toggleClass } from "./_classUtil";
+    indexInContainer, childAtIndex, moveFocus, toggleClass, SortElements } from "./_classUtil";
 import { toggleHighlight } from "./_notes";
 import { isDebug, theBoiler } from "./_boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./_storage";
@@ -372,7 +372,7 @@ function UpdateExtraction(extractedId:string|null) {
     
     const delayLiterals = DelayLiterals(extractedId);
     const inputs = document.getElementsByClassName('extract-input');
-    const sorted_inputs = SortExtraction(inputs);
+    const sorted_inputs = SortElements(inputs);
     let extraction = '';
     let ready = true;
     for (var i = 0; i < sorted_inputs.length; i++) {
@@ -417,41 +417,6 @@ function UpdateExtraction(extractedId:string|null) {
 }
 
 /**
- * Sort a collection of elements into an array
- * @param src A collection of elements, as from document.getElementsByClassName
- * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
- * @returns An array of the same elements, either sorted, or else in original document order
- */
-function SortExtraction(src:HTMLCollectionOf<Element>, sort_attr:string = 'data-extract-order'): Element[] {
-    const lookup = {};
-    const indeces:number[] = [];
-    const sorted:Element[] = [];
-    for (let i = 0; i < src.length; i++) {
-        const elmt = src[i];
-        const order = getOptionalStyle(elmt, sort_attr);
-        if (order) {
-            // track order values we've seen
-            indeces.push(parseInt(order));
-            // make elements findable by their order
-            lookup[order] = elmt;
-        }
-        else {
-            // elements without an explicit order go document order
-            sorted.push(elmt);
-        }
-    }
-
-    // Sort indeces, then build array from them
-    indeces.sort();
-    for (let i = 0; i < indeces.length; i++) {
-        const order = '' + indeces[i];
-        sorted.push(lookup[order]);
-    }
-
-    return sorted;
-}
-
-/**
  * Puzzles can specify delayed literals within their extraction, 
  * which only show up if all non-literal cells are filled in.
  * @param extractedId The id of an element that collects extractions
@@ -461,7 +426,7 @@ function DelayLiterals(extractedId:string|null) :boolean {
     let delayedLiterals = false;
     let isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
-    const sorted_inputs = SortExtraction(inputs);
+    const sorted_inputs = SortElements(inputs);
     for (var i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
@@ -541,18 +506,22 @@ function ApplyExtraction(   text:string,
 function UpdateNumbered(extractedId:string|null) {
     extractedId = extractedId || 'extracted';
     const div = document.getElementById(extractedId);
+    var outputs = div?.getElementsByTagName('input');
     var inputs = document.getElementsByClassName('extract-input');
-    const sorted_inputs = SortExtraction(inputs);
+    const sorted_inputs = SortElements(inputs);
     let concat = '';
     for (var i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         const inp = input as HTMLInputElement
         const index = input.getAttribute('data-number');
-        const extractCell = document.getElementById('extractor-' + index) as HTMLInputElement;
+        let output = document.getElementById('extractor-' + index) as HTMLInputElement;
+        if (!output && outputs) {
+            output = outputs[i];
+        }
         let letter = inp.value || '';
         letter = letter.trim();
-        if (letter.length > 0 || extractCell.value.length > 0) {
-            extractCell.value = letter;
+        if (letter.length > 0 || output.value.length > 0) {
+            output.value = letter;
         }
         concat += letter;
     }
@@ -661,7 +630,7 @@ export function updateWordExtraction(extractedId:string|null) {
     }
     
     var inputs = document.getElementsByClassName('word-input');
-    const sorted_inputs = SortExtraction(inputs);
+    const sorted_inputs = SortElements(inputs);
     var extraction = '';
     var partial = false;
     for (var i = 0; i < sorted_inputs.length; i++) {

@@ -45,7 +45,7 @@ body.solved {
 }
 
 @media print {
-  .letter.portrait #guess-log {
+  #guess-log {
     display: none;
   }
 }

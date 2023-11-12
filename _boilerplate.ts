@@ -204,6 +204,7 @@ type BoilerPlateData = {
     onNoteChange?: (inp:HTMLInputElement) => void;
     onInputChange?: (inp:HTMLInputElement) => void;
     onStampChange?: (newTool:string, prevTool:string) => void;
+    onStamp?: (stampTarget:HTMLElement) => void;
     onRestore?: () => void;
 }
 

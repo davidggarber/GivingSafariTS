@@ -12,56 +12,17 @@
         'print_qr': true,
         'author': 'Dana Young',
         'copyright': '2020',
-        'orientation': 'landscape',
+        'type': 'logic',
         'textInput': true,
         'abilities': {
           'stamping': true,
-        },
-        "validation":{"extracted":{"ORRF":"1"}},
-        'onStamp': updateStampCounts
+          'notes': true,
+        }
       };
-
-      var crops = [
-        ['asparagus', 'asparagus'],
-        ['blackberry', 'blackberries'],
-        ['sunflower', 'sunflowers'],
-        ['watermelon', 'watermelons'],
-      ]
-
-      function updateStampCounts(target) {
-        for (var c = 0; c < crops.length; c++) {
-          var crop = crops[c];
-          var pre = document.getElementsByClassName(crop[0] + '-stamp');
-          var plant = document.getElementsByClassName(crop[1]);
-          var sum = pre.length + plant.length;
-          var count = document.getElementById(crop[0] + '-count');
-          count.innerText = sum;
-          var tool = document.getElementById(crop[0] + '-tool');
-          tool.setAttribute('data-sort-order', sum);
-          var input = tool.getElementsByTagName('input')[0];
-          var letter = sum <= crop[1].length ? crop[1].toUpperCase()[sum - 1] : '';
-          input.value = letter;
-        }
-
-        var stampPalette = document.getElementById('stampPalette');
-        var stampTools = stampPalette.getElementsByClassName('stampTool');
-        var sorted = SortElements(stampTools, 'data-sort-order');
-        for (var i = sorted.length - 1; i >= 0; i--) {
-          var tool = sorted[i];
-          if (tool.id == 'shovelTool') {
-            continue;
-          }
-          stampPalette.removeChild(tool);
-          stampPalette.insertAdjacentElement('afterbegin', tool);
-        }
-
-        UpdateExtraction('extracted');
-      }
     </script>
     <style>
       .flavor {
         font-size: 9pt;
-        width: 2.5in;
       }
       path {
         fill: none;
@@ -85,8 +46,8 @@
       }
       #answer {
         position: absolute;
-        left: 0px;
-        top: 6.25in;
+        right: 0px;
+        bottom: -0.6in;
       }
       #fields foreignObject {
         width: 48px;
@@ -99,24 +60,8 @@
         height: 38px;
       }
       #stampPalette .stampTool {
-        display:block;
-        position: relative;
         width: 72px;
-        height: 72px;
         margin: 0px;
-        white-space: nowrap;
-      }
-      .stampTool .count {
-        position: relative;
-        display: inline-block;
-        top: -20px;
-      }
-      .stampTool input {
-        position: relative;
-        display: inline-block;
-        top: -20px;
-        left: 5px;
-        width: 2em;
       }
       #CropDusters .stampTool.selected div {
         border: solid 3px transparent;
@@ -162,38 +107,38 @@
         Use the number of each type of crop as an ordering and an index into that crop to get your answer.
       </p>
 
-      <svg id="fields" style="position: absolute; left: 2.75in; top: -0.75in; width:7.5in; height:8.1in; user-select: none;">
+      <svg id="fields" style="position: absolute; left: 0px; bottom: 25px; width:7.5in; height:8.1in; user-select: none;">
         <g transform="translate(3,7)">
 
-          <path d="M0,0 h141 v38 h-141 Z" class="asparagus prestamped" />
+          <path d="M0,0 h141 v38 h-141 Z" class="asparagus" />
           <path d="M141,0 h94 v114 l-47,38 h-94 v-38 l-47,-38 v-38 h94 Z" class="open stampable" data-stamp-parent="fo-2" />
-          <path d="M235,0 h188 v38 l47,38 v38 h-188 v-38 h-47 Z" class="asparagus prestamped" />
+          <path d="M235,0 h188 v38 l47,38 v38 h-188 v-38 h-47 Z" class="asparagus" />
           <path d="M423,0 h282 v304 h-47 l-47,-38 v-152 l-47,-38 v-38 h-47 v76 h-47 v-38 l-47,-38 Z" class="open stampable" data-stamp-parent="fo-3" />
           <path d="M0,38 h47 v38 h-47 Z" class="open stampable" data-stamp-parent="fo-1" />
-          <path d="M0,76 h47 l47,38 v38 l-47,38 h-47 Z" class="sunflowers prestamped"/>
+          <path d="M0,76 h47 l47,38 v38 l-47,38 h-47 Z" class="sunflowers"/>
           <path d="M94,152 h94 v76 h-188 v-38 h47 Z" class="open stampable" data-stamp-parent="fo-4" />
           <path d="M188,152 l47,-38 v-38 h47 v76 h47 l47,38 v76 h-94 v-38 h-47 v38 h-47 Z" class="open stampable" data-stamp-parent="fo-5" />
           <path d="M282,114 h188 v38 h47 l47,38 l-47,38 v38 l-47,38 h-47 l-47,-38 v-76 l-47,-38 h-47 Z" class="open stampable" data-stamp-parent="fo-6" />
-          <path d="M470,114 h47 v-76 h47 v38 l47,38 v152 h-94 v-38 l47,-38 l-47,-38 h-47 Z" class="watermelons prestamped" />
-          <path d="M0,228 h188 v76 l-47,38 l-47,-38 l-47,38 v38 h-47 Z" class="watermelons prestamped" />
+          <path d="M470,114 h47 v-76 h47 v38 l47,38 v152 h-94 v-38 l47,-38 l-47,-38 h-47 Z" class="watermelons" />
+          <path d="M0,228 h188 v76 l-47,38 l-47,-38 l-47,38 v38 h-47 Z" class="watermelons" />
           <path d="M47,342 l47,-38 l47,38 l47,-38 v-38 h47 v-38 h47 v190 l-47,38 h-47 v38 h-47 l-94,-76 Z" class="open stampable" data-stamp-parent="fo-7" />
           <path d="M282,266 h94 l47,38 v38 l-47,38 v38 h-47 v-38 h-47 Z" class="open stampable" data-stamp-parent="fo-8" />
-          <path d="M423,304 h47 l47,-38 h47 v114 h-47 l-47,38 h-94 v-38 l47,-38 Z" class="asparagus prestamped" />
+          <path d="M423,304 h47 l47,-38 h47 v114 h-47 l-47,38 h-94 v-38 l47,-38 Z" class="asparagus" />
           <path d="M564,266 h47 l47,38 h47 v38 h-47 v38 h-94 Z" class="open stampable" data-stamp-parent="fo-9" />
           <path d="M0,380 h47 v38 l94,76 v76 l-47,38 v38 h-94 Z" class="open stampable" data-stamp-parent="fo-10" />
           <path d="M188,456 h47 l47,-38 v-38 h47 v38 h47 v38 h-47 l-47,38 h-94 Z" class="open stampable" data-stamp-parent="fo-11" />
           <path d="M376,418 h94 v38 l-47,38 l47,38 l-47,38 v76 h-47 v-38 h-47 v38 h-47 v-76 l-47,-38 v-38 h47 l47,-38 h47 Z" class="open stampable" data-stamp-parent="fo-12" />
           <path d="M470,418 l47,-38 h94 v76 h-141 Z" class="open stampable" data-stamp-parent="fo-13" />
-          <path d="M611,380 h47 v38 h-47 Z" class="sunflowers prestamped" />
+          <path d="M611,380 h47 v38 h-47 Z" class="sunflowers" />
           <path d="M611,418 h47 v38 h-47 Z" class="open stampable" data-stamp-parent="fo-14" />
           <path d="M658,342 h47 v152 h-47 Z" class="open stampable" data-stamp-parent="fo-15" />
-          <path d="M611,456 h47 v38 h47 v76 h-94 Z" class="blackberries prestamped" />
+          <path d="M611,456 h47 v38 h47 v76 h-94 Z" class="blackberries" />
           <path d="M470,456 h141 v114 l-94,76 l-47,-38 h-47 v-38 l47,-38 l-47,-38 Z" class="open stampable" data-stamp-parent="fo-16" />
-          <path d="M141,494 h94 v38 l47,38 v76 h-94 l-47,38 l-47,-38 v-38 l47,-38 Z" class="blackberries prestamped" />
+          <path d="M141,494 h94 v38 l47,38 v76 h-94 l-47,38 l-47,-38 v-38 l47,-38 Z" class="blackberries" />
           <path d="M0,646 h94 l47,38 v76 h-141 Z" class="open stampable" data-stamp-parent="fo-17" />
-          <path d="M141,684 l47,-38 h141 v114 h-188 Z" class="watermelons prestamped" />
+          <path d="M141,684 l47,-38 h141 v114 h-188 Z" class="watermelons" />
           <path d="M329,608 h47 v38 h47 v-38 h47 l47,38 v38 h-47 l-47,38 h-94 Z" class="open stampable" data-stamp-parent="fo-18" />
-          <path d="M611,570 h94 v190 h-94 v-38 l-47,-38 h-47 v-38 Z" class="sunflowers prestamped" />
+          <path d="M611,570 h94 v190 h-94 v-38 l-47,-38 h-47 v-38 Z" class="sunflowers" />
           <path d="M329,722 h94 l47,-38 h94 l47,38 v38 h-282 Z" class="open stampable" data-stamp-parent="fo-19" />
 
           <foreignObject x="0" y="38"><div id="fo-1"></div></foreignObject>
@@ -218,29 +163,20 @@
         </g>
       </svg>
 
-      <div id="stampPalette" data-tool-count="5" data-tool-first="asparagus-stamp" data-tool-erase="erase-stamp" style="position: absolute; left:0px; top: 2.5in;">
-        <div id="blackberry-tool" class="stampTool" data-template-id="blackberry-stamp" data-sort-order="2">
-          <span class="count"><span id="blackberry-count">2</span>&times;</span>
-          <img src="Images/Crops/Blackberry.png" style="width: 72px;" class="notes-below">
-          <input type="text" readonly class="extracted extract-input extract-literal">
+      <div id="stampPalette" data-tool-count="5" data-tool-erase="erase-stamp" style="position: absolute; left:1.75in; bottom: -0.6in;">
+        <div class="stampTool" data-template-id="asparagus-stamp" style="display:inline-block; ">
+          <div class="notes-below"><img src="Images/Crops/Asparagus.png" style="width: 72px;"></div>
         </div>
-        <div id="asparagus-tool" class="stampTool" data-template-id="asparagus-stamp" data-sort-order="3">
-          <span class="count"><span id="asparagus-count">3</span>&times;</span>
-          <img src="Images/Crops/Asparagus.png" style="width: 72px;">
-          <input type="text" readonly class="extracted extract-input extract-literal">
+        <div class="stampTool" data-template-id="blackberry-stamp" style="display:inline-block; ">
+          <div class="notes-below"><img src="Images/Crops/Blackberry.png" style="width: 72px;" class="notes-below"></div>
         </div>
-        <div id="sunflower-tool" class="stampTool" data-template-id="sunflower-stamp" data-sort-order="3">
-          <span class="count"><span id="sunflower-count">3</span>&times;</span>
-          <img src="Images/Crops/Sunflower.png" style="width: 72px;" class="notes-below">
-          <input type="text" readonly class="extracted extract-input extract-literal">
+        <div class="stampTool" data-template-id="sunflower-stamp" style="display:inline-block; ">
+          <div class="notes-below"><img src="Images/Crops/Sunflower.png" style="width: 72px;" class="notes-below"></div>
         </div>
-        <div id="watermelon-tool" class="stampTool" data-template-id="watermelon-stamp" data-sort-order="3">
-          <span class="count"><span id="watermelon-count">3</span>&times;</span>
-          <img src="Images/Crops/Watermelon.png" style="width: 72px;" class="notes-below">
-          <input type="text" readonly class="extracted extract-input extract-literal">
+        <div class="stampTool" data-template-id="watermelon-stamp" style="display:inline-block; ">
+          <div class="notes-below"><img src="Images/Crops/Watermelon.png" style="width: 72px;" class="notes-below"></div>
         </div>
-        <div id="shovelTool" class="stampTool" data-template-id="erase-stamp">
-          <span class="count">&nbsp;&nbsp;&nbsp;</span>
+        <div class="stampTool" data-template-id="erase-stamp" style="display:inline-block; ">
           <img src="Images/Crops/Shovel.png" style="width: 72px;">
         </div>
       </div>
@@ -259,10 +195,7 @@
         </template>
       </div>  
 
-      <div id="answer" class="screen-only">
-        Answer: <span id="extracted" data-letter-pattern="4"></span>
-        <button class="validater ready" id="submit-answer" data-extracted-id="extracted">Submit</button>
-      </div>
+      <div id="answer" class="screen-only">Answer: <span class="letter-cell-block create-from-pattern" data-letter-pattern="4"></span></div>
 
     </div>
   </body>
