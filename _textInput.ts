@@ -5,6 +5,7 @@ import { isTag, hasClass, getOptionalStyle,
 import { toggleHighlight } from "./_notes";
 import { isDebug, theBoiler } from "./_boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./_storage";
+import { validateInputReady } from "./_confirmation";
 
 /**
  * Any event stemming from key in this list should be ignored
@@ -145,7 +146,7 @@ export function onLetterKeyDown(event: KeyboardEvent) {
                     }
                 }
             }
-            afterInputUpdate(input);
+            afterInputUpdate(input, event.key);
             event.preventDefault();
             return;
         }
@@ -156,7 +157,7 @@ export function onLetterKeyDown(event: KeyboardEvent) {
             }
             if (matchInputRules(input, event)) {
                 input.value = event.key;
-                afterInputUpdate(input);
+                afterInputUpdate(input, event.key);
             }
             event.preventDefault();
             return;
@@ -271,14 +272,15 @@ export function onLetterKey(event:KeyboardEvent) {
             }
         }
     }
-    afterInputUpdate(input);
+    afterInputUpdate(input, event.key);
 }
 
 /**
  * Re-scan for extractions
  * @param input The input which just changed
+ * @param key The key from the event that led here
  */
-export function afterInputUpdate(input:HTMLInputElement) {
+export function afterInputUpdate(input:HTMLInputElement, key:string) {
     var text = input.value;
     if (hasClass(input.parentNode, 'lower-case')) {
         text = text.toLocaleLowerCase();
@@ -299,6 +301,14 @@ export function afterInputUpdate(input:HTMLInputElement) {
     input.value = text;
     
     ExtractFromInput(input);
+    
+    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
+    if (showReady) {
+        const btn = document.getElementById(showReady) as HTMLButtonElement;
+        if (btn) {
+            validateInputReady(btn, key);
+        }    
+    }
 
     if (!multiLetter) {
         if (nextInput != null) {
@@ -307,7 +317,7 @@ export function afterInputUpdate(input:HTMLInputElement) {
                 nextInput.value = overflow;
                 moveFocus(nextInput);
                 // Then do the same post-processing as this cell
-                afterInputUpdate(nextInput);
+                afterInputUpdate(nextInput, key);
             }
             else if (text.length > 0) {
                 // Just move the focus

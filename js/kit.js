@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.decodeAndValidate = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = void 0;
+exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -269,6 +269,9 @@ exports.findFirstChildOfClass = findFirstChildOfClass;
  * @returns The found or default style, optional with prefix added
  */
 function getOptionalStyle(elmt, attrName, defaultStyle, prefix) {
+    if (!elmt) {
+        return null;
+    }
     var val = elmt.getAttribute(attrName);
     while (val === null) {
         elmt = elmt.parentNode;
@@ -1289,7 +1292,7 @@ function restoreLetters(values) {
         var value = values[i];
         if (value != undefined) {
             input.value = value;
-            afterInputUpdate(input);
+            afterInputUpdate(input, values[i]);
         }
     }
 }
@@ -1771,7 +1774,7 @@ function onLetterKeyDown(event) {
                     }
                 }
             }
-            afterInputUpdate(input);
+            afterInputUpdate(input, event.key);
             event.preventDefault();
             return;
         }
@@ -1781,7 +1784,7 @@ function onLetterKeyDown(event) {
             }
             if (matchInputRules(input, event)) {
                 input.value = event.key;
-                afterInputUpdate(input);
+                afterInputUpdate(input, event.key);
             }
             event.preventDefault();
             return;
@@ -1889,14 +1892,15 @@ function onLetterKey(event) {
             }
         }
     }
-    afterInputUpdate(input);
+    afterInputUpdate(input, event.key);
 }
 exports.onLetterKey = onLetterKey;
 /**
  * Re-scan for extractions
  * @param input The input which just changed
+ * @param key The key from the event that led here
  */
-function afterInputUpdate(input) {
+function afterInputUpdate(input, key) {
     var text = input.value;
     if (hasClass(input.parentNode, 'lower-case')) {
         text = text.toLocaleLowerCase();
@@ -1915,6 +1919,13 @@ function afterInputUpdate(input) {
     }
     input.value = text;
     ExtractFromInput(input);
+    var showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
+    if (showReady) {
+        var btn = document.getElementById(showReady);
+        if (btn) {
+            validateInputReady(btn, key);
+        }
+    }
     if (!multiLetter) {
         if (nextInput != null) {
             if (overflow.length > 0 && nextInput.value.length == 0) {
@@ -1922,7 +1933,7 @@ function afterInputUpdate(input) {
                 nextInput.value = overflow;
                 moveFocus(nextInput);
                 // Then do the same post-processing as this cell
-                afterInputUpdate(nextInput);
+                afterInputUpdate(nextInput, key);
             }
             else if (text.length > 0) {
                 // Just move the focus
@@ -5402,7 +5413,7 @@ function setupValidation() {
             // If button is connected to a text field, hook up ENTER to submit
             if (src && ((isTag(src, 'input') && src.type == 'text')
                 || isTag(src, 'textarea'))) { // TODO: not multiline
-                src.onkeyup = function (e) { validateInputReady(btn, e); };
+                src.onkeyup = function (e) { validateInputReady(btn, e.key); };
             }
         }
     };
@@ -5497,26 +5508,46 @@ function calcTransform(elmt, prop, index, defValue) {
  * When typing in an input connect to a validate button,
  * Any non-empty string indicates ready (TODO: add other rules)
  * and ENTER triggers a button click
- * @param btn
- * @param evt
+ * @param btn The button to enable/disable as ready
+ * @param key What key was just typed, if any
  */
-function validateInputReady(btn, evt) {
-    var input = evt.target;
+function validateInputReady(btn, key) {
+    var id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
+    var ext = id ? document.getElementById(id) : null;
+    if (!ext) {
+        return;
+    }
+    var isInput = false;
     var value = '';
-    if (isTag(input, 'input')) {
-        value = input.value;
+    var ready = false;
+    if (isTag(ext, 'input')) {
+        isInput = true;
+        value = ext.value;
+        ready = value.length > 0;
     }
-    else if (isTag(input, 'textarea')) {
-        value = input.value;
-    }
-    toggleClass(btn, 'ready', value.length > 0);
-    if (value.length > 0 && evt.key == 'Enter') {
-        clickValidationButton(btn);
+    else if (isTag(ext, 'textarea')) {
+        isInput = true;
+        value = ext.value;
+        ready = value.length > 0;
     }
     else {
-        horzScaleToFit(input, value);
+        var inputs = ext.getElementsByClassName('letter-input');
+        ready = inputs.length > 0;
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].value.length == 0) {
+                ready = false;
+            }
+        }
+    }
+    toggleClass(btn, 'ready', ready);
+    if (ready && key == 'Enter') {
+        clickValidationButton(btn);
+    }
+    else if (isInput) {
+        horzScaleToFit(ext, value);
     }
 }
+exports.validateInputReady = validateInputReady;
 /**
  * There should be a singleton guess history, which we likely created above
  * @param id The ID, or 'guess-history' by default
@@ -5542,6 +5573,16 @@ function clickValidationButton(btn) {
     if (!value) {
         if (isTag(ext, 'input')) {
             value = ext.value;
+        }
+        else if (isTag(ext, 'textarea')) {
+            value = ext.value;
+        }
+        else {
+            value = '';
+            var inputs = ext.getElementsByClassName('letter-input');
+            for (var i = 0; i < inputs.length; i++) {
+                value += inputs[i].value;
+            }
         }
     }
     if (value) {

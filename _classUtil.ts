@@ -285,11 +285,14 @@ export function findFirstChildOfClass(  elmt: Element,
  * @param prefix - (optional) - A prefix to apply to the answer
  * @returns The found or default style, optional with prefix added
  */
-export function getOptionalStyle(   elmt: Element, 
+export function getOptionalStyle(   elmt: Element|null, 
                                     attrName: string, 
                                     defaultStyle?: string, 
                                     prefix?: string)
                                     : string|null {
+    if (!elmt) {
+        return null;
+    }
     var val = elmt.getAttribute(attrName);
     while (val === null) {
         elmt = elmt.parentNode as Element;

@@ -557,7 +557,7 @@ function restoreLetters(values:object) {
         var value = values[i] as string;
         if(value != undefined){
             input.value = value;
-            afterInputUpdate(input);
+            afterInputUpdate(input, values[i]);
         }
     }
 }

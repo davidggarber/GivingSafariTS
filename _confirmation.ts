@@ -100,7 +100,7 @@ export function setupValidation() {
             // If button is connected to a text field, hook up ENTER to submit
             if (src && ((isTag(src, 'input') && (src as HTMLInputElement).type == 'text')
                         || isTag(src, 'textarea'))) {  // TODO: not multiline
-                src.onkeyup=function(e){validateInputReady(btn as HTMLButtonElement, e)};
+                src.onkeyup=function(e){validateInputReady(btn as HTMLButtonElement, e.key)};
             }
         }
     }
@@ -199,24 +199,43 @@ function calcTransform(elmt:HTMLElement, prop:string, index:number, defValue:num
  * When typing in an input connect to a validate button,
  * Any non-empty string indicates ready (TODO: add other rules)
  * and ENTER triggers a button click
- * @param btn 
- * @param evt 
+ * @param btn The button to enable/disable as ready
+ * @param key What key was just typed, if any
  */
-function validateInputReady(btn:HTMLButtonElement, evt:KeyboardEvent) {
-    const input = evt.target as HTMLElement;
+export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
+    const id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
+    const ext = id ? document.getElementById(id) : null;
+    if (!ext) {
+        return;
+    }
+    let isInput = false;
     let value = '';
-    if (isTag(input, 'input')) {
-        value = (input as HTMLInputElement).value;
+    let ready = false;
+    if (isTag(ext, 'input')) {
+        isInput = true;
+        value = (ext as HTMLInputElement).value;
+        ready = value.length > 0;
     }
-    else if (isTag(input, 'textarea')) {
-        value = (input as HTMLTextAreaElement).value;
-    }
-    toggleClass(btn, 'ready', value.length > 0);
-    if (value.length > 0 && evt.key == 'Enter') {
-        clickValidationButton(btn as HTMLButtonElement); 
+    else if (isTag(ext, 'textarea')) {
+        isInput = true;
+        value = (ext as HTMLTextAreaElement).value;
+        ready = value.length > 0;
     }
     else {
-        horzScaleToFit(input, value);
+        const inputs = ext.getElementsByClassName('letter-input');
+        ready = inputs.length > 0;
+        for (let i = 0; i < inputs.length; i++) {
+            if ((inputs[i] as HTMLInputElement).value.length == 0) {
+                ready = false;
+            }
+        }
+    }
+    toggleClass(btn, 'ready', ready);
+    if (ready && key == 'Enter') {
+        clickValidationButton(btn as HTMLButtonElement); 
+    }
+    else if (isInput) {
+        horzScaleToFit(ext, value);
     }
 }
 
@@ -247,7 +266,17 @@ function clickValidationButton(btn:HTMLButtonElement) {
     if (!value) {
         if (isTag(ext, 'input')) {
             value = (ext as HTMLInputElement).value;
-        }    
+        }
+        else if (isTag(ext, 'textarea')) {
+            value = (ext as HTMLTextAreaElement).value;
+        }
+        else {
+            value = '';
+            const inputs = ext.getElementsByClassName('letter-input');
+            for (let i = 0; i < inputs.length; i++) {
+                value += (inputs[i] as HTMLInputElement).value;
+            }    
+        }
     }
     if (value) {
         const now = new Date();
