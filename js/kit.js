@@ -5642,6 +5642,9 @@ function decodeAndValidate(gl) {
             appendResponse(block, no_match_response);
         }
     }
+    else {
+        console.error('Unrecognized validation field: ' + gl.field);
+    }
 }
 exports.decodeAndValidate = decodeAndValidate;
 /**

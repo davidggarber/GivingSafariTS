@@ -6261,6 +6261,9 @@ export function decodeAndValidate(gl:GuessLog) {
             appendResponse(block, no_match_response);
         }
     }
+    else {
+        console.error('Unrecognized validation field: ' + gl.field);
+    }
 }
 
 /**
