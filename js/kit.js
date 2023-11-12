@@ -3,8 +3,8 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.decodeAndValidate = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = void 0;
+exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.decodeAndValidate = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -306,6 +306,46 @@ function moveFocus(input, caret) {
     return false;
 }
 exports.moveFocus = moveFocus;
+/**
+ * Sort a collection of elements into an array
+ * @param src A collection of elements, as from document.getElementsByClassName
+ * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
+ * @returns An array of the same elements, either sorted, or else in original document order
+ */
+function SortElements(src, sort_attr) {
+    if (sort_attr === void 0) { sort_attr = 'data-extract-order'; }
+    var lookup = {};
+    var indeces = [];
+    var sorted = [];
+    for (var i = 0; i < src.length; i++) {
+        var elmt = src[i];
+        var order = getOptionalStyle(elmt, sort_attr);
+        if (order) {
+            // track order values we've seen
+            if (!(order in lookup)) {
+                indeces.push(parseInt(order));
+                lookup[order] = [];
+            }
+            // make elements findable by their order
+            lookup[order].push(elmt);
+        }
+        else {
+            // elements without an explicit order go document order
+            sorted.push(elmt);
+        }
+    }
+    // Sort indeces, then build array from them
+    indeces.sort();
+    for (var i = 0; i < indeces.length; i++) {
+        var order = '' + indeces[i];
+        var peers = lookup[order];
+        for (var p = 0; p < peers.length; p++) {
+            sorted.push(peers[p]);
+        }
+    }
+    return sorted;
+}
+exports.SortElements = SortElements;
 /**
  * Create a generic TR tag for each row in a table.
  * Available for TableDetails.onRow where that is all that's needed
@@ -1973,7 +2013,7 @@ function UpdateExtraction(extractedId) {
     }
     var delayLiterals = DelayLiterals(extractedId);
     var inputs = document.getElementsByClassName('extract-input');
-    var sorted_inputs = SortExtraction(inputs);
+    var sorted_inputs = SortElements(inputs);
     var extraction = '';
     var ready = true;
     for (var i = 0; i < sorted_inputs.length; i++) {
@@ -2016,39 +2056,6 @@ function UpdateExtraction(extractedId) {
     ApplyExtraction(extraction, extracted, ready);
 }
 /**
- * Sort a collection of elements into an array
- * @param src A collection of elements, as from document.getElementsByClassName
- * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
- * @returns An array of the same elements, either sorted, or else in original document order
- */
-function SortExtraction(src, sort_attr) {
-    if (sort_attr === void 0) { sort_attr = 'data-extract-order'; }
-    var lookup = {};
-    var indeces = [];
-    var sorted = [];
-    for (var i = 0; i < src.length; i++) {
-        var elmt = src[i];
-        var order = getOptionalStyle(elmt, sort_attr);
-        if (order) {
-            // track order values we've seen
-            indeces.push(parseInt(order));
-            // make elements findable by their order
-            lookup[order] = elmt;
-        }
-        else {
-            // elements without an explicit order go document order
-            sorted.push(elmt);
-        }
-    }
-    // Sort indeces, then build array from them
-    indeces.sort();
-    for (var i = 0; i < indeces.length; i++) {
-        var order = '' + indeces[i];
-        sorted.push(lookup[order]);
-    }
-    return sorted;
-}
-/**
  * Puzzles can specify delayed literals within their extraction,
  * which only show up if all non-literal cells are filled in.
  * @param extractedId The id of an element that collects extractions
@@ -2058,7 +2065,7 @@ function DelayLiterals(extractedId) {
     var delayedLiterals = false;
     var isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
-    var sorted_inputs = SortExtraction(inputs);
+    var sorted_inputs = SortElements(inputs);
     for (var i = 0; i < sorted_inputs.length; i++) {
         var input = sorted_inputs[i];
         if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
@@ -2131,18 +2138,22 @@ function ApplyExtraction(text, dest, ready) {
 function UpdateNumbered(extractedId) {
     extractedId = extractedId || 'extracted';
     var div = document.getElementById(extractedId);
+    var outputs = div === null || div === void 0 ? void 0 : div.getElementsByTagName('input');
     var inputs = document.getElementsByClassName('extract-input');
-    var sorted_inputs = SortExtraction(inputs);
+    var sorted_inputs = SortElements(inputs);
     var concat = '';
     for (var i = 0; i < sorted_inputs.length; i++) {
         var input = sorted_inputs[i];
         var inp = input;
         var index = input.getAttribute('data-number');
-        var extractCell = document.getElementById('extractor-' + index);
+        var output = document.getElementById('extractor-' + index);
+        if (!output && outputs) {
+            output = outputs[i];
+        }
         var letter = inp.value || '';
         letter = letter.trim();
-        if (letter.length > 0 || extractCell.value.length > 0) {
-            extractCell.value = letter;
+        if (letter.length > 0 || output.value.length > 0) {
+            output.value = letter;
         }
         concat += letter;
     }
@@ -2240,7 +2251,7 @@ function updateWordExtraction(extractedId) {
         return;
     }
     var inputs = document.getElementsByClassName('word-input');
-    var sorted_inputs = SortExtraction(inputs);
+    var sorted_inputs = SortElements(inputs);
     var extraction = '';
     var partial = false;
     for (var i = 0; i < sorted_inputs.length; i++) {
@@ -3817,6 +3828,10 @@ var _stampTools = [];
  */
 var _selectedTool = null;
 /**
+ * The tool name to cycle to first.
+ */
+var _firstTool = null;
+/**
  * A tool name which, as a side effect, extract an answer from the content under it.
  */
 var _extractorTool = null;
@@ -3873,6 +3888,10 @@ function preprocessStampObjects() {
     if (palette != null) {
         _extractorTool = palette.getAttributeNS('', 'data-tool-extractor');
         _eraseTool = palette.getAttributeNS('', 'data-tool-erase');
+        _firstTool = palette.getAttributeNS('', 'data-tool-first');
+    }
+    if (!_firstTool) {
+        _firstTool = _stampTools[0].getAttributeNS('', 'data-template-id');
     }
 }
 exports.preprocessStampObjects = preprocessStampObjects;
@@ -3927,7 +3946,7 @@ function getStampTool(event, toolFromErase) {
     if (_selectedTool != null) {
         return _selectedTool.getAttributeNS('', 'data-template-id');
     }
-    return _stampTools[0].getAttributeNS('', 'data-template-id');
+    return _firstTool;
 }
 /**
  * Expose current stamp tool, in case other features want to react
@@ -4004,6 +4023,10 @@ function doStamp(target, tool) {
         updateStampExtraction();
     }
     saveStampingLocally(target);
+    var fn = theBoiler().onStamp;
+    if (fn) {
+        fn(target);
+    }
 }
 exports.doStamp = doStamp;
 var _dragDrawTool = null;

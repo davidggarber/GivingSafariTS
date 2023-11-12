@@ -335,6 +335,47 @@ export function moveFocus(input: HTMLInputElement,
     return false;
 }
 
+/**
+ * Sort a collection of elements into an array
+ * @param src A collection of elements, as from document.getElementsByClassName
+ * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
+ * @returns An array of the same elements, either sorted, or else in original document order
+ */
+export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = 'data-extract-order'): Element[] {
+    const lookup = {};
+    const indeces:number[] = [];
+    const sorted:Element[] = [];
+    for (let i = 0; i < src.length; i++) {
+        const elmt = src[i];
+        const order = getOptionalStyle(elmt, sort_attr);
+        if (order) {
+            // track order values we've seen
+            if (!(order in lookup)) {
+                indeces.push(parseInt(order));
+                lookup[order] = [];
+            }
+            // make elements findable by their order
+            lookup[order].push(elmt);
+        }
+        else {
+            // elements without an explicit order go document order
+            sorted.push(elmt);
+        }
+    }
+
+    // Sort indeces, then build array from them
+    indeces.sort();
+    for (let i = 0; i < indeces.length; i++) {
+        const order = '' + indeces[i];
+        const peers = lookup[order];
+        for (let p = 0; p < peers.length; p++) {
+            sorted.push(peers[p]);
+        }
+    }
+
+    return sorted;
+}
+
 
 /*-----------------------------------------------------------
  * _tableBuilder.ts
@@ -2146,7 +2187,7 @@ function UpdateExtraction(extractedId:string|null) {
     
     const delayLiterals = DelayLiterals(extractedId);
     const inputs = document.getElementsByClassName('extract-input');
-    const sorted_inputs = SortExtraction(inputs);
+    const sorted_inputs = SortElements(inputs);
     let extraction = '';
     let ready = true;
     for (var i = 0; i < sorted_inputs.length; i++) {
@@ -2191,41 +2232,6 @@ function UpdateExtraction(extractedId:string|null) {
 }
 
 /**
- * Sort a collection of elements into an array
- * @param src A collection of elements, as from document.getElementsByClassName
- * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
- * @returns An array of the same elements, either sorted, or else in original document order
- */
-function SortExtraction(src:HTMLCollectionOf<Element>, sort_attr:string = 'data-extract-order'): Element[] {
-    const lookup = {};
-    const indeces:number[] = [];
-    const sorted:Element[] = [];
-    for (let i = 0; i < src.length; i++) {
-        const elmt = src[i];
-        const order = getOptionalStyle(elmt, sort_attr);
-        if (order) {
-            // track order values we've seen
-            indeces.push(parseInt(order));
-            // make elements findable by their order
-            lookup[order] = elmt;
-        }
-        else {
-            // elements without an explicit order go document order
-            sorted.push(elmt);
-        }
-    }
-
-    // Sort indeces, then build array from them
-    indeces.sort();
-    for (let i = 0; i < indeces.length; i++) {
-        const order = '' + indeces[i];
-        sorted.push(lookup[order]);
-    }
-
-    return sorted;
-}
-
-/**
  * Puzzles can specify delayed literals within their extraction, 
  * which only show up if all non-literal cells are filled in.
  * @param extractedId The id of an element that collects extractions
@@ -2235,7 +2241,7 @@ function DelayLiterals(extractedId:string|null) :boolean {
     let delayedLiterals = false;
     let isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
-    const sorted_inputs = SortExtraction(inputs);
+    const sorted_inputs = SortElements(inputs);
     for (var i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
@@ -2315,18 +2321,22 @@ function ApplyExtraction(   text:string,
 function UpdateNumbered(extractedId:string|null) {
     extractedId = extractedId || 'extracted';
     const div = document.getElementById(extractedId);
+    var outputs = div?.getElementsByTagName('input');
     var inputs = document.getElementsByClassName('extract-input');
-    const sorted_inputs = SortExtraction(inputs);
+    const sorted_inputs = SortElements(inputs);
     let concat = '';
     for (var i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         const inp = input as HTMLInputElement
         const index = input.getAttribute('data-number');
-        const extractCell = document.getElementById('extractor-' + index) as HTMLInputElement;
+        let output = document.getElementById('extractor-' + index) as HTMLInputElement;
+        if (!output && outputs) {
+            output = outputs[i];
+        }
         let letter = inp.value || '';
         letter = letter.trim();
-        if (letter.length > 0 || extractCell.value.length > 0) {
-            extractCell.value = letter;
+        if (letter.length > 0 || output.value.length > 0) {
+            output.value = letter;
         }
         concat += letter;
     }
@@ -2435,7 +2445,7 @@ export function updateWordExtraction(extractedId:string|null) {
     }
     
     var inputs = document.getElementsByClassName('word-input');
-    const sorted_inputs = SortExtraction(inputs);
+    const sorted_inputs = SortElements(inputs);
     var extraction = '';
     var partial = false;
     for (var i = 0; i < sorted_inputs.length; i++) {
@@ -4180,6 +4190,10 @@ const _stampTools:Array<HTMLElement> = [];
  */
 let _selectedTool:HTMLElement|null = null;
 /**
+ * The tool name to cycle to first.
+ */
+let _firstTool:string|null = null;
+/**
  * A tool name which, as a side effect, extract an answer from the content under it.
  */
 let _extractorTool:string|null = null;
@@ -4240,6 +4254,11 @@ export function preprocessStampObjects() {
     if (palette != null) {
         _extractorTool = palette.getAttributeNS('', 'data-tool-extractor');
         _eraseTool = palette.getAttributeNS('', 'data-tool-erase');
+        _firstTool = palette.getAttributeNS('', 'data-tool-first');
+    }
+
+    if (!_firstTool) {
+        _firstTool = _stampTools[0].getAttributeNS('', 'data-template-id');
     }
 }
 
@@ -4297,7 +4316,7 @@ function getStampTool(event:MouseEvent, toolFromErase:string|null):string|null {
     if (_selectedTool != null) {
         return _selectedTool.getAttributeNS('', 'data-template-id');
     }
-    return _stampTools[0].getAttributeNS('', 'data-template-id');
+    return _firstTool;
 }
 
 /**
@@ -4379,6 +4398,11 @@ export function doStamp(target:HTMLElement, tool:string) {
         updateStampExtraction();
     }
     saveStampingLocally(target);
+
+    const fn = theBoiler().onStamp;
+    if (fn) {
+        fn(target);
+    }
 }
 
 let _dragDrawTool:string|null = null;
@@ -5424,6 +5448,7 @@ type BoilerPlateData = {
     onNoteChange?: (inp:HTMLInputElement) => void;
     onInputChange?: (inp:HTMLInputElement) => void;
     onStampChange?: (newTool:string, prevTool:string) => void;
+    onStamp?: (stampTarget:HTMLElement) => void;
     onRestore?: () => void;
 }
 

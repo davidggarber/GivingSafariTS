@@ -19,6 +19,10 @@ const _stampTools:Array<HTMLElement> = [];
  */
 let _selectedTool:HTMLElement|null = null;
 /**
+ * The tool name to cycle to first.
+ */
+let _firstTool:string|null = null;
+/**
  * A tool name which, as a side effect, extract an answer from the content under it.
  */
 let _extractorTool:string|null = null;
@@ -79,6 +83,11 @@ export function preprocessStampObjects() {
     if (palette != null) {
         _extractorTool = palette.getAttributeNS('', 'data-tool-extractor');
         _eraseTool = palette.getAttributeNS('', 'data-tool-erase');
+        _firstTool = palette.getAttributeNS('', 'data-tool-first');
+    }
+
+    if (!_firstTool) {
+        _firstTool = _stampTools[0].getAttributeNS('', 'data-template-id');
     }
 }
 
@@ -136,7 +145,7 @@ function getStampTool(event:MouseEvent, toolFromErase:string|null):string|null {
     if (_selectedTool != null) {
         return _selectedTool.getAttributeNS('', 'data-template-id');
     }
-    return _stampTools[0].getAttributeNS('', 'data-template-id');
+    return _firstTool;
 }
 
 /**
@@ -218,6 +227,11 @@ export function doStamp(target:HTMLElement, tool:string) {
         updateStampExtraction();
     }
     saveStampingLocally(target);
+
+    const fn = theBoiler().onStamp;
+    if (fn) {
+        fn(target);
+    }
 }
 
 let _dragDrawTool:string|null = null;

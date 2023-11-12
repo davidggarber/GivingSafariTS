@@ -328,3 +328,44 @@ export function moveFocus(input: HTMLInputElement,
     }
     return false;
 }
+
+/**
+ * Sort a collection of elements into an array
+ * @param src A collection of elements, as from document.getElementsByClassName
+ * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
+ * @returns An array of the same elements, either sorted, or else in original document order
+ */
+export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = 'data-extract-order'): Element[] {
+    const lookup = {};
+    const indeces:number[] = [];
+    const sorted:Element[] = [];
+    for (let i = 0; i < src.length; i++) {
+        const elmt = src[i];
+        const order = getOptionalStyle(elmt, sort_attr);
+        if (order) {
+            // track order values we've seen
+            if (!(order in lookup)) {
+                indeces.push(parseInt(order));
+                lookup[order] = [];
+            }
+            // make elements findable by their order
+            lookup[order].push(elmt);
+        }
+        else {
+            // elements without an explicit order go document order
+            sorted.push(elmt);
+        }
+    }
+
+    // Sort indeces, then build array from them
+    indeces.sort();
+    for (let i = 0; i < indeces.length; i++) {
+        const order = '' + indeces[i];
+        const peers = lookup[order];
+        for (let p = 0; p < peers.length; p++) {
+            sorted.push(peers[p]);
+        }
+    }
+
+    return sorted;
+}
