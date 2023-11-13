@@ -90,6 +90,12 @@
             top: -6px;
             color: black;
         }
+        .feeders .radio sub {
+            position: relative;
+            left: -19px;
+            top: -8px;
+            color: white;
+        }
         .feeders .science.unlocked sub {
             color: white;
         }
@@ -171,6 +177,7 @@
         var feeders = {
             'science': { locked: 'Images/Science/bubbling.png', unlocked: 'Images/Science/green_flask.png', tooltip: 'Weird Science feeder piece', materials: {} },
             'bus': { locked: 'Images/Bus/locked.png', unlocked: 'Images/Bus/unlocked.png', tooltip: 'Magic Schoolbus feeder piece', materials: {} },
+            'radio': { locked: 'Images/Radio/locked.png', unlocked: 'Images/Radio/unlocked.png', tooltip: 'Radio Wave feeder piece', materials: {} },
             'exp-cosmos': { locked: 'Icons/exp-cosmos-locked.png', unlocked: 'Icons/exp-cosmos.png', tooltip: 'Challenge ticket: Cosmos', materials: {} },
             'exp-magic': { locked: 'Icons/exp-magic-locked.png', unlocked: 'Icons/exp-magic.png', tooltip: 'Challenge ticket: Science or Magic', materials: {} },
             'exp-cartrip': { locked: 'Icons/exp-cartrip-locked.png', unlocked: 'Icons/exp-cartrip.png', tooltip: 'Challenge ticket: Car Trip', materials: {} },
@@ -341,7 +348,7 @@
             for (var i = 0; i < challenges.length; i++) {
                 var chal = challenges[i];  
                 td = document.getElementById(chal + '-unlocked');
-                if (Object.keys(feeders[chal].materials).length > 0) {
+                if (!td || Object.keys(feeders[chal].materials).length > 0) {
                     continue;
                 }
                 var materials = loadMetaMaterials(chal, 0, 1);
