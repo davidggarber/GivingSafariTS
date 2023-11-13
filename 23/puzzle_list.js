@@ -24,6 +24,7 @@ var orient = {
 var meta = {
     science: 'science',
     bus: 'bus',
+    radio: 'radio',
 };
 var challenge = {
     cosmos: 'exp-cosmos',
@@ -58,6 +59,7 @@ var puzzles = [
     { title: 'Zoology', thumb: 'Zoo', author: 'David Garber', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.magic] },
     { title: 'The Magic School Bus', thumb: 'Tmsb', author: 'Philippe Nicolle', type: types.meta, group: group.meta, icon: meta.bus, orientation: orient.portrait },
     { title: 'Weird Science', thumb: 'Ws', author: 'Martyn Lovell', type: types.meta, group: group.meta, icon: meta.science, orientation: orient.portrait },
+    { title: 'Radio Waves', thumb: 'Rw', author: 'David Garber', type: types.meta, group: group.meta, icon: meta.radio, orientation: orient.portrait },
     { title: 'Cosmos', file: 'Cosmos', thumb: 'Cos', author: 'Rorke Haining', type: types.challenge, group: group.challenge, icon: challenge.cosmos, orientation: orient.portrait },
     { title: 'Car Trip', file: 'CarTrip', thumb: 'Ct', author: 'David Garber', type: types.challenge, group: group.challenge, icon: challenge.ascent, orientation: orient.portrait },
     { title: 'Science or Magic', file: 'ScienceMagic', thumb: 'Sm', author: 'Ken Showman', type: types.challenge, group: group.challenge, icon: challenge.magic, orientation: orient.portrait },

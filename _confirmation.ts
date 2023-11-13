@@ -208,7 +208,6 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
     if (!ext) {
         return;
     }
-    let isInput = false;
     const value = getValueToValidate(ext);
     const ready = isValueReady(btn, value);
 
