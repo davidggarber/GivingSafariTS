@@ -580,10 +580,17 @@ function updateExtractionData(extracted:string|HTMLElement, value:string, ready:
             : extracted;
     if (container) {
         container.setAttribute('data-extraction', value);
-        const btnId = container.getAttribute('data-show-ready');
+        let btnId = container.getAttribute('data-show-ready');
         if (btnId) {
             const btn = document.getElementById(btnId);
             toggleClass(btn, 'ready', ready);
+        }
+        else {
+            btnId = getOptionalStyle(container, 'data-show-ready');
+            if (btnId) {
+                const btn = document.getElementById(btnId);
+                validateInputReady(btn as HTMLButtonElement, value);
+            }
         }
     }
 

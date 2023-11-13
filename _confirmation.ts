@@ -1,5 +1,5 @@
 import { theBoiler } from "./_boilerplate";
-import { getOptionalStyle, isTag, toggleClass } from "./_classUtil";
+import { getAllElementsWithAttribute, getOptionalStyle, isTag, toggleClass } from "./_classUtil";
 import { PuzzleStatus, getCurFileName, saveGuessHistory, updatePuzzleList } from "./_storage";
 
 /**
@@ -209,34 +209,78 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
         return;
     }
     let isInput = false;
-    let value = '';
-    let ready = false;
-    if (isTag(ext, 'input')) {
-        isInput = true;
-        value = (ext as HTMLInputElement).value;
-        ready = value.length > 0;
-    }
-    else if (isTag(ext, 'textarea')) {
-        isInput = true;
-        value = (ext as HTMLTextAreaElement).value;
-        ready = value.length > 0;
-    }
-    else {
-        const inputs = ext.getElementsByClassName('letter-input');
-        ready = inputs.length > 0;
-        for (let i = 0; i < inputs.length; i++) {
-            if ((inputs[i] as HTMLInputElement).value.length == 0) {
-                ready = false;
-            }
-        }
-    }
+    const value = getValueToValidate(ext);
+    const ready = isValueReady(btn, value);
+
     toggleClass(btn, 'ready', ready);
     if (ready && key == 'Enter') {
         clickValidationButton(btn as HTMLButtonElement); 
     }
-    else if (isInput) {
+    else if (isTag(ext, 'input') || isTag(ext, 'textarea')) {
         horzScaleToFit(ext, value);
     }
+}
+
+/**
+ * Submit buttons can be associated with various constructs.
+ * Extract an appropriate value to submit
+ * @param container The container of the value to submit.
+ * @returns The value, or concatenation of values.
+ */
+function getValueToValidate(container:HTMLElement):string {
+    // If the extraction has alredy been cached, use it
+    const cached = container.getAttribute('data-extraction');
+    if (cached) {
+        return cached;
+    }
+    // If container is an input, get its value
+    if (isTag(container, 'input')) {
+        return (container as HTMLInputElement).value;
+    }
+    if (isTag(container, 'textarea')) {
+        return (container as HTMLTextAreaElement).value;
+    }
+    // If we contain multiple inputs, concat them
+    const inputs = container.getElementsByClassName('letter-input');
+    if (inputs.length > 0) {
+        let value = '';
+        for (let i = 0; i < inputs.length; i++) {
+            value += (inputs[i] as HTMLInputElement).value;
+        }
+        return value;
+    }
+    // If we contain multiple other extractions, concat them
+    const datas = getAllElementsWithAttribute(container, 'data-extraction');
+    if (datas.length > 0) {
+        let value = '';
+        for (let i = 0; i < datas.length; i++) {
+            value += datas[i].getAttribute('data-extraction');
+        }
+        return value;
+    }
+    // No recognized combo
+    console.error('Unrecognized value container: ' + container);
+    return '';
+}
+
+/**
+ * Is this value complete, such that submitting is possible?
+ * @param btn The button to submit
+ * @param value The value to submit
+ * @returns true if the value is long enough and contains no blanks
+ */
+function isValueReady(btn:HTMLButtonElement, value:string|null):boolean {
+    if (!value) {
+        return false;
+    }
+    if (value.indexOf('_') >= 0) {
+        return false;
+    }
+    const minLength = getOptionalStyle(btn, 'data-min-length')
+    if (minLength) {
+        return value.length >= parseInt(minLength);
+    }
+    return value.length > 0;
 }
 
 /**
@@ -262,23 +306,10 @@ function clickValidationButton(btn:HTMLButtonElement) {
         return;
     }
 
-    let value = ext.getAttribute('data-extraction');
-    if (!value) {
-        if (isTag(ext, 'input')) {
-            value = (ext as HTMLInputElement).value;
-        }
-        else if (isTag(ext, 'textarea')) {
-            value = (ext as HTMLTextAreaElement).value;
-        }
-        else {
-            value = '';
-            const inputs = ext.getElementsByClassName('letter-input');
-            for (let i = 0; i < inputs.length; i++) {
-                value += (inputs[i] as HTMLInputElement).value;
-            }    
-        }
-    }
-    if (value) {
+    const value = getValueToValidate(ext);
+    const ready = isValueReady(btn, value);
+
+    if (ready) {
         const now = new Date();
         const gl:GuessLog = { field:id, guess: value, time: now };
         decodeAndValidate(gl);

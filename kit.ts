@@ -314,6 +314,34 @@ export function getOptionalStyle(   elmt: Element|null,
 }
 
 /**
+ * Loop through all elements in a DOM sub-tree, looking for any elements with an optional tag.
+ * Recurse as needed. But once found, don't recurse within the find.
+ * @param root The node to look through. Can also be 'document'
+ * @param attr The name of an attribute. It must be present and non-empty to count
+ * @returns A list of zero or more elements
+ */
+export function getAllElementsWithAttribute(root: Node, attr:string):HTMLElement[] {
+    const list:HTMLElement[] = [];
+    for (let i = 0; i < root.childNodes.length; i++) {
+        const child = root.childNodes[i];
+        if (child.nodeType == Node.ELEMENT_NODE) {
+            const elmt = child as HTMLElement;
+            if (elmt.getAttribute(attr)) {
+                list.push(elmt);
+                // once found, don't recurse
+            }
+            else {
+                const recurse = getAllElementsWithAttribute(elmt, attr);
+                for (let r = 0; r < recurse.length; r++) {
+                    list.push(recurse[r]);
+                }
+            }
+        }
+    }
+    return list;
+}
+
+/**
  * Move focus to the given input (if not null), and select the entire contents.
  * If input is of type number, do nothing.
  * @param input - A text input element
@@ -2407,10 +2435,17 @@ function updateExtractionData(extracted:string|HTMLElement, value:string, ready:
             : extracted;
     if (container) {
         container.setAttribute('data-extraction', value);
-        const btnId = container.getAttribute('data-show-ready');
+        let btnId = container.getAttribute('data-show-ready');
         if (btnId) {
             const btn = document.getElementById(btnId);
             toggleClass(btn, 'ready', ready);
+        }
+        else {
+            btnId = getOptionalStyle(container, 'data-show-ready');
+            if (btnId) {
+                const btn = document.getElementById(btnId);
+                validateInputReady(btn as HTMLButtonElement, value);
+            }
         }
     }
 
@@ -6154,34 +6189,78 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
         return;
     }
     let isInput = false;
-    let value = '';
-    let ready = false;
-    if (isTag(ext, 'input')) {
-        isInput = true;
-        value = (ext as HTMLInputElement).value;
-        ready = value.length > 0;
-    }
-    else if (isTag(ext, 'textarea')) {
-        isInput = true;
-        value = (ext as HTMLTextAreaElement).value;
-        ready = value.length > 0;
-    }
-    else {
-        const inputs = ext.getElementsByClassName('letter-input');
-        ready = inputs.length > 0;
-        for (let i = 0; i < inputs.length; i++) {
-            if ((inputs[i] as HTMLInputElement).value.length == 0) {
-                ready = false;
-            }
-        }
-    }
+    const value = getValueToValidate(ext);
+    const ready = isValueReady(btn, value);
+
     toggleClass(btn, 'ready', ready);
     if (ready && key == 'Enter') {
         clickValidationButton(btn as HTMLButtonElement); 
     }
-    else if (isInput) {
+    else if (isTag(ext, 'input') || isTag(ext, 'textarea')) {
         horzScaleToFit(ext, value);
     }
+}
+
+/**
+ * Submit buttons can be associated with various constructs.
+ * Extract an appropriate value to submit
+ * @param container The container of the value to submit.
+ * @returns The value, or concatenation of values.
+ */
+function getValueToValidate(container:HTMLElement):string {
+    // If the extraction has alredy been cached, use it
+    const cached = container.getAttribute('data-extraction');
+    if (cached) {
+        return cached;
+    }
+    // If container is an input, get its value
+    if (isTag(container, 'input')) {
+        return (container as HTMLInputElement).value;
+    }
+    if (isTag(container, 'textarea')) {
+        return (container as HTMLTextAreaElement).value;
+    }
+    // If we contain multiple inputs, concat them
+    const inputs = container.getElementsByClassName('letter-input');
+    if (inputs.length > 0) {
+        let value = '';
+        for (let i = 0; i < inputs.length; i++) {
+            value += (inputs[i] as HTMLInputElement).value;
+        }
+        return value;
+    }
+    // If we contain multiple other extractions, concat them
+    const datas = getAllElementsWithAttribute(container, 'data-extraction');
+    if (datas.length > 0) {
+        let value = '';
+        for (let i = 0; i < datas.length; i++) {
+            value += datas[i].getAttribute('data-extraction');
+        }
+        return value;
+    }
+    // No recognized combo
+    console.error('Unrecognized value container: ' + container);
+    return '';
+}
+
+/**
+ * Is this value complete, such that submitting is possible?
+ * @param btn The button to submit
+ * @param value The value to submit
+ * @returns true if the value is long enough and contains no blanks
+ */
+function isValueReady(btn:HTMLButtonElement, value:string|null):boolean {
+    if (!value) {
+        return false;
+    }
+    if (value.indexOf('_') >= 0) {
+        return false;
+    }
+    const minLength = getOptionalStyle(btn, 'data-min-length')
+    if (minLength) {
+        return value.length >= parseInt(minLength);
+    }
+    return value.length > 0;
 }
 
 /**
@@ -6207,23 +6286,10 @@ function clickValidationButton(btn:HTMLButtonElement) {
         return;
     }
 
-    let value = ext.getAttribute('data-extraction');
-    if (!value) {
-        if (isTag(ext, 'input')) {
-            value = (ext as HTMLInputElement).value;
-        }
-        else if (isTag(ext, 'textarea')) {
-            value = (ext as HTMLTextAreaElement).value;
-        }
-        else {
-            value = '';
-            const inputs = ext.getElementsByClassName('letter-input');
-            for (let i = 0; i < inputs.length; i++) {
-                value += (inputs[i] as HTMLInputElement).value;
-            }    
-        }
-    }
-    if (value) {
+    const value = getValueToValidate(ext);
+    const ready = isValueReady(btn, value);
+
+    if (ready) {
         const now = new Date();
         const gl:GuessLog = { field:id, guess: value, time: now };
         decodeAndValidate(gl);

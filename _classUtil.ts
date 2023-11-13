@@ -308,6 +308,34 @@ export function getOptionalStyle(   elmt: Element|null,
 }
 
 /**
+ * Loop through all elements in a DOM sub-tree, looking for any elements with an optional tag.
+ * Recurse as needed. But once found, don't recurse within the find.
+ * @param root The node to look through. Can also be 'document'
+ * @param attr The name of an attribute. It must be present and non-empty to count
+ * @returns A list of zero or more elements
+ */
+export function getAllElementsWithAttribute(root: Node, attr:string):HTMLElement[] {
+    const list:HTMLElement[] = [];
+    for (let i = 0; i < root.childNodes.length; i++) {
+        const child = root.childNodes[i];
+        if (child.nodeType == Node.ELEMENT_NODE) {
+            const elmt = child as HTMLElement;
+            if (elmt.getAttribute(attr)) {
+                list.push(elmt);
+                // once found, don't recurse
+            }
+            else {
+                const recurse = getAllElementsWithAttribute(elmt, attr);
+                for (let r = 0; r < recurse.length; r++) {
+                    list.push(recurse[r]);
+                }
+            }
+        }
+    }
+    return list;
+}
+
+/**
  * Move focus to the given input (if not null), and select the entire contents.
  * If input is of type number, do nothing.
  * @param input - A text input element

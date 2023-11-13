@@ -17,6 +17,7 @@
         'abilities': {
           'stamping': true
         },
+        "validation":{"final":{"ZHYGVCEBPRFFBEF":"1"}},
         'preSetup': makeStampables,
         'postSetup': prepMaterials
       };
@@ -130,9 +131,14 @@
       #final {
         position: absolute;
         bottom: -0.25in;
-        width: 100%;
-        left: 0px;
+        left: 1.75in;
+      }
+      #final td {
         text-align: center;
+      }
+      #submit-extracted {
+        position: relative;
+        top: -26px;
       }
       .extractions td {
         text-transform: capitalize;
@@ -475,7 +481,7 @@
       </p>
       <div id="final">
         <table style="display:inline-block;">
-          <tr class="extractions input-font">
+          <tr class="extractions input-font" data-show-ready="submit-extracted">
             <td id="extracted-A"></td>
             <td id="extracted-B"></td>
             <td id="extracted-C"></td>
@@ -510,6 +516,7 @@
             <td>O</td>
           </tr>
         </table>
+        <button class="validater" id="submit-extracted" data-extracted-id="final" data-min-length="15">Submit</button>
       </div>
 
       <div id="materials">
