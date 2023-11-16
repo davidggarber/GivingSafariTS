@@ -175,12 +175,12 @@
         }
 
         var feeders = {
-            'science': { locked: 'Images/Science/bubbling.png', unlocked: 'Images/Science/green_flask.png', tooltip: 'Weird Science feeder piece', materials: {} },
-            'bus': { locked: 'Images/Bus/locked.png', unlocked: 'Images/Bus/unlocked.png', tooltip: 'Magic Schoolbus feeder piece', materials: {} },
-            'radio': { locked: 'Images/Radio/locked.png', unlocked: 'Images/Radio/unlocked.png', tooltip: 'Radio Wave feeder piece', materials: {} },
-            'exp-cosmos': { locked: 'Icons/exp-cosmos-locked.png', unlocked: 'Icons/exp-cosmos.png', tooltip: 'Challenge ticket: Cosmos', materials: {} },
-            'exp-magic': { locked: 'Icons/exp-magic-locked.png', unlocked: 'Icons/exp-magic.png', tooltip: 'Challenge ticket: Science or Magic', materials: {} },
-            'exp-cartrip': { locked: 'Icons/exp-cartrip-locked.png', unlocked: 'Icons/exp-cartrip.png', tooltip: 'Challenge ticket: Car Trip', materials: {} },
+            'science': { type:'meta', locked: 'Images/Science/bubbling.png', unlocked: 'Images/Science/green_flask.png', tooltip: 'Weird Science feeder piece', materials: {}, count:5, store:'Science' },
+            'bus': { type:'meta', locked: 'Images/Bus/locked.png', unlocked: 'Images/Bus/unlocked.png', tooltip: 'Magic Schoolbus feeder piece', materials: {}, count:4, store:'Bus' },
+            'radio': { type:'meta', locked: 'Images/Radio/locked.png', unlocked: 'Images/Radio/unlocked.png', tooltip: 'Radio Wave feeder piece', materials: {}, count:3, store:'Radio' },
+            'exp-cosmos': { type:'challenge', locked: 'Icons/exp-cosmos-locked.png', unlocked: 'Icons/exp-cosmos.png', tooltip: 'Challenge ticket: Cosmos', materials: {} },
+            'exp-magic': { type:'challenge', locked: 'Icons/exp-magic-locked.png', unlocked: 'Icons/exp-magic.png', tooltip: 'Challenge ticket: Science or Magic', materials: {} },
+            'exp-cartrip': { type:'challenge', locked: 'Icons/exp-cartrip-locked.png', unlocked: 'Icons/exp-cartrip.png', tooltip: 'Challenge ticket: Car Trip', materials: {} },
         }
 
         function expandPuzzles() {
@@ -320,41 +320,34 @@
         }
 
         function updateProgress() {
-            var td = document.getElementById('science-unlocked');
-            for (var i = 1; i <= 5; i++) {
-                if (i in feeders['science'].materials) {
-                    continue;
+            var feederKeys = Object.keys(feeders);
+            for (var f = 0; f < feederKeys.length; f++) {
+                var key = feederKeys[f];
+                var feed = feeders[key];
+                if (feed.type == 'meta') {
+                    var store = feed.store;
+                    var td = document.getElementById(key + '-unlocked');
+                    for (var i = 1; i <= feed.count; i++) {
+                        if (i in feed.materials) {
+                            continue;
+                        }
+                        var materials = loadMetaMaterials(store, 0, i);
+                        if (materials != null) {
+                            feed.materials[i] = materials['src'];
+                            td.appendChild(createFeeder([key, i], true));
+                        }
+                    }
                 }
-                var materials = loadMetaMaterials('Science', 0, i);
-                if (materials != null) {
-                    feeders['science'].materials[i] = materials['src'];
-                    td.appendChild(createFeeder(['science', i], true));
-                }
-            }
-
-            td = document.getElementById('bus-unlocked');
-            for (var i = 1; i <= 4; i++) {
-                if (i in feeders['bus'].materials) {
-                    continue;
-                }
-                var materials = loadMetaMaterials('Schoolbus', 0, i);
-                if (materials != null) {
-                    feeders['bus'].materials[i] = materials['src'];
-                    td.appendChild(createFeeder(['bus', i], true));
-                }
-            }
-
-            challenges = ['exp-cosmos', 'exp-magic', 'exp-cartrip'];
-            for (var i = 0; i < challenges.length; i++) {
-                var chal = challenges[i];  
-                td = document.getElementById(chal + '-unlocked');
-                if (!td || Object.keys(feeders[chal].materials).length > 0) {
-                    continue;
-                }
-                var materials = loadMetaMaterials(chal, 0, 1);
-                if (materials != null) {
-                    feeders[chal].materials[0] = materials['src'];
-                    td.appendChild(createFeeder([chal, 0], true, 'Icons/ticket.png'));
+                else {  // feed.type == 'challenge'
+                    td = document.getElementById(key + '-unlocked');
+                    if (!td || Object.keys(feed.materials).length > 0) {
+                        continue;
+                    }
+                    var materials = loadMetaMaterials(chal, 0, 1);
+                    if (materials != null) {
+                        feed.materials[0] = materials['src'];
+                        td.appendChild(createFeeder([chal, 0], true, 'Icons/ticket.png'));
+                    }
                 }
             }
 

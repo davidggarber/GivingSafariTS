@@ -40,7 +40,7 @@ var puzzles = [
     { title: 'Chemical Compounds', thumb: 'Cc', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,3] },
     { title: 'Complex Molecules', thumb: 'Cm', author: 'Philippe Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.bus,2] },
     { title: 'Computers', thumb: 'Comp', author: 'Rorke Haining', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,1] },
-    { title: 'Crop Dusters', thumb: 'Cd', author: 'Dana Young', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.radio,1] },
+    { title: 'Crop Dusters', thumb: 'CdL', author: 'Dana Young', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.radio,1] },
     { title: 'Elementary Charge', thumb: 'Ec', author: 'Dana Young', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,4] },
     { title: 'Engineering', thumb: 'Eng', author: 'Dana Young', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,5] },
     { title: 'Entomology Lab', thumb: 'El', author: 'Peter Golde', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.bus,4] },
