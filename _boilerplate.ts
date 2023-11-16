@@ -76,6 +76,15 @@ export function isPrint() {
 }
 
 /**
+ * Determines if this document's URL was tagged with ?icon
+ * This is intended to as an alternative way to generate icons for each puzzle
+ * @returns true if this page's URL contains a print argument (other than false)
+ */
+export function isIcon() {
+    return urlArgs['icon'] != undefined && urlArgs['icon'] !== false;
+}
+
+/**
  * Special url arg to override any cached storage. Always restarts.
  * @returns true if this page's URL contains a restart argument (other than =false)
  */
@@ -221,6 +230,9 @@ function preSetup(bp:BoilerPlateData) {
     }
     if (isPrint()) {
         bodies[0].classList.add('print');
+    }
+    if (isIcon()) {
+        bodies[0].classList.add('icon');
     }
     if (bp.pathToRoot) {
         if (safariDetails.logo) { 

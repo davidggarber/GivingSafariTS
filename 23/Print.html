@@ -12,7 +12,18 @@
 
     <script src="puzzle_list.js"></script>
     <script>
+      var icon_mode = false;
+
       function onLoad() {
+          icon_mode = window.location.search.indexOf('icons') >= 0;
+          var body = document.getElementById('print-view');
+          if (icon_mode) {
+            body.classList.add('thumbnails');
+          }
+          else {
+            body.classList.add('printer');
+          }
+
           expandIFrames(orient.portrait, false, 'block');
           expandIFrames(orient.portrait, true, 'none');
           //expandIFrames(orient.landscape, 'none');
@@ -45,7 +56,11 @@
                 div.classList.add(other);
               }
 
-              iframe.src = puzzleHref(puz) + '?iframe&print';
+              var href = puzzleHref(puz) + '?iframe&print';
+              if (icon_mode) {
+                href += '&icon';
+              }
+              iframe.src = href;
 
               div.appendChild(iframe);
               list.appendChild(div);
@@ -78,6 +93,15 @@
         }
       }
 
+      function reload(mode) {
+        if (mode == 'icons') {
+          window.location.href = 'Print.html?icons';
+        }
+        else {
+          window.location.href = 'Print.html';
+        }
+      }
+
       function toggleThumbs(chk) {
         var body = document.getElementById('print-view');
         var chk = document.getElementById('thumb-check');
@@ -94,9 +118,17 @@
 
     </script>
     <style>
+      .reload-btn {
+        display:inline-block;
+        transform: translate(0,-30px);
+      }
+      button img {
+        height: 0.5in;
+      }
       .thumbnails .page {
         display: inline-block;
         transform: scale(10%);
+        margin-left: 1px;
       }
       .thumbnails .page.print-portrait {
         width:0.85in;
@@ -106,21 +138,42 @@
         height:0.85in;
         width:1.1in;
       }
+      .printer #icon-tips {
+        display: none;
+      }
+      .printer #load-print {
+        display: none;
+      }
+      .thumbnails #print-tips {
+        display: none;
+      }
+      .thumbnails #load-icons {
+        display: none;
+      }
+      .thumbnails #puzzle_list {
+        white-space: nowrap;
+      }
     </style>
   </head> 
   <body id="print-view" class="portrait landscape feeders" onload="onLoad()">
     <div id="layout">
       <button id="puzzles" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('puzzle_list')">Puzzles</button>
       <button id="bonus" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('bonus_list')">Bonus</button>
-      <div style="display:inline-block; width:0.8in; height:0.8in; color:white; text-align: center; cursor: default;" onclick="toggleThumbs()"><input id="thumb-check" type="checkbox" value="thumbnails"><br>Thumbnails</div>
+      <button id="load-icons" class="reload-btn" onclick="reload('icons')">Switch to<br><img src="Thumbs/stamp.png"><br>Icons</button>
+      <button id="load-print" class="reload-btn" onclick="reload('print')">Switch to<br><img src="Thumbs/print.png"><br>Printable</button>
       <!--
         <button id="metas" class="layout-btn" style="width:1in; height: 1in;" onclick="switchLayout('meta')">Meta Puzzles</button>  
         <button id="feeders" class="layout-btn" style="width:0.85in; height: 1.1in;" onclick="switchLayout('feeder')">Meta Feeders</button>  
       -->
       <a href="indexx.html" style="color:cornflowerblue; margin-left: 1in;">Puzzle index</a>
-      <p style="color:wheat; background-color: dark-gray;">
+      <p id="print-tips" style="color:wheat; background-color: dark-gray;">
         When printing. Make sure margins are set to NONE, and background graphics is checked.
         <br>There may be an extra blank page. Recommend printing explicitly pages 1-<span id="page-count">21</span>.
+      </p>
+      <p id="icon-tips" style="color:wheat; background-color: dark-gray;">
+        <b>Icon Screen Clipper</b>
+        <br>All icons will stay on one line
+        <br>
       </p>
     </div>
     <div id="puzzle_list" class="group-list"></div>

@@ -56,6 +56,11 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
   transform-origin: 408px 408px;
 }
 
+.icon.print.iframe.letter.landscape #page {
+  transform: rotate(90deg) translate(0px, 48px);
+  transform-origin: 432px 432px;
+}
+
 @media screen {
   .printedPage {
     background-color: white;
@@ -304,6 +309,9 @@ body, p, td {
   }
   .print #qr {
     display: block;
+  }
+  .print.icon #qr {
+    display: none;
   }
   .thumb.print #qr {
     display: none;
