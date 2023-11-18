@@ -5453,6 +5453,20 @@ const safari20Details:PuzzleEventDetails = {
     // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 }
 
+const safariDggDetails:PuzzleEventDetails = {
+    'title': 'David’s Puzzles',
+    'logo': './Images/octopus_watermark.png',
+    'icon': './Images/octopus_icon.png',
+    'puzzleList': './indexx.html',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts.css',
+    'googleFonts': 'Caveat',
+    'links': [],
+    'qr_folders': {'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
+                   'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/'},
+    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+}
+
 const pastSafaris = {
     'Sample': safariSampleDetails,
     'Single': safariSingleDetails,

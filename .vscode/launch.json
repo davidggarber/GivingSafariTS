@@ -20,6 +20,19 @@
     {
       "type": "msedge",
       "request": "launch",
+      "name": "Launch DGG",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "url": "${workspaceFolder}\\DGG\\indexx.html",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/js/**/*.js"
+      ]
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
       "name": "Launch GS 23",
       "skipFiles": [
         "<node_internals>/**"

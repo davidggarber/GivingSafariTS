@@ -40,10 +40,11 @@ var meta = {
 var puzzles = [
     { title: 'Leftovers', file: 'Aaaaaaaa', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
     { title: 'Grandma’s Secret Recipe', file:'Grandmas', author: 'David Garber', mech: mechs.logic, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Moby Dick’s Drive-In', file:'MobyDicks', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
     { title: 'Wild Game', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
     { title: 'Royal Fork', author: 'David Garber', mech: mechs.maze, group: group.puzzle, orientation: orient.portrait },
     { title: 'Tmmmm Moasty', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Dodecadent Dinners', author: 'David Garber', mech: mechs.math, group: group.puzzle, orientation: orient.portrait },
 ];
 
 /**
@@ -55,6 +56,7 @@ function puzzleFile(puz) {
     if (puz['file']) {
         return puz['file'];
     }
+    // TODO: remove all punctuation too
     return puz.title.replaceAll(' ', '');
 }
 
