@@ -1,17 +1,18 @@
 .title {
   font-size: 24pt;
-  font-family: 'Doodle Gum';
+  font-family: 'Cormorant Upright';
+  font-weight: bold;
 }
 
 .title-font {
-  font-family: 'Doodle Gum';
+  font-family: 'Cormorant Upright';
 }
 
 .input-font {
   font-family: 'Caveat';
 }
 
-._20 .letter-cell {
+._Dgg .letter-cell {
   font-family: 'Caveat';
   font-size: 14pt;
   width: 1.05em;

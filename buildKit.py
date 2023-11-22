@@ -14,7 +14,8 @@ kitFiles = [
     '_stampTools.ts',
     '_straightEdge.ts',
     '_boilerplate.ts',
-    '_confirmation.ts'
+    '_confirmation.ts',
+    '_builder.ts',
 ]
 
 merged = []

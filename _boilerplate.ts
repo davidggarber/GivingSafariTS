@@ -9,6 +9,7 @@ import { EdgeTypes, preprocessRulerFunctions } from "./_straightEdge";
 import { TableDetails, constructTable } from "./_tableBuilder";
 import { setupSubways } from "./_subway";
 import { setupValidation } from "./_confirmation";
+import { expandControlTags } from "./_builder";
 
 
 /**
@@ -155,7 +156,7 @@ const safari20Details:PuzzleEventDetails = {
     'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
-    'googleFonts': 'Architects+Daughter,Caveat',
+    'googleFonts': 'Architects+Daughter,Caveat',  // no whitespace
     'links': [],
     'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
                    'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
@@ -169,7 +170,7 @@ const safariDggDetails:PuzzleEventDetails = {
     'puzzleList': './indexx.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
+    'googleFonts': 'Caveat,Righteous,Cormorant+Upright',  // no whitespace
     'links': [],
     'qr_folders': {'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
                    'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/'},
@@ -180,6 +181,7 @@ const pastSafaris = {
     'Sample': safariSampleDetails,
     'Single': safariSingleDetails,
     '20': safari20Details,
+    'Dgg': safariDggDetails,
 }
 
 let safariDetails:PuzzleEventDetails;
@@ -216,11 +218,14 @@ type BoilerPlateData = {
     lang?: string;  // en-us by default
     paperSize?: string;  // letter by default
     orientation?: string;  // portrait by default
+    printAsColor: boolean;  // True=color, false=grayscale
     textInput?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
     validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
+    reactiveBuilder?: boolean;  // invoke the new reactive builder
+    builderLookup?: object;  // a dictionary of javascript objects and/or pointers
     preSetup?: () => void;
     postSetup?: () => void;
     googleFonts?: string;  // A list of fonts, separated by commas
@@ -414,6 +419,10 @@ function boilerplate(bp: BoilerPlateData) {
      *    </body>
      *   </html>
      */
+
+    if (bp.reactiveBuilder) {
+        expandControlTags();
+    }
 
     if (bp.tableBuilder) {
         constructTable(bp.tableBuilder);

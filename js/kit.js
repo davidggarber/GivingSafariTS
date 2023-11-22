@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = void 0;
+exports.expandControlTags = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -4959,7 +4959,7 @@ var safariDggDetails = {
     'puzzleList': './indexx.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
+    'googleFonts': 'Caveat,Righteous,Cormorant+Upright',
     'links': [],
     'qr_folders': { 'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/' },
@@ -4969,6 +4969,7 @@ var pastSafaris = {
     'Sample': safariSampleDetails,
     'Single': safariSingleDetails,
     '20': safari20Details,
+    'Dgg': safariDggDetails,
 };
 var safariDetails;
 /**
@@ -5143,6 +5144,9 @@ function boilerplate(bp) {
      *    </body>
      *   </html>
      */
+    if (bp.reactiveBuilder) {
+        expandControlTags();
+    }
     if (bp.tableBuilder) {
         constructTable(bp.tableBuilder);
     }
@@ -5867,4 +5871,238 @@ function rot13(source) {
 //     const resultBytes = [...new Uint8Array(digest)];
 //     return resultBytes.map(x => x.toString(16).padStart(2, '0')).join("");
 // }
+/*-----------------------------------------------------------
+ * _builder.ts
+ *-----------------------------------------------------------*/
+/**
+ * Look for control tags like for loops and if branches.
+ */
+function expandControlTags() {
+    var context = theBoiler().builderLookup || {};
+    var fors = document.getElementsByTagName('for');
+    while (fors.length > 0) {
+        var src = fors[0];
+        var dest = startForLoop(src, context);
+        var parent_2 = src.parentNode;
+        for (var d = 0; d < dest.length; d++) {
+            var node = dest[d];
+            parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.insertBefore(node, src);
+        }
+        parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.removeChild(src);
+        // See if there are more
+        fors = document.getElementsByTagName('for');
+    }
+}
+exports.expandControlTags = expandControlTags;
+/**
+ * Potentially several kinds of for loops:
+ * for each: <for each="var" in="list">  // ideas for optional args: first, last, skip
+ * for char: <for char="var" in="text">
+ * for key: <for key="var" in="object">  // idea for optional arg: sort
+ * @param src the <for> element
+ * @param context the set of values that might get used by the for loop
+ * @returns a list of nodes, which will replace this <for> element
+ */
+function startForLoop(src, context) {
+    var dest = [];
+    // <for each="variable_name" in="list">
+    var each = src.getAttributeNS('', 'each');
+    // const char = src.getAttributeNS('', 'char');
+    if (each) {
+        var list_name = src.getAttributeNS('', 'in');
+        if (!list_name) {
+            throw new Error('for each requires "in" attribute');
+        }
+        var list = list_name ? context[list_name] : null;
+        if (!list) {
+            throw new Error('unresolved context: ' + list_name);
+        }
+        var each_index = each + '#';
+        for (var i = 0; i < list.length; i++) {
+            context[each_index] = i;
+            context[each] = list[i];
+            pushRange(dest, expandContents(src, context));
+        }
+        context[each_index] = undefined;
+        context[each] = undefined;
+    }
+    return dest;
+}
+function pushRange(list, add) {
+    for (var i = 0; i < add.length; i++) {
+        list.push(add[i]);
+    }
+}
+function appendRange(node, add) {
+    for (var i = 0; i < add.length; i++) {
+        node.insertBefore(add[i], null);
+    }
+}
+/**
+ * Clone every node inside a parent element.
+ * Any occurence of {curly} braces is in fact a lookup.
+ * It can be in body text or an element attribute value
+ * @param src The containing element
+ * @param context A dictionary of all values that can be looked up
+ * @returns A list of nodes
+ */
+function expandContents(src, context) {
+    var dest = [];
+    for (var i = 0; i < src.childNodes.length; i++) {
+        var child = src.childNodes[i];
+        console.log(child);
+        if (child.nodeType == Node.ELEMENT_NODE) {
+            var elmt = child;
+            if (isTag(elmt, 'for')) {
+                pushRange(dest, startForLoop(elmt, context));
+            }
+            else {
+                dest.push(cloneWithContext(elmt, context));
+            }
+        }
+        else if (child.nodeType == Node.TEXT_NODE) {
+            pushRange(dest, cloneTextNode(child, context));
+        }
+        else {
+            dest.push(cloneNode(child));
+        }
+    }
+    return dest;
+}
+/**
+ * Deep-clone an HTML element
+ * @param elmt The original element
+ * @param context A dictionary of all accessible values
+ * @returns A cloned element
+ */
+function cloneWithContext(elmt, context) {
+    var clone = document.createElement(elmt.tagName);
+    cloneAttributes(elmt, clone, context);
+    for (var i = 0; i < elmt.childNodes.length; i++) {
+        var child = elmt.childNodes[i];
+        if (child.nodeType == Node.ELEMENT_NODE) {
+            var elmt_1 = child;
+            if (isTag(elmt_1, 'for')) {
+                appendRange(clone, startForLoop(elmt_1, context));
+            }
+            else {
+                clone.appendChild(cloneWithContext(elmt_1, context));
+            }
+        }
+        else if (child.nodeType == Node.TEXT_NODE) {
+            appendRange(clone, cloneTextNode(child, context));
+        }
+        else {
+            clone.insertBefore(cloneNode(child), null);
+        }
+    }
+    return clone;
+}
+/**
+ * Finish cloning an HTML element
+ * @param src The element being cloned
+ * @param dest The new element, still in need of attributes
+ * @param context A dictionary of all accessible values
+ */
+function cloneAttributes(src, dest, context) {
+    for (var i = 0; i < src.attributes.length; i++) {
+        var name_5 = src.attributes[i].name;
+        var value = src.attributes[i].value;
+        console.log(name_5 + '=' + value);
+        if (name_5 == 'id') {
+            dest.id = cloneText(src.id, context);
+        }
+        else if (name_5 == 'class') {
+            var classes = src.classList;
+            if (classes) {
+                for (var i_5 = 0; i_5 < classes.length; i_5++) {
+                    dest.classList.add(cloneText(classes[i_5], context));
+                }
+            }
+        }
+        // REVIEW: special case 'style'?
+        else {
+            dest.setAttribute(name_5, cloneText(value, context));
+        }
+    }
+}
+/**
+ * Process a text node which may contain {curly} formatting.
+ * @param text A text node
+ * @param context A dictionary of all accessible values
+ * @returns A list of text nodes
+ */
+function cloneTextNode(text, context) {
+    var dest = [];
+    var str = text.textContent;
+    var i = str ? str.indexOf('{') : -1;
+    while (str && i >= 0) {
+        var j = str.indexOf('}', i);
+        if (j < 0) {
+            break;
+        }
+        if (i > 0) {
+            dest.push(document.createTextNode(str.substring(0, i)));
+        }
+        var key = str.substring(i + 1, j);
+        dest.push(document.createTextNode(textFromContext(key, context)));
+        str = str.substring(j + 1);
+        i = str.indexOf('{');
+    }
+    if (str) {
+        dest.push(document.createTextNode(str));
+    }
+    return dest;
+}
+/**
+ * Process text which may contain {curly} formatting.
+ * @param text Any text
+ * @param context A dictionary of all accessible values
+ * @returns Expanded text
+ */
+function cloneText(str, context) {
+    var dest = '';
+    var i = str ? str.indexOf('{') : -1;
+    while (str && i >= 0) {
+        var j = str.indexOf('}', i);
+        if (j < 0) {
+            break;
+        }
+        if (i > 0) {
+            dest += str.substring(0, i);
+        }
+        var key = str.substring(i + 1, j);
+        dest += textFromContext(key, context);
+        str = str.substring(j + 1);
+        i = str.indexOf('{');
+    }
+    if (str) {
+        dest += str;
+    }
+    return dest;
+}
+/**
+ * Enable lookups into the context by key name.
+ * Keys can be paths, separated by dots (.)
+ * Even arrays use dot notation: foo.0 is the 0th item in foo
+ * @param key A key, initially from {curly} notation
+ * @param context A dictionary of all accessible values
+ * @returns Resolved text
+ */
+function textFromContext(key, context) {
+    var path = key.split('.');
+    var c = context;
+    for (var i = 0; i < path.length; i++) {
+        c = c[path[i]];
+    }
+    return c.toString();
+}
+/**
+ * Clone other node types, besides HTML elements and Text
+ * @param node Original node
+ * @returns A node to use in the clone
+ */
+function cloneNode(node) {
+    return node; // STUB: keep original node
+}
 //# sourceMappingURL=kit.js.map
