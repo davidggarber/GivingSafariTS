@@ -5895,9 +5895,31 @@ function expandControlTags() {
 }
 exports.expandControlTags = expandControlTags;
 /**
+ * Concatenate one list onto another
+ * @param list The list to modified
+ * @param add The list to add to the end
+ */
+function pushRange(list, add) {
+    for (var i = 0; i < add.length; i++) {
+        list.push(add[i]);
+    }
+}
+/**
+ * Append more than one child node to the end of a parent's child list
+ * @param parent The parent node
+ * @param add A list of new children
+ */
+function appendRange(parent, add) {
+    for (var i = 0; i < add.length; i++) {
+        parent.insertBefore(add[i], null);
+    }
+}
+/**
  * Potentially several kinds of for loops:
  * for each: <for each="var" in="list">  // ideas for optional args: first, last, skip
- * for char: <for char="var" in="text">
+ * for char: <for char="var" in="text">  // every character in a string
+ * for char: <for word="var" in="text">  // space-delimited substrings
+ * for range: <for range="var" from="first" to="last" or until="after">
  * for key: <for key="var" in="object">  // idea for optional arg: sort
  * @param src the <for> element
  * @param context the set of values that might get used by the for loop
@@ -5905,38 +5927,108 @@ exports.expandControlTags = expandControlTags;
  */
 function startForLoop(src, context) {
     var dest = [];
+    var iter = null;
+    var list = [];
     // <for each="variable_name" in="list">
-    var each = src.getAttributeNS('', 'each');
-    // const char = src.getAttributeNS('', 'char');
-    if (each) {
-        var list_name = src.getAttributeNS('', 'in');
-        if (!list_name) {
-            throw new Error('for each requires "in" attribute');
-        }
-        var list = list_name ? context[list_name] : null;
-        if (!list) {
-            throw new Error('unresolved context: ' + list_name);
-        }
-        var each_index = each + '#';
-        for (var i = 0; i < list.length; i++) {
-            context[each_index] = i;
-            context[each] = list[i];
-            pushRange(dest, expandContents(src, context));
-        }
-        context[each_index] = undefined;
-        context[each] = undefined;
+    iter = src.getAttributeNS('', 'each');
+    if (iter) {
+        list = parseForEach(src, context);
     }
+    else {
+        iter = src.getAttributeNS('', 'char');
+        if (iter) {
+            list = parseForText(src, context, '');
+        }
+        else {
+            iter = src.getAttributeNS('', 'word');
+            if (iter) {
+                list = parseForText(src, context, ' ');
+            }
+            else {
+                iter = src.getAttributeNS('', 'key');
+                if (iter) {
+                    list = parseForKey(src, context);
+                }
+                else {
+                    iter = src.getAttributeNS('', 'range');
+                    if (iter) {
+                        list = parseForRange(src, context);
+                    }
+                    else {
+                        throw new Error('Unrecognized <for> tag type: ' + src);
+                    }
+                }
+            }
+        }
+    }
+    var iter_index = iter + '#';
+    for (var i = 0; i < list.length; i++) {
+        context[iter_index] = i;
+        context[iter] = list[i];
+        pushRange(dest, expandContents(src, context));
+    }
+    context[iter_index] = undefined;
+    context[iter] = undefined;
     return dest;
 }
-function pushRange(list, add) {
-    for (var i = 0; i < add.length; i++) {
-        list.push(add[i]);
+/**
+ * Syntax: <for each="var" in="list">
+ * @param src
+ * @param context
+ * @returns a list of elements
+ */
+function parseForEach(src, context) {
+    var list_name = src.getAttributeNS('', 'in');
+    if (!list_name) {
+        throw new Error('for each requires "in" attribute');
     }
+    var list = (list_name in context) ? context[list_name] : null;
+    if (!list) {
+        throw new Error('unresolved list context: ' + list_name);
+    }
+    return list;
 }
-function appendRange(node, add) {
-    for (var i = 0; i < add.length; i++) {
-        node.insertBefore(add[i], null);
+function parseForText(src, context, delim) {
+    var list_name = src.getAttributeNS('', 'in');
+    if (!list_name) {
+        throw new Error('for char requires "in" attribute');
     }
+    // The list_name can just be a literal string
+    var list = (list_name in context) ? context[list_name] : list_name;
+    if (!list) {
+        throw new Error('unresolved context: ' + list_name);
+    }
+    return list.split(delim);
+}
+function parseForRange(src, context) {
+    var from = src.getAttributeNS('', 'in');
+    var until = src.getAttributeNS('', 'until');
+    var last = src.getAttributeNS('', 'to');
+    var step = src.getAttributeNS('', 'step');
+    var start = from ? parseInt(from) : 0;
+    var end = until ? parseInt(until)
+        : last ? (parseInt(last) + 1)
+            : start;
+    var inc = step ? parseInt(step) : 1;
+    if (!until && inc < 0) {
+        end -= 2; // from 5 to 1 step -1 means i >= 0
+    }
+    var list = [];
+    for (var i = start; inc > 0 ? (i < end) : (i > end); i += inc) {
+        list.push(i);
+    }
+    return list;
+}
+function parseForKey(src, context) {
+    var obj_name = src.getAttributeNS('', 'in');
+    if (!obj_name) {
+        throw new Error('for each requires "in" attribute');
+    }
+    var obj = (obj_name in context) ? context[obj_name] : null;
+    if (!obj) {
+        throw new Error('unresolved list context: ' + obj_name);
+    }
+    return Object.keys(obj);
 }
 /**
  * Clone every node inside a parent element.
@@ -6084,6 +6176,10 @@ function cloneText(str, context) {
 /**
  * Enable lookups into the context by key name.
  * Keys can be paths, separated by dots (.)
+ * Paths can have other paths as nested arguments, using [ ]
+ * Note, the dot separator is still required.
+ *   example: foo.[bar].fuz       equivalent to foo[{bar}].fuz
+ *   example: foo.[bar.baz].fuz   equivalent to foo[{bar.baz}].fuz
  * Even arrays use dot notation: foo.0 is the 0th item in foo
  * @param key A key, initially from {curly} notation
  * @param context A dictionary of all accessible values
@@ -6091,11 +6187,39 @@ function cloneText(str, context) {
  */
 function textFromContext(key, context) {
     var path = key.split('.');
-    var c = context;
+    var nested = [context];
     for (var i = 0; i < path.length; i++) {
-        c = c[path[i]];
+        var step = path[i];
+        if (!step) {
+            continue; // Ignore blank steps for now
+        }
+        if (step[0] == '[') {
+            step = step.substring(1);
+            nested.push(context);
+        }
+        var unnest = step[step.length - 1] == ']';
+        if (unnest) {
+            if (nested.length <= 1) {
+                throw new Error('Malformed path has unmatched ] : ' + key);
+            }
+            step = step.substring(0, step.length - 1);
+        }
+        if (!(step in nested[nested.length - 1])) {
+            throw new Error('Unrecognized key: ' + step);
+        }
+        nested[nested.length - 1] = nested[nested.length - 1][step];
+        if (unnest) {
+            var pop = '' + nested.pop();
+            if (!(pop in nested[nested.length - 1])) {
+                throw new Error('Unrecognized key: ' + pop);
+            }
+            nested[nested.length - 1] = nested[nested.length - 1][pop];
+        }
     }
-    return c.toString();
+    if (nested.length > 1) {
+        throw new Error('Malformed path has unmatched [ : ' + key);
+    }
+    return '' + nested.pop();
 }
 /**
  * Clone other node types, besides HTML elements and Text
