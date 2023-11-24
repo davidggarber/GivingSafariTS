@@ -39,7 +39,7 @@ var meta = {
  */
 var puzzles = [
     { title: 'Leftovers', file: 'Aaaaaaaa', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Grandma’s Secret Recipe', file:'Grandmas', author: 'David Garber', mech: mechs.logic, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Grandma’s Secret Recipe', file:'GrandmasSecretRecipe', author: 'David Garber', mech: mechs.logic, group: group.puzzle, orientation: orient.portrait },
     { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
     { title: 'Wild Game', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
     { title: 'Royal Fork', author: 'David Garber', mech: mechs.maze, group: group.puzzle, orientation: orient.portrait },

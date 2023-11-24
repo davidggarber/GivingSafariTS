@@ -6875,19 +6875,34 @@ function textFromContext(key:string, context:object):string {
     if (!(step in nested[nested.length - 1])) {
       throw new Error('Unrecognized key: ' + step);
     }
-    nested[nested.length - 1] = nested[nested.length - 1][step];
+    nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step);
     if (unnest) {
       const pop:string = '' + nested.pop();
-      if (!(pop in nested[nested.length - 1])) {
-        throw new Error('Unrecognized key: ' + pop);
-      }
-      nested[nested.length - 1] = nested[nested.length - 1][pop];
+      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop);
     }
   }
   if (nested.length > 1) {
     throw new Error('Malformed path has unmatched [ : ' + key);
   }
   return '' + nested.pop();
+}
+
+/**
+ * Get a keyed child of a parent, where the key is either a dictionary key 
+ * or a list index or a string offset.
+ * @param parent The parent object: a list, object, or string
+ * @param key The identifier of the child: a dictionary key, a list index, or a string offset
+ * @returns A child object, or a substring
+ */
+function getKeyedChild(parent:any, key:string) {
+  if (typeof(parent) == 'string') {
+    const i = parseInt(key);
+    return (parent as string)[i];
+  }
+  if (!(key in parent)) {
+    throw new Error('Unrecognized key: ' + key);
+  }
+  return parent[key];
 }
 
 /**
