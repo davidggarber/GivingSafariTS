@@ -186,7 +186,6 @@ function expandContents(src:HTMLElement, context:object):Node[] {
   const dest:Node[] = [];
   for (let i = 0; i < src.childNodes.length; i++) {
     const child = src.childNodes[i];
-    console.log(child);
     if (child.nodeType == Node.ELEMENT_NODE) {
       const elmt = child as HTMLElement;
       if (isTag(elmt, 'for')) {
@@ -249,7 +248,6 @@ function cloneAttributes(src:HTMLElement, dest:HTMLElement, context:object) {
   for (let i = 0; i < src.attributes.length; i++) {
     const name = src.attributes[i].name;
     const value = src.attributes[i].value;
-    console.log(name + '=' + value);
     if (name == 'id') {
       dest.id = cloneText(src.id, context);
     }
@@ -349,19 +347,22 @@ function textFromContext(key:string, context:object):string {
       step = step.substring(1);
       nested.push(context);
     }
-    let unnest = step[step.length - 1] == ']';
-    if (unnest) {
-      if (nested.length <= 1) {
+    // steps can end in one more more ']', which can't occur anywhere else
+    let unnest = step.indexOf(']');
+    if (unnest >= 0) {
+      unnest = step.length - unnest;
+      if (nested.length <= unnest) {
         throw new Error('Malformed path has unmatched ] : ' + key);
       }
-      step = step.substring(0, step.length - 1);
+      step = step.substring(0, step.length - unnest);
     }
 
     if (!(step in nested[nested.length - 1])) {
       throw new Error('Unrecognized key: ' + step);
     }
     nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step);
-    if (unnest) {
+
+    for (; unnest > 0; unnest--) {
       const pop:string = '' + nested.pop();
       nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop);
     }

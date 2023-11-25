@@ -24,7 +24,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\DGG\\MobyDicksDriveIn.html",
+      "url": "${workspaceFolder}\\DGG\\GrandmasSecretRecipe.html",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"
