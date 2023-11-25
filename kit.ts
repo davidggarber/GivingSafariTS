@@ -204,10 +204,20 @@ export function findEndInContainer( current: Element,
 /**
  * Determine the tag type, based on the tag name (case-insenstive)
  * @param elmt An HTML element
- * @param tag a tag name
+ * @param tag a tag name, or array of names
  */
-export function isTag(elmt: Element, tag: string) {
-    return elmt.tagName.toUpperCase() == tag.toUpperCase();
+export function isTag(elmt: Element, tag: string|string[]) {
+    const tagName = elmt.tagName.toUpperCase();
+    if (typeof(tag) == 'string') {
+        return tagName == tag.toUpperCase();
+    }
+    const tags = tag as string[];
+    for (let i = 0; i < tags.length; i++) {
+        if (tagName == tags[i].toUpperCase()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -6690,6 +6700,131 @@ function parseForKey(src:HTMLElement, context:object):any {
 }
 
 /**
+ * Potentially several kinds of if expressions:
+ *   equality: <if test="var" eq="value">  
+ *   not-equality: <if test="var" ne="value">  
+ *   less-than: <if test="var" lt="value">  
+ *   less-or-equal: <if test="var" le="value">  
+ *   greater-than: <if test="var" gt="value">  
+ *   greater-or-equal: <if test="var" ge="value">  
+ *   contains: <if test="var" in="value">  
+ *   not-contains: <if test="var" ni="value">  
+ *   boolean: <if test="var">
+ * Note there is no else or else-if block, because there are no scoping blocks
+ * @param src the <if> element
+ * @param context the set of values that might get used by or inside the if block
+ * @returns a list of nodes, which will replace this <if> element
+ */
+function startIfBlock(src:HTMLElement, context:object):Node[] {
+  let test = src.getAttributeNS('', 'test');
+  if (!test) {
+    throw new Error('<if> tags must have a test attribute');
+  }
+  test = textFromContext(test, context); 
+
+  let pass:boolean = false;
+  let value:string|null;
+  if (value = src.getAttributeNS('', 'eq')) {  // equality
+    pass = test == textFromContext(value, context);
+  }
+  else if (value = src.getAttributeNS('', 'ne')) {  // not-equals
+    pass = test != textFromContext(value, context);
+  }
+  else if (value = src.getAttributeNS('', 'lt')) {  // less-than
+    pass = test < textFromContext(value, context);
+  }
+  else if (value = src.getAttributeNS('', 'le')) {  // less-than or equals
+    pass = test <= textFromContext(value, context);
+  }
+  else if (value = src.getAttributeNS('', 'gt')) {  // greater-than
+    pass = test > textFromContext(value, context);
+  }
+  else if (value = src.getAttributeNS('', 'ge')) {  // greater-than or equals
+    pass = test >= textFromContext(value, context);
+  }
+  else if (value = src.getAttributeNS('', 'in')) {  // string contains
+    pass = textFromContext(value, context).indexOf(test) >= 0;
+  }
+  else if (value = src.getAttributeNS('', 'ni')) {  // string doesn't contain
+    pass = textFromContext(value, context).indexOf(test) >= 0;
+  }
+  else {  // simple boolean
+    pass = test === 'true';
+  }
+
+  if (pass) {
+    // No change in context from the if
+    return expandContents(src, context);
+
+  }
+  
+  return [];
+}
+
+const inputAreaTagNames = [
+  'letter', 'literal', 'number', 'letters', 'word'
+];
+
+/**
+ * Shortcut tags for text input. These include:
+ * 
+ * @param src One of the input shortcut tags
+ * @param context A dictionary of all values that can be looked up
+ * @returns a node array containing a single <span>
+ */
+function startInputArea(src:HTMLElement, context:object):Node[] {
+  const span = document.createElement('span');
+
+  // Copy most attributes. 
+  // Special-cased ones are harmless - no meaning in generic spans
+  cloneAttributes(src, span, context);
+
+  let cloneContents = false;
+  let literal:string|null = null;
+
+  // Convert special attributes to data-* attributes for later text setup
+  let attr:string|null;
+  if (isTag(src, 'letter')) {  // 1 input cell for (usually) one character
+    toggleClass(src, 'letter-cell', true);
+    literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
+  }
+  else if (isTag(src, 'literal')) {  // 1 input cell for (usually) one character
+    toggleClass(src, 'letter-cell', true);
+    toggleClass(src, 'literal', true);
+    cloneContents = true;  // literal value
+  }
+  else if (isTag(src, 'number')) {  // 1 input cell for (usually) one character
+    toggleClass(src, 'letter-cell', true);
+    toggleClass(src, 'numeric', true);
+    literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
+  }
+  else if (isTag(src, 'letters')) {  // multiple input cells for (usually) one character each
+    toggleClass(src, 'create-from-pattern', true);
+    if (attr = src.getAttributeNS('', 'pattern')) {
+      span.setAttributeNS('', 'data-letter-pattern', textFromContext(attr, context));
+    }
+    if (attr = src.getAttributeNS('', 'extract')) {
+      span.setAttributeNS('', 'data-extract-indeces', textFromContext(attr, context));
+    }
+    if (attr = src.getAttributeNS('', 'numbers')) {
+      span.setAttributeNS('', 'data-number-assignments', textFromContext(attr, context));
+    }
+  }
+  else if (isTag(src, 'word')) {  // 1 input cell for (usually) one character
+    toggleClass(src, 'word-cell', true);
+  }
+
+  if (literal) {
+    span.innerText = textFromContext(literal, context);  
+  }      
+  if (cloneContents) {
+    appendRange(span, expandContents(src, context));
+  }
+
+  return [span];
+}
+
+/**
  * Clone every node inside a parent element.
  * Any occurence of {curly} braces is in fact a lookup.
  * It can be in body text or an element attribute value
@@ -6702,19 +6837,25 @@ function expandContents(src:HTMLElement, context:object):Node[] {
   for (let i = 0; i < src.childNodes.length; i++) {
     const child = src.childNodes[i];
     if (child.nodeType == Node.ELEMENT_NODE) {
-      const elmt = child as HTMLElement;
-      if (isTag(elmt, 'for')) {
-        pushRange(dest, startForLoop(elmt, context));
+      const child_elmt = child as HTMLElement;
+      if (isTag(child_elmt, 'for')) {
+        pushRange(dest, startForLoop(child_elmt, context));
+      }
+      else if (isTag(child_elmt, 'if')) {
+        pushRange(dest, startIfBlock(child_elmt, context));
+      }
+      else if (isTag(child_elmt, inputAreaTagNames)) {
+        pushRange(dest, startInputArea(child_elmt, context));
       }
       else {
-        dest.push(cloneWithContext(elmt, context));
+        dest.push(cloneWithContext(child_elmt, context));
       }
     }
     else if (child.nodeType == Node.TEXT_NODE) {
-        pushRange(dest, cloneTextNode(child as Text, context));
+      pushRange(dest, cloneTextNode(child as Text, context));
     }
     else {
-        dest.push(cloneNode(child));
+      dest.push(cloneNode(child));
     }
   }
 
@@ -6734,12 +6875,18 @@ function cloneWithContext(elmt:HTMLElement, context:object):HTMLElement {
   for (let i = 0; i < elmt.childNodes.length; i++) {
     const child = elmt.childNodes[i];
     if (child.nodeType == Node.ELEMENT_NODE) {
-      const elmt = child as HTMLElement;
-      if (isTag(elmt, 'for')) {
-        appendRange(clone, startForLoop(elmt, context));
+      const child_elmt = child as HTMLElement;
+      if (isTag(child_elmt, 'for')) {
+        appendRange(clone, startForLoop(child_elmt, context));
+      }
+      else if (isTag(child_elmt, 'if')) {
+        appendRange(clone, startIfBlock(child_elmt, context));
+      }
+      else if (isTag(child_elmt, inputAreaTagNames)) {
+        appendRange(clone, startInputArea(child_elmt, context));
       }
       else {
-        clone.appendChild(cloneWithContext(elmt, context));
+        clone.appendChild(cloneWithContext(child_elmt, context));
       }
     }
     else if (child.nodeType == Node.TEXT_NODE) {
@@ -6765,14 +6912,14 @@ function cloneAttributes(src:HTMLElement, dest:HTMLElement, context:object) {
     let value = src.attributes[i].value;
     value = cloneText(value, context);
     if (name == 'id') {
-      dest.id = cloneText(value, context);
+      dest.id = value;
     }
     else if (name == 'class') {
       if (value) {
         const classes = value.split(' ');
         for (let i = 0; i < classes.length; i++) {
           if (classes[i].length > 0) {
-            dest.classList.add(cloneText(classes[i], context));
+            dest.classList.add(classes[i]);
           }
         }
       }    
@@ -6861,7 +7008,8 @@ function textFromContext(key:string, context:object):string {
     if (!step) {
       continue;  // Ignore blank steps for now
     }
-    if (step[0] == '[') {
+    const newNest = step[0] == '[';
+    if (newNest) {
       step = step.substring(1);
       nested.push(context);
     }
@@ -6876,9 +7024,16 @@ function textFromContext(key:string, context:object):string {
     }
 
     if (!(step in nested[nested.length - 1])) {
-      throw new Error('Unrecognized key: ' + step);
+      if ((i == 0 && path.length == 1) || (newNest && unnest > 0)) {
+        nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
+      }
+      else {
+        throw new Error('Unrecognized key: ' + step);
+      }
     }
-    nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step);
+    else {
+      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step);
+    }
 
     for (; unnest > 0; unnest--) {
       const pop:string = '' + nested.pop();

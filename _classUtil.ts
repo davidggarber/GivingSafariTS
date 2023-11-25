@@ -198,10 +198,20 @@ export function findEndInContainer( current: Element,
 /**
  * Determine the tag type, based on the tag name (case-insenstive)
  * @param elmt An HTML element
- * @param tag a tag name
+ * @param tag a tag name, or array of names
  */
-export function isTag(elmt: Element, tag: string) {
-    return elmt.tagName.toUpperCase() == tag.toUpperCase();
+export function isTag(elmt: Element, tag: string|string[]) {
+    const tagName = elmt.tagName.toUpperCase();
+    if (typeof(tag) == 'string') {
+        return tagName == tag.toUpperCase();
+    }
+    const tags = tag as string[];
+    for (let i = 0; i < tags.length; i++) {
+        if (tagName == tags[i].toUpperCase()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
