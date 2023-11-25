@@ -247,21 +247,24 @@ function cloneWithContext(elmt:HTMLElement, context:object):HTMLElement {
 function cloneAttributes(src:HTMLElement, dest:HTMLElement, context:object) {
   for (let i = 0; i < src.attributes.length; i++) {
     const name = src.attributes[i].name;
-    const value = src.attributes[i].value;
+    let value = src.attributes[i].value;
+    value = cloneText(value, context);
     if (name == 'id') {
-      dest.id = cloneText(src.id, context);
+      dest.id = cloneText(value, context);
     }
     else if (name == 'class') {
-      const classes = src.classList;
-      if (classes) {
+      if (value) {
+        const classes = value.split(' ');
         for (let i = 0; i < classes.length; i++) {
-          dest.classList.add(cloneText(classes[i], context));
+          if (classes[i].length > 0) {
+            dest.classList.add(cloneText(classes[i], context));
+          }
         }
       }    
     }
     // REVIEW: special case 'style'?
     else {
-      dest.setAttribute(name, cloneText(value, context));
+      dest.setAttribute(name, value);
     }
   }
 }

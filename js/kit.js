@@ -6042,7 +6042,6 @@ function expandContents(src, context) {
     var dest = [];
     for (var i = 0; i < src.childNodes.length; i++) {
         var child = src.childNodes[i];
-        console.log(child);
         if (child.nodeType == Node.ELEMENT_NODE) {
             var elmt = child;
             if (isTag(elmt, 'for')) {
@@ -6100,21 +6099,23 @@ function cloneAttributes(src, dest, context) {
     for (var i = 0; i < src.attributes.length; i++) {
         var name_5 = src.attributes[i].name;
         var value = src.attributes[i].value;
-        console.log(name_5 + '=' + value);
+        value = cloneText(value, context);
         if (name_5 == 'id') {
-            dest.id = cloneText(src.id, context);
+            dest.id = cloneText(value, context);
         }
         else if (name_5 == 'class') {
-            var classes = src.classList;
-            if (classes) {
+            if (value) {
+                var classes = value.split(' ');
                 for (var i_5 = 0; i_5 < classes.length; i_5++) {
-                    dest.classList.add(cloneText(classes[i_5], context));
+                    if (classes[i_5].length > 0) {
+                        dest.classList.add(cloneText(classes[i_5], context));
+                    }
                 }
             }
         }
         // REVIEW: special case 'style'?
         else {
-            dest.setAttribute(name_5, cloneText(value, context));
+            dest.setAttribute(name_5, value);
         }
     }
 }
