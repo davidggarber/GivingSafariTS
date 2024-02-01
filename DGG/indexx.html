@@ -45,6 +45,13 @@
             position: relative;
             text-align: left; 
         }
+        .year {
+            width: 0.75in;
+            text-align: center;
+        }
+        .year img {
+            height: 0.3in;
+        }
 
         .feeders {
             text-align: center;
@@ -154,11 +161,14 @@
                 var tr = document.createElement('tr');
                 var thIcon = document.createElement('td');
                 var tdTitle = document.createElement('td');
+                var tdYear = document.createElement('td');
                 var tdAuthor = document.createElement('td');
                 tr.classList.add('sortable');
                 thIcon.classList.add('icons');
                 tdTitle.classList.add('html');
+                tdYear.classList.add('year');
                 tdAuthor.classList.add('author');
+                
                 var imgIcon = document.createElement('img');
                 var aTitle = document.createElement('a');
                 if (puz.icon) {
@@ -174,6 +184,15 @@
                 aTitle.target = '_blank';
                 aTitle.innerText = puz.title;
                 aTitle.classList.add('hover');
+
+                if (puz.safari) {
+                    var imgYear = document.createElement('img');
+                    imgYear.src = 'Icons/ps' + puz.safari + '.png';
+                    imgYear.alt = 'Puzzle Safari ' + puz.safari;
+                    imgYear.title = imgYear.alt;
+                    tdYear.appendChild(imgYear);
+                }
+
                 tdAuthor.innerText = puz.author;
                 if (puz.thumb) {
                     var imgThumb = document.createElement('img');
@@ -184,6 +203,7 @@
 
                 tr.appendChild(thIcon);
                 tr.appendChild(tdTitle);
+                tr.appendChild(tdYear);
                 tr.appendChild(tdAuthor);
                 thIcon.appendChild(imgIcon);
                 tdTitle.appendChild(aTitle);
@@ -276,13 +296,14 @@
 
     <table id="table" style="border-collapse: collapse; width:5in">
         <thead>
-            <tr colspan="3" class="title" style="text-align: center;">
-                <th colspan="3" class="title" style="text-align: center;">Safari 23</th>
+            <tr class="title" style="text-align: center;">
+                <th colspan="4" class="title" style="text-align: center;">David&rsquo;s puzzles</th>
             </tr>
             <tr id="sortHeader">
                 <th class="icon" onclick="sortTable(1)">Type</th>
                 <th class="html" onclick="sortTable(2)">Puzzle</th>
-                <th class="author" onclick="sortTable(3)">Author</th>
+                <th class="year" onclick="sortTable(3)">Year</th>
+                <th class="author" onclick="sortTable(4)">Author</th>
             </tr>    
         </thead>
         <tbody id="puzzle_list">
@@ -290,23 +311,25 @@
         </tbody>
         <tfoot id="meta_list">
             <tr>
-                <td colspan="3" style="background-color: #D1D6D7">&nbsp;</th>
+                <td colspan="4" style="background-color: #D1D6D7">&nbsp;</th>
             </tr>
             <tr>
                 <th>&nbsp;</th>
                 <th class="html" style="text-align: left;">Meta-Puzzles</th>
+                <th class="year" style="text-align: left;">Year</th>
                 <th class="author" style="text-align: left;">Author</th>
             </tr>
             <tr>
-                <td colspan="3" style="background-color: #D1D6D7">&nbsp;</th>
+                <td colspan="4" style="background-color: #D1D6D7">&nbsp;</th>
             </tr>
             <tr>
                 <th>&nbsp;</th>
                 <th class="html" style="text-align: left;">Challenges</th>
+                <th class="year" style="text-align: left;">Year</th>
                 <th class="author" style="text-align: left;">Author</th>
             </tr>    
             <tr>
-                <td colspan="3" style="text-align: center;">
+                <td colspan="4" style="text-align: center;">
                     <a href="javascript:resetAll()">Reset all puzzle progress</a>
                 </td>
             </tr>

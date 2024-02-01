@@ -333,7 +333,7 @@ export function afterInputUpdate(input:HTMLInputElement, key:string) {
         //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
     saveLetterLocally(input);
-    inputChangeCallback(input);
+    inputChangeCallback(input, key);
 }
 
 /**
@@ -606,6 +606,8 @@ export function onWordKey(event:KeyboardEvent) {
     }
 
     const input = event.currentTarget as HTMLInputElement;
+    inputChangeCallback(input, event.key);
+
     if (getOptionalStyle(input, 'data-extract-index') != null) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         updateWordExtraction(extractId);
@@ -706,7 +708,7 @@ export function onLetterChange(event:KeyboardEvent) {
 
     const input = findParentOfClass(event.currentTarget as Element, 'letter-input') as HTMLInputElement;
     saveLetterLocally(input);
-    inputChangeCallback(input);
+    inputChangeCallback(input, event.key);
 }
 
 /**
@@ -720,17 +722,25 @@ export function onWordChange(event:KeyboardEvent) {
 
     const input = findParentOfClass(event.currentTarget as Element, 'word-input') as HTMLInputElement;
     saveWordLocally(input);
-    inputChangeCallback(input);
+    inputChangeCallback(input, event.key);
 }
 
 /**
  * Anytime any note changes, inform any custom callback
  * @param inp The affected input
+ * @param key The key from the event that led here
  */
-function inputChangeCallback(inp: HTMLInputElement) {
+function inputChangeCallback(inp: HTMLInputElement, key:string) {
     const fn = theBoiler().onInputChange;
     if (fn) {
         fn(inp);
+    }
+    const doc = getOptionalStyle(inp, 'data-onchange');
+    if (doc) {
+        const func = window[doc];
+        if (func) {
+            func(inp, key);
+        }
     }
 }
 
@@ -1084,4 +1094,31 @@ function findNextDiscover(root: Element,
         }
     }
     return nearest;
+}
+
+/**
+ * Autocomplete the contents of a multi-letter input from a restricted list of options.
+ * Existing text must match the beginning of exactly one option (case-insensitive).
+ * @param input a text <input> or <textarea>
+ * @param list a list of potential values to complete to
+ * @returns true if a single match was found, else false for 0 or multiple matches
+ */
+export function autoCompleteWord(input:HTMLInputElement|HTMLTextAreaElement, list:string[]) {
+    var value = input.value.toLowerCase();
+    var match:string|null = null;
+    for (var i of list) {
+      if (i.toLowerCase().indexOf(value) == 0) {
+        if (match) {
+          return false;  // multiple matches
+        }
+        match = i;
+      }
+    }
+    if (match) {
+      var len = input.value.length;
+      input.value = match;
+      input.setSelectionRange(len, match.length);  // Select the remainder of the word
+      return true;
+    }
+    return false;  // no matches
 }

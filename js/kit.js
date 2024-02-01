@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.expandControlTags = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = void 0;
+exports.expandControlTags = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -2027,7 +2027,7 @@ function afterInputUpdate(input, key) {
         //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
     saveLetterLocally(input);
-    inputChangeCallback(input);
+    inputChangeCallback(input, key);
 }
 exports.afterInputUpdate = afterInputUpdate;
 /**
@@ -2279,6 +2279,7 @@ function onWordKey(event) {
         return; // Don't interfere with IMEs
     }
     var input = event.currentTarget;
+    inputChangeCallback(input, event.key);
     if (getOptionalStyle(input, 'data-extract-index') != null) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         updateWordExtraction(extractId);
@@ -2374,7 +2375,7 @@ function onLetterChange(event) {
     }
     var input = findParentOfClass(event.currentTarget, 'letter-input');
     saveLetterLocally(input);
-    inputChangeCallback(input);
+    inputChangeCallback(input, event.key);
 }
 exports.onLetterChange = onLetterChange;
 /**
@@ -2387,17 +2388,25 @@ function onWordChange(event) {
     }
     var input = findParentOfClass(event.currentTarget, 'word-input');
     saveWordLocally(input);
-    inputChangeCallback(input);
+    inputChangeCallback(input, event.key);
 }
 exports.onWordChange = onWordChange;
 /**
  * Anytime any note changes, inform any custom callback
  * @param inp The affected input
+ * @param key The key from the event that led here
  */
-function inputChangeCallback(inp) {
+function inputChangeCallback(inp, key) {
     var fn = theBoiler().onInputChange;
     if (fn) {
         fn(inp);
+    }
+    var doc = getOptionalStyle(inp, 'data-onchange');
+    if (doc) {
+        var func = window[doc];
+        if (func) {
+            func(inp, key);
+        }
     }
 }
 /**
@@ -2715,6 +2724,34 @@ function findNextDiscover(root, start, dx, dy, cls, clsSkip) {
     }
     return nearest;
 }
+/**
+ * Autocomplete the contents of a multi-letter input from a restricted list of options.
+ * Existing text must match the beginning of exactly one option (case-insensitive).
+ * @param input a text <input> or <textarea>
+ * @param list a list of potential values to complete to
+ * @returns true if a single match was found, else false for 0 or multiple matches
+ */
+function autoCompleteWord(input, list) {
+    var value = input.value.toLowerCase();
+    var match = null;
+    for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
+        var i = list_2[_i];
+        if (i.toLowerCase().indexOf(value) == 0) {
+            if (match) {
+                return false; // multiple matches
+            }
+            match = i;
+        }
+    }
+    if (match) {
+        var len = input.value.length;
+        input.value = match;
+        input.setSelectionRange(len, match.length); // Select the remainder of the word
+        return true;
+    }
+    return false; // no matches
+}
+exports.autoCompleteWord = autoCompleteWord;
 /*-----------------------------------------------------------
  * _textSetup.ts
  *-----------------------------------------------------------*/
@@ -6102,7 +6139,11 @@ var inputAreaTagNames = [
 ];
 /**
  * Shortcut tags for text input. These include:
- *
+ *  letter: any single character
+ *  literal: readonly single character
+ *  number: any numeric
+ *  letters: multi-character with compression
+ *  word: full multi-character
  * @param src One of the input shortcut tags
  * @param context A dictionary of all values that can be looked up
  * @returns a node array containing a single <span>

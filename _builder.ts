@@ -242,7 +242,11 @@ const inputAreaTagNames = [
 
 /**
  * Shortcut tags for text input. These include:
- * 
+ *  letter: any single character
+ *  literal: readonly single character
+ *  number: any numeric
+ *  letters: multi-character with compression
+ *  word: full multi-character
  * @param src One of the input shortcut tags
  * @param context A dictionary of all values that can be looked up
  * @returns a node array containing a single <span>

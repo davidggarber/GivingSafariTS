@@ -30,6 +30,7 @@ var meta = {
  * Schema:
  *   title: friendly name
  *   file: actual filename (optional if same as title)
+ *   safari: which event was the puzzle originally created for?
  *   thumb: filename (in Thumbs folder) of thumbnail
  *   author: name of puzzle author
  *   mech: what puzzle mechanism (should be one of the mechs, above)
@@ -38,13 +39,15 @@ var meta = {
  *   feeder: does this puzzle advertise that it unlocks a feeder to another puzzle?
  */
 var puzzles = [
-    { title: 'Leftovers', file: 'Aaaaaaaa', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Grandma’s Secret Recipe', file:'GrandmasSecretRecipe', author: 'David Garber', mech: mechs.logic, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Wild Game', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Royal Fork', author: 'David Garber', mech: mechs.maze, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Tmmmm Moasty', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Dodecadent Dinners', author: 'David Garber', mech: mechs.math, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Zoology', thumb: 'Zoo', safari: '20', author: 'David Garber', mech: mechs.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [meta.radio,2] },
+    { title: 'Radio Waves', thumb: 'Rw', safari: '20', author: 'David Garber', mech: mechs.meta, group: group.meta, icon: meta.radio, orientation: orient.portrait },
+    { title: 'Leftovers', file: 'Aaaaaaaa', safari: '21', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Grandma’s Secret Recipe', file:'GrandmasSecretRecipe', safari: '21', author: 'David Garber', mech: mechs.logic, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', safari: '21', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Wild Game', safari: '21', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Royal Fork', safari: '21', author: 'David Garber', mech: mechs.maze, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Tmmmm Moasty', safari: '21', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Dodecadent Dinners', safari: '21', author: 'David Garber', mech: mechs.math, group: group.puzzle, orientation: orient.portrait },
 ];
 
 /**
