@@ -3387,6 +3387,10 @@ function verticalSubway(subway) {
     if (sLefts.length == 0 && sRights.length == 0) {
         return undefined;
     }
+    var leftId = subway.getAttributeNS('', 'data-left-id');
+    var rightId = subway.getAttributeNS('', 'data-right-id');
+    sLefts = joinIds(leftId, sLefts);
+    sRights = joinIds(rightId, sRights);
     var bounds;
     var yLefts = [];
     var yRights = [];
@@ -3460,6 +3464,13 @@ function verticalSubway(subway) {
         shift: new DOMPoint(shift_left, 0)
     };
 }
+function joinIds(id, indeces) {
+    if (!id || !indeces) {
+        return indeces;
+    }
+    var list = indeces.split(' ').map(function (i) { return id + '.' + i; });
+    return list.join(' ');
+}
 /**
  * Build the paths of a horizontally-oriented subway
  * @param subway The <div class='subway' with coordinate info
@@ -3472,6 +3483,10 @@ function horizontalSubway(subway) {
     if (sTops.length == 0 && sBottoms.length == 0) {
         return undefined;
     }
+    var topId = subway.getAttributeNS('', 'data-top-id');
+    var bottomId = subway.getAttributeNS('', 'data-bottom-id');
+    sTops = joinIds(topId, sTops);
+    sBottoms = joinIds(bottomId, sBottoms);
     var bounds;
     var xTops = [];
     var xBottoms = [];
@@ -5977,6 +5992,159 @@ function rot13(source) {
 /*-----------------------------------------------------------
  * _builder.ts
  *-----------------------------------------------------------*/
+/****************************************************************************
+ *          BUILDER
+ *
+ * Buider HTML is loosely inspired by React.
+ * It defines the data first.
+ * Then the HTML supports special tags for loops and conditionals,
+ * and the text and attributes support lookups into the data.
+ *
+ * Data initialization:
+ *    In the script block of the page, add two values to the boilerplate:
+ *        const boiler = {
+ *          ...
+ *          'reactiveBuilder': true,  // required
+ *          'builderLookup': {        // free-form, for example...
+ *            magic: 123,
+ *            line: { start: {x:1, y:2}, end: {x:3, y:4} },
+ *            fonts: [ 'bold', 'italic' ],
+ *            grid: [
+ *              [1, 2, 3],
+ *              [4, 5, 6]
+ *            ]
+ *          }
+ *        };
+ *
+ * Data lookup:
+ *    In text or attribute values, use curly-brace syntax to inject named values:
+ *    Examples in text:
+ *      {magic}             =>  123
+ *      {line.end.x}        =>  3
+ *      {grid.0.1}          =>  2   // note that .0 and .1 are indeces
+ *
+ *    Examples in attributes:
+ *      <div id="{magic}" class="{fonts.0} {fonts.1}">
+ *                          =>  <div id="123" class="bold italic">
+ *
+*    There is a special rule for tags and attributes prefixed with __
+ *    when you need to avoid the pre-processed tags/attributes being acted upon by the DOM.
+ *      <__img __src="{fonts.0}Icon.png">
+ *                          =>  <img src="boldIcon.png">
+ *
+ *   Parameterized lookups allow one lookup to be used to name the child of another.
+ *   Any nested pair of [brackets] restarts the lookup context at the root.
+ *      {grid.[line.start.x].[line.start.y]}
+ *                          ==  {grid.1.2}      =>  5
+ *
+ * <for> Loops:
+ *    Use the new <for> tag to loop over a set of values,
+ *    cloning and re-evaluating the contents of the loop for each.
+ *
+ *    The targets of loops are implicitly lookups, so the {curly} syntax is not needed.
+ *    As they expand, new nested values are dynamically added to the lookup table, to reflect the loop state.
+ *
+ *    Loop over elements in a list:
+ *      <for each="font" in="fonts">{font#}:{font} </for>
+ *                          =>  0:bold 1:italic
+ *        Note: in="fonts" could have been in="{fonts}"
+ *        Inside the <for> tags, new temporary named values exist based on the name specified in each=""
+ *          {font} for each value in the list,
+ *          and {font#} for the index of that item (starting at 0)
+ *
+ *    Loop over fields in an object:
+ *      <for key="a" in="line.start">{a#}:{a}={a!} </for>
+ *                          =>  0:x=1 1:y=2
+ *        Inside the <for> tags, an additional temporary:
+ *          {a} for each key in the object, {a#} for the index of that key,
+ *          and {a!} for the value corresponding to that key.
+ *
+ *    Loop over characters in text:
+ *      <for char="ch" in="fonts.0">{ch} </for>
+ *                          =>  b o l d
+ *      <for char="ch" in="other">{ch} </for>
+ *                          =>  o t h e r
+ *
+ *        Note that the in="value" can be a literal.
+ *
+ *    Loop over words in text:
+ *      <for char="w" in="Hello World!">{w}-{w}</for>
+ *                          =>  Hello-HelloWorld!-World!
+ *
+ *        Word is really anything delimited by spaces.
+ *
+ *    Loop over a range of values:
+ *      <for range="i" from="1" to="3">{i}</for>
+ *                          =>  123
+ *      <for range="i" from="1" until="3">{i}</for>
+ *                          =>  12
+ *      <for range="i" from="5" to="0" step="-2">{i}</for>
+ *                          =>  531
+ *
+ *        from=""   specifies the start value
+ *        to=""     specifies the last value (inclusive)
+ *        until=""  specifies a stop value (exclusive)
+ *        step=""   specifies a step value, if not 1
+ *
+ *    Use ranges to in compound lookups:
+ *      <for range="row" from="0" to="1">
+ *        <for range="col" from="0" to="2">
+ *          {grid.[row].[col]}
+ *      </for>,</for>
+ *                          =>  1 2 3 , 4 5 6
+ *
+ *  <if> conditionals
+ *    Use the new <if> tag to check a lookup against various states.
+ *    The checked values are implicitly lookups, so the {curly} syntax is not needed.
+ *    No new temporary values are generated by ifs.
+ *
+ *    Note: there is no else syntax. Instead, concatenate multiple ifs.
+ *      As such, be careful not to nest, unless intended.
+ *
+ *    <if test="magic" eq="123">Magic!</if>
+ *    <if test="magic" ne="123">Lame.</if>
+ *                          =>  Magic!
+ *    <if test="magic" ge="100">Big!
+ *    <if test="magic" ge="120">Bigger!</if>
+ *    </if>
+ *                          =>  Big!Bigger!
+ *
+ *        Relative operators:
+ *          eq=""       Equality (case-sensitive, in all cases)
+ *          ne=""       Not-equals
+ *          gt=""       Greater than
+ *          lt=""       Less than
+ *          ge=""       Greater than or equals
+ *          le=""       Less than or equals
+ *        Containment operators:
+ *          in="super"  Test value is IN (a substring of) "super"
+ *          ni="super"  Test value is NOT IN (not a substring of) "super"
+ *        There is no NOT modifier. Instead, use the converse operator.
+ *
+ *
+ *  Loops and Tables:
+ *    It is tempting to use loops inside <table> tags.
+ *    However, the DOM will likely refactor them if found inside a <table> but not inside <td>.
+ *
+ *    Two options: __prefix and CSS
+ *      <__table>
+ *        <for ...>
+ *          <__tr>
+ *            <if eq ...><__th></__th></if>
+ *            <if ne ...><__td></__td></if>
+ *          </__tr>
+ *        </for>
+ *      </__table>
+ *
+ *      <div style="display:table">
+ *        <for ...>
+ *          <div style="display:table-row">
+ *            <if eq ...><div style="display:table-header"></div></if>
+ *            <if ne ...><div style="display:table-cell"></div></if>
+ *          </div>
+ *        </for>
+ *      </div>
+ */
 /**
  * Look for control tags like for loops and if branches.
  */
@@ -6021,7 +6189,7 @@ function appendRange(parent, add) {
  * Potentially several kinds of for loops:
  * for each: <for each="var" in="list">  // ideas for optional args: first, last, skip
  * for char: <for char="var" in="text">  // every character in a string
- * for char: <for word="var" in="text">  // space-delimited substrings
+ * for word: <for word="var" in="text">  // space-delimited substrings
  * for range: <for range="var" from="first" to="last" or until="after">
  * for key: <for key="var" in="object">  // idea for optional arg: sort
  * @param src the <for> element
@@ -6032,6 +6200,7 @@ function startForLoop(src, context) {
     var dest = [];
     var iter = null;
     var list = [];
+    var vals = []; // not always used
     // <for each="variable_name" in="list">
     iter = src.getAttributeNS('', 'each');
     if (iter) {
@@ -6051,6 +6220,8 @@ function startForLoop(src, context) {
                 iter = src.getAttributeNS('', 'key');
                 if (iter) {
                     list = parseForKey(src, context);
+                    vals = list[1];
+                    list = list[0];
                 }
                 else {
                     iter = src.getAttributeNS('', 'range');
@@ -6068,6 +6239,9 @@ function startForLoop(src, context) {
     for (var i = 0; i < list.length; i++) {
         context[iter_index] = i;
         context[iter] = list[i];
+        if (vals.length > 0) {
+            context[iter + '!'] = vals[i];
+        }
         pushRange(dest, expandContents(src, context));
     }
     context[iter_index] = undefined;
@@ -6085,11 +6259,7 @@ function parseForEach(src, context) {
     if (!list_name) {
         throw new Error('for each requires "in" attribute');
     }
-    var list = (list_name in context) ? context[list_name] : null;
-    if (!list) {
-        throw new Error('unresolved list context: ' + list_name);
-    }
-    return list;
+    return anyFromContext(list_name, context);
 }
 function parseForText(src, context, delim) {
     var list_name = src.getAttributeNS('', 'in');
@@ -6108,11 +6278,11 @@ function parseForRange(src, context) {
     var until = src.getAttributeNS('', 'until');
     var last = src.getAttributeNS('', 'to');
     var step = src.getAttributeNS('', 'step');
-    var start = from ? parseInt(from) : 0;
-    var end = until ? parseInt(until)
-        : last ? (parseInt(last) + 1)
+    var start = from ? parseInt(textFromContext(from, context)) : 0;
+    var end = until ? parseInt(textFromContext(until, context))
+        : last ? (parseInt(textFromContext(last, context)) + 1)
             : start;
-    var inc = step ? parseInt(step) : 1;
+    var inc = step ? parseInt(textFromContext(step, context)) : 1;
     if (!until && inc < 0) {
         end -= 2; // from 5 to 1 step -1 means i >= 0
     }
@@ -6127,11 +6297,13 @@ function parseForKey(src, context) {
     if (!obj_name) {
         throw new Error('for each requires "in" attribute');
     }
-    var obj = (obj_name in context) ? context[obj_name] : null;
+    var obj = anyFromContext(obj_name, context);
     if (!obj) {
         throw new Error('unresolved list context: ' + obj_name);
     }
-    return Object.keys(obj);
+    var keys = Object.keys(obj);
+    var vals = keys.map(function (k) { return obj[k]; });
+    return [keys, vals];
 }
 /**
  * Potentially several kinds of if expressions:
@@ -6287,13 +6459,35 @@ function expandContents(src, context) {
     return dest;
 }
 /**
+ * Some HTML elements and attributes are immediately acted upon by the DOM.
+ * To delay that until after builds (especially <for> and <if>),
+ * use __prefx or suffix__, and the tag or attribute will be renamed when cloned.
+ * @param name Any tag or attribute name
+ * @returns The name, or the the name without the __
+ */
+function normalizeName(name) {
+    var i = name.indexOf('__');
+    if (i < 0) {
+        return name;
+    }
+    if (i == 0) {
+        return name.substring(2);
+    }
+    if (i + 2 == name.length) {
+        return name.substring(0, i);
+    }
+    return name;
+}
+/**
  * Deep-clone an HTML element
+ * Note that element and attribute names with __prefix will be renamed without __
  * @param elmt The original element
  * @param context A dictionary of all accessible values
  * @returns A cloned element
  */
 function cloneWithContext(elmt, context) {
-    var clone = document.createElement(elmt.tagName);
+    var tagName = normalizeName(elmt.tagName);
+    var clone = document.createElement(tagName);
     cloneAttributes(elmt, clone, context);
     for (var i = 0; i < elmt.childNodes.length; i++) {
         var child = elmt.childNodes[i];
@@ -6329,7 +6523,7 @@ function cloneWithContext(elmt, context) {
  */
 function cloneAttributes(src, dest, context) {
     for (var i = 0; i < src.attributes.length; i++) {
-        var name_5 = src.attributes[i].name;
+        var name_5 = normalizeName(src.attributes[i].name);
         var value = src.attributes[i].value;
         value = cloneText(value, context);
         if (name_5 == 'id') {
@@ -6418,7 +6612,12 @@ function cloneText(str, context) {
  * @param context A dictionary of all accessible values
  * @returns Resolved text
  */
-function textFromContext(key, context) {
+function anyFromContext(key, context) {
+    key = key.trim();
+    if (key[0] == '{' && key[key.length - 1] == '}') {
+        // Remove redundant {curly}, since some fields don't require them
+        key = key.substring(1, key.length - 2).trim();
+    }
     var path = key.split('.');
     var nested = [context];
     for (var i = 0; i < path.length; i++) {
@@ -6459,7 +6658,40 @@ function textFromContext(key, context) {
     if (nested.length > 1) {
         throw new Error('Malformed path has unmatched [ : ' + key);
     }
-    return '' + nested.pop();
+    return nested.pop();
+}
+/**
+ * Test a key in the current context
+ * @param key A key, initially from {curly} notation
+ * @param context A dictionary of all accessible values
+ * @returns true if key is a valid path within the context
+ */
+function validateKeyInContet(key, context) {
+    try {
+        anyFromContext(key, context);
+        return true;
+    }
+    catch (_a) {
+        return false;
+    }
+}
+/**
+ * Enable lookups into the context by key name.
+ * Keys can be paths, separated by dots (.)
+ * Paths can have other paths as nested arguments, using [ ]
+ * Note, the dot separator is still required.
+ *   example: foo.[bar].fuz       equivalent to foo[{bar}].fuz
+ *   example: foo.[bar.baz].fuz   equivalent to foo[{bar.baz}].fuz
+ * Even arrays use dot notation: foo.0 is the 0th item in foo
+ * @param key A key, initially from {curly} notation
+ * @param context A dictionary of all accessible values
+ * @returns Resolved text
+ */
+function textFromContext(key, context) {
+    if (!key.indexOf('.')) {
+        return key; // key can be a literal value
+    }
+    return '' + anyFromContext(key, context);
 }
 /**
  * Get a keyed child of a parent, where the key is either a dictionary key

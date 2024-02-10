@@ -93,11 +93,16 @@ function createSubway(subway:HTMLElement) {
  */
 function verticalSubway(subway:HTMLElement) :SubwayPath|undefined {
   const origin = subway.getBoundingClientRect();
-  const sLefts:string = subway.getAttributeNS('', 'data-left-end') || '';
-  const sRights:string = subway.getAttributeNS('', 'data-right-end') || '';
+  let sLefts:string = subway.getAttributeNS('', 'data-left-end') || '';
+  let sRights:string = subway.getAttributeNS('', 'data-right-end') || '';
   if (sLefts.length == 0 && sRights.length == 0) {
     return undefined;
   }
+
+  const leftId:string|null = subway.getAttributeNS('', 'data-left-id');
+  const rightId:string|null = subway.getAttributeNS('', 'data-right-id');
+  sLefts = joinIds(leftId, sLefts);
+  sRights = joinIds(rightId, sRights);
 
   let bounds:DOMRect|undefined;
   const yLefts:number[] = [];
@@ -179,6 +184,14 @@ function verticalSubway(subway:HTMLElement) :SubwayPath|undefined {
   } as SubwayPath;
 }
 
+function joinIds(id:string|null, indeces:string) :string {
+  if (!id || !indeces) {
+    return indeces;
+  }
+  const list = indeces.split(' ').map(i => id + '.' + i);
+  return list.join(' ');
+}
+
 /**
  * Build the paths of a horizontally-oriented subway
  * @param subway The <div class='subway' with coordinate info
@@ -186,11 +199,16 @@ function verticalSubway(subway:HTMLElement) :SubwayPath|undefined {
  */
 function horizontalSubway(subway:HTMLElement) :SubwayPath|undefined {
   const origin = subway.getBoundingClientRect();
-  const sTops:string = subway.getAttributeNS('', 'data-top-end') || '';
-  const sBottoms:string = subway.getAttributeNS('', 'data-bottom-end') || '';
+  let sTops:string = subway.getAttributeNS('', 'data-top-end') || '';
+  let sBottoms:string = subway.getAttributeNS('', 'data-bottom-end') || '';
   if (sTops.length == 0 && sBottoms.length == 0) {
     return undefined;
   }
+
+  const topId:string|null = subway.getAttributeNS('', 'data-top-id');
+  const bottomId:string|null = subway.getAttributeNS('', 'data-bottom-id');
+  sTops = joinIds(topId, sTops);
+  sBottoms = joinIds(bottomId, sBottoms);
 
   let bounds:DOMRect|undefined;
   const xTops:number[] = [];
