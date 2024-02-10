@@ -1386,6 +1386,9 @@ function restoreWords(values) {
         var value = values[i];
         if (value != undefined) {
             input.value = value;
+            if (value.length > 0) {
+                afterInputUpdate(input, value.substring(value.length - 1));
+            }
             var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
             if (extractId != null) {
                 updateWordExtraction(extractId);
@@ -1991,7 +1994,8 @@ function afterInputUpdate(input, key) {
         ? findNextInput(input, 0, 1, 'letter-input', 'letter-non-input')
         : findNextInput(input, plusX, 0, 'letter-input', 'letter-non-input');
     var multiLetter = hasClass(input.parentNode, 'multiple-letter');
-    if (!multiLetter && text.length > 1) {
+    var word = multiLetter || hasClass(input.parentNode, 'word-cell') || hasClass(input, 'word-input');
+    if (!word && text.length > 1) {
         overflow = text.substring(1);
         text = text.substring(0, 1);
     }
@@ -2019,14 +2023,19 @@ function afterInputUpdate(input, key) {
             }
         }
     }
-    else if (!hasClass(input.parentNode, 'fixed-spacing')) {
+    else if (!hasClass(input.parentNode, 'getElementsByClassName')) {
         var spacing = (text.length - 1) * 0.05;
         input.style.letterSpacing = -spacing + 'em';
         input.style.paddingRight = (2 * spacing) + 'em';
         //var rotate = text.length <= 2 ? 0 : (text.length * 5);
         //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
-    saveLetterLocally(input);
+    if (word) {
+        saveWordLocally(input);
+    }
+    else {
+        saveLetterLocally(input);
+    }
     inputChangeCallback(input, key);
 }
 exports.afterInputUpdate = afterInputUpdate;
@@ -2051,12 +2060,13 @@ function ExtractFromInput(input) {
  * @param extractedId The id of an element that collects extractions
  */
 function UpdateExtraction(extractedId) {
-    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
+    var extracted = document.getElementById(extractedId || 'extracted');
     if (extracted == null) {
         return;
     }
     var join = getOptionalStyle(extracted, 'data-extract-join') || '';
-    if (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null) {
+    if (extracted.getAttribute('data-extraction-source') != 'data'
+        && (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null)) {
         UpdateNumbered(extractedId);
         return;
     }
@@ -2067,7 +2077,7 @@ function UpdateExtraction(extractedId) {
     var ready = true;
     for (var i = 0; i < sorted_inputs.length; i++) {
         var input = sorted_inputs[i];
-        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
         var letter = '';
@@ -2102,7 +2112,46 @@ function UpdateExtraction(extractedId) {
             extraction += letter;
         }
     }
-    ApplyExtraction(extraction, extracted, ready);
+    if (extracted.getAttribute('data-letter-pattern') != null) {
+        var inps = extracted.getElementsByClassName('extractor-input');
+        if (inps.length > extraction.length) {
+            extraction += Array(1 + inps.length - extraction.length).join('_');
+        }
+        var ready_1 = true;
+        for (var i = 0; i < inps.length; i++) {
+            var inp = inps[i];
+            if (extraction[i] != '_') {
+                inp.value = extraction.substring(i, i + 1);
+            }
+            else {
+                inp.value = '';
+                ready_1 = false;
+            }
+        }
+        updateExtractionData(extracted, extraction, ready_1);
+    }
+    else {
+        ApplyExtraction(extraction, extracted, ready);
+    }
+}
+/**
+ * Cause a value to be extracted directly from data- attributes, rather than from inputs.
+ * @param elmt Any element - probably not an input
+ * @param value Any text, or null to revert
+ * @param extractedId The id of an element that collects extractions
+ */
+function ExtractViaData(elmt, value, extractedId) {
+    if (value == null) {
+        elmt.removeAttribute('data-extract-value');
+        toggleClass(elmt, 'extract-input', false);
+        toggleClass(elmt, 'extract-literal', false);
+    }
+    else {
+        elmt.setAttribute('data-extract-value', value);
+        toggleClass(elmt, 'extract-literal', true);
+        toggleClass(elmt, 'extract-input', true);
+    }
+    UpdateExtraction(extractedId);
 }
 /**
  * Puzzles can specify delayed literals within their extraction,
@@ -2303,20 +2352,25 @@ exports.onWordKey = onWordKey;
  * @param extractedId The ID of an extraction area
  */
 function updateWordExtraction(extractedId) {
-    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
+    var extracted = document.getElementById(extractedId || 'extracted');
     if (extracted == null) {
         return;
     }
     var inputs = document.getElementsByClassName('word-input');
     var sorted_inputs = SortElements(inputs);
     var extraction = '';
+    var hasWordExtraction = false;
     var partial = false;
     for (var i = 0; i < sorted_inputs.length; i++) {
         var input = sorted_inputs[i];
-        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
         var index = getOptionalStyle(input, 'data-extract-index', '');
+        if (index === null) {
+            continue;
+        }
+        hasWordExtraction = true;
         var indeces = index.split(' ');
         for (var j = 0; j < indeces.length; j++) {
             var inp = input;
@@ -2327,7 +2381,9 @@ function updateWordExtraction(extractedId) {
             }
         }
     }
-    ApplyExtraction(extraction, extracted, !partial);
+    if (hasWordExtraction) {
+        ApplyExtraction(extraction, extracted, !partial);
+    }
 }
 exports.updateWordExtraction = updateWordExtraction;
 /**
@@ -2387,8 +2443,8 @@ function onWordChange(event) {
         return; // Don't interfere with IMEs
     }
     var input = findParentOfClass(event.currentTarget, 'word-input');
-    saveWordLocally(input);
     inputChangeCallback(input, event.key);
+    saveWordLocally(input);
 }
 exports.onWordChange = onWordChange;
 /**

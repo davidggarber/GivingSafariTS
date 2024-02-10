@@ -574,6 +574,9 @@ function restoreWords(values:object) {
         var value = values[i] as string;
         if(value != undefined){
             input.value = value;
+            if (value.length > 0) {
+                afterInputUpdate(input, value.substring(value.length - 1));
+            }
             var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
             if (extractId != null) {
                 updateWordExtraction(extractId);
