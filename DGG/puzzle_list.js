@@ -47,7 +47,7 @@ var puzzles = [
     { title: 'Wild Game', safari: '21', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
     { title: 'Royal Fork', safari: '21', author: 'David Garber', mech: mechs.maze, group: group.puzzle, orientation: orient.portrait },
     { title: 'Tmmmm Moasty', safari: '21', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Dodecadent Dinners', safari: '21', author: 'David Garber', mech: mechs.math, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Dodecadent Dinner', safari: '21', author: 'David Garber', mech: mechs.math, group: group.puzzle, orientation: orient.portrait },
 ];
 
 /**

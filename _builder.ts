@@ -796,7 +796,7 @@ function validateKeyInContet(key:string, context:object) {
  * @returns Resolved text
  */
 function textFromContext(key:string, context:object):string {
-  if (!key.indexOf('.')) {
+  if (key.indexOf('.') < 0) {
     return key;  // key can be a literal value
   }
 
