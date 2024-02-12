@@ -297,7 +297,7 @@
                 <div class="clue-row">
                   <div class="clue-cell">
                     <div class="cross-off notes-below">
-                      <img class="{row}" __src="Images/Zoo/{col.prefix}{row#}.png">
+                      <img class="{row}" _src="Images/Zoo/{col.prefix}{row#}.png">
                     </div>
                   </div>
                 </div>
@@ -309,7 +309,7 @@
 
       <div id="phrases" class="letter-grid-2d" data-input-style="grid" data-literal-style="gridgap" data-extract-style="highlight">
         <for each="row" in="phrases">
-          <div __id="{row.row_id}" class="letter-cell-block create-from-pattern" data-letter-pattern="{row.letter_pattern}" data-extract-indeces="{row.extract_indeces}"></div>
+          <div _id="{row.row_id}" class="letter-cell-block create-from-pattern" data-letter-pattern="{row.letter_pattern}" data-extract-indeces="{row.extract_indeces}"></div>
           <div class="row-space">
             <for each="sub" in="row.subways">
               <div class="subway {sub.color}" data-top-id="{row.row_id}" data-bottom-id="{row.next_row_id}" data-top-end="{sub.tops}" data-bottom-end="{sub.bottoms}" data-center-line="{sub.center}"></div>

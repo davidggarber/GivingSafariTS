@@ -1047,7 +1047,7 @@ function saveCache() {
  * @param element an letter-input element
  */
 function saveLetterLocally(input) {
-    if (input) {
+    if (input && input != currently_restoring) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.letters[index] = input.value;
@@ -1061,7 +1061,7 @@ exports.saveLetterLocally = saveLetterLocally;
  * @param element an word-input element
  */
 function saveWordLocally(input) {
-    if (input) {
+    if (input && input != currently_restoring) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.words[index] = input.value;
@@ -1358,6 +1358,7 @@ function loadLocalStorage(storage) {
         fn();
     }
 }
+var currently_restoring = null;
 /**
  * Restore any saved letter input values
  * @param values A dictionary of index=>string
@@ -1366,6 +1367,7 @@ function restoreLetters(values) {
     localCache.letters = values;
     var inputs = document.getElementsByClassName('letter-input');
     for (var i = 0; i < inputs.length; i++) {
+        currently_restoring = inputs[i];
         var input = inputs[i];
         var value = values[i];
         if (value != undefined) {
@@ -1373,6 +1375,7 @@ function restoreLetters(values) {
             afterInputUpdate(input, values[i]);
         }
     }
+    currently_restoring = null;
 }
 /**
  * Restore any saved word input values
@@ -1382,6 +1385,7 @@ function restoreWords(values) {
     localCache.words = values;
     var inputs = document.getElementsByClassName('word-input');
     for (var i = 0; i < inputs.length; i++) {
+        currently_restoring = inputs[i];
         var input = inputs[i];
         var value = values[i];
         if (value != undefined) {
@@ -1395,6 +1399,7 @@ function restoreWords(values) {
             }
         }
     }
+    currently_restoring = null;
     if (inputs.length > 0) {
         updateWordExtraction(null);
     }
@@ -6027,9 +6032,9 @@ function rot13(source) {
  *      <div id="{magic}" class="{fonts.0} {fonts.1}">
  *                          =>  <div id="123" class="bold italic">
  *
-*    There is a special rule for tags and attributes prefixed with __
+*    There is a special rule for tags and attributes prefixed with _
  *    when you need to avoid the pre-processed tags/attributes being acted upon by the DOM.
- *      <__img __src="{fonts.0}Icon.png">
+ *      <_img _src="{fonts.0}Icon.png">
  *                          =>  <img src="boldIcon.png">
  *
  *   Parameterized lookups allow one lookup to be used to name the child of another.
@@ -6126,15 +6131,15 @@ function rot13(source) {
  *    It is tempting to use loops inside <table> tags.
  *    However, the DOM will likely refactor them if found inside a <table> but not inside <td>.
  *
- *    Two options: __prefix and CSS
- *      <__table>
+ *    Two options: _prefix and CSS
+ *      <_table>
  *        <for ...>
- *          <__tr>
- *            <if eq ...><__th></__th></if>
- *            <if ne ...><__td></__td></if>
- *          </__tr>
+ *          <_tr>
+ *            <if eq ...><_th></_th></if>
+ *            <if ne ...><_td></_td></if>
+ *          </_tr>
  *        </for>
- *      </__table>
+ *      </_table>
  *
  *      <div style="display:table">
  *        <for ...>
@@ -6145,15 +6150,40 @@ function rot13(source) {
  *        </for>
  *      </div>
  */
+var builder_tags = [
+    'build', 'use', 'for', 'if'
+];
+function identifyBuilders() {
+    for (var _i = 0, builder_tags_1 = builder_tags; _i < builder_tags_1.length; _i++) {
+        var t = builder_tags_1[_i];
+        var tags = document.getElementsByTagName(t);
+        for (var i = 0; i < tags.length; i++) {
+            toggleClass(tags[i], 'builder_control', true);
+        }
+    }
+}
 /**
  * Look for control tags like for loops and if branches.
  */
 function expandControlTags() {
+    identifyBuilders();
     var context = theBoiler().builderLookup || {};
-    var fors = document.getElementsByTagName('for');
-    while (fors.length > 0) {
-        var src = fors[0];
-        var dest = startForLoop(src, context);
+    var controls = document.getElementsByClassName('builder_control');
+    while (controls.length > 0) {
+        var src = controls[0];
+        var dest = [];
+        if (isTag(src, 'build')) {
+            dest = expandContents(src, context);
+        }
+        else if (isTag(src, 'for')) {
+            dest = startForLoop(src, context);
+        }
+        else if (isTag(src, 'if')) {
+            dest = startIfBlock(src, context);
+        }
+        else if (isTag(src, 'use')) {
+            dest = useTemplate(src, context);
+        }
         var parent_2 = src.parentNode;
         for (var d = 0; d < dest.length; d++) {
             var node = dest[d];
@@ -6161,7 +6191,7 @@ function expandControlTags() {
         }
         parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.removeChild(src);
         // See if there are more
-        fors = document.getElementsByTagName('for');
+        controls = document.getElementsByClassName('builder_control');
     }
 }
 exports.expandControlTags = expandControlTags;
@@ -6363,15 +6393,17 @@ function startIfBlock(src, context) {
     return [];
 }
 var inputAreaTagNames = [
-    'letter', 'literal', 'number', 'letters', 'word'
+    'letter', 'letters', 'literal', 'number', 'numbers', 'pattern', 'word'
 ];
 /**
  * Shortcut tags for text input. These include:
  *  letter: any single character
+ *  letters: a few characters, in a single input
  *  literal: readonly single character
- *  number: any numeric
- *  letters: multi-character with compression
+ *  number: any numeric digit
+ *  numbers: a few numeric digits
  *  word: full multi-character
+ *  pattern: multiple inputs, generated from a pattern
  * @param src One of the input shortcut tags
  * @param context A dictionary of all values that can be looked up
  * @returns a node array containing a single <span>
@@ -6386,21 +6418,33 @@ function startInputArea(src, context) {
     // Convert special attributes to data-* attributes for later text setup
     var attr;
     if (isTag(src, 'letter')) { // 1 input cell for (usually) one character
-        toggleClass(src, 'letter-cell', true);
+        toggleClass(span, 'letter-cell', true);
+        literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
+    }
+    else if (isTag(src, 'letters')) { // 1 input cell for a few characters
+        toggleClass(span, 'letter-cell', true);
+        toggleClass(span, 'multiple-letter', true);
         literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
     }
     else if (isTag(src, 'literal')) { // 1 input cell for (usually) one character
-        toggleClass(src, 'letter-cell', true);
-        toggleClass(src, 'literal', true);
+        toggleClass(span, 'letter-cell', true);
+        toggleClass(span, 'literal', true);
         cloneContents = true; // literal value
     }
-    else if (isTag(src, 'number')) { // 1 input cell for (usually) one character
-        toggleClass(src, 'letter-cell', true);
-        toggleClass(src, 'numeric', true);
+    else if (isTag(src, 'number')) { // 1 input cell for one numeric character
+        toggleClass(span, 'letter-cell', true);
+        toggleClass(span, 'numeric', true);
         literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
     }
-    else if (isTag(src, 'letters')) { // multiple input cells for (usually) one character each
-        toggleClass(src, 'create-from-pattern', true);
+    else if (isTag(src, 'numbers')) { // 1 input cell for multiple numeric digits
+        toggleClass(span, 'letter-cell', true);
+        toggleClass(span, 'multiple-letter', true);
+        toggleClass(span, 'numeric', true);
+        // To support longer (or negative) numbers, set class = 'multiple-letter'
+        literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
+    }
+    else if (isTag(src, 'pattern')) { // multiple input cells for (usually) one character each
+        toggleClass(span, 'create-from-pattern', true);
         if (attr = src.getAttributeNS('', 'pattern')) {
             span.setAttributeNS('', 'data-letter-pattern', textFromContext(attr, context));
         }
@@ -6412,7 +6456,7 @@ function startInputArea(src, context) {
         }
     }
     else if (isTag(src, 'word')) { // 1 input cell for (usually) one character
-        toggleClass(src, 'word-cell', true);
+        toggleClass(span, 'word-cell', true);
     }
     if (literal) {
         span.innerText = textFromContext(literal, context);
@@ -6442,6 +6486,9 @@ function expandContents(src, context) {
             else if (isTag(child_elmt, 'if')) {
                 pushRange(dest, startIfBlock(child_elmt, context));
             }
+            else if (isTag(child_elmt, 'use')) {
+                pushRange(dest, useTemplate(child_elmt, context));
+            }
             else if (isTag(child_elmt, inputAreaTagNames)) {
                 pushRange(dest, startInputArea(child_elmt, context));
             }
@@ -6461,26 +6508,23 @@ function expandContents(src, context) {
 /**
  * Some HTML elements and attributes are immediately acted upon by the DOM.
  * To delay that until after builds (especially <for> and <if>),
- * use __prefx or suffix__, and the tag or attribute will be renamed when cloned.
+ * use _prefx or suffix_, and the tag or attribute will be renamed when cloned.
  * @param name Any tag or attribute name
- * @returns The name, or the the name without the __
+ * @returns The name, or the the name without the _
  */
 function normalizeName(name) {
-    var i = name.indexOf('__');
-    if (i < 0) {
-        return name;
+    if (name.substring(0, 1) == '_') {
+        return name.substring(1);
     }
-    if (i == 0) {
-        return name.substring(2);
+    if (name.substring(name.length - 1) == '_') {
+        return name.substring(0, name.length - 1);
     }
-    if (i + 2 == name.length) {
-        return name.substring(0, i);
-    }
+    // Any other interior underscores are kept
     return name;
 }
 /**
  * Deep-clone an HTML element
- * Note that element and attribute names with __prefix will be renamed without __
+ * Note that element and attribute names with _prefix will be renamed without _
  * @param elmt The original element
  * @param context A dictionary of all accessible values
  * @returns A cloned element
@@ -6498,6 +6542,9 @@ function cloneWithContext(elmt, context) {
             }
             else if (isTag(child_elmt, 'if')) {
                 appendRange(clone, startIfBlock(child_elmt, context));
+            }
+            else if (isTag(child_elmt, 'use')) {
+                appendRange(clone, useTemplate(child_elmt, context));
             }
             else if (isTag(child_elmt, inputAreaTagNames)) {
                 appendRange(clone, startInputArea(child_elmt, context));
@@ -6717,5 +6764,48 @@ function getKeyedChild(parent, key) {
  */
 function cloneNode(node) {
     return node; // STUB: keep original node
+}
+/**
+ * Replace a <use> tag with the contents of a <template>.
+ * Along the way, push any attributes of the <use> tag onto the context.
+ * Afterwards, pop them back off.
+ * Optionally, a <use> tag without a template="" attribute is a way to modify the context for the use's children.
+ * @param node a <use> tag
+ * @param context The current context
+ * @returns An array of nodes to insert into the document in place of the <use> tag
+ */
+function useTemplate(node, context) {
+    var dest = [];
+    var tempId = node.getAttribute('template');
+    var template = tempId ? document.getElementById(tempId) : undefined;
+    var popContext = {};
+    for (var i = 0; i < node.attributes.length; i++) {
+        var attr = node.attributes[i].name;
+        var val = node.attributes[i].value;
+        var attri = node.attributes[i].name.toLowerCase();
+        if (attri != 'template' && attri != 'builder_control') {
+            popContext[attr] = context[attr];
+            context[attr] = anyFromContext(val, context) || val;
+        }
+    }
+    if (tempId) {
+        var template_1 = document.getElementById(tempId);
+        if (!template_1) {
+            throw new Error('Unresolved template ID: ' + tempId);
+        }
+        // The template doesn't have any child nodes. Its content must first be cloned.
+        var clone = template_1.content.cloneNode(true);
+        dest = expandContents(clone, context);
+    }
+    else {
+        dest = expandContents(node, context);
+    }
+    for (var i = 0; i < node.attributes.length; i++) {
+        var attr = node.attributes[i].name.toLowerCase();
+        if (attr != 'template' && attr != 'builder_control') {
+            context[attr] = popContext[attr];
+        }
+    }
+    return dest;
 }
 //# sourceMappingURL=kit.js.map

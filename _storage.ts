@@ -228,7 +228,7 @@ function saveCache() {
  * @param element an letter-input element
  */
 export function saveLetterLocally(input:HTMLInputElement) {
-    if (input) {
+    if (input && input != currently_restoring) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.letters[index] = input.value;
@@ -242,7 +242,7 @@ export function saveLetterLocally(input:HTMLInputElement) {
  * @param element an word-input element
  */
 export function saveWordLocally(input:HTMLInputElement) {
-    if (input) {
+    if (input && input != currently_restoring) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.words[index] = input.value;
@@ -545,6 +545,8 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     }
 }
 
+let currently_restoring:HTMLElement|null = null;
+
 /**
  * Restore any saved letter input values
  * @param values A dictionary of index=>string
@@ -553,6 +555,7 @@ function restoreLetters(values:object) {
     localCache.letters = values;
     var inputs = document.getElementsByClassName('letter-input');
     for (var i = 0; i < inputs.length; i++) {
+        currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
         if(value != undefined){
@@ -560,6 +563,7 @@ function restoreLetters(values:object) {
             afterInputUpdate(input, values[i]);
         }
     }
+    currently_restoring = null;
 }
 
 /**
@@ -570,6 +574,7 @@ function restoreWords(values:object) {
     localCache.words = values;
     var inputs = document.getElementsByClassName('word-input');
     for (var i = 0; i < inputs.length; i++) {
+        currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
         if(value != undefined){
@@ -583,6 +588,7 @@ function restoreWords(values:object) {
             }            
         }
     }
+    currently_restoring = null;
     if (inputs.length > 0) {
         updateWordExtraction(null);
     }

@@ -38,7 +38,7 @@ Examples in attributes:
 Example | Generated | Notes
 --------|-----------|-------
 `<div id="{magic}" class="{fonts.0} {fonts.1}">` | <div id="123" class="bold italic">
-`<img__ src__="{fonts.0}Icon.png">` | \<img src="boldIcon.png"> | There is a special rule for tags and attributes suffixed with __ <br> when you need to avoid the pre-processed tags/attributes being acted upon by the DOM.
+`<img_ src_="{fonts.0}Icon.png">` | \<img src="boldIcon.png"> | There is a special rule for tags and attributes suffixed with _ <br> when you need to avoid the pre-processed tags/attributes being acted upon by the DOM.
 `{grid.[line.start.x].[line.start.y]}` | 5  (same as {grid.1.2}) | Parameterized lookups allow one lookup to be used to name the child of another. <br> Any nested pair of **\[brackets]** restarts the lookup context at the root.
   
 # \<for> Loops:
@@ -93,7 +93,10 @@ It is tempting to use loops inside \<table> tags.
 However, the DOM will likely refactor them if found inside a \<table> but not inside a \<td>.
 
 Two options:
-sufix__ syntax | CSS
+sufix_ syntax | CSS
 ---------------|-----
-`<table__>` <br>&nbsp;&nbsp;`<for ...>` <br>&nbsp;&nbsp;&nbsp;&nbsp;`<tr__>...</tr__>` <br>&nbsp;&nbsp;`</for>` <br> `</table__>` | `<div style="display:table">` <br>&nbsp;&nbsp;`<for ...>` <br>&nbsp;&nbsp;&nbsp;&nbsp;`<div style="display:table-row">...</div>` <br>&nbsp;&nbsp;`</for>` <br> `</div>`
+`<table_>` <br>&nbsp;&nbsp;`<for ...>` <br>&nbsp;&nbsp;&nbsp;&nbsp;`<tr_>...</tr_>` <br>&nbsp;&nbsp;`</for>` <br> `</table_>` | `<div style="display:table">` <br>&nbsp;&nbsp;`<for ...>` <br>&nbsp;&nbsp;&nbsp;&nbsp;`<div style="display:table-row">...</div>` <br>&nbsp;&nbsp;`</for>` <br> `</div>`
 
+# Text input shortcuts
+
+The builder defines several custom tags
