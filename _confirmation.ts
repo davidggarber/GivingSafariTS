@@ -416,7 +416,7 @@ function appendResponse(block:HTMLDivElement, response:string) {
         if (caret >= 0) {
             response = response.substring(0, caret);
         }
-        const parts = response.split('^');  // caret now allowed in a URL
+        const parts = response.split('^');  // caret not allowed in a URL
         div.appendChild(document.createTextNode('You have unlocked '));
         const link = document.createElement('a');
         link.href = response;
@@ -432,7 +432,7 @@ function appendResponse(block:HTMLDivElement, response:string) {
         div.appendChild(iframe);
     }
     else if (type == ResponseType.Show) {
-        const parts = response.split('^');  // caret now allowed in a URL
+        const parts = response.split('^');  // caret not allowed in a URL
         const elmt = document.getElementById(parts[0]);
         if (elmt) {
             if (parts.length > 1) {
