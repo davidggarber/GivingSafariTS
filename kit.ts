@@ -3224,7 +3224,7 @@ interface LetterStyles {
  * @param defExtract - A default extraction style
  * @returns An object with a style name for each role
  */
-function getLetterStyles(   elmt: Element, 
+export function getLetterStyles(   elmt: Element, 
                             defLetter: string, 
                             defLiteral: string|undefined, 
                             defExtract: string)
@@ -7090,6 +7090,9 @@ function startInputArea(src:HTMLElement, context:object):Node[] {
 
   let cloneContents = false;
   let literal:string|null = null;
+  const extract = src.getAttributeNS('', 'extract');
+
+  var styles = getLetterStyles(src, 'underline', '', 'box');
 
   // Convert special attributes to data-* attributes for later text setup
   let attr:string|null;
@@ -7119,6 +7122,9 @@ function startInputArea(src:HTMLElement, context:object):Node[] {
     // To support longer (or negative) numbers, set class = 'multiple-letter'
     literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
   }
+  else if (isTag(src, 'word')) {  // 1 input cell for (usually) one character
+    toggleClass(span, 'word-cell', true);
+  }
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
     toggleClass(span, 'create-from-pattern', true);
     if (attr = src.getAttributeNS('', 'pattern')) {
@@ -7131,13 +7137,21 @@ function startInputArea(src:HTMLElement, context:object):Node[] {
       span.setAttributeNS('', 'data-number-assignments', textFromContext(attr, context));
     }
   }
-  else if (isTag(src, 'word')) {  // 1 input cell for (usually) one character
-    toggleClass(span, 'word-cell', true);
+  else {
+    return [src];  // Unknown tag. NYI?
   }
 
   if (literal) {
     span.innerText = textFromContext(literal, context);  
+    applyAllClasses(span, styles.literal);
   }      
+  else if (!isTag(src, 'pattern')) {
+    applyAllClasses(span, styles.letter);
+    if (extract != null) {
+      applyAllClasses(span, styles.extract);
+    }
+  }
+
   if (cloneContents) {
     appendRange(span, expandContents(src, context));
   }

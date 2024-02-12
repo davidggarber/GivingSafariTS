@@ -4,7 +4,7 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.expandControlTags = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = void 0;
+exports.expandControlTags = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -2985,6 +2985,7 @@ function getLetterStyles(elmt, defLetter, defLiteral, defExtract) {
         'literal': literal
     };
 }
+exports.getLetterStyles = getLetterStyles;
 /**
  * Create a span block for a literal character, which can be a sibling of text input fields.
  * It should occupy the same space, although may not have the same decorations such as underline.
@@ -6415,6 +6416,8 @@ function startInputArea(src, context) {
     cloneAttributes(src, span, context);
     var cloneContents = false;
     var literal = null;
+    var extract = src.getAttributeNS('', 'extract');
+    var styles = getLetterStyles(src, 'underline', '', 'box');
     // Convert special attributes to data-* attributes for later text setup
     var attr;
     if (isTag(src, 'letter')) { // 1 input cell for (usually) one character
@@ -6443,6 +6446,9 @@ function startInputArea(src, context) {
         // To support longer (or negative) numbers, set class = 'multiple-letter'
         literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
     }
+    else if (isTag(src, 'word')) { // 1 input cell for (usually) one character
+        toggleClass(span, 'word-cell', true);
+    }
     else if (isTag(src, 'pattern')) { // multiple input cells for (usually) one character each
         toggleClass(span, 'create-from-pattern', true);
         if (attr = src.getAttributeNS('', 'pattern')) {
@@ -6455,11 +6461,18 @@ function startInputArea(src, context) {
             span.setAttributeNS('', 'data-number-assignments', textFromContext(attr, context));
         }
     }
-    else if (isTag(src, 'word')) { // 1 input cell for (usually) one character
-        toggleClass(span, 'word-cell', true);
+    else {
+        return [src]; // Unknown tag. NYI?
     }
     if (literal) {
         span.innerText = textFromContext(literal, context);
+        applyAllClasses(span, styles.literal);
+    }
+    else if (!isTag(src, 'pattern')) {
+        applyAllClasses(span, styles.letter);
+        if (extract != null) {
+            applyAllClasses(span, styles.extract);
+        }
     }
     if (cloneContents) {
         appendRange(span, expandContents(src, context));

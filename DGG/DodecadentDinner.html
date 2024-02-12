@@ -17,10 +17,10 @@
         'reactiveBuilder': true,
         'builderLookup': {
         },
-        // "validation":{}
-       };
+        "validation":{"final-answer":{"CVPGBTENUNZF":"1","89R2G56171R4":"2Hfr sbbqf gb pbaireg onpx gb yrggref","891121056171114":"2Hfr sbbqf gb pbaireg onpx gb yrggref"}}
+      };
 
-       var images = {
+      var images = {
         a:'Images/Dodec/Apple.png',
         c:'Images/Dodec/Corn.png',
         e:'Images/Dodec/Egg.png',
@@ -34,28 +34,32 @@
         s:'Images/Dodec/Shrimp.png',
         t:'Images/Dodec/Turkey.png',
         _:'Images/Dodec/Blank.png',
-       };
-       var decoder = [
+      };
+      var decoder = [
         ['a','m'],
         ['c','o'],
         ['e','p'],
         ['g','r'],
         ['h','s'],
         ['i','t'],
-       ]
+      ];
 
-       var sample1 = ['grt','-','trg','tmi'];
-       var sample2 = ['grt','+','trg','tmi'];
-       var longDiv = ['aarheo',];
-
-
-       boiler['builderLookup'] =
+      boiler['builderLookup'] =
       {
         images: images,
         decoder: decoder,
-        final1: 'rephotograph',
-        final2: 'tprhethpaeti',
       };
+
+      function updateDecoder(input, key) {
+        var val = input.value;
+        var id = input.parentNode.id;
+        var fruit = id.substring(3);
+        var cls = 'fd_' + fruit;
+        var spans = document.getElementsByClassName(cls);
+        for (var s of spans) {
+          s.innerText = val;
+        }
+      }
 
     </script>
     <style>
@@ -89,14 +93,33 @@
         font-size: 28pt;
         vertical-align: middle;
       }
+      .fruitDigit {
+        position: relative;
+      }
       .big-food img {
         height: 0.5in;
       }
       .small-food img {
         height: 0.3in;
       }
+      .big-food .overlay {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        font-size: 18pt;
+        color: #cff;
+        text-shadow: 0 0 3px black;
+      }
+      .small-food .overlay {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+        font-size: 15pt;
+        color: #cff;
+        text-shadow: 0 0 3px black;
+      }
       #given {
-        margin-top: 0.25in;
+        margin-top: 0.1in;
       }
       #given td {
         vertical-align: middle;
@@ -104,25 +127,29 @@
       }
       #solving {
         position: absolute;
-        top: 1.75in;
+        top: 1.5in;
         left: 0px;
         width: 4in;
         text-align: right;
       }
       #whatIs {
         position: absolute;
-        top: 7.65in;
+        top: 7.3in;
         left: 0px;
         width: 6.75in;
         text-align: right;
       }
       #whatIs .letter-cell {
         height: 0.5in;
-        width: 0.42in;
+        width: 0.365in;
         font-size: 28pt;
       }
       .operator {
+        position: absolute;
         font-size: 24pt;
+      }
+      #solving .operator {
+        left: 140px;
       }
       .line {
         display: inline-block;
@@ -143,19 +170,19 @@
   <body id="DodecadentDinner">
     <div id="pageBody">
       <build>
-        <table_ id="dodecoder">
+        <table_ id="dodecoder" data-input-style="none">
           <tr_>
             <th_ colspan="2">(Do-)decoder key:</th_>
           </tr_>
           <for each="row" in="decoder">
             <tr_>
               <td_>
-                <img _src="{images.[row.0]}">=
-                <letters id="dd_{row.0}" class="multiple-letter"></letters>
+                <img _src="{images.[row.0]}"> =
+                <letters id="dd_{row.0}" class="multiple-letter" data-onchange="updateDecoder"></letters>
               </td_>
               <td_>
-                <img _src="{images.[row.1]}">=
-                <letters id="dd_{row.1}" class="multiple-letter"></letters>
+                <img _src="{images.[row.1]}"> =
+                <letters id="dd_{row.1}" class="multiple-letter" data-onchange="updateDecoder"></letters>
               </td_>
             </tr_>
           </for>
@@ -168,16 +195,16 @@
       <table id="given" class="small-food">
         <tr>
           <td style="width: 1in;">Given:</td>
-          <td style="width: 1.5in; text-align: right; line-height: 0.4in;">
-            <span><use template="fruitDigits" sequence="grt"></use></span><br>
-            <span style="border-bottom: solid 1px black;"><use template="operator" op="−"></use><use template="fruitDigits" sequence="_trg"></use></span><br>
-            <span><use template="fruitDigits" sequence="tmi"></use></span>    
+          <td style="width: 1.5in; text-align: right;">
+            <span class="line"><use template="fruitDigits" sequence="grt"></use></span><br>
+            <span class="underline"><use template="operator" op="−"></use><use template="fruitDigits" sequence="__trg"></use></span><br>
+            <span class="line"><use template="fruitDigits" sequence="tmi"></use></span>    
           </td>
           <td style="width: 1.5in; text-align: center;">and</td>
-          <td style="width: 1.5in; text-align: right; line-height: 0.4in;">
-            <span><use template="fruitDigits" sequence="tmi"></use></span><br>
-            <span style="border-bottom: solid 1px black;"><use template="operator" op="+"></use><use template="fruitDigits" sequence="_imt"></use></span><br>
-            <span><use template="fruitDigits" sequence="aeom"></use></span>    
+          <td style="width: 1.5in; text-align: right;">
+            <span class="line"><use template="fruitDigits" sequence="tmi"></use></span><br>
+            <span class="underline"><use template="operator" op="+"></use><use template="fruitDigits" sequence="__imt"></use></span><br>
+            <span class="line"><use template="fruitDigits" sequence="aeom"></use></span>    
           </td>
         </tr>
       </div>
@@ -186,15 +213,15 @@
         <p style="text-align: left; font-size: 12pt;">And solving this long division:</p>
         <span class="underline"><use template="fruitDigits" sequence="___aarheo"></use></span><br>
         <span class="line"><use template="fruitDigits" sequence="tma__cchsteto"></use></span><br>
-        <span class="underline"><use template="fruitDigits" sequence="tma"></use></span><span class="line"><use template="fruitDigits" sequence="_____"></use></span><br>
+        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="tma"></use></span><span class="line"><use template="fruitDigits" sequence="_____"></use></span><br>
         <span class="line"><use template="fruitDigits" sequence="srsteto"></use></span><br>
-        <span class="underline"><use template="fruitDigits" sequence="tma"></use></span><span class="line"><use template="fruitDigits" sequence="____"></use></span><br>
+        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="tma"></use></span><span class="line"><use template="fruitDigits" sequence="____"></use></span><br>
         <span class="line"><use template="fruitDigits" sequence="ahcteto"></use></span><br>
-        <span class="underline"><use template="fruitDigits" sequence="agrr"></use></span><span class="line"><use template="fruitDigits" sequence="___"></use></span><br>
+        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="agrr"></use></span><span class="line"><use template="fruitDigits" sequence="___"></use></span><br>
         <span class="line"><use template="fruitDigits" sequence="appeto"></use></span><br>
-        <span class="underline"><use template="fruitDigits" sequence="apgh"></use></span><span class="line"><use template="fruitDigits" sequence="__"></use></span><br>
+        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="apgh"></use></span><span class="line"><use template="fruitDigits" sequence="__"></use></span><br>
         <span class="line"><use template="fruitDigits" sequence="tgto"></use></span><br>
-        <span class="double underline"><use template="fruitDigits" sequence="tgto"></use></span><br>
+        <use template="operator" op="−"></use><span class="double underline"><use template="fruitDigits" sequence="tgto"></use></span><br>
         <svg width="15" height="40" style="position:absolute; top: 92.5px; left:163px">
           <ellipse cx="-30" cy="20" rx="40" ry="40" fill="none" stroke="black" stroke-width="1"></ellipse>
         </svg>
@@ -205,13 +232,17 @@
           <p style="position: absolute; left:0px; top: 0.3in; font-size: 12pt;">What is:</p>
           <span class="big-food"><use template="fruitDigits" sequence="rephotograph"></use></span><br>
           <span class="big-food" style="border-bottom: solid 1px black;"><use template="operator" op="+"></use><use template="fruitDigits" sequence="_tprhethpaeti"></use></span><br>
-          <letters></letters><letters></letters><letters></letters><letters></letters><letters></letters><letters></letters><letters></letters><letters></letters><letters></letters><letters></letters><letters></letters><letters></letters>
+          <pattern pattern="12" class="no-print"></pattern>
         </div>
       </build>
 
+      <div class="no-print" style="position:absolute; bottom: -0.5in; right: 0px;">
+        Answer:<br><input id="final-answer" class="extracted" type="text" style="width:2.5in; text-transform: uppercase;"></input>
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
 
       <template id="fruitDigits">
-        <for char="ch" in="sequence"><span class="digit"><img _src="{images.[ch]}"></span></for>
+        <for char="ch" in="sequence"><span class="fruitDigit"><img _src="{images.[ch]}"><span class="overlay fd_{ch}"></span></span></for>
       </template>
 
       <template id="operator">
