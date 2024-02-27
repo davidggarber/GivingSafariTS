@@ -113,9 +113,9 @@ type LinkDetails = {
 
 type PuzzleEventDetails = {
     title: string;
-    logo: string;  // path from root
+    logo?: string;  // path from root
     icon: string;  // path from root
-    puzzleList: string;
+    puzzleList?: string;
     cssRoot: string;  // path from root
     fontCss: string;  // path from root
     googleFonts?: string;  // comma-delimeted list
@@ -163,6 +163,20 @@ const safari20Details:PuzzleEventDetails = {
     // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 }
 
+const safari24Details:PuzzleEventDetails = {
+    'title': 'Game Night',
+    // 'logo': './Images/PS24 logo.png',
+    'icon': '../24/Images/Sample_Icon.png',
+    // 'puzzleList': './safari.html',
+    'cssRoot': '../Css/',
+    'fontCss': '../24/Css/Fonts24.css',
+    'googleFonts': 'Goblin+One,Caveat',  // no whitespace
+    'links': [],
+    // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+                //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+    // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+}
+
 const safariDggDetails:PuzzleEventDetails = {
     'title': 'David’s Puzzles',
     'logo': './Images/octopus_watermark.png',
@@ -182,6 +196,7 @@ const pastSafaris = {
     'Single': safariSingleDetails,
     '20': safari20Details,
     'Dgg': safariDggDetails,
+    '24': safari24Details,
 }
 
 let safariDetails:PuzzleEventDetails;

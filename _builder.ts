@@ -279,6 +279,10 @@ function startForLoop(src:HTMLElement, context:object):Node[] {
     }
   }
 
+  if (!list) {
+    throw new Error('Unable to resolve from context: ' + src.outerHTML);
+  }
+
   const iter_index = iter + '#';
   for (let i = 0; i < list.length; i++) {
     context[iter_index] = i;
@@ -796,11 +800,15 @@ function validateKeyInContet(key:string, context:object) {
  * @returns Resolved text
  */
 function textFromContext(key:string, context:object):string {
-  if (key.indexOf('.') < 0) {
-    return key;  // key can be a literal value
+  try {
+    return '' + anyFromContext(key, context);
   }
-
-  return '' + anyFromContext(key, context);
+  catch(ex) {
+    if (key.indexOf('.') < 0) {
+      return key;  // key can be a literal value
+    }
+    throw ex;
+  }
 }
 
 

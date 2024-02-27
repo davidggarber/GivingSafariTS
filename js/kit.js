@@ -4173,6 +4173,13 @@ function eraseStamp(target) {
             return _eraseTool; // erase
         }
     }
+    else if (hasClass(target, 'stampedObject')) {
+        // Template is a class on the container itself
+        var curTool = target.getAttributeNS('', 'data-template-id');
+        toggleClass(target, 'stampedObject', false);
+        toggleClass(target, curTool, false);
+        target.removeAttributeNS('', 'data-template-id');
+    }
     return null; // normal
 }
 /**
@@ -4185,10 +4192,16 @@ function doStamp(target, tool) {
     // Template can be null if tool removes drawn objects
     var template = document.getElementById(tool);
     if (template != null) {
+        // Inject the template into the stampable container
         var clone = template.content.cloneNode(true);
         parent.appendChild(clone);
-        toggleClass(target, tool, true);
     }
+    else if (tool) {
+        // Apply the template ID as a style. The container is itself the stamped object
+        toggleClass(target, 'stampedObject', true);
+        target.setAttributeNS('', 'data-template-id', tool);
+    }
+    toggleClass(target, tool, true);
     if (_extractorTool != null) {
         updateStampExtraction();
     }
@@ -5076,6 +5089,19 @@ var safari20Details = {
         'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
     // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 };
+var safari24Details = {
+    'title': 'Game Night',
+    // 'logo': './Images/PS24 logo.png',
+    'icon': '../24/Images/Sample_Icon.png',
+    // 'puzzleList': './safari.html',
+    'cssRoot': '../Css/',
+    'fontCss': '../24/Css/Fonts24.css',
+    'googleFonts': 'Goblin+One,Caveat',
+    'links': [],
+    // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+    //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+    // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+};
 var safariDggDetails = {
     'title': 'David’s Puzzles',
     'logo': './Images/octopus_watermark.png',
@@ -5094,6 +5120,7 @@ var pastSafaris = {
     'Single': safariSingleDetails,
     '20': safari20Details,
     'Dgg': safariDggDetails,
+    '24': safari24Details,
 };
 var safariDetails;
 /**
@@ -6266,6 +6293,9 @@ function startForLoop(src, context) {
             }
         }
     }
+    if (!list) {
+        throw new Error('Unable to resolve from context: ' + src.outerHTML);
+    }
     var iter_index = iter + '#';
     for (var i = 0; i < list.length; i++) {
         context[iter_index] = i;
@@ -6748,10 +6778,15 @@ function validateKeyInContet(key, context) {
  * @returns Resolved text
  */
 function textFromContext(key, context) {
-    if (key.indexOf('.') < 0) {
-        return key; // key can be a literal value
+    try {
+        return '' + anyFromContext(key, context);
     }
-    return '' + anyFromContext(key, context);
+    catch (ex) {
+        if (key.indexOf('.') < 0) {
+            return key; // key can be a literal value
+        }
+        throw ex;
+    }
 }
 /**
  * Get a keyed child of a parent, where the key is either a dictionary key

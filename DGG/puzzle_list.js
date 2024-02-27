@@ -39,14 +39,19 @@ var meta = {
  *   feeder: does this puzzle advertise that it unlocks a feeder to another puzzle?
  */
 var puzzles = [
-    { title: 'Zoology', thumb: 'Zoo', safari: '20', author: 'David Garber', mech: mechs.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [meta.radio,2] },
-    { title: 'Radio Waves', thumb: 'Rw', safari: '20', author: 'David Garber', mech: mechs.meta, group: group.meta, icon: meta.radio, orientation: orient.portrait },
-    { title: 'Leftovers', file: 'Aaaaaaaa', safari: '21', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Mandatory Meeting', safari: '16', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Planet of the Apes', safari: '18', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Detour', safari: '19', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
+    { title: 'John Deere', safari: '19', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Pavement', safari: '19', author: 'David Garber', mech: mechs.logic, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Zoology', safari: '20', author: 'David Garber', mech: mechs.rebus, group: group.puzzle, orientation: orient.portrait },
+    { title: 'Radio Waves', safari: '20', author: 'David Garber', mech: mechs.meta, group: group.meta, icon: meta.radio, orientation: orient.portrait },
+    // { title: 'Leftovers', safari: '21', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
     { title: 'Grandma’s Secret Recipe', file:'GrandmasSecretRecipe', safari: '21', author: 'David Garber', mech: mechs.logic, group: group.puzzle, orientation: orient.portrait },
     { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', safari: '21', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
     { title: 'Wild Game', safari: '21', author: 'David Garber', mech: mechs.word, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Royal Fork', safari: '21', author: 'David Garber', mech: mechs.maze, group: group.puzzle, orientation: orient.portrait },
-    { title: 'Tmmmm Moasty', safari: '21', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
+    // { title: 'Royal Fork', safari: '21', author: 'David Garber', mech: mechs.maze, group: group.puzzle, orientation: orient.portrait },
+    // { title: 'Tmmmm Moasty', safari: '21', author: 'David Garber', mech: mechs.trivia, group: group.puzzle, orientation: orient.portrait },
     { title: 'Dodecadent Dinner', safari: '21', author: 'David Garber', mech: mechs.math, group: group.puzzle, orientation: orient.portrait },
 ];
 

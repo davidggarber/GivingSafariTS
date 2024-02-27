@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <link href="../24/Css/PaintByNumbers.css" rel="Stylesheet" type="text/css"></link>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '24',
+        'title': 'Battleship',
+        'author': 'David Garber',
+        'copyright': '2024',
+        'orientation': 'landscape',
+        'abilities': {
+          'stamping': true,
+        },
+        'onStamp': validatePBN,
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+      };
+
+      var cols = [
+        [4], [4], [8], [1,8], [1,7],
+        [1,6], [9], [9], [10], [1,9],
+        [1,10], [1,10], [12], [12], [12],
+        [10], [2,1,1,11], [25], [2,1,1,11], [12],
+        [13], [14], [14], [16], [17],
+        [18], [24], [25], [4,18], [18],
+        [14], [13], [12], [13], [13],
+        [13], [1,10], [1,11], [1,10], [1,3,3,2],
+        [1,1,1,1,2], [1,1,2], [1,8], [1,1,4], [1,1,4],
+        [1,2], [8], [7], [7], [8],
+      ];
+      var rows = [
+        [1, 1], [1, 3], [3, 3], [3, 3], [1, 3],
+        [1, 2], [1, 2], [3, 5], [1, 6], [1, 7],
+        [3, 7], [1, 10], [1, 12, 7], [6, 1, 17], [3, 20, 7],
+        [6, 30, 1], [1, 44], [39, 1, 4], [41, 1, 1, 4], [40, 1, 4],
+        [40, 3, 4], [37, 3, 4], [48], [3, 41], [2, 30],
+      ];
+
+
+      boiler['builderLookup'] =
+      {
+        colGroups: cols,
+        rowGroups: rows,
+      };
+
+      function validatePBN(target) {
+        var pos = target.id.split('_');
+        var row = parseInt(pos[0]);
+        var col = parseInt(pos[1]);
+        var cells = document.getElementsByClassName('stampable');
+        var rowOn = [];
+        var colOn = [];
+        for (var c of cells) {
+          if (hasClass(c, 'stampPaint')) {
+            pos = c.id.split('_');
+            if (pos[0] == row) {
+              rowOn.push(parseInt(pos[1]));
+            }
+            if (pos[1] == col) {
+              colOn.push(parseInt(pos[0]));
+            }
+          }
+        }
+        var rSum = document.getElementById('rowSummary-' + row);
+        if (rSum) {
+          groups = summarize(rowOn);
+          rSum.innerHTML = '';
+          for (var g of groups) {
+            if (g > 0) {
+              var span = document.createElement('span');
+              toggleClass(span, 'pbn-row-group', true);
+              span.innerText = g;
+              rSum.appendChild(span);
+            }
+          }
+          var header = rows[row];
+          var comp = comparegroups(header, groups);
+          toggleClass(rSum, 'done', comp == 0);
+          toggleClass(rSum, 'exceeded', comp > 0);
+        }
+        var cSum = document.getElementById('colSummary-' + col);
+        if (cSum) {
+          groups = summarize(colOn);
+          cSum.innerHTML = '';
+          for (var g of groups) {
+            if (g > 0) {
+              var span = document.createElement('span');
+              toggleClass(span, 'pbn-col-group', true);
+              span.innerText = g;
+              cSum.appendChild(span);
+            }
+          }
+          var header = cols[col];
+          var comp = comparegroups(header, groups);
+          toggleClass(cSum, 'done', comp == 0);
+          toggleClass(cSum, 'exceeded', comp > 0);
+        }
+
+      }
+
+      function summarize(list) {
+        var prev = NaN;
+        var consec = 0;
+        var summary = [];
+        list.push(NaN);
+        for (var next of list) {
+          if (next == prev + 1) {
+            consec++;
+          }
+          else {
+            if (consec > 0) {
+              summary.push(consec);
+              var gap = next - prev - 1;
+              if (gap != NaN && gap > 0) {
+                summary.push(-gap);
+              }
+            }
+            consec = (next != NaN) ? 1 : 0;
+          }
+          prev = next;
+        }
+        if (summary.length == 0) {
+          return [0];
+        }
+        return summary;
+      }
+
+      function comparegroups(expect, have) {
+        var exact = true;
+        var e = 0;
+        var gap = 0;
+        var prevH = 0;
+        var curE = expect.length > 0 ? expect[0] : 0;
+        for (var h of have) {
+          if (h <= 0) {
+            gap = -h;
+            continue;
+          }
+          prevH = prevH > 0 ? (prevH + gap + h) : h;
+          if (prevH <= curE) {
+            exact &= h == curE;
+            gap = 0;
+            if (prevH == curE) {
+              prevH = 0;
+              e++;
+              curE = e < expect.length ? expect[e] : 0;
+            }
+          }
+          else {
+            prevH = 0;
+            gap = 0;
+            e++;
+            while (e < expect.length && h > expect[e]) {
+              exact = false;
+              e++;
+            }
+            curE = e < expect.length ? expect[e] : 0;
+            if (h < curE) {
+              prevH = h;
+              exact = false;
+            }
+            else if (h == curE) {
+              e++;
+              curE = e < expect.length ? expect[e] : 0;
+            }
+            else {
+              return 1;  // too big
+            }
+          }
+        }
+        // return 0 for exact match
+        // return -1 for incomplete match - groups thus far do not exceed expected
+        return (exact && e == expect.length) ? 0 : -1;
+      }
+
+    </script>
+    <style>
+      #stampPalette {
+        position: absolute;
+        bottom: -96px;
+        right: 0px;
+      }
+
+      .pbn-cell {
+        color: transparent;
+      }
+      .pbn-cell.stampPaint {
+        background-color: black;
+      }
+      .pbn-cell.stampBlank {
+        text-align: center;
+        vertical-align: middle;
+        color: #999;
+      }
+
+      table.paint-by-numbers {
+        user-select: none;
+        border-spacing: 0px;
+        border-right: solid 1px black;
+        width: 10.5in;
+      }
+    </style>
+  </head>
+  <body id="Battleship">
+    <div id="pageBody">
+      <use template="paintByNumbers" cols="colGroups" rows="rowGroups">
+
+      </use>
+
+
+      <template id="paintByNumbers">
+        <table_ class="paint-by-numbers">
+          <thead_>
+            <tr_ class="pbn-col-headers">
+              <th_ class="pbn-corner">&nbsp;</th_>
+              <for each="col" in="colGroups">
+                <td_ class="pbn-col-header">
+                  <for each="group" in="col"><span class="pbn-col-group">{.group}</span></for>
+                </td_>
+              </for>
+            </tr_>
+          </thead_>
+          <for each="row" in="rowGroups">
+            <tr_ class="pbn-row">
+              <td_ class="pbn-row-header">
+                <for each="group" in="row"><span class="pbn-row-group">{.group}</span></for>
+              </td_>
+              <for each="col" in="colGroups">
+                <td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>
+              </for>
+              <td_ id="rowSummary-{row#}" class="pbn-row-footer"></td_>
+            </tr_>
+          </for>
+          <tfoot_>
+            <tr_ class="pbn-col-footer">
+              <th_ class="pbn-corner">&nbsp;</th_>
+              <for each="col" in="colGroups">
+                <td_ id="colSummary-{col#}" class="pbn-col-footer"> </td_>
+              </for>
+            </tr_>
+          </tfoot_>
+        </table_>
+      </template>
+
+      <div id="stampPalette" data-tool-count="3" data-tool-erase="stampErase">
+        <div class="stampTool" data-template-id="stampPaint" data-click-modifier="ctrl" title="ctrl + draw">
+          <div style="background-color: black;">
+            <div class="stampIcon"><img src="../24/Images/Bat/brush.png" style="width: 64px;"></div>
+          </div>
+        </div>
+        <div class="stampTool" data-template-id="stampBlank" data-click-modifier="shift" title="shift + draw">
+          <div style="background-color: #aaa;">
+            <div class="stampIcon"><img src="../24/Images/Bat/blank.png" style="width: 64px;"></div>
+          </div>
+        </div>
+        <div class="stampTool" data-template-id="stampErase" data-click-modifier="alt" title="alt + draw">
+          <div style="background-color: #00000011;">
+            <div class="stampIcon"><img src="../24/Images/Bat/eraser.png" style="width: 64px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

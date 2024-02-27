@@ -4551,7 +4551,14 @@ function eraseStamp(target:HTMLElement):string|null {
             return _eraseTool;  // erase
         }
     }
-    return null;  // normal
+    else if (hasClass(target, 'stampedObject')) {
+        // Template is a class on the container itself
+        const curTool = target.getAttributeNS('', 'data-template-id');
+        toggleClass(target, 'stampedObject', false);
+        toggleClass(target, curTool, false);
+        target.removeAttributeNS('', 'data-template-id');
+    }
+return null;  // normal
 }
 
 /**
@@ -4565,10 +4572,16 @@ export function doStamp(target:HTMLElement, tool:string) {
     // Template can be null if tool removes drawn objects
     let template = document.getElementById(tool) as HTMLTemplateElement;
     if (template != null) {
+        // Inject the template into the stampable container
         const clone = template.content.cloneNode(true);
         parent.appendChild(clone);
-        toggleClass(target, tool, true);
     }
+    else if (tool) {
+        // Apply the template ID as a style. The container is itself the stamped object
+        toggleClass(target, 'stampedObject', true);
+        target.setAttributeNS('', 'data-template-id', tool);
+    }
+    toggleClass(target, tool, true);
     if (_extractorTool != null) {
         updateStampExtraction();
     }
@@ -5531,9 +5544,9 @@ type LinkDetails = {
 
 type PuzzleEventDetails = {
     title: string;
-    logo: string;  // path from root
+    logo?: string;  // path from root
     icon: string;  // path from root
-    puzzleList: string;
+    puzzleList?: string;
     cssRoot: string;  // path from root
     fontCss: string;  // path from root
     googleFonts?: string;  // comma-delimeted list
@@ -5581,6 +5594,20 @@ const safari20Details:PuzzleEventDetails = {
     // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 }
 
+const safari24Details:PuzzleEventDetails = {
+    'title': 'Game Night',
+    // 'logo': './Images/PS24 logo.png',
+    'icon': '../24/Images/Sample_Icon.png',
+    // 'puzzleList': './safari.html',
+    'cssRoot': '../Css/',
+    'fontCss': '../24/Css/Fonts24.css',
+    'googleFonts': 'Goblin+One,Caveat',  // no whitespace
+    'links': [],
+    // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+                //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+    // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+}
+
 const safariDggDetails:PuzzleEventDetails = {
     'title': 'David’s Puzzles',
     'logo': './Images/octopus_watermark.png',
@@ -5600,6 +5627,7 @@ const pastSafaris = {
     'Single': safariSingleDetails,
     '20': safari20Details,
     'Dgg': safariDggDetails,
+    '24': safari24Details,
 }
 
 let safariDetails:PuzzleEventDetails;
@@ -6924,6 +6952,10 @@ function startForLoop(src:HTMLElement, context:object):Node[] {
     }
   }
 
+  if (!list) {
+    throw new Error('Unable to resolve from context: ' + src.outerHTML);
+  }
+
   const iter_index = iter + '#';
   for (let i = 0; i < list.length; i++) {
     context[iter_index] = i;
@@ -7441,11 +7473,15 @@ function validateKeyInContet(key:string, context:object) {
  * @returns Resolved text
  */
 function textFromContext(key:string, context:object):string {
-  if (key.indexOf('.') < 0) {
-    return key;  // key can be a literal value
+  try {
+    return '' + anyFromContext(key, context);
   }
-
-  return '' + anyFromContext(key, context);
+  catch(ex) {
+    if (key.indexOf('.') < 0) {
+      return key;  // key can be a literal value
+    }
+    throw ex;
+  }
 }
 
 

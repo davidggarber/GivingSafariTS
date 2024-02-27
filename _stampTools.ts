@@ -1,5 +1,5 @@
 import { theBoiler } from "./_boilerplate";
-import { findFirstChildOfClass, findParentOfClass, getOptionalStyle, toggleClass } from "./_classUtil";
+import { findFirstChildOfClass, findParentOfClass, getOptionalStyle, hasClass, toggleClass } from "./_classUtil";
 import { saveStampingLocally } from "./_storage";
 
 // VOCABULARY
@@ -205,7 +205,14 @@ function eraseStamp(target:HTMLElement):string|null {
             return _eraseTool;  // erase
         }
     }
-    return null;  // normal
+    else if (hasClass(target, 'stampedObject')) {
+        // Template is a class on the container itself
+        const curTool = target.getAttributeNS('', 'data-template-id');
+        toggleClass(target, 'stampedObject', false);
+        toggleClass(target, curTool, false);
+        target.removeAttributeNS('', 'data-template-id');
+    }
+return null;  // normal
 }
 
 /**
@@ -219,10 +226,16 @@ export function doStamp(target:HTMLElement, tool:string) {
     // Template can be null if tool removes drawn objects
     let template = document.getElementById(tool) as HTMLTemplateElement;
     if (template != null) {
+        // Inject the template into the stampable container
         const clone = template.content.cloneNode(true);
         parent.appendChild(clone);
-        toggleClass(target, tool, true);
     }
+    else if (tool) {
+        // Apply the template ID as a style. The container is itself the stamped object
+        toggleClass(target, 'stampedObject', true);
+        target.setAttributeNS('', 'data-template-id', tool);
+    }
+    toggleClass(target, tool, true);
     if (_extractorTool != null) {
         updateStampExtraction();
     }
