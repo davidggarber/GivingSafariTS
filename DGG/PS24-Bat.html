@@ -152,17 +152,16 @@
             }
           }
           else {
+            exact = false;
             prevH = 0;
             gap = 0;
             e++;
             while (e < expect.length && h > expect[e]) {
-              exact = false;
               e++;
             }
             curE = e < expect.length ? expect[e] : 0;
             if (h < curE) {
               prevH = h;
-              exact = false;
             }
             else if (h == curE) {
               e++;
