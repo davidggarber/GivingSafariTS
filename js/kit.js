@@ -1141,6 +1141,9 @@ function saveStampingLocally(element) {
             if (drawn) {
                 localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
             }
+            else if (hasClass(parent_1, 'stampedObject')) {
+                localCache.stamps[index] = parent_1.getAttributeNS('', 'data-template-id');
+            }
             else {
                 delete localCache.stamps[index];
             }
