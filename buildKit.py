@@ -16,6 +16,8 @@ kitFiles = [
     '_boilerplate.ts',
     '_confirmation.ts',
     '_builder.ts',
+    '_templates.ts',
+    '_validatePBN.ts',
 ]
 
 merged = []

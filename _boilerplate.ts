@@ -462,7 +462,7 @@ function boilerplate(bp: BoilerPlateData) {
     head.appendChild(viewport);
 
     if (safariDetails.fontCss) {
-        linkCss(head, safariDetails.fontCss);
+        linkCss(safariDetails.fontCss);
     }
     let gFonts = bp.googleFonts;
     if (safariDetails.googleFonts) {
@@ -490,8 +490,8 @@ function boilerplate(bp: BoilerPlateData) {
         }
         addLink(head, link);
     }
-    linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
-    linkCss(head, safariDetails.cssRoot + 'TextInput.css');
+    linkCss(safariDetails.cssRoot + 'PageSizes.css');
+    linkCss(safariDetails.cssRoot + 'TextInput.css');
     if (!bp.paperSize) {
         bp.paperSize = 'letter';
     }
@@ -553,7 +553,7 @@ function boilerplate(bp: BoilerPlateData) {
     setupAbilities(head, margins, bp.abilities || {});
 
     if (bp.validation) {
-        linkCss(head, safariDetails.cssRoot + 'Guesses.css');
+        linkCss(safariDetails.cssRoot + 'Guesses.css');
         setupValidation();
     }
 
@@ -562,6 +562,10 @@ function boilerplate(bp: BoilerPlateData) {
         setTimeout(checkLocalStorage, 100);
     }
 
+}
+
+function theHead(): HTMLHeadElement {
+    return document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
 }
 
 /**
@@ -574,7 +578,8 @@ let cssToLoad = 1;
  * @param head the head tag
  * @param det the attributes of the link tag
  */
-function addLink(head:HTMLHeadElement, det:LinkDetails) {
+export function addLink(head:HTMLHeadElement, det:LinkDetails) {
+    head = head || theHead();
     const link = document.createElement('link');
     link.href = det.href;
     link.rel = det.rel;
@@ -591,12 +596,20 @@ function addLink(head:HTMLHeadElement, det:LinkDetails) {
     head.appendChild(link);
 }
 
+const linkedCss = {};
+
 /**
  * Append a CSS link to the header
- * @param head the head tag
  * @param relPath The contents of the link's href
+ * @param head the head tag
  */
-function linkCss(head:HTMLHeadElement, relPath:string) {
+export function linkCss(relPath:string, head?:HTMLHeadElement) {
+    if (relPath in linkedCss) {
+        return;  // Don't re-add
+    }
+    linkedCss[relPath] = true;
+    
+    head = head || theHead();
     const link = document.createElement('link');
     link.href=relPath;
     link.rel = "Stylesheet";
@@ -664,29 +677,29 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         preprocessDragFunctions();
         indexAllDragDropFields();
-        linkCss(head, safariDetails.cssRoot + 'DragDrop.css');
+        linkCss(safariDetails.cssRoot + 'DragDrop.css');
         count++;
     }
     if (data.stamping) {
         preprocessStampObjects();
         indexAllDrawableFields();
-        linkCss(head, safariDetails.cssRoot + 'StampTools.css');
+        linkCss(safariDetails.cssRoot + 'StampTools.css');
         // No ability icon
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions(EdgeTypes.straightEdge, false);
-        linkCss(head, safariDetails.cssRoot + 'StraightEdge.css');
+        linkCss(safariDetails.cssRoot + 'StraightEdge.css');
         //indexAllVertices();
     }
     if (data.wordSearch) {
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
         preprocessRulerFunctions(EdgeTypes.wordSelect, true);
-        linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
+        linkCss(safariDetails.cssRoot + 'WordSearch.css');
         //indexAllVertices();
     }
     if (data.subway) {
-        linkCss(head, safariDetails.cssRoot + 'Subway.css');
+        linkCss(safariDetails.cssRoot + 'Subway.css');
         // Don't setupSubways() until all styles have applied, so CSS-derived locations are final
     }
     if (data.notes) {

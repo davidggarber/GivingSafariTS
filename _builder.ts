@@ -1,5 +1,6 @@
 import { theBoiler } from "./_boilerplate";
 import { applyAllClasses, isTag, toggleClass } from "./_classUtil";
+import { builtInTemplate, getTemplate } from "./_templates";
 import { getLetterStyles } from "./_textSetup";
 
 /****************************************************************************
@@ -170,11 +171,19 @@ function identifyBuilders() {
 }
 
 /**
+ * The root context for all builder functions
+ * @returns the builderLookup object on the boiler.
+ */
+export function theBoilerContext() {
+  return theBoiler().builderLookup || {};
+}
+
+/**
  * Look for control tags like for loops and if branches.
  */
 export function expandControlTags() {
   identifyBuilders();
-  const context = theBoiler().builderLookup || {};
+  const context = theBoilerContext();
 
   let controls = document.getElementsByClassName('builder_control');
   while (controls.length > 0) {
@@ -720,7 +729,7 @@ function cloneText(str:string, context:object):string {
  * @param context A dictionary of all accessible values
  * @returns Resolved text
  */
-function anyFromContext(key:string, context:object):any {
+export function anyFromContext(key:string, context:object):any {
   key = key.trim();
   if (key[0] == '{' && key[key.length - 1] == '}') {
     // Remove redundant {curly}, since some fields don't require them
@@ -842,7 +851,8 @@ function cloneNode(node:Node):Node {
 /**
  * Replace a <use> tag with the contents of a <template>.
  * Along the way, push any attributes of the <use> tag onto the context.
- * Afterwards, pop them back off.
+ * Also push the context paths (as strings) as separate attributes.
+ * Afterwards, pop them all back off.
  * Optionally, a <use> tag without a template="" attribute is a way to modify the context for the use's children.
  * @param node a <use> tag
  * @param context The current context
@@ -850,8 +860,7 @@ function cloneNode(node:Node):Node {
  */
 function useTemplate(node:HTMLElement, context:object):Node[] {
   let dest:Node[] = [];
-  const tempId = node.getAttribute('template');
-  const template = tempId ? document.getElementById(tempId) : undefined;
+  
   const popContext = {};
   for (var i = 0; i < node.attributes.length; i++) {
     const attr = node.attributes[i].name;
@@ -859,15 +868,15 @@ function useTemplate(node:HTMLElement, context:object):Node[] {
     const attri = node.attributes[i].name.toLowerCase();
     if (attri != 'template' && attri != 'builder_control') {
       popContext[attr] = context[attr];
+      popContext[attr + '$'] = context[attr + '$'];
       context[attr] = anyFromContext(val, context) || val;
+      context[attr + '$'] = val;  // Store the context path, so it can also be referenced
     }
   }
 
+  const tempId = node.getAttribute('template');
   if (tempId) {
-    const template = document.getElementById(tempId) as HTMLTemplateElement;
-    if (!template) {
-      throw new Error('Unresolved template ID: ' + tempId);
-    }
+    const template = getTemplate(tempId);
     // The template doesn't have any child nodes. Its content must first be cloned.
     const clone = template.content.cloneNode(true) as HTMLElement;
     dest = expandContents(clone, context);
@@ -880,6 +889,7 @@ function useTemplate(node:HTMLElement, context:object):Node[] {
     const attr = node.attributes[i].name.toLowerCase();
     if (attr != 'template' && attr != 'builder_control') {
       context[attr] = popContext[attr];
+      context[attr + '$'] = popContext[attr + '$'];
     }
   }
 

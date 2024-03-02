@@ -48,134 +48,6 @@
         rowGroups: rows,
       };
 
-      function validatePBN(target) {
-        var pos = target.id.split('_');
-        var row = parseInt(pos[0]);
-        var col = parseInt(pos[1]);
-        var cells = document.getElementsByClassName('stampable');
-        var rowOn = [];
-        var colOn = [];
-        for (var c of cells) {
-          if (hasClass(c, 'stampPaint')) {
-            pos = c.id.split('_');
-            if (pos[0] == row) {
-              rowOn.push(parseInt(pos[1]));
-            }
-            if (pos[1] == col) {
-              colOn.push(parseInt(pos[0]));
-            }
-          }
-        }
-        var rSum = document.getElementById('rowSummary-' + row);
-        if (rSum) {
-          groups = summarize(rowOn);
-          rSum.innerHTML = '';
-          for (var g of groups) {
-            if (g > 0) {
-              var span = document.createElement('span');
-              toggleClass(span, 'pbn-row-group', true);
-              span.innerText = g;
-              rSum.appendChild(span);
-            }
-          }
-          var header = rows[row];
-          var comp = comparegroups(header, groups);
-          toggleClass(rSum, 'done', comp == 0);
-          toggleClass(rSum, 'exceeded', comp > 0);
-        }
-        var cSum = document.getElementById('colSummary-' + col);
-        if (cSum) {
-          groups = summarize(colOn);
-          cSum.innerHTML = '';
-          for (var g of groups) {
-            if (g > 0) {
-              var span = document.createElement('span');
-              toggleClass(span, 'pbn-col-group', true);
-              span.innerText = g;
-              cSum.appendChild(span);
-            }
-          }
-          var header = cols[col];
-          var comp = comparegroups(header, groups);
-          toggleClass(cSum, 'done', comp == 0);
-          toggleClass(cSum, 'exceeded', comp > 0);
-        }
-
-      }
-
-      function summarize(list) {
-        var prev = NaN;
-        var consec = 0;
-        var summary = [];
-        list.push(NaN);
-        for (var next of list) {
-          if (next == prev + 1) {
-            consec++;
-          }
-          else {
-            if (consec > 0) {
-              summary.push(consec);
-              var gap = next - prev - 1;
-              if (gap != NaN && gap > 0) {
-                summary.push(-gap);
-              }
-            }
-            consec = (next != NaN) ? 1 : 0;
-          }
-          prev = next;
-        }
-        if (summary.length == 0) {
-          return [0];
-        }
-        return summary;
-      }
-
-      function comparegroups(expect, have) {
-        var exact = true;
-        var e = 0;
-        var gap = 0;
-        var prevH = 0;
-        var curE = expect.length > 0 ? expect[0] : 0;
-        for (var h of have) {
-          if (h <= 0) {
-            gap = -h;
-            continue;
-          }
-          prevH = prevH > 0 ? (prevH + gap + h) : h;
-          if (prevH <= curE) {
-            exact &= h == curE;
-            gap = 0;
-            if (prevH == curE) {
-              prevH = 0;
-              e++;
-              curE = e < expect.length ? expect[e] : 0;
-            }
-          }
-          else {
-            exact = false;
-            prevH = 0;
-            gap = 0;
-            e++;
-            while (e < expect.length && h > expect[e]) {
-              e++;
-            }
-            curE = e < expect.length ? expect[e] : 0;
-            if (h < curE) {
-              prevH = h;
-            }
-            else if (h == curE) {
-              e++;
-              curE = e < expect.length ? expect[e] : 0;
-            }
-            else {
-              return 1;  // too big
-            }
-          }
-        }
-        // return 0 for exact match
-        // return -1 for incomplete match - groups thus far do not exceed expected
-        return (exact && e == expect.length) ? 0 : -1;
-      }
 
     </script>
     <style>
@@ -185,28 +57,13 @@
         right: 0px;
       }
 
-      .pbn-cell {
-        color: transparent;
+      @media screen {
+        .paint-by-numbers {
+          width: 10.5in;
+        }        
       }
-      .pbn-cell.stampPaint {
-        background-color: black;
-      }
-      .pbn-cell.stampBlank {
-        text-align: center;
-        vertical-align: middle;
-        color: #999;
-      }
-
-      table.paint-by-numbers {
-        user-select: none;
-        border-spacing: 0px;
-        width: 10.5in;
-      }
-
       @media print {
-        table.paint-by-numbers {
-          user-select: none;
-          border-spacing: 0px;
+        .paint-by-numbers {
           width: 10in;
         }
       }
@@ -216,43 +73,8 @@
   <body id="Battleship">
     <div id="pageBody">
       <use template="paintByNumbers" cols="colGroups" rows="rowGroups">
-
       </use>
 
-
-      <template id="paintByNumbers">
-        <table_ class="paint-by-numbers bolden_5_10">
-          <thead_>
-            <tr_ class="pbn-col-headers">
-              <th_ class="pbn-corner">&nbsp;</th_>
-              <for each="col" in="colGroups">
-                <td_ class="pbn-col-header">
-                  <for each="group" in="col"><span class="pbn-col-group">{.group}</span></for>
-                </td_>
-              </for>
-            </tr_>
-          </thead_>
-          <for each="row" in="rowGroups">
-            <tr_ class="pbn-row">
-              <td_ class="pbn-row-header">
-                <for each="group" in="row"><span class="pbn-row-group">{.group}</span></for>
-              </td_>
-              <for each="col" in="colGroups">
-                <td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>
-              </for>
-              <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
-            </tr_>
-          </for>
-          <tfoot_>
-            <tr_ class="pbn-col-footer">
-              <th_ class="pbn-corner">&nbsp;</th_>
-              <for each="col" in="colGroups">
-                <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
-              </for>
-            </tr_>
-          </tfoot_>
-        </table_>
-      </template>
 
       <div id="stampPalette" data-tool-count="3" data-tool-erase="stampErase">
         <div class="stampTool" data-template-id="stampPaint" data-click-modifier="ctrl" title="ctrl + draw">

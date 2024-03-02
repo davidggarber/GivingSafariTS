@@ -4,7 +4,8 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.expandControlTags = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = void 0;
+exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = void 0;
+exports.builtInTemplate = exports.getTemplate = exports.anyFromContext = exports.expandControlTags = exports.theBoilerContext = exports.decodeAndValidate = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -5318,7 +5319,7 @@ function boilerplate(bp) {
     viewport.content = 'width=device-width, initial-scale=1';
     head.appendChild(viewport);
     if (safariDetails.fontCss) {
-        linkCss(head, safariDetails.fontCss);
+        linkCss(safariDetails.fontCss);
     }
     var gFonts = bp.googleFonts;
     if (safariDetails.googleFonts) {
@@ -5345,8 +5346,8 @@ function boilerplate(bp) {
         };
         addLink(head, link);
     }
-    linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
-    linkCss(head, safariDetails.cssRoot + 'TextInput.css');
+    linkCss(safariDetails.cssRoot + 'PageSizes.css');
+    linkCss(safariDetails.cssRoot + 'TextInput.css');
     if (!bp.paperSize) {
         bp.paperSize = 'letter';
     }
@@ -5400,12 +5401,15 @@ function boilerplate(bp) {
     }
     setupAbilities(head, margins, bp.abilities || {});
     if (bp.validation) {
-        linkCss(head, safariDetails.cssRoot + 'Guesses.css');
+        linkCss(safariDetails.cssRoot + 'Guesses.css');
         setupValidation();
     }
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);
     }
+}
+function theHead() {
+    return document.getElementsByTagName('HEAD')[0];
 }
 /**
  * Count-down before we know all delay-linked CSS have been loaded
@@ -5417,6 +5421,7 @@ var cssToLoad = 1;
  * @param det the attributes of the link tag
  */
 function addLink(head, det) {
+    head = head || theHead();
     var link = document.createElement('link');
     link.href = det.href;
     link.rel = det.rel;
@@ -5432,12 +5437,19 @@ function addLink(head, det) {
     }
     head.appendChild(link);
 }
+exports.addLink = addLink;
+var linkedCss = {};
 /**
  * Append a CSS link to the header
- * @param head the head tag
  * @param relPath The contents of the link's href
+ * @param head the head tag
  */
-function linkCss(head, relPath) {
+function linkCss(relPath, head) {
+    if (relPath in linkedCss) {
+        return; // Don't re-add
+    }
+    linkedCss[relPath] = true;
+    head = head || theHead();
     var link = document.createElement('link');
     link.href = relPath;
     link.rel = "Stylesheet";
@@ -5446,6 +5458,7 @@ function linkCss(head, relPath) {
     cssToLoad++;
     head.appendChild(link);
 }
+exports.linkCss = linkCss;
 /**
  * Each CSS file that is delay-linked needs time to load.
  * Decrement the count after each one.
@@ -5503,29 +5516,29 @@ function setupAbilities(head, margins, data) {
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         preprocessDragFunctions();
         indexAllDragDropFields();
-        linkCss(head, safariDetails.cssRoot + 'DragDrop.css');
+        linkCss(safariDetails.cssRoot + 'DragDrop.css');
         count++;
     }
     if (data.stamping) {
         preprocessStampObjects();
         indexAllDrawableFields();
-        linkCss(head, safariDetails.cssRoot + 'StampTools.css');
+        linkCss(safariDetails.cssRoot + 'StampTools.css');
         // No ability icon
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions(exports.EdgeTypes.straightEdge, false);
-        linkCss(head, safariDetails.cssRoot + 'StraightEdge.css');
+        linkCss(safariDetails.cssRoot + 'StraightEdge.css');
         //indexAllVertices();
     }
     if (data.wordSearch) {
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
         preprocessRulerFunctions(exports.EdgeTypes.wordSelect, true);
-        linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
+        linkCss(safariDetails.cssRoot + 'WordSearch.css');
         //indexAllVertices();
     }
     if (data.subway) {
-        linkCss(head, safariDetails.cssRoot + 'Subway.css');
+        linkCss(safariDetails.cssRoot + 'Subway.css');
         // Don't setupSubways() until all styles have applied, so CSS-derived locations are final
     }
     if (data.notes) {
@@ -6194,11 +6207,19 @@ function identifyBuilders() {
     }
 }
 /**
+ * The root context for all builder functions
+ * @returns the builderLookup object on the boiler.
+ */
+function theBoilerContext() {
+    return theBoiler().builderLookup || {};
+}
+exports.theBoilerContext = theBoilerContext;
+/**
  * Look for control tags like for loops and if branches.
  */
 function expandControlTags() {
     identifyBuilders();
-    var context = theBoiler().builderLookup || {};
+    var context = theBoilerContext();
     var controls = document.getElementsByClassName('builder_control');
     while (controls.length > 0) {
         var src = controls[0];
@@ -6753,6 +6774,7 @@ function anyFromContext(key, context) {
     }
     return nested.pop();
 }
+exports.anyFromContext = anyFromContext;
 /**
  * Test a key in the current context
  * @param key A key, initially from {curly} notation
@@ -6819,7 +6841,8 @@ function cloneNode(node) {
 /**
  * Replace a <use> tag with the contents of a <template>.
  * Along the way, push any attributes of the <use> tag onto the context.
- * Afterwards, pop them back off.
+ * Also push the context paths (as strings) as separate attributes.
+ * Afterwards, pop them all back off.
  * Optionally, a <use> tag without a template="" attribute is a way to modify the context for the use's children.
  * @param node a <use> tag
  * @param context The current context
@@ -6827,8 +6850,6 @@ function cloneNode(node) {
  */
 function useTemplate(node, context) {
     var dest = [];
-    var tempId = node.getAttribute('template');
-    var template = tempId ? document.getElementById(tempId) : undefined;
     var popContext = {};
     for (var i = 0; i < node.attributes.length; i++) {
         var attr = node.attributes[i].name;
@@ -6836,16 +6857,16 @@ function useTemplate(node, context) {
         var attri = node.attributes[i].name.toLowerCase();
         if (attri != 'template' && attri != 'builder_control') {
             popContext[attr] = context[attr];
+            popContext[attr + '$'] = context[attr + '$'];
             context[attr] = anyFromContext(val, context) || val;
+            context[attr + '$'] = val; // Store the context path, so it can also be referenced
         }
     }
+    var tempId = node.getAttribute('template');
     if (tempId) {
-        var template_1 = document.getElementById(tempId);
-        if (!template_1) {
-            throw new Error('Unresolved template ID: ' + tempId);
-        }
+        var template = getTemplate(tempId);
         // The template doesn't have any child nodes. Its content must first be cloned.
-        var clone = template_1.content.cloneNode(true);
+        var clone = template.content.cloneNode(true);
         dest = expandContents(clone, context);
     }
     else {
@@ -6855,8 +6876,265 @@ function useTemplate(node, context) {
         var attr = node.attributes[i].name.toLowerCase();
         if (attr != 'template' && attr != 'builder_control') {
             context[attr] = popContext[attr];
+            context[attr + '$'] = popContext[attr + '$'];
         }
     }
     return dest;
+}
+/*-----------------------------------------------------------
+ * _templates.ts
+ *-----------------------------------------------------------*/
+/**
+ * Find a template that matches an ID.
+ * Could be on the local page, or a built-in one
+ * @param tempId The ID of the template (must be valid)
+ * @returns An HTMLTemplateElement, or throws
+ */
+function getTemplate(tempId) {
+    if (tempId) {
+        var elmt = document.getElementById(tempId);
+        if (elmt) {
+            return elmt;
+        }
+        var template = builtInTemplate(tempId);
+        if (template) {
+            return template;
+        }
+    }
+    throw new Error('Unresolved template ID: ' + tempId);
+}
+exports.getTemplate = getTemplate;
+/**
+ * Match a template name to a built-in template object
+ * @param tempId The ID
+ * @returns A template element (not part of the document), or undefined if unrecognized.
+ */
+function builtInTemplate(tempId) {
+    if (tempId == 'paintByNumbers') {
+        return paintByNumbersTemplate();
+    }
+}
+exports.builtInTemplate = builtInTemplate;
+;
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ */
+function paintByNumbersTemplate() {
+    linkCss('../Css/PaintByNumbers.css');
+    var temp = document.createElement('template');
+    temp.id = 'paintByNumbers';
+    temp.innerHTML =
+        '<table_ class="paint-by-numbers bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">' +
+            '<thead_>' +
+            '<tr_ class="pbn-col-headers">' +
+            '<th_ class="pbn-corner">&nbsp;</th_>' +
+            '<for each="col" in="colGroups">' +
+            '<td_ class="pbn-col-header">' +
+            '<for each="group" in="col"><span class="pbn-col-group">{.group}</span></for>' +
+            '</td_>' +
+            '</for>' +
+            '</tr_>' +
+            '</thead_>' +
+            '<for each="row" in="rowGroups">' +
+            '<tr_ class="pbn-row">' +
+            '<td_ class="pbn-row-header">' +
+            '<for each="group" in="row"><span class="pbn-row-group">{.group}</span></for>' +
+            '</td_>' +
+            '<for each="col" in="colGroups">' +
+            '<td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>' +
+            '</for>' +
+            '<td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>' +
+            '</tr_>' +
+            '</for>' +
+            '<tfoot_>' +
+            '<tr_ class="pbn-col-footer">' +
+            '<th_ class="pbn-corner">&nbsp;</th_>' +
+            '<for each="col" in="colGroups">' +
+            '<td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>' +
+            '</for>' +
+            '</tr_>' +
+            '</tfoot_>' +
+            '</table_>';
+    return temp;
+}
+/*-----------------------------------------------------------
+ * _validatePBN.ts
+ *-----------------------------------------------------------*/
+/**
+ * Validate the paint-by-numbers grid that contains this cell
+ * @param target
+ */
+function validatePBN(target) {
+    var table = findParentOfClass(target, 'paint-by-numbers');
+    if (!table) {
+        return;
+    }
+    var pos = target.id.split('_');
+    var row = parseInt(pos[0]);
+    var col = parseInt(pos[1]);
+    var rSum = document.getElementById('rowSummary-' + row);
+    var cSum = document.getElementById('colSummary-' + col);
+    if (!rSum && !cSum) {
+        return; // this PBN does not have a UI for validation
+    }
+    // Scan all cells in this PBN table, looking for those in the current row & column
+    // Track the painted ones as a list of row/column indices
+    var cells = table.getElementsByClassName('stampable');
+    var rowOn = [];
+    var colOn = [];
+    for (var i = 0; i < cells.length; i++) {
+        var cell = cells[i];
+        if (hasClass(cell, 'stampPaint')) {
+            pos = cell.id.split('_');
+            var r = parseInt(pos[0]);
+            var c = parseInt(pos[1]);
+            if (r == row) {
+                rowOn.push(c);
+            }
+            if (c == col) {
+                colOn.push(r);
+            }
+        }
+    }
+    var rows = contextDataFromRef(table, 'data-row-context');
+    if (rSum && rows) {
+        // Convert a list of column indices to group notation
+        var groups = summarizePBN(rowOn);
+        rSum.innerHTML = '';
+        for (var _i = 0, groups_1 = groups; _i < groups_1.length; _i++) {
+            var g = groups_1[_i];
+            if (g > 0) {
+                var span = document.createElement('span');
+                toggleClass(span, 'pbn-row-group', true);
+                span.innerText = g.toString();
+                rSum.appendChild(span);
+            }
+        }
+        var header = rows[row];
+        var comp = compareGroupsPBN(header, groups);
+        toggleClass(rSum, 'done', comp == 0);
+        toggleClass(rSum, 'exceeded', comp > 0);
+    }
+    var cols = contextDataFromRef(table, 'data-col-context');
+    if (cSum) {
+        var groups = summarizePBN(colOn);
+        cSum.innerHTML = '';
+        for (var _a = 0, groups_2 = groups; _a < groups_2.length; _a++) {
+            var g = groups_2[_a];
+            if (g > 0) {
+                var span = document.createElement('span');
+                toggleClass(span, 'pbn-col-group', true);
+                span.innerText = g.toString();
+                cSum.appendChild(span);
+            }
+        }
+        var header = cols[col];
+        var comp = compareGroupsPBN(header, groups);
+        toggleClass(cSum, 'done', comp == 0);
+        toggleClass(cSum, 'exceeded', comp > 0);
+    }
+}
+/**
+ * Look up a value, according to the context path cached in an attribute
+ * @param elmt Any element
+ * @param attr An attribute name, which should exist in elmt or any parent
+ * @returns Any JSON object
+ */
+function contextDataFromRef(elmt, attr) {
+    var context = theBoilerContext();
+    var path = getOptionalStyle(elmt, attr);
+    if (path && context) {
+        return anyFromContext(path, context);
+    }
+    return undefined;
+}
+/**
+ * Read the user's actual painting within the PBN grid as a list of group sizes.
+ * @param list A list of numbers, indicating row or column indices
+ * @returns A list of groups separated by gaps. Positive numbers are consecutive painted. Negative are consecutive un-painted.
+ * The leading- and trailing- empty cells are ignored. But if the whole series is empty, return [0]
+ */
+function summarizePBN(list) {
+    var prev = NaN;
+    var consec = 0;
+    var summary = [];
+    list.push(NaN);
+    for (var _i = 0, list_3 = list; _i < list_3.length; _i++) {
+        var next = list_3[_i];
+        if (next == prev + 1) {
+            consec++;
+        }
+        else {
+            if (consec > 0) {
+                summary.push(consec);
+                var gap = next - prev - 1;
+                if (!isNaN(gap) && gap > 0) {
+                    summary.push(-gap);
+                }
+            }
+            consec = (!isNaN(next)) ? 1 : 0;
+        }
+        prev = next;
+    }
+    if (summary.length == 0) {
+        return [0];
+    }
+    return summary;
+}
+/**
+ * Compare the actual panted cells vs. the clues.
+ * The actual cells could indicate either more than was clued, or less than was clued, or exactly what was clued.
+ * @param expect A list of expected groups (positives only)
+ * @param have A list of actual groups (positives indicate groups, negatives indicates gaps between groups)
+ * @returns 0 if exact, 1 if actual exceeds expected, or -1 if actual is not yet expected, but hasn't contradicted it yet
+ */
+function compareGroupsPBN(expect, have) {
+    var exact = true;
+    var e = 0;
+    var gap = 0;
+    var prevH = 0;
+    var curE = expect.length > 0 ? expect[0] : 0;
+    for (var _i = 0, have_1 = have; _i < have_1.length; _i++) {
+        var h = have_1[_i];
+        if (h <= 0) {
+            gap = -h;
+            continue;
+        }
+        prevH = prevH > 0 ? (prevH + gap + h) : h;
+        if (prevH <= curE) {
+            exact = exact && h == curE;
+            gap = 0;
+            if (prevH == curE) {
+                prevH = 0;
+                e++;
+                curE = e < expect.length ? expect[e] : 0;
+            }
+        }
+        else {
+            exact = false;
+            prevH = 0;
+            gap = 0;
+            e++;
+            while (e < expect.length && h > expect[e]) {
+                e++;
+            }
+            curE = e < expect.length ? expect[e] : 0;
+            if (h < curE) {
+                prevH = h;
+            }
+            else if (h == curE) {
+                e++;
+                curE = e < expect.length ? expect[e] : 0;
+            }
+            else {
+                return 1; // too big
+            }
+        }
+    }
+    // return 0 for exact match
+    // return -1 for incomplete match - groups thus far do not exceed expected
+    return (exact && e == expect.length) ? 0 : -1;
 }
 //# sourceMappingURL=kit.js.map

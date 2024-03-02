@@ -5896,7 +5896,7 @@ function boilerplate(bp: BoilerPlateData) {
     head.appendChild(viewport);
 
     if (safariDetails.fontCss) {
-        linkCss(head, safariDetails.fontCss);
+        linkCss(safariDetails.fontCss);
     }
     let gFonts = bp.googleFonts;
     if (safariDetails.googleFonts) {
@@ -5924,8 +5924,8 @@ function boilerplate(bp: BoilerPlateData) {
         }
         addLink(head, link);
     }
-    linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
-    linkCss(head, safariDetails.cssRoot + 'TextInput.css');
+    linkCss(safariDetails.cssRoot + 'PageSizes.css');
+    linkCss(safariDetails.cssRoot + 'TextInput.css');
     if (!bp.paperSize) {
         bp.paperSize = 'letter';
     }
@@ -5987,7 +5987,7 @@ function boilerplate(bp: BoilerPlateData) {
     setupAbilities(head, margins, bp.abilities || {});
 
     if (bp.validation) {
-        linkCss(head, safariDetails.cssRoot + 'Guesses.css');
+        linkCss(safariDetails.cssRoot + 'Guesses.css');
         setupValidation();
     }
 
@@ -5996,6 +5996,10 @@ function boilerplate(bp: BoilerPlateData) {
         setTimeout(checkLocalStorage, 100);
     }
 
+}
+
+function theHead(): HTMLHeadElement {
+    return document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
 }
 
 /**
@@ -6008,7 +6012,8 @@ let cssToLoad = 1;
  * @param head the head tag
  * @param det the attributes of the link tag
  */
-function addLink(head:HTMLHeadElement, det:LinkDetails) {
+export function addLink(head:HTMLHeadElement, det:LinkDetails) {
+    head = head || theHead();
     const link = document.createElement('link');
     link.href = det.href;
     link.rel = det.rel;
@@ -6025,12 +6030,20 @@ function addLink(head:HTMLHeadElement, det:LinkDetails) {
     head.appendChild(link);
 }
 
+const linkedCss = {};
+
 /**
  * Append a CSS link to the header
- * @param head the head tag
  * @param relPath The contents of the link's href
+ * @param head the head tag
  */
-function linkCss(head:HTMLHeadElement, relPath:string) {
+export function linkCss(relPath:string, head?:HTMLHeadElement) {
+    if (relPath in linkedCss) {
+        return;  // Don't re-add
+    }
+    linkedCss[relPath] = true;
+    
+    head = head || theHead();
     const link = document.createElement('link');
     link.href=relPath;
     link.rel = "Stylesheet";
@@ -6098,29 +6111,29 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         preprocessDragFunctions();
         indexAllDragDropFields();
-        linkCss(head, safariDetails.cssRoot + 'DragDrop.css');
+        linkCss(safariDetails.cssRoot + 'DragDrop.css');
         count++;
     }
     if (data.stamping) {
         preprocessStampObjects();
         indexAllDrawableFields();
-        linkCss(head, safariDetails.cssRoot + 'StampTools.css');
+        linkCss(safariDetails.cssRoot + 'StampTools.css');
         // No ability icon
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions(EdgeTypes.straightEdge, false);
-        linkCss(head, safariDetails.cssRoot + 'StraightEdge.css');
+        linkCss(safariDetails.cssRoot + 'StraightEdge.css');
         //indexAllVertices();
     }
     if (data.wordSearch) {
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
         preprocessRulerFunctions(EdgeTypes.wordSelect, true);
-        linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
+        linkCss(safariDetails.cssRoot + 'WordSearch.css');
         //indexAllVertices();
     }
     if (data.subway) {
-        linkCss(head, safariDetails.cssRoot + 'Subway.css');
+        linkCss(safariDetails.cssRoot + 'Subway.css');
         // Don't setupSubways() until all styles have applied, so CSS-derived locations are final
     }
     if (data.notes) {
@@ -6846,11 +6859,19 @@ function identifyBuilders() {
 }
 
 /**
+ * The root context for all builder functions
+ * @returns the builderLookup object on the boiler.
+ */
+export function theBoilerContext() {
+  return theBoiler().builderLookup || {};
+}
+
+/**
  * Look for control tags like for loops and if branches.
  */
 export function expandControlTags() {
   identifyBuilders();
-  const context = theBoiler().builderLookup || {};
+  const context = theBoilerContext();
 
   let controls = document.getElementsByClassName('builder_control');
   while (controls.length > 0) {
@@ -7396,7 +7417,7 @@ function cloneText(str:string, context:object):string {
  * @param context A dictionary of all accessible values
  * @returns Resolved text
  */
-function anyFromContext(key:string, context:object):any {
+export function anyFromContext(key:string, context:object):any {
   key = key.trim();
   if (key[0] == '{' && key[key.length - 1] == '}') {
     // Remove redundant {curly}, since some fields don't require them
@@ -7518,7 +7539,8 @@ function cloneNode(node:Node):Node {
 /**
  * Replace a <use> tag with the contents of a <template>.
  * Along the way, push any attributes of the <use> tag onto the context.
- * Afterwards, pop them back off.
+ * Also push the context paths (as strings) as separate attributes.
+ * Afterwards, pop them all back off.
  * Optionally, a <use> tag without a template="" attribute is a way to modify the context for the use's children.
  * @param node a <use> tag
  * @param context The current context
@@ -7526,8 +7548,7 @@ function cloneNode(node:Node):Node {
  */
 function useTemplate(node:HTMLElement, context:object):Node[] {
   let dest:Node[] = [];
-  const tempId = node.getAttribute('template');
-  const template = tempId ? document.getElementById(tempId) : undefined;
+  
   const popContext = {};
   for (var i = 0; i < node.attributes.length; i++) {
     const attr = node.attributes[i].name;
@@ -7535,15 +7556,15 @@ function useTemplate(node:HTMLElement, context:object):Node[] {
     const attri = node.attributes[i].name.toLowerCase();
     if (attri != 'template' && attri != 'builder_control') {
       popContext[attr] = context[attr];
+      popContext[attr + '$'] = context[attr + '$'];
       context[attr] = anyFromContext(val, context) || val;
+      context[attr + '$'] = val;  // Store the context path, so it can also be referenced
     }
   }
 
+  const tempId = node.getAttribute('template');
   if (tempId) {
-    const template = document.getElementById(tempId) as HTMLTemplateElement;
-    if (!template) {
-      throw new Error('Unresolved template ID: ' + tempId);
-    }
+    const template = getTemplate(tempId);
     // The template doesn't have any child nodes. Its content must first be cloned.
     const clone = template.content.cloneNode(true) as HTMLElement;
     dest = expandContents(clone, context);
@@ -7556,8 +7577,275 @@ function useTemplate(node:HTMLElement, context:object):Node[] {
     const attr = node.attributes[i].name.toLowerCase();
     if (attr != 'template' && attr != 'builder_control') {
       context[attr] = popContext[attr];
+      context[attr + '$'] = popContext[attr + '$'];
     }
   }
 
   return dest;
+}
+
+/*-----------------------------------------------------------
+ * _templates.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * Find a template that matches an ID.
+ * Could be on the local page, or a built-in one
+ * @param tempId The ID of the template (must be valid)
+ * @returns An HTMLTemplateElement, or throws
+ */
+export function getTemplate(tempId:string) :HTMLTemplateElement {
+  if (tempId) {
+    let elmt = document.getElementById(tempId);
+    if (elmt) {
+      return elmt as HTMLTemplateElement;
+    }
+    const template = builtInTemplate(tempId);
+    if (template) {
+      return template;
+    }
+  }
+  throw new Error('Unresolved template ID: ' + tempId);
+}
+
+/**
+ * Match a template name to a built-in template object
+ * @param tempId The ID
+ * @returns A template element (not part of the document), or undefined if unrecognized.
+ */
+export function builtInTemplate(tempId:string) :HTMLTemplateElement|undefined {
+  if (tempId == 'paintByNumbers') {
+    return paintByNumbersTemplate();
+  }
+};
+
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ */
+function paintByNumbersTemplate() :HTMLTemplateElement {
+  linkCss('../Css/PaintByNumbers.css');
+
+  const temp = document.createElement('template');
+  temp.id = 'paintByNumbers';
+  temp.innerHTML = 
+  '<table_ class="paint-by-numbers bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">' +
+    '<thead_>' +
+      '<tr_ class="pbn-col-headers">' +
+        '<th_ class="pbn-corner">&nbsp;</th_>' +
+        '<for each="col" in="colGroups">' +
+          '<td_ class="pbn-col-header">' +
+            '<for each="group" in="col"><span class="pbn-col-group">{.group}</span></for>' +
+          '</td_>' +
+        '</for>' +
+      '</tr_>' +
+    '</thead_>' +
+    '<for each="row" in="rowGroups">' +
+      '<tr_ class="pbn-row">' +
+        '<td_ class="pbn-row-header">' +
+          '<for each="group" in="row"><span class="pbn-row-group">{.group}</span></for>' +
+        '</td_>' +
+        '<for each="col" in="colGroups">' +
+          '<td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>' +
+        '</for>' +
+        '<td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>' +
+      '</tr_>' +
+    '</for>' +
+    '<tfoot_>' +
+      '<tr_ class="pbn-col-footer">' +
+        '<th_ class="pbn-corner">&nbsp;</th_>' +
+        '<for each="col" in="colGroups">' +
+          '<td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>' +
+        '</for>' +
+      '</tr_>' +
+    '</tfoot_>' +
+  '</table_>';
+  return temp;
+}
+
+/*-----------------------------------------------------------
+ * _validatePBN.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * Validate the paint-by-numbers grid that contains this cell
+ * @param target 
+ */
+function validatePBN(target:HTMLElement) {
+  const table = findParentOfClass(target, 'paint-by-numbers');
+  if (!table) {
+    return;
+  }
+  let pos = target.id.split('_');
+  const row = parseInt(pos[0]);
+  const col = parseInt(pos[1]);
+  const rSum = document.getElementById('rowSummary-' + row);
+  const cSum = document.getElementById('colSummary-' + col);
+
+  if (!rSum && !cSum) {
+    return;  // this PBN does not have a UI for validation
+  }
+
+  // Scan all cells in this PBN table, looking for those in the current row & column
+  // Track the painted ones as a list of row/column indices
+  const cells = table.getElementsByClassName('stampable');
+  const rowOn:number[] = [];
+  const colOn:number[] = [];
+  for (let i = 0; i < cells.length; i++) {
+    const cell = cells[i];
+    if (hasClass(cell, 'stampPaint')) {
+      pos = cell.id.split('_');
+      const r = parseInt(pos[0]);
+      const c = parseInt(pos[1]);
+      if (r == row) {
+        rowOn.push(c);
+      }
+      if (c == col) {
+        colOn.push(r);
+      }
+    }
+  }
+
+  const rows = contextDataFromRef(table, 'data-row-context');
+  if (rSum && rows) {
+    // Convert a list of column indices to group notation
+    const groups = summarizePBN(rowOn);
+    rSum.innerHTML = '';
+    for (const g of groups) {
+      if (g > 0) {
+        const span = document.createElement('span');
+        toggleClass(span, 'pbn-row-group', true);
+        span.innerText = g.toString();
+        rSum.appendChild(span);
+      }
+    }
+    const header = rows[row];
+    const comp = compareGroupsPBN(header, groups);
+    toggleClass(rSum, 'done', comp == 0);
+    toggleClass(rSum, 'exceeded', comp > 0);
+  }
+
+  const cols = contextDataFromRef(table, 'data-col-context');
+  if (cSum) {
+    const groups = summarizePBN(colOn);
+    cSum.innerHTML = '';
+    for (const g of groups) {
+      if (g > 0) {
+        const span = document.createElement('span');
+        toggleClass(span, 'pbn-col-group', true);
+        span.innerText = g.toString();
+        cSum.appendChild(span);
+      }
+    }
+    const header = cols[col];
+    const comp = compareGroupsPBN(header, groups);
+    toggleClass(cSum, 'done', comp == 0);
+    toggleClass(cSum, 'exceeded', comp > 0);
+  }
+
+}
+
+/**
+ * Look up a value, according to the context path cached in an attribute
+ * @param elmt Any element
+ * @param attr An attribute name, which should exist in elmt or any parent
+ * @returns Any JSON object
+ */
+function contextDataFromRef(elmt:Element, attr:string):any {
+  const context = theBoilerContext();
+  const path = getOptionalStyle(elmt, attr);
+  if (path && context) {
+    return anyFromContext(path, context);
+  }
+  return undefined;
+}
+
+/**
+ * Read the user's actual painting within the PBN grid as a list of group sizes.
+ * @param list A list of numbers, indicating row or column indices
+ * @returns A list of groups separated by gaps. Positive numbers are consecutive painted. Negative are consecutive un-painted.
+ * The leading- and trailing- empty cells are ignored. But if the whole series is empty, return [0]
+ */
+function summarizePBN(list) {
+  let prev = NaN;
+  let consec = 0;
+  const summary:number[] = [];
+  list.push(NaN);
+  for (const next of list) {
+    if (next == prev + 1) {
+      consec++;
+    }
+    else {
+      if (consec > 0) {
+        summary.push(consec);
+        const gap = next - prev - 1;
+        if (!isNaN(gap) && gap > 0) {
+          summary.push(-gap);
+        }
+      }
+      consec = (!isNaN(next)) ? 1 : 0;
+    }
+    prev = next;
+  }
+  if (summary.length == 0) {
+    return [0];
+  }
+  return summary;
+}
+
+/**
+ * Compare the actual panted cells vs. the clues.
+ * The actual cells could indicate either more than was clued, or less than was clued, or exactly what was clued.
+ * @param expect A list of expected groups (positives only)
+ * @param have A list of actual groups (positives indicate groups, negatives indicates gaps between groups)
+ * @returns 0 if exact, 1 if actual exceeds expected, or -1 if actual is not yet expected, but hasn't contradicted it yet
+ */
+function compareGroupsPBN(expect:number[], have:number[]) {
+  let exact = true;
+  let e = 0;
+  let gap = 0;
+  let prevH = 0;
+  let curE = expect.length > 0 ? expect[0] : 0;
+  for (const h of have) {
+    if (h <= 0) {
+      gap = -h;
+      continue;
+    }
+    prevH = prevH > 0 ? (prevH + gap + h) : h;
+    if (prevH <= curE) {
+      exact = exact && h == curE;
+      gap = 0;
+      if (prevH == curE) {
+        prevH = 0;
+        e++;
+        curE = e < expect.length ? expect[e] : 0;
+      }
+    }
+    else {
+      exact = false;
+      prevH = 0;
+      gap = 0;
+      e++;
+      while (e < expect.length && h > expect[e]) {
+        e++;
+      }
+      curE = e < expect.length ? expect[e] : 0;
+      if (h < curE) {
+        prevH = h;
+      }
+      else if (h == curE) {
+        e++;
+        curE = e < expect.length ? expect[e] : 0;
+      }
+      else {
+        return 1;  // too big
+      }
+    }
+  }
+  // return 0 for exact match
+  // return -1 for incomplete match - groups thus far do not exceed expected
+  return (exact && e == expect.length) ? 0 : -1;
 }
