@@ -6930,7 +6930,7 @@ function paintByNumbersTemplate() {
     var temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/pbn\" target=\"_blank\">\n              https://help.puzzyl.net/pbn<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"group\" in=\"col\"><span class=\"pbn-col-group\">{.group}</span></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n    <for each=\"row\" in=\"rowGroups\">\n      <tr_ class=\"pbn-row\">\n        <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n          &hairsp; <for each=\"group\" in=\"row\"><span class=\"pbn-row-group\">{.group}</span> </for>&hairsp;\n        </td_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">&times;</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
+        "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"group\" in=\"col\"><span class=\"pbn-col-group\" onclick=\"togglePbnClue(this)\">{.group}</span></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n    <for each=\"row\" in=\"rowGroups\">\n      <tr_ class=\"pbn-row\">\n        <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n          &hairsp; <for each=\"group\" in=\"row\"><span class=\"pbn-row-group\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>&hairsp;\n        </td_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">&times;</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
     return temp;
 }
 /**
@@ -7139,5 +7139,13 @@ function compareGroupsPBN(expect, have) {
     // return 0 for exact match
     // return -1 for incomplete match - groups thus far do not exceed expected
     return (exact && e == expect.length) ? 0 : -1;
+}
+/**
+ * When a PBN group in row or col header is checked,
+ * toggle a check- or cross-off effect.
+ * @param group The group that was clicked.
+ */
+function togglePbnClue(group) {
+    toggleClass(group, 'pbn-check');
 }
 //# sourceMappingURL=kit.js.map

@@ -54,15 +54,15 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
           <span class="pbn-instructions">
             This is a nonogram<br>(aka paint-by-numbers).<br>
             For instructions, see 
-            <a href="https://help.puzzyl.net/pbn" target="_blank">
-              https://help.puzzyl.net/pbn<br>
+            <a href="https://help.puzzyl.net/PBN" target="_blank">
+              https://help.puzzyl.net/PBN<br>
               <img src="../Images/Intro/pbn.png">
             </a>
           </span>
         </th_>
         <for each="col" in="colGroups">
           <td_ id="colHeader-{col#}" class="pbn-col-header">
-            <for each="group" in="col"><span class="pbn-col-group">{.group}</span></for>
+            <for each="group" in="col"><span class="pbn-col-group" onclick="togglePbnClue(this)">{.group}</span></for>
           </td_>
         </for>
         <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
@@ -71,7 +71,7 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
     <for each="row" in="rowGroups">
       <tr_ class="pbn-row">
         <td_ id="rowHeader-{row#}" class="pbn-row-header">
-          &hairsp; <for each="group" in="row"><span class="pbn-row-group">{.group}</span> </for>&hairsp;
+          &hairsp; <for each="group" in="row"><span class="pbn-row-group" onclick="togglePbnClue(this)">{.group}</span> </for>&hairsp;
         </td_>
         <for each="col" in="colGroups">
           <td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>

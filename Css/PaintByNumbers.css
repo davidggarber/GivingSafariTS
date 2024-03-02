@@ -28,6 +28,7 @@
 }
 .pbn-col-group {
   display:block;
+  border: solid 1px transparent;
   letter-spacing: -1.5px;
 }
 .pbn-col-footer {
@@ -65,7 +66,8 @@
 }
 .pbn-row-group {
   display: inline-block;
-  margin-left: 8px;
+  border: solid 1px transparent;
+  margin-left: 4px;
 }
 .pbn-row td {
   border: dotted 0.5px #ccc;
@@ -89,6 +91,10 @@
 }
 .pbn-row-validation.exceeded {
   background-color: #ff8080;
+}
+.pbn-check {
+  background-color: #80ff8080;
+  border: solid 1px #80ff80;
 }
 
 @media print {

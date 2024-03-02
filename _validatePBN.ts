@@ -184,3 +184,12 @@ function compareGroupsPBN(expect:number[], have:number[]) {
   // return -1 for incomplete match - groups thus far do not exceed expected
   return (exact && e == expect.length) ? 0 : -1;
 }
+
+/**
+ * When a PBN group in row or col header is checked,
+ * toggle a check- or cross-off effect.
+ * @param group The group that was clicked.
+ */
+function togglePbnClue(group:HTMLSpanElement) {
+  toggleClass(group, 'pbn-check');
+}
