@@ -6730,7 +6730,7 @@ function anyFromContext(key, context) {
     key = key.trim();
     if (key[0] == '{' && key[key.length - 1] == '}') {
         // Remove redundant {curly}, since some fields don't require them
-        key = key.substring(1, key.length - 2).trim();
+        key = key.substring(1, key.length - 1).trim();
     }
     var path = key.split('.');
     var nested = [context];
@@ -6904,14 +6904,18 @@ function getTemplate(tempId) {
     throw new Error('Unresolved template ID: ' + tempId);
 }
 exports.getTemplate = getTemplate;
+var builtInTemplates = {
+    paintByNumbers: paintByNumbersTemplate,
+    classStampPalette: classStampPaletteTemplate,
+};
 /**
  * Match a template name to a built-in template object
  * @param tempId The ID
  * @returns A template element (not part of the document), or undefined if unrecognized.
  */
 function builtInTemplate(tempId) {
-    if (tempId == 'paintByNumbers') {
-        return paintByNumbersTemplate();
+    if (tempId in builtInTemplates) {
+        return builtInTemplates[tempId]();
     }
 }
 exports.builtInTemplate = builtInTemplate;
@@ -6926,39 +6930,34 @@ function paintByNumbersTemplate() {
     var temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        '<table_ class="paint-by-numbers bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">' +
-            '<thead_>' +
-            '<tr_ class="pbn-col-headers">' +
-            '<th_ class="pbn-corner">&nbsp;</th_>' +
-            '<for each="col" in="colGroups">' +
-            '<td_ class="pbn-col-header">' +
-            '<for each="group" in="col"><span class="pbn-col-group">{.group}</span></for>' +
-            '</td_>' +
-            '</for>' +
-            '</tr_>' +
-            '</thead_>' +
-            '<for each="row" in="rowGroups">' +
-            '<tr_ class="pbn-row">' +
-            '<td_ class="pbn-row-header">' +
-            '<for each="group" in="row"><span class="pbn-row-group">{.group}</span></for>' +
-            '</td_>' +
-            '<for each="col" in="colGroups">' +
-            '<td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>' +
-            '</for>' +
-            '<td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>' +
-            '</tr_>' +
-            '</for>' +
-            '<tfoot_>' +
-            '<tr_ class="pbn-col-footer">' +
-            '<th_ class="pbn-corner">&nbsp;</th_>' +
-            '<for each="col" in="colGroups">' +
-            '<td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>' +
-            '</for>' +
-            '</tr_>' +
-            '</tfoot_>' +
-            '</table_>';
+        "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/pbn\" target=\"_blank\">\n              https://help.puzzyl.net/pbn<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"group\" in=\"col\"><span class=\"pbn-col-group\">{.group}</span></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n    <for each=\"row\" in=\"rowGroups\">\n      <tr_ class=\"pbn-row\">\n        <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n          &hairsp; <for each=\"group\" in=\"row\"><span class=\"pbn-row-group\">{.group}</span> </for>&hairsp;\n        </td_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">&times;</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
     return temp;
 }
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ */
+function classStampPaletteTemplate() {
+    linkCss('../Css/PaintByNumbers.css');
+    var temp = document.createElement('template');
+    temp.id = 'classStampPalette';
+    temp.innerHTML =
+        "<div id=\"stampPalette\" class=\"toolSize-{size}\" data-tool-count=\"3\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool\" data-template-id=\"{tool.id}\" data-click-modifier=\"{tool.modifier}\" title=\"{tool.modifier} + draw\">\n        <div class=\"roundTool {tool.id}-button\">\n          <span class=\"stampIcon\"><img src_=\"{tool.img}\"></span>\n        </div>\n      </div>\n    </for>\n  </div>";
+    return temp;
+}
+function stampPaletteTemplate() {
+    linkCss('../Css/StampTools.css');
+    var temp = document.createElement('template');
+    temp.innerHTML =
+        "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n  </table_>";
+    return temp;
+}
+var pbnStampTools = [
+    { id: 'stampPaint', modifier: 'ctrl', img: '../Images/Stamps/brush.png' },
+    { id: 'stampBlank', modifier: 'shift', img: '../Images/Stamps/blank.png' },
+    { id: 'stampErase', modifier: 'alt', img: '../Images/Stamps/eraser.png' },
+];
 /*-----------------------------------------------------------
  * _validatePBN.ts
  *-----------------------------------------------------------*/
@@ -7016,6 +7015,8 @@ function validatePBN(target) {
         var comp = compareGroupsPBN(header, groups);
         toggleClass(rSum, 'done', comp == 0);
         toggleClass(rSum, 'exceeded', comp > 0);
+        var rHead = document.getElementById('rowHeader-' + row);
+        toggleClass(rHead, 'done', comp == 0);
     }
     var cols = contextDataFromRef(table, 'data-col-context');
     if (cSum) {
@@ -7034,6 +7035,8 @@ function validatePBN(target) {
         var comp = compareGroupsPBN(header, groups);
         toggleClass(cSum, 'done', comp == 0);
         toggleClass(cSum, 'exceeded', comp > 0);
+        var cHead = document.getElementById('colHeader-' + col);
+        toggleClass(cHead, 'done', comp == 0);
     }
 }
 /**

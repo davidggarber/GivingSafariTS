@@ -1,6 +1,6 @@
 @media screen {
   #stampPalette {
-      display: block;
+    display: block;
   }
   .print #stampPalette {
     display: none;

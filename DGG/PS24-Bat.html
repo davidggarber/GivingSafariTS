@@ -2,7 +2,6 @@
 <html>
   <head>
     <meta charset="UTF-8"></meta>
-    <link href="../24/Css/PaintByNumbers.css" rel="Stylesheet" type="text/css"></link>
     <script> var exports = {}; </script>
     <script src="../js/kit.js"></script>
     <script>
@@ -46,17 +45,12 @@
       {
         colGroups: cols,
         rowGroups: rows,
+        stampTools: pbnStampTools,
       };
 
 
     </script>
     <style>
-      #stampPalette {
-        position: absolute;
-        bottom: -96px;
-        right: 0px;
-      }
-
       @media screen {
         .paint-by-numbers {
           width: 10.5in;
@@ -72,28 +66,11 @@
   </head>
   <body id="Battleship">
     <div id="pageBody">
-      <use template="paintByNumbers" cols="colGroups" rows="rowGroups">
-      </use>
+      <use template="paintByNumbers" cols="colGroups" rows="rowGroups"></use>
 
-
-      <div id="stampPalette" data-tool-count="3" data-tool-erase="stampErase">
-        <div class="stampTool" data-template-id="stampPaint" data-click-modifier="ctrl" title="ctrl + draw">
-          <div class="roundTool" style="background-color: black;">
-            <span class="stampIcon"><img src="../24/Images/Bat/brush.png" style="width: 64px;"></span>
-          </div>
-        </div>
-        <div class="stampTool" data-template-id="stampBlank" data-click-modifier="shift" title="shift + draw">
-          <div class="roundTool" style="background-color: #aaa;">
-            <span class="stampIcon"><img src="../24/Images/Bat/blank.png" style="width: 64px;"></span>
-          </div>
-        </div>
-        <div class="stampTool" data-template-id="stampErase" data-click-modifier="alt" title="alt + draw">
-          <div class="roundTool" style="background-color: #00000011;">
-            <span class="stampIcon"><img src="../24/Images/Bat/eraser.png" style="width: 64px;"></span>
-          </div>
-        </div>
+      <div style="position: absolute; bottom: -96px; right: 0px;">
+        <use template="classStampPalette" tools="{stampTools}" size="64" erase="stampErase"></use>
       </div>
-
     </div>
   </body>
 </html>

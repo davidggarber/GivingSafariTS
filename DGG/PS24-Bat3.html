@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '24',
+        'title': 'Battleship',
+        'author': 'David Garber',
+        'copyright': '2024',
+        'orientation': 'portrait',
+        'abilities': {
+          'stamping': true,
+        },
+        'onStamp': validatePBN,
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+      };
+
+      var cols = [
+        [11,6,3],  [12,11], [25], [24], [29],
+        [30], [2,3], [2,12,1,2,3], [2,12,3,3,2], [2,12,4,4,2],
+        [2,2,2,2,2,2,2,3], [2,2,2,2,2,2,2,3], [2,3,4,3,2,3,2,4], [2,12,12,4], [2,4,4,4,5,4],
+        [3,2,2,2,3,6], [2,7], [2,12,4,1,6], [2,12,6,2,5], [2,12,3,3,3,5],
+        [2,2,2,2,2,2,2,5], [2,2,2,2,2,2,2,5], [2,3,4,3,3,2,3,5], [2,12,12,5], [2,4,4,10,5],
+        [3,2,2,1,8,6], [4,3,7], [34], [34]
+      ];
+      var rows = [
+        [25], [25], [2,1,4], [2,7,7,3], [3,2,8,8,2],
+        [6,3,4,3,4,2], [6,3,3,3,3,2], [6,3,3,3,3,2], [6,7,7,2], [6,7,7,2],
+        [6,3,3,3,3,2], [6,3,3,3,3,2], [6,3,4,3,4,2], [6,8,8,2], [6,7,7,3],
+        [5,4], [4,5,5,3], [5,7,7,2], [6,3,3,3,4,2], [6,2,3,2,3,2],
+        [6,3,2,3,2], [6,4,3,4,2], [6,5,8,2], [6,3,3,3,2],[5,3,3,3,2],
+        [6,3,3,3,4,2], [6,7,7,2], [7,5,1,5,3], [6,3,4], [24],
+        [22], [19], [17], [14]
+      ];
+
+      boiler['builderLookup'] =
+      {
+        colGroups: cols,
+        rowGroups: rows,
+        stampTools: pbnStampTools,
+      };
+
+
+    </script>
+    <style>
+      #Battleship2 .pbn-row-header {
+        text-align-last: justify;
+        width: 1.1in;
+      }
+      #Battleship2 .pbn-col-header {
+        vertical-align: middle;
+      }
+      #Battleship2 .pbn-row-footer {
+        width: 1.1in;
+      }
+
+      @media screen {
+        #pbn-pos {
+          margin-left: -0.25in;
+        }
+        .paint-by-numbers {
+          width: 8.25in;
+        }        
+      }
+      @media print {
+        .paint-by-numbers {
+          width: 7.5in;
+        }
+      }
+
+    </style>
+  </head>
+  <body id="Battleship2">
+    <div id="pageBody">
+      <div id="pbn-pos">
+        <use template="paintByNumbers" cols="colGroups" rows="rowGroups"></use>
+      </div>
+
+      <div style="position: absolute; top: -1in; right: 1in;">
+        <use template="classStampPalette" tools="{stampTools}" size="64" erase="stampErase"></use>
+      </div>
+      
+    </div>
+  </body>
+</html>

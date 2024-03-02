@@ -2,6 +2,23 @@
   user-select: none;
   border-spacing: 0px;
 }
+.pbn-corner {
+  position: relative;
+}
+.pbn-instructions {
+  position: absolute;
+  bottom: 20px;
+  right: 5px;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: normal;
+  font-style: italic;
+  font-size: 8pt;
+  width: 1.5in;
+  text-align: center;
+}
+.pbn-instructions img {
+  margin: 5px;
+}
 
 .pbn-col-header {
   vertical-align: bottom;
@@ -25,11 +42,19 @@
   vertical-align: top;
   text-align: center;
 }
+.pbn-col-header.done {
+  background-color: #80ff80;
+}
 .pbn-col-validation.done {
   background-color: #80ff80;
 }
 .pbn-col-validation.exceeded {
   background-color: #ff8080;
+}
+.pbn-corner-validation {
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: normal;
+  font-style: italic;
 }
 
 .pbn-row-header {
@@ -55,6 +80,9 @@
   left: 0px;
   height: 100%;
   text-wrap: nowrap;
+}
+.pbn-row-header.done {
+  background-color: #80ff80;
 }
 .pbn-row-validation.done {
   background-color: #80ff80;
@@ -110,3 +138,12 @@
   color: #999;
 }
 
+.stampPaint-button {
+  background-color: black;
+}
+.stampBlank-button {
+  background-color: #aaa;
+}
+.stampErase-button {
+  background-color: #00000011;
+}

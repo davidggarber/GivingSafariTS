@@ -57,6 +57,8 @@ function validatePBN(target:HTMLElement) {
     const comp = compareGroupsPBN(header, groups);
     toggleClass(rSum, 'done', comp == 0);
     toggleClass(rSum, 'exceeded', comp > 0);
+    const rHead = document.getElementById('rowHeader-' + row);
+    toggleClass(rHead, 'done', comp == 0);
   }
 
   const cols = contextDataFromRef(table, 'data-col-context');
@@ -75,6 +77,8 @@ function validatePBN(target:HTMLElement) {
     const comp = compareGroupsPBN(header, groups);
     toggleClass(cSum, 'done', comp == 0);
     toggleClass(cSum, 'exceeded', comp > 0);
+    const cHead = document.getElementById('colHeader-' + col);
+    toggleClass(cHead, 'done', comp == 0);
   }
 
 }

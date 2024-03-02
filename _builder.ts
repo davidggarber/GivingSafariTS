@@ -733,7 +733,7 @@ export function anyFromContext(key:string, context:object):any {
   key = key.trim();
   if (key[0] == '{' && key[key.length - 1] == '}') {
     // Remove redundant {curly}, since some fields don't require them
-    key = key.substring(1, key.length - 2).trim();
+    key = key.substring(1, key.length - 1).trim();
   }
   const path = key.split('.');
   const nested = [context];
