@@ -51,6 +51,11 @@
 
     </script>
     <style>
+      #Battleship .pbn-instructions {
+        bottom: 0px;
+        right: -5px;
+      }
+
       @media screen {
         .paint-by-numbers {
           width: 10.5in;
@@ -68,7 +73,7 @@
     <div id="pageBody">
       <use template="paintByNumbers" cols="colGroups" rows="rowGroups"></use>
 
-      <div style="position: absolute; bottom: -96px; right: 0px;">
+      <div style="position: absolute; top: -1in; right: 2.75in;">
         <use template="classStampPalette" tools="{stampTools}" size="64" erase="stampErase"></use>
       </div>
     </div>
