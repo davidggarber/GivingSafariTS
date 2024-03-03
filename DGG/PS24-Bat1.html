@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '24',
+        'title': 'Battleship',
+        'author': 'David Garber',
+        'copyright': '2024',
+        'orientation': 'landscape',
+        'abilities': {
+          'stamping': true,
+        },
+        'onStamp': validatePBN,
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+      };
+
+      var cols = [
+        [4], [4], [8], [1,8], [1,7],
+        [1,6], [9], [9], [10], [1,9],
+        [1,10], [1,10], [12], [12], [12],
+        [10], [2,1,1,11], [25], [2,1,1,11], [12],
+        [13], [14], [14], [16], [17],
+        [18], [24], [25], [4,18], [18],
+        [14], [13], [12], [13], [13],
+        [13], [1,10], [1,11], [1,10], [1,3,3,2],
+        [1,1,1,1,2], [1,1,2], [1,8], [1,1,4], [1,1,4],
+        [1,2], [8], [7], [7], [8],
+      ];
+      var rows = [
+        [1, 1], [1, 3], [3, 3], [3, 3], [1, 3],
+        [1, 2], [1, 2], [3, 5], [1, 6], [1, 7],
+        [3, 7], [1, 10], [1, 12, 7], [6, 1, 17], [3, 20, 7],
+        [6, 30, 1], [1, 44], [39, 1, 4], [41, 1, 1, 4], [40, 1, 4],
+        [40, 3, 4], [37, 3, 4], [48], [3, 41], [2, 30],
+      ];
+
+
+      boiler['builderLookup'] =
+      {
+        colGroups: cols,
+        rowGroups: rows,
+        stampTools: pbnStampTools,
+      };
+
+
+    </script>
+    <style>
+      #Battleship .pbn-instructions {
+        bottom: 0px;
+        right: -5px;
+      }
+
+      @media screen {
+        .paint-by-numbers {
+          width: 10.5in;
+        }        
+      }
+      @media print {
+        .paint-by-numbers {
+          width: 10in;
+        }
+      }
+
+    </style>
+  </head>
+  <body id="Battleship">
+    <div id="pageBody">
+      <use template="paintByNumbers" cols="colGroups" rows="rowGroups"></use>
+
+      <div style="position: absolute; top: -1in; right: 2.75in;">
+        <use template="classStampPalette" tools="{stampTools}" size="64" erase="stampErase"></use>
+      </div>
+    </div>
+  </body>
+</html>

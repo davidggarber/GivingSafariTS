@@ -67,7 +67,8 @@
 .pbn-row-group {
   display: inline-block;
   border: solid 1px transparent;
-  margin-left: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 .pbn-row td {
   border: dotted 0.5px #ccc;
