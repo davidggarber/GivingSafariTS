@@ -42,6 +42,8 @@
   width: 100%;
   vertical-align: top;
   text-align: center;
+  font-size: small;
+  font-style: italic;
 }
 .pbn-col-header.done {
   background-color: #80ff80;
@@ -82,6 +84,8 @@
   top: 0px;
   left: 0px;
   height: 100%;
+  font-size: small;
+  font-style: italic;
   text-wrap: nowrap;
 }
 .pbn-row-header.done {

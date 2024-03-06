@@ -742,6 +742,10 @@ export function anyFromContext(key:string, context:object):any {
     if (!step) {
       continue;  // Ignore blank steps for now
     }
+    const maybe = step.indexOf('?') == step.length - 1;
+    if (maybe) {
+      step = step.substring(0, step.length - 1);
+    }
     const newNest = step[0] == '[';
     if (newNest) {
       step = step.substring(1);
@@ -761,8 +765,14 @@ export function anyFromContext(key:string, context:object):any {
       if ((i == 0 && path.length == 1) || (newNest && unnest > 0)) {
         nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
       }
+      else if (maybe) {
+        if (i != path.length - 1) {
+          console.log('Optional key ' + step + '?' + ' before the end of ' + key);
+        }
+        return '';  // All missing optionals return ''
+      }
       else {
-        throw new Error('Unrecognized key: ' + step);
+        throw new Error('Unrecognized key: ' + step + ' in ' + key);
       }
     }
     else {

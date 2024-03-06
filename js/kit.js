@@ -4103,6 +4103,7 @@ function onSelectStampTool(event) {
  * @returns the name of a draw tool
  */
 function getStampTool(event, toolFromErase) {
+    // Shift keys always win
     if (event.shiftKey || event.altKey || event.ctrlKey) {
         for (var i = 0; i < _stampTools.length; i++) {
             var mods = _stampTools[i].getAttributeNS('', 'data-click-modifier');
@@ -4114,12 +4115,17 @@ function getStampTool(event, toolFromErase) {
             }
         }
     }
+    // toolFromErase is set by how the stamping began.
+    // If it begins on a pre-stamped cell, shift to the next stamp.
+    // After the first click, subsequent dragging keeps the same tool.
     if (toolFromErase != null) {
         return toolFromErase;
     }
+    // Lacking other inputs, use the selected tool.
     if (_selectedTool != null) {
         return _selectedTool.getAttributeNS('', 'data-template-id');
     }
+    // If no selection, the first tool is the default
     return _firstTool;
 }
 /**
@@ -4163,28 +4169,61 @@ function eraseStamp(target) {
     }
     var parent = getStampParent(target);
     var cur = findFirstChildOfClass(parent, 'stampedObject');
+    var curId;
+    var nextId = '';
     if (cur != null) {
-        var curTool = cur.getAttributeNS('', 'data-template-id');
-        toggleClass(target, curTool, false);
+        curId = cur.getAttributeNS('', 'data-template-id');
+        toggleClass(target, curId, false);
         parent.removeChild(cur);
         if (_extractorTool != null) {
             updateStampExtraction();
         }
-        if (_selectedTool == null) {
-            return cur.getAttributeNS('', 'data-next-template-id'); // rotate
-        }
-        if (_selectedTool.getAttributeNS('', 'data-template-id') == curTool) {
-            return _eraseTool; // erase
-        }
+        nextId = cur.getAttributeNS('', 'data-next-template-id');
     }
     else if (hasClass(target, 'stampedObject')) {
         // Template is a class on the container itself
-        var curTool = target.getAttributeNS('', 'data-template-id');
+        curId = target.getAttributeNS('', 'data-template-id');
         toggleClass(target, 'stampedObject', false);
-        toggleClass(target, curTool, false);
+        toggleClass(target, curId, false);
         target.removeAttributeNS('', 'data-template-id');
+        if (_extractorTool != null) {
+            updateStampExtraction();
+        }
     }
-    return null; // normal
+    else {
+        return null; // This cell is currently blank
+    }
+    if (_selectedTool == null) {
+        // rotate through the tools
+        if (!nextId && curId) {
+            var stampTool = findStampTool(curId);
+            nextId = stampTool.getAttributeNS('', 'data-next-template-id');
+        }
+        if (nextId) {
+            return nextId;
+        }
+    }
+    if (_selectedTool && _selectedTool.getAttributeNS('', 'data-template-id') == curId) {
+        // When a tool is explicitly selected, clicking on that type toggles it back off
+        return _eraseTool;
+    }
+    // No guidance on what to replace this cell with
+    return null;
+}
+/**
+ * Given a stamp ID from a stamped element, find the tool that applied it.
+ * @param templateId A string that must match a stampTool in this document.
+ * @returns The stampTool element.
+ */
+function findStampTool(templateId) {
+    var tools = document.getElementsByClassName('stampTool');
+    for (var i = 0; i < tools.length; i++) {
+        var tool = tools[i];
+        if (tool.getAttributeNS('', 'data-template-id') == templateId) {
+            return tool;
+        }
+    }
+    throw new Error('Unrecognized stamp tool: ' + templateId);
 }
 /**
  * Draw on the target surface, using the named tool.
@@ -6739,6 +6778,10 @@ function anyFromContext(key, context) {
         if (!step) {
             continue; // Ignore blank steps for now
         }
+        var maybe = step.indexOf('?') == step.length - 1;
+        if (maybe) {
+            step = step.substring(0, step.length - 1);
+        }
         var newNest = step[0] == '[';
         if (newNest) {
             step = step.substring(1);
@@ -6757,8 +6800,14 @@ function anyFromContext(key, context) {
             if ((i == 0 && path.length == 1) || (newNest && unnest > 0)) {
                 nested[nested.length - 1] = new String(step); // A lone step (or nested step) can be a literal
             }
+            else if (maybe) {
+                if (i != path.length - 1) {
+                    console.log('Optional key ' + step + '?' + ' before the end of ' + key);
+                }
+                return ''; // All missing optionals return ''
+            }
             else {
-                throw new Error('Unrecognized key: ' + step);
+                throw new Error('Unrecognized key: ' + step + ' in ' + key);
             }
         }
         else {
@@ -6930,20 +6979,36 @@ function paintByNumbersTemplate() {
     var temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"group\" in=\"col\"><span class=\"pbn-col-group\" onclick=\"togglePbnClue(this)\">{.group}</span></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n    <for each=\"row\" in=\"rowGroups\">\n      <tr_ class=\"pbn-row\">\n        <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n          &hairsp; <for each=\"group\" in=\"row\"><span class=\"pbn-row-group\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>&hairsp;\n        </td_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">&times;</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
+        "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"group\" in=\"col\"><span class=\"pbn-col-group\" onclick=\"togglePbnClue(this)\">{.group}</span></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n    <for each=\"row\" in=\"rowGroups\">\n      <tr_ class=\"pbn-row\">\n        <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n          &hairsp; <for each=\"group\" in=\"row\"><span class=\"pbn-row-group\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>&hairsp;\n        </td_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">&times;</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">\n          \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n          <br>\u2190&nbsp;validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
     return temp;
 }
 /**
  * Create a standard pant-by-numbers template element.
  * Also load the accompanying CSS file.
  * @returns The template.
+ * @remarks This template takes the following arguments:
+ *   size: Optional descriptor of stamp toolbar button size.
+ *         Choices are "medium" and "small". The default is large.
+ *   erase: the tool id of the eraser
+ *   tools: A list of objects, each of which contain:
+ *     id: the name of the stamp.
+ *     next: Optional id of the next stamp, for rotational clicking.
+ *           If absent, clicking on pre-stamped cells does nothing differnt.
+ *     modifier: Optional shift state for clicks.
+ *               Choices are "ctrl", "alt", "shift".
+ *     img: The image source path to the button.
+ *     label: Optional text to render below the toolbar button
+ * @remarks Invoking this stamping template also loads the PaintByNumbers.css
+ * Top candidates of styles to override include:
+ *   stampLabel: to change or suppress the display of the label.
+ *   stampMod: to change of suppress the modifier as a simple label.
  */
 function classStampPaletteTemplate() {
     linkCss('../Css/PaintByNumbers.css');
     var temp = document.createElement('template');
     temp.id = 'classStampPalette';
     temp.innerHTML =
-        "<div id=\"stampPalette\" class=\"toolSize-{size}\" data-tool-count=\"3\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool\" data-template-id=\"{tool.id}\" data-click-modifier=\"{tool.modifier}\" title=\"{tool.modifier} + draw\">\n        <div class=\"roundTool {tool.id}-button\">\n          <span class=\"stampIcon\"><img src_=\"{tool.img}\"></span>\n        </div>\n      </div>\n    </for>\n  </div>";
+        "<div id=\"stampPalette\" data-tool-count=\"3\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool {size?}\" data-template-id=\"{tool.id}\" data-click-modifier=\"{tool.modifier?}\" title=\"{tool.modifier?} + draw\" data-next-template-id=\"{tool.next}\">\n        <div class=\"roundTool {tool.id}-button\">\n          <span id=\"{tool.id}-icon\" class=\"stampIcon\"><img src_=\"{tool.img}\"></span>\n          <span id=\"{tool.id}-label\" class=\"stampLabel\">{tool.label?}</span>\n          <span id=\"{tool.id}-mod\" class=\"stampMod\">{tool.modifier?}+click</span>\n        </div>\n      </div>\n    </for>\n  </div>";
     return temp;
 }
 function stampPaletteTemplate() {
@@ -6954,9 +7019,9 @@ function stampPaletteTemplate() {
     return temp;
 }
 var pbnStampTools = [
-    { id: 'stampPaint', modifier: 'ctrl', img: '../Images/Stamps/brush.png' },
-    { id: 'stampBlank', modifier: 'shift', img: '../Images/Stamps/blank.png' },
-    { id: 'stampErase', modifier: 'alt', img: '../Images/Stamps/eraser.png' },
+    { id: 'stampPaint', modifier: 'ctrl', label: 'Paint', img: '../Images/Stamps/brushH.png', next: 'stampBlank' },
+    { id: 'stampBlank', modifier: 'shift', label: 'Blank', img: '../Images/Stamps/blankH.png', next: 'stampErase' },
+    { id: 'stampErase', modifier: 'alt', label: 'Erase', img: '../Images/Stamps/eraserH.png', next: 'stampPaint' },
 ];
 /*-----------------------------------------------------------
  * _validatePBN.ts

@@ -85,7 +85,9 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
         <for each="col" in="colGroups">
           <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
         </for>
-        <th_ class="pbn-corner-validation">validation</th_>
+        <th_ class="pbn-corner-validation">
+          ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ
+          <br>←&nbsp;validation</th_>
       </tr_>
     </tfoot_>
   </table_>`;
@@ -96,6 +98,22 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
  * Create a standard pant-by-numbers template element.
  * Also load the accompanying CSS file.
  * @returns The template.
+ * @remarks This template takes the following arguments:
+ *   size: Optional descriptor of stamp toolbar button size.
+ *         Choices are "medium" and "small". The default is large.
+ *   erase: the tool id of the eraser
+ *   tools: A list of objects, each of which contain:
+ *     id: the name of the stamp.
+ *     next: Optional id of the next stamp, for rotational clicking.
+ *           If absent, clicking on pre-stamped cells does nothing differnt.
+ *     modifier: Optional shift state for clicks. 
+ *               Choices are "ctrl", "alt", "shift".
+ *     img: The image source path to the button.
+ *     label: Optional text to render below the toolbar button
+ * @remarks Invoking this stamping template also loads the PaintByNumbers.css
+ * Top candidates of styles to override include:
+ *   stampLabel: to change or suppress the display of the label.
+ *   stampMod: to change of suppress the modifier as a simple label.
  */
 function classStampPaletteTemplate() :HTMLTemplateElement {
   linkCss('../Css/PaintByNumbers.css');
@@ -103,11 +121,13 @@ function classStampPaletteTemplate() :HTMLTemplateElement {
   const temp = document.createElement('template');
   temp.id = 'classStampPalette';
   temp.innerHTML = 
-  `<div id="stampPalette" class="toolSize-{size}" data-tool-count="3" data-tool-erase="{erase}">
+  `<div id="stampPalette" data-tool-count="3" data-tool-erase="{erase}">
     <for each="tool" in="tools">
-      <div class="stampTool" data-template-id="{tool.id}" data-click-modifier="{tool.modifier}" title="{tool.modifier} + draw">
+      <div class="stampTool {size?}" data-template-id="{tool.id}" data-click-modifier="{tool.modifier?}" title="{tool.modifier?} + draw" data-next-template-id="{tool.next}">
         <div class="roundTool {tool.id}-button">
-          <span class="stampIcon"><img src_="{tool.img}"></span>
+          <span id="{tool.id}-icon" class="stampIcon"><img src_="{tool.img}"></span>
+          <span id="{tool.id}-label" class="stampLabel">{tool.label?}</span>
+          <span id="{tool.id}-mod" class="stampMod">{tool.modifier?}+click</span>
         </div>
       </div>
     </for>
@@ -126,7 +146,7 @@ function stampPaletteTemplate() :HTMLTemplateElement {
 }
 
 var pbnStampTools = [
-  {id:'stampPaint', modifier:'ctrl', img:'../Images/Stamps/brush.png'},
-  {id:'stampBlank', modifier:'shift', img:'../Images/Stamps/blank.png'},
-  {id:'stampErase', modifier:'alt', img:'../Images/Stamps/eraser.png'},
+  {id:'stampPaint', modifier:'ctrl', label:'Paint', img:'../Images/Stamps/brushH.png', next:'stampBlank'},
+  {id:'stampBlank', modifier:'shift', label:'Blank', img:'../Images/Stamps/blankH.png', next:'stampErase'},
+  {id:'stampErase', modifier:'alt', label:'Erase', img:'../Images/Stamps/eraserH.png', next:'stampPaint'},
 ];

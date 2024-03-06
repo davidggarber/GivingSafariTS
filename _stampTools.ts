@@ -127,6 +127,7 @@ function onSelectStampTool(event:MouseEvent) {
  * @returns the name of a draw tool
  */
 function getStampTool(event:MouseEvent, toolFromErase:string|null):string|null {
+    // Shift keys always win
     if (event.shiftKey || event.altKey || event.ctrlKey) {
         for (let i = 0; i < _stampTools.length; i++) {
             const mods = _stampTools[i].getAttributeNS('', 'data-click-modifier');
@@ -139,12 +140,19 @@ function getStampTool(event:MouseEvent, toolFromErase:string|null):string|null {
         }
     }
     
+    // toolFromErase is set by how the stamping began.
+    // If it begins on a pre-stamped cell, shift to the next stamp.
+    // After the first click, subsequent dragging keeps the same tool.
     if (toolFromErase != null) {
         return toolFromErase;
     }
+
+    // Lacking other inputs, use the selected tool.
     if (_selectedTool != null) {
         return _selectedTool.getAttributeNS('', 'data-template-id');
     }
+
+    // If no selection, the first tool is the default
     return _firstTool;
 }
 
@@ -190,29 +198,65 @@ function eraseStamp(target:HTMLElement):string|null {
     const parent = getStampParent(target);
 
     const cur = findFirstChildOfClass(parent, 'stampedObject');
+    let curId:string|null;
+    let nextId:string|null = '';
     if (cur != null) {
-        const curTool = cur.getAttributeNS('', 'data-template-id');
-        toggleClass(target, curTool, false);
+        curId = cur.getAttributeNS('', 'data-template-id');
+        toggleClass(target, curId, false);
         parent.removeChild(cur);
         if (_extractorTool != null) {
             updateStampExtraction();
         }
-
-        if (_selectedTool == null) {
-            return cur.getAttributeNS('', 'data-next-template-id');  // rotate
-        }
-        if (_selectedTool.getAttributeNS('', 'data-template-id') == curTool) {
-            return _eraseTool;  // erase
-        }
+        nextId = cur.getAttributeNS('', 'data-next-template-id');   
     }
     else if (hasClass(target, 'stampedObject')) {
         // Template is a class on the container itself
-        const curTool = target.getAttributeNS('', 'data-template-id');
+        curId = target.getAttributeNS('', 'data-template-id');
         toggleClass(target, 'stampedObject', false);
-        toggleClass(target, curTool, false);
+        toggleClass(target, curId, false);
         target.removeAttributeNS('', 'data-template-id');
+        if (_extractorTool != null) {
+            updateStampExtraction();
+        }
     }
-return null;  // normal
+    else {
+        return null;  // This cell is currently blank
+    }
+
+    if (_selectedTool == null) {
+        // rotate through the tools
+        if (!nextId && curId) {
+            const stampTool = findStampTool(curId);
+            nextId = stampTool.getAttributeNS('', 'data-next-template-id');
+        }
+        if (nextId) {
+            return nextId;
+        }
+        
+    }
+    if (_selectedTool && _selectedTool.getAttributeNS('', 'data-template-id') == curId) {
+        // When a tool is explicitly selected, clicking on that type toggles it back off
+        return _eraseTool;
+    }
+
+    // No guidance on what to replace this cell with
+    return null;
+}
+
+/**
+ * Given a stamp ID from a stamped element, find the tool that applied it.
+ * @param templateId A string that must match a stampTool in this document.
+ * @returns The stampTool element.
+ */
+function findStampTool(templateId:string):HTMLElement {
+    const tools = document.getElementsByClassName('stampTool');
+    for (let i = 0; i < tools.length; i++) {
+        const tool = tools[i];
+        if (tool.getAttributeNS('', 'data-template-id') == templateId) {
+            return tool as HTMLElement;
+        }
+    }
+    throw new Error('Unrecognized stamp tool: ' + templateId);
 }
 
 /**
