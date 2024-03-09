@@ -791,6 +791,19 @@ export function anyFromContext(key:string, context:object):any {
 }
 
 /**
+ * Look up a value, according to the context path cached in an attribute
+ * @param path A context path
+ * @returns Any JSON object
+ */
+export function globalContextData(path:string):any {
+  const context = theBoilerContext();
+  if (path && context) {
+    return anyFromContext(path, context);
+  }
+  return undefined;
+}
+
+/**
  * Test a key in the current context
  * @param key A key, initially from {curly} notation
  * @param context A dictionary of all accessible values
@@ -887,6 +900,12 @@ function useTemplate(node:HTMLElement, context:object):Node[] {
   const tempId = node.getAttribute('template');
   if (tempId) {
     const template = getTemplate(tempId);
+    if (!template) {
+      throw new Error('Template not found: ' + tempId);
+    }
+    if (!template.content) {
+      throw new Error('Invalid template: ' + tempId);
+    }
     // The template doesn't have any child nodes. Its content must first be cloned.
     const clone = template.content.cloneNode(true) as HTMLElement;
     dest = expandContents(clone, context);

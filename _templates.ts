@@ -22,6 +22,7 @@ export function getTemplate(tempId:string) :HTMLTemplateElement {
 
 const builtInTemplates = {
   paintByNumbers: paintByNumbersTemplate,
+  paintByColorNumbers: paintByColorNumbersTemplate,
   classStampPalette: classStampPaletteTemplate,
 }
 
@@ -75,6 +76,67 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
         </td_>
         <for each="col" in="colGroups">
           <td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>
+        </for>
+        <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
+      </tr_>
+    </for>
+    <tfoot_>
+      <tr_ class="pbn-col-footer">
+        <th_ class="pbn-corner">&nbsp;</th_>
+        <for each="col" in="colGroups">
+          <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
+        </for>
+        <th_ class="pbn-corner-validation">
+          ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ
+          <br>←&nbsp;validation</th_>
+      </tr_>
+    </tfoot_>
+  </table_>`;
+  return temp;
+}
+
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ */
+function paintByColorNumbersTemplate() :HTMLTemplateElement {
+  linkCss('../Css/PaintByNumbers.css');
+
+  const temp = document.createElement('template');
+  temp.id = 'paintByNumbers';
+  temp.innerHTML = 
+  `<table_ class="paint-by-numbers pbn-two-color bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
+    <thead_>
+      <tr_ class="pbn-col-headers">
+        <th_ class="pbn-corner">
+          <span class="pbn-instructions">
+            This is a nonogram<br>(aka paint-by-numbers).<br>
+            For instructions, see 
+            <a href="https://help.puzzyl.net/PBN" target="_blank">
+              https://help.puzzyl.net/PBN<br>
+              <img src="../Images/Intro/pbn.png">
+            </a>
+          </span>
+        </th_>
+        <for each="col" in="colGroups">
+          <td_ id="colHeader-{col#}" class="pbn-col-header">
+            <for each="colorGroup" in="col"><for key="color" in="colorGroup"><for each="group" in="color!"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span></for></for></for>
+          </td_>
+        </for>
+        <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
+      </tr_>
+    </thead_>
+      <for each="row" in="rowGroups">
+        <tr_ class="pbn-row">
+          <td_ id="rowHeader-{row#}" class="pbn-row-header">
+            &hairsp; 
+            <for each="colorGroup" in="row"><for key="color" in="colorGroup">
+              <for each="group" in="color!"><span class="pbn-row-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span> </for>
+            &hairsp;</for></for>
+          </td_>
+          <for each="col" in="colGroups">
+          <td_ id="{row#}_{col#}" class="pbn-cell stampable">{blank?}</td_>
         </for>
         <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
       </tr_>

@@ -21,62 +21,92 @@
       };
 
       var cols = [
-      [11,5,3],	[12,10],	[22],	[27],	[27],	[27],	[2,2],	[2,11,2,2,1],	[2,11,3,3,1],	[2,2,2,2,2,2,2],	[2,2,2,2,2,2,2,2],	[2,7,3,2,2,2,2],	[2,4,4,11,3],	[3,2,2,4,4,3],	[2,3],	[2,11,5,2,3],	[2,11,7,3,3],	[2,2,2,2,2,2,2,3],	[2,2,2,2,2,2,2,3],	[2,7,3,2,2,2,3],	[2,4,4,11,3],	[3,2,2,9,3],	[4,2,4],	[30],	[30],
+      [{land:[11,5,3]}],
+      [{land:[12,10]}],
+      [{land:[22]}],
+      [{land:[27]}],
+      [{land:[27]}],
+      [{land:[27]}],
+      [{land:[2,2]}],
+      [{land:[2]}, {ship:[11,2,2]}, {land:[1]}],
+      [{land:[2]}, {ship:[11,3,3]}, {land:[1]}],
+      [{land:[2]}, {ship:[2,2,2,2,2]}, {land:[2]}],
+      [{land:[2]}, {ship:[2,2,2,2,2,2]}, {land:[2]}],
+      [{land:[2]}, {ship:[7,3,2,2,2]}, {land:[2]}],
+      [{land:[2]}, {ship:[4,4,11]}, {land:[3]}],
+      [{land:[3]}, {ship:[2,2,4,4]}, {land:[3]}],
+      [{land:[2]}, {land:[3]}],
+      [{land:[2]}, {ship:[11,5,2]}, {land:[3]}],
+      [{land:[2]}, {ship:[11,7,3]}, {land:[3]}],
+      [{land:[2]}, {ship:[2,2,2,2,2,2]}, {land:[3]}],
+      [{land:[2]}, {ship:[2,2,2,2,2,2]}, {land:[3]}],
+      [{land:[2]}, {ship:[7,3,2,2,2]}, {land:[3]}],
+      [{land:[2]}, {ship:[4,4,11]}, {land:[3]}],
+      [{land:[3]}, {ship:[2,2,9]}, {land:[3]}],
+      [{land:[4,2,4]}],
+      [{land:[30]}],
+      [{land:[30]}],
 
       ];
       var rows = [
-      [22],
-[22],
-[3,1,4],
-[2,3,5,5,3],
-[6,6,6,2],
-[6,2,3,2,3,2],
-[6,2,3,2,3,2],
-[6,6,6,2],
-[6,5,5,2],
-[6,2,2,2,2,2],
-[6,2,2,2,2,2],
-[6,2,3,2,3,2],
-[6,6,6,2],
-[6,5,5,3],
-[5,3],
-[4,5,5,2],
-[5,7,7,2],
-[6,2,2,2,2,2],
-[6,2,2,2,2],
-[6,4,2,2,2],
-[6,3,7,2],
-[6,2,6,2],
-[5,2,2,2],
-[6,2,2,2,2,2],
-[6,7,7,2],
-[6,5,5,2],
-[4,3],
-[19],
-[16],
-[13],
+        [{land:[22]}],
+        [{land:[22]}],
+        [{land:[3,1,4]}],
+        [{land:[2]}, {ship:[3,5,5]}, {land:[3]}],
+        [{land:[6]}, {ship:[6,6]}, {land:[2]}],
+        [{land:[6]}, {ship:[2,3,2,3]}, {land:[2]}],
+        [{land:[6]}, {ship:[2,3,2,3]}, {land:[2]}],
+        [{land:[6]}, {ship:[6,6]}, {land:[2]}],
+        [{land:[6]}, {ship:[5,5]}, {land:[2]}],
+        [{land:[6]}, {ship:[2,2,2,2]}, {land:[2]}],
+        [{land:[6]}, {ship:[2,2,2,2]}, {land:[2]}],
+        [{land:[6]}, {ship:[2,3,2,3]}, {land:[2]}],
+        [{land:[6]}, {ship:[6,6]}, {land:[2]}],
+        [{land:[6]}, {ship:[5,5]}, {land:[3]}],
+        [{land:[5,3]}],
+        [{land:[4]}, {ship:[5,5]}, {land:[2]}],
+        [{land:[5]}, {ship:[7,7]}, {land:[2]}],
+        [{land:[6]}, {ship:[2,2,2,2]}, {land:[2]}],
+        [{land:[6]}, {ship:[2,2,2]}, {land:[2]}],
+        [{land:[6]}, {ship:[4,2,2]}, {land:[2]}],
+        [{land:[6]}, {ship:[3,7]}, {land:[2]}],
+        [{land:[6]}, {ship:[2,6]}, {land:[2]}],
+        [{land:[5]}, {ship:[2,2]}, {land:[2]}],
+        [{land:[6]}, {ship:[2,2,2,2]}, {land:[2]}],
+        [{land:[6]}, {ship:[7,7]}, {land:[2]}],
+        [{land:[6]}, {ship:[5,5]}, {land:[2]}],
+        [{land:[4,3]}],
+        [{land:[19]}],
+        [{land:[16]}],
+        [{land:[13]}],
+      ];
 
+      var redBlackStampTools = [
+        {id:'stampLand', modifier:'', label:'Land', img:'../24/Images/Bat/Land.png', next:'stampShip', data:'land'},
+        {id:'stampShip', modifier:'ctrl', label:'Ship', img:'../24/Images/Bat/Ship.png', next:'stampWater', data:'ship'},
+        {id:'stampWater', modifier:'shift', label:'Water', img:'../24/Images/Bat/Water.png', next:'stampErase', data:''},
+        {id:'stampErase', modifier:'alt', label:'Erase', img:'../Images/Stamps/eraserH.png', next:'stampLand', data:''},
       ];
 
       boiler['builderLookup'] =
       {
         colGroups: cols,
         rowGroups: rows,
-        stampTools: pbnStampTools,
+        stampTools: redBlackStampTools,
       };
 
 
     </script>
     <style>
-      #Battleship2 .pbn-row-header {
+      #Battleship .pbn-row-header {
         text-align-last: justify;
         width: 1.1in;
       }
-      #Battleship2 .pbn-col-header {
+      #Battleship .pbn-col-header {
         vertical-align: middle;
         line-height: 15pt;
       }
-      #Battleship2 .pbn-row-footer {
+      #Battleship .pbn-row-footer {
         width: 1.1in;
       }
 
@@ -94,18 +124,62 @@
         }
       }
 
+      
+      .pbn-color-land {
+        color: rgb(61, 99, 1);
+      }
+      .pbn-color-ship {
+        color: red;
+      }
+      .pbn-cell.stampLand {
+        background-color: rgb(61, 99, 1);
+      }
+      .pbn-cell.stampShip {
+        background-color: red;
+      }
+      .pbn-cell.stampWater {
+        text-align: center;
+        vertical-align: middle;
+        background-color: #ddddff22;
+        color: #ccf;
+      }
+
+      #Battleship .pbn-col-validation.exceeded {
+        background-color: #ffff80;
+      }
+      #Battleship .pbn-row-validation.exceeded {
+        background-color: #ffff80;
+      }
+
+
+      .stampLand-button {
+        background-color: rgb(61, 99, 1);
+      }
+      .stampShip-button {
+        background-color: red;
+      }
+      .stampWater-button {
+        background-color: #ddf;
+      }
+      #stampLand-label {
+        color: white;
+      }
+      #stampLand-mod {
+        display: none;
+      }
+
     </style>
   </head>
-  <body id="Battleship2">
+  <body id="Battleship">
     <div id="pageBody">
       <div id="pbn-pos">
-        <use template="paintByNumbers" cols="colGroups" rows="rowGroups"></use>
+        <use template="paintByColorNumbers" cols="colGroups" rows="rowGroups" blank="~" stamplist="stampTools"></use>
       </div>
 
       <div style="position: absolute; top: -1in; right: 1in;">
         <use template="classStampPalette" tools="{stampTools}" size="medium" erase="stampErase"></use>
       </div>
-      
+          
     </div>
   </body>
 </html>

@@ -5,7 +5,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = void 0;
-exports.builtInTemplate = exports.getTemplate = exports.anyFromContext = exports.expandControlTags = exports.theBoilerContext = exports.decodeAndValidate = void 0;
+exports.builtInTemplate = exports.getTemplate = exports.globalContextData = exports.anyFromContext = exports.expandControlTags = exports.theBoilerContext = exports.decodeAndValidate = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -6825,6 +6825,19 @@ function anyFromContext(key, context) {
 }
 exports.anyFromContext = anyFromContext;
 /**
+ * Look up a value, according to the context path cached in an attribute
+ * @param path A context path
+ * @returns Any JSON object
+ */
+function globalContextData(path) {
+    var context = theBoilerContext();
+    if (path && context) {
+        return anyFromContext(path, context);
+    }
+    return undefined;
+}
+exports.globalContextData = globalContextData;
+/**
  * Test a key in the current context
  * @param key A key, initially from {curly} notation
  * @param context A dictionary of all accessible values
@@ -6914,6 +6927,12 @@ function useTemplate(node, context) {
     var tempId = node.getAttribute('template');
     if (tempId) {
         var template = getTemplate(tempId);
+        if (!template) {
+            throw new Error('Template not found: ' + tempId);
+        }
+        if (!template.content) {
+            throw new Error('Invalid template: ' + tempId);
+        }
         // The template doesn't have any child nodes. Its content must first be cloned.
         var clone = template.content.cloneNode(true);
         dest = expandContents(clone, context);
@@ -6955,6 +6974,7 @@ function getTemplate(tempId) {
 exports.getTemplate = getTemplate;
 var builtInTemplates = {
     paintByNumbers: paintByNumbersTemplate,
+    paintByColorNumbers: paintByColorNumbersTemplate,
     classStampPalette: classStampPaletteTemplate,
 };
 /**
@@ -6980,6 +7000,19 @@ function paintByNumbersTemplate() {
     temp.id = 'paintByNumbers';
     temp.innerHTML =
         "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"group\" in=\"col\"><span class=\"pbn-col-group\" onclick=\"togglePbnClue(this)\">{.group}</span></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n    <for each=\"row\" in=\"rowGroups\">\n      <tr_ class=\"pbn-row\">\n        <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n          &hairsp; <for each=\"group\" in=\"row\"><span class=\"pbn-row-group\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>&hairsp;\n        </td_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">&times;</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">\n          \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n          <br>\u2190&nbsp;validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
+    return temp;
+}
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ */
+function paintByColorNumbersTemplate() {
+    linkCss('../Css/PaintByNumbers.css');
+    var temp = document.createElement('template');
+    temp.id = 'paintByNumbers';
+    temp.innerHTML =
+        "<table_ class=\"paint-by-numbers pbn-two-color bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\" data-stamp-list=\"{stamplist$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"colorGroup\" in=\"col\"><for key=\"color\" in=\"colorGroup\"><for each=\"group\" in=\"color!\"><span class=\"pbn-col-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span></for></for></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n      <for each=\"row\" in=\"rowGroups\">\n        <tr_ class=\"pbn-row\">\n          <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n            &hairsp; \n            <for each=\"colorGroup\" in=\"row\"><for key=\"color\" in=\"colorGroup\">\n              <for each=\"group\" in=\"color!\"><span class=\"pbn-row-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>\n            &hairsp;</for></for>\n          </td_>\n          <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">{blank?}</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">\n          \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n          <br>\u2190&nbsp;validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
     return temp;
 }
 /**
@@ -7028,11 +7061,16 @@ var pbnStampTools = [
  *-----------------------------------------------------------*/
 /**
  * Validate the paint-by-numbers grid that contains this cell
- * @param target
+ * @param target The cell that was just modified
  */
 function validatePBN(target) {
     var table = findParentOfClass(target, 'paint-by-numbers');
     if (!table) {
+        return;
+    }
+    var stampList = getOptionalStyle(table, 'data-stamp-list');
+    if (stampList) {
+        validateColorPBN(target, table, stampList);
         return;
     }
     var pos = target.id.split('_');
@@ -7103,6 +7141,19 @@ function validatePBN(target) {
         var cHead = document.getElementById('colHeader-' + col);
         toggleClass(cHead, 'done', comp == 0);
     }
+}
+/**
+ * Is a given cell tagged with a (non-blank) stamp id?
+ * @param cell
+ * @param stampTools
+ * @returns the stamp data, or undefined if none found
+ */
+function dataFromTool(cell, stampTools) {
+    for (var i = 0; i < stampTools.length; i++) {
+        if (stampTools[i].data && hasClass(cell, stampTools[i].id))
+            return stampTools[i].data;
+    }
+    return undefined;
 }
 /**
  * Look up a value, according to the context path cached in an attribute
@@ -7212,5 +7263,193 @@ function compareGroupsPBN(expect, have) {
  */
 function togglePbnClue(group) {
     toggleClass(group, 'pbn-check');
+}
+var nonIndexTag = { index: NaN, tag: '' };
+var nonLinearTag = { len: 0, tag: '' };
+var outerGapTag = { len: 1, tag: '' };
+/**
+* Validate the paint-by-numbers grid that contains this cell
+* @param target The cell that was just modified
+* @param table The containing table
+* @param stampList
+*/
+function validateColorPBN(target, table, stampList) {
+    var stampTools = globalContextData(stampList);
+    var pos = target.id.split('_');
+    var row = parseInt(pos[0]);
+    var col = parseInt(pos[1]);
+    var rSum = document.getElementById('rowSummary-' + row);
+    var cSum = document.getElementById('colSummary-' + col);
+    if (!rSum && !cSum) {
+        return; // this PBN does not have a UI for validation
+    }
+    // Scan all cells in this PBN table, looking for those in the current row & column
+    // Track the painted ones as a list of row/column indices
+    var cells = table.getElementsByClassName('stampable');
+    var rowOn = [];
+    var colOn = [];
+    for (var i = 0; i < cells.length; i++) {
+        var cell = cells[i];
+        var data = dataFromTool(cell, stampTools);
+        if (data) {
+            pos = cell.id.split('_');
+            var r = parseInt(pos[0]);
+            var c = parseInt(pos[1]);
+            if (r == row) {
+                var it = { index: c, tag: data };
+                rowOn.push(it);
+            }
+            if (c == col) {
+                var it = { index: r, tag: data };
+                colOn.push(it);
+            }
+        }
+    }
+    var rows = contextDataFromRef(table, 'data-row-context');
+    if (rSum && rows) {
+        // Convert a list of column indices to group notation
+        var groups = summarizeTaggedPBN(rowOn);
+        rSum.innerHTML = '';
+        for (var _i = 0, groups_3 = groups; _i < groups_3.length; _i++) {
+            var g = groups_3[_i];
+            if (g.tag != '') {
+                var span = document.createElement('span');
+                toggleClass(span, 'pbn-row-group', true);
+                toggleClass(span, 'pbn-color-' + g.tag, true);
+                span.innerText = g.len.toString();
+                rSum.appendChild(span);
+            }
+        }
+        var header = invertColorTags(rows[row]);
+        var comp = compareTaggedGroupsPBN(header, groups);
+        toggleClass(rSum, 'done', comp == 0);
+        toggleClass(rSum, 'exceeded', comp > 0);
+        var rHead = document.getElementById('rowHeader-' + row);
+        toggleClass(rHead, 'done', comp == 0);
+    }
+    var cols = contextDataFromRef(table, 'data-col-context');
+    if (cSum) {
+        var groups = summarizeTaggedPBN(colOn);
+        cSum.innerHTML = '';
+        for (var _a = 0, groups_4 = groups; _a < groups_4.length; _a++) {
+            var g = groups_4[_a];
+            if (g.tag != '') {
+                var span = document.createElement('span');
+                toggleClass(span, 'pbn-col-group', true);
+                toggleClass(span, 'pbn-color-' + g.tag, true);
+                span.innerText = g.len.toString();
+                cSum.appendChild(span);
+            }
+        }
+        var header = invertColorTags(cols[col]);
+        var comp = compareTaggedGroupsPBN(header, groups);
+        toggleClass(cSum, 'done', comp == 0);
+        toggleClass(cSum, 'exceeded', comp > 0);
+        var cHead = document.getElementById('colHeader-' + col);
+        toggleClass(cHead, 'done', comp == 0);
+    }
+}
+/**
+* Starting from a tag-clumped header input:
+*  [ {tag1:[1,2]}, {tag2:[3,4]} ]
+* Convert to linear groups with tags
+*  [ [1,tag1], [2,tag1], [3,tag2], [4,tag2]]
+* @param header input-style header
+* @returns linear-style header
+*/
+function invertColorTags(header) {
+    var linear = [];
+    for (var i = 0; i < header.length; i++) {
+        var tagged = header[i]; // {tag:[1,2]}
+        var tag = Object.keys(tagged)[0];
+        var groups = tagged[tag];
+        for (var g = 0; g < groups.length; g++) {
+            var lt = { len: groups[g], tag: tag };
+            linear.push(lt);
+        }
+    }
+    return linear;
+}
+/**
+ * Read the user's actual painting within the PBN grid as a list of group sizes.
+ * @param list A list of numbers, indicating row or column indices
+ * @returns A list of groups and gaps, trimming exterior gaps.
+ */
+function summarizeTaggedPBN(list) {
+    var prev = nonIndexTag;
+    var consec = 0;
+    var summary = [];
+    list.push(nonIndexTag);
+    for (var _i = 0, list_4 = list; _i < list_4.length; _i++) {
+        var next = list_4[_i];
+        if (next.tag == prev.tag && next.index == prev.index + 1) {
+            consec++;
+        }
+        else {
+            if (consec > 0) {
+                var line = { len: consec, tag: prev.tag };
+                summary.push(line);
+                var gap = { len: next.index - prev.index - 1, tag: '' };
+                if (next.tag != '') {
+                    summary.push(gap);
+                }
+            }
+            consec = next == nonIndexTag ? 0 : 1;
+        }
+        prev = next;
+    }
+    if (summary.length == 0) {
+        return [];
+    }
+    return summary;
+}
+/**
+ * Compare the actual painted cells vs. the clues.
+ * The actual cells could indicate either more than was clued, or less than was clued, or exactly what was clued.
+ * @param expect A list of expected groups (omitting gaps)
+ * @param have A list of actual groups (including gaps between groups)
+ * @returns 0 if exact, 1 if actual exceeds expected, or -1 if actual is not yet expected, but hasn't contradicted it yet
+ */
+function compareTaggedGroupsPBN(expect, have) {
+    var exact = true;
+    var e = 0;
+    var gap = outerGapTag;
+    var prevH = nonLinearTag;
+    var curE = expect.length == 0 ? nonLinearTag : expect[0];
+    for (var _i = 0, have_2 = have; _i < have_2.length; _i++) {
+        var h = have_2[_i];
+        if (h.tag == '') {
+            gap = h;
+            continue;
+        }
+        if (h.tag == prevH.tag) {
+            // Two groups of the same type, separated by a gap, could fit within a single expected range
+            prevH.len += gap.len + h.len;
+            if (prevH.len <= curE.len) {
+                continue;
+            }
+            // curE has already accomodated prevH. If this new, bigger prevH doesn't fit, move on to the next E, and forget prevH
+            e++;
+        }
+        // If the next expected group is either a different type, or too small, fast forward to one that fits
+        while (e < expect.length && (expect[e].tag != h.tag || expect[e].len < h.len)) {
+            e++;
+        }
+        if (e >= expect.length) {
+            return 1; // We're past the end, while still having cells that don't fit
+        }
+        if (h.len == curE.len) {
+            e++;
+            prevH = nonLinearTag;
+        }
+        else {
+            exact = false;
+            prevH = h;
+        }
+        curE = expect[e];
+    }
+    // return 0 for exact match
+    // return -1 for incomplete match - groups thus far do not exceed expected
+    return (exact && e == expect.length) ? 0 : -1;
 }
 //# sourceMappingURL=kit.js.map

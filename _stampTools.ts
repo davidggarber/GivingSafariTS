@@ -32,6 +32,18 @@ let _extractorTool:string|null = null;
 let _eraseTool:string|null = null;
 
 /**
+ * Type structure of a stamp tool, as provided to a classStampPalette template
+ */
+export type StampToolDetails = {
+    id: string,
+    modifier?: string,
+    label?: string,
+    img?: string,  // img src url
+    next?: string,  // id of another tool
+    data?: string,  // extra data, depending on context
+};
+
+/**
  * Scan the page for anything marked stampable or a draw tool
  */
 export function preprocessStampObjects() {
