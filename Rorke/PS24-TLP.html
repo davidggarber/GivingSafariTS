@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '24',
+        'title': 'Twister Little Passages',
+        'author': 'Rorke Haining',
+        'copyright': '2024',
+        'orientation': 'portrait',
+        'googleFonts': 'PT+Mono',
+        'abilities': {
+        },
+        'onStamp': validatePBN,
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+      };
+
+      var mazeText = [
+        '#################################',
+        ' T#   R      #96    #9#32  ##456#',
+        '#U# @ G #PAIN# CACHE#X#1## ##D###',
+        '#N#   B #    #78        #O7  2O#G',
+        '#N####### ########### ###      ##',
+        '#E#57L  I H 8#$$$$$$     PUZZLE #',
+        '#L  5# J# ##M#$GEMS$# #  SAFAR1 #',
+        '# #### ## Y1 #$$$$$$# ###      ##',
+        '# #34M A# 1U ######## ####2O24###',
+        '# O 3# ## C1 O#Q Q#     #######9#',
+        '# #### I#  K O  W   P1T 1SHAFT99#',
+        '# #6 N ##F   O#Q Q#     #########',
+        '#   6# L#FF  ### #### ###V#6   6#',
+        '# ####  #7FF2#1K Y23#     1T M S#',
+        '# #NO## ############# ##### O B #',
+        '#          23  C 2 O N 3 T#6   6#',
+        '##################### ###########',
+      ];
+      var mazeColors = [
+        'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
+        '  w   r      w   y  w w    ww   w',
+        'w w a g w    wr     w w wwgww www',
+        'w w   b w    w   g  b y w      w ',
+        'w wwwwwww wwwwwwwwwww www      ww',
+        'w w          w      g r  y g b  w',
+        'w    w  wyww w rgby w w      b  w',
+        'w wwww ww    w      w www      ww',
+        'w w     w    wwwwwwww wwww    www',
+        'w b  w ww     w   w     wwwwwww w',
+        'w wwww  w     r                 w',
+        'w w    ww     w   w     wwwwwwwww',
+        'w g  w  w    www wwww www w     w',
+        'w wwww  wr   w      w           w',
+        'w w  ww wwwwwwwwwwwwwywwwww     w',
+        'w       y                rw     w',
+        'wwwwwwwwwwwwwwwwwwwwwgwwwwwwwwwww',
+      ];
+
+      var mazeWidth = mazeText[0].length;
+      var mazeHeight = mazeText.length;
+
+      var monsters = {
+        A: {name:'Ant', hp:1},
+        B: {name:'Bat', hp:2},
+        C: {name:'Centaur', hp:9},
+        D: {name:'Dragon', hp:16},
+        E: {name:'Ettin', hp:4},
+        F: {name:'Fungus', hp:1},
+        G: {name:'Ghost', hp:13},
+        H: {name:'Hydra', hp:9},
+        I: {name:'Imp', hp:2},
+        J: {name:'Jabberwock', hp:14},
+        K: {name:'Kestrel', hp:2},
+        L: {name:'Lich', hp:20},
+        M: {name:'Mummy', hp:12},
+        N: {name:'Nightmare', hp:5},
+        O: {name:'Orc', hp:3},
+        P: {name:'Phantom', hp:6},
+        Q: {name:'Qube', hp:27},
+        R: {name:'Rat', hp:2},
+        S: {name:'Snake', hp:3},
+        T: {name:'Tarrasque', hp:30},
+        U: {name:'Undine', hp:7},
+        V: {name:'Vampire', hp:15},
+        W: {name:'Wight', hp:11},
+        X: {name:'Xorn', hp:10},
+        Y: {name:'Yeti', hp:8},
+        Z: {name:'Zombie', hp:5},
+      };
+
+
+      boiler['builderLookup'] =
+      {
+        mazeText: mazeText,
+        mazeColors: mazeColors,
+        monsters: monsters,
+      };
+
+
+
+    </script>
+    <script src="PS24-TLP.js"></script>
+    <style>
+      #player {
+        position: absolute;
+        left: -0.05in;
+        height: 0.25in;
+        animation: live-player 5s infinite;
+      }
+      #tombstone {
+        position: absolute;
+        left: -0.05in;
+        height: 0.3in;
+      }
+
+      @keyframes live-player {
+        0% { transform: rotate(0deg); }
+        5% { transform: rotate(8deg); }
+        15% { transform: rotate(-8deg); }
+        20% { transform: rotate(0deg); }
+        50% { transform: scale(1.0); }
+        60% { transform: scale(1.2); }
+        70% { transform: scale(1.0); }
+      }
+
+      #maze {
+        user-select: none;
+        font-family: 'PT Mono', 'Lucida Console', monospace;
+        font-size: 18pt;
+        xline-height: 19pt;
+      }
+
+      #maze span {
+        position: relative;
+      }
+      .reachable.move-west {
+        cursor: w-resize;
+      }
+      .reachable.move-east {
+        cursor: e-resize;
+      }
+      .reachable.move-north {
+        cursor: n-resize;
+      }
+      .reachable.move-south {
+        cursor: s-resize;
+      }
+
+      .maze-color-r { background-color: #FF0000; }
+      .maze-color-g { background-color: #92D050; }
+      .maze-color-b { background-color: #45c4f3; }
+      .maze-color-y { background-color: #FFFF00; }
+      .maze-color-w { background-color: #A9A9A9; }
+      .cleared-span { color: transparent; }
+
+      .maze-at {  
+        position: absolute;
+        font-size: 24pt;
+      }
+
+      #monster-list {
+        position: absolute;
+        top: 0px;
+        right: 0.25in;
+        font-family: 'PT Mono', 'Lucida Console', monospace;
+        font-size: 11pt;
+      }
+
+      .mono {
+        font-family: 'PT Mono', 'Lucida Console', monospace;
+      }
+
+      #start-button {
+        height: 0.5in;
+        position: absolute;
+        right: 1in;
+        top: 4.5in;
+      }
+      #game-console {
+        height: 0.45in;
+        margin-left: 0.25in;
+        margin-top: 0.1in;
+      }
+      #game-status th {
+        text-align: right;
+        margin-left: 0.5in;
+      }
+      #rules p {
+        padding-right: 0.2in;
+        xline-height: 14pt;
+      }
+    </style>
+  </head>
+  <body id="TwisterLittlePassages">
+    <div id="pageBody">
+      <div id="maze">
+        <for each="row" in="mazeText">
+          <div><for char="ch" in="row"><span 
+            id="m{row#}_{ch#}" onclick="walkTo(this)" 
+            class="maze-color-{mazeColors.[row#].[ch#]}">{ch}</span></for></div>
+          
+        </for>
+
+      </div>
+      <div id="monster-list">
+        <for key="m" in="monsters">
+          <use template="monster-info" letter="{m}" name="{m!.name}" hp="{m!.hp}"></use>
+        </for>
+      </div>
+
+      <img id="start-button" src="../24/Images/TLP/Play.png" title="Start game!" onclick="startGame()">
+      <div id="game-console">
+        <table id="game-status" style="display: none; height:0.5in;">
+          <tr><th>Health:</th><td id="health" style="width:1in;">10</td>
+            <th>Last color:</th><td id="lastTwist" style="width: 1in;"></td>
+            <th>Loot:</th><td id="loot"></td>
+          </tr>
+          <tr><th>Monsters:</th><td id="beaten" colspan="5"></td></tr>
+        </table>
+      </div>
+
+      <div id="rules">
+        <p>
+          <b>Objective</b>
+          You (@) are an adventurer – a carefree Rogue in search of the Amulet of Yendor (?). But 
+          alas, you have fallen into a maze of twisty little passages, all alike. You must find a way to escape the 
+          maze alive. Picking up any loot ($) along the way is a strictly optional bonus.
+        </p>
+        <p>
+          <b>Movement:</b>
+          Start at your symbol (@) near the upper left. You may move one square at a time 
+          horizontally or vertically. You may move over any open square ( ) as often as you like, backtracking if so 
+          desired. Walls (<span class="maze-color-w">#</span>) are impassable. But there’s a Twist! You may only travel over colored squares in the 
+          magical Twister sequence: <span class="maze-color-r">RED</span> -> <span class="maze-color-g">GREEN</span> -> <span class="maze-color-b">BLUE</span> -> <span class="maze-color-y">YELLOW</span> then starting over again with RED. You 
+          may start with any color first, but once you stand on a colored square, you may not stand on any other 
+          colored square unless it is the next in sequence.
+        </p>
+        <p>
+          <b>Health:</b>
+          You start with 10 health. If your health ever falls to 0 (zero) or below, you die. Positive digits 
+          (1-9) represent bandages, magic potions, and so on that regenerate your health. Moving onto a healing 
+          item’s square immediately consumes the item and increases your health by that amount. That square is 
+          then open, but its color, if any, does not change. You may have more than 10 health.
+        </p>
+        <p>
+          <b>Combat:</b>
+          Capital letters (A-Z) are monsters. The table above right shows each monster’s type and 
+          strength in parentheses. Moving onto a monster’s square initiates combat to the death. The monster 
+          reduces your health by its strength amount, then dies. If you survive, that square is then open, but its 
+          color, if any, does not change. Fortunately, monsters do not move or chase you and wait for you to 
+          initiate combat.
+        </p>
+        <p>Good luck, adventurer!</p>
+      </div>
+
+    </div>
+
+    <template id="monster-info">
+      <div>{letter}: {name} ({hp})</div>
+    </template>
+
+  </body>
+</html>
