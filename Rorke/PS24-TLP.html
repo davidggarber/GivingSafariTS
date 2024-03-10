@@ -111,6 +111,7 @@
 
     </script>
     <script src="PS24-TLP.js"></script>
+    <style id="animations" type="text/css"></style>
     <style>
       #player {
         position: absolute;
@@ -160,6 +161,14 @@
       }
       .reachable.move-south {
         cursor: s-resize;
+      }
+      #player.step-west {
+        animation: step-west 0.2s;
+      }
+      @keyframes exited-player {
+        0% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(359deg) scale(2); }
+        100% { transform: scale(1.0); }
       }
 
       .maze-color-r { background-color: #FF0000; }

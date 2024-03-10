@@ -57,6 +57,7 @@ function reset() {
 
 function startGame() {
   reset();
+  playAudio(sound.start);
   document.getElementById('game-status').style.display = 'inline-block';
   document.getElementById('game-help').style.display = 'block';
   mapReachable();
@@ -73,6 +74,9 @@ function mapReachable() {
     mapRay(playerPos.x, -1, 0, -1, 'move-north');
     mapRay(mazeWidth, playerPos.y, 1, 0, 'move-east');
     mapRay(playerPos.x, mazeHeight, 0, 1, 'move-south');
+  }
+  else if (playerHP > 0) {
+    playAudio(sound.exit);
   }
 }
 
@@ -108,11 +112,11 @@ function canWalkTo(dest) {
 
 function walkTo(span) {
   if (!playerChar) {
-    return;
+    return false;
   }
   // TODO: can we get here without crossing anything else?
   if (!canWalkTo(span)) {
-    return;
+    return false;
   }
 
   var yx = span.id.substring(1).split('_').map(n => parseInt(n));
@@ -121,6 +125,8 @@ function walkTo(span) {
   playerSpan.removeChild(playerChar);
 
   // Clear destination
+  var mx = yx[1] - playerPos.x;
+  var my = yx[0] - playerPos.y;
   playerPos = {x:yx[1], y:yx[0]};
   playerSpan = span;
 
@@ -141,6 +147,7 @@ function walkTo(span) {
   toggleClass(playerSpan, 'cleared-span', true);
   
   playerSpan.appendChild(playerChar);
+  animateMove(mx, my);
 
   var color = colorAt(playerPos.x, playerPos.y);
   if (color != ' ') {
@@ -148,6 +155,7 @@ function walkTo(span) {
   }
 
   mapReachable();
+  return true;
 }
 
 function colorAt(x, y) {
@@ -168,21 +176,28 @@ function fightMonster(ch) {
   document.getElementById('health').innerText = playerHP + (playerHP > 0 ? ' ❤️' : ' 🪦');
 
   if (playerHP <= 0) {
+    playAudio(sound.dead);
     playerChar.src = "Images/TLP/Tomb.png";
     playerChar.title = 'Dead. Play again to restart.';
+  }
+  else {
+    playAudio(sound.fight);
   }
 }
 
 function pickupHealth(ch) {
+  playAudio(sound.health);
   playerHP += parseInt(ch);
   document.getElementById('health').innerText = playerHP + ' ❤️';
 }
 
 function pickupLoot(ch) {
+  playAudio(sound.loot);
   document.getElementById('loot').innerText += '$ ';
 }
 
 function updateTwist(ch) {
+  playAudio(sound.color);
   twistColor = ch;
   var colorNames = {r:'RED', g:'GREEN', b:'BLUE', y:'YELLOW'};
   var span = document.createElement('span');
@@ -214,7 +229,9 @@ function onArrowKey(evt) {
       dest = spanAt(playerPos.x, playerPos.y + 1);
     }
     if (dest) {
-      walkTo(dest);
+      if (!walkTo(dest)) {
+        playAudio(sound.bump);
+      }
       evt.preventDefault();
       return;
     }
@@ -222,6 +239,46 @@ function onArrowKey(evt) {
   if ((playerHP <= 0 || evt.shiftKey) && (evt.code == 'Enter' || evt.code == 'Space')) {
     startGame();
   }
+}
+
+var anims = {};  // List of existing keyframe animations
+var cellSize = undefined;  // size of a single cell
+var animationSheet = undefined;
+
+function animateMove(dx, dy) {
+  var animId = 'a' + dx + '_' + dy;
+  if (!(animId in anims)) {
+    if (!animationSheet) {
+      animationSheet = document.getElementById('animations').sheet;
+      var spanSize = document.getElementById('m0_0').getBoundingClientRect();
+      cellSize = {x:Math.floor(spanSize.width), y:Math.floor(spanSize.height)};
+    }
+    var px = (-dx * cellSize.x) + 'px';
+    var py = (-dy * cellSize.y) + 'px';
+    var keyframe = '@keyframes ' + animId 
+      + '{ 0% { transform:translate(' + px + ',' + py + '); }'
+      + ' 100% { transform:translate(0px,0px); } }';
+    animationSheet.insertRule(keyframe, animationSheet.length);
+    anims[animId] = keyframe;
+  }
+  var dur = (Math.floor(Math.sqrt(Math.abs(dx + dy))) * 0.1) + 's linear ';
+  playerChar.style.animation = dur + animId;
+}
+
+var sound = {
+  start: new Audio('Sounds/TLP/start.mp3'),
+  color: new Audio('Sounds/TLP/color.mp3'),
+  bump: new Audio('Sounds/TLP/bump.mp3'),
+  fight: new Audio('Sounds/TLP/fight.mp3'),
+  health: new Audio('Sounds/TLP/health.mp3'),
+  loot: new Audio('Sounds/TLP/loot.mp3'),
+  dead: new Audio('Sounds/TLP/dead.mp3'),
+  exit: new Audio('Sounds/TLP/exit.mp3'),
+}
+
+function playAudio(aud) {
+  // TODO: have a global mute button
+  aud.play();
 }
 
 document.addEventListener("keydown", (event) => {
