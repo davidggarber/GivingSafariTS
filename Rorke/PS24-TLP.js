@@ -169,8 +169,9 @@ function fightMonster(ch) {
   monstersFought.push(monster.name);
 
   var list = document.getElementById('beaten');
-  var span = document.createElement('span');
-  span.innerText = ((list.childNodes.length > 0) ? ', ' : '') + monster.name;
+  var span = document.createElement('span');  
+  span.innerHTML = ((list.childNodes.length > 0) ? ', ' : '') 
+    + '<b>' + monster.name[0] + '</b>' + monster.name.substring(1);
   list.appendChild(span);
 
   document.getElementById('health').innerText = playerHP + (playerHP > 0 ? ' ❤️' : ' 🪦');
