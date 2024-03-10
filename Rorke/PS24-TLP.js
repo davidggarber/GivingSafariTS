@@ -65,8 +65,7 @@ function startGame() {
 function mapReachable() {
   var reachable = document.getElementsByClassName('reachable');
   for (var i = reachable.length - 1; i >= 0; i--) {
-    toggleClass(reachable[i], 'reachable', false);
-    clearAllClasses(reachable[i], 'move-west move-north move-east move-south');
+    clearAllClasses(reachable[i], 'reachable move-west move-north move-east move-south');
   }
 
   if (!checkVictory() && playerHP > 0) {
@@ -202,20 +201,21 @@ function checkVictory() {
 function onArrowKey(evt) {
   var dest = null;
   if (playerChar && playerHP > 0) {
-    if (evt.code == 'ArrowLeft' || evt.code == 'keyA') {
+    if (evt.code == 'ArrowLeft' || evt.code == 'KeyA') {
       dest = spanAt(playerPos.x - 1, playerPos.y);
     }
-    else if (evt.code == 'ArrowRight' || evt.code == 'keyD') {
+    else if (evt.code == 'ArrowRight' || evt.code == 'KeyD') {
       dest = spanAt(playerPos.x + 1, playerPos.y);
     }
-    else if (evt.code == 'ArrowUp' || evt.code == 'keyW') {
+    else if (evt.code == 'ArrowUp' || evt.code == 'KeyW') {
       dest = spanAt(playerPos.x, playerPos.y - 1);
     }
-    else if (evt.code == 'ArrowDown' || evt.code == 'keyS') {
+    else if (evt.code == 'ArrowDown' || evt.code == 'KeyS') {
       dest = spanAt(playerPos.x, playerPos.y + 1);
     }
     if (dest) {
       walkTo(dest);
+      evt.preventDefault();
       return;
     }
   }
