@@ -144,7 +144,6 @@
         user-select: none;
         font-family: 'PT Mono', 'Lucida Console', monospace;
         font-size: 18pt;
-        xline-height: 19pt;
       }
 
       #maze span {
@@ -177,7 +176,7 @@
 
       #monster-list {
         position: absolute;
-        top: 0px;
+        top: -20px;
         right: 0.25in;
         font-family: 'PT Mono', 'Lucida Console', monospace;
         font-size: 11pt;
@@ -216,7 +215,24 @@
       }
       #rules p {
         padding-right: 0.2in;
-        xline-height: 14pt;
+      }
+
+      @media print {
+        #start-button {
+          display: none;
+        }
+        #monster-list {
+          top: 0px;
+        }
+        #maze {
+          line-height: 19pt;
+        }
+        #game-console {
+          display: none;
+        }
+        #rules p {
+          line-height: 14pt;
+        }
       }
     </style>
   </head>
