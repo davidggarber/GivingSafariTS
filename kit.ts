@@ -74,6 +74,19 @@ export function applyAllClasses(obj: Node|string,
 }
 
 /**
+ * Apply all classes in a list of classes.
+ * @param obj - A page element, or id of an element
+ * @param classes - A list of class names, delimited by spaces
+ */
+export function clearAllClasses(obj: Node|string, 
+                                classes:string) {
+    var list = classes.split(' ');
+    for (let cls of list) {
+        toggleClass(obj, cls, false);
+    }
+}
+
+/**
  * Given one element, find the next one in the document that matches the desired class
  * @param current - An existing element
  * @param matchClass - A class that this element has
@@ -7520,12 +7533,12 @@ export function anyFromContext(key:string, context:object):any {
       }
     }
     else {
-      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step);
+      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
     }
 
     for (; unnest > 0; unnest--) {
       const pop:string = '' + nested.pop();
-      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop);
+      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
     }
   }
   if (nested.length > 1) {
@@ -7593,14 +7606,21 @@ function textFromContext(key:string, context:object):string {
  * or a list index or a string offset.
  * @param parent The parent object: a list, object, or string
  * @param key The identifier of the child: a dictionary key, a list index, or a string offset
+ * @param maybe If true, and key does not work, return ''
  * @returns A child object, or a substring
  */
-function getKeyedChild(parent:any, key:string) {
+function getKeyedChild(parent:any, key:string, maybe?:boolean) {
   if (typeof(parent) == 'string') {
     const i = parseInt(key);
+    if (maybe && (i < 0 || i >= (parent as string).length)) {
+      return '';
+    }
     return (parent as string)[i];
   }
   if (!(key in parent)) {
+    if (maybe) {
+      return '';
+    }
     throw new Error('Unrecognized key: ' + key);
   }
   return parent[key];

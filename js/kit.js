@@ -3,9 +3,9 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = void 0;
-exports.builtInTemplate = exports.getTemplate = exports.globalContextData = exports.anyFromContext = exports.expandControlTags = exports.theBoilerContext = exports.decodeAndValidate = void 0;
+exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = void 0;
+exports.builtInTemplate = exports.getTemplate = exports.globalContextData = exports.anyFromContext = exports.expandControlTags = exports.theBoilerContext = exports.decodeAndValidate = exports.validateInputReady = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -71,6 +71,19 @@ function applyAllClasses(obj, classes) {
     }
 }
 exports.applyAllClasses = applyAllClasses;
+/**
+ * Apply all classes in a list of classes.
+ * @param obj - A page element, or id of an element
+ * @param classes - A list of class names, delimited by spaces
+ */
+function clearAllClasses(obj, classes) {
+    var list = classes.split(' ');
+    for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
+        var cls = list_2[_i];
+        toggleClass(obj, cls, false);
+    }
+}
+exports.clearAllClasses = clearAllClasses;
 /**
  * Given one element, find the next one in the document that matches the desired class
  * @param current - An existing element
@@ -2799,8 +2812,8 @@ function findNextDiscover(root, start, dx, dy, cls, clsSkip) {
 function autoCompleteWord(input, list) {
     var value = input.value.toLowerCase();
     var match = null;
-    for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
-        var i = list_2[_i];
+    for (var _i = 0, list_3 = list; _i < list_3.length; _i++) {
+        var i = list_3[_i];
         if (i.toLowerCase().indexOf(value) == 0) {
             if (match) {
                 return false; // multiple matches
@@ -6811,11 +6824,11 @@ function anyFromContext(key, context) {
             }
         }
         else {
-            nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step);
+            nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
         }
         for (; unnest > 0; unnest--) {
             var pop = '' + nested.pop();
-            nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop);
+            nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
         }
     }
     if (nested.length > 1) {
@@ -6880,14 +6893,21 @@ function textFromContext(key, context) {
  * or a list index or a string offset.
  * @param parent The parent object: a list, object, or string
  * @param key The identifier of the child: a dictionary key, a list index, or a string offset
+ * @param maybe If true, and key does not work, return ''
  * @returns A child object, or a substring
  */
-function getKeyedChild(parent, key) {
+function getKeyedChild(parent, key, maybe) {
     if (typeof (parent) == 'string') {
         var i = parseInt(key);
+        if (maybe && (i < 0 || i >= parent.length)) {
+            return '';
+        }
         return parent[i];
     }
     if (!(key in parent)) {
+        if (maybe) {
+            return '';
+        }
         throw new Error('Unrecognized key: ' + key);
     }
     return parent[key];
@@ -7180,8 +7200,8 @@ function summarizePBN(list) {
     var consec = 0;
     var summary = [];
     list.push(NaN);
-    for (var _i = 0, list_3 = list; _i < list_3.length; _i++) {
-        var next = list_3[_i];
+    for (var _i = 0, list_4 = list; _i < list_4.length; _i++) {
+        var next = list_4[_i];
         if (next == prev + 1) {
             consec++;
         }
@@ -7380,8 +7400,8 @@ function summarizeTaggedPBN(list) {
     var consec = 0;
     var summary = [];
     list.push(nonIndexTag);
-    for (var _i = 0, list_4 = list; _i < list_4.length; _i++) {
-        var next = list_4[_i];
+    for (var _i = 0, list_5 = list; _i < list_5.length; _i++) {
+        var next = list_5[_i];
         if (next.tag == prev.tag && next.index == prev.index + 1) {
             consec++;
         }

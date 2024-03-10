@@ -91,12 +91,20 @@
         Z: {name:'Zombie', hp:5},
       };
 
+      var hover = {};
+      for (var m of Object.keys(monsters)) {
+        hover[m] = monsters[m].name + ' (' + monsters[m].hp + ')';
+      }
+      for (var i = 1; i < 10; i++) {
+        hover[i] = 'health +' + i;
+      }
 
       boiler['builderLookup'] =
       {
         mazeText: mazeText,
         mazeColors: mazeColors,
         monsters: monsters,
+        hover: hover,
       };
 
 
@@ -108,12 +116,13 @@
         position: absolute;
         left: -0.05in;
         height: 0.25in;
+        z-index: 1000;
         animation: live-player 5s infinite;
       }
-      #tombstone {
-        position: absolute;
-        left: -0.05in;
-        height: 0.3in;
+      #player.victory {
+        transform:scale(2);
+        animation: exited-player 5s infinite;
+        z-index: 1000;
       }
 
       @keyframes live-player {
@@ -124,6 +133,11 @@
         50% { transform: scale(1.0); }
         60% { transform: scale(1.2); }
         70% { transform: scale(1.0); }
+      }
+      @keyframes exited-player {
+        0% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(359deg) scale(2); }
+        100% { transform: scale(1.0); }
       }
 
       #maze {
@@ -176,8 +190,20 @@
       #start-button {
         height: 0.5in;
         position: absolute;
-        right: 1in;
-        top: 4.5in;
+        right: 1.75in;
+        top: 4.45in;
+      }
+      #game-help {
+        display: none;
+        position: absolute;
+        top: 4.35in;
+        right: -0.5in;
+        width: 2.1in;
+        font-size: 9pt;
+        font-style: italic;
+      }
+      #game-help p {
+        margin: 0px;
       }
       #game-console {
         height: 0.45in;
@@ -200,7 +226,8 @@
         <for each="row" in="mazeText">
           <div><for char="ch" in="row"><span 
             id="m{row#}_{ch#}" onclick="walkTo(this)" 
-            class="maze-color-{mazeColors.[row#].[ch#]}">{ch}</span></for></div>
+            class="maze-color-{mazeColors.[row#].[ch#]}"
+            title="{hover.[ch]?}">{ch}</span></for></div>
           
         </for>
 
@@ -211,11 +238,19 @@
         </for>
       </div>
 
-      <img id="start-button" src="../24/Images/TLP/Play.png" title="Start game!" onclick="startGame()">
+      <img id="start-button" src="Images/TLP/Play.png" title="Start game!" onclick="startGame()">
+      <div id="game-help">
+        <p>
+          You are <img src="Images/TLP/At.png" style="height:15pt">. Use arrow<br>
+          keys or click any space<br>
+          reachable in a straight<br>
+          line to move there.</p>
+        <p style="margin-left:-20pt;"><img src="Images/TLP/Play.png" style="height:15pt"> or shift+Enter to start over.</p>
+      </div>
       <div id="game-console">
-        <table id="game-status" style="display: none; height:0.5in;">
-          <tr><th>Health:</th><td id="health" style="width:1in;">10</td>
-            <th>Last color:</th><td id="lastTwist" style="width: 1in;"></td>
+        <table id="game-status" style="display: none; height:0.5in; width: 4.5in;">
+          <tr><th>Health:</th><td id="health" style="width:0.7in;">10</td>
+            <th>Last color:</th><td id="lastTwist" style="width: 0.7in;"></td>
             <th>Loot:</th><td id="loot"></td>
           </tr>
           <tr><th>Monsters:</th><td id="beaten" colspan="5"></td></tr>

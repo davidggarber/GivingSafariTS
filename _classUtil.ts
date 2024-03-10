@@ -68,6 +68,19 @@ export function applyAllClasses(obj: Node|string,
 }
 
 /**
+ * Apply all classes in a list of classes.
+ * @param obj - A page element, or id of an element
+ * @param classes - A list of class names, delimited by spaces
+ */
+export function clearAllClasses(obj: Node|string, 
+                                classes:string) {
+    var list = classes.split(' ');
+    for (let cls of list) {
+        toggleClass(obj, cls, false);
+    }
+}
+
+/**
  * Given one element, find the next one in the document that matches the desired class
  * @param current - An existing element
  * @param matchClass - A class that this element has

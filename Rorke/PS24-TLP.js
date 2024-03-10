@@ -1,26 +1,29 @@
-var exits = [ {x:0, y:1}, {x:21, y:16} ];
+function spanIdAt(x, y) {
+  return 'm' + y + '_' + x;
+}
+
+function spanAt(x, y) {
+  if (y >= 0 && y < mazeHeight && x >= 0 && x < mazeWidth) {
+    return document.getElementById(spanIdAt(x, y));
+  }
+  return null;
+}
+
+var exits = [ spanIdAt(0, 1), spanIdAt(21, 16) ];
 var start = {x:4, y:2};
 var playerPos = {x:start.x, y:start.y};
 var playerSpan = undefined;
 var playerChar = undefined;
-var tombStone = undefined;
 var playerHP = 0;  // dead
 var monstersFought = [];
 var twistColor = '*';
 var nextTwistColor = {r:'g', g:'b', b:'y', y:'r'};
 
-function spanAt(x, y) {
-  return document.getElementById('m' + y + '_' + x);
-}
 
 function reset() {
   if (playerChar && playerChar.parentNode) {
     playerChar.parentNode.removeChild(playerChar);
     playerChar = undefined;
-  }
-  if (tombStone && tombStone.parentNode) {
-    tombStone.parentNode.removeChild(tombStone);
-    tombStone = undefined;
   }
   playerSpan = undefined;
 
@@ -39,6 +42,7 @@ function reset() {
   document.getElementById('loot').innerText = '';
   monstersKilled = [];
   document.getElementById('beaten').innerText = '';
+  toggleClass(document.getElementById('beaten'), 'victory', false);
 
   // Erase the built-in @
   playerSpan = spanAt(playerPos.x, playerPos.y);
@@ -46,7 +50,7 @@ function reset() {
   // Replace with animated @
   playerChar = document.createElement('img');
   playerChar.id = 'player';
-  playerChar.src = "../24/Images/TLP/At.png";
+  playerChar.src = "Images/TLP/At.png";
   playerChar.title = 'Click horizontally or vertically to move';
   playerSpan.appendChild(playerChar);
 }
@@ -54,29 +58,18 @@ function reset() {
 function startGame() {
   reset();
   document.getElementById('game-status').style.display = 'inline-block';
+  document.getElementById('game-help').style.display = 'block';
   mapReachable();
-}
-
-function playerDeath() {
-  if (playerChar && playerSpan) {
-    playerSpan.removeChild(playerChar);
-    playerChar = undefined;
-
-    // Replace with tombstone
-    tombStone = document.createElement('img');
-    tombStone.id = 'tombstone';
-    tombStone.src = "../24/Images/TLP/Tomb.png";
-    playerSpan.appendChild(tombStone);
-  }
 }
 
 function mapReachable() {
   var reachable = document.getElementsByClassName('reachable');
   for (var i = reachable.length - 1; i >= 0; i--) {
     toggleClass(reachable[i], 'reachable', false);
+    clearAllClasses(reachable[i], 'move-west move-north move-east move-south');
   }
 
-  if (playerHP > 0) {
+  if (!checkVictory() && playerHP > 0) {
     mapRay(-1, playerPos.y, -1, 0, 'move-west');
     mapRay(playerPos.x, -1, 0, -1, 'move-north');
     mapRay(mazeWidth, playerPos.y, 1, 0, 'move-east');
@@ -150,12 +143,17 @@ function walkTo(span) {
   
   playerSpan.appendChild(playerChar);
 
-  var color = mazeColors[playerPos.y][playerPos.x];
+  var color = colorAt(playerPos.x, playerPos.y);
   if (color != ' ') {
-    twistColor = color;
+    updateTwist(color);
   }
 
   mapReachable();
+}
+
+function colorAt(x, y) {
+  var c = mazeColors[y][x];
+  return c == 'w' ? ' ' : c;
 }
 
 function fightMonster(ch) {
@@ -171,7 +169,7 @@ function fightMonster(ch) {
   document.getElementById('health').innerText = playerHP;
 
   if (playerHP <= 0) {
-    playerChar.src = "../24/Images/TLP/Tomb.png";
+    playerChar.src = "Images/TLP/Tomb.png";
     playerChar.title = 'Dead. Play again to restart.';
   }
 }
@@ -184,3 +182,48 @@ function pickupHealth(ch) {
 function pickupLoot(ch) {
   document.getElementById('loot').innerText += '$ ';
 }
+
+function updateTwist(ch) {
+  twistColor = ch;
+  var colorNames = {r:'RED', g:'GREEN', b:'BLUE', y:'YELLOW'};
+  var span = document.createElement('span');
+  span.innerText = colorNames[ch];
+  toggleClass(span, 'maze-color-' + ch, true);
+  document.getElementById('lastTwist').innerHTML = span.outerHTML;
+}
+
+function checkVictory() {
+  var victory = exits.indexOf(spanIdAt(playerPos.x, playerPos.y)) >= 0;
+  toggleClass(document.getElementById('beaten'), 'victory', victory);
+  toggleClass(playerChar, 'victory', victory);
+  return victory;
+}
+
+function onArrowKey(evt) {
+  var dest = null;
+  if (playerChar && playerHP > 0) {
+    if (evt.code == 'ArrowLeft' || evt.code == 'keyA') {
+      dest = spanAt(playerPos.x - 1, playerPos.y);
+    }
+    else if (evt.code == 'ArrowRight' || evt.code == 'keyD') {
+      dest = spanAt(playerPos.x + 1, playerPos.y);
+    }
+    else if (evt.code == 'ArrowUp' || evt.code == 'keyW') {
+      dest = spanAt(playerPos.x, playerPos.y - 1);
+    }
+    else if (evt.code == 'ArrowDown' || evt.code == 'keyS') {
+      dest = spanAt(playerPos.x, playerPos.y + 1);
+    }
+    if (dest) {
+      walkTo(dest);
+      return;
+    }
+  }
+  if ((playerHP <= 0 || evt.shiftKey) && (evt.code == 'Enter' || evt.code == 'Space')) {
+    startGame();
+  }
+}
+
+document.addEventListener("keydown", (event) => {
+  onArrowKey(event);
+});
