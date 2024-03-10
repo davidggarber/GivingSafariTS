@@ -37,7 +37,7 @@ function reset() {
   
   // Reset stats
   playerHP = 10;
-  document.getElementById('health').innerText = playerHP;
+  document.getElementById('health').innerText = playerHP + ' ❤️';
   document.getElementById('lastTwist').innerText = '';
   document.getElementById('loot').innerText = '';
   monstersKilled = [];
@@ -166,7 +166,7 @@ function fightMonster(ch) {
   span.innerText = ((list.childNodes.length > 0) ? ', ' : '') + monster.name;
   list.appendChild(span);
 
-  document.getElementById('health').innerText = playerHP;
+  document.getElementById('health').innerText = playerHP + (playerHP > 0 ? ' ❤️' : ' 🪦');
 
   if (playerHP <= 0) {
     playerChar.src = "Images/TLP/Tomb.png";
@@ -176,7 +176,7 @@ function fightMonster(ch) {
 
 function pickupHealth(ch) {
   playerHP += parseInt(ch);
-  document.getElementById('health').innerText = playerHP;
+  document.getElementById('health').innerText = playerHP + ' ❤️';
 }
 
 function pickupLoot(ch) {
