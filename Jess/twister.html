@@ -538,6 +538,14 @@
                 "win": "You escape the maze!",
                 "log": "$1"
             };
+            const soundBonus = new Audio("bonus.mp3");
+            const soundColorChange = new Audio("colorchange.mp3");
+            const soundHeal = new Audio("heal.mp3");
+            const soundKill = new Audio("kill.mp3");
+            const soundWall = new Audio("wall.mp3");
+            const soundWarn = new Audio("warn.mp3");
+            const soundWin = new Audio("win.mp3");
+
             function log(message, p1, p2, p3) {
                 logbox = document.getElementById("actionlog");
                 msg = messages[message];
@@ -559,18 +567,22 @@
                 if (gs.grid[dest.Y][dest.X] && gs.grid[dest.Y][dest.X].char) dest.char =  gs.grid[dest.Y][dest.X].char;
                 if (gs.grid[dest.Y][dest.X] && gs.grid[dest.Y][dest.X].color) dest.color = gs.grid[dest.Y][dest.X].color; 
                 if (dest.char === "#") {
+                    soundWall.play();
                     log("wall"); return;
                 }
                 if (!gs.moveFreely && dest.color && dest.color != gs.nextColor) {
+                    soundWall.play();
                     log("colorbad"); return;
                 }
                 if (dest.char && gs.monsters[dest.char] && gs.monsters[dest.char].strength >= gs.health) {
+                    soundWarn.play();
                     log("die", gs.monsters[dest.char].type); return;
                 }
                 if (dest.char) {
                     var heal = parseInt(dest.char);
                     if (heal > 0 && heal <= 9) {
                         gs.health = gs.health + heal;
+                        soundHeal.play();
                         log("heal", heal);
                         delete gs.grid[dest.Y][dest.X].char;
                         updatePlayerPos(dest.X, dest.Y);
@@ -579,6 +591,7 @@
                 }
                 if (dest.char && dest.char === "$") {
                     gs.bonus++;
+                    soundBonus.play();
                     log("bonus");
                     delete gs.grid[dest.Y][dest.X].char;
                     updatePlayerPos(dest.X, dest.Y);
@@ -587,6 +600,7 @@
                 if (dest.char && gs.monsters[dest.char]) {
                     gs.health = gs.health - gs.monsters[dest.char].strength;
                     gs.graveyard = gs.graveyard + dest.char;
+                    soundKill.play();
                     log("kill", gs.monsters[dest.char].type, gs.monsters[dest.char].strength);
                     delete gs.grid[dest.Y][dest.X].char;
                     updatePlayerPos(dest.X, dest.Y);
@@ -597,6 +611,7 @@
             }
             function updatePlayerPos(x, y) {
                 if (gs.grid[y][x] && gs.grid[y][x].color) {
+                    soundColorChange.play();
                     switch (gs.grid[y][x].color) {
                         case "red": gs.playerColor = "red"; gs.nextColor = "green"; log("switchGreen"); gs.moveFreely = false; break;
                         case "green": gs.playerColor = "green"; gs.nextColor = "blue"; log("switchBlue"); gs.moveFreely = false; break;
@@ -608,6 +623,7 @@
                 gs.playerY = y;
                 if (gs.playerX === 0 || gs.playerX === gs.cols - 1 || gs.playerY === 0 || gs.playerY == gs.rows - 1) {
                     gs.win = true;
+                    soundWin.play();
                     log("win");
                 }
                 gs.renderDirty = true;
@@ -625,7 +641,6 @@
                 var cleanup = false;
                 if (gs.grid[row][col] && gs.grid[row][col].char) {
                     occupant = gs.grid[row][col].char;
-                    //console.log("R:" +row+", C:"+col+", O:"+occupant);
                     if (occupant && occupant != gs.hoverMonster && gs.monsters[occupant]) {
                         gs.hoverMonster = occupant;
                         if (gs.hoverMonster) {
