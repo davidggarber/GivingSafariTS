@@ -1,0 +1,825 @@
+<html>
+    <head>
+        <link rel="stylesheet"href="https://fonts.googleapis.com/css?family=Roboto+Mono">
+        
+    </head>
+    <body onload="render">
+        <p id="instructions">Use arrow keys to move and inspect by hovering over a symbol with your mouse.</p>
+        <canvas id="puzzleGrid">
+            Your browser does not support this puzzle.
+        </canvas>
+        <div><span id="color" class="white">&marker;</span>&nbsp;&nbsp;&nbsp;<span id="health"></span>&nbsp;&nbsp;&nbsp;<span id="strength"></span>&nbsp;&nbsp;&nbsp;<span id="graveyard"></span></div>
+        <div id="actionlog"></div>
+
+        <script>
+            var gameState = {
+                font: "20px Roboto Mono",
+                monsterFont: "10px Roboto Mono",
+                listHeight: 12,
+                cellWidth: 16,
+                cellHeight: 20,
+                cols: 33,
+                rows: 17,
+                colors: {
+                    gray:  "#888",
+                    red:   "#f00",
+                    green: "#0c0",
+                    blue:  "#09f",
+                    white: "#fff",
+                    black: "#000",
+                    yellow: "#eb0",
+                    lightgray: "#bbb"
+                },
+                renderDirty: true,
+                moveFreely: true,
+                gameOver: false,
+                playerX: 4,
+                playerY: 2,
+                playerChar: "@",
+                playerColor: "white",
+                nextColor: "white",
+                health: 10,
+                bonus: 0,
+                graveyard: "",
+                hoverMonster: "",
+                monsters: {
+                    "#": {"type": "Wall"},
+                    "@": {"type": "You"},
+                    "A": {"type": "Ant", "strength": 1},
+                    "B": {"type": "Bat", "strength": 2},
+                    "C": {"type": "Centaur", "strength": 9},
+                    "D": {"type": "Dragon", "strength": 16},
+                    "E": {"type": "Ettin", "strength": 4},
+                    "F": {"type": "Fungus", "strength": 1},
+                    "G": {"type": "Ghost", "strength": 13},
+                    "H": {"type": "Hydra", "strength": 9},
+                    "I": {"type": "Imp", "strength": 2},
+                    "J": {"type": "Jabberwock", "strength": 14},
+                    "K": {"type": "Kestrel", "strength": 2},
+                    "L": {"type": "Lich", "strength": 20},
+                    "M": {"type": "Mummy", "strength": 12},
+                    "N": {"type": "Nightmare", "strength": 5},
+                    "O": {"type": "Orc", "strength": 3},
+                    "P": {"type": "Phantom", "strength": 6},
+                    "Q": {"type": "Qube", "strength": 27},
+                    "R": {"type": "Rat", "strength": 2},
+                    "S": {"type": "Snake", "strength": 3},
+                    "T": {"type": "Tarrasque", "strength": 30},
+                    "U": {"type": "Undine", "strength": 7},
+                    "V": {"type": "Vampire", "strength": 15},
+                    "W": {"type": "Wight", "strength": 11},
+                    "X": {"type": "Xorn", "strength": 10},
+                    "Y": {"type": "Yeti", "strength": 8},
+                    "Z": {"type": "Zombie", "strength": 5},
+
+                },
+                grid: {
+                    0: {
+                        0: { "char": "#", "color": "gray" },
+                        1: { "char": "#", "color": "gray" },
+                        2: { "char": "#", "color": "gray" },
+                        3: { "char": "#", "color": "gray" },
+                        4: { "char": "#", "color": "gray" },
+                        5: { "char": "#", "color": "gray" },
+                        6: { "char": "#", "color": "gray" },
+                        7: { "char": "#", "color": "gray" },
+                        8: { "char": "#", "color": "gray" },
+                        9: { "char": "#", "color": "gray" },
+                        10: { "char": "#", "color": "gray" },
+                        11: { "char": "#", "color": "gray" },
+                        12: { "char": "#", "color": "gray" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "#", "color": "gray" },
+                        15: { "char": "#", "color": "gray" },
+                        16: { "char": "#", "color": "gray" },
+                        17: { "char": "#", "color": "gray" },
+                        18: { "char": "#", "color": "gray" },
+                        19: { "char": "#", "color": "gray" },
+                        20: { "char": "#", "color": "gray" },
+                        21: { "char": "#", "color": "gray" },
+                        22: { "char": "#", "color": "gray" },
+                        23: { "char": "#", "color": "gray" },
+                        24: { "char": "#", "color": "gray" },
+                        25: { "char": "#", "color": "gray" },
+                        26: { "char": "#", "color": "gray" },
+                        27: { "char": "#", "color": "gray" },
+                        28: { "char": "#", "color": "gray" },
+                        29: { "char": "#", "color": "gray" },
+                        30: { "char": "#", "color": "gray" },
+                        31: { "char": "#", "color": "gray" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    1: {
+                        0: {"exit": true },
+                        1: { "char": "T" },
+                        2: { "char": "#", "color": "gray" },
+                        6: { "char": "R", "color": "red" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "9" },
+                        15: { "char": "6" },
+                        17: { "color": "yellow" },
+                        20: { "char": "#", "color": "gray" },
+                        21: { "char": "9" },
+                        22: { "char": "#", "color": "gray" },
+                        23: { "char": "3" },
+                        24: { "char": "2" },
+                        27: { "char": "#", "color": "gray" },
+                        28: { "char": "#", "color": "gray" },
+                        29: { "char": "4" },
+                        30: { "char": "5" },
+                        31: { "char": "6" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    2: {
+                        0: { "char": "#", "color": "gray" },
+                        1: { "char": "U" },
+                        2: { "char": "#", "color": "gray" },
+                        6: { "char": "G", "color": "green" },
+                        8: { "char": "#", "color": "gray" },
+                        9: { "char": "P" },
+                        10: { "char": "A" },
+                        11: { "char": "I" },
+                        12: { "char": "N" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "color": "red" },
+                        15: { "char": "C" },
+                        16: { "char": "A" },
+                        17: { "char": "C" },
+                        18: { "char": "H" },
+                        19: { "char": "E" },
+                        20: { "char": "#", "color": "gray" },
+                        21: { "char": "X" },
+                        22: { "char": "#", "color": "gray" },
+                        23: { "char": "1" },
+                        24: { "char": "#", "color": "gray" },
+                        25: { "char": "#", "color": "gray" },
+                        26: { "color": "green" },
+                        27: { "char": "#", "color": "gray" },
+                        28: { "char": "#", "color": "gray" },
+                        29: { "char": "D" },
+                        30: { "char": "#", "color": "gray" },
+                        31: { "char": "#", "color": "gray" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    3: {
+                        0: { "char": "#", "color": "gray" },
+                        1: { "char": "N" },
+                        2: { "char": "#", "color": "gray" },
+                        6: { "char": "B", "color": "blue" },
+                        8: { "char": "#", "color": "gray" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "7" },
+                        15: { "char": "8" },
+                        17: { "color": "green" },
+                        20: { "color": "blue" },
+                        22: { "color": "yellow" },
+                        24: { "char": "#", "color": "gray" },
+                        25: { "char": "O" },
+                        26: { "char": "7" },
+                        29: { "char": "2" },
+                        30: { "char": "O" },
+                        31: { "char": "#", "color": "gray" },
+                        32: { "char": "G" },
+                    },
+                    4: {
+                        0: { "char": "#", "color": "gray" },
+                        1: { "char": "N" },
+                        2: { "char": "#", "color": "gray" },
+                        3: { "char": "#", "color": "gray" },
+                        4: { "char": "#", "color": "gray" },
+                        5: { "char": "#", "color": "gray" },
+                        6: { "char": "#", "color": "gray" },
+                        7: { "char": "#", "color": "gray" },
+                        8: { "char": "#", "color": "gray" },
+                        10: { "char": "#", "color": "gray" },
+                        11: { "char": "#", "color": "gray" },
+                        12: { "char": "#", "color": "gray" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "#", "color": "gray" },
+                        15: { "char": "#", "color": "gray" },
+                        16: { "char": "#", "color": "gray" },
+                        17: { "char": "#", "color": "gray" },
+                        18: { "char": "#", "color": "gray" },
+                        19: { "char": "#", "color": "gray" },
+                        20: { "char": "#", "color": "gray" },
+                        22: { "char": "#", "color": "gray" },
+                        23: { "char": "#", "color": "gray" },
+                        24: { "char": "#", "color": "gray" },
+                        31: { "char": "#", "color": "gray" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    5: {
+                        0: { "char": "#", "color": "gray" },
+                        1: { "char": "E" },
+                        2: { "char": "#", "color": "gray" },
+                        3: { "char": "5" },
+                        4: { "char": "7" },
+                        5: { "char": "L" },
+                        8: { "char": "I" },
+                        10: { "char": "H" },
+                        12: { "char": "8" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "$" },
+                        15: { "char": "$" },
+                        16: { "char": "$" },
+                        17: { "char": "$" },
+                        18: { "char": "$" },
+                        19: { "char": "$" },
+                        20: { "color": "green" },
+                        22: { "color": "red" },
+                        25: { "char": "P", "color": "yellow" },
+                        26: { "char": "U" },
+                        27: { "char": "Z", "color": "green" },
+                        28: { "char": "Z" },
+                        29: { "char": "L", "color": "blue" },
+                        30: { "char": "E" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    6: {
+                        0: { "char": "#", "color": "gray" },
+                        1: { "char": "L" },
+                        4: { "char": "5" },
+                        5: { "char": "#", "color": "gray" },
+                        7: { "char": "J" },
+                        8: { "char": "#", "color": "gray" },
+                        9: { "color": "yellow" },
+                        10: { "char": "#", "color": "gray" },
+                        11: { "char": "#", "color": "gray" },
+                        12: { "char": "M" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "$" },
+                        15: { "char": "G", "color": "red" },
+                        16: { "char": "E", "color": "green" },
+                        17: { "char": "M", "color": "blue" },
+                        18: { "char": "S", "color": "yellow" },
+                        19: { "char": "$" },
+                        20: { "char": "#", "color": "gray" },
+                        22: { "char": "#", "color": "gray" },
+                        25: { "char": "S" },
+                        26: { "char": "A" },
+                        27: { "char": "F" },
+                        28: { "char": "A" },
+                        29: { "char": "R", "color": "blue" },
+                        30: { "char": "1" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    7: {
+                        0: { "char": "#", "color": "gray" },
+                        2: { "char": "#", "color": "gray" },
+                        3: { "char": "#", "color": "gray" },
+                        4: { "char": "#", "color": "gray" },
+                        5: { "char": "#", "color": "gray" },
+                        7: { "char": "#", "color": "gray" },
+                        8: { "char": "#", "color": "gray" },
+                        10: { "char": "Y" },
+                        11: { "char": "1" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "$" },
+                        15: { "char": "$" },
+                        16: { "char": "$" },
+                        17: { "char": "$" },
+                        18: { "char": "$" },
+                        19: { "char": "$" },
+                        20: { "char": "#", "color": "gray" },
+                        22: { "char": "#", "color": "gray" },
+                        23: { "char": "#", "color": "gray" },
+                        24: { "char": "#", "color": "gray" },
+                        31: { "char": "#", "color": "gray" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    8: {
+                        0: { "char": "#", "color": "gray" },
+                        2: { "char": "#", "color": "gray" },
+                        3: { "char": "3" },
+                        4: { "char": "4" },
+                        5: { "char": "M" },
+                        7: { "char": "A" },
+                        8: { "char": "#", "color": "gray" },
+                        10: { "char": "1" },
+                        11: { "char": "U" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "#", "color": "gray" },
+                        15: { "char": "#", "color": "gray" },
+                        16: { "char": "#", "color": "gray" },
+                        17: { "char": "#", "color": "gray" },
+                        18: { "char": "#", "color": "gray" },
+                        19: { "char": "#", "color": "gray" },
+                        20: { "char": "#", "color": "gray" },
+                        22: { "char": "#", "color": "gray" },
+                        23: { "char": "#", "color": "gray" },
+                        24: { "char": "#", "color": "gray" },
+                        25: { "char": "#", "color": "gray" },
+                        26: { "char": "2" },
+                        27: { "char": "O" },
+                        28: { "char": "2" },
+                        29: { "char": "4" },
+                        30: { "char": "#", "color": "gray" },
+                        31: { "char": "#", "color": "gray" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    9: {
+                        0: { "char": "#", "color": "gray" },
+                        2: { "char": "O", "color": "blue" },
+                        4: { "char": "3" },
+                        5: { "char": "#", "color": "gray" },
+                        7: { "char": "#", "color": "gray" },
+                        8: { "char": "#", "color": "gray" },
+                        10: { "char": "C" },
+                        11: { "char": "1" },
+                        13: { "char": "O" },
+                        14: { "char": "#", "color": "gray" },
+                        15: { "char": "Q" },
+                        17: { "char": "Q" },
+                        18: { "char": "#", "color": "gray" },
+                        24: { "char": "#", "color": "gray" },
+                        25: { "char": "#", "color": "gray" },
+                        26: { "char": "#", "color": "gray" },
+                        27: { "char": "#", "color": "gray" },
+                        28: { "char": "#", "color": "gray" },
+                        29: { "char": "#", "color": "gray" },
+                        30: { "char": "#", "color": "gray" },
+                        31: { "char": "9" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    10: {
+                        0: { "char": "#", "color": "gray" },
+                        2: { "char": "#", "color": "gray" },
+                        3: { "char": "#", "color": "gray" },
+                        4: { "char": "#", "color": "gray" },
+                        5: { "char": "#", "color": "gray" },
+                        7: { "char": "I" },
+                        8: { "char": "#", "color": "gray" },
+                        11: { "char": "K" },
+                        13: { "char": "O" },
+                        14: { "color": "red" },
+                        16: { "char": "W" },
+                        20: { "char": "P" },
+                        21: { "char": "1" },
+                        22: { "char": "T" },
+                        24: { "char": "1" },
+                        25: { "char": "S" },
+                        26: { "char": "H" },
+                        27: { "char": "A" },
+                        28: { "char": "F" },
+                        29: { "char": "T" },
+                        30: { "char": "9" },
+                        31: { "char": "9" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    11: {
+                        0: { "char": "#", "color": "gray" },
+                        2: { "char": "#", "color": "gray" },
+                        3: { "char": "6" },
+                        5: { "char": "N" },
+                        7: { "char": "#", "color": "gray" },
+                        8: { "char": "#", "color": "gray" },
+                        9: { "char": "F" },
+                        13: { "char": "O" },
+                        14: { "char": "#", "color": "gray" },
+                        15: { "char": "Q" },
+                        17: { "char": "Q" },
+                        18: { "char": "#", "color": "gray" },
+                        24: { "char": "#", "color": "gray" },
+                        25: { "char": "#", "color": "gray" },
+                        26: { "char": "#", "color": "gray" },
+                        27: { "char": "#", "color": "gray" },
+                        28: { "char": "#", "color": "gray" },
+                        29: { "char": "#", "color": "gray" },
+                        30: { "char": "#", "color": "gray" },
+                        31: { "char": "#", "color": "gray" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    12: {
+                        0: { "char": "#", "color": "gray" },
+                        2: { "color": "green" },
+                        4: { "char": "6" },
+                        5: { "char": "#", "color": "gray" },
+                        7: { "char": "L" },
+                        8: { "char": "#", "color": "gray" },
+                        9: { "char": "F" },
+                        10: { "char": "F" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "#", "color": "gray" },
+                        15: { "char": "#", "color": "gray" },
+                        17: { "char": "#", "color": "gray" },
+                        18: { "char": "#", "color": "gray" },
+                        19: { "char": "#", "color": "gray" },
+                        20: { "char": "#", "color": "gray" },
+                        22: { "char": "#", "color": "gray" },
+                        23: { "char": "#", "color": "gray" },
+                        24: { "char": "#", "color": "gray" },
+                        25: { "char": "V" },
+                        26: { "char": "#", "color": "gray" },
+                        27: { "char": "6" },
+                        31: { "char": "6" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    13: {
+                        0: { "char": "#", "color": "gray" },
+                        2: { "char": "#", "color": "gray" },
+                        3: { "char": "#", "color": "gray" },
+                        4: { "char": "#", "color": "gray" },
+                        5: { "char": "#", "color": "gray" },
+                        8: { "char": "#", "color": "gray" },
+                        9: { "char": "7", "color": "red" },
+                        10: { "char": "F" },
+                        11: { "char": "F" },
+                        12: { "char": "2" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "1" },
+                        15: { "char": "K" },
+                        17: { "char": "Y" },
+                        18: { "char": "2" },
+                        19: { "char": "3" },
+                        20: { "char": "#", "color": "gray" },
+                        26: { "char": "1" },
+                        27: { "char": "T" },
+                        29: { "char": "M" },
+                        31: { "char": "S" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    14: {
+                        0: { "char": "#", "color": "gray" },
+                        2: { "char": "#", "color": "gray" },
+                        3: { "char": "N" },
+                        4: { "char": "O" },
+                        5: { "char": "#", "color": "gray" },
+                        6: { "char": "#", "color": "gray" },
+                        8: { "char": "#", "color": "gray" },
+                        9: { "char": "#", "color": "gray" },
+                        10: { "char": "#", "color": "gray" },
+                        11: { "char": "#", "color": "gray" },
+                        12: { "char": "#", "color": "gray" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "#", "color": "gray" },
+                        15: { "char": "#", "color": "gray" },
+                        16: { "char": "#", "color": "gray" },
+                        17: { "char": "#", "color": "gray" },
+                        18: { "char": "#", "color": "gray" },
+                        19: { "char": "#", "color": "gray" },
+                        20: { "char": "#", "color": "gray" },
+                        21: { "color": "yellow" },
+                        22: { "char": "#", "color": "gray" },
+                        23: { "char": "#", "color": "gray" },
+                        24: { "char": "#", "color": "gray" },
+                        25: { "char": "#", "color": "gray" },
+                        26: { "char": "#", "color": "gray" },
+                        28: { "char": "O" },
+                        30: { "char": "B" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    15: {
+                        0: { "char": "#", "color": "gray" },
+                        8: { "color": "yellow" },
+                        11: { "char": "2" },
+                        12: { "char": "3" },
+                        15: { "char": "C" },
+                        17: { "char": "2" },
+                        19: { "char": "O" },
+                        21: { "char": "N" },
+                        23: { "char": "3" },
+                        25: { "char": "T", "color": "red" },
+                        26: { "char": "#", "color": "gray" },
+                        27: { "char": "6" },
+                        31: { "char": "6" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                    16: {
+                        0: { "char": "#", "color": "gray" },
+                        1: { "char": "#", "color": "gray" },
+                        2: { "char": "#", "color": "gray" },
+                        3: { "char": "#", "color": "gray" },
+                        4: { "char": "#", "color": "gray" },
+                        5: { "char": "#", "color": "gray" },
+                        6: { "char": "#", "color": "gray" },
+                        7: { "char": "#", "color": "gray" },
+                        8: { "char": "#", "color": "gray" },
+                        9: { "char": "#", "color": "gray" },
+                        10: { "char": "#", "color": "gray" },
+                        11: { "char": "#", "color": "gray" },
+                        12: { "char": "#", "color": "gray" },
+                        13: { "char": "#", "color": "gray" },
+                        14: { "char": "#", "color": "gray" },
+                        15: { "char": "#", "color": "gray" },
+                        16: { "char": "#", "color": "gray" },
+                        17: { "char": "#", "color": "gray" },
+                        18: { "char": "#", "color": "gray" },
+                        19: { "char": "#", "color": "gray" },
+                        20: { "char": "#", "color": "gray" },
+                        21: { "color": "green", "exit":true },
+                        22: { "char": "#", "color": "gray" },
+                        23: { "char": "#", "color": "gray" },
+                        24: { "char": "#", "color": "gray" },
+                        25: { "char": "#", "color": "gray" },
+                        26: { "char": "#", "color": "gray" },
+                        27: { "char": "#", "color": "gray" },
+                        28: { "char": "#", "color": "gray" },
+                        29: { "char": "#", "color": "gray" },
+                        30: { "char": "#", "color": "gray" },
+                        31: { "char": "#", "color": "gray" },
+                        32: { "char": "#", "color": "gray" },
+                    },
+                }
+            };
+            let messages = {
+                "wall": "You cannot go through a wall.",
+                "colorbad": "You cannot enter that color now.",
+                "switchRed": "You can only enter red or white spaces now.",
+                "switchGreen": "You can only enter green or white spaces now.",
+                "switchBlue": "You can only enter blue or white spaces now.",
+                "switchYellow": "You can only enter yellow or white spaces now.",
+                "kill": "You defeat the $1 and take $2 damage.",
+                "die": "The $1 would kill you!",
+                "heal": "You gain $1 health!",
+                "bonus": "You pick up a treasure!",
+                "win": "You escape the maze!",
+                "log": "$1"
+            };
+            function log(message, p1, p2, p3) {
+                logbox = document.getElementById("actionlog");
+                msg = messages[message];
+                if (p1) msg = msg.replace("\$1", p1);
+                if (p2) msg = msg.replace("\$2", p2);
+                if (p3) msg = msg.replace("\$3", p3);
+                logbox.innerHTML = logbox.innerHTML + "<br />" + "\u2BA1 " + msg;
+                logbox.scrollTop = logbox.scrollHeight;
+            };
+            function move(dir) {
+                var dest = {};
+                switch (dir) {
+                    case "ArrowLeft": dest.X = gs.playerX - 1; dest.Y = gs.playerY; break;
+                    case "ArrowRight": dest.X = gs.playerX + 1; dest.Y = gs.playerY; break;
+                    case "ArrowUp": dest.X = gs.playerX; dest.Y = gs.playerY - 1; break;
+                    case "ArrowDown": dest.X = gs.playerX; dest.Y = gs.playerY + 1; break;
+                    default: return;
+                }
+                if (gs.grid[dest.Y][dest.X] && gs.grid[dest.Y][dest.X].char) dest.char =  gs.grid[dest.Y][dest.X].char;
+                if (gs.grid[dest.Y][dest.X] && gs.grid[dest.Y][dest.X].color) dest.color = gs.grid[dest.Y][dest.X].color; 
+                if (dest.char === "#") {
+                    log("wall"); return;
+                }
+                if (!gs.moveFreely && dest.color && dest.color != gs.nextColor) {
+                    log("colorbad"); return;
+                }
+                if (dest.char && gs.monsters[dest.char] && gs.monsters[dest.char].strength >= gs.health) {
+                    log("die", gs.monsters[dest.char].type); return;
+                }
+                if (dest.char) {
+                    var heal = parseInt(dest.char);
+                    if (heal > 0 && heal <= 9) {
+                        gs.health = gs.health + heal;
+                        log("heal", heal);
+                        delete gs.grid[dest.Y][dest.X].char;
+                        updatePlayerPos(dest.X, dest.Y);
+                        return;
+                    }
+                }
+                if (dest.char && dest.char === "$") {
+                    gs.bonus++;
+                    log("bonus");
+                    delete gs.grid[dest.Y][dest.X].char;
+                    updatePlayerPos(dest.X, dest.Y);
+                    return;
+                }
+                if (dest.char && gs.monsters[dest.char]) {
+                    gs.health = gs.health - gs.monsters[dest.char].strength;
+                    gs.graveyard = gs.graveyard + dest.char;
+                    log("kill", gs.monsters[dest.char].type, gs.monsters[dest.char].strength);
+                    delete gs.grid[dest.Y][dest.X].char;
+                    updatePlayerPos(dest.X, dest.Y);
+                    return;
+                }
+                updatePlayerPos(dest.X, dest.Y);
+                //log("log","Nothing happens.");
+            }
+            function updatePlayerPos(x, y) {
+                if (gs.grid[y][x] && gs.grid[y][x].color) {
+                    switch (gs.grid[y][x].color) {
+                        case "red": gs.playerColor = "red"; gs.nextColor = "green"; log("switchGreen"); gs.moveFreely = false; break;
+                        case "green": gs.playerColor = "green"; gs.nextColor = "blue"; log("switchBlue"); gs.moveFreely = false; break;
+                        case "blue": gs.playerColor = "blue"; gs.nextColor = "yellow"; log("switchYellow"); gs.moveFreely = false; break;
+                        case "yellow": gs.playerColor = "yellow"; gs.nextColor = "red"; log("switchRed"); gs.moveFreely = false; break;
+                    }
+                }
+                gs.playerX = x;
+                gs.playerY = y;
+                if (gs.playerX === 0 || gs.playerX === gs.cols - 1 || gs.playerY === 0 || gs.playerY == gs.rows - 1) {
+                    gs.win = true;
+                    log("win");
+                }
+                gs.renderDirty = true;
+                render();
+            }
+            function keyPress(e) {
+                if (!e.repeat && !gs.win && (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown"))
+                    move(e.key);
+            }
+            function mouseHover(e) {
+                var pos = getMousePos(canv,e);
+                var col = Math.floor(pos.x / gs.cellWidth);
+                var row = Math.floor(pos.y / gs.cellHeight);
+                var occupant = "";
+                var cleanup = false;
+                if (gs.grid[row][col] && gs.grid[row][col].char) {
+                    occupant = gs.grid[row][col].char;
+                    //console.log("R:" +row+", C:"+col+", O:"+occupant);
+                    if (occupant && occupant != gs.hoverMonster && gs.monsters[occupant]) {
+                        gs.hoverMonster = occupant;
+                        if (gs.hoverMonster) {
+                            monsterDesc = gs.monsters[gs.hoverMonster].type;
+                            if (gs.monsters[gs.hoverMonster].strength) monsterDesc = monsterDesc + "(" + gs.monsters[gs.hoverMonster].strength + ")";
+                        }
+                        document.getElementById("strength").innerHTML = monsterDesc;
+                    } else {
+                        cleanup = true;
+                    }
+                } else if (col == gs.playerX && row == gs.playerY) {
+                    document.getElementById("strength").innerHTML = "You";
+                } else {cleanup = true;}
+                if (cleanup) {
+                    if (!occupant || occupant != gs.hoverMonster) {
+                            gs.hoverMonster = "";
+                            document.getElementById("strength").innerHTML = "";
+                    }
+                    cleanup = false;
+                }
+            }
+
+            let gs = gameState;
+            let canv = document.getElementById("puzzleGrid");
+            canv.width = gs.cellWidth * gs.cols + 150;    
+            canv.height = gs.cellHeight * gs.rows; 
+            canv.addEventListener("mousemove", mouseHover);
+            document.addEventListener("keydown", keyPress);
+            let ctx = canv.getContext("2d");
+            ctx.font = gs.font;
+            function render() {
+                if (!gs.renderDirty) return;
+                // RENDER GRID
+                ctx.clearRect(0, 0, canv.width, canv.height);
+                var cell;
+                for (var row = 0; row < gs.rows; row++) {
+                    for (var col = 0; col < gs.cols; col++) {
+                        if (gs.grid[row]) cell = gs.grid[row][col]; else cell = null;
+                        if (cell) {
+                            if (cell.color) ctx.fillStyle = gs.colors[cell.color]; else ctx.fillStyle = gs.colors.white;
+                            ctx.fillRect(col * gs.cellWidth, row * gs.cellHeight, gs.cellWidth, gs.cellHeight);
+                            ctx.fillStyle = gs.colors.white+"d";
+                            switch (cell.color) {
+                                case "red":
+                                    ctx.fillRect((col * gs.cellWidth) + 1, (row * gs.cellHeight)+1, 3, 3);
+                                    break;
+                                case "green":
+                                    ctx.fillRect(((col + 1) * gs.cellWidth) - 4, (row * gs.cellHeight)+1, 3, 3);
+                                    break;
+                                case "blue":
+                                    ctx.fillRect(((col + 1) * gs.cellWidth) - 4, ((row+1) * gs.cellHeight) - 4, 3, 3);
+                                    break;
+                                case "yellow":
+                                    ctx.fillRect((col * gs.cellWidth) + 1, ((row + 1) * gs.cellHeight) - 4, 3, 3);
+                                    break;
+                            }
+                            if (cell.char) {
+                                ctx.fillStyle=gs.colors.black; 
+                                ctx.font = gs.font;
+                                var textSize = ctx.measureText(cell.char);
+                                textSize.height = textSize.actualBoundingBoxAscent;
+                                ctx.fillText(cell.char, (col*gs.cellWidth) + ((gs.cellWidth - textSize.width)/2), ((row + 1)*gs.cellHeight) - ((gs.cellHeight - textSize.height)/2) );
+                            }
+                        }
+                    }
+                }
+                // RENDER PLAYER
+                plyr = gs.playerChar;
+                ctx.font = gs.font;
+                var textSize = ctx.measureText(plyr);
+                textSize.height = textSize.actualBoundingBoxAscent;
+
+                ctx.fillStyle = gs.colors[gs.nextColor]+"a";
+                ctx.beginPath();
+                ctx.arc( (gs.playerX * gs.cellWidth) + (gs.cellWidth / 2), (gs.playerY * gs.cellHeight) + (gs.cellHeight / 2), gs.cellWidth / 2.25, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.fillStyle = gs.colors.black;
+                ctx.fillText(plyr, (gs.playerX * gs.cellWidth) + ((gs.cellWidth - textSize.width) / 2), ((gs.playerY + 1) * gs.cellHeight) - ((gs.cellHeight - textSize.height) / 2));
+
+                // RENDER MONSTER LIST
+                const mList = Object.keys(gs.monsters);
+                mList.forEach(function (item, indx, arr) {
+                    ctx.fillStyle = gs.colors.black;
+                    ctx.font = gs.monsterFont;
+                    var mData = item + ": " + gs.monsters[item].type;
+                    if (gs.monsters[item].strength) mData = mData + " (" + gs.monsters[item].strength + ")";
+                    ctx.fillText(mData, ((gs.cols + 1) * gs.cellWidth), ((indx+1) * gs.listHeight));
+                }, gs);
+
+                // RENDER GRID LINES
+                for (var row = 0; row <= gs.rows; row++) {
+                    ctx.beginPath();
+                    ctx.moveTo(0,row * gs.cellHeight);
+                    ctx.lineTo((gs.cols + 1) * gs.cellWidth, row * gs.cellHeight);
+                    ctx.strokeStyle = gs.colors["lightgray"];
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+                for (var col = 0; col <= gs.cols; col++) {
+                    ctx.beginPath();
+                    ctx.moveTo(col * gs.cellWidth, 0);
+                    ctx.lineTo(col * gs.cellWidth, (gs.rows + 1) * gs.cellHeight);
+                    ctx.strokeStyle = gs.colors["lightgray"];
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+
+                // UPDATE STATE
+                document.getElementById("health").innerHTML = gs.health;
+                document.getElementById("color").className = gs.playerColor;
+                document.getElementById("graveyard").innerHTML = gs.graveyard;
+                var monsterDesc = "";
+                if (gs.hoverMonster) {
+                    monsterDesc = gs.monsters[gs.hoverMonster].type;
+                    if (gs.monsters[gs.hoverMonster].strength) monsterDesc = monsterDesc + "(" + gs.monsters[gs.hoverMonster].strength + ")";
+                }
+                document.getElementById("strength").innerHTML = monsterDesc;
+                gs.renderDirty = false;
+            }
+            function getMousePos(canvas, evt) {
+                var rect = canvas.getBoundingClientRect();
+                return {
+                    x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
+                    y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
+                };
+            }
+            document.fonts.onloadingdone = function (fontFaceSetEvent) {
+                render();
+                canv.focus();
+            };
+        </script>
+        <style>
+            body {
+                font: "20px Roboto Mono";
+            }
+            #puzzleGrid {
+                font: "20px Roboto Mono";
+            }
+            #graveyard {
+                font: 14px Roboto Mono;
+                width: 100px;
+                display: inline-block;
+            }
+            #graveyard::before {
+                content: "☠️";
+            }
+            #health {
+                font: 14px Roboto Mono;
+                width: 100px;
+                display: inline-block;
+            }
+            #health::before {
+                content: "🩸";
+            }
+            #strength {
+                font: 14px Roboto Mono;
+                width: 125px;
+                display: inline-block;
+            }
+            #strength::before {
+                content: "⚔️";
+            }
+            #color {
+                font: 14px Roboto Mono;
+                width: 100px;
+                display: inline-block;
+            }
+            #color.red {
+                color: #f00;
+            }
+            #color.yellow {
+                color: #fc0;
+            }
+            #color.blue {
+                color: #09f;
+            }
+            #color.green {
+                color: #0f0;
+            }
+            #color.white {
+                color: #ddd;
+            }
+            #color::before {
+                content: "🎨";
+            }
+            #instructions {
+                width: 650px;
+                font: 14px Roboto Mono;
+            }
+            #actionlog {
+                height: 300px;
+                width: 650px;
+                overflow-y: scroll;
+                border: 1px solid darkgray;
+                font: 14px Roboto Mono;
+            }
+        </style>
+    </body>
+</html>
