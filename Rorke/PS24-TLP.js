@@ -40,7 +40,6 @@ function reset() {
   document.getElementById('health').innerText = playerHP + ' ❤️';
   document.getElementById('lastTwist').innerText = '';
   document.getElementById('loot').innerText = '';
-  monstersKilled = [];
   document.getElementById('beaten').innerText = '';
   toggleClass(document.getElementById('beaten'), 'victory', false);
 

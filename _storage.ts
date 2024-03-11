@@ -1,10 +1,11 @@
-import { forceReload, getSafariDetails, isIFrame, isRestart, theBoiler } from "./_boilerplate";
+import { forceReload, isIFrame, isRestart, theBoiler } from "./_boilerplate";
 import { hasClass, toggleClass, getOptionalStyle, findFirstChildOfClass } from "./_classUtil";
 import { afterInputUpdate, updateWordExtraction } from "./_textInput";
 import { quickMove, quickFreeMove, Position, positionFromStyle } from "./_dragDrop";
 import { doStamp, getStampParent } from "./_stampTools";
 import { createFromVertexList } from "./_straightEdge";
 import { GuessLog, decodeAndValidate } from "./_confirmation";
+import { getSafariDetails } from "./_events";
 
 ////////////////////////////////////////////////////////////////////////
 // Types

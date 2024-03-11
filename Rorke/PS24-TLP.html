@@ -8,7 +8,7 @@
       const boiler = {
         'safari': '24',
         'title': 'Twister Little Passages',
-        'author': 'Rorke Haining',
+        'author': 'Rorke Haining, Jess McGatha, & David Garber',
         'copyright': '2024',
         'orientation': 'portrait',
         'googleFonts': 'PT+Mono',
@@ -22,9 +22,9 @@
 
       var mazeText = [
         '#################################',
-        ' T#   R      #96    #9#32  ##456#',
+        ' T#   R      #98    #9#32  ##456#',
         '#U# @ G #PAIN# CACHE#X#1## ##D###',
-        '#N#   B #    #78        #O7  2O#G',
+        '#N#   B #    #88        #O7  2O#$',
         '#N####### ########### ###      ##',
         '#E#57L  I H 8#$$$$$$     PUZZLE #',
         '#L  5# J# ##M#$GEMS$# #  SAFAR1 #',
@@ -36,7 +36,7 @@
         '#   6# L#FF  ### #### ###V#6   6#',
         '# ####  #7FF2#1K Y23#     1T M S#',
         '# #NO## ############# ##### O B #',
-        '#          23  C 2 O N 3 T#6   6#',
+        '#          23  H2O   N T $#6   6#',
         '##################### ###########',
       ];
       var mazeColors = [
@@ -55,7 +55,7 @@
         'w g  w  w    www wwww www w     w',
         'w wwww  wr   w      w           w',
         'w w  ww wwwwwwwwwwwwwywwwww     w',
-        'w       y                rw     w',
+        'w       y               r w     w',
         'wwwwwwwwwwwwwwwwwwwwwgwwwwwwwwwww',
       ];
 
@@ -201,7 +201,7 @@
       #game-help {
         display: none;
         position: absolute;
-        top: 4.35in;
+        top: 4.25in;
         right: -0.5in;
         width: 2.1in;
         font-size: 9pt;
@@ -212,15 +212,14 @@
       }
       #game-console {
         height: 0.45in;
-        margin-left: 0.25in;
-        margin-top: 0.1in;
+        margin: 0px;
       }
       #game-status th {
         text-align: right;
-        margin-left: 0.5in;
       }
       #rules p {
-        padding-right: 0.2in;
+        margin-top: 8px;
+        margin-bottom: 8px;
       }
 
       @media print {
@@ -270,37 +269,38 @@
         <p style="margin-left:-20pt;"><img src="Images/TLP/Play.png" style="height:15pt"> or shift+Enter to start over.</p>
       </div>
       <div id="game-console">
-        <table id="game-status" style="display: none; height:0.5in; width: 4.5in;">
-          <tr><th>Health:</th><td id="health" style="width:0.7in;">10</td>
-            <th>Last color:</th><td id="lastTwist" style="width: 0.7in;"></td>
-            <th>Loot:</th><td id="loot"></td>
+        <table id="game-status" style="display: none; height:0.5in; width: 5.15in;">
+          <tr><th style="width:1in;">Health:</th><td id="health" style="width:0.5in;">10</td>
+            <th style="width:1in;">Last color:</th><td id="lastTwist" style="width: 0.6in;"></td>
+            <th style="width:0.5in;">Loot:</th><td id="loot" style="width:1.5in;"></td>
           </tr>
           <tr><th>Monsters:</th><td id="beaten" colspan="5"></td></tr>
         </table>
       </div>
 
-      <div id="rules">
+      <div id="rules" style="margin-top: 20px;">
         <p>
           <b>Objective</b>
-          You (@) are an adventurer – a carefree Rogue in search of the Amulet of Yendor (?). But 
-          alas, you have fallen into a maze of twisty little passages, all alike. You must find a way to escape the 
-          maze alive. Picking up any loot ($) along the way is a strictly optional bonus.
+          You (@) are a Rogue in search of adventure, but alas have fallen into a maze of twisty little passages, 
+          all alike.  Can you escape alive?  Getting any loot ($) along the way is a strictly optional bonus.
         </p>
         <p>
           <b>Movement:</b>
           Start at your symbol (@) near the upper left. You may move one square at a time 
           horizontally or vertically. You may move over any open square ( ) as often as you like, backtracking if so 
-          desired. Walls (<span class="maze-color-w">#</span>) are impassable. But there’s a Twist! You may only travel over colored squares in the 
-          magical Twister sequence: <span class="maze-color-r">RED</span> -> <span class="maze-color-g">GREEN</span> -> <span class="maze-color-b">BLUE</span> -> <span class="maze-color-y">YELLOW</span> then starting over again with RED. You 
+          desired. Walls (<span class="maze-color-w">#</span>) are impassable. But there’s a Twist! 
+          You may only travel over colored squares in the magical Twister sequence: 
+          <span class="maze-color-r">RED</span> -> <span class="maze-color-g">GREEN</span> -> <span class="maze-color-b">BLUE</span> -> <span class="maze-color-y">YELLOW</span> 
+          then starting over again with RED. You 
           may start with any color first, but once you stand on a colored square, you may not stand on any other 
           colored square unless it is the next in sequence.
         </p>
         <p>
           <b>Health:</b>
           You start with 10 health. If your health ever falls to 0 (zero) or below, you die. Positive digits 
-          (1-9) represent bandages, magic potions, and so on that regenerate your health. Moving onto a healing 
-          item’s square immediately consumes the item and increases your health by that amount. That square is 
-          then open, but its color, if any, does not change. You may have more than 10 health.
+          (1-9) represent health potions. Moving onto a potion's square immediately consumes the potion 
+          and increases your health by that amount. You may have more than 10 health. That square is then open,
+          but its color, if any, does not change. 
         </p>
         <p>
           <b>Combat:</b>
@@ -309,6 +309,13 @@
           reduces your health by its strength amount, then dies. If you survive, that square is then open, but its 
           color, if any, does not change. Fortunately, monsters do not move or chase you and wait for you to 
           initiate combat.
+        </p>
+        <p>
+          <b>Play interactively:</b>
+          Turn up your sound and play this puzzle as an interactive game in Edge or Chrome!
+          Two versions are available: &nbsp;<a href="https://aka.ms/ps24-twister-dgv">https://aka.ms/ps24-twister-dgv</a>
+          and <a href="https://aka.ms/ps24-twister-jmv">https://aka.ms/ps24-twister-jmv</a> .
+
         </p>
         <p>Good luck, adventurer!</p>
       </div>

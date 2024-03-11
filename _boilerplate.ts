@@ -10,6 +10,7 @@ import { TableDetails, constructTable } from "./_tableBuilder";
 import { setupSubways } from "./_subway";
 import { setupValidation } from "./_confirmation";
 import { expandControlTags } from "./_builder";
+import { LinkDetails, getSafariDetails, initSafariDetails } from "./_events";
 
 
 /**
@@ -104,109 +105,6 @@ export function forceReload(): boolean|undefined {
     return undefined;
 }
 
-type LinkDetails = {
-    rel: string;  // 'preconnect', 'stylesheet', ...
-    href: string;
-    type?: string;  // example: 'text/css'
-    crossorigin?: string;  // if anything, ''
-}
-
-type PuzzleEventDetails = {
-    title: string;
-    logo?: string;  // path from root
-    icon: string;  // path from root
-    puzzleList?: string;
-    cssRoot: string;  // path from root
-    fontCss: string;  // path from root
-    googleFonts?: string;  // comma-delimeted list
-    links: LinkDetails[];
-    qr_folders?: {};  // folder lookup
-    solverSite?: string;  // URL to another website
-}
-
-const safariSingleDetails:PuzzleEventDetails = {
-    'title': 'Puzzle',
-    'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
-    'puzzleList': '',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
-    'links': [
-//        { rel:'preconnect', href:'https://fonts.googleapis.com' },
-//        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
-    ]
-}
-
-const safariSampleDetails:PuzzleEventDetails = {
-    'title': 'Puzzle Safari',
-    'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
-    'puzzleList': './index.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
-    'links': []
-}
-
-const safari20Details:PuzzleEventDetails = {
-    'title': 'Safari Labs',
-    'logo': './Images/PS20 logo.png',
-    'icon': './Images/Beaker_icon.png',
-    'puzzleList': './safari.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts20.css',
-    'googleFonts': 'Architects+Daughter,Caveat',  // no whitespace
-    'links': [],
-    'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
-                   'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
-    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
-}
-
-const safari24Details:PuzzleEventDetails = {
-    'title': 'Game Night',
-    // 'logo': './Images/PS24 logo.png',
-    'icon': '../24/Images/Sample_Icon.png',
-    // 'puzzleList': './safari.html',
-    'cssRoot': '../Css/',
-    'fontCss': '../24/Css/Fonts24.css',
-    'googleFonts': 'Goblin+One,Caveat',  // no whitespace
-    'links': [],
-    // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
-                //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
-    // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
-}
-
-const safariDggDetails:PuzzleEventDetails = {
-    'title': 'David’s Puzzles',
-    'logo': './Images/octopus_watermark.png',
-    'icon': './Images/octopus_icon.png',
-    'puzzleList': './indexx.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat,Righteous,Cormorant+Upright',  // no whitespace
-    'links': [],
-    'qr_folders': {'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
-                   'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/'},
-    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
-}
-
-const pastSafaris = {
-    'Sample': safariSampleDetails,
-    'Single': safariSingleDetails,
-    '20': safari20Details,
-    'Dgg': safariDggDetails,
-    '24': safari24Details,
-}
-
-let safariDetails:PuzzleEventDetails;
-
-/**
- * Return the details of this puzzle event
- */
-export function getSafariDetails(): PuzzleEventDetails {
-    return safariDetails;
-}
 
 type AbilityData = {
     notes?: boolean;
@@ -256,7 +154,7 @@ type BoilerPlateData = {
  * @param bp 
  */
 function preSetup(bp:BoilerPlateData) {
-    safariDetails = pastSafaris[bp.safari];
+    const safariDetails = initSafariDetails(bp.safari);
     debugSetup();
     var bodies = document.getElementsByTagName('BODY');
     if (isIFrame()) {
@@ -348,6 +246,7 @@ function createPrintQrBase64(data:string):HTMLImageElement {
 }
 
 function getQrPath():string|undefined {
+    const safariDetails = getSafariDetails();
     if (safariDetails.qr_folders) {
         const url = window.location.href;
         for (const key of Object.keys(safariDetails.qr_folders)) {
@@ -452,6 +351,7 @@ function boilerplate(bp: BoilerPlateData) {
     
     html.lang = bp.lang || 'en-us';
 
+    const safariDetails = getSafariDetails();
     for (var i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
@@ -636,6 +536,7 @@ function cssLoaded() {
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
 function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:AbilityData) {
+    const safariDetails = getSafariDetails();
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;

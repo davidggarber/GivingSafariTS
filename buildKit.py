@@ -13,6 +13,7 @@ kitFiles = [
     '_dragDrop.ts',
     '_stampTools.ts',
     '_straightEdge.ts',
+    '_events.ts',
     '_boilerplate.ts',
     '_confirmation.ts',
     '_builder.ts',

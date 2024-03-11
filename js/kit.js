@@ -4,8 +4,8 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = void 0;
-exports.builtInTemplate = exports.getTemplate = exports.globalContextData = exports.anyFromContext = exports.expandControlTags = exports.theBoilerContext = exports.decodeAndValidate = exports.validateInputReady = void 0;
+exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = void 0;
+exports.builtInTemplate = exports.getTemplate = exports.globalContextData = exports.anyFromContext = exports.expandControlTags = exports.theBoilerContext = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -5016,6 +5016,94 @@ function clearAllStraightEdges(id) {
     _straightEdgeBuilder = null;
 }
 exports.clearAllStraightEdges = clearAllStraightEdges;
+var safariSingleDetails = {
+    'title': 'Puzzle',
+    'logo': './Images/Sample_Logo.png',
+    'icon': './Images/Sample_Icon.png',
+    'puzzleList': '',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts.css',
+    'googleFonts': 'Caveat',
+    'links': [
+    //        { rel:'preconnect', href:'https://fonts.googleapis.com' },
+    //        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
+    ]
+};
+var safariSampleDetails = {
+    'title': 'Puzzle Safari',
+    'logo': './Images/Sample_Logo.png',
+    'icon': './Images/Sample_Icon.png',
+    'puzzleList': './index.html',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts.css',
+    'googleFonts': 'Caveat',
+    'links': []
+};
+var safari20Details = {
+    'title': 'Safari Labs',
+    'logo': './Images/PS20 logo.png',
+    'icon': './Images/Beaker_icon.png',
+    'puzzleList': './safari.html',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts20.css',
+    'googleFonts': 'Architects+Daughter,Caveat',
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
+    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+};
+var safari24Details = {
+    'title': 'Game Night',
+    // 'logo': './Images/PS24 logo.png',
+    'icon': '../24/Images/Sample_Icon.png',
+    // 'puzzleList': './safari.html',
+    'cssRoot': '../Css/',
+    'fontCss': '../24/Css/Fonts24.css',
+    'googleFonts': 'Goblin+One,Caveat',
+    'links': [],
+    // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+    //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+    // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+};
+var safariDggDetails = {
+    'title': 'David’s Puzzles',
+    'logo': './Images/octopus_watermark.png',
+    'icon': './Images/octopus_icon.png',
+    'puzzleList': './indexx.html',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts.css',
+    'googleFonts': 'Caveat,Righteous,Cormorant+Upright',
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/' },
+    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+};
+var pastSafaris = {
+    'Sample': safariSampleDetails,
+    'Single': safariSingleDetails,
+    '20': safari20Details,
+    'Dgg': safariDggDetails,
+    '24': safari24Details,
+};
+var safariDetails;
+/**
+* Initialize a global reference to Safari event details
+*/
+function initSafariDetails(safariId) {
+    if (!(safariId in pastSafaris)) {
+        throw new Error('Unrecognized Safari Event ID: ' + safariId);
+    }
+    safariDetails = pastSafaris[safariId];
+    return safariDetails;
+}
+exports.initSafariDetails = initSafariDetails;
+/**
+* Return the details of this puzzle event
+*/
+function getSafariDetails() {
+    return safariDetails;
+}
+exports.getSafariDetails = getSafariDetails;
 /*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
@@ -5109,89 +5197,12 @@ function forceReload() {
     return undefined;
 }
 exports.forceReload = forceReload;
-var safariSingleDetails = {
-    'title': 'Puzzle',
-    'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
-    'puzzleList': '',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
-    'links': [
-    //        { rel:'preconnect', href:'https://fonts.googleapis.com' },
-    //        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
-    ]
-};
-var safariSampleDetails = {
-    'title': 'Puzzle Safari',
-    'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
-    'puzzleList': './index.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
-    'links': []
-};
-var safari20Details = {
-    'title': 'Safari Labs',
-    'logo': './Images/PS20 logo.png',
-    'icon': './Images/Beaker_icon.png',
-    'puzzleList': './safari.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts20.css',
-    'googleFonts': 'Architects+Daughter,Caveat',
-    'links': [],
-    'qr_folders': { 'https://www.puzzyl.net/23/': './Qr/puzzyl/',
-        'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
-    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
-};
-var safari24Details = {
-    'title': 'Game Night',
-    // 'logo': './Images/PS24 logo.png',
-    'icon': '../24/Images/Sample_Icon.png',
-    // 'puzzleList': './safari.html',
-    'cssRoot': '../Css/',
-    'fontCss': '../24/Css/Fonts24.css',
-    'googleFonts': 'Goblin+One,Caveat',
-    'links': [],
-    // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
-    //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
-    // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
-};
-var safariDggDetails = {
-    'title': 'David’s Puzzles',
-    'logo': './Images/octopus_watermark.png',
-    'icon': './Images/octopus_icon.png',
-    'puzzleList': './indexx.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat,Righteous,Cormorant+Upright',
-    'links': [],
-    'qr_folders': { 'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
-        'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/' },
-    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
-};
-var pastSafaris = {
-    'Sample': safariSampleDetails,
-    'Single': safariSingleDetails,
-    '20': safari20Details,
-    'Dgg': safariDggDetails,
-    '24': safari24Details,
-};
-var safariDetails;
-/**
- * Return the details of this puzzle event
- */
-function getSafariDetails() {
-    return safariDetails;
-}
-exports.getSafariDetails = getSafariDetails;
 /**
  * Do some basic setup before of the page and boilerplate, before building new components
  * @param bp
  */
 function preSetup(bp) {
-    safariDetails = pastSafaris[bp.safari];
+    var safariDetails = initSafariDetails(bp.safari);
     debugSetup();
     var bodies = document.getElementsByTagName('BODY');
     if (isIFrame()) {
@@ -5268,6 +5279,7 @@ function createPrintQrBase64(data) {
     return qr;
 }
 function getQrPath() {
+    var safariDetails = getSafariDetails();
     if (safariDetails.qr_folders) {
         var url = window.location.href;
         for (var _i = 0, _a = Object.keys(safariDetails.qr_folders); _i < _a.length; _i++) {
@@ -5363,6 +5375,7 @@ function boilerplate(bp) {
     var pageBody = document.getElementById('pageBody');
     document.title = bp.title;
     html.lang = bp.lang || 'en-us';
+    var safariDetails = getSafariDetails();
     for (var i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
@@ -5527,6 +5540,7 @@ function cssLoaded() {
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
 function setupAbilities(head, margins, data) {
+    var safariDetails = getSafariDetails();
     var ability = document.getElementById('ability');
     if (ability != null) {
         var text = ability.innerText;
