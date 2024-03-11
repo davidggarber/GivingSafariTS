@@ -18,7 +18,7 @@ var playerHP = 0;  // dead
 var monstersFought = [];
 var twistColor = '*';
 var nextTwistColor = {r:'g', g:'b', b:'y', y:'r'};
-
+var twistShadows = {r:'#ff0000', g:'#8aea23', b:'#45c4f3', y:'#FFFF00'};
 
 function reset() {
   if (playerChar && playerChar.parentNode) {
@@ -205,6 +205,11 @@ function updateTwist(ch) {
   span.innerText = colorNames[ch];
   toggleClass(span, 'maze-color-' + ch, true);
   document.getElementById('lastTwist').innerHTML = span.outerHTML;
+
+  // Color the player with the twist they can do next
+  var nextColor = twistShadows[nextTwistColor[ch]];
+  var filter = 'drop-shadow(0 0 2px ' + nextColor + ') ';
+  playerChar.style.filter = filter + filter;
 }
 
 function checkVictory() {
