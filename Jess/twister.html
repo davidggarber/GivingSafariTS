@@ -1,17 +1,19 @@
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Twister Little Passages</title>
-        <link rel="stylesheet"href="https://fonts.googleapis.com/css?family=Roboto+Mono">
-        <link rel="shortcut icon" type="image/png" href="../Samples/Images/Sample_Icon.png">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <title>Twister Little Passages</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
+    <link rel="shortcut icon" type="image/png" href="../Samples/Images/Sample_Icon.png">
+</head>
     <body onload="render">
-        <p id="instructions">Use arrow keys to move and inspect by hovering over a symbol with your mouse.</p>
-        <canvas id="puzzleGrid">
-            Your browser does not support this puzzle.
-        </canvas>
-        <div><span id="color" class="white">&marker;</span>&nbsp;&nbsp;&nbsp;<span id="health"></span>&nbsp;&nbsp;&nbsp;<span id="strength"></span>&nbsp;&nbsp;&nbsp;<span id="graveyard"></span></div>
-        <div id="actionlog"></div>
+        <div class="flex-container">
+            <p id="instructions">Use arrow keys to move and inspect by hovering over a symbol with your mouse.</p>
+            <canvas id="puzzleGrid">
+                Your browser does not support this puzzle.
+            </canvas>
+            <div><span id="color" class="white">&marker;</span>&nbsp;&nbsp;&nbsp;<span id="health"></span>&nbsp;&nbsp;&nbsp;<span class="hidden" id="inspect"></span><span class="visible" id="strength"></span>&nbsp;&nbsp;&nbsp;<span id="graveyard"></span></div>
+            <div id="actionlog"></div>
+        </div>
 
         <script>
             var gameState = {
@@ -44,37 +46,7 @@
                 bonus: 0,
                 graveyard: "",
                 hoverMonster: "",
-                monsters: {
-                    "#": {"type": "Wall"},
-                    "@": {"type": "You"},
-                    "A": {"type": "Ant", "strength": 1},
-                    "B": {"type": "Bat", "strength": 2},
-                    "C": {"type": "Centaur", "strength": 9},
-                    "D": {"type": "Dragon", "strength": 16},
-                    "E": {"type": "Ettin", "strength": 4},
-                    "F": {"type": "Fungus", "strength": 1},
-                    "G": {"type": "Ghost", "strength": 13},
-                    "H": {"type": "Hydra", "strength": 9},
-                    "I": {"type": "Imp", "strength": 2},
-                    "J": {"type": "Jabberwock", "strength": 14},
-                    "K": {"type": "Kestrel", "strength": 2},
-                    "L": {"type": "Lich", "strength": 20},
-                    "M": {"type": "Mummy", "strength": 12},
-                    "N": {"type": "Nightmare", "strength": 5},
-                    "O": {"type": "Orc", "strength": 3},
-                    "P": {"type": "Phantom", "strength": 6},
-                    "Q": {"type": "Qube", "strength": 27},
-                    "R": {"type": "Rat", "strength": 2},
-                    "S": {"type": "Snake", "strength": 3},
-                    "T": {"type": "Tarrasque", "strength": 30},
-                    "U": {"type": "Undine", "strength": 7},
-                    "V": {"type": "Vampire", "strength": 15},
-                    "W": {"type": "Wight", "strength": 11},
-                    "X": {"type": "Xorn", "strength": 10},
-                    "Y": {"type": "Yeti", "strength": 8},
-                    "Z": {"type": "Zombie", "strength": 5},
-
-                },
+                hoverInspect: "",
                 grid: {
                     0: {
                         0: { "char": "#", "color": "gray" },
@@ -112,7 +84,7 @@
                         32: { "char": "#", "color": "gray" },
                     },
                     1: {
-                        0: {"exit": true },
+                        0: { "exit": true },
                         1: { "char": "T" },
                         2: { "char": "#", "color": "gray" },
                         6: { "char": "R", "color": "red" },
@@ -510,7 +482,7 @@
                         18: { "char": "#", "color": "gray" },
                         19: { "char": "#", "color": "gray" },
                         20: { "char": "#", "color": "gray" },
-                        21: { "color": "green", "exit":true },
+                        21: { "color": "green", "exit": true },
                         22: { "char": "#", "color": "gray" },
                         23: { "char": "#", "color": "gray" },
                         24: { "char": "#", "color": "gray" },
@@ -524,6 +496,49 @@
                         32: { "char": "#", "color": "gray" },
                     },
                 }
+            };
+            let monsters = {
+                "#": { "type": "Wall" },
+                "@": { "type": "You" },
+                "A": { "type": "Ant", "strength": 1 },
+                "B": { "type": "Bat", "strength": 2 },
+                "C": { "type": "Centaur", "strength": 9 },
+                "D": { "type": "Dragon", "strength": 16 },
+                "E": { "type": "Ettin", "strength": 4 },
+                "F": { "type": "Fungus", "strength": 1 },
+                "G": { "type": "Ghost", "strength": 13 },
+                "H": { "type": "Hydra", "strength": 9 },
+                "I": { "type": "Imp", "strength": 2 },
+                "J": { "type": "Jabberwock", "strength": 14 },
+                "K": { "type": "Kestrel", "strength": 2 },
+                "L": { "type": "Lich", "strength": 20 },
+                "M": { "type": "Mummy", "strength": 12 },
+                "N": { "type": "Nightmare", "strength": 5 },
+                "O": { "type": "Orc", "strength": 3 },
+                "P": { "type": "Phantom", "strength": 6 },
+                "Q": { "type": "Qube", "strength": 27 },
+                "R": { "type": "Rat", "strength": 2 },
+                "S": { "type": "Snake", "strength": 3 },
+                "T": { "type": "Tarrasque", "strength": 30 },
+                "U": { "type": "Undine", "strength": 7 },
+                "V": { "type": "Vampire", "strength": 15 },
+                "W": { "type": "Wight", "strength": 11 },
+                "X": { "type": "Xorn", "strength": 10 },
+                "Y": { "type": "Yeti", "strength": 8 },
+                "Z": { "type": "Zombie", "strength": 5 },
+
+            };
+            let inspectables = {
+                "1": { "type": "Potion", strength: 1 },
+                "2": { "type": "Potion", strength: 2 },
+                "3": { "type": "Potion", strength: 3 },
+                "4": { "type": "Potion", strength: 4 },
+                "5": { "type": "Potion", strength: 5 },
+                "6": { "type": "Potion", strength: 6 },
+                "7": { "type": "Potion", strength: 7 },
+                "8": { "type": "Potion", strength: 8 },
+                "9": { "type": "Potion", strength: 9 },
+                "$": { "type": "Treasure" }
             };
             let messages = {
                 "wall": "You cannot go through a wall.",
@@ -575,9 +590,9 @@
                     soundWall.play();
                     log("colorbad"); return;
                 }
-                if (dest.char && gs.monsters[dest.char] && gs.monsters[dest.char].strength >= gs.health) {
+                if (dest.char && monsters[dest.char] && monsters[dest.char].strength >= gs.health) {
                     soundWarn.play();
-                    log("die", gs.monsters[dest.char].type); return;
+                    log("die", monsters[dest.char].type); return;
                 }
                 if (dest.char) {
                     var heal = parseInt(dest.char);
@@ -598,11 +613,11 @@
                     updatePlayerPos(dest.X, dest.Y);
                     return;
                 }
-                if (dest.char && gs.monsters[dest.char]) {
-                    gs.health = gs.health - gs.monsters[dest.char].strength;
+                if (dest.char && monsters[dest.char]) {
+                    gs.health = gs.health - monsters[dest.char].strength;
                     gs.graveyard = gs.graveyard + dest.char;
                     soundKill.play();
-                    log("kill", gs.monsters[dest.char].type, gs.monsters[dest.char].strength);
+                    log("kill", monsters[dest.char].type, monsters[dest.char].strength);
                     delete gs.grid[dest.Y][dest.X].char;
                     updatePlayerPos(dest.X, dest.Y);
                     return;
@@ -640,25 +655,64 @@
                 var row = Math.floor(pos.y / gs.cellHeight);
                 var occupant = "";
                 var cleanup = false;
-                if (gs.grid[row][col] && gs.grid[row][col].char) {
+                var mons, insp;
+                if (gs.grid[row] && gs.grid[row][col] && gs.grid[row][col].char) {
                     occupant = gs.grid[row][col].char;
-                    if (occupant && occupant != gs.hoverMonster && gs.monsters[occupant]) {
-                        gs.hoverMonster = occupant;
-                        if (gs.hoverMonster) {
-                            monsterDesc = gs.monsters[gs.hoverMonster].type;
-                            if (gs.monsters[gs.hoverMonster].strength) monsterDesc = monsterDesc + "(" + gs.monsters[gs.hoverMonster].strength + ")";
+                    if (occupant && (occupant != gs.hoverMonster || occupant != gs.hoverInspect)) {
+                        if (monsters[occupant]) {
+                            gs.hoverMonster = occupant;
+                            monsterDesc = monsters[gs.hoverMonster].type;
+                            if (monsters[gs.hoverMonster].strength) monsterDesc = monsterDesc + "(" + monsters[gs.hoverMonster].strength + ")";
+                            mons = document.getElementById("strength");
+                            mons.innerHTML = monsterDesc;
+                            mons.classList.add("visible");
+                            mons.classList.remove("hidden");
+                            insp = document.getElementById("inspect");
+                            insp.innerHTML = "";
+                            insp.classList.add("hidden");
+                            insp.classList.remove("visible");
+
+                        } else if (inspectables[occupant]) {
+                            gs.hoverInspect = occupant;
+                            inspectDesc = inspectables[gs.hoverInspect].type;
+                            if (inspectables[gs.hoverInspect].strength) inspectDesc = inspectDesc + "(" + inspectables[gs.hoverInspect].strength + ")";
+                            insp = document.getElementById("inspect");
+                            insp.innerHTML = inspectDesc;
+                            insp.classList.add("visible");
+                            insp.classList.remove("hidden");
+                            mons = document.getElementById("strength");
+                            mons.innerHTML = "";
+                            mons.classList.add("hidden");
+                            mons.classList.remove("visible");
+
+                        } else {
+                            cleanup = true;
                         }
-                        document.getElementById("strength").innerHTML = monsterDesc;
-                    } else {
-                        cleanup = true;
                     }
                 } else if (col == gs.playerX && row == gs.playerY) {
-                    document.getElementById("strength").innerHTML = "You";
-                } else {cleanup = true;}
+                    gs.hoverInspect = "@";
+                    insp = document.getElementById("inspect");
+                    mons = document.getElementById("monster");
+                    insp.innerHTML = "You";
+                    mons.innerHTML = "";
+                    insp.classList.add("visible");
+                    insp.classList.remove("hidden");
+                    mons = document.getElementById("strength");
+                    mons.innerHTML = "";
+                    mons.classList.add("hidden");
+                    mons.classList.remove("visible");
+
+                    
+                    cleanup = true;
+                } else { cleanup = true; }
                 if (cleanup) {
                     if (!occupant || occupant != gs.hoverMonster) {
                             gs.hoverMonster = "";
                             document.getElementById("strength").innerHTML = "";
+                    }
+                    if (!occupant || occupant != gs.hoverInspect) {
+                        gs.hoverInspect = "";
+                        document.getElementById("inspect").innerHTML = "";
                     }
                     cleanup = false;
                 }
@@ -723,12 +777,12 @@
                 ctx.fillText(plyr, (gs.playerX * gs.cellWidth) + ((gs.cellWidth - textSize.width) / 2), ((gs.playerY + 1) * gs.cellHeight) - ((gs.cellHeight - textSize.height) / 2));
 
                 // RENDER MONSTER LIST
-                const mList = Object.keys(gs.monsters);
+                const mList = Object.keys(monsters);
                 mList.forEach(function (item, indx, arr) {
                     ctx.fillStyle = gs.colors.black;
                     ctx.font = gs.monsterFont;
-                    var mData = item + ": " + gs.monsters[item].type;
-                    if (gs.monsters[item].strength) mData = mData + " (" + gs.monsters[item].strength + ")";
+                    var mData = item + ": " + monsters[item].type;
+                    if (monsters[item].strength) mData = mData + " (" + monsters[item].strength + ")";
                     ctx.fillText(mData, ((gs.cols + 1) * gs.cellWidth), ((indx+1) * gs.listHeight));
                 }, gs);
 
@@ -736,7 +790,7 @@
                 for (var row = 0; row <= gs.rows; row++) {
                     ctx.beginPath();
                     ctx.moveTo(0,row * gs.cellHeight);
-                    ctx.lineTo((gs.cols + 1) * gs.cellWidth, row * gs.cellHeight);
+                    ctx.lineTo(gs.cols  * gs.cellWidth, row * gs.cellHeight);
                     ctx.strokeStyle = gs.colors["lightgray"];
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
@@ -755,11 +809,24 @@
                 document.getElementById("color").className = gs.playerColor;
                 document.getElementById("graveyard").innerHTML = gs.graveyard;
                 var monsterDesc = "";
+                var inspectDesc = "";
                 if (gs.hoverMonster) {
-                    monsterDesc = gs.monsters[gs.hoverMonster].type;
-                    if (gs.monsters[gs.hoverMonster].strength) monsterDesc = monsterDesc + "(" + gs.monsters[gs.hoverMonster].strength + ")";
+                    monsterDesc = monsters[gs.hoverMonster].type;
+                    if (monsters[gs.hoverMonster].strength) monsterDesc = monsterDesc + "(" + monsters[gs.hoverMonster].strength + ")";
+                    var monster = document.getElementById("strength");
+                    monster.innerHTML = monsterDesc;
+                    monster.classList.toggle("hidden");
+                    monster.classList.toggle("visible");
+
+                } else if (gs.hoverInspect) {
+                    inspectDesc = inspectables[gs.hoverInspect].type;
+                    if (inspectables[gs.hoverInspect].strength) inspectDesc = inspectDesc + "(" + inspectables[gs.hoverInspect].strength + ")";
+                    var inspect = document.getElementById("inspect");
+                    inspect.innerHTML = inspectDesc;
+                    inspect.classList.toggle("hidden");
+                    inspect.classList.toggle("visible");
                 }
-                document.getElementById("strength").innerHTML = monsterDesc;
+                
                 gs.renderDirty = false;
             }
             function getMousePos(canvas, evt) {
@@ -773,6 +840,12 @@
                 render();
                 canv.focus();
             };
+            function loadingcomplete() {
+                gs.renderDirty = true;
+                render();
+                canv.focus();
+            }
+            window.onload = loadingcomplete;
         </script>
         <style>
             body {
@@ -800,10 +873,16 @@
             #strength {
                 font: 14px Roboto Mono;
                 width: 125px;
-                display: inline-block;
             }
             #strength::before {
                 content: "⚔️";
+            }
+            #inspect {
+                font: 14px Roboto Mono;
+                width: 125px;
+            }
+            #inspect::before {
+                content: "🔍";
             }
             #color {
                 font: 14px Roboto Mono;
@@ -839,6 +918,19 @@
                 border: 1px solid darkgray;
                 font: 14px Roboto Mono;
             }
+            .hidden {
+                display: unset;
+                visibility: hidden;
+            }
+            .visible {
+                visibility: visible;
+                display: inline-block;
+            }
+            /*
+            .flex-container {
+                display: flex;
+            }
+                */
         </style>
     </body>
 </html>
