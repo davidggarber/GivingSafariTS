@@ -22,7 +22,7 @@
 
       var mazeText = [
         '#################################',
-        ' T#   R      #98    #9#32  ##456#',
+        ' T#   R      #88    #9#32  ##456#',
         '#U# @ G #PAIN# CACHE#X#1## ##D###',
         '#N#   B #    #88        #O7  2O#$',
         '#N####### ########### ###      ##',
@@ -36,7 +36,7 @@
         '#   6# L#FF  ### #### ###V#6   6#',
         '# ####  #7FF2#1K Y23#     1T M S#',
         '# #NO## ############# ##### O B #',
-        '#          23  H2O   N T $#6   6#',
+        '#          23  H2O 1 N T $#6   6#',
         '##################### ###########',
       ];
       var mazeColors = [
@@ -280,7 +280,7 @@
 
       <div id="rules" style="margin-top: 20px;">
         <p>
-          <b>Objective</b>
+          <b>Objective:</b>
           You (@) are a Rogue in search of adventure, but alas have fallen into a maze of twisty little passages, 
           all alike.  Can you escape alive?  Getting any loot ($) along the way is a strictly optional bonus.
         </p>
@@ -291,16 +291,16 @@
           desired. Walls (<span class="maze-color-w">#</span>) are impassable. But there’s a Twist! 
           You may only travel over colored squares in the magical Twister sequence: 
           <span class="maze-color-r">RED</span> -> <span class="maze-color-g">GREEN</span> -> <span class="maze-color-b">BLUE</span> -> <span class="maze-color-y">YELLOW</span> 
-          then starting over again with RED. You 
+          then starting over again with <span class="maze-color-r">RED</span>. You 
           may start with any color first, but once you stand on a colored square, you may not stand on any other 
           colored square unless it is the next in sequence.
         </p>
         <p>
           <b>Health:</b>
-          You start with 10 health. If your health ever falls to 0 (zero) or below, you die. Positive digits 
-          (1-9) represent health potions. Moving onto a potion's square immediately consumes the potion 
-          and increases your health by that amount. You may have more than 10 health. That square is then open,
-          but its color, if any, does not change. 
+          You start with 10 health. If your health ever falls to zero or below, you die. Positive digits (1-9) 
+          represent magic healing potions. Moving onto a potion's square immediately consumes the potion and 
+          increases your health by that amount. You may have more than 10 health. That square is then open, but 
+          its color, if any, does not change. 
         </p>
         <p>
           <b>Combat:</b>
@@ -313,7 +313,7 @@
         <p>
           <b>Play interactively:</b>
           Turn up your sound and play this puzzle as an interactive game in Edge or Chrome!
-          Two versions are available: &nbsp;<a href="https://aka.ms/ps24-twister-dgv">https://aka.ms/ps24-twister-dgv</a>
+          Two versions are available: <a href="https://aka.ms/ps24-twister-dgv">https://aka.ms/ps24-twister-dgv</a>
           and <a href="https://aka.ms/ps24-twister-jmv">https://aka.ms/ps24-twister-jmv</a> .
 
         </p>
