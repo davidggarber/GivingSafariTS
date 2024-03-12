@@ -82,20 +82,21 @@ function mapReachable() {
 function mapRay(endX, endY, dx, dy, moveDir) {
   var x = playerPos.x + dx;
   var y = playerPos.y + dy;
-  while (x != endX || y != endY) {
+  var mc = ' ';
+  while (mc == ' ' && (x != endX || y != endY)) {
     var span = spanAt(x, y);
-    var ch = mazeColors[y][x];
-    if (ch == 'w') {
+    mc = mazeColors[y][x];
+    if (mc == 'w') {
       return;  // Wall
     }
-    if (ch != ' ' && twistColor != '*' && ch != nextTwistColor[twistColor]) {
+    if (mc != ' ' && twistColor != '*' && mc != nextTwistColor[twistColor]) {
       return;  // Impassable color
     }
     toggleClass(span, 'reachable', true);
     toggleClass(span, moveDir, true);
     if (!hasClass(span, 'cleared-span')) {
-      var ch = mazeText[y][x];
-      if (ch != ' ') {
+      var mt = mazeText[y][x];
+      if (mt != ' ') {
         return;
       }
     }
