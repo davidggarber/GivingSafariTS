@@ -65,6 +65,7 @@
   letter-spacing: -1.5px;
   padding-right: 8px;
   width: 0.8in;
+  white-space: nowrap;
 }
 .pbn-row-group {
   display: inline-block;
