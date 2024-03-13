@@ -32,7 +32,7 @@
         '# #34M A# 1U ######## ####2O24###',
         '# O 3# ## C1 O#Q Q#     #######9#',
         '# #### I#  K O  W   P1T 1SHAFT99#',
-        '# #6 N ##F   O#Q Q#     #########',
+        '# #63N ##F   O#Q Q#     #########',
         '#   6# L#FF  ### #### ###V#6   6#',
         '# ####  #7FF2#1K Y23#     1T M S#',
         '# #NO## ############# ##### O B #',
@@ -71,7 +71,7 @@
         F: {name:'Fungus', hp:1},
         G: {name:'Ghost', hp:13},
         H: {name:'Hydra', hp:9},
-        I: {name:'Imp', hp:2},
+        I: {name:'Imp', hp:5},
         J: {name:'Jabberwock', hp:14},
         K: {name:'Kestrel', hp:2},
         L: {name:'Lich', hp:20},
@@ -115,14 +115,25 @@
     <style>
       #player {
         position: absolute;
-        left: -0.05in;
+        display: inline-block;
+        color: black;
+        font-size: 20pt;
+        top: -4px;
+        left: -1px;
         height: 0.25in;
         z-index: 1000;
         animation: live-player 5s infinite;
       }
+      #player.dead {
+        font-size: 12pt;
+        left: -4px;
+        top: 0px;
+      }
       #player.victory {
         transform:scale(2);
-        animation: exited-player 5s infinite;
+        font-size: 24pt;
+        top: -20pt;
+        text-shadow: 3px 0px 3px #FF0000,0px -3px 3px #FFFF00, -3px 0px 3px #45c4f3,0px 3px 3px #92D050;
         z-index: 1000;
       }
 
@@ -173,7 +184,7 @@
       .maze-color-b { background-color: #45c4f3; }
       .maze-color-y { background-color: #FFFF00; }
       .maze-color-w { background-color: #A9A9A9; }
-      .cleared-span { color: transparent; }
+      .cleared-span { position:relative; color: transparent; }
 
       .maze-at {  
         position: absolute;
@@ -201,7 +212,7 @@
       #game-help {
         display: none;
         position: absolute;
-        top: 4.25in;
+        top: 4.4in;
         right: -0.5in;
         width: 2.1in;
         font-size: 9pt;
@@ -262,11 +273,9 @@
       <img id="start-button" src="Images/TLP/Play.png" title="Start game!" onclick="startGame()">
       <div id="game-help">
         <p>
-          You are <img src="Images/TLP/At.png" style="height:15pt">. Use arrow<br>
-          keys or click any space<br>
-          reachable in a straight<br>
-          line to move there.</p>
-        <p style="margin-left:-20pt;"><img src="Images/TLP/Play.png" style="height:15pt"> or shift+Enter to start over.</p>
+          You are <b>@</b>. Use arrow<br>
+          keys or click to move.<br>
+        <p>Shift+Enter to start over.</p>
       </div>
       <div id="game-console">
         <table id="game-status" style="display: none; height:0.5in; width: 5.15in;">

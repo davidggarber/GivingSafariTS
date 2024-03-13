@@ -11,6 +11,7 @@ function spanAt(x, y) {
 
 var exits = [ spanIdAt(0, 1), spanIdAt(21, 16) ];
 var start = {x:4, y:2};
+var startHealth = 10;
 var playerPos = {x:start.x, y:start.y};
 var playerSpan = undefined;
 var playerChar = undefined;
@@ -36,7 +37,7 @@ function reset() {
   twistColor = '*';
   
   // Reset stats
-  playerHP = 10;
+  playerHP = startHealth;
   document.getElementById('health').innerText = playerHP + ' ❤️';
   document.getElementById('lastTwist').innerText = '';
   document.getElementById('loot').innerText = '';
@@ -47,11 +48,49 @@ function reset() {
   playerSpan = spanAt(playerPos.x, playerPos.y);
   toggleClass(playerSpan, 'cleared-span', true);
   // Replace with animated @
-  playerChar = document.createElement('img');
-  playerChar.id = 'player';
-  playerChar.src = "Images/TLP/At.png";
-  playerChar.title = 'Click horizontally or vertically to move';
+  updatePlayer(true, undefined);
   playerSpan.appendChild(playerChar);
+}
+
+function updatePlayerImg(alive, color) {
+  if (!playerChar) {
+    playerChar = document.createElement('img');
+    playerChar.id = 'player';
+    playerSpan.appendChild(playerChar);
+  }
+  playerChar.src = alive ? "Images/TLP/At.png" : "Images/TLP/Tomb.png";
+  playerChar.title = alive ? 'Click horizontally or vertically to move' : 'Dead. Play again to restart.';
+
+  if (color) {
+    // Color the player with the twist they can do next
+    var nextColor = twistShadows[nextTwistColor[color]];
+    var filter = 'drop-shadow(0 0 2px ' + nextColor + ') ';
+    //playerChar.style.filter = filter + filter;
+  }
+}
+
+function updatePlayerChar(alive, color) {
+  if (!playerChar) {
+    playerChar = document.createElement('div');
+    // playerChar.innerText = '@';
+    playerChar.id = 'player';
+    playerSpan.appendChild(playerChar);
+  }
+  toggleClass(playerChar, 'dead', playerHP <= 0);
+  playerChar.innerText = alive ? '@' : '💀';
+  playerChar.title = alive ? 'Click horizontally or vertically to move' : 'Dead. Play again to restart.';
+
+  if (color) {
+    // Color the player with the twist they can do next
+    var nextColor = twistShadows[nextTwistColor[color]];
+    var shadow = '0 0 2px ' + nextColor + ', 0 0 3px ' + nextColor + ', 0 0 4px ' + nextColor;
+    playerChar.style.textShadow = shadow;
+  }
+}
+
+function updatePlayer(alive, color) {
+  // updatePlayerImg(alive, color);  
+  updatePlayerChar(alive, color);
 }
 
 function startGame() {
@@ -178,8 +217,7 @@ function fightMonster(ch) {
 
   if (playerHP <= 0) {
     playAudio(sound.dead);
-    playerChar.src = "Images/TLP/Tomb.png";
-    playerChar.title = 'Dead. Play again to restart.';
+    updatePlayer(false, twistColor);
   }
   else {
     playAudio(sound.fight);
@@ -193,8 +231,10 @@ function pickupHealth(ch) {
 }
 
 function pickupLoot(ch) {
-  playAudio(sound.loot);
   document.getElementById('loot').innerText += '$ ';
+  // Switch loot sounds, so we can play more rapidly
+  var count = document.getElementById('loot').innerText.length;
+  playAudio(lootSounds[count % lootSounds.length]);
 }
 
 function updateTwist(ch) {
@@ -206,16 +246,16 @@ function updateTwist(ch) {
   toggleClass(span, 'maze-color-' + ch, true);
   document.getElementById('lastTwist').innerHTML = span.outerHTML;
 
-  // Color the player with the twist they can do next
-  var nextColor = twistShadows[nextTwistColor[ch]];
-  var filter = 'drop-shadow(0 0 2px ' + nextColor + ') ';
-  playerChar.style.filter = filter + filter;
+  updatePlayer(playerHP > 0, ch)  
 }
 
 function checkVictory() {
   var victory = exits.indexOf(spanIdAt(playerPos.x, playerPos.y)) >= 0;
   toggleClass(document.getElementById('beaten'), 'victory', victory);
   toggleClass(playerChar, 'victory', victory);
+  if (victory) {
+    playerChar.style.textShadow = '';  // Allow victory style to add shadow
+  }
   return victory;
 }
 
@@ -281,6 +321,11 @@ var sound = {
   dead: new Audio('Sounds/TLP/dead.mp3'),
   exit: new Audio('Sounds/TLP/exit.mp3'),
 }
+var lootSounds = [
+  new Audio('Sounds/TLP/loot1.mp3'),
+  new Audio('Sounds/TLP/loot2.mp3'),
+  new Audio('Sounds/TLP/loot3.mp3'),
+];
 
 function playAudio(aud) {
   // TODO: have a global mute button
