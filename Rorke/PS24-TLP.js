@@ -16,6 +16,7 @@ var startHealth = 10;
 var playerPos = {x:start.x, y:start.y};
 var playerSpan = undefined;
 var playerChar = undefined;
+var playerWiggle = undefined;
 var playerHP = 0;  // dead
 var playerCash = 0;
 var monstersFought = [];
@@ -75,12 +76,15 @@ function updatePlayerImg(alive, color) {
 function updatePlayerChar(alive, color) {
   if (!playerChar) {
     playerChar = document.createElement('div');
-    // playerChar.innerText = '@';
     playerChar.id = 'player';
+    playerWiggle = document.createElement('div');
+    playerWiggle.id = 'playerWiggle';
+    playerChar.appendChild(playerWiggle);
+    // playerChar.innerText = '@';
     playerSpan.appendChild(playerChar);
   }
   toggleClass(playerChar, 'dead', playerHP <= 0);
-  playerChar.innerText = alive ? '@' : '💀';
+  playerWiggle.innerText = alive ? '@' : '💀';
   playerChar.title = alive ? 'Click horizontally or vertically to move' : 'Dead. Play again to restart.';
 
   if (color == '*') {
