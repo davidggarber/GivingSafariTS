@@ -647,8 +647,10 @@
                 render();
             }
             function keyPress(e) {
-                if (!e.repeat && !gs.win && (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown"))
+                if (!e.repeat && !gs.win && (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown")) {
                     move(e.key);
+                    e.preventDefault();
+                }
             }
             function mouseHover(e) {
                 var pos = getMousePos(canv,e);
