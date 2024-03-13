@@ -388,7 +388,7 @@ function undoStep() {
     }
     // Update console
     document.getElementById('health').innerText = playerHP + ' ❤️';
-    document.getElementById('loot').innerText = Array(playerCash + 1).join('$ ');
+    document.getElementById('loot').innerText = Array(playerCash + 1).join('$');
 
     if (!rec.cleared) {
       toggleClass(playerSpan, 'cleared-span', false);
