@@ -18,6 +18,7 @@
         'reactiveBuilder': true,
         'builderLookup': {
         },
+        // 'postSetup':startGame
       };
 
       var mazeText = [
@@ -209,6 +210,18 @@
         right: 1.75in;
         top: 4.45in;
       }
+      #undo-button {
+        height: 0.2in;
+        position: absolute;
+        left: -80px;
+        top: 0px;
+        cursor: pointer;
+      }
+      #undo-button.no-undo {
+        display: none;
+        opacity: 0.2;
+        cursor: not-allowed;
+      }
       #game-help {
         display: none;
         position: absolute;
@@ -272,10 +285,13 @@
 
       <img id="start-button" src="Images/TLP/Play.png" title="Start game!" onclick="startGame()">
       <div id="game-help">
+        <img id="undo-button" class="no-undo" src="Images/TLP/Undo.png" title="Undo move: Ctrl+Z" onclick="undoStep()">
         <p>
           You are <b>@</b>. Use arrow<br>
           keys or click to move.<br>
-        <p>Shift+Enter to start over.</p>
+          Shift+Enter to start over.<br>
+          Ctrl+Z to undo.
+        </p>
       </div>
       <div id="game-console">
         <table id="game-status" style="display: none; height:0.5in; width: 5.15in;">

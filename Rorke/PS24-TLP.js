@@ -9,6 +9,7 @@ function spanAt(x, y) {
   return null;
 }
 
+var allowUndo = true;
 var exits = [ spanIdAt(0, 1), spanIdAt(21, 16) ];
 var start = {x:4, y:2};
 var startHealth = 10;
@@ -16,12 +17,14 @@ var playerPos = {x:start.x, y:start.y};
 var playerSpan = undefined;
 var playerChar = undefined;
 var playerHP = 0;  // dead
+var playerCash = 0;
 var monstersFought = [];
 var twistColor = '*';
 var nextTwistColor = {r:'g', g:'b', b:'y', y:'r'};
 var twistShadows = {r:'#ff0000', g:'#8aea23', b:'#45c4f3', y:'#FFFF00'};
 
 function reset() {
+  undoBuffer = [];
   if (playerChar && playerChar.parentNode) {
     playerChar.parentNode.removeChild(playerChar);
     playerChar = undefined;
@@ -80,7 +83,10 @@ function updatePlayerChar(alive, color) {
   playerChar.innerText = alive ? '@' : '💀';
   playerChar.title = alive ? 'Click horizontally or vertically to move' : 'Dead. Play again to restart.';
 
-  if (color) {
+  if (color == '*') {
+    playerChar.style.textShadow = '';
+  }
+  else if (color) {
     // Color the player with the twist they can do next
     var nextColor = twistShadows[nextTwistColor[color]];
     var shadow = '0 0 2px ' + nextColor + ', 0 0 3px ' + nextColor + ', 0 0 4px ' + nextColor;
@@ -159,6 +165,7 @@ function walkTo(span) {
   }
 
   var yx = span.id.substring(1).split('_').map(n => parseInt(n));
+  var undoRec = summarizeGameState(yx[1], yx[0]);
 
   // Lift At out of previous location
   playerSpan.removeChild(playerChar);
@@ -192,6 +199,8 @@ function walkTo(span) {
   if (color != ' ') {
     updateTwist(color);
   }
+
+  pushUndo(undoRec);
 
   mapReachable();
   return true;
@@ -231,6 +240,7 @@ function pickupHealth(ch) {
 }
 
 function pickupLoot(ch) {
+  playerCash++;
   document.getElementById('loot').innerText += '$ ';
   // Switch loot sounds, so we can play more rapidly
   var count = document.getElementById('loot').innerText.length;
@@ -239,10 +249,11 @@ function pickupLoot(ch) {
 
 function updateTwist(ch) {
   playAudio(sound.color);
-  twistColor = ch;
   var colorNames = {r:'RED', g:'GREEN', b:'BLUE', y:'YELLOW'};
   var span = document.createElement('span');
-  span.innerText = colorNames[ch];
+  toggleClass(span, 'maze-color-' + twistColor, false);
+  twistColor = ch;
+  span.innerText = ch == '*' ? '' : colorNames[ch];
   toggleClass(span, 'maze-color-' + ch, true);
   document.getElementById('lastTwist').innerHTML = span.outerHTML;
 
@@ -261,6 +272,10 @@ function checkVictory() {
 
 function onArrowKey(evt) {
   var dest = null;
+  if (evt.code == 'KeyZ' && evt.ctrlKey) {
+    undoStep();
+    return;
+  }
   if (playerChar && playerHP > 0) {
     if (evt.code == 'ArrowLeft' || evt.code == 'KeyA') {
       dest = spanAt(playerPos.x - 1, playerPos.y);
@@ -286,6 +301,10 @@ function onArrowKey(evt) {
     startGame();
   }
 }
+
+document.addEventListener("keydown", (event) => {
+  onArrowKey(event);
+});
 
 var anims = {};  // List of existing keyframe animations
 var cellSize = undefined;  // size of a single cell
@@ -332,6 +351,66 @@ function playAudio(aud) {
   aud.play();
 }
 
-document.addEventListener("keydown", (event) => {
-  onArrowKey(event);
-});
+var undoBuffer = [];
+function summarizeGameState(xDest, yDest) {
+  // Summarize the player state and the state of the destination, prior to moving to x,y
+  var span = spanAt(xDest, yDest);
+  return {
+    from:{x:playerPos.x, y:playerPos.y}, 
+    to:{x:xDest, y:yDest}, 
+    cleared:hasClass(span, 'cleared-span'), 
+    color:twistColor,
+    hp:playerHP, 
+    loot:playerCash,
+    monsters:monstersFought.length
+  };
+}
+
+function pushUndo(gameState) {
+  if (allowUndo) {
+    undoBuffer.push(gameState);
+    // Enable undo button
+    toggleClass(document.getElementById('undo-button'), 'no-undo', false);
+  }
+}
+
+function undoStep() {
+  if (undoBuffer.length > 0) {
+    var rec = undoBuffer.pop();
+
+    playerSpan = spanAt(rec.to.x, rec.to.y);
+    playerSpan.removeChild(playerChar);
+
+    playerHP = rec.hp;
+    playerCash = rec.loot;
+    if (twistColor != rec.color) {
+      updateTwist(rec.color);
+    }
+    // Update console
+    document.getElementById('health').innerText = playerHP + ' ❤️';
+    document.getElementById('loot').innerText = Array(playerCash + 1).join('$ ');
+
+    if (!rec.cleared) {
+      toggleClass(playerSpan, 'cleared-span', false);
+
+      if (rec.monsters < monstersFought.length) {
+        monstersFought.pop();
+        var list = document.getElementById('beaten');
+        var spans = list.getElementsByTagName('span');
+        list.removeChild(spans[spans.length - 1]);
+      }
+    }
+
+    playerChar.style.animation = '';
+    updatePlayer(true, twistColor);
+    playerPos = rec.from;
+    playerSpan = spanAt(rec.from.x, rec.from.y);
+    playerSpan.appendChild(playerChar);
+    mapReachable();
+  }
+
+  if (undoBuffer.length == 0) {
+    // Disable undo button
+    toggleClass(document.getElementById('undo-button'), 'no-undo', true);
+  }
+}
