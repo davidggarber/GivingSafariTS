@@ -225,6 +225,12 @@
         opacity: 0.2;
         cursor: not-allowed;
       }
+      #mute-button {
+        position: absolute;
+        height: 24px;
+        top: 40px;
+        left: -80px;
+      }
       #game-help {
         position: absolute;
         top: 4.4in;
@@ -291,6 +297,7 @@
       <img id="start-button" src="Images/TLP/Play.png" title="Start game!" onclick="startGame()">
       <div id="game-help">
         <img id="undo-button" class="no-undo" src="Images/TLP/Undo.png" title="Undo move: Ctrl+Z" onclick="undoStep()">
+        <img id="mute-button" src="Images/TLP/unmuted.png" title="Mute sound: Ctrl+M" onclick="toggleMute()">
         <p>
           You are <b>@</b>. Use arrow<br>
           keys or click to move.<br>

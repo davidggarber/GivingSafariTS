@@ -300,6 +300,10 @@ function onArrowKey(evt) {
     undoStep();
     return;
   }
+  if (evt.code == 'KeyM' && evt.ctrlKey) {
+    toggleMute();
+    return;
+  }
   if (playerChar && playerHP > 0) {
     if (evt.code == 'ArrowLeft' || evt.code == 'KeyA') {
       dest = spanAt(playerPos.x - 1, playerPos.y);
@@ -362,16 +366,26 @@ var sound = {
   fightM: new Audio('Sounds/TLP/fight-medium.mp3'),
   fightS: new Audio('Sounds/TLP/fight-strong.mp3'),
   health: new Audio('Sounds/TLP/health.mp3'),
-  loot: new Audio('Sounds/TLP/lootbonus.mp3'),
+  loot: new Audio('Sounds/TLP/loot.mp3'),
   undo: new Audio('Sounds/TLP/undo.mp3'),
   dead: new Audio('Sounds/TLP/dead.mp3'),
   exit: new Audio('Sounds/TLP/exit.mp3'),
 }
 
+var muted = false;
+
 function playAudio(aud) {
-  // TODO: have a global mute button
-  aud.currentTime = 0;
-  aud.play();
+  if (!muted) {
+    aud.currentTime = 0;
+    aud.play();  
+  }
+}
+
+function toggleMute() {
+  muted = !muted;
+  var btn = document.getElementById('mute-button');
+  btn.src = muted ? 'Images/TLP/muted.png' : 'Images/TLP/unmuted.png';
+  btn.title = (muted ? 'Unmute' : 'Mute sound') + ': Ctrl+M';
 }
 
 var undoBuffer = [];
@@ -393,6 +407,7 @@ function pushUndo(gameState) {
   if (allowUndo) {
     undoBuffer.push(gameState);
     // Enable undo button
+    toggleClass(document.getElementById('undo-button'), 'no-undo', false);
     toggleClass(document.getElementById('undo-button'), 'no-undo', false);
   }
 }
