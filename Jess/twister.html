@@ -1,27 +1,92 @@
-<html>
-<head>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <title>Twister Little Passages</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
-    <link rel="shortcut icon" type="image/png" href="../Samples/Images/Sample_Icon.png">
 </head>
     <body onload="render">
-        <div class="flex-container">
-            <p id="instructions">Use arrow keys to move and inspect by hovering over a symbol with your mouse.</p>
-            <canvas id="puzzleGrid">
-                Your browser does not support this puzzle.
-            </canvas>
-            <div><span id="color" class="white">&marker;</span>&nbsp;&nbsp;&nbsp;<span id="health"></span>&nbsp;&nbsp;&nbsp;<span class="hidden" id="inspect"></span><span class="visible" id="strength"></span>&nbsp;&nbsp;&nbsp;<span id="graveyard"></span></div>
-            <div id="actionlog"></div>
+        <div id="grid-container">
+            <div id="instructions-container">
+                <p id="instructions">Use arrow keys to move, CTRL-Z to undo, and point with the mouse to inspect.</p>
+            </div>
+            <div id="puzzle-container">
+                <canvas id="puzzleGrid" width="678" height="340">
+                    Your browser does not support this puzzle.
+                </canvas>
+            </div>
+            <div id="monster-list-container">
+                <div id="monster-list"></div>
+            </div>
+            <div id="logArea">
+                <div class="info">
+                    <span id="color" class="white info">▮</span>&nbsp;
+                    <span class="info" id="health">10</span>&nbsp;
+                    <span class="info" id="bonus">0</span>&nbsp;&nbsp;
+                    <span class="info" id="inspect"></span>&nbsp;&nbsp;
+                    <span class="info" id="graveyard"></span>
+                </div>
+                <div class="row" id="actionlog"></div>
+                <button onclick="bigger()">(+)</button>
+                <button onclick="smaller()">(-)</button>
+                <button onclick="tryUndo()">Undo</button>
+                <button onclick="toggleMute()" id="muteButton">Mute</button>
+            </div>
         </div>
 
         <script>
-            var gameState = {
-                font: "20px Roboto Mono",
-                monsterFont: "10px Roboto Mono",
-                listHeight: 12,
-                cellWidth: 16,
-                cellHeight: 20,
+            var mazeText = [
+            '#################################',
+            '!T#   R      #88    #9#32  ##456#',
+            '#U# @ G #PAIN# CACHE#X#1## ##D###',
+            '#N#   B #    #88        #O7  2O#$',
+            '#N####### ########### ###      ##',
+            '#E#57L  I H $#$$$$$$     PUZZLE #',
+            '#L  5# J# ##M#$GEMS$# #  SAFAR1 #',
+            '# #### ## Y1 #$$$$$$# ###      ##',
+            '# #34M A# 1U ######## ####2O24###',
+            '# O 3# ## C1 O#Q Q#     #######9#',
+            '# #### I#  K O  W   P1T 1SHAFT99#',
+            '# #63N ##F   O#Q Q#     #########',
+            '#   6# L#FF  ### #### ###V#6   6#',
+            '# ####  #7FF2#1K Y23#     1T M S#',
+            '# #NO## ############# ##### O B #',
+            '#          23  H2O 1 N T $#6   6#',
+            '#######################!#########',
+            ];
+            var mazeColors = [
+                'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
+                '  w   r      w   y  w w    ww   w',
+                'w w   g w    wr     w w wwgwwgwww',
+                'w w   b w    w   g  b y w      w ',
+                'w wwwwwww wwwwwwwwwww www      ww',
+                'w w          w      g r  y g b  w',
+                'w    w  wyww w rgby w w      b  w',
+                'w wwww ww    w      w www      ww',
+                'w w     w    wwwwwwww wwww    www',
+                'w b  w ww     w   w     wwwwwww w',
+                'w wwww  w     r                 w',
+                'w w    ww     w   w     wwwwwwwww',
+                'w g  w  w    www wwww www w     w',
+                'w wwww  wr   w      w           w',
+                'w w  ww wwwwwwwwwwwwwywwwww     w',
+                'w       y               r w     w',
+                'wwwwwwwwwwwwwwwwwwwwwww wwwwwwwww',
+            ];
+            
+            // Things that shouldn't be affected by undo
+            var staticGameState = {
+                fontString: "px Roboto Mono",
+                monsterFontString: "px Roboto Mono",
+                defaultFontSize: 20,
+                defaultInfoFontSize: 14,
+                defaultMonsterFontSize: 9,
+                defaultListHeight: 12,
+                defaultCellWidth:16,
+                defaultCellHeight:20,
+                defaultColorWidth: 50,
+                defaultBonusWidth: 50,
+                defaultInspectWidth: 150,
+                defaultGraveyardWidth: 50,
+                defaultHealthWidth: 50,
                 cols: 33,
                 rows: 17,
                 colors: {
@@ -35,6 +100,12 @@
                     lightgray: "#bbb"
                 },
                 renderDirty: true,
+                hoverMonster: "",
+                hoverInspect: "",
+                muted: false
+            };
+            // Things that should be affected by undo
+            var gameState = {
                 moveFreely: true,
                 gameOver: false,
                 playerX: 4,
@@ -45,462 +116,22 @@
                 health: 10,
                 bonus: 0,
                 graveyard: "",
-                hoverMonster: "",
-                hoverInspect: "",
+                log: [],
                 grid: {
-                    0: {
-                        0: { "char": "#", "color": "gray" },
-                        1: { "char": "#", "color": "gray" },
-                        2: { "char": "#", "color": "gray" },
-                        3: { "char": "#", "color": "gray" },
-                        4: { "char": "#", "color": "gray" },
-                        5: { "char": "#", "color": "gray" },
-                        6: { "char": "#", "color": "gray" },
-                        7: { "char": "#", "color": "gray" },
-                        8: { "char": "#", "color": "gray" },
-                        9: { "char": "#", "color": "gray" },
-                        10: { "char": "#", "color": "gray" },
-                        11: { "char": "#", "color": "gray" },
-                        12: { "char": "#", "color": "gray" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "#", "color": "gray" },
-                        15: { "char": "#", "color": "gray" },
-                        16: { "char": "#", "color": "gray" },
-                        17: { "char": "#", "color": "gray" },
-                        18: { "char": "#", "color": "gray" },
-                        19: { "char": "#", "color": "gray" },
-                        20: { "char": "#", "color": "gray" },
-                        21: { "char": "#", "color": "gray" },
-                        22: { "char": "#", "color": "gray" },
-                        23: { "char": "#", "color": "gray" },
-                        24: { "char": "#", "color": "gray" },
-                        25: { "char": "#", "color": "gray" },
-                        26: { "char": "#", "color": "gray" },
-                        27: { "char": "#", "color": "gray" },
-                        28: { "char": "#", "color": "gray" },
-                        29: { "char": "#", "color": "gray" },
-                        30: { "char": "#", "color": "gray" },
-                        31: { "char": "#", "color": "gray" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    1: {
-                        0: { "exit": true },
-                        1: { "char": "T" },
-                        2: { "char": "#", "color": "gray" },
-                        6: { "char": "R", "color": "red" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "8" },
-                        15: { "char": "8" },
-                        17: { "color": "yellow" },
-                        20: { "char": "#", "color": "gray" },
-                        21: { "char": "9" },
-                        22: { "char": "#", "color": "gray" },
-                        23: { "char": "3" },
-                        24: { "char": "2" },
-                        27: { "char": "#", "color": "gray" },
-                        28: { "char": "#", "color": "gray" },
-                        29: { "char": "4" },
-                        30: { "char": "5" },
-                        31: { "char": "6" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    2: {
-                        0: { "char": "#", "color": "gray" },
-                        1: { "char": "U" },
-                        2: { "char": "#", "color": "gray" },
-                        6: { "char": "G", "color": "green" },
-                        8: { "char": "#", "color": "gray" },
-                        9: { "char": "P" },
-                        10: { "char": "A" },
-                        11: { "char": "I" },
-                        12: { "char": "N" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "color": "red" },
-                        15: { "char": "C" },
-                        16: { "char": "A" },
-                        17: { "char": "C" },
-                        18: { "char": "H" },
-                        19: { "char": "E" },
-                        20: { "char": "#", "color": "gray" },
-                        21: { "char": "X" },
-                        22: { "char": "#", "color": "gray" },
-                        23: { "char": "1" },
-                        24: { "char": "#", "color": "gray" },
-                        25: { "char": "#", "color": "gray" },
-                        26: { "color": "green" },
-                        27: { "char": "#", "color": "gray" },
-                        28: { "char": "#", "color": "gray" },
-                        29: { "char": "D" },
-                        30: { "char": "#", "color": "gray" },
-                        31: { "char": "#", "color": "gray" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    3: {
-                        0: { "char": "#", "color": "gray" },
-                        1: { "char": "N" },
-                        2: { "char": "#", "color": "gray" },
-                        6: { "char": "B", "color": "blue" },
-                        8: { "char": "#", "color": "gray" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "8" },
-                        15: { "char": "8" },
-                        17: { "color": "green" },
-                        20: { "color": "blue" },
-                        22: { "color": "yellow" },
-                        24: { "char": "#", "color": "gray" },
-                        25: { "char": "O" },
-                        26: { "char": "7" },
-                        29: { "char": "2" },
-                        30: { "char": "O" },
-                        31: { "char": "#", "color": "gray" },
-                        32: { "char": "$" },
-                    },
-                    4: {
-                        0: { "char": "#", "color": "gray" },
-                        1: { "char": "N" },
-                        2: { "char": "#", "color": "gray" },
-                        3: { "char": "#", "color": "gray" },
-                        4: { "char": "#", "color": "gray" },
-                        5: { "char": "#", "color": "gray" },
-                        6: { "char": "#", "color": "gray" },
-                        7: { "char": "#", "color": "gray" },
-                        8: { "char": "#", "color": "gray" },
-                        10: { "char": "#", "color": "gray" },
-                        11: { "char": "#", "color": "gray" },
-                        12: { "char": "#", "color": "gray" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "#", "color": "gray" },
-                        15: { "char": "#", "color": "gray" },
-                        16: { "char": "#", "color": "gray" },
-                        17: { "char": "#", "color": "gray" },
-                        18: { "char": "#", "color": "gray" },
-                        19: { "char": "#", "color": "gray" },
-                        20: { "char": "#", "color": "gray" },
-                        22: { "char": "#", "color": "gray" },
-                        23: { "char": "#", "color": "gray" },
-                        24: { "char": "#", "color": "gray" },
-                        31: { "char": "#", "color": "gray" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    5: {
-                        0: { "char": "#", "color": "gray" },
-                        1: { "char": "E" },
-                        2: { "char": "#", "color": "gray" },
-                        3: { "char": "5" },
-                        4: { "char": "7" },
-                        5: { "char": "L" },
-                        8: { "char": "I" },
-                        10: { "char": "H" },
-                        12: { "char": "8" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "$" },
-                        15: { "char": "$" },
-                        16: { "char": "$" },
-                        17: { "char": "$" },
-                        18: { "char": "$" },
-                        19: { "char": "$" },
-                        20: { "color": "green" },
-                        22: { "color": "red" },
-                        25: { "char": "P", "color": "yellow" },
-                        26: { "char": "U" },
-                        27: { "char": "Z", "color": "green" },
-                        28: { "char": "Z" },
-                        29: { "char": "L", "color": "blue" },
-                        30: { "char": "E" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    6: {
-                        0: { "char": "#", "color": "gray" },
-                        1: { "char": "L" },
-                        4: { "char": "5" },
-                        5: { "char": "#", "color": "gray" },
-                        7: { "char": "J" },
-                        8: { "char": "#", "color": "gray" },
-                        9: { "color": "yellow" },
-                        10: { "char": "#", "color": "gray" },
-                        11: { "char": "#", "color": "gray" },
-                        12: { "char": "M" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "$" },
-                        15: { "char": "G", "color": "red" },
-                        16: { "char": "E", "color": "green" },
-                        17: { "char": "M", "color": "blue" },
-                        18: { "char": "S", "color": "yellow" },
-                        19: { "char": "$" },
-                        20: { "char": "#", "color": "gray" },
-                        22: { "char": "#", "color": "gray" },
-                        25: { "char": "S" },
-                        26: { "char": "A" },
-                        27: { "char": "F" },
-                        28: { "char": "A" },
-                        29: { "char": "R", "color": "blue" },
-                        30: { "char": "1" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    7: {
-                        0: { "char": "#", "color": "gray" },
-                        2: { "char": "#", "color": "gray" },
-                        3: { "char": "#", "color": "gray" },
-                        4: { "char": "#", "color": "gray" },
-                        5: { "char": "#", "color": "gray" },
-                        7: { "char": "#", "color": "gray" },
-                        8: { "char": "#", "color": "gray" },
-                        10: { "char": "Y" },
-                        11: { "char": "1" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "$" },
-                        15: { "char": "$" },
-                        16: { "char": "$" },
-                        17: { "char": "$" },
-                        18: { "char": "$" },
-                        19: { "char": "$" },
-                        20: { "char": "#", "color": "gray" },
-                        22: { "char": "#", "color": "gray" },
-                        23: { "char": "#", "color": "gray" },
-                        24: { "char": "#", "color": "gray" },
-                        31: { "char": "#", "color": "gray" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    8: {
-                        0: { "char": "#", "color": "gray" },
-                        2: { "char": "#", "color": "gray" },
-                        3: { "char": "3" },
-                        4: { "char": "4" },
-                        5: { "char": "M" },
-                        7: { "char": "A" },
-                        8: { "char": "#", "color": "gray" },
-                        10: { "char": "1" },
-                        11: { "char": "U" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "#", "color": "gray" },
-                        15: { "char": "#", "color": "gray" },
-                        16: { "char": "#", "color": "gray" },
-                        17: { "char": "#", "color": "gray" },
-                        18: { "char": "#", "color": "gray" },
-                        19: { "char": "#", "color": "gray" },
-                        20: { "char": "#", "color": "gray" },
-                        22: { "char": "#", "color": "gray" },
-                        23: { "char": "#", "color": "gray" },
-                        24: { "char": "#", "color": "gray" },
-                        25: { "char": "#", "color": "gray" },
-                        26: { "char": "2" },
-                        27: { "char": "O" },
-                        28: { "char": "2" },
-                        29: { "char": "4" },
-                        30: { "char": "#", "color": "gray" },
-                        31: { "char": "#", "color": "gray" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    9: {
-                        0: { "char": "#", "color": "gray" },
-                        2: { "char": "O", "color": "blue" },
-                        4: { "char": "3" },
-                        5: { "char": "#", "color": "gray" },
-                        7: { "char": "#", "color": "gray" },
-                        8: { "char": "#", "color": "gray" },
-                        10: { "char": "C" },
-                        11: { "char": "1" },
-                        13: { "char": "O" },
-                        14: { "char": "#", "color": "gray" },
-                        15: { "char": "Q" },
-                        17: { "char": "Q" },
-                        18: { "char": "#", "color": "gray" },
-                        24: { "char": "#", "color": "gray" },
-                        25: { "char": "#", "color": "gray" },
-                        26: { "char": "#", "color": "gray" },
-                        27: { "char": "#", "color": "gray" },
-                        28: { "char": "#", "color": "gray" },
-                        29: { "char": "#", "color": "gray" },
-                        30: { "char": "#", "color": "gray" },
-                        31: { "char": "9" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    10: {
-                        0: { "char": "#", "color": "gray" },
-                        2: { "char": "#", "color": "gray" },
-                        3: { "char": "#", "color": "gray" },
-                        4: { "char": "#", "color": "gray" },
-                        5: { "char": "#", "color": "gray" },
-                        7: { "char": "I" },
-                        8: { "char": "#", "color": "gray" },
-                        11: { "char": "K" },
-                        13: { "char": "O" },
-                        14: { "color": "red" },
-                        16: { "char": "W" },
-                        20: { "char": "P" },
-                        21: { "char": "1" },
-                        22: { "char": "T" },
-                        24: { "char": "1" },
-                        25: { "char": "S" },
-                        26: { "char": "H" },
-                        27: { "char": "A" },
-                        28: { "char": "F" },
-                        29: { "char": "T" },
-                        30: { "char": "9" },
-                        31: { "char": "9" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    11: {
-                        0: { "char": "#", "color": "gray" },
-                        2: { "char": "#", "color": "gray" },
-                        3: { "char": "6" },
-                        4: { "char": "3" },
-                        5: { "char": "N" },
-                        7: { "char": "#", "color": "gray" },
-                        8: { "char": "#", "color": "gray" },
-                        9: { "char": "F" },
-                        13: { "char": "O" },
-                        14: { "char": "#", "color": "gray" },
-                        15: { "char": "Q" },
-                        17: { "char": "Q" },
-                        18: { "char": "#", "color": "gray" },
-                        24: { "char": "#", "color": "gray" },
-                        25: { "char": "#", "color": "gray" },
-                        26: { "char": "#", "color": "gray" },
-                        27: { "char": "#", "color": "gray" },
-                        28: { "char": "#", "color": "gray" },
-                        29: { "char": "#", "color": "gray" },
-                        30: { "char": "#", "color": "gray" },
-                        31: { "char": "#", "color": "gray" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    12: {
-                        0: { "char": "#", "color": "gray" },
-                        2: { "color": "green" },
-                        4: { "char": "6" },
-                        5: { "char": "#", "color": "gray" },
-                        7: { "char": "L" },
-                        8: { "char": "#", "color": "gray" },
-                        9: { "char": "F" },
-                        10: { "char": "F" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "#", "color": "gray" },
-                        15: { "char": "#", "color": "gray" },
-                        17: { "char": "#", "color": "gray" },
-                        18: { "char": "#", "color": "gray" },
-                        19: { "char": "#", "color": "gray" },
-                        20: { "char": "#", "color": "gray" },
-                        22: { "char": "#", "color": "gray" },
-                        23: { "char": "#", "color": "gray" },
-                        24: { "char": "#", "color": "gray" },
-                        25: { "char": "V" },
-                        26: { "char": "#", "color": "gray" },
-                        27: { "char": "6" },
-                        31: { "char": "6" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    13: {
-                        0: { "char": "#", "color": "gray" },
-                        2: { "char": "#", "color": "gray" },
-                        3: { "char": "#", "color": "gray" },
-                        4: { "char": "#", "color": "gray" },
-                        5: { "char": "#", "color": "gray" },
-                        8: { "char": "#", "color": "gray" },
-                        9: { "char": "7", "color": "red" },
-                        10: { "char": "F" },
-                        11: { "char": "F" },
-                        12: { "char": "2" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "1" },
-                        15: { "char": "K" },
-                        17: { "char": "Y" },
-                        18: { "char": "2" },
-                        19: { "char": "3" },
-                        20: { "char": "#", "color": "gray" },
-                        26: { "char": "1" },
-                        27: { "char": "T" },
-                        29: { "char": "M" },
-                        31: { "char": "S" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    14: {
-                        0: { "char": "#", "color": "gray" },
-                        2: { "char": "#", "color": "gray" },
-                        3: { "char": "N" },
-                        4: { "char": "O" },
-                        5: { "char": "#", "color": "gray" },
-                        6: { "char": "#", "color": "gray" },
-                        8: { "char": "#", "color": "gray" },
-                        9: { "char": "#", "color": "gray" },
-                        10: { "char": "#", "color": "gray" },
-                        11: { "char": "#", "color": "gray" },
-                        12: { "char": "#", "color": "gray" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "#", "color": "gray" },
-                        15: { "char": "#", "color": "gray" },
-                        16: { "char": "#", "color": "gray" },
-                        17: { "char": "#", "color": "gray" },
-                        18: { "char": "#", "color": "gray" },
-                        19: { "char": "#", "color": "gray" },
-                        20: { "char": "#", "color": "gray" },
-                        21: { "color": "yellow" },
-                        22: { "char": "#", "color": "gray" },
-                        23: { "char": "#", "color": "gray" },
-                        24: { "char": "#", "color": "gray" },
-                        25: { "char": "#", "color": "gray" },
-                        26: { "char": "#", "color": "gray" },
-                        28: { "char": "O" },
-                        30: { "char": "B" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    15: {
-                        0: { "char": "#", "color": "gray" },
-                        8: { "color": "yellow" },
-                        11: { "char": "2" },
-                        12: { "char": "3" },
-                        15: { "char": "H" },
-                        16: { "char": "2" },
-                        17: { "char": "O" },
-                        19: { "char": "1" },
-                        21: { "char": "N" },
-                        23: { "char": "T" },
-                        24: { "color": "red" },
-                        25: { "char": "$" },
-                        26: { "char": "#", "color": "gray" },
-                        27: { "char": "6" },
-                        31: { "char": "6" },
-                        32: { "char": "#", "color": "gray" },
-                    },
-                    16: {
-                        0: { "char": "#", "color": "gray" },
-                        1: { "char": "#", "color": "gray" },
-                        2: { "char": "#", "color": "gray" },
-                        3: { "char": "#", "color": "gray" },
-                        4: { "char": "#", "color": "gray" },
-                        5: { "char": "#", "color": "gray" },
-                        6: { "char": "#", "color": "gray" },
-                        7: { "char": "#", "color": "gray" },
-                        8: { "char": "#", "color": "gray" },
-                        9: { "char": "#", "color": "gray" },
-                        10: { "char": "#", "color": "gray" },
-                        11: { "char": "#", "color": "gray" },
-                        12: { "char": "#", "color": "gray" },
-                        13: { "char": "#", "color": "gray" },
-                        14: { "char": "#", "color": "gray" },
-                        15: { "char": "#", "color": "gray" },
-                        16: { "char": "#", "color": "gray" },
-                        17: { "char": "#", "color": "gray" },
-                        18: { "char": "#", "color": "gray" },
-                        19: { "char": "#", "color": "gray" },
-                        20: { "char": "#", "color": "gray" },
-                        21: { "color": "green", "exit": true },
-                        22: { "char": "#", "color": "gray" },
-                        23: { "char": "#", "color": "gray" },
-                        24: { "char": "#", "color": "gray" },
-                        25: { "char": "#", "color": "gray" },
-                        26: { "char": "#", "color": "gray" },
-                        27: { "char": "#", "color": "gray" },
-                        28: { "char": "#", "color": "gray" },
-                        29: { "char": "#", "color": "gray" },
-                        30: { "char": "#", "color": "gray" },
-                        31: { "char": "#", "color": "gray" },
-                        32: { "char": "#", "color": "gray" },
-                    },
                 }
             };
+            var gameScale = {
+                cellWidth: staticGameState.defaultCellWidth,
+                cellHeight: staticGameState.defaultCellHeight,
+                listHeight: staticGameState.defaultListHeight,
+                fontSize: staticGameState.defaultFontSize,
+                monsterFontSize: staticGameState.defaultMonsterFontSize,
+                infoFontSize: staticGameState.defaultInfoFontSize
+            }
             let monsters = {
-                "#": { "type": "Wall" },
                 "@": { "type": "You" },
+                "#": { "type": "Wall" },
+                "$": { "type": "Loot" },
                 "A": { "type": "Ant", "strength": 1 },
                 "B": { "type": "Bat", "strength": 2 },
                 "C": { "type": "Centaur", "strength": 9 },
@@ -539,7 +170,7 @@
                 "7": { "type": "Potion", strength: 7 },
                 "8": { "type": "Potion", strength: 8 },
                 "9": { "type": "Potion", strength: 9 },
-                "$": { "type": "Treasure" }
+                "$": { "type": "Loot" }
             };
             let messages = {
                 "wall": "You cannot go through a wall.",
@@ -551,17 +182,162 @@
                 "kill": "You defeat the $1 and take $2 damage.",
                 "die": "The $1 would kill you!",
                 "heal": "You gain $1 health!",
-                "bonus": "You pick up a treasure!",
+                "bonus": "You pick up some loot!",
                 "win": "You escape the maze!",
                 "log": "$1"
+            };
+            let sounds = {
+                "Bonus" : new Audio("bonus.mp3"),
+                "ColorChange" : new Audio("colorchange.mp3"),
+                "Heal" : new Audio("heal.mp3"),
+                "Kill" : new Audio("kill.mp3"),
+                "KillWeak" : new Audio("kill-weak.mp3"),
+                "KillStrong" : new Audio("kill-strong.mp3"),
+                "BlockedMonster" : new Audio("blocked-monster.mp3"),
+                "Wall" : new Audio("wall.mp3"),
+                "Warn" : new Audio("warn.mp3"),
+                "Win" : new Audio("win.mp3"),
+                "Undo" : new Audio("undo.mp3")
             };
             const soundBonus = new Audio("bonus.mp3");
             const soundColorChange = new Audio("colorchange.mp3");
             const soundHeal = new Audio("heal.mp3");
             const soundKill = new Audio("kill.mp3");
+            const soundKillWeak = new Audio("kill-weak.mp3");
+            const soundKillStrong = new Audio("kill-strong.mp3");
+            const soundBlockedMonster = new Audio("blocked-monster.mp3");
             const soundWall = new Audio("wall.mp3");
             const soundWarn = new Audio("warn.mp3");
             const soundWin = new Audio("win.mp3");
+            const soundUndo = new Audio("undo.mp3");
+
+            var undoBuffer = [];
+            let gs = gameState;
+            let scale = 1.5;
+            // At least as long as the longest string among the monster descriptions (i.e. 'J: Jabberwocky (15)' is 18)
+            let largestMonsterString = 25;
+
+            function bigger(){
+                scale += 0.25;
+                rescale();
+            }
+
+            function smaller(){
+                scale -= 0.25;
+                rescale();
+            }
+
+            function rescale(){
+                gameScale.cellHeight = staticGameState.defaultCellHeight * scale;
+                gameScale.cellWidth = staticGameState.defaultCellWidth * scale;
+                gameScale.listHeight = staticGameState.defaultListHeight * scale;
+                gameScale.fontSize = Math.floor(staticGameState.defaultFontSize * scale);
+                gameScale.infoFontSize = Math.floor(staticGameState.defaultInfoFontSize * scale);
+                gameScale.monsterFontSize = Math.floor(staticGameState.defaultMonsterFontSize * scale);
+                document.getElementById("monster-list").style.fontSize = gameScale.monsterFontSize;
+                let infos = document.getElementsByClassName("info");
+                for(i = 0; i < infos.length; i++){
+                    let element = infos[i];
+                    element.style.fontSize = gameScale.infoFontSize
+                }
+                document.getElementById("color").style.width = staticGameState.defaultColorWidth * scale;
+                document.getElementById("graveyard").style.width = staticGameState.defaultGraveyardWidth * scale;
+                document.getElementById("health").style.width = staticGameState.defaultHealthWidth * scale;
+                document.getElementById("inspect").style.width = staticGameState.defaultInspectWidth * scale;
+                document.getElementById("bonus").style.width = staticGameState.defaultBonusWidth * scale;
+                staticGameState.renderDirty = true;
+                render();
+            }
+
+            function getFont(){
+                return gameScale.fontSize + staticGameState.fontString;
+            }
+
+            function getMonsterFont(){
+                return gameScale.monsterFontSize + staticGameState.monsterFontString;
+            }
+            
+            function tryUndo(){
+                if (undoBuffer.length > 0){
+                    let oldState = undoBuffer.pop();
+                    gs = oldState;
+                    staticGameState.renderDirty = true;
+                    sounds["Undo"].play();
+                    render();
+                    printLog();
+                }
+            }
+
+            function toggleMute(){
+                if (staticGameState.muted){
+                    staticGameState.muted = false;
+                    document.getElementById("muteButton").innerText = "Mute";
+                }
+                else{
+                    staticGameState.muted = true;
+                    document.getElementById("muteButton").innerText = "Unmute";
+                }
+                updateMutes();
+            }
+
+            function updateMutes(){
+                for(const [key, value] of Object.entries(sounds)){
+                    sounds[key].muted = staticGameState.muted;
+                }
+            }
+            
+            function calculateMonsterDescriptionPaddingSize(context){
+                context.font = getMonsterFont();
+                // Monospaced font so any character should work
+                let monsterCharSize = context.measureText(gs.playerChar);
+                let monsterCharWidth = monsterCharSize.actualBoundingBoxRight;
+                let monsterTextPadding = monsterCharWidth * largestMonsterString;
+                return monsterTextPadding;
+            }
+
+            function prepMaze(){
+                let grid = {};
+                for(i=0; i<mazeText.length;i++){
+                    grid[i] = {};
+                    for(j=0; j<mazeText[i].length;j++){
+                        let obj =  (mazeText[i][j] != ' ' && mazeText[i][j] != ' ') ? {char:mazeText[i][j]} : {};
+                        if (obj.char === '@'){
+                            gs.playerY = i;
+                            gs.playerX = j;
+                            continue;
+                        }
+                        if (obj.char === '!'){
+                            obj = {exit:true};
+                        }
+                        if (mazeColors[i][j] != ' '){
+                            obj.color = charToColor(mazeColors[i][j]);
+                        }
+                        if (Object.keys(obj).length === 0){
+                            continue;
+                        }
+                        grid[i][j] = obj;
+                    }
+                }
+                staticGameState.cols = mazeText[0].length;
+                staticGameState.rows = mazeText.length;
+                gs.grid = grid;
+            }
+            function charToColor(char){
+                switch(char){
+                    case 'w':
+                        return 'gray';
+                    case 'r':
+                        return 'red';
+                    case 'b':
+                        return 'blue';
+                    case 'g':
+                        return 'green';
+                    case 'y':
+                        return 'yellow';
+                    default:
+                        return "";
+                }
+            }
 
             function log(message, p1, p2, p3) {
                 logbox = document.getElementById("actionlog");
@@ -569,9 +345,15 @@
                 if (p1) msg = msg.replace("\$1", p1);
                 if (p2) msg = msg.replace("\$2", p2);
                 if (p3) msg = msg.replace("\$3", p3);
-                logbox.innerHTML = logbox.innerHTML + "<br />" + "\u2BA1 " + msg;
-                logbox.scrollTop = logbox.scrollHeight;
+                gs.log.push(msg);
+                printLog();
             };
+
+            function printLog(){
+                logbox = document.getElementById("actionlog");
+                logbox.innerHTML = gs.log.join("<br />");
+                logbox.scrollTop = logbox.scrollHeight;
+            }
             function move(dir) {
                 var dest = {};
                 switch (dir) {
@@ -584,22 +366,26 @@
                 if (gs.grid[dest.Y][dest.X] && gs.grid[dest.Y][dest.X].char) dest.char =  gs.grid[dest.Y][dest.X].char;
                 if (gs.grid[dest.Y][dest.X] && gs.grid[dest.Y][dest.X].color) dest.color = gs.grid[dest.Y][dest.X].color; 
                 if (dest.char === "#") {
-                    soundWall.play();
+                    sounds["Wall"].play();
                     log("wall"); return;
-                }
+                }                
                 if (!gs.moveFreely && dest.color && dest.color != gs.nextColor) {
-                    soundWall.play();
+                    sounds["BlockedMonster"].play();
                     log("colorbad"); return;
                 }
                 if (dest.char && monsters[dest.char] && monsters[dest.char].strength >= gs.health) {
-                    soundWarn.play();
+                    sounds["Warn"].play();
                     log("die", monsters[dest.char].type); return;
                 }
+                
+                // Move will occur, so push old state onto undo buffer
+                undoBuffer.push(structuredClone(gs));
+
                 if (dest.char) {
                     var heal = parseInt(dest.char);
                     if (heal > 0 && heal <= 9) {
                         gs.health = gs.health + heal;
-                        soundHeal.play();
+                        sounds["Heal"].play();
                         log("heal", heal);
                         delete gs.grid[dest.Y][dest.X].char;
                         updatePlayerPos(dest.X, dest.Y);
@@ -608,7 +394,10 @@
                 }
                 if (dest.char && dest.char === "$") {
                     gs.bonus++;
-                    soundBonus.play();
+                    if (!staticGameState.muted){
+                        let tempAudio = new Audio("bonus.mp3");
+                        tempAudio.play();
+                    }
                     log("bonus");
                     delete gs.grid[dest.Y][dest.X].char;
                     updatePlayerPos(dest.X, dest.Y);
@@ -617,7 +406,15 @@
                 if (dest.char && monsters[dest.char]) {
                     gs.health = gs.health - monsters[dest.char].strength;
                     gs.graveyard = gs.graveyard + dest.char;
-                    soundKill.play();
+                    if (monsters[dest.char].strength === 1){
+                        sounds["KillWeak"].play();
+                    }
+                    else if(monsters[dest.char].strength >= 10){
+                        sounds["KillStrong"].play();
+                    }
+                    else{
+                        sounds["Kill"].play();
+                    }
                     log("kill", monsters[dest.char].type, monsters[dest.char].strength);
                     delete gs.grid[dest.Y][dest.X].char;
                     updatePlayerPos(dest.X, dest.Y);
@@ -628,7 +425,7 @@
             }
             function updatePlayerPos(x, y) {
                 if (gs.grid[y][x] && gs.grid[y][x].color) {
-                    soundColorChange.play();
+                    sounds["ColorChange"].play();
                     switch (gs.grid[y][x].color) {
                         case "red": gs.playerColor = "red"; gs.nextColor = "green"; log("switchGreen"); gs.moveFreely = false; break;
                         case "green": gs.playerColor = "green"; gs.nextColor = "blue"; log("switchBlue"); gs.moveFreely = false; break;
@@ -638,15 +435,43 @@
                 }
                 gs.playerX = x;
                 gs.playerY = y;
-                if (gs.playerX === 0 || gs.playerX === gs.cols - 1 || gs.playerY === 0 || gs.playerY == gs.rows - 1) {
+                if (gs.playerX === 0 || gs.playerX === staticGameState.cols - 1 || gs.playerY === 0 || gs.playerY == staticGameState.rows - 1) {
                     gs.win = true;
-                    soundWin.play();
+                    sounds["Win"].play();
                     log("win");
                 }
-                gs.renderDirty = true;
+                staticGameState.renderDirty = true;
                 render();
             }
+            function wheelZoom(e){
+                if (e.ctrlKey === true) {
+                    if (e.deltaY > 0){
+                        smaller();
+                    }
+                    else{
+                        bigger();
+                    }
+                    e.stopPropagation();
+                    e.preventDefault(); 
+                }
+            }
+
             function keyPress(e) {
+                if (e.ctrlKey && e.code === "KeyZ") {
+                    tryUndo();
+                    e.preventDefault();
+                    return;
+                }
+                if (e.ctrlKey && (e.code === "ArrowUp" || e.code === 'Equal')){
+                    bigger();
+                    e.preventDefault();
+                    return;
+                }
+                if (e.ctrlKey && (e.code === "ArrowDown" || e.code === 'Minus')){
+                    smaller();
+                    e.preventDefault();
+                    return;
+                }
                 if (!e.repeat && !gs.win && (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown")) {
                     move(e.key);
                     e.preventDefault();
@@ -654,183 +479,152 @@
             }
             function mouseHover(e) {
                 var pos = getMousePos(canv,e);
-                var col = Math.floor(pos.x / gs.cellWidth);
-                var row = Math.floor(pos.y / gs.cellHeight);
+                var col = Math.floor(pos.x / gameScale.cellWidth);
+                var row = Math.floor(pos.y / gameScale.cellHeight);
                 var occupant = "";
                 var cleanup = false;
                 var mons, insp;
                 if (gs.grid[row] && gs.grid[row][col] && gs.grid[row][col].char) {
                     occupant = gs.grid[row][col].char;
-                    if (occupant && (occupant != gs.hoverMonster || occupant != gs.hoverInspect)) {
+                    if (occupant && (occupant != staticGameState.hoverInspect)) {
                         if (monsters[occupant]) {
-                            gs.hoverMonster = occupant;
-                            monsterDesc = monsters[gs.hoverMonster].type;
-                            if (monsters[gs.hoverMonster].strength) monsterDesc = monsterDesc + "(" + monsters[gs.hoverMonster].strength + ")";
-                            mons = document.getElementById("strength");
-                            mons.innerHTML = monsterDesc;
-                            mons.classList.add("visible");
-                            mons.classList.remove("hidden");
+                            staticGameState.hoverInspect = occupant;
+                            monsterDesc = monsters[staticGameState.hoverInspect].type;
+                            if (monsters[staticGameState.hoverInspect].strength) monsterDesc = monsterDesc + " (" + monsters[staticGameState.hoverInspect].strength + ")";
                             insp = document.getElementById("inspect");
-                            insp.innerHTML = "";
-                            insp.classList.add("hidden");
-                            insp.classList.remove("visible");
+                            insp.innerHTML = monsterDesc;
 
                         } else if (inspectables[occupant]) {
-                            gs.hoverInspect = occupant;
-                            inspectDesc = inspectables[gs.hoverInspect].type;
-                            if (inspectables[gs.hoverInspect].strength) inspectDesc = inspectDesc + "(" + inspectables[gs.hoverInspect].strength + ")";
+                            staticGameState.hoverInspect = occupant;
+                            inspectDesc = inspectables[staticGameState.hoverInspect].type;
+                            if (inspectables[staticGameState.hoverInspect].strength) inspectDesc = inspectDesc + " (" + inspectables[staticGameState.hoverInspect].strength + ")";
                             insp = document.getElementById("inspect");
                             insp.innerHTML = inspectDesc;
-                            insp.classList.add("visible");
-                            insp.classList.remove("hidden");
-                            mons = document.getElementById("strength");
-                            mons.innerHTML = "";
-                            mons.classList.add("hidden");
-                            mons.classList.remove("visible");
-
-                        } else {
+                        }
+                        else{
+                            
                             cleanup = true;
                         }
                     }
                 } else if (col == gs.playerX && row == gs.playerY) {
-                    gs.hoverInspect = "@";
+                    staticGameState.hoverInspect = "@";
                     insp = document.getElementById("inspect");
-                    mons = document.getElementById("monster");
                     insp.innerHTML = "You";
-                    mons.innerHTML = "";
-                    insp.classList.add("visible");
-                    insp.classList.remove("hidden");
-                    mons = document.getElementById("strength");
-                    mons.innerHTML = "";
-                    mons.classList.add("hidden");
-                    mons.classList.remove("visible");
-
-                    
-                    cleanup = true;
                 } else { cleanup = true; }
                 if (cleanup) {
-                    if (!occupant || occupant != gs.hoverMonster) {
-                            gs.hoverMonster = "";
-                            document.getElementById("strength").innerHTML = "";
-                    }
-                    if (!occupant || occupant != gs.hoverInspect) {
-                        gs.hoverInspect = "";
+                    if (!occupant || occupant != staticGameState.hoverInspect) {
+                        staticGameState.hoverInspect = "";
                         document.getElementById("inspect").innerHTML = "";
                     }
                     cleanup = false;
                 }
             }
 
-            let gs = gameState;
             let canv = document.getElementById("puzzleGrid");
-            canv.width = gs.cellWidth * gs.cols + 150;    
-            canv.height = gs.cellHeight * gs.rows; 
+            let ctx = canv.getContext("2d");
+            canv.width = gameScale.cellWidth * staticGameState.cols;    
+            canv.height = gameScale.cellHeight * staticGameState.rows; 
             canv.addEventListener("mousemove", mouseHover);
             document.addEventListener("keydown", keyPress);
-            let ctx = canv.getContext("2d");
-            ctx.font = gs.font;
+            document.addEventListener("wheel", wheelZoom, { passive: false });
+
+            ctx.font = getFont();
+
+            const mList = Object.keys(monsters);
+            let monsterTexts = [];
+            mList.forEach(function (item, indx, arr) {
+                var mData = item + ": " + monsters[item].type;
+                if (monsters[item].strength) mData = mData + " (" + monsters[item].strength + ")";
+                monsterTexts.push(mData);
+            });
+            document.getElementById("monster-list").innerHTML = monsterTexts.join("<br/>");
+
             function render() {
-                if (!gs.renderDirty) return;
+                if (!staticGameState.renderDirty) return;
+                canv.width = gameScale.cellWidth * staticGameState.cols;
+                canv.height = gameScale.cellHeight * staticGameState.rows; 
                 // RENDER GRID
                 ctx.clearRect(0, 0, canv.width, canv.height);
                 var cell;
-                for (var row = 0; row < gs.rows; row++) {
-                    for (var col = 0; col < gs.cols; col++) {
+                for (var row = 0; row < staticGameState.rows; row++) {
+                    for (var col = 0; col < staticGameState.cols; col++) {
                         if (gs.grid[row]) cell = gs.grid[row][col]; else cell = null;
                         if (cell) {
-                            if (cell.color) ctx.fillStyle = gs.colors[cell.color]; else ctx.fillStyle = gs.colors.white;
-                            ctx.fillRect(col * gs.cellWidth, row * gs.cellHeight, gs.cellWidth, gs.cellHeight);
-                            ctx.fillStyle = gs.colors.white+"d";
+                            if (cell.color) ctx.fillStyle = staticGameState.colors[cell.color]; else ctx.fillStyle = staticGameState.colors.white;
+                            ctx.fillRect(col * gameScale.cellWidth, row * gameScale.cellHeight, gameScale.cellWidth, gameScale.cellHeight);
+                            ctx.fillStyle = staticGameState.colors.white+"d";
                             switch (cell.color) {
                                 case "red":
-                                    ctx.fillRect((col * gs.cellWidth) + 1, (row * gs.cellHeight)+1, 3, 3);
+                                    ctx.fillRect((col * gameScale.cellWidth) + 1, (row * gameScale.cellHeight)+1, 3, 3);
                                     break;
                                 case "green":
-                                    ctx.fillRect(((col + 1) * gs.cellWidth) - 4, (row * gs.cellHeight)+1, 3, 3);
+                                    ctx.fillRect(((col + 1) * gameScale.cellWidth) - 4, (row * gameScale.cellHeight)+1, 3, 3);
                                     break;
                                 case "blue":
-                                    ctx.fillRect(((col + 1) * gs.cellWidth) - 4, ((row+1) * gs.cellHeight) - 4, 3, 3);
+                                    ctx.fillRect(((col + 1) * gameScale.cellWidth) - 4, ((row+1) * gameScale.cellHeight) - 4, 3, 3);
                                     break;
                                 case "yellow":
-                                    ctx.fillRect((col * gs.cellWidth) + 1, ((row + 1) * gs.cellHeight) - 4, 3, 3);
+                                    ctx.fillRect((col * gameScale.cellWidth) + 1, ((row + 1) * gameScale.cellHeight) - 4, 3, 3);
                                     break;
                             }
                             if (cell.char) {
-                                ctx.fillStyle=gs.colors.black; 
-                                ctx.font = gs.font;
+                                ctx.fillStyle=staticGameState.colors.black; 
+                                ctx.font = getFont();
                                 var textSize = ctx.measureText(cell.char);
                                 textSize.height = textSize.actualBoundingBoxAscent;
-                                ctx.fillText(cell.char, (col*gs.cellWidth) + ((gs.cellWidth - textSize.width)/2), ((row + 1)*gs.cellHeight) - ((gs.cellHeight - textSize.height)/2) );
+                                ctx.fillText(cell.char, (col*gameScale.cellWidth) + ((gameScale.cellWidth - textSize.width)/2), ((row + 1)*gameScale.cellHeight) - ((gameScale.cellHeight - textSize.height)/2) );
                             }
                         }
                     }
                 }
                 // RENDER PLAYER
                 plyr = gs.playerChar;
-                ctx.font = gs.font;
+                ctx.font = getFont();
                 var textSize = ctx.measureText(plyr);
                 textSize.height = textSize.actualBoundingBoxAscent;
 
-                ctx.fillStyle = gs.colors[gs.nextColor]+"a";
+                ctx.fillStyle = staticGameState.colors[gs.nextColor]+"a";
                 ctx.beginPath();
-                ctx.arc( (gs.playerX * gs.cellWidth) + (gs.cellWidth / 2), (gs.playerY * gs.cellHeight) + (gs.cellHeight / 2), gs.cellWidth / 2.25, 0, 2 * Math.PI);
+                ctx.arc( (gs.playerX * gameScale.cellWidth) + (gameScale.cellWidth / 2), (gs.playerY * gameScale.cellHeight) + (gameScale.cellHeight / 2), gameScale.cellWidth / 2.25, 0, 2 * Math.PI);
                 ctx.fill();
 
-                ctx.fillStyle = gs.colors.black;
-                ctx.fillText(plyr, (gs.playerX * gs.cellWidth) + ((gs.cellWidth - textSize.width) / 2), ((gs.playerY + 1) * gs.cellHeight) - ((gs.cellHeight - textSize.height) / 2));
+                ctx.fillStyle = staticGameState.colors.black;
+                ctx.fillText(plyr, (gs.playerX * gameScale.cellWidth) + ((gameScale.cellWidth - textSize.width) / 2), ((gs.playerY + 1) * gameScale.cellHeight) - ((gameScale.cellHeight - textSize.height) / 2));
 
                 // RENDER MONSTER LIST
-                const mList = Object.keys(monsters);
-                mList.forEach(function (item, indx, arr) {
-                    ctx.fillStyle = gs.colors.black;
-                    ctx.font = gs.monsterFont;
-                    var mData = item + ": " + monsters[item].type;
-                    if (monsters[item].strength) mData = mData + " (" + monsters[item].strength + ")";
-                    ctx.fillText(mData, ((gs.cols + 1) * gs.cellWidth), ((indx+1) * gs.listHeight));
-                }, gs);
+                // const mList = Object.keys(monsters);
+                // mList.forEach(function (item, indx, arr) {
+                //     ctx.fillStyle = staticGameState.colors.black;
+                //     ctx.font = getMonsterFont();
+                //     var mData = item + ": " + monsters[item].type;
+                //     if (monsters[item].strength) mData = mData + " (" + monsters[item].strength + ")";
+                //     ctx.fillText(mData, ((staticGameState.cols + 1) * gameScale.cellWidth), ((indx+1) * gameScale.listHeight));
+                // }, gs);
 
                 // RENDER GRID LINES
-                for (var row = 0; row <= gs.rows; row++) {
+                for (var row = 0; row <= staticGameState.rows; row++) {
                     ctx.beginPath();
-                    ctx.moveTo(0,row * gs.cellHeight);
-                    ctx.lineTo(gs.cols  * gs.cellWidth, row * gs.cellHeight);
-                    ctx.strokeStyle = gs.colors["lightgray"];
+                    ctx.moveTo(0,row * gameScale.cellHeight);
+                    ctx.lineTo(staticGameState.cols  * gameScale.cellWidth, row * gameScale.cellHeight);
+                    ctx.strokeStyle = staticGameState.colors["lightgray"];
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                 }
-                for (var col = 0; col <= gs.cols; col++) {
+                for (var col = 0; col <= staticGameState.cols; col++) {
                     ctx.beginPath();
-                    ctx.moveTo(col * gs.cellWidth, 0);
-                    ctx.lineTo(col * gs.cellWidth, (gs.rows + 1) * gs.cellHeight);
-                    ctx.strokeStyle = gs.colors["lightgray"];
+                    ctx.moveTo(col * gameScale.cellWidth, 0);
+                    ctx.lineTo(col * gameScale.cellWidth, (staticGameState.rows + 1) * gameScale.cellHeight);
+                    ctx.strokeStyle = staticGameState.colors["lightgray"];
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                 }
 
                 // UPDATE STATE
-                document.getElementById("health").innerHTML = gs.health;
+                document.getElementById("health").innerText = gs.health;
                 document.getElementById("color").className = gs.playerColor;
-                document.getElementById("graveyard").innerHTML = gs.graveyard;
-                var monsterDesc = "";
-                var inspectDesc = "";
-                if (gs.hoverMonster) {
-                    monsterDesc = monsters[gs.hoverMonster].type;
-                    if (monsters[gs.hoverMonster].strength) monsterDesc = monsterDesc + "(" + monsters[gs.hoverMonster].strength + ")";
-                    var monster = document.getElementById("strength");
-                    monster.innerHTML = monsterDesc;
-                    monster.classList.toggle("hidden");
-                    monster.classList.toggle("visible");
-
-                } else if (gs.hoverInspect) {
-                    inspectDesc = inspectables[gs.hoverInspect].type;
-                    if (inspectables[gs.hoverInspect].strength) inspectDesc = inspectDesc + "(" + inspectables[gs.hoverInspect].strength + ")";
-                    var inspect = document.getElementById("inspect");
-                    inspect.innerHTML = inspectDesc;
-                    inspect.classList.toggle("hidden");
-                    inspect.classList.toggle("visible");
-                }
-                
-                gs.renderDirty = false;
+                document.getElementById("graveyard").innerText = gs.graveyard;
+                document.getElementById("bonus").innerText = gs.bonus;
+                staticGameState.renderDirty = false;
             }
             function getMousePos(canvas, evt) {
                 var rect = canvas.getBoundingClientRect();
@@ -844,7 +638,9 @@
                 canv.focus();
             };
             function loadingcomplete() {
-                gs.renderDirty = true;
+                staticGameState.renderDirty = true;
+                prepMaze();
+                rescale();
                 render();
                 canv.focus();
             }
@@ -858,38 +654,32 @@
                 font: "20px Roboto Mono";
             }
             #graveyard {
-                font: 14px Roboto Mono;
-                width: 100px;
                 display: inline-block;
             }
             #graveyard::before {
                 content: "☠️";
             }
             #health {
-                font: 14px Roboto Mono;
-                width: 100px;
                 display: inline-block;
             }
             #health::before {
                 content: "🩸";
             }
-            #strength {
-                font: 14px Roboto Mono;
-                width: 125px;
+            #bonus {
+                width: 50px;
+                display: inline-block;
             }
-            #strength::before {
-                content: "⚔️";
+            #bonus::before {
+                content: "💰";
             }
             #inspect {
-                font: 14px Roboto Mono;
-                width: 125px;
+                width: 150px;
             }
             #inspect::before {
                 content: "🔍";
             }
             #color {
-                font: 14px Roboto Mono;
-                width: 100px;
+                width: 50px;
                 display: inline-block;
             }
             #color.red {
@@ -929,11 +719,84 @@
                 visibility: visible;
                 display: inline-block;
             }
-            /*
-            .flex-container {
-                display: flex;
+            .info{
+                font: 14px Roboto Mono;
+                display: inline-block;
             }
-                */
+            #grid-container{
+                display: grid;
+                grid-auto-columns: max-content;
+            }
+            #instruction-container{
+                grid-column: 1;
+                grid-row: 1;
+            }
+            #puzzle-container{
+                grid-column: 1;
+                grid-row: 2;
+            }
+            #monster-list-container{
+                grid-column: 2;
+                grid-row: 2 / span 2;
+                padding-left:20px;
+            }
+            #monster-list{
+                font: 9px Roboto Mono
+            }
+            #logArea{
+                grid-column:1;
+                grid-row:3;
+            }
+
+            /* cyrillic-ext */
+            @font-face {
+            font-family: 'Roboto Mono';
+            font-style: normal;
+            font-weight: 400;
+            src: url(https://fonts.gstatic.com/s/robotomono/v23/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_SeW4Ep0.woff2) format('woff2');
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            }
+            /* cyrillic */
+            @font-face {
+            font-family: 'Roboto Mono';
+            font-style: normal;
+            font-weight: 400;
+            src: url(https://fonts.gstatic.com/s/robotomono/v23/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_QOW4Ep0.woff2) format('woff2');
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            }
+            /* greek */
+            @font-face {
+            font-family: 'Roboto Mono';
+            font-style: normal;
+            font-weight: 400;
+            src: url(https://fonts.gstatic.com/s/robotomono/v23/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_R-W4Ep0.woff2) format('woff2');
+            unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+            }
+            /* vietnamese */
+            @font-face {
+            font-family: 'Roboto Mono';
+            font-style: normal;
+            font-weight: 400;
+            src: url(https://fonts.gstatic.com/s/robotomono/v23/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_S-W4Ep0.woff2) format('woff2');
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            }
+            /* latin-ext */
+            @font-face {
+            font-family: 'Roboto Mono';
+            font-style: normal;
+            font-weight: 400;
+            src: url(https://fonts.gstatic.com/s/robotomono/v23/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_SuW4Ep0.woff2) format('woff2');
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            }
+            /* latin */
+            @font-face {
+            font-family: 'Roboto Mono';
+            font-style: normal;
+            font-weight: 400;
+            src: url(https://fonts.gstatic.com/s/robotomono/v23/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_ROW4.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            }
+
         </style>
-    </body>
-</html>
+    
+</body></html>
