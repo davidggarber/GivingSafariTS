@@ -6311,6 +6311,11 @@ function expandControlTags() {
         // See if there are more
         controls = document.getElementsByClassName('builder_control');
     }
+    // Call any post-builder method
+    var fn = theBoiler().postBuild;
+    if (fn) {
+        fn();
+    }
 }
 exports.expandControlTags = expandControlTags;
 /**

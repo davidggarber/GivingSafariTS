@@ -5761,6 +5761,7 @@ type BoilerPlateData = {
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
     reactiveBuilder?: boolean;  // invoke the new reactive builder
     builderLookup?: object;  // a dictionary of javascript objects and/or pointers
+    postBuild?: () => void;  // invoked after the builder is done
     preSetup?: () => void;
     postSetup?: () => void;
     googleFonts?: string;  // A list of fonts, separated by commas
@@ -6987,6 +6988,12 @@ export function expandControlTags() {
 
     // See if there are more
     controls = document.getElementsByClassName('builder_control');
+  }
+
+  // Call any post-builder method
+  const fn = theBoiler().postBuild;
+  if (fn) {
+      fn();
   }
 }
 

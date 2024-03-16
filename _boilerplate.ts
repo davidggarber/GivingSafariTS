@@ -139,6 +139,7 @@ type BoilerPlateData = {
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
     reactiveBuilder?: boolean;  // invoke the new reactive builder
     builderLookup?: object;  // a dictionary of javascript objects and/or pointers
+    postBuild?: () => void;  // invoked after the builder is done
     preSetup?: () => void;
     postSetup?: () => void;
     googleFonts?: string;  // A list of fonts, separated by commas

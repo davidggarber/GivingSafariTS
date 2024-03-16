@@ -4,11 +4,12 @@
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
     <script src="../js/kit.js"></script>
+    <script src="PS24-TLP.js"></script>
     <script>
       const boiler = {
         'safari': '24',
         'title': 'Twister Little Passages',
-        'author': 'Rorke Haining, Jess McGatha, & David Garber',
+        'author': 'Rorke Haining, Jess McGatha, David Garber, & Gabe Stocco',
         'copyright': '2024',
         'orientation': 'portrait',
         'googleFonts': 'PT+Mono',
@@ -18,7 +19,7 @@
         'reactiveBuilder': true,
         'builderLookup': {
         },
-        // 'postSetup':startGame
+        'postBuild': tlpInit,
       };
 
       var mazeText = [
@@ -27,7 +28,7 @@
         '#U# @ G #PAIN# CACHE#X#1## ##D###',
         '#N#   B #    #88        #O7  2O#$',
         '#N####### ########### ###      ##',
-        '#E#57L  I H 8#$$$$$$     PUZZLE #',
+        '#E#57L  I H $#$$$$$$     PUZZLE #',
         '#L  5# J# ##M#$GEMS$# #  SAFAR1 #',
         '# #### ## Y1 #$$$$$$# ###      ##',
         '# #34M A# 1U ######## ####2O24###',
@@ -38,12 +39,12 @@
         '# ####  #7FF2#1K Y23#     1T M S#',
         '# #NO## ############# ##### O B #',
         '#          23  H2O 1 N T $#6   6#',
-        '##################### ###########',
+        '####################### #########',
       ];
       var mazeColors = [
         'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
-        '  w   r      w   y  w w    ww   w',
-        'w w   g w    wr     w w wwgww www',
+        'e w   r      w   y  w w    ww   w',
+        'w w   g w    wr     w w wwgwwgwww',
         'w w   b w    w   g  b y w      w ',
         'w wwwwwww wwwwwwwwwww www      ww',
         'w w          w      g r  y g b  w',
@@ -57,7 +58,7 @@
         'w wwww  wr   w      w           w',
         'w w  ww wwwwwwwwwwwwwywwwww     w',
         'w       y               r w     w',
-        'wwwwwwwwwwwwwwwwwwwwwgwwwwwwwwwww',
+        'wwwwwwwwwwwwwwwwwwwwwwwewwwwwwwww',
       ];
 
       var mazeWidth = mazeText[0].length;
@@ -111,7 +112,6 @@
 
 
     </script>
-    <script src="PS24-TLP.js"></script>
     <style id="animations" type="text/css"></style>
     <style>
       #player {
@@ -226,7 +226,6 @@
         cursor: not-allowed;
       }
       #game-help {
-        display: none;
         position: absolute;
         top: 4.4in;
         right: -0.5in;
@@ -251,6 +250,9 @@
 
       @media print {
         #start-button {
+          display: none;
+        }
+        #game-help {
           display: none;
         }
         #monster-list {
@@ -297,7 +299,7 @@
         </p>
       </div>
       <div id="game-console">
-        <table id="game-status" style="display: none; height:0.5in; width: 5.15in;">
+        <table id="game-status" style="display: inline-block; height:0.5in; width: 5.15in;">
           <tr><th style="width:1in;">Health:</th><td id="health" style="width:0.5in;">10</td>
             <th style="width:1in;">Last color:</th><td id="lastTwist" style="width: 0.6in;"></td>
             <th style="width:0.5in;">Loot:</th><td id="loot" style="width:1.5in;"></td>
@@ -340,9 +342,8 @@
         </p>
         <p>
           <b>Play interactively:</b>
-          Turn up your sound and play this puzzle as an interactive game in Edge or Chrome!
-          Two versions are available: <a href="https://aka.ms/ps24-twister-dgv">https://aka.ms/ps24-twister-dgv</a>
-          and <a href="https://aka.ms/ps24-twister-jmv">https://aka.ms/ps24-twister-jmv</a> .
+          Turn up your sound and play this puzzle as a game!
+          <a href="https://aka.ms/ps24-twister-jdg">https://aka.ms/ps24-twister-jdg</a>.
 
         </p>
         <p>Good luck, adventurer!</p>

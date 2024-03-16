@@ -10,10 +10,10 @@ function spanAt(x, y) {
 }
 
 var allowUndo = true;
-var exits = [ spanIdAt(0, 1), spanIdAt(21, 16) ];
-var start = {x:4, y:2};
+var exits = [];
+var start = undefined;
 var startHealth = 10;
-var playerPos = {x:start.x, y:start.y};
+var playerPos = undefined;
 var playerSpan = undefined;
 var playerChar = undefined;
 var playerWiggle = undefined;
@@ -23,6 +23,24 @@ var monstersFought = [];
 var twistColor = '*';
 var nextTwistColor = {r:'g', g:'b', b:'y', y:'r'};
 var twistShadows = {r:'#ff0000', g:'#8aea23', b:'#45c4f3', y:'#FFFF00'};
+
+function tlpInit() {
+  // Find @ and ! in map
+  exits = [];
+  for (let y = 0; y < mazeHeight; y++) {
+    for (let x = 0; x < mazeWidth; x++) {
+      if (mazeText[y][x] == '@') {
+        start = {x:x, y:y};
+      }
+      else if (mazeColors[y][x] == 'e') {
+        exits.push(spanIdAt(x, y));
+      }
+    }
+  }
+  if (!isPrint() && !isIFrame()) {
+    startGame();
+  }
+}
 
 function reset() {
   undoBuffer = [];
@@ -106,8 +124,8 @@ function updatePlayer(alive, color) {
 function startGame() {
   reset();
   playAudio(sound.start);
-  document.getElementById('game-status').style.display = 'inline-block';
-  document.getElementById('game-help').style.display = 'block';
+  // document.getElementById('game-status').style.display = 'inline-block';
+  // document.getElementById('game-help').style.display = 'block';
   mapReachable();
 }
 
@@ -138,7 +156,7 @@ function mapRay(endX, endY, dx, dy, moveDir) {
     if (mc == 'w') {
       return;  // Wall
     }
-    if (mc != ' ' && twistColor != '*' && mc != nextTwistColor[twistColor]) {
+    if (mc != ' ' && mc != 'e' && twistColor != '*' && mc != nextTwistColor[twistColor]) {
       return;  // Impassable color
     }
     toggleClass(span, 'reachable', true);
@@ -233,7 +251,9 @@ function fightMonster(ch) {
     updatePlayer(false, twistColor);
   }
   else {
-    playAudio(sound.fight);
+    if (monster.hp < 2) { playAudio(sound.fightW); }
+    else if (monster.hp < 10) { playAudio(sound.fightM); }
+    else { playAudio(sound.fightS); }
   }
 }
 
@@ -248,7 +268,7 @@ function pickupLoot(ch) {
   document.getElementById('loot').innerText += '$ ';
   // Switch loot sounds, so we can play more rapidly
   var count = document.getElementById('loot').innerText.length;
-  playAudio(lootSounds[count % lootSounds.length]);
+  playAudio(sound.loot);
 }
 
 function updateTwist(ch) {
@@ -338,20 +358,19 @@ var sound = {
   start: new Audio('Sounds/TLP/start.mp3'),
   color: new Audio('Sounds/TLP/color.mp3'),
   bump: new Audio('Sounds/TLP/bump.mp3'),
-  fight: new Audio('Sounds/TLP/fight.mp3'),
+  fightW: new Audio('Sounds/TLP/fight-weak.mp3'),
+  fightM: new Audio('Sounds/TLP/fight-medium.mp3'),
+  fightS: new Audio('Sounds/TLP/fight-strong.mp3'),
   health: new Audio('Sounds/TLP/health.mp3'),
-  loot: new Audio('Sounds/TLP/loot.mp3'),
+  loot: new Audio('Sounds/TLP/lootbonus.mp3'),
+  undo: new Audio('Sounds/TLP/undo.mp3'),
   dead: new Audio('Sounds/TLP/dead.mp3'),
   exit: new Audio('Sounds/TLP/exit.mp3'),
 }
-var lootSounds = [
-  new Audio('Sounds/TLP/loot1.mp3'),
-  new Audio('Sounds/TLP/loot2.mp3'),
-  new Audio('Sounds/TLP/loot3.mp3'),
-];
 
 function playAudio(aud) {
   // TODO: have a global mute button
+  aud.currentTime = 0;
   aud.play();
 }
 
@@ -380,6 +399,7 @@ function pushUndo(gameState) {
 
 function undoStep() {
   if (undoBuffer.length > 0) {
+    playAudio(sound.undo);
     var rec = undoBuffer.pop();
 
     playerSpan = spanAt(rec.to.x, rec.to.y);
