@@ -6433,11 +6433,13 @@ function parseForRange(src, context) {
     var from = src.getAttributeNS('', 'in');
     var until = src.getAttributeNS('', 'until');
     var last = src.getAttributeNS('', 'to');
+    var length = src.getAttributeNS('', 'len');
     var step = src.getAttributeNS('', 'step');
     var start = from ? parseInt(textFromContext(from, context)) : 0;
     var end = until ? parseInt(textFromContext(until, context))
         : last ? (parseInt(textFromContext(last, context)) + 1)
-            : start;
+            : length ? (anyFromContext(length, context).length)
+                : start;
     var inc = step ? parseInt(textFromContext(step, context)) : 1;
     if (!until && inc < 0) {
         end -= 2; // from 5 to 1 step -1 means i >= 0

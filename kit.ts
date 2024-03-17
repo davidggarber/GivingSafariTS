@@ -7122,11 +7122,13 @@ function parseForRange(src:HTMLElement, context:object):any {
   const from = src.getAttributeNS('', 'in');
   let until = src.getAttributeNS('', 'until');
   const last = src.getAttributeNS('', 'to');
+  const length = src.getAttributeNS('', 'len');
   const step = src.getAttributeNS('', 'step');
 
   const start = from ? parseInt(textFromContext(from, context)) : 0;
   let end = until ? parseInt(textFromContext(until, context))
     : last ? (parseInt(textFromContext(last, context)) + 1)
+    : length ? (anyFromContext(length, context).length)
     : start;
   const inc = step ? parseInt(textFromContext(step, context)) : 1;
   if (!until && inc < 0) {

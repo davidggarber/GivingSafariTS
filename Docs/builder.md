@@ -57,7 +57,7 @@ List type | Syntax | Generates | Notes
 **Key**s in an object | `<for key="a" in="line.end">{a#}:{a}={a!} </for>` | 0:x=3 1:y=4 | `{a}` is the key <br> `{a!}` is the value <br> `{a#}` is the index
 **Char**acters in text | `<for char="ch" in="fonts.0">{ch} </for>` <br> `<for char="ch" in="other">{ch} </for>` | b o l d <br> o t h e r | Note that the `in="value"` can be a literal.
 **Word**s in text | `<for char="w" in="Hello World!">{w}-{w}</for>` | Hello-HelloWorld!-World! | A word is really anything delimited by spaces.
-**Range**s of values | `<for range="i" from="1" to="3">{i}</for>` <br> `<for range="i" from="1" until="3">{i}</for>` <br> `<for range="i" from="5" to="0" step="-2">{i}</for>` | 123 <br> 12 <br> 531 | `from=""`   specifies the start value <br> `to=""` specifies the last value (inclusive) <br> `until=""` specifies a stop value (exclusive) <br> `step=""` specifies a step value, if not 1
+**Range**s of values | `<for range="i" from="1" to="3">{i}</for>` <br> `<for range="i" from="1" until="3">{i}</for>` <br> `<for range="i" from="5" to="0" step="-2">{i}</for>` <br> `<for range="i" length="fonts">{fonts.[i]} </for>` | 123 <br> 12 <br> 531 <br> bold italic | `from=""`   specifies the start value (default 0) <br> `to=""` specifies the last value (inclusive) <br> `until=""` specifies a stop value (exclusive) <br> `length=""` is equivalent to until=length-of-list <br> `step=""` specifies a step value, if not 1
 | | `<for range="row" from="0" to="1"><for range="col" from="0" to="2">{grid.[row].[col]}</for>,</for>` | 123,456 | Use ranges in compound lookups
 
 # \<if> conditionals

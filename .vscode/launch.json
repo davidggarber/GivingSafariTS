@@ -24,7 +24,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\Rorke\\PS24-TLP.html",
+      "url": "${workspaceFolder}\\DGG\\PS24-Blokus.html",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"
