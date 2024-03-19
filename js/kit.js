@@ -6662,6 +6662,17 @@ function normalizeName(name) {
     // Any other interior underscores are kept
     return name;
 }
+function createNormalizedElement(name) {
+    var colon = name.split(':');
+    var norm = normalizeName(colon[colon.length - 1]);
+    if (colon.length == 1) {
+        return document.createElement(normalizeName(norm));
+    }
+    if (colon[0] == 'svg') {
+        return document.createElementNS(exports.svg_xmlns, norm);
+    }
+    throw new Error('Unknown namespace: ' + name);
+}
 /**
  * Deep-clone an HTML element
  * Note that element and attribute names with _prefix will be renamed without _
@@ -6670,8 +6681,8 @@ function normalizeName(name) {
  * @returns A cloned element
  */
 function cloneWithContext(elmt, context) {
-    var tagName = normalizeName(elmt.tagName);
-    var clone = document.createElement(tagName);
+    // const tagName = normalizeName(elmt.tagName);
+    var clone = createNormalizedElement(elmt.tagName);
     cloneAttributes(elmt, clone, context);
     for (var i = 0; i < elmt.childNodes.length; i++) {
         var child = elmt.childNodes[i];

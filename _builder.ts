@@ -1,5 +1,6 @@
 import { theBoiler } from "./_boilerplate";
 import { applyAllClasses, isTag, toggleClass } from "./_classUtil";
+import { svg_xmlns } from "./_tableBuilder";
 import { builtInTemplate, getTemplate } from "./_templates";
 import { getLetterStyles } from "./_textSetup";
 
@@ -594,6 +595,18 @@ function normalizeName(name:string):string {
   return name;
 }
 
+function createNormalizedElement(name:string): Element {
+  const colon = name.split(':');
+  const norm = normalizeName(colon[colon.length - 1]);
+  if (colon.length == 1) {
+    return document.createElement(normalizeName(norm));
+  }
+  if (colon[0] == 'svg') {
+    return document.createElementNS(svg_xmlns, norm);
+  }
+  throw new Error('Unknown namespace: ' + name);
+}
+
 /**
  * Deep-clone an HTML element
  * Note that element and attribute names with _prefix will be renamed without _
@@ -601,9 +614,9 @@ function normalizeName(name:string):string {
  * @param context A dictionary of all accessible values
  * @returns A cloned element
  */
-function cloneWithContext(elmt:HTMLElement, context:object):HTMLElement {
-  const tagName = normalizeName(elmt.tagName);
-  const clone = document.createElement(tagName);
+function cloneWithContext(elmt:HTMLElement, context:object):Element {
+  // const tagName = normalizeName(elmt.tagName);
+  const clone = createNormalizedElement(elmt.tagName);
   cloneAttributes(elmt, clone, context);
 
   for (let i = 0; i < elmt.childNodes.length; i++) {
@@ -643,7 +656,7 @@ function cloneWithContext(elmt:HTMLElement, context:object):HTMLElement {
  * @param dest The new element, still in need of attributes
  * @param context A dictionary of all accessible values
  */
-function cloneAttributes(src:HTMLElement, dest:HTMLElement, context:object) {
+function cloneAttributes(src:Element, dest:Element, context:object) {
   for (let i = 0; i < src.attributes.length; i++) {
     const name = normalizeName(src.attributes[i].name);
     let value = src.attributes[i].value;
