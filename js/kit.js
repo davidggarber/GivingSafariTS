@@ -7485,6 +7485,7 @@ function compareTaggedGroupsPBN(expect, have) {
         }
         // If the next expected group is either a different type, or too small, fast forward to one that fits
         while (e < expect.length && (expect[e].tag != h.tag || expect[e].len < h.len)) {
+            exact = false;
             e++;
         }
         if (e >= expect.length) {
