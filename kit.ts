@@ -7859,7 +7859,9 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
             <for each="colorGroup" in="col"><for key="color" in="colorGroup"><for each="group" in="color!"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span></for></for></for>
           </td_>
         </for>
-        <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
+        <if test="validate?" ne="false">
+          <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
+        </if>
       </tr_>
     </thead_>
       <for each="row" in="rowGroups">
@@ -7873,20 +7875,24 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
           <for each="col" in="colGroups">
           <td_ id="{row#}_{col#}" class="pbn-cell stampable">{blank?}</td_>
         </for>
-        <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
+        <if test="validate?" ne="false">
+          <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
+        </if>
       </tr_>
     </for>
-    <tfoot_>
-      <tr_ class="pbn-col-footer">
-        <th_ class="pbn-corner">&nbsp;</th_>
-        <for each="col" in="colGroups">
-          <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
-        </for>
-        <th_ class="pbn-corner-validation">
-          ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ
-          <br>←&nbsp;validation</th_>
-      </tr_>
-    </tfoot_>
+    <if test="validate?" ne="false">
+      <tfoot_>
+        <tr_ class="pbn-col-footer">
+          <th_ class="pbn-corner">&nbsp;</th_>
+          <for each="col" in="colGroups">
+            <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
+          </for>
+          <th_ class="pbn-corner-validation">
+            ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ
+            <br>←&nbsp;validation</th_>
+        </tr_>
+      </tfoot_>
+    </if>
   </table_>`;
   return temp;
 }
