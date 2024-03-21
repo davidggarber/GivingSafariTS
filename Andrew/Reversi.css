@@ -55,3 +55,15 @@
   text-decoration: underline; /* Underlines the text */
   cursor: default;
 }
+
+ol {
+  counter-reset: list;
+}
+ol > li {
+  list-style: none;
+  margin-bottom: 12pt;
+}
+ol > li:before {
+  content: counter(list) ")  ";
+  counter-increment: list;
+}
