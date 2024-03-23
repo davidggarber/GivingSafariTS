@@ -431,3 +431,23 @@ body, p, td {
   border-radius: 10px;
   margin-right: 10px;
 }
+
+.minimalist .printedPage {
+  background-color: white;
+  margin: 0px;
+  padding: 0px;
+  position: relative; 
+  box-shadow: none; 
+}
+.minimalist #pageBody {
+  top: 0px;
+}
+.minimalist .title {
+  display: none;
+}
+.minimalist .copyright {
+  display: none;
+}
+.minimalist .ability {
+  display: none;
+}
