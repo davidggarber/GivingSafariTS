@@ -25,55 +25,59 @@
       //   1-9 and dot indicate visible contents of each cell.
       //   Spaces fill out bounding rectangle.
       var tiles = {
-        a: {board:false, x:0, y:9, color:12, values:['52896']},
-        b: {board:true, x:7, y:6, color:0, values:['548.',
-                                                   '   .']},
-        c: {board:false, x:14, y:3, color:1, values:[' 5',
-                                                    ' 1',
-                                                    '14',
+        a: {board:false, x:1, y:0, color:9, values:['5']},
+        b: {board:false, x:3, y:0, color:9, values:['23']},
+        c: {board:false, x:6, y:0, color:8, values:['5268']},
+        d: {board:false, x:13, y:0, color:2, values:['714',
+                                                     '  2',
+                                                     '  6']},
+        e: {board:false, x:11, y:1, color:6, values:['8 ',
+                                                     '39',
+                                                     '9 ']},
+        f: {board:false, x:0, y:2, color:13, values:['6',
+                                                     '2',
+                                                     '4']},
+        g: {board:false, x:2, y:2, color:5, values:['2 ',
+                                                     '71']},
+        h: {board:false, x:5, y:2, color:11, values:['27',
+                                                     '4 ',
+                                                     '6 ']},
+        i: {board:false, x:7, y:3, color:12, values:['  5',
+                                                     '471',
+                                                     '  9']},
+        j: {board:false, x:13, y:4, color:4, values:['14 ',
+                                                     ' 28']},
+        k: {board:false, x:1, y:5, color:7, values:[' 3 ',
+                                                    '475',
+                                                    ' 1 ']},
+        l: {board:false, x:11, y:5, color:10, values:['5 ',
+                                                      '9 ',
+                                                      '36',
+                                                      ' 7']},
+        m: {board:false, x:5, y:6, color:1, values:[' 9',
+                                                    '71',
+                                                    ' 4',
                                                     ' 6']},
-        d: {board:false, x:13, y:0, color:0, values:['352',
-                                                     ' 14']},
-        e: {board:true, x:6, y:0, color:0, values:['..',
+        n: {board:false, x:8, y:7, color:3, values:[' 3 ',
+                                                    '59 ',
+                                                    ' 12']},
+        o: {board:false, x:14, y:7, color:0, values:['8 ',
+                                                     '35',
+                                                     '71']},
+        p: {board:false, x:0, y:9, color:12, values:['52896']},
+        q: {board:true, x:6, y:0, color:0, values:['..',
                                                    '3 ',
                                                    '78']},
-        f: {board:true, x:3, y:8, color:0, values:[' 89',
-                                                   ' 3 ',
-                                                   '.. ']},
-        g: {board:false, x:7, y:7, color:3, values:[' 3 ',
-                                                    '91 ',
-                                                    ' 96']},
-        h: {board:false, x:5, y:0, color:2, values:['714',
-                                                    '  2',
-                                                    '  6']},
-        i: {board:true, x:0, y:2, color:0, values:[' 96',
+        r: {board:true, x:0, y:2, color:0, values:[' 96',
                                                    '.1 ',
                                                    '.  ']},
-        j: {board:false, x:10, y:5, color:10, values:['5 ',
-                                                      '9 ',
-                                                      '27',
-                                                      ' 3']},
-        k: {board:false, x:5, y:4, color:7, values:[' 3 ',
-                                                    '475',
-                                                    ' 5 ']},
-        l: {board:false, x:10, y:2, color:12, values:['  5',
-                                                      '471',
-                                                      '  9']},
-        m: {board:false, x:3, y:1, color:11, values:['4 ',
-                                                     '2 ',
-                                                     '63']},
-        n: {board:false, x:13, y:8, color:4, values:['14 ',
-                                                     ' 28']},
-        o: {board:true, x:4, y:4, color:0, values:['63',
-                                                   '48']},
-        p: {board:false, x:0, y:7, color:8, values:['5268']},
-        q: {board:false, x:9, y:0, color:6, values:['927',
-                                                    ' 7 ']},
-        r: {board:false, x:0, y:2, color:5, values:['8 ',
-                                                    '71']},
-        s: {board:false, x:0, y:5, color:13, values:['896']},
-        t: {board:false, x:0, y:0, color:9, values:['23']},
-        u: {board:true, x:1, y:9, color:0, values:['7']},
+        s: {board:true, x:4, y:4, color:0, values:['48',
+                                                   '63']},
+        t: {board:true, x:7, y:6, color:0, values:['548.',
+                                                   '   .']},
+        u: {board:true, x:3, y:8, color:0, values:[' 89',
+                                                   ' 3 ',
+                                                   '.. ']},
       }
 
       // Extraction coordinates, where active board is 1-9, 
@@ -81,7 +85,7 @@
       var extractPairs = [
         [{x:2,y:1},{x:3,y:1}],
         [{x:7,y:2},{x:8,y:2}],
-        [{x:1,y:3},{x:2,y:3}],
+        [{x:1,y:4},{x:2,y:4}],
         [{x:7,y:4},{x:8,y:4}],
         [{x:1,y:6},{x:1,y:7}],
         [{x:7,y:7},{x:7,y:8}],
@@ -397,7 +401,7 @@
       #flavor {
         position: absolute;
         left: 0px;
-        top: 0px;
+        top: 0.05in;
         width: 2.25in;
       }
       #extraction .pair {
@@ -451,7 +455,7 @@
       #sudoku .majors {
         fill: none;
         stroke: black;
-        stroke-width: 1.5px;
+        stroke-width: 1px;
       }
 
       .tile path {
@@ -495,22 +499,19 @@
         opacity: 66%;
       }
 
-      #tile-u {
-        fill: #7300ff;
-      }
-      #tile-e {
+      #tile-q {
         fill: #ff771c;
       }
-      #tile-i {
+      #tile-r {
         fill: #FFC000;
       }
-      #tile-o {
+      #tile-s {
         fill: #F141C7;
       }
-      #tile-b {
+      #tile-t {
         fill: #92D050;
       }
-      #tile-f {
+      #tile-u {
         fill: #5B9BD5;
       }
 
@@ -535,14 +536,14 @@
     <div id="pageBody">
       <div id="flavor">
         <p>
-          Someone has taken some liberties with their Blokus <br>game and turned it into a jigsaw-Sudoku hybrid! 
+          Someone has taken some liberties with their Blokus game and turned it into a jigsaw-Sudoku hybrid! 
         </p>
         <p>
-          They’ve taken one full set of the 21 unique pieces, and written the numbers 1-9 all over them. Six of the pieces have been glued in place on this 9×9 mini-board. A few <br>cells stick beyond the edges, but those lack digits.
+          They’ve taken one full set of the 21 unique pieces, and written the numbers 1-9 all over them. 5 of the pieces have been glued in place on this 9×9 mini-board. A few cells stick beyond the edges, but those lack digits.
         </p>
         <p>
-          Please pack the rest back together! It looks like they’ll just barely fit, following a mix of Sudoku rules and jigsaw strategies.
-          <b>No rotations needed!</b>
+          Please pack the rest back together! It looks like they’ll just barely fit, following a mix of Sudoku and jigsaw rules.
+          <br><b>No rotations needed!</b>
         </p>
         <p>
           Afterwards, those dashed regions should make sum sense.
@@ -565,12 +566,10 @@
           <path class="interior" d="M40,40 h360 v360 h-360 v-360"></path>
           <path class="minors" d="M40,80 h360 M40,120 h360 M40,200 h360 M40,240 h360 M40,320 h360 M40,360 h360"></path>
           <path class="minors" d="M80,40 v360 M120,40 v360 M200,40 v360 M240,40 v360 M320,40 v360 M360,40 v360"></path>
-        <g id="circles" style="transform:translate(40px,40px)"></g>
+          <path class="majors" d="M40,160 h360 M40,280 h360"></path>
+          <path class="majors" d="M160,40 v360 M280,40 v360"></path>
+          <g id="circles" style="transform:translate(40px,40px)"></g>
           <g id="board"></g>
-          <g id="gridlines">
-            <path class="majors" d="M40,160 h360 M40,280 h360"></path>
-            <path class="majors" d="M160,40 v360 M280,40 v360"></path>  
-          </g>
         </g>
         <g id="extras">
           <rect id="extraArea" x="-84" y="0" width="784" height="480" fill="transparent"></rect>
