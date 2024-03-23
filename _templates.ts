@@ -24,6 +24,7 @@ const builtInTemplates = {
   paintByNumbers: paintByNumbersTemplate,
   paintByColorNumbers: paintByColorNumbersTemplate,
   classStampPalette: classStampPaletteTemplate,
+  classStampNoTools: classStampNoToolsTemplate,
 }
 
 /**
@@ -197,6 +198,21 @@ function classStampPaletteTemplate() :HTMLTemplateElement {
           <span id="{tool.id}-label" class="stampLabel">{tool.label?}</span>
           <span id="{tool.id}-mod" class="stampMod">{tool.modifier?}+click</span>
         </div>
+      </div>
+    </for>
+  </div>`;
+  return temp;
+}
+
+function classStampNoToolsTemplate() :HTMLTemplateElement {
+  linkCss('../Css/PaintByNumbers.css');
+
+  const temp = document.createElement('template');
+  temp.id = 'classStampPalette';
+  temp.innerHTML = 
+  `<div id="stampPalette" class="hidden" data-tool-erase="{erase}">
+    <for each="tool" in="tools">
+      <div class="stampTool" data-template-id="{tool.id}" data-next-template-id="{tool.next}">
       </div>
     </for>
   </div>`;

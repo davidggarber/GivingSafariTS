@@ -595,16 +595,31 @@ function normalizeName(name:string):string {
   return name;
 }
 
+const nameSpaces = {
+  '': '',
+  'svg': svg_xmlns,
+  's': svg_xmlns,
+  'html': null,
+  'h': null,
+}
+
 function createNormalizedElement(name:string): Element {
   const colon = name.split(':');
   const norm = normalizeName(colon[colon.length - 1]);
-  if (colon.length == 1) {
-    return document.createElement(normalizeName(norm));
+  const ns = colon.length > 1 ? colon[0].toLocaleLowerCase() : '';
+  if (!(ns in nameSpaces)) {
+    throw new Error('Unknown namespace: ' + name);
   }
-  if (colon[0] == 'svg') {
-    return document.createElementNS(svg_xmlns, norm);
+  let elmt:Element;
+  const xmlns = nameSpaces[ns];
+  if (!xmlns) {
+    elmt = document.createElement(norm);
   }
-  throw new Error('Unknown namespace: ' + name);
+  else {
+    elmt = document.createElementNS(xmlns, norm);
+  }
+  elmt.setAttributeNS('', 'data-xmlns', ns);
+  return elmt;
 }
 
 /**
@@ -676,7 +691,15 @@ function cloneAttributes(src:Element, dest:Element, context:object) {
     }
     // REVIEW: special case 'style'?
     else {
-      dest.setAttribute(name, value);
+      // Clone styles, using same XMLNS as the tag name
+      var ns = dest.getAttributeNS('', 'data-xmlns') || '';
+      const xmlns = nameSpaces[ns] || '';
+      if (xmlns) {
+        dest.setAttributeNS(xmlns, name, value);
+      }
+      else {
+        dest.setAttribute(name, value);
+      }
     }
   }
 }

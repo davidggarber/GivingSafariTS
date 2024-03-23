@@ -20,6 +20,10 @@
   user-select: none;
 }
 
+#stampPalette.hidden {
+  display: none;
+}
+
 .stampTool {
   position: relative;
   display: inline-block;

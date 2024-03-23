@@ -11,6 +11,9 @@
         'author': 'Andrew Giese',
         'copyright': '2024',
         'orientation': 'portrait',
+        'abilities': {
+          'stamping': true,
+        },
         'reactiveBuilder': true,
       };
 
@@ -25,37 +28,34 @@
         "ANVAMFGE",
       ];
       var colors = [
-        " B   W  ",
-        " B    B ",
-        "   W W  ",
-        "   B   B",
-        "  W    B",
-        " B      ",
-        "    BB  ",
-        "   W    ",
+        "xBxxxWxx",
+        "xBxxxxBx",
+        "xxxWxWxx",
+        "xxxBxxxB",
+        "xxWxxxxB",
+        "xBxxxxxx",
+        "xxxxBBxx",
+        "xxxWxxxx",
+      ];
+      var stampable = {
+        B: '',
+        W: '',
+        x: 'stampable'
+      }
+
+      var circleStamps = [
+        {id:'has-B', next:'has-W'},
+        {id:'has-W', next:'clear'},
+        {id:'clear', next:'has-B'},
       ];
 
       boiler['builderLookup'] =
       {
         letters: letters,
         colors: colors,
+        stamps: circleStamps,
+        stampable: stampable,
       };
-
-      function clickSquare(square) {
-        if (hasClass(square, 'locked-W') || hasClass(square, 'locked-B')) {
-          return;  // locked
-        }
-        if (hasClass(square, 'has-W')) {
-          toggleClass(square, 'has-W', false);  // toggle white to unset
-        }
-        else if (hasClass(square, 'has-B')) {
-          toggleClass(square, 'has-B', false);  // toggle black to white
-          toggleClass(square, 'has-W', true);
-        }
-        else {
-          toggleClass(square, 'has-B', true);  // toggle unset to black
-        }
-      }
     </script>
     <style>
       #grid-container {
@@ -161,7 +161,7 @@
       <div id="grid-container">
         <for each="row" in="letters">
           <for each="ch" in="row">
-            <div class="grid-square has-{colors.[row#].[ch#]} locked-{colors.[row#].[ch#]}" onclick="clickSquare(this)">
+            <div class="grid-square has-{colors.[row#].[ch#]} locked-{colors.[row#].[ch#]} {stampable.[colors.[row#].[ch#]]}">
               <div class="circle"></div>
               <span class="grid-text">{ch}</span>
             </div>
@@ -171,6 +171,10 @@
 
       <div id="footer">
         This puzzle can also be solved online at <a href="aka.ms/ps24/reversi">aka.ms/ps24/reversi</a>
+      </div>
+
+      <div style="position: absolute; top: -1in; right: 1in;">
+        <use template="classStampNoTools" tools="{stamps}" erase="clear"></use>
       </div>
 
     </div>

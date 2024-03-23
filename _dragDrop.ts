@@ -1,4 +1,4 @@
-import { findFirstChildOfClass, findParentOfClass, hasClass, toggleClass } from "./_classUtil";
+import { findFirstChildOfClass, findParentOfClass, hasClass, isSelfOrParent, toggleClass } from "./_classUtil";
 import { saveContainerLocally, savePositionLocally } from "./_storage";
 
 export type Position = {
@@ -394,7 +394,7 @@ function findEmptySource():HTMLElement|null {
  * @param destination The container to place it in
  */
 export function quickMove(moveable:HTMLElement, destination:HTMLElement) {
-    if (moveable != null && destination != null) {
+    if (moveable != null && destination != null && !isSelfOrParent(moveable, destination)) {
         pickUp(moveable);
         doDrop(destination);    
     }

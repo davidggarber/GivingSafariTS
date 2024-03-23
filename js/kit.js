@@ -3,9 +3,9 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = void 0;
-exports.builtInTemplate = exports.getTemplate = exports.globalContextData = exports.anyFromContext = exports.expandControlTags = exports.theBoilerContext = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = void 0;
+exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = void 0;
+exports.builtInTemplate = exports.getTemplate = exports.globalContextData = exports.anyFromContext = exports.expandControlTags = exports.theBoilerContext = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -239,6 +239,22 @@ function findParentOfClass(elmt, parentClass) {
     return null;
 }
 exports.findParentOfClass = findParentOfClass;
+/**
+ * Is the element anywhere underneath parent (including itself)
+ * @param elmt An element
+ * @param parent An element
+ * @returns true if parent is anywhere in elmt's parent chain
+ */
+function isSelfOrParent(elmt, parent) {
+    while (elmt !== null && elmt.tagName !== 'BODY') {
+        if (elmt === parent) {
+            return true;
+        }
+        elmt = elmt.parentNode;
+    }
+    return false;
+}
+exports.isSelfOrParent = isSelfOrParent;
 /**
  * Find the nearest containing node of the specified tag type.
  * @param elmt - An existing element
@@ -3976,7 +3992,7 @@ function findEmptySource() {
  * @param destination The container to place it in
  */
 function quickMove(moveable, destination) {
-    if (moveable != null && destination != null) {
+    if (moveable != null && destination != null && !isSelfOrParent(moveable, destination)) {
         pickUp(moveable);
         doDrop(destination);
     }
@@ -6662,16 +6678,30 @@ function normalizeName(name) {
     // Any other interior underscores are kept
     return name;
 }
+var nameSpaces = {
+    '': '',
+    'svg': exports.svg_xmlns,
+    's': exports.svg_xmlns,
+    'html': null,
+    'h': null,
+};
 function createNormalizedElement(name) {
     var colon = name.split(':');
     var norm = normalizeName(colon[colon.length - 1]);
-    if (colon.length == 1) {
-        return document.createElement(normalizeName(norm));
+    var ns = colon.length > 1 ? colon[0].toLocaleLowerCase() : '';
+    if (!(ns in nameSpaces)) {
+        throw new Error('Unknown namespace: ' + name);
     }
-    if (colon[0] == 'svg') {
-        return document.createElementNS(exports.svg_xmlns, norm);
+    var elmt;
+    var xmlns = nameSpaces[ns];
+    if (!xmlns) {
+        elmt = document.createElement(norm);
     }
-    throw new Error('Unknown namespace: ' + name);
+    else {
+        elmt = document.createElementNS(xmlns, norm);
+    }
+    elmt.setAttributeNS('', 'data-xmlns', ns);
+    return elmt;
 }
 /**
  * Deep-clone an HTML element
@@ -6739,7 +6769,15 @@ function cloneAttributes(src, dest, context) {
         }
         // REVIEW: special case 'style'?
         else {
-            dest.setAttribute(name_5, value);
+            // Clone styles, using same XMLNS as the tag name
+            var ns = dest.getAttributeNS('', 'data-xmlns') || '';
+            var xmlns = nameSpaces[ns] || '';
+            if (xmlns) {
+                dest.setAttributeNS(xmlns, name_5, value);
+            }
+            else {
+                dest.setAttribute(name_5, value);
+            }
         }
     }
 }
@@ -7028,6 +7066,7 @@ var builtInTemplates = {
     paintByNumbers: paintByNumbersTemplate,
     paintByColorNumbers: paintByColorNumbersTemplate,
     classStampPalette: classStampPaletteTemplate,
+    classStampNoTools: classStampNoToolsTemplate,
 };
 /**
  * Match a template name to a built-in template object
@@ -7094,6 +7133,14 @@ function classStampPaletteTemplate() {
     temp.id = 'classStampPalette';
     temp.innerHTML =
         "<div id=\"stampPalette\" data-tool-count=\"3\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool {size?}\" data-template-id=\"{tool.id}\" data-click-modifier=\"{tool.modifier?}\" title=\"{tool.modifier?} + draw\" data-next-template-id=\"{tool.next}\">\n        <div class=\"roundTool {tool.id}-button\">\n          <span id=\"{tool.id}-icon\" class=\"stampIcon\"><img src_=\"{tool.img}\"></span>\n          <span id=\"{tool.id}-label\" class=\"stampLabel\">{tool.label?}</span>\n          <span id=\"{tool.id}-mod\" class=\"stampMod\">{tool.modifier?}+click</span>\n        </div>\n      </div>\n    </for>\n  </div>";
+    return temp;
+}
+function classStampNoToolsTemplate() {
+    linkCss('../Css/PaintByNumbers.css');
+    var temp = document.createElement('template');
+    temp.id = 'classStampPalette';
+    temp.innerHTML =
+        "<div id=\"stampPalette\" class=\"hidden\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool\" data-template-id=\"{tool.id}\" data-next-template-id=\"{tool.next}\">\n      </div>\n    </for>\n  </div>";
     return temp;
 }
 function stampPaletteTemplate() {

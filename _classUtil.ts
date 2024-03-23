@@ -253,6 +253,22 @@ export function findParentOfClass(elmt: Element,
 }
 
 /**
+ * Is the element anywhere underneath parent (including itself)
+ * @param elmt An element
+ * @param parent An element
+ * @returns true if parent is anywhere in elmt's parent chain
+ */
+export function isSelfOrParent(elmt: Element, parent: Element) {
+    while (elmt !== null && elmt.tagName !== 'BODY') {
+        if (elmt === parent) {
+            return true;
+        }
+        elmt = elmt.parentNode as Element;
+    }
+    return false;
+}
+
+/**
  * Find the nearest containing node of the specified tag type.
  * @param elmt - An existing element
  * @param parentTag - A tag name of a parent element
