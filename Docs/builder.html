@@ -1,0 +1,270 @@
+<p>Buider HTML is loosely inspired by React or ASP.<br>It defines the data first.<br>Then the HTML supports special tags for loops and conditionals,<br>and the text and attributes support lookups into the data.  </p>
+<h1 id="data-initialization">Data initialization:</h1>
+<p>In the script block of the page, add two values to the boilerplate:</p>
+<pre><code>const boiler = {
+  ...
+  &#39;reactiveBuilder&#39;: true,  // required
+  &#39;builderLookup&#39;: {        // free-form, for example...
+    magic: 123,
+    line: { start: {x:1, y:2}, end: {x:3, y:4} },
+    fonts: [ &#39;bold&#39;, &#39;italic&#39; ],
+    grid: [
+      [1, 2, 3],
+      [4, 5, 6]
+    ]
+  }
+};
+</code></pre>
+<h1 id="data-lookup">Data lookup:</h1>
+<p>In HTML text or attribute values, use curly-brace syntax to inject named values:</p>
+<p>Examples in text:</p>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Generated</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>{magic}</code></td>
+<td>123</td>
+<td></td>
+</tr>
+<tr>
+<td><code>{line.end.x}</code></td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td><code>{grid.0.1}</code></td>
+<td>2</td>
+<td><em>note that .0 and .1 are indeces</em></td>
+</tr>
+</tbody></table>
+<p>Examples in attributes:</p>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Generated</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;div id=&quot;{magic}&quot; class=&quot;{fonts.0} {fonts.1}&quot;&gt;</code></td>
+<td><div id="123" class="bold italic"></td>
+<td></td>
+</tr>
+<tr>
+<td><code>&lt;img_ src_=&quot;{fonts.0}Icon.png&quot;&gt;</code></td>
+<td>&lt;img src=&quot;boldIcon.png&quot;&gt;</td>
+<td>There is a special rule for tags and attributes suffixed with _ <br> when you need to avoid the pre-processed tags/attributes being acted upon by the DOM.</td>
+</tr>
+<tr>
+<td><code>{grid.[line.start.x].[line.start.y]}</code></td>
+<td>5  (same as {grid.1.2})</td>
+<td>Parameterized lookups allow one lookup to be used to name the child of another. <br> Any nested pair of <strong>[brackets]</strong> restarts the lookup context at the root.</td>
+</tr>
+</tbody></table>
+<h1 id="for-loops">&lt;for&gt; Loops:</h1>
+<p>Use the new <strong>&lt;for&gt;</strong> tag to loop over a set of values,<br>cloning and re-evaluating the contents of the loop for each.  </p>
+<p>The targets of loops are implicitly lookups, so the {curly} syntax is not needed.<br>As they expand, new nested values are dynamically added to the lookup table, to reflect the loop state.  </p>
+<p>There are several variant syntaxes of &lt;for&gt; loop, differentiated by the first attribute, which names the iterator.
+Within the body of the &lt;for&gt; tags, new temporary lookup values are available, based on the iterator names.</p>
+<table>
+<thead>
+<tr>
+<th>List type</th>
+<th>Syntax</th>
+<th>Generates</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Each</strong> element in a list</td>
+<td><code>&lt;for each=&quot;font&quot; in=&quot;fonts&quot;&gt;{font#}:{font} &lt;/for&gt;</code></td>
+<td>0:bold 1:italic</td>
+<td><code>{font}</code> is the element <br> <code>{font#}</code> is the index (starting at 0)</td>
+</tr>
+<tr>
+<td><strong>Key</strong>s in an object</td>
+<td><code>&lt;for key=&quot;a&quot; in=&quot;line.end&quot;&gt;{a#}:{a}={a!} &lt;/for&gt;</code></td>
+<td>0:x=3 1:y=4</td>
+<td><code>{a}</code> is the key <br> <code>{a!}</code> is the value <br> <code>{a#}</code> is the index</td>
+</tr>
+<tr>
+<td><strong>Char</strong>acters in text</td>
+<td><code>&lt;for char=&quot;ch&quot; in=&quot;fonts.0&quot;&gt;{ch} &lt;/for&gt;</code> <br> <code>&lt;for char=&quot;ch&quot; in=&quot;other&quot;&gt;{ch} &lt;/for&gt;</code></td>
+<td>b o l d <br> o t h e r</td>
+<td>Note that the <code>in=&quot;value&quot;</code> can be a literal.</td>
+</tr>
+<tr>
+<td><strong>Word</strong>s in text</td>
+<td><code>&lt;for char=&quot;w&quot; in=&quot;Hello World!&quot;&gt;{w}-{w}&lt;/for&gt;</code></td>
+<td>Hello-HelloWorld!-World!</td>
+<td>A word is really anything delimited by spaces.</td>
+</tr>
+<tr>
+<td><strong>Range</strong>s of values</td>
+<td><code>&lt;for range=&quot;i&quot; from=&quot;1&quot; to=&quot;3&quot;&gt;{i}&lt;/for&gt;</code> <br> <code>&lt;for range=&quot;i&quot; from=&quot;1&quot; until=&quot;3&quot;&gt;{i}&lt;/for&gt;</code> <br> <code>&lt;for range=&quot;i&quot; from=&quot;5&quot; to=&quot;0&quot; step=&quot;-2&quot;&gt;{i}&lt;/for&gt;</code> <br> <code>&lt;for range=&quot;i&quot; length=&quot;fonts&quot;&gt;{fonts.[i]} &lt;/for&gt;</code></td>
+<td>123 <br> 12 <br> 531 <br> bold italic</td>
+<td><code>from=&quot;&quot;</code>   specifies the start value (default 0) <br> <code>to=&quot;&quot;</code> specifies the last value (inclusive) <br> <code>until=&quot;&quot;</code> specifies a stop value (exclusive) <br> <code>length=&quot;&quot;</code> is equivalent to until=length-of-list <br> <code>step=&quot;&quot;</code> specifies a step value, if not 1</td>
+</tr>
+<tr>
+<td></td>
+<td><code>&lt;for range=&quot;row&quot; from=&quot;0&quot; to=&quot;1&quot;&gt;&lt;for range=&quot;col&quot; from=&quot;0&quot; to=&quot;2&quot;&gt;{grid.[row].[col]}&lt;/for&gt;,&lt;/for&gt;</code></td>
+<td>123,456</td>
+<td>Use ranges in compound lookups</td>
+</tr>
+</tbody></table>
+<h1 id="if-conditionals">&lt;if&gt; conditionals</h1>
+<p>Use the new <strong>&lt;if&gt;</strong> tag to check a lookup against various states.<br>The checked values are implicitly lookups, so the {curly} syntax is not needed.<br>No new temporary values are generated by ifs.  </p>
+<p>Note: there is no else syntax. Instead, concatenate multiple ifs.
+As such, be careful not to nest, unless intended.</p>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Generates</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;if test=&quot;magic&quot; eq=&quot;123&quot;&gt;Magic!&lt;/if&gt;</code> <br> <code>&lt;if test=&quot;magic&quot; ne=&quot;123&quot;&gt;Lame.&lt;/if&gt;</code></td>
+<td>Magic!</td>
+</tr>
+<tr>
+<td><code>&lt;if test=&quot;magic&quot; ge=&quot;100&quot;&gt;Big!</code> <br> <code>&lt;if test=&quot;magic&quot; ge=&quot;120&quot;&gt;Bigger!&lt;/if&gt;</code> <br> <code>&lt;/if&gt;</code></td>
+<td>Big!Bigger!</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>Attributes</th>
+<th>Operations</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>eq=&quot;x&quot;</code></td>
+<td>Equals &quot;x&quot; <em>(always case-sensitive)</em></td>
+</tr>
+<tr>
+<td><code>ne=&quot; &quot;</code></td>
+<td>Not-equals a space</td>
+</tr>
+<tr>
+<td><code>gt=&quot;0&quot;</code></td>
+<td>Greater than 0</td>
+</tr>
+<tr>
+<td><code>lt=&quot;10&quot;</code></td>
+<td>Less than 10</td>
+</tr>
+<tr>
+<td><code>ge=&quot;0&quot;</code></td>
+<td>Greater than or equals 0</td>
+</tr>
+<tr>
+<td><code>le=&quot;9&quot;</code></td>
+<td>Less than or equals 9</td>
+</tr>
+<tr>
+<td><code>in=&quot;super&quot;</code></td>
+<td>Test value is IN (a substring of) &quot;super&quot;</td>
+</tr>
+<tr>
+<td><code>ni=&quot;super&quot;</code></td>
+<td>Test value is NOT IN (not a substring of) &quot;super&quot;</td>
+</tr>
+<tr>
+<td><em>default</em></td>
+<td>If no evaluation is specified, the tested value is checked for boolean true</td>
+</tr>
+</tbody></table>
+<p><em>There is no NOT modifier. Instead, use the converse operator.</em><br><em>Nor are there AND or OR modifiers. Consider secondary lookup tables.</em>  </p>
+<h2 id="incompatibility-with-tables">Incompatibility with Tables:</h2>
+<p>It is tempting to use loops inside &lt;table&gt; tags.<br>However, the DOM will likely refactor them if found inside a &lt;table&gt; but not inside a &lt;td&gt;.</p>
+<p>Some options include: suffix syntax, table CSS, or grid CSS</p>
+<table>
+<thead>
+<tr>
+<th>sufix_ syntax</th>
+<th>Table CSS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;table_&gt;</code> <br>&nbsp;&nbsp;<code>&lt;for ...&gt;</code> <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;tr_&gt;...&lt;/tr_&gt;</code> <br>&nbsp;&nbsp;<code>&lt;/for&gt;</code> <br> <code>&lt;/table_&gt;</code></td>
+<td><code>&lt;div style=&quot;display:table&quot;&gt;</code> <br>&nbsp;&nbsp;<code>&lt;for ...&gt;</code> <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;div style=&quot;display:table-row&quot;&gt;...&lt;/div&gt;</code> <br>&nbsp;&nbsp;<code>&lt;/for&gt;</code> <br> <code>&lt;/div&gt;</code></td>
+</tr>
+</tbody></table>
+<h1 id="text-input-shortcuts">Text input shortcuts</h1>
+<p>The builder defines several custom tags</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Creates</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;letter&gt;</code></td>
+<td>An input area for a single letter.</td>
+</tr>
+<tr>
+<td><code>&lt;letters&gt;</code></td>
+<td>An input area for a couple letters.</td>
+</tr>
+<tr>
+<td><code>&lt;word&gt;</code></td>
+<td>An input area for short text, no line wrap.</td>
+</tr>
+<tr>
+<td><code>&lt;literal&gt;</code></td>
+<td>Literal text, visually similar to a user-input letter.</td>
+</tr>
+<tr>
+<td><code>&lt;number&gt;</code></td>
+<td>An input area for a single digit.</td>
+</tr>
+<tr>
+<td><code>&lt;pattern&gt;</code></td>
+<td>Generates a sequence of <letter> and <literal> tags, details below.</td>
+</tr>
+</tbody></table>
+<h2 id="pattern-syntax">Pattern syntax</h2>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Creates</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;pattern pattern=&quot;5&quot;&gt;&gt;</code></td>
+<td>Creates 5 letter inputs in a row</td>
+</tr>
+<tr>
+<td><code>&lt;pattern pattern=&quot;2 3&quot;&gt;</code></td>
+<td>Creates 5 letter inputs, with a space gap after the 2nd</td>
+</tr>
+<tr>
+<td><code>&lt;pattern pattern=&quot;3-3-4&quot;&gt;</code></td>
+<td>Creates 10 letter inputs with dash separators, in this case, like a phone number pattern</td>
+</tr>
+<tr>
+<td><code>&lt;pattern pattern=&quot;5&quot; extract=&quot;3&quot;&gt;</code></td>
+<td>5 letters, where the 3rd is treated as an extract element. <br>It will be colored differently, and if possible, hooked up to an #extracted element.</td>
+</tr>
+<tr>
+<td><code>&lt;pattern pattern=&quot;5&quot; extract=&quot;2 4&quot;&gt;</code></td>
+<td>5 letters, where the 2nd and 4th are both treated as extract elements. <br>All extracts on the page are assumed to read in book-reading order.</td>
+</tr>
+<tr>
+<td><code>&lt;pattern pattern=&quot;5&quot; numbers=&quot;2=5 4=1&quot;&gt;</code></td>
+<td>5 letters, where the 2nd is the 5th letter of an extraction, and the 4th letter here is the 1st letter of an extraction.</td>
+</tr>
+</tbody></table>
+<h2 id="letter-styles">Letter styles</h2>
+<p>By default, letters are underlined and extracted letters are shaded gray. Literals are neither.
+Any of these can be customized (details pending).</p>

@@ -83,20 +83,44 @@ Attributes | Operations
 `le="9"`      | Less than or equals 9
 `in="super"`  | Test value is IN (a substring of) "super"
 `ni="super"`  | Test value is NOT IN (not a substring of) "super"
+_default_     | If no evaluation is specified, the tested value is checked for boolean true
 
 _There is no NOT modifier. Instead, use the converse operator._  
-_Nor are the AND or OR modifiers. Consider secondary lookup tables._  
+_Nor are there AND or OR modifiers. Consider secondary lookup tables._  
  
   
 ## Incompatibility with Tables:
 It is tempting to use loops inside \<table> tags.  
 However, the DOM will likely refactor them if found inside a \<table> but not inside a \<td>.
 
-Two options:
-sufix_ syntax | CSS
+Some options include: suffix syntax, table CSS, or grid CSS
+sufix_ syntax | Table CSS
 ---------------|-----
 `<table_>` <br>&nbsp;&nbsp;`<for ...>` <br>&nbsp;&nbsp;&nbsp;&nbsp;`<tr_>...</tr_>` <br>&nbsp;&nbsp;`</for>` <br> `</table_>` | `<div style="display:table">` <br>&nbsp;&nbsp;`<for ...>` <br>&nbsp;&nbsp;&nbsp;&nbsp;`<div style="display:table-row">...</div>` <br>&nbsp;&nbsp;`</for>` <br> `</div>`
 
 # Text input shortcuts
 
 The builder defines several custom tags
+
+Tag         | Creates
+------------|-----------------------------------
+`<letter>`  | An input area for a single letter.
+`<letters>` | An input area for a couple letters.
+`<word>`    | An input area for short text, no line wrap.
+`<literal>` | Literal text, visually similar to a user-input letter.
+`<number>`  | An input area for a single digit.
+`<pattern>` | Generates a sequence of <letter> and <literal> tags, details below.
+
+## Pattern syntax
+Attribute         | Creates
+------------------|-----------
+`<pattern pattern="5">>`    | Creates 5 letter inputs in a row
+`<pattern pattern="2 3">`   | Creates 5 letter inputs, with a space gap after the 2nd
+`<pattern pattern="3-3-4">` | Creates 10 letter inputs with dash separators, in this case, like a phone number pattern
+`<pattern pattern="5" extract="3">`         | 5 letters, where the 3rd is treated as an extract element. <br>It will be colored differently, and if possible, hooked up to an #extracted element.
+`<pattern pattern="5" extract="2 4">`       | 5 letters, where the 2nd and 4th are both treated as extract elements. <br>All extracts on the page are assumed to read in book-reading order.
+`<pattern pattern="5" numbers="2=5 4=1">`   | 5 letters, where the 2nd is the 5th letter of an extraction, and the 4th letter here is the 1st letter of an extraction.
+
+## Letter styles
+By default, letters are underlined and extracted letters are shaded gray. Literals are neither.
+Any of these can be customized (details pending).
