@@ -25,55 +25,55 @@
       //   1-9 and dot indicate visible contents of each cell.
       //   Spaces fill out bounding rectangle.
       var tiles = {
-        a: {board:false, x:0, y:9, color:12, values:['52896']},
-        b: {board:true, x:7, y:6, color:0, values:['548.',
-                                                   '   .']},
-        c: {board:false, x:14, y:3, color:1, values:[' 5',
-                                                    ' 1',
-                                                    '14',
-                                                    ' 6']},
-        d: {board:false, x:13, y:0, color:0, values:['352',
-                                                     ' 14']},
-        e: {board:true, x:6, y:0, color:0, values:['..',
-                                                   '3 ',
-                                                   '78']},
-        f: {board:true, x:3, y:8, color:0, values:[' 89',
-                                                   ' 3 ',
-                                                   '.. ']},
-        g: {board:false, x:7, y:7, color:3, values:[' 3 ',
-                                                    '91 ',
-                                                    ' 96']},
-        h: {board:false, x:5, y:0, color:2, values:['714',
-                                                    '  2',
-                                                    '  6']},
-        i: {board:true, x:0, y:2, color:0, values:[' 96',
-                                                   '.1 ',
-                                                   '.  ']},
-        j: {board:false, x:10, y:5, color:10, values:['5 ',
-                                                      '9 ',
-                                                      '27',
-                                                      ' 3']},
-        k: {board:false, x:5, y:4, color:7, values:[' 3 ',
-                                                    '475',
-                                                    ' 5 ']},
-        l: {board:false, x:10, y:2, color:12, values:['  5',
-                                                      '471',
-                                                      '  9']},
-        m: {board:false, x:3, y:1, color:11, values:['4 ',
-                                                     '2 ',
-                                                     '63']},
-        n: {board:false, x:13, y:8, color:4, values:['14 ',
-                                                     ' 28']},
-        o: {board:true, x:4, y:4, color:0, values:['63',
-                                                   '48']},
-        p: {board:false, x:0, y:7, color:8, values:['5268']},
-        q: {board:false, x:9, y:0, color:6, values:['927',
-                                                    ' 7 ']},
-        r: {board:false, x:0, y:2, color:5, values:['8 ',
-                                                    '71']},
-        s: {board:false, x:0, y:5, color:13, values:['896']},
-        t: {board:false, x:0, y:0, color:9, values:['23']},
-        u: {board:true, x:1, y:9, color:0, values:['7']},
+        a: {board:false, x:0, y:9, color:12, values:   ['52896']},
+        b: {board:true, x:7, y:6, color:0, values:     ['548.',
+                                                        '   .']},
+        c: {board:false, x:14, y:3, color:1, values:   [' 5',
+                                                        ' 1',
+                                                        '14',
+                                                        ' 6']},
+        d: {board:false, x:13, y:0, color:0, values:   ['352',
+                                                        ' 14']},
+        e: {board:true, x:6, y:0, color:0, values:     ['..',
+                                                        '3 ',
+                                                        '78']},
+        f: {board:true, x:3, y:8, color:0, values:     [' 89',
+                                                        ' 3 ',
+                                                        '.. ']},
+        g: {board:false, x:7, y:7, color:3, values:    [' 3 ',
+                                                        '91 ',
+                                                        ' 96']},
+        h: {board:false, x:5, y:0, color:2, values:    ['714',
+                                                        '  2',
+                                                        '  6']},
+        i: {board:true, x:0, y:2, color:0, values:     [' 96',
+                                                        '.1 ',
+                                                        '.  ']},
+        j: {board:false, x:10, y:5, color:10, values:  ['5 ',
+                                                        '9 ',
+                                                        '27',
+                                                        ' 3']},
+        k: {board:false, x:5, y:4, color:7, values:    [' 3 ',
+                                                        '475',
+                                                        ' 5 ']},
+        l: {board:false, x:10, y:2, color:12, values:  ['  5',
+                                                        '471',
+                                                        '  9']},
+        m: {board:false, x:3, y:1, color:11, values:   ['4 ',
+                                                        '2 ',
+                                                        '63']},
+        n: {board:false, x:13, y:8, color:4, values:   ['14 ',
+                                                        ' 28']},
+        o: {board:true, x:4, y:4, color:0, values:     ['63',
+                                                        '48']},
+        p: {board:false, x:0, y:7, color:8, values:    ['5268']},
+        q: {board:false, x:9, y:0, color:6, values:    ['927',
+                                                        ' 7 ']},
+        r: {board:false, x:0, y:2, color:5, values:    ['8 ',
+                                                        '71']},
+        s: {board:false, x:0, y:5, color:13, values:   ['896']},
+        t: {board:false, x:0, y:0, color:9, values:    ['23']},
+        u: {board:true, x:1, y:9, color:0, values:     ['7']},
       }
 
       // Extraction coordinates, where active board is 1-9, 
@@ -101,6 +101,7 @@
 
       var sudokuGrid = [Array(9),Array(9),Array(9),Array(9),Array(9),Array(9),Array(9),Array(9),Array(9)];
 
+      var selected = null;
       var dragging = null;
 
       function parseTransform(trans) {
@@ -134,6 +135,7 @@
           rel: { x: evt.clientX - bounds.left, y: evt.clientY - bounds.top },
           transform: g.style.transform,
           translate: translate,
+          click: true,  // this might just be a click, not a drag
         };
 
         if (dragging.inBoard) {
@@ -143,6 +145,7 @@
           liftValues(dragging.g, dragging.home);
         }
         toggleClass(dragging.g, 'dragging', true);
+        toggleClass(dragging.g, 'selected', true);
       }
 
       function midDrag(evt) {
@@ -151,20 +154,30 @@
           var dy = evt.clientY - dragging.start.y;
           dragging.g.style.transform = dragging.transform + ' translate(' + dx + 'px,' + dy + 'px)';
 
-          var info = calcDropInfo();
+          var info = calcDropInfo(dragging, evt);
+          if (dragging.click) {
+            // Look for thresholds where this is clearly a drag, not a click
+            if (Math.abs(dx) + Math.abs(dy) >= cellSize / 2) {
+              dragging.click = false;
+            }
+            else if (info.board && dragging.home && (info.x != dragging.home.x || info.y != dragging.home.y)) {
+              dragging.click = false;  // We've moved to another cell
+            }
+          }
           toggleClass(dragging.g, 'collision', info == null);
         }
       }
 
-      function calcDropInfo() {
-        if (dragging) {
-          var g = dragging.g.getBoundingClientRect();
+      function calcDropInfo(progress, evt) {
+        if (progress) {
+
+          var g = progress.g.getBoundingClientRect();
           var board = document.getElementById('board').getBoundingClientRect();
           var bx = Math.round((g.left - board.left) / cellSize);
           var by = Math.round((g.top - board.top) / cellSize);
           if (bx >= 1 && bx <= 9 && by >= 1 && by <= 9) {
             var info = {board: true, x: bx, y: by};
-            if (checkBoardFit(info)) {
+            if (checkBoardFit(progress, info)) {
               return info;
             }
             return null;
@@ -178,11 +191,11 @@
         return null;
       }
 
-      function checkBoardFit(info) {
-        if (info.x < 1 || (info.x + dragging.size.x) > 10 || info.y < 1 || (info.y + dragging.size.y) > 10) {
+      function checkBoardFit(progress, info) {
+        if (info.x < 1 || (info.x + progress.size.x) > 10 || info.y < 1 || (info.y + progress.size.y) > 10) {
           return false;
         }
-        var rects = dragging.g.getElementsByTagNameNS(svg_xmlns, 'rect');
+        var rects = progress.g.getElementsByTagNameNS(svg_xmlns, 'rect');
         for (var r of rects) {
           var dx = parseInt(r.getAttributeNS('', 'data-x'));
           var dy = parseInt(r.getAttributeNS('', 'data-y'));
@@ -217,11 +230,17 @@
 
       function endDrag(evt) {
         if (dragging) {
-          var dx = evt.clientX - dragging.start.x;
-          var dy = evt.clientY - dragging.start.y;
+          // REVIEW: could endDrag be called twice?
+          let info = calcDropInfo(dragging, evt);
+          if (dragging.click) {
+            clickSelect();
+            return;
+          }
+
           toggleClass(dragging.g, 'dragging', false);
+          toggleClass(dragging.g, 'selected', false);
           toggleClass(dragging.g, 'collision', false);
-          var info = calcDropInfo();
+
           if (!info) {
             cancelDrag();
             return;
@@ -269,17 +288,38 @@
             ];
             dragging.g.style.fill = ninePurples[tiles[dragging.id].color];
           }
+          updateExtractions();
           dragging = null;
         }
-        updateExtractions();
       }
 
       function cancelDrag() {
         if (dragging) {
           toggleClass(dragging.g, 'dragging', false);
           toggleClass(dragging.g, 'collision', false);
+          toggleClass(dragging.g, 'selected', false);
           dragging.g.style.transform = dragging.transform;
           dragging = null;
+        }
+        if (selected) {
+          toggleClass(selected.g, 'selected', false);
+        }
+      }
+
+      function clickSelect() {
+        selected = dragging;
+        cancelDrag();
+        toggleClass(selected.g, 'selected', true);  // after cancelDrag
+      }
+
+      function clickCanvas(evt) {
+        if (selected) {
+          toggleClass(selected.g, 'selected', false);
+          dragging = selected;
+          selected = null;
+          midDrag(evt);
+          dragging.click = false;
+          endDrag(evt);
         }
       }
 
@@ -316,6 +356,7 @@
         svgArea.addEventListener('mouseleave', cancelDrag);
         svgArea.addEventListener('mousemove', midDrag);
         svgArea.addEventListener('mouseup', endDrag);
+        svgArea.addEventListener('mousedown', clickCanvas);
         var board = document.getElementById('board');
         var extras = document.getElementById('extras');
         for (var id of Object.keys(tiles)) {
@@ -515,6 +556,7 @@
       }
 
       .tile.moveable {
+        touch-action: none;
         cursor: pointer;
       }
 
@@ -526,10 +568,20 @@
         fill: transparent;
       }
 
-      #sudoku .dragging {
-        filter: "url(#dropShadow)";
+      .tile.selected .highlight {
+        stroke: #99999940;
+        stroke-width: 2px;
       }
-    </style>
+      .tile.selected .shadow {
+        stroke: #ffffff80;
+        stroke-width: 2px;
+      }
+      .tile.selected text {
+        font-size: 16pt;
+        transform: translate(0,4px);
+      }
+
+</style>
   </head>
   <body id="Blokus">
     <div id="pageBody">
