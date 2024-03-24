@@ -117,6 +117,10 @@
       }
 
       function startDrag(evt) {
+        if (evt.pointerType != 'mouse') {
+          evt.preventDefault();
+        }
+
         if (dragging) {
           cancelDrag()
         }
@@ -353,10 +357,10 @@
 
       function buildSvgs() {
         var svgArea = document.getElementById('svg-area');
-        svgArea.addEventListener('mouseleave', cancelDrag);
-        svgArea.addEventListener('mousemove', midDrag);
-        svgArea.addEventListener('mouseup', endDrag);
-        svgArea.addEventListener('mousedown', clickCanvas);
+        svgArea.addEventListener('pointerleave', cancelDrag);
+        svgArea.addEventListener('pointermove', midDrag);
+        svgArea.addEventListener('pointerup', endDrag);
+        svgArea.addEventListener('pointerdown', clickCanvas);
         var board = document.getElementById('board');
         var extras = document.getElementById('extras');
         for (var id of Object.keys(tiles)) {
@@ -369,10 +373,9 @@
           }
           else {
             g.classList.add('moveable');
-            g.addEventListener('touchstart', function(e){e.preventDefault()});
-            g.addEventListener('mousedown', startDrag);
-            g.addEventListener('mousemove', midDrag);
-            g.addEventListener('mouseup', endDrag);
+            g.addEventListener('pointerdown', startDrag);
+            g.addEventListener('pointermove', midDrag);
+            g.addEventListener('pointerup', endDrag);
           }
           g.setAttributeNS('', 'data-height', tile.values.length);
           g.setAttributeNS('', 'data-width', tile.values[0].length);

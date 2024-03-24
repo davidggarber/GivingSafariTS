@@ -85,12 +85,28 @@ const safariDggDetails:PuzzleEventDetails = {
   // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 }
 
+// Event for the PuzzylSafariTeam branch
+const puzzylSafariTeamDetails:PuzzleEventDetails = {
+  'title': 'Game Night',
+  // 'logo': './Images/Sample_Logo.png',
+  'icon': '24/favicon.png',
+  'puzzleList': '',
+  'cssRoot': 'Css/',
+  'fontCss': '24/Fonts24.css',
+  'googleFonts': 'Goblin+One,Caveat',
+  'links': [
+//        { rel:'preconnect', href:'https://fonts.googleapis.com' },
+//        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
+  ]
+}
+
 const pastSafaris = {
   'Sample': safariSampleDetails,
   'Single': safariSingleDetails,
   '20': safari20Details,
   'Dgg': safariDggDetails,
   '24': safari24Details,
+  'team': puzzylSafariTeamDetails,
 }
 
 let safariDetails:PuzzleEventDetails;

@@ -1,4 +1,5 @@
 import { linkCss } from "./_boilerplate";
+import { getSafariDetails } from "./_events";
 
 /**
  * Find a template that matches an ID.
@@ -44,7 +45,7 @@ export function builtInTemplate(tempId:string) :HTMLTemplateElement|undefined {
  * @returns The template.
  */
 function paintByNumbersTemplate() :HTMLTemplateElement {
-  linkCss('../Css/PaintByNumbers.css');
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
 
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
@@ -102,7 +103,7 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
  * @returns The template.
  */
 function paintByColorNumbersTemplate() :HTMLTemplateElement {
-  linkCss('../Css/PaintByNumbers.css');
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
 
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
@@ -116,7 +117,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
             For instructions, see 
             <a href="https://help.puzzyl.net/PBN" target="_blank">
               https://help.puzzyl.net/PBN<br>
-              <img src="../Images/Intro/pbn.png">
+              <img src="https://help.puzzyl.net/pbn.png">
             </a>
           </span>
         </th_>
@@ -185,7 +186,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
  *   stampMod: to change of suppress the modifier as a simple label.
  */
 function classStampPaletteTemplate() :HTMLTemplateElement {
-  linkCss('../Css/PaintByNumbers.css');
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
 
   const temp = document.createElement('template');
   temp.id = 'classStampPalette';
@@ -205,7 +206,7 @@ function classStampPaletteTemplate() :HTMLTemplateElement {
 }
 
 function classStampNoToolsTemplate() :HTMLTemplateElement {
-  linkCss('../Css/PaintByNumbers.css');
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
 
   const temp = document.createElement('template');
   temp.id = 'classStampPalette';
@@ -220,7 +221,7 @@ function classStampNoToolsTemplate() :HTMLTemplateElement {
 }
 
 function stampPaletteTemplate() :HTMLTemplateElement {
-  linkCss('../Css/StampTools.css');
+  linkCss(getSafariDetails().cssRoot + 'StampTools.css');
 
   const temp = document.createElement('template');
   temp.innerHTML = 

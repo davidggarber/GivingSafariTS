@@ -5094,12 +5094,27 @@ var safariDggDetails = {
         'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/' },
     // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 };
+// Event for the PuzzylSafariTeam branch
+var puzzylSafariTeamDetails = {
+    'title': 'Game Night',
+    'logo': './Images/Sample_Logo.png',
+    'icon': '24/favicon.png',
+    'puzzleList': '',
+    'cssRoot': 'Css/',
+    'fontCss': '24/Fonts24.css',
+    'googleFonts': 'Goblin+One,Caveat',
+    'links': [
+    //        { rel:'preconnect', href:'https://fonts.googleapis.com' },
+    //        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
+    ]
+};
 var pastSafaris = {
     'Sample': safariSampleDetails,
     'Single': safariSingleDetails,
     '20': safari20Details,
     'Dgg': safariDggDetails,
     '24': safari24Details,
+    'team': puzzylSafariTeamDetails,
 };
 var safariDetails;
 /**
@@ -7086,7 +7101,7 @@ exports.builtInTemplate = builtInTemplate;
  * @returns The template.
  */
 function paintByNumbersTemplate() {
-    linkCss('../Css/PaintByNumbers.css');
+    linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
     var temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
@@ -7099,11 +7114,11 @@ function paintByNumbersTemplate() {
  * @returns The template.
  */
 function paintByColorNumbersTemplate() {
-    linkCss('../Css/PaintByNumbers.css');
+    linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
     var temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        "<table_ class=\"paint-by-numbers pbn-two-color bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\" data-stamp-list=\"{stamplist$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"colorGroup\" in=\"col\"><for key=\"color\" in=\"colorGroup\"><for each=\"group\" in=\"color!\"><span class=\"pbn-col-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span></for></for></for>\n          </td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n        </if>\n      </tr_>\n    </thead_>\n      <for each=\"row\" in=\"rowGroups\">\n        <tr_ class=\"pbn-row\">\n          <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n            &hairsp; \n            <for each=\"colorGroup\" in=\"row\"><for key=\"color\" in=\"colorGroup\">\n              <for each=\"group\" in=\"color!\"><span class=\"pbn-row-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>\n            &hairsp;</for></for>\n          </td_>\n          <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">{blank?}</td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n        </if>\n      </tr_>\n    </for>\n    <if test=\"validate?\" ne=\"false\">\n      <tfoot_>\n        <tr_ class=\"pbn-col-footer\">\n          <th_ class=\"pbn-corner\">&nbsp;</th_>\n          <for each=\"col\" in=\"colGroups\">\n            <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n          </for>\n          <th_ class=\"pbn-corner-validation\">\n            \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n            <br>\u2190&nbsp;validation</th_>\n        </tr_>\n      </tfoot_>\n    </if>\n  </table_>";
+        "<table_ class=\"paint-by-numbers pbn-two-color bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\" data-stamp-list=\"{stamplist$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"https://help.puzzyl.net/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"colorGroup\" in=\"col\"><for key=\"color\" in=\"colorGroup\"><for each=\"group\" in=\"color!\"><span class=\"pbn-col-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span></for></for></for>\n          </td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n        </if>\n      </tr_>\n    </thead_>\n      <for each=\"row\" in=\"rowGroups\">\n        <tr_ class=\"pbn-row\">\n          <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n            &hairsp; \n            <for each=\"colorGroup\" in=\"row\"><for key=\"color\" in=\"colorGroup\">\n              <for each=\"group\" in=\"color!\"><span class=\"pbn-row-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>\n            &hairsp;</for></for>\n          </td_>\n          <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">{blank?}</td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n        </if>\n      </tr_>\n    </for>\n    <if test=\"validate?\" ne=\"false\">\n      <tfoot_>\n        <tr_ class=\"pbn-col-footer\">\n          <th_ class=\"pbn-corner\">&nbsp;</th_>\n          <for each=\"col\" in=\"colGroups\">\n            <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n          </for>\n          <th_ class=\"pbn-corner-validation\">\n            \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n            <br>\u2190&nbsp;validation</th_>\n        </tr_>\n      </tfoot_>\n    </if>\n  </table_>";
     return temp;
 }
 /**
@@ -7128,7 +7143,7 @@ function paintByColorNumbersTemplate() {
  *   stampMod: to change of suppress the modifier as a simple label.
  */
 function classStampPaletteTemplate() {
-    linkCss('../Css/PaintByNumbers.css');
+    linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
     var temp = document.createElement('template');
     temp.id = 'classStampPalette';
     temp.innerHTML =
@@ -7136,7 +7151,7 @@ function classStampPaletteTemplate() {
     return temp;
 }
 function classStampNoToolsTemplate() {
-    linkCss('../Css/PaintByNumbers.css');
+    linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
     var temp = document.createElement('template');
     temp.id = 'classStampPalette';
     temp.innerHTML =
@@ -7144,7 +7159,7 @@ function classStampNoToolsTemplate() {
     return temp;
 }
 function stampPaletteTemplate() {
-    linkCss('../Css/StampTools.css');
+    linkCss(getSafariDetails().cssRoot + 'StampTools.css');
     var temp = document.createElement('template');
     temp.innerHTML =
         "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n  </table_>";

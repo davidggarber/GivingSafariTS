@@ -5616,12 +5616,28 @@ const safariDggDetails:PuzzleEventDetails = {
   // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 }
 
+// Event for the PuzzylSafariTeam branch
+const puzzylSafariTeamDetails:PuzzleEventDetails = {
+  'title': 'Game Night',
+  'logo': './Images/Sample_Logo.png',
+  'icon': '24/favicon.png',
+  'puzzleList': '',
+  'cssRoot': 'Css/',
+  'fontCss': '24/Fonts24.css',
+  'googleFonts': 'Goblin+One,Caveat',
+  'links': [
+//        { rel:'preconnect', href:'https://fonts.googleapis.com' },
+//        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
+  ]
+}
+
 const pastSafaris = {
   'Sample': safariSampleDetails,
   'Single': safariSingleDetails,
   '20': safari20Details,
   'Dgg': safariDggDetails,
   '24': safari24Details,
+  'team': puzzylSafariTeamDetails,
 }
 
 let safariDetails:PuzzleEventDetails;
@@ -7818,7 +7834,7 @@ export function builtInTemplate(tempId:string) :HTMLTemplateElement|undefined {
  * @returns The template.
  */
 function paintByNumbersTemplate() :HTMLTemplateElement {
-  linkCss('../Css/PaintByNumbers.css');
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
 
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
@@ -7876,7 +7892,7 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
  * @returns The template.
  */
 function paintByColorNumbersTemplate() :HTMLTemplateElement {
-  linkCss('../Css/PaintByNumbers.css');
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
 
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
@@ -7890,7 +7906,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
             For instructions, see 
             <a href="https://help.puzzyl.net/PBN" target="_blank">
               https://help.puzzyl.net/PBN<br>
-              <img src="../Images/Intro/pbn.png">
+              <img src="https://help.puzzyl.net/pbn.png">
             </a>
           </span>
         </th_>
@@ -7959,7 +7975,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
  *   stampMod: to change of suppress the modifier as a simple label.
  */
 function classStampPaletteTemplate() :HTMLTemplateElement {
-  linkCss('../Css/PaintByNumbers.css');
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
 
   const temp = document.createElement('template');
   temp.id = 'classStampPalette';
@@ -7979,7 +7995,7 @@ function classStampPaletteTemplate() :HTMLTemplateElement {
 }
 
 function classStampNoToolsTemplate() :HTMLTemplateElement {
-  linkCss('../Css/PaintByNumbers.css');
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
 
   const temp = document.createElement('template');
   temp.id = 'classStampPalette';
@@ -7994,7 +8010,7 @@ function classStampNoToolsTemplate() :HTMLTemplateElement {
 }
 
 function stampPaletteTemplate() :HTMLTemplateElement {
-  linkCss('../Css/StampTools.css');
+  linkCss(getSafariDetails().cssRoot + 'StampTools.css');
 
   const temp = document.createElement('template');
   temp.innerHTML = 
