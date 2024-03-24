@@ -369,6 +369,7 @@
           }
           else {
             g.classList.add('moveable');
+            g.addEventListener('touchstart', function(e){e.preventDefault()});
             g.addEventListener('mousedown', startDrag);
             g.addEventListener('mousemove', midDrag);
             g.addEventListener('mouseup', endDrag);
