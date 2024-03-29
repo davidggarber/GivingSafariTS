@@ -1,5 +1,5 @@
 import { theBoiler } from "./_boilerplate";
-import { applyAllClasses, isTag, toggleClass } from "./_classUtil";
+import { applyAllClasses, findParentOfTag, isTag, toggleClass } from "./_classUtil";
 import { svg_xmlns } from "./_tableBuilder";
 import { builtInTemplate, getTemplate } from "./_templates";
 import { getLetterStyles } from "./_textSetup";
@@ -180,15 +180,32 @@ export function theBoilerContext() {
 }
 
 /**
+ * See if we are inside an existing <svg> tag. Or multiple!
+ * @param elmt Any element
+ * @returns How many <svg> tags are in its parent chain
+ */
+function getSvgDepth(elmt:Element) {
+  let s = 0;
+  let parent = findParentOfTag(elmt, 'SVG');
+  while (parent) {
+    s++;
+    parent = parent.parentElement ? findParentOfTag(parent.parentElement, 'SVG') : null;
+  }
+  return s;
+}
+
+/**
  * Look for control tags like for loops and if branches.
  */
 export function expandControlTags() {
   identifyBuilders();
   const context = theBoilerContext();
+  const inSvg = context['svg-depth'];
 
   let controls = document.getElementsByClassName('builder_control');
   while (controls.length > 0) {
     const src = controls[0] as HTMLElement;
+    context['svg-depth'] = getSvgDepth(src);
     let dest:Node[] = [];
     if (isTag(src, 'build')) {
       dest = expandContents(src, context);
@@ -211,6 +228,7 @@ export function expandControlTags() {
 
     // See if there are more
     controls = document.getElementsByClassName('builder_control');
+    context['svg-depth'] = inSvg;  // restore
   }
 
   // Call any post-builder method
@@ -631,8 +649,19 @@ function createNormalizedElement(name:string): Element {
  */
 function cloneWithContext(elmt:HTMLElement, context:object):Element {
   // const tagName = normalizeName(elmt.tagName);
-  const clone = createNormalizedElement(elmt.tagName);
+  let clone:Element;
+  if (context['svg-depth'] > 0) {
+    clone = document.createElementNS(svg_xmlns, elmt.localName);
+  }
+  else {
+    clone = document.createElement(elmt.tagName);
+  }
+  // const clone = createNormalizedElement(elmt.tagName);
   cloneAttributes(elmt, clone, context);
+
+  if (elmt.tagName == 'SVG') {
+    context['svg-depth']++;
+  }
 
   for (let i = 0; i < elmt.childNodes.length; i++) {
     const child = elmt.childNodes[i];
@@ -660,6 +689,10 @@ function cloneWithContext(elmt:HTMLElement, context:object):Element {
     else {
       clone.insertBefore(cloneNode(child), null);
     }
+  }
+
+  if (elmt.tagName == 'SVG') {
+    context['svg-depth']--;
   }
 
   return clone;
@@ -740,23 +773,164 @@ function cloneTextNode(text:Text, context:object):Node[] {
  * @returns Expanded text
  */
 function cloneText(str:string, context:object):string {
-  let dest = '';
-  let i = str ? str.indexOf('{') : -1;
-  while (str && i >= 0) {
-    const j = str.indexOf('}', i);
-    if (j < 0) {
-      break;
+  return contextFormula(str, context, false);
+}
+
+enum TokenType {
+  start = 0,
+  bracket,
+  operator,
+  text
+}
+
+/**
+ * Divide up a string into sibling tokens.
+ * Each token may be divisible into sub-tokens, but those are skipped here.
+ * If we're not inside a {=formula}, the only tokens are { and }.
+ * If we are inside a {=formula}, then operators and others brackets are tokens too.
+ * @param str The parent string
+ * @param inFormula True if str should be treated as already inside {}
+ * @returns A list of token strings. Uninterpretted.
+ */
+function tokenizeFormula(str:string, inFormula:boolean): string[] {
+  const tokens:string[] = [];
+  const stack:string[] = [];
+  let tok = '';
+  let tokType = TokenType.start;
+  for (let i = 0; i < str.length; i++) {
+    const prevTT = tokType;
+    const ch = str[i];
+    if (!inFormula && ch == '{') {
+      stack.push(bracketPairs[ch]);  // push the expected close
+      tokType = TokenType.bracket;
     }
-    if (i > 0) {
-      dest += str.substring(0, i);
+    else if (inFormula && ch in bracketPairs) {
+      stack.push(bracketPairs[ch]);  // push the expected close
+      tokType = TokenType.bracket;
     }
-    const key = str.substring(i + 1, j);
-    dest += textFromContext(key, context);
-    str = str.substring(j + 1);
-    i = str.indexOf('{');
+    else if (stack.length > 0) {
+      if (ch == stack[stack.length - 1]) {
+        stack.pop();
+        tokens.push(tok);
+        tok = '';
+        tokType = TokenType.start;
+        continue;
+      }
+    }
+    else if (inFormula && ch in binaryOperators) {
+      tokType = TokenType.operator;
+    }
+    else {
+      tokType = TokenType.text;
+    }
+
+    if (tokType != prevTT) {
+      if (tok) {
+        tokens.push(tok);
+      }
+      tok = ch;
+      if (tokType == TokenType.operator) {
+        tokens.push(ch);
+        tok = '';
+        tokType = TokenType.start;
+      }
+    }
+    else {
+      tok += ch;
+    }
   }
-  if (str) {
-    dest += str;
+  if (tok) {
+    tokens.push(tok);
+  }
+  return tokens;
+}
+
+const bracketPairs = {
+  '(': ')',
+  // '[': ']',
+  '{': '}',
+  // '<': '>',  // should never be used for comparison operators in this context
+  '"': '"',
+  "'": "'",
+}
+
+const binaryOperators = {
+  '+': (a,b) => {return String(parseFloat(a) + parseFloat(b))},
+  '-': (a,b) => {return String(parseFloat(a) - parseFloat(b))},
+  '*': (a,b) => {return String(parseFloat(a) * parseFloat(b))},
+  '/': (a,b) => {return String(parseFloat(a) / parseFloat(b))},
+  '%': (a,b) => {return String(parseFloat(a) % parseInt(b))},
+  '&': (a,b) => {return String(a) + String(b)},
+}
+
+const unaryOperators = {
+  '-': (a) => {return String(-parseFloat(a))},
+}
+
+/**
+ * Handle a mix of context tokens and operators
+ * @param str Raw text of a token/operator string
+ * @param context A dictionary of all accessible values
+ * @param inFormula True if str should be treated as already inside {}
+ * @returns Expanded text
+ */
+function contextFormula(str:string, context:object, inFormula:boolean):string {
+  let dest = '';
+  const tokens = tokenizeFormula(str, inFormula);
+  let binaryOp:undefined|((a:string,b:string) => string);
+  let unaryOp:undefined|((a:string) => string);
+  for (let t = 0; t < tokens.length; t++) {
+    let tok = tokens[t];
+    if (tok in binaryOperators) {
+      if ((binaryOp || dest == '') && tok in unaryOperators) {
+        unaryOp = binaryOperators[tok];
+
+      }
+      else if (binaryOp) {
+        // TODO: consider unary operators
+        throw new Error("Consecutive binary operators: " + tok);
+      }
+      else {
+        binaryOp = binaryOperators[tok];
+      }
+      continue;  
+    }
+    if (tok[0] in bracketPairs) {
+      const inner = tok.substring(1, tok.length - 1);
+      if (tok[0] == '(') {
+        // (...) is a precedence operator
+        tok = contextFormula(inner, context, true);
+      }
+      else if (tok[0] == '{') {
+        if (tok[1] == '=') {
+          // {=...} is a nested formula
+          tok = contextFormula(inner.substring(1), context, true);
+        }
+        else {
+          // {...} is a context look-up
+          tok = textFromContext(inner, context);
+        }
+      }
+    }
+    if (unaryOp) {
+      tok = unaryOp(tok);
+      unaryOp = undefined;
+    }
+    if (binaryOp) {
+      // All operators read left-to-right
+      // TODO: if dest=='', consider unary operators
+      dest = binaryOp(dest, tok);
+      binaryOp = undefined;  // used up
+    }
+    else {
+      dest += tok;
+    }
+  }
+  if (unaryOp) {
+    throw new Error("Incomplete unary operation: " + str);
+  }
+  if (binaryOp) {
+    throw new Error("Incomplete binary operation: " + str);
   }
   return dest;
 }

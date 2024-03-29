@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '24',
+        'title': 'Bridges of Catan',
+        'author': 'David Garber',
+        'copyright': '2024',
+        'type': 'logic',
+        'orientation': 'landscape',
+        'textInput': true,
+        'abilities': {
+          straightEdge: true,
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+      };
+
+      var tile = {
+          width: 134,   // interior width of hex
+          height: 112,  // interior height of hex
+          dx: 105,      // offset of one column (including border)
+          dy: 118,      // offset to next hex in column (including border)
+          hy: 59,       // 1/2 hex offset at top of odd columns
+      };
+      // Each column has a list of regions (g/w/s/o/b), bridge numbers (0 is none), and top offsets
+      var hexColumns = [
+        { reg: 'gwwsoow', num: [2,0,8,0,2,0,0], top: tile.hy },
+        // { reg: 'bowgbwss', num: [0,0,0,0,2,0,0,2], top: 0 },
+        // { reg: 'sobgobww', num: [0,2,0,4,0,0,0,2], top: tile.hy },
+        // { reg: 'sgwbbogwo', num: [1,0,0,4,0,0,0,0,0], top: 0 },
+        // { reg: 'osooosbsb', num: [0,0,0,4,2,0,5,1,0], top: tile.hy },
+        // { reg: 'oobgowgbgw', num: [0,0,0,0,0,0,4,0,1,0], top: 0 },
+        // { reg: 'oogbbsgog', num: [0,2,3,3,0,0,0,0,0], top: tile.hy },
+        // { reg: 'bsbgwobwsw', num: [0,0,0,0,0,4,0,0,0,2], top: 0 },
+        // { reg: 'bbwowgbgs', num: [3,0,2,0,2,0,0,0,0], top: tile.hy },
+        // { reg: 'gobswgos', num: [0,0,1,0,0,2,0,2], top: tile.dy },
+        // { reg: 'wwsbsog', num: [2,0,3,1,0,0,0], top: tile.dy * 2 },
+      ];
+
+      boiler['builderLookup'] = {
+        tile: tile,
+        hexColumns: hexColumns,
+      };
+
+    </script>
+    <style>
+      .flavor {
+        margin-bottom: 0px;
+      }
+      .narrow {
+        width: 3.75in;
+      }
+      .tight {
+        margin-top: 0px;
+      }
+      img.sample {
+        height: 0.25in;
+      }
+      img.sample.up {
+        top: -0.1in;
+      }
+      .hex path {
+        stroke-width: 6px;
+        fill: none;
+      }
+      path.g {
+        stroke: #FFD966;
+      }
+      path.w {
+        stroke: #00B050;
+      }
+      path.b {
+        stroke: #C55A11;
+      }
+      path.o {
+        stroke: #000000;
+      }
+      path.s {
+        stroke: #92D050;
+      }
+    </style>
+  </head>
+  <body id="Bridges">
+    <div id="pageBody">
+      <p class="flavor">
+        The settlers of Catan have decided to upgrade their transportation system. They want to construct a set of <i>hashi</i> (bridges), 
+        to speed up commerce over their hexagonal lands. Whereas the old roads traveled around and between the resource tiles, these new bridges will 
+        jump from tile-center to tile-center. All participating tiles have circles (with numbers) at their landing points. No bridges go anywhere else.
+      </p>
+      <p class="flavor narrow">
+        Some bridges have a single lane. Others have two lanes. Never more. A bridge span can connect neighboring tiles, or they can jump over as many as 3 empty tiles. 
+        The two ends of a bridge will always be different resource types. Bridges may not cross other bridges mid-span. And they must always align to one of the hexagonal axes <img class="sample" style="position: absolute;" src="Images/Bridges/hex-axes.png"> &nbsp; &nbsp; &nbsp; .
+      </p>
+      <p class="flavor narrow">
+        Circled numbers on participating tiles specify how many lanes arrive at that tile. These lanes can be for a single bridge, or divided among up to 6 bridges. Collectively all bridges make a single interconnected graph around the island. No loops and no disconnected clusters.
+      </p>
+      <p class="flavor narrow tight">
+        <b>Mountains</b><img class="sample" style="position: relative;" src="Images/Bridges/hex-axes.png"><br>
+        Due to their heights, all bridges that connect to or from a mountain must have two lanes. Furthermore, no bridge can span over another mountain tile – even those not participating as bridge landings.
+      </p>
+      <p class="flavor narrow tight">
+        <b>Pastures</b><img class="sample" style="position: relative;" src="Images/Bridges/hex-axes.png"><br>
+        To reduce traffic danger to sheep, any bridges landing in a pasture may only have one lane.
+      </p>
+      <p class="flavor narrow tight">
+        <b>Forests</b><img class="sample" style="position: relative;" src="Images/Bridges/hex-axes.png"><br>
+        To keep logging accessible, no spur in the bridge system may terminate at a forest.
+      </p>
+      <p class="flavor narrow tight">
+          <b>Hills</b> and <b>Fields</b><img class="sample" style="position: relative;" src="Images/Bridges/hex-axes.png"><br>
+        The bridge system is divided into regions, each identified by a single letter. Boundaries occur anywhere a hill is connected by bridge to a field.
+      </p>
+      <p class="flavor">
+          Read the region letters in reading order across the map.
+      </p>
+
+      <div id="board" style="position: absolute; right: 0px; top: 0.75in;">
+        <svg width="600" height="600" viewbox="0 0 1200 1200">
+          <for each="col" in="hexColumns">
+            <g transform="translate({={col#}*{tile.dx}},{col.top})">
+              <for each="reg" in="col.reg">
+                <use template="hex" x="0" row="{reg#}" reg="{reg}"></use>
+              </for>
+            </g>
+          </for>
+        </svg>
+      </div>
+
+
+      <template id="hex">
+        <g transform="translate({x},{={row}*{tile.dy}})">            
+          <path class="{reg}" d="M34,0 h66 l34,56 l-34,56 h-66 l-34,-56 Z"></path>  
+        </g>
+      </template>
+
+
+    </div>
+  </body>
+</html>
