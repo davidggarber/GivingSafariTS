@@ -621,25 +621,6 @@ const nameSpaces = {
   'h': null,
 }
 
-function createNormalizedElement(name:string): Element {
-  const colon = name.split(':');
-  const norm = normalizeName(colon[colon.length - 1]);
-  const ns = colon.length > 1 ? colon[0].toLocaleLowerCase() : '';
-  if (!(ns in nameSpaces)) {
-    throw new Error('Unknown namespace: ' + name);
-  }
-  let elmt:Element;
-  const xmlns = nameSpaces[ns];
-  if (!xmlns) {
-    elmt = document.createElement(norm);
-  }
-  else {
-    elmt = document.createElementNS(xmlns, norm);
-  }
-  elmt.setAttributeNS('', 'data-xmlns', ns);
-  return elmt;
-}
-
 /**
  * Deep-clone an HTML element
  * Note that element and attribute names with _prefix will be renamed without _
@@ -648,15 +629,14 @@ function createNormalizedElement(name:string): Element {
  * @returns A cloned element
  */
 function cloneWithContext(elmt:HTMLElement, context:object):Element {
-  // const tagName = normalizeName(elmt.tagName);
+  const tagName = normalizeName(elmt.localName);
   let clone:Element;
   if (context['svg-depth'] > 0) {
-    clone = document.createElementNS(svg_xmlns, elmt.localName);
+    clone = document.createElementNS(svg_xmlns, tagName);
   }
   else {
-    clone = document.createElement(elmt.tagName);
+    clone = document.createElement(tagName);
   }
-  // const clone = createNormalizedElement(elmt.tagName);
   cloneAttributes(elmt, clone, context);
 
   if (elmt.tagName == 'SVG') {
@@ -809,13 +789,16 @@ function tokenizeFormula(str:string, inFormula:boolean): string[] {
       tokType = TokenType.bracket;
     }
     else if (stack.length > 0) {
+      tok += ch;
       if (ch == stack[stack.length - 1]) {
         stack.pop();
-        tokens.push(tok);
-        tok = '';
-        tokType = TokenType.start;
-        continue;
+        if (stack.length == 0) {
+          tokens.push(tok);
+          tok = '';
+          tokType = TokenType.start;
+        }
       }
+      continue;
     }
     else if (inFormula && ch in binaryOperators) {
       tokType = TokenType.operator;
@@ -881,9 +864,12 @@ function contextFormula(str:string, context:object, inFormula:boolean):string {
   let unaryOp:undefined|((a:string) => string);
   for (let t = 0; t < tokens.length; t++) {
     let tok = tokens[t];
+    if (!tok) {
+      continue;
+    }
     if (tok in binaryOperators) {
       if ((binaryOp || dest == '') && tok in unaryOperators) {
-        unaryOp = binaryOperators[tok];
+        unaryOp = unaryOperators[tok];
 
       }
       else if (binaryOp) {
@@ -1117,7 +1103,10 @@ function useTemplate(node:HTMLElement, context:object):Node[] {
     if (attri != 'template' && attri != 'builder_control') {
       popContext[attr] = context[attr];
       popContext[attr + '$'] = context[attr + '$'];
-      context[attr] = anyFromContext(val, context) || val;
+      context[attr] = anyFromContext(val, context);
+      if (context[attr] === '') {
+        context[attr] = val;
+      }
       context[attr + '$'] = val;  // Store the context path, so it can also be referenced
     }
   }

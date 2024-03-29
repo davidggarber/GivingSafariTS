@@ -4911,6 +4911,7 @@ type RulerEventData = {
     canCrossSelf: boolean;
     hoverRange: number;
     angleConstraints?: number;
+    angleConstraintsOffset: number;
     showOpenDrag: boolean;
     evtPos: DOMPoint;
     evtPoint: SVGPoint;
@@ -4938,6 +4939,7 @@ function getRulerData(evt:MouseEvent):RulerEventData {
     let spt = svg.createSVGPoint();
         spt.x = pos.x - bounds.left;
         spt.y = pos.y - bounds.top;
+    const angleConstraints2 = angleConstraints ? (angleConstraints+'+0').split('+').map(c => parseInt(c)) : undefined;
     const data:RulerEventData = {
         svg: svg, 
         container: (containers && containers.length > 0) ? containers[0] : svg,
@@ -4946,7 +4948,8 @@ function getRulerData(evt:MouseEvent):RulerEventData {
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
         hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
+        angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
+        angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
         evtPos: pos,
         evtPoint: spt,
@@ -4981,6 +4984,7 @@ function getRulerDataFromVertex(vertex:HTMLElement):RulerEventData {
     let spt = svg.createSVGPoint();
         spt.x = pos.x - bounds.left;
         spt.y = pos.y - bounds.top;
+    const angleConstraints2 = angleConstraints ? (angleConstraints+'+0').split('+').map(c => parseInt(c)) : undefined;
     const data:RulerEventData = {
         svg: svg, 
         container: (containers && containers.length > 0) ? containers[0] : svg,
@@ -4989,7 +4993,8 @@ function getRulerDataFromVertex(vertex:HTMLElement):RulerEventData {
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
         hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
+        angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
+        angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
         evtPos: pos,
         evtPoint: spt,
@@ -5372,7 +5377,7 @@ function isReachable(data:RulerEventData, vert: VertexData):boolean {
         return true;  // Any other point is valid
     }
     const degrees = Math.atan2(dy, dx) * 180 / Math.PI + 360;
-    let mod = Math.abs(degrees % data.angleConstraints);
+    let mod = Math.abs((degrees + data.angleConstraintsOffset) % data.angleConstraints);
     if (mod > data.angleConstraints / 2) {
         mod = data.angleConstraints - mod;
     }
@@ -7430,25 +7435,6 @@ const nameSpaces = {
   'h': null,
 }
 
-function createNormalizedElement(name:string): Element {
-  const colon = name.split(':');
-  const norm = normalizeName(colon[colon.length - 1]);
-  const ns = colon.length > 1 ? colon[0].toLocaleLowerCase() : '';
-  if (!(ns in nameSpaces)) {
-    throw new Error('Unknown namespace: ' + name);
-  }
-  let elmt:Element;
-  const xmlns = nameSpaces[ns];
-  if (!xmlns) {
-    elmt = document.createElement(norm);
-  }
-  else {
-    elmt = document.createElementNS(xmlns, norm);
-  }
-  elmt.setAttributeNS('', 'data-xmlns', ns);
-  return elmt;
-}
-
 /**
  * Deep-clone an HTML element
  * Note that element and attribute names with _prefix will be renamed without _
@@ -7457,15 +7443,14 @@ function createNormalizedElement(name:string): Element {
  * @returns A cloned element
  */
 function cloneWithContext(elmt:HTMLElement, context:object):Element {
-  // const tagName = normalizeName(elmt.tagName);
+  const tagName = normalizeName(elmt.localName);
   let clone:Element;
   if (context['svg-depth'] > 0) {
-    clone = document.createElementNS(svg_xmlns, elmt.localName);
+    clone = document.createElementNS(svg_xmlns, tagName);
   }
   else {
-    clone = document.createElement(elmt.tagName);
+    clone = document.createElement(tagName);
   }
-  // const clone = createNormalizedElement(elmt.tagName);
   cloneAttributes(elmt, clone, context);
 
   if (elmt.tagName == 'SVG') {
@@ -7618,13 +7603,16 @@ function tokenizeFormula(str:string, inFormula:boolean): string[] {
       tokType = TokenType.bracket;
     }
     else if (stack.length > 0) {
+      tok += ch;
       if (ch == stack[stack.length - 1]) {
         stack.pop();
-        tokens.push(tok);
-        tok = '';
-        tokType = TokenType.start;
-        continue;
+        if (stack.length == 0) {
+          tokens.push(tok);
+          tok = '';
+          tokType = TokenType.start;
+        }
       }
+      continue;
     }
     else if (inFormula && ch in binaryOperators) {
       tokType = TokenType.operator;
@@ -7647,6 +7635,9 @@ function tokenizeFormula(str:string, inFormula:boolean): string[] {
     else {
       tok += ch;
     }
+  }
+  if (tok) {
+    tokens.push(tok);
   }
   return tokens;
 }
@@ -7687,9 +7678,12 @@ function contextFormula(str:string, context:object, inFormula:boolean):string {
   let unaryOp:undefined|((a:string) => string);
   for (let t = 0; t < tokens.length; t++) {
     let tok = tokens[t];
+    if (!tok) {
+      continue;
+    }
     if (tok in binaryOperators) {
       if ((binaryOp || dest == '') && tok in unaryOperators) {
-        unaryOp = binaryOperators[tok];
+        unaryOp = unaryOperators[tok];
 
       }
       else if (binaryOp) {
@@ -7923,7 +7917,10 @@ function useTemplate(node:HTMLElement, context:object):Node[] {
     if (attri != 'template' && attri != 'builder_control') {
       popContext[attr] = context[attr];
       popContext[attr + '$'] = context[attr + '$'];
-      context[attr] = anyFromContext(val, context) || val;
+      context[attr] = anyFromContext(val, context);
+      if (context[attr] === '') {
+        context[attr] = val;
+      }
       context[attr + '$'] = val;  // Store the context path, so it can also be referenced
     }
   }

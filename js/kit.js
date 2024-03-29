@@ -4482,6 +4482,7 @@ function getRulerData(evt) {
     var spt = svg.createSVGPoint();
     spt.x = pos.x - bounds.left;
     spt.y = pos.y - bounds.top;
+    var angleConstraints2 = angleConstraints ? (angleConstraints + '+0').split('+').map(function (c) { return parseInt(c); }) : undefined;
     var data = {
         svg: svg,
         container: (containers && containers.length > 0) ? containers[0] : svg,
@@ -4490,7 +4491,8 @@ function getRulerData(evt) {
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
         hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
+        angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
+        angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
         evtPos: pos,
         evtPoint: spt,
@@ -4523,6 +4525,7 @@ function getRulerDataFromVertex(vertex) {
     var spt = svg.createSVGPoint();
     spt.x = pos.x - bounds.left;
     spt.y = pos.y - bounds.top;
+    var angleConstraints2 = angleConstraints ? (angleConstraints + '+0').split('+').map(function (c) { return parseInt(c); }) : undefined;
     var data = {
         svg: svg,
         container: (containers && containers.length > 0) ? containers[0] : svg,
@@ -4531,7 +4534,8 @@ function getRulerDataFromVertex(vertex) {
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
         hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
+        angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
+        angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
         evtPos: pos,
         evtPoint: spt,
@@ -4887,7 +4891,7 @@ function isReachable(data, vert) {
         return true; // Any other point is valid
     }
     var degrees = Math.atan2(dy, dx) * 180 / Math.PI + 360;
-    var mod = Math.abs(degrees % data.angleConstraints);
+    var mod = Math.abs((degrees + data.angleConstraintsOffset) % data.angleConstraints);
     if (mod > data.angleConstraints / 2) {
         mod = data.angleConstraints - mod;
     }
@@ -6717,24 +6721,6 @@ var nameSpaces = {
     'html': null,
     'h': null,
 };
-function createNormalizedElement(name) {
-    var colon = name.split(':');
-    var norm = normalizeName(colon[colon.length - 1]);
-    var ns = colon.length > 1 ? colon[0].toLocaleLowerCase() : '';
-    if (!(ns in nameSpaces)) {
-        throw new Error('Unknown namespace: ' + name);
-    }
-    var elmt;
-    var xmlns = nameSpaces[ns];
-    if (!xmlns) {
-        elmt = document.createElement(norm);
-    }
-    else {
-        elmt = document.createElementNS(xmlns, norm);
-    }
-    elmt.setAttributeNS('', 'data-xmlns', ns);
-    return elmt;
-}
 /**
  * Deep-clone an HTML element
  * Note that element and attribute names with _prefix will be renamed without _
@@ -6743,15 +6729,14 @@ function createNormalizedElement(name) {
  * @returns A cloned element
  */
 function cloneWithContext(elmt, context) {
-    // const tagName = normalizeName(elmt.tagName);
+    var tagName = normalizeName(elmt.localName);
     var clone;
     if (context['svg-depth'] > 0) {
-        clone = document.createElementNS(exports.svg_xmlns, elmt.localName);
+        clone = document.createElementNS(exports.svg_xmlns, tagName);
     }
     else {
-        clone = document.createElement(elmt.tagName);
+        clone = document.createElement(tagName);
     }
-    // const clone = createNormalizedElement(elmt.tagName);
     cloneAttributes(elmt, clone, context);
     if (elmt.tagName == 'SVG') {
         context['svg-depth']++;
@@ -6896,13 +6881,16 @@ function tokenizeFormula(str, inFormula) {
             tokType = TokenType.bracket;
         }
         else if (stack.length > 0) {
+            tok += ch;
             if (ch == stack[stack.length - 1]) {
                 stack.pop();
-                tokens.push(tok);
-                tok = '';
-                tokType = TokenType.start;
-                continue;
+                if (stack.length == 0) {
+                    tokens.push(tok);
+                    tok = '';
+                    tokType = TokenType.start;
+                }
             }
+            continue;
         }
         else if (inFormula && ch in binaryOperators) {
             tokType = TokenType.operator;
@@ -6924,6 +6912,9 @@ function tokenizeFormula(str, inFormula) {
         else {
             tok += ch;
         }
+    }
+    if (tok) {
+        tokens.push(tok);
     }
     return tokens;
 }
@@ -6960,9 +6951,12 @@ function contextFormula(str, context, inFormula) {
     var unaryOp;
     for (var t = 0; t < tokens.length; t++) {
         var tok = tokens[t];
+        if (!tok) {
+            continue;
+        }
         if (tok in binaryOperators) {
             if ((binaryOp || dest == '') && tok in unaryOperators) {
-                unaryOp = binaryOperators[tok];
+                unaryOp = unaryOperators[tok];
             }
             else if (binaryOp) {
                 // TODO: consider unary operators
@@ -7186,7 +7180,10 @@ function useTemplate(node, context) {
         if (attri != 'template' && attri != 'builder_control') {
             popContext[attr] = context[attr];
             popContext[attr + '$'] = context[attr + '$'];
-            context[attr] = anyFromContext(val, context) || val;
+            context[attr] = anyFromContext(val, context);
+            if (context[attr] === '') {
+                context[attr] = val;
+            }
             context[attr + '$'] = val; // Store the context path, so it can also be referenced
         }
     }

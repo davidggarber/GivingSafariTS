@@ -24,28 +24,47 @@
       var tile = {
           width: 134,   // interior width of hex
           height: 112,  // interior height of hex
-          dx: 105,      // offset of one column (including border)
-          dy: 118,      // offset to next hex in column (including border)
-          hy: 59,       // 1/2 hex offset at top of odd columns
+          dx: 106,      // offset of one column (including border)
+          dy: 119,      // offset to next hex in column (including border)
+          hy: 59.5,     // 1/2 hex offset at top of odd columns
+          mx: 67,       // offset to horizontal middle of hex
+          my: 56,       // offset to vertical middle of hex
       };
       // Each column has a list of regions (g/w/s/o/b), bridge numbers (0 is none), and top offsets
       var hexColumns = [
         { reg: 'gwwsoow', num: [2,0,8,0,2,0,0], top: tile.hy },
-        // { reg: 'bowgbwss', num: [0,0,0,0,2,0,0,2], top: 0 },
-        // { reg: 'sobgobww', num: [0,2,0,4,0,0,0,2], top: tile.hy },
-        // { reg: 'sgwbbogwo', num: [1,0,0,4,0,0,0,0,0], top: 0 },
-        // { reg: 'osooosbsb', num: [0,0,0,4,2,0,5,1,0], top: tile.hy },
-        // { reg: 'oobgowgbgw', num: [0,0,0,0,0,0,4,0,1,0], top: 0 },
-        // { reg: 'oogbbsgog', num: [0,2,3,3,0,0,0,0,0], top: tile.hy },
-        // { reg: 'bsbgwobwsw', num: [0,0,0,0,0,4,0,0,0,2], top: 0 },
-        // { reg: 'bbwowgbgs', num: [3,0,2,0,2,0,0,0,0], top: tile.hy },
-        // { reg: 'gobswgos', num: [0,0,1,0,0,2,0,2], top: tile.dy },
-        // { reg: 'wwsbsog', num: [2,0,3,1,0,0,0], top: tile.dy * 2 },
+        { reg: 'bowgbwss', num: [0,0,0,0,2,0,0,2], top: 0 },
+        { reg: 'sobgobww', num: [0,2,0,4,0,0,0,2], top: tile.hy },
+        { reg: 'sgwbbogwo', num: [1,0,0,4,0,0,0,0,0], top: 0 },
+        { reg: 'osooosbsb', num: [0,0,0,4,2,0,5,1,0], top: tile.hy },
+        { reg: 'oobgowgbgw', num: [0,0,0,0,0,0,4,0,1,0], top: 0 },
+        { reg: 'oogbbsgog', num: [0,2,3,3,0,0,0,0,0], top: tile.hy },
+        { reg: 'bsbgwobwsw', num: [0,0,0,0,0,4,0,0,0,2], top: 0 },
+        { reg: 'bbwowgbgs', num: [3,0,2,0,2,0,0,0,0], top: tile.hy },
+        { reg: 'gobswgos', num: [0,0,1,0,0,2,0,2], top: tile.dy },
+        { reg: 'wwsbsog', num: [2,0,3,1,0,0,0], top: tile.dy + tile.hy },
       ];
+      var hexResources = {
+        b: 'Hills',
+        g: 'Field',
+        o: 'Mountain',
+        s: 'Pasture',
+        w: 'Forest'
+      }
+      var hexImages = {
+        b: 'Images/Bridges/brick.png',
+        g: 'Images/Bridges/grain.png',
+        o: 'Images/Bridges/ore.png',
+        s: 'Images/Bridges/sheep.png',
+        w: 'Images/Bridges/wood.png',
+      }
+
 
       boiler['builderLookup'] = {
         tile: tile,
         hexColumns: hexColumns,
+        hexImages: hexImages,
+        hexResources: hexResources,
       };
 
     </script>
@@ -64,6 +83,9 @@
       }
       img.sample.up {
         top: -0.1in;
+      }
+      #board {
+        user-select: none;
       }
       .hex path {
         stroke-width: 6px;
@@ -84,6 +106,19 @@
       path.s {
         stroke: #92D050;
       }
+      .circle {
+        stroke: none;
+        fill: white;
+      }
+      #Bridges .straight-edge-area .vertex {
+        stroke-width: 2px;
+        stroke: black;
+        fill: none;
+      }
+      .hex .lanes {
+        text-anchor: middle;
+        font-size: 20pt;
+      }
     </style>
   </head>
   <body id="Bridges">
@@ -101,19 +136,19 @@
         Circled numbers on participating tiles specify how many lanes arrive at that tile. These lanes can be for a single bridge, or divided among up to 6 bridges. Collectively all bridges make a single interconnected graph around the island. No loops and no disconnected clusters.
       </p>
       <p class="flavor narrow tight">
-        <b>Mountains</b><img class="sample" style="position: relative;" src="Images/Bridges/hex-axes.png"><br>
+        <b>Mountains</b><img class="sample" style="position: relative;" src="Images/Bridges/small-mountain.png"><br>
         Due to their heights, all bridges that connect to or from a mountain must have two lanes. Furthermore, no bridge can span over another mountain tile – even those not participating as bridge landings.
       </p>
       <p class="flavor narrow tight">
-        <b>Pastures</b><img class="sample" style="position: relative;" src="Images/Bridges/hex-axes.png"><br>
+        <b>Pastures</b><img class="sample" style="position: relative;" src="Images/Bridges/small-pasture.png"><br>
         To reduce traffic danger to sheep, any bridges landing in a pasture may only have one lane.
       </p>
       <p class="flavor narrow tight">
-        <b>Forests</b><img class="sample" style="position: relative;" src="Images/Bridges/hex-axes.png"><br>
+        <b>Forests</b><img class="sample" style="position: relative;" src="Images/Bridges/small-forest.png"><br>
         To keep logging accessible, no spur in the bridge system may terminate at a forest.
       </p>
       <p class="flavor narrow tight">
-          <b>Hills</b> and <b>Fields</b><img class="sample" style="position: relative;" src="Images/Bridges/hex-axes.png"><br>
+          <b>Hills</b><img class="sample" style="position: relative;" src="Images/Bridges/small-hills.png"> and <b>Fields</b><img class="sample" style="position: relative;" src="Images/Bridges/small-field.png"><br>
         The bridge system is divided into regions, each identified by a single letter. Boundaries occur anywhere a hill is connected by bridge to a field.
       </p>
       <p class="flavor">
@@ -121,21 +156,68 @@
       </p>
 
       <div id="board" style="position: absolute; right: 0px; top: 0.75in;">
-        <svg width="600" height="600" viewbox="0 0 1200 1200">
-          <for each="col" in="hexColumns">
-            <g transform="translate({={col#}*{tile.dx}},{col.top})">
-              <for each="reg" in="col.reg">
-                <use template="hex" x="0" row="{reg#}" reg="{reg}"></use>
-              </for>
+        <svg class="straight-edge-area" width="600" height="600" viewbox="0 0 1200 1200" data-angle-constraints="60+30" data-can-share-vertices="true">
+          <g transform="translate(4,4)">
+            <g id="images">
+              <for each="col" in="hexColumns">
+                <g_ transform="translate({={col#}*{tile.dx}},{col.top})">
+                  <for each="reg" in="col.reg">
+                    <use template="resource" row="{reg#}" src="{hexImages.[reg]}" resource="{hexResources.[reg]}" lanes="{col.num.[reg#]}"></use>
+                  </for>
+                </g_>
+              </for>  
             </g>
-          </for>
+            <g id="borders">
+              <for each="col" in="hexColumns">
+                <g_ transform="translate({={col#}*{tile.dx}},{col.top})">
+                  <for each="reg" in="col.reg">
+                    <use template="border" row="{reg#}" reg="{reg}"></use>
+                  </for>
+                </g_>
+              </for>                
+            </g>
+            <g id="numbers">
+              <for each="col" in="hexColumns">
+                <g_ transform="translate({={col#}*{tile.dx}},{col.top})">
+                  <for each="num" in="col.num">
+                    <if test="num" gt="0">
+                      <use template="number" row="{num#}" num="{num}" resource="{hexResources.[col.reg.[num#]]}"></use>
+                    </if>
+                  </for>
+                </g_>
+              </for>                
+            </g>
+            <g class="straight-edge-container" transform="scale(2)">
+
+            </g>
+          </g>
         </svg>
       </div>
 
 
-      <template id="hex">
-        <g transform="translate({x},{={row}*{tile.dy}})">            
+      <template id="resource">
+        <g class="hex" transform="translate(0,{={row}*{tile.dy}})">
+          <image_ href="{src}" x="0" y="0" width="{tile.width}" height="{tile.height}">
+            <if test="lanes" eq="0"><title>{resource}</title></if>
+            <if test="lanes" eq="1"><title>{resource} with 1 lane</title></if>            
+            <if test="lanes" gt="1"><title>{resource} with {lanes} lanes</title></if>            
+          </image_>  
+        </g>
+      </template>
+      <template id="border">
+        <g class="hex" transform="translate(0,{={row}*{tile.dy}})">
           <path class="{reg}" d="M34,0 h66 l34,56 l-34,56 h-66 l-34,-56 Z"></path>  
+        </g>
+      </template>
+      <template id="number">
+        <g class="hex vertex-g" transform="translate({tile.mx},{={row}*{tile.dy}+{tile.my}})">
+          <ellipse class="circle" cx="0" cy="0" rx="20" ry="20"></ellipse>
+          <text class="lanes" x="0" y="6pt">{num}</text>
+          <ellipse class="vertex" cx="0" cy="0" rx="20" ry="20">
+            <if test="num" eq="0"><title>{resource}</title></if>
+            <if test="num" eq="1"><title>{resource} with 1 lane</title></if>            
+            <if test="num" gt="1"><title>{resource} with {num} lanes</title></if>            
+          </ellipse>
         </g>
       </template>
 

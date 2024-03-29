@@ -143,6 +143,7 @@ type RulerEventData = {
     canCrossSelf: boolean;
     hoverRange: number;
     angleConstraints?: number;
+    angleConstraintsOffset: number;
     showOpenDrag: boolean;
     evtPos: DOMPoint;
     evtPoint: SVGPoint;
@@ -170,6 +171,7 @@ function getRulerData(evt:MouseEvent):RulerEventData {
     let spt = svg.createSVGPoint();
         spt.x = pos.x - bounds.left;
         spt.y = pos.y - bounds.top;
+    const angleConstraints2 = angleConstraints ? (angleConstraints+'+0').split('+').map(c => parseInt(c)) : undefined;
     const data:RulerEventData = {
         svg: svg, 
         container: (containers && containers.length > 0) ? containers[0] : svg,
@@ -178,7 +180,8 @@ function getRulerData(evt:MouseEvent):RulerEventData {
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
         hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
+        angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
+        angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
         evtPos: pos,
         evtPoint: spt,
@@ -213,6 +216,7 @@ function getRulerDataFromVertex(vertex:HTMLElement):RulerEventData {
     let spt = svg.createSVGPoint();
         spt.x = pos.x - bounds.left;
         spt.y = pos.y - bounds.top;
+    const angleConstraints2 = angleConstraints ? (angleConstraints+'+0').split('+').map(c => parseInt(c)) : undefined;
     const data:RulerEventData = {
         svg: svg, 
         container: (containers && containers.length > 0) ? containers[0] : svg,
@@ -221,7 +225,8 @@ function getRulerDataFromVertex(vertex:HTMLElement):RulerEventData {
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
         hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
+        angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
+        angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
         evtPos: pos,
         evtPoint: spt,
@@ -604,7 +609,7 @@ function isReachable(data:RulerEventData, vert: VertexData):boolean {
         return true;  // Any other point is valid
     }
     const degrees = Math.atan2(dy, dx) * 180 / Math.PI + 360;
-    let mod = Math.abs(degrees % data.angleConstraints);
+    let mod = Math.abs((degrees + data.angleConstraintsOffset) % data.angleConstraints);
     if (mod > data.angleConstraints / 2) {
         mod = data.angleConstraints - mod;
     }
