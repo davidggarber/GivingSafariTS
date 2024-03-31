@@ -10,10 +10,11 @@
         'title': 'Bridges of Catan',
         'author': 'David Garber',
         'copyright': '2024',
+        'type': 'logic',
         'orientation': 'landscape',
         'textInput': true,
         'abilities': {
-          hashiBridge: true,
+          straightEdge: true,
         },
         'reactiveBuilder': true,
         'builderLookup': {
@@ -109,45 +110,21 @@
         stroke: none;
         fill: white;
       }
-      .hex .lanes {
-        text-anchor: middle;
-        font-size: 20pt;
-      }
-
-      #Bridges .hashi-bridge-area {
-        touch-action: none;
-      }
-      #Bridges .hashi-bridge-area .vertex {
+      #Bridges .straight-edge-area .vertex {
         stroke-width: 2px;
         stroke: black;
         fill: none;
       }
-      #Bridges .hashi-bridge-area .hover .vertex {
-        fill:#ff00ff66;
-      }
-      #Bridges .hashi-bridge-area .hover text {
-        stroke:black;
-      }
-      #Bridges .hashi-bridge {
-        stroke: #ffffffcc;
-        stroke-width: 6px;
+      #Bridges .straight-edge-area .vertex {
+        stroke-width: 2px;
+        stroke: black;
         fill: none;
       }
-      #Bridges .hashi-bridge-fill {
-        stroke:#cc00ff;
-        stroke-width: 5px;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        fill: none;
-        z-index: 2;
-      }
 
-      #Bridges .hashi-bridge.building {
-        stroke: white;
-        stroke-dasharray: 1 1;
-        stroke-width: 4px;
+      .hex .lanes {
+        text-anchor: middle;
+        font-size: 20pt;
       }
-
     </style>
   </head>
   <body id="Bridges">
@@ -158,26 +135,11 @@
         jump from tile-center to tile-center. All participating tiles have circles (with numbers) at their landing points. No bridges go anywhere else.
       </p>
       <p class="flavor narrow">
-        All bridges have 1 or 2 lanes.
-        The circled numbers count the total number of lanes reaching that tile, across all bridges.
-        <img class="sample" style="position: absolute;" src="Images/Bridges/rule-numbers.png">
+        Some bridges have a single lane. Others have two lanes. Never more. A bridge span can connect neighboring tiles, or they can jump over as many as 3 empty tiles. 
+        The two ends of a bridge will always be different resource types. Bridges may not cross other bridges mid-span. And they must always align to one of the hexagonal axes <img class="sample" style="position: absolute;" src="Images/Bridges/hex-axes.png"> &nbsp; &nbsp; &nbsp; .
       </p>
       <p class="flavor narrow">
-        Bridge spans may not intersect mid-span.
-        <img class="sample" style="position: absolute;" src="Images/Bridges/rule-intersect.png">
-      </p>
-      <p class="flavor narrow">
-        Bridges may connect neighboring tiles or jump 
-        to more distant tiles. They always align &nbsp;
-        <img class="sample" style="position: absolute;" src="Images/Bridges/hex-axes.png"><br>
-        with a hexagonal axis.
-      </p>
-      <p class="flavor narrow" style="display: none;">
-        Collectively, all bridges make a single interconnected graph around the island. No loops and no disconnected clusters.
-      </p>
-      <p class="flavor narrow">
-        The specific tile types matter. The two ends of a bridge will always be different resource types.
-        <br>Furthermore…
+        Circled numbers on participating tiles specify how many lanes arrive at that tile. These lanes can be for a single bridge, or divided among up to 6 bridges. Collectively all bridges make a single interconnected graph around the island. No loops and no disconnected clusters.
       </p>
       <p class="flavor narrow tight">
         <b>Mountains</b><img class="sample" style="position: relative;" src="Images/Bridges/small-mountain.png"><br>
@@ -196,11 +158,11 @@
         The bridge system is divided into regions, each identified by a single letter. Boundaries occur anywhere a hill is connected by bridge to a field.
       </p>
       <p class="flavor">
-          <i>Read the region letters in reading order across the map.</i>
+          Read the region letters in reading order across the map.
       </p>
 
       <div id="board" style="position: absolute; right: 0px; top: 0.75in;">
-        <svg class="hashi-bridge-area" width="600" height="600" viewbox="0 0 1200 1200" data-angle-constraints="60+30" data-can-share-vertices="true" data-bridge-offset="4">
+        <svg class="straight-edge-area" width="600" height="600" viewbox="0 0 1200 1200" data-angle-constraints="60+30" data-can-share-vertices="true">
           <g transform="translate(4,4)">
             <g id="images">
               <for each="col" in="hexColumns">
@@ -220,8 +182,6 @@
                 </g_>
               </for>                
             </g>
-            <g class="hashi-bridge-container" transform="translate(-4,-4) scale(2)">
-            </g>
             <g id="numbers">
               <for each="col" in="hexColumns">
                 <g_ transform="translate({={col#}*{tile.dx}},{col.top})">
@@ -233,9 +193,13 @@
                 </g_>
               </for>                
             </g>
+            <g class="straight-edge-container" transform="scale(2)">
+
+            </g>
           </g>
         </svg>
       </div>
+
 
       <template id="resource">
         <g class="hex" transform="translate(0,{={row}*{tile.dy}})">
@@ -254,7 +218,7 @@
       <template id="number">
         <g class="hex vertex-g" transform="translate({tile.mx},{={row}*{tile.dy}+{tile.my}})">
           <ellipse class="circle" cx="0" cy="0" rx="20" ry="20"></ellipse>
-          <text class="lanes" x="0" y="7pt">{num}</text>
+          <text class="lanes" x="0" y="6pt">{num}</text>
           <ellipse class="vertex" cx="0" cy="0" rx="20" ry="20">
             <if test="num" eq="0"><title>{resource}</title></if>
             <if test="num" eq="1"><title>{resource} with 1 lane</title></if>            

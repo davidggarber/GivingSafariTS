@@ -160,7 +160,7 @@ import { getLetterStyles } from "./_textSetup";
 
 
 const builder_tags = [
-  'build', 'use', 'for', 'if'
+  'build', 'use', 'for', 'if', 'xml'
 ];
 function identifyBuilders() {
   for (const t of builder_tags) {
@@ -207,7 +207,7 @@ export function expandControlTags() {
     const src = controls[0] as HTMLElement;
     context['svg-depth'] = getSvgDepth(src);
     let dest:Node[] = [];
-    if (isTag(src, 'build')) {
+    if (isTag(src, 'build') || isTag(src, 'xml')) {
       dest = expandContents(src, context);
     }
     else if (isTag(src, 'for')) {
@@ -631,7 +631,8 @@ const nameSpaces = {
 function cloneWithContext(elmt:HTMLElement, context:object):Element {
   const tagName = normalizeName(elmt.localName);
   let clone:Element;
-  if (context['svg-depth'] > 0) {
+  if (context['svg-depth'] > 0 || tagName == 'svg') {
+    // TODO: contents of embedded objects aren't SVG
     clone = document.createElementNS(svg_xmlns, tagName);
   }
   else {
@@ -639,7 +640,7 @@ function cloneWithContext(elmt:HTMLElement, context:object):Element {
   }
   cloneAttributes(elmt, clone, context);
 
-  if (elmt.tagName == 'SVG') {
+  if (elmt.tagName == 'svg') {
     context['svg-depth']++;
   }
 

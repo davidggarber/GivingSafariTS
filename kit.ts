@@ -4856,7 +4856,8 @@ function preprocessRulerRange(elem:HTMLElement) {
  */
 export const EdgeTypes = {
     straightEdge: 'straight-edge',
-    wordSelect: 'word-select'
+    wordSelect: 'word-select',
+    hashiBridge: 'hashi-bridge',
 }
 
 /**
@@ -4868,7 +4869,7 @@ let selector_class:string;
  */
 let selector_fill_class:string|null;
 /**
- * What is the class of the container: straight-edge-are or word-select-area
+ * What is the class of the container: straight-edge-area or word-select-area
  */
 let area_class:string;
 
@@ -4909,6 +4910,8 @@ type RulerEventData = {
     maxPoints: number;
     canShareVertices: boolean;
     canCrossSelf: boolean;
+    maxBridges: number,
+    bridgeOffset: number,
     hoverRange: number;
     angleConstraints?: number;
     angleConstraintsOffset: number;
@@ -4918,13 +4921,7 @@ type RulerEventData = {
     nearest?: VertexData;
 }
 
-/**
- * Looks up the containing area, and any optional settings
- * @param evt A mouse event within the area
- * @returns A RulerEventData
- */
-function getRulerData(evt:MouseEvent):RulerEventData {
-    const range = findParentOfClass(evt.target as Element, area_class) as HTMLElement;
+function createPartialRulerData(range:Element):RulerEventData {
     const svg = findParentOfTag(range, 'SVG') as SVGSVGElement;
     const containers = svg.getElementsByClassName(selector_class + '-container');
     const bounds = svg.getBoundingClientRect();
@@ -4932,13 +4929,11 @@ function getRulerData(evt:MouseEvent):RulerEventData {
     const maxPoints = max_points ? parseInt(max_points) : 2;
     const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
     const canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
+    const maxBridges = range.getAttributeNS('', 'data-max-bridges');
+    const bridgeOffset = range.getAttributeNS('', 'data-bridge-offset');
     const hoverRange = range.getAttributeNS('', 'data-hover-range');
     const angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
     const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
-    const pos = new DOMPoint(evt.x, evt.y);
-    let spt = svg.createSVGPoint();
-        spt.x = pos.x - bounds.left;
-        spt.y = pos.y - bounds.top;
     const angleConstraints2 = angleConstraints ? (angleConstraints+'+0').split('+').map(c => parseInt(c)) : undefined;
     const data:RulerEventData = {
         svg: svg, 
@@ -4947,13 +4942,30 @@ function getRulerData(evt:MouseEvent):RulerEventData {
         maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
+        maxBridges: maxBridges ? parseInt(maxBridges) : selector_class == EdgeTypes.hashiBridge ? 2 : 1,
+        bridgeOffset: bridgeOffset ? parseInt(bridgeOffset) : 2,
         hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
         angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
         angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
-        evtPos: pos,
-        evtPoint: spt,
+        evtPos: new DOMPoint(NaN, NaN),  // stub
+        evtPoint: svg.createSVGPoint(),  // stub 
     };
+    return data;
+}
+
+/**
+ * Looks up the containing area, and any optional settings
+ * @param evt A mouse event within the area
+ * @returns A RulerEventData
+ */
+function getRulerData(evt:MouseEvent):RulerEventData {
+    const range = findParentOfClass(evt.target as Element, area_class) as HTMLElement;
+    const data = createPartialRulerData(range);
+    data.evtPos = new DOMPoint(evt.x, evt.y);
+    data.evtPoint = data.svg.createSVGPoint();
+    data.evtPoint.x = data.evtPos.x - data.bounds.left;
+    data.evtPoint.y = data.evtPos.y - data.bounds.top;
 
     let near = findNearestVertex(data) as HTMLElement;
     if (near) {
@@ -4969,36 +4981,12 @@ function getRulerData(evt:MouseEvent):RulerEventData {
  */
 function getRulerDataFromVertex(vertex:HTMLElement):RulerEventData {
     const range = findParentOfClass(vertex, area_class) as HTMLElement;
-    const svg = findParentOfTag(range, 'SVG') as SVGSVGElement;
-    const containers = svg.getElementsByClassName(selector_class + '-container');
-    const bounds = svg.getBoundingClientRect();
-    const max_points = range.getAttributeNS('', 'data-max-points');
-    const maxPoints = max_points ? parseInt(max_points) : 2;
-    const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
-    const canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
-    const hoverRange = range.getAttributeNS('', 'data-hover-range');
-    const angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
-    const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
+    const data = createPartialRulerData(range);
     const vBounds = vertex.getBoundingClientRect();
-    const pos = new DOMPoint(vBounds.x + vBounds.width / 2, vBounds.y + vBounds.height / 2);
-    let spt = svg.createSVGPoint();
-        spt.x = pos.x - bounds.left;
-        spt.y = pos.y - bounds.top;
-    const angleConstraints2 = angleConstraints ? (angleConstraints+'+0').split('+').map(c => parseInt(c)) : undefined;
-    const data:RulerEventData = {
-        svg: svg, 
-        container: (containers && containers.length > 0) ? containers[0] : svg,
-        bounds: bounds,
-        maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
-        canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
-        canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
-        hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
-        angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
-        showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
-        evtPos: pos,
-        evtPoint: spt,
-    };
+    data.evtPos = new DOMPoint(vBounds.x + vBounds.width / 2, vBounds.y + vBounds.height / 2);
+    data.evtPoint = data.svg.createSVGPoint();
+    data.evtPoint.x = data.evtPos.x - data.bounds.left;
+    data.evtPoint.y = data.evtPos.y - data.bounds.top;
 
     let near = findNearestVertex(data) as HTMLElement;
     if (near) {
@@ -5201,6 +5189,34 @@ function openStraightLineTo(ruler:RulerEventData) {
 }
 
 /**
+ * Vertex lists are identifiers, so normalize them to be low-to-high
+ * @param vertexList A comma-delimited list of vertex indeces
+ * @param edge A Polyline, whose points would also need to be reversed
+ * @returns An equivalent list, where the first is always < last
+ */
+function normalizeVertexList(vertexList:string, edge?:SVGPolylineElement):string {
+    let list = vertexList.split(',').map(v => parseInt(v));
+    if (list.length > 2 && list[1] > list[list.length - 2]) {
+        // Reverse the point list too
+        if (edge) {
+            const pts:SVGPoint[] = [];
+            for (let i = edge.points.length - 1; i >= 0; i--) {
+                pts.push(edge.points[i]);
+            }
+            edge.points.clear();
+            for (let i = 0; i < pts.length; i++) {
+                edge.points.appendItem(pts[i]);
+            }
+        }
+
+        // Reverse the vertex list
+        const rev = list.map(n => isNaN(n) ? '' : String(n)).reverse();
+        return rev.join(',');
+    }
+    return vertexList;  // unchanged
+}
+
+/**
  * Convert the straight line being built to a finished line
  * @param ruler The containing area and rules
  * @param vertexList A string join of all the vertex indeces
@@ -5221,6 +5237,14 @@ function completeStraightLine(ruler:RulerEventData, vertexList:string, save:bool
         toggleClass(_straightEdgeBuilder, 'open-ended', false);
     }
 
+    vertexList = normalizeVertexList(vertexList, _straightEdgeBuilder);
+    const dupes:Element[] = findDuplicateEdges('data-vertices', vertexList, selector_class, []);
+    if (dupes.length >= ruler.maxBridges && _straightEdgeBuilder) {
+        // Disallow any more duplicates
+        ruler.container.removeChild(_straightEdgeBuilder);
+        _straightEdgeBuilder = null;
+    }
+
     if (_straightEdgeBuilder) {
         toggleClass(_straightEdgeBuilder, 'building', false);
         _straightEdgeBuilder.setAttributeNS('', 'data-vertices', vertexList);
@@ -5233,8 +5257,27 @@ function completeStraightLine(ruler:RulerEventData, vertexList:string, save:bool
                 fill.points.appendItem(_straightEdgeBuilder.points[i]);
             }
             ruler.container.appendChild(fill);  // will always be after the original
+            fill.onmouseenter=function(e){onEdgeHoverStart(e)};
+            fill.onmouseleave=function(e){onEdgeHoverEnd(e)};
+            fill.onclick=function(e){onDeleteEdge(e)};    
+        }
+        else {
+            _straightEdgeBuilder.onmouseenter=function(e){onEdgeHoverStart(e)};
+            _straightEdgeBuilder.onmouseleave=function(e){onEdgeHoverEnd(e)};
+            _straightEdgeBuilder.onclick=function(e){onDeleteEdge(e)};        
         }
 
+        dupes.push(_straightEdgeBuilder);
+        if (dupes.length > 1) {
+            // We have duplicates, so spread them apart
+            for (let d = 0; d < dupes.length; d++) {
+                const offset = dupes.length == 1 ? 0
+                : dupes.length == 2 ? ruler.bridgeOffset * (d * 2 - 1)
+                : ruler.bridgeOffset * (d - Math.floor(dupes.length / 2));
+                offsetBridge(ruler, dupes[d] as SVGPolylineElement, offset);
+            }
+        }
+        
         if (save) {
             saveStraightEdge(vertexList, true);
         }
@@ -5242,6 +5285,50 @@ function completeStraightLine(ruler:RulerEventData, vertexList:string, save:bool
 
     _straightEdgeVertices = [];
     _straightEdgeBuilder = null;
+}
+
+/**
+ * Move an edge sideways by some amount by turning a simple segment into a C shape.
+ * Alternatively, remove the C shape, and return to the simple segment.
+ * @param edge The polyline to modify
+ * @param offset The amount to offset, or 0 to remove the C shape
+ */
+function offsetBridge(ruler:RulerEventData, edge:SVGPolylineElement, offset:number) {
+    if (edge.points.length < 2) {
+        return;
+    }
+
+    const oldPoints = (edge as Element).getAttributeNS('', 'points') || '';
+
+    const start = edge.points[0];
+    const end = edge.points[edge.points.length - 1];
+
+    const normal = {x:start.y - end.y, y:end.x - start.x}
+    const lenNormal = Math.sqrt(normal.x * normal.x + normal.y * normal.y);
+    normal.x /= lenNormal;
+    normal.y /= lenNormal;
+
+    edge.points.clear();
+    edge.points.appendItem(start);
+    if (offset != 0) {
+        const p1 = ruler.svg.createSVGPoint();
+        const p2 = ruler.svg.createSVGPoint();
+        p1.x = start.x + normal.x * offset;
+        p1.y = start.y + normal.y * offset
+        p2.x = end.x + normal.x * offset;
+        p2.y = end.y + normal.y * offset
+        edge.points.appendItem(p1);
+        edge.points.appendItem(p2);
+    }
+    edge.points.appendItem(end);
+
+    if (selector_fill_class) {
+        const fills = findDuplicateEdges('points', oldPoints, selector_fill_class, []);
+        if (fills.length > 0) {
+            // Change just 1 to match
+            fills[0].setAttributeNS('', 'points', edge.getAttributeNS('', 'points') || '');
+        }
+    }
 }
 
 /**
@@ -5385,10 +5472,31 @@ function isReachable(data:RulerEventData, vert: VertexData):boolean {
 }
 
 /**
+ * For various reasons, multiple edges can ocupy the same space. Find them all.
+ * @param attr The attribute to check
+ * @param points The points attribute
+ * @param cls A class name to search through
+ * @param dupes A list of elements to append to
+ */
+function findDuplicateEdges(attr:string, points:string, cls:string, dupes:Element[]):Element[] {
+    const list = document.getElementsByClassName(cls);
+    for (let i = 0; i < list.length; i++) {
+        const elmt = list[i] as Element;
+        if (elmt.getAttributeNS('', attr) === points) {
+            dupes.push(elmt);
+        }
+    }
+    return dupes;
+}
+
+/**
  * Delete an existing straight-edge
  * @param edge The edge to remove
  */
 function deleteStraightEdge(edge:SVGPolylineElement) {
+    const range = findParentOfClass(edge, area_class) as HTMLElement;
+    const data = createPartialRulerData(range);
+
     for (let i = 0; i < _straightEdges.length; i++) {
         if (_straightEdges[i] === edge) {
             _straightEdges.splice(i, 1);
@@ -5396,23 +5504,39 @@ function deleteStraightEdge(edge:SVGPolylineElement) {
         }
     }
 
-    // See if there's a duplicate straight-edge, of class word-select2
-    if (selector_fill_class) {
-        const points = (edge as Element).getAttributeNS('', 'points');
-        const second = document.getElementsByClassName(selector_fill_class);
-        for (let i = 0; i < second.length; i++) {
-            const sec = second[i] as HTMLElement;
-            if (sec.getAttributeNS('', 'points') === points) {
-                edge.parentNode?.removeChild(sec);
-                break;
-            }
+    // See if there's a duplicate straight-edge, of class word-select
+    let dupes:Element[] = [];
+    const points = (edge as Element).getAttributeNS('', 'points');
+    if (points) {
+        dupes = findDuplicateEdges('points', points, selector_class, []);
+        if (selector_fill_class) {
+            dupes = findDuplicateEdges('points', points, selector_fill_class, dupes);
         }
     }
 
-    const indexList = edge.getAttributeNS('', 'data-vertices');
-    saveStraightEdge(indexList as string, false);  // Deletes from the saved list
+    let vertexList:string = '';
+    for (let d = 0; d < dupes.length; d++) {
+        const dupe = dupes[d];
+        if (!vertexList) {
+            vertexList = dupe.getAttributeNS('', 'data-vertices') || '';
+            if (vertexList) {
+                saveStraightEdge(vertexList as string, false);  // Deletes from the saved list
+            }        
+        }
+        dupe.parentNode?.removeChild(dupe);
+    }
 
-    edge.parentNode?.removeChild(edge);
+    // See if there were any parallel bridges
+    dupes = findDuplicateEdges('data-vertices', vertexList, selector_class, []);
+    if (dupes.length >= 1) {
+        // If so, re-layout to show fewer
+        for (let d = 0; d < dupes.length; d++) {
+            const offset = dupes.length == 1 ? 0
+                : dupes.length == 2 ? data.bridgeOffset * (d * 2 - 1)
+                : data.bridgeOffset * (d - Math.floor(dupes.length / 2));
+            offsetBridge(data, dupes[d] as SVGPolylineElement, offset);
+        }
+    }
 }
 
 /**
@@ -5431,6 +5555,66 @@ function findNearestVertex(data:RulerEventData):Element|null {
         if (min < 0 || dist < min) {
             min = dist;
             nearest = end;
+        }
+    }
+    return nearest;
+}
+
+function distanceToLine(edge: SVGPolylineElement, pt: SVGPoint) {
+    const ret = {
+        distance: NaN,
+        ptOnLine: {x:NaN, y:NaN},
+        fractionAlongLine: NaN
+    };
+
+    // For our uses, points attribute is always x0 y0 x1 y1
+    if (!edge.points || edge.points.length != 2) { 
+        return ret; 
+    }
+    const p0 = edge.points[0];
+    const p1 = edge.points[1];
+
+    // Line form: ax + by + c = 0
+    const line = {
+        a: p0.y - p1.y,
+        b: p1.x - p0.x,
+        c: -p0.x * (p0.y - p1.y) - p0.y * (p1.x - p1.x) };
+    const edgeLen = Math.sqrt(line.a * line.a + line.b * line.b);  // Length of edge
+    ret.distance = Math.abs(line.a * pt.x + line.b * pt.y + line.c) / edgeLen;
+
+    // Normal vector
+    const nx = line.b / edgeLen;
+    const ny = -line.a / edgeLen;
+    // Not sure which direction, so consider both directions along normal
+    const n1 = {x:nx * ret.distance, y:ny * ret.distance};
+    const n2 = {x:nx * -ret.distance, y:ny * -ret.distance};
+    // To find point p2 on the line
+    ret.ptOnLine = Math.abs(line.a * n1.x + line.b * n1.y) < Math.abs(line.a * n2.x + line.b * n2.y) ? n1 : n2;
+
+    // Calculate where on line, where 0 == p0 and 1 == p1
+    ret.fractionAlongLine = line.b != 0 
+        ? (ret.ptOnLine.x - p0.x) / line.b
+        : (ret.ptOnLine.y - p0.y) / -line.a;
+    
+        return ret;
+}
+
+/**
+ * Find the vertex nearest to the mouse event, and within any snap limit
+ * @param data The containing area and rules, including mouse event details
+ * @returns A vertex data, or null if none close enough
+ */
+function findEdgeUnder(data:RulerEventData):Element|null {
+    let min = data.hoverRange;
+    const edges = data.svg.getElementsByClassName(selector_class);
+    let nearest:Element|null = null;
+    for (let i = 0; i < edges.length; i++) {
+        const edge = edges[i];
+        const dtl = distanceToLine(edge as SVGPolylineElement, data.evtPoint);
+        if (dtl.distance < min && dtl.fractionAlongLine > 0.1 && dtl.fractionAlongLine < 0.9) {
+            // We're reasonably near the line segment
+            min = dtl.distance;
+            nearest = edge;
         }
     }
     return nearest;
@@ -5529,6 +5713,22 @@ export function clearAllStraightEdges(id:string) {
     _straightEdgeVertices = [];
     _straightEdgeBuilder = null;
 }
+
+function onEdgeHoverStart(evt:MouseEvent) {
+    const edge = evt.target as SVGPolylineElement;
+
+}
+
+function onEdgeHoverEnd(evt:MouseEvent) {
+    const edge = evt.target as SVGPolylineElement;
+
+}
+
+function onDeleteEdge(evt:MouseEvent) {
+    const edge = evt.target as SVGPolylineElement;
+    deleteStraightEdge(edge);
+}
+
 
 /*-----------------------------------------------------------
  * _events.ts
@@ -5775,6 +5975,7 @@ type AbilityData = {
     stamping?: boolean;
     straightEdge?: boolean;
     wordSearch?: boolean;
+    hashiBridge?: boolean;
     subway?: boolean;
 }
 
@@ -6257,6 +6458,12 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
         preprocessRulerFunctions(EdgeTypes.wordSelect, true);
         linkCss(safariDetails.cssRoot + 'WordSearch.css');
+        //indexAllVertices();
+    }
+    if (data.hashiBridge) {
+        // fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">🌉</span>';
+        preprocessRulerFunctions(EdgeTypes.hashiBridge, true);
+        linkCss(safariDetails.cssRoot + 'HashiBridge.css');
         //indexAllVertices();
     }
     if (data.subway) {
@@ -6974,7 +7181,7 @@ function rot13(source:string) {
 
 
 const builder_tags = [
-  'build', 'use', 'for', 'if'
+  'build', 'use', 'for', 'if', 'xml'
 ];
 function identifyBuilders() {
   for (const t of builder_tags) {
@@ -7021,7 +7228,7 @@ export function expandControlTags() {
     const src = controls[0] as HTMLElement;
     context['svg-depth'] = getSvgDepth(src);
     let dest:Node[] = [];
-    if (isTag(src, 'build')) {
+    if (isTag(src, 'build') || isTag(src, 'xml')) {
       dest = expandContents(src, context);
     }
     else if (isTag(src, 'for')) {
@@ -7445,7 +7652,8 @@ const nameSpaces = {
 function cloneWithContext(elmt:HTMLElement, context:object):Element {
   const tagName = normalizeName(elmt.localName);
   let clone:Element;
-  if (context['svg-depth'] > 0) {
+  if (context['svg-depth'] > 0 || tagName == 'svg') {
+    // TODO: contents of embedded objects aren't SVG
     clone = document.createElementNS(svg_xmlns, tagName);
   }
   else {
@@ -7453,7 +7661,7 @@ function cloneWithContext(elmt:HTMLElement, context:object):Element {
   }
   cloneAttributes(elmt, clone, context);
 
-  if (elmt.tagName == 'SVG') {
+  if (elmt.tagName == 'svg') {
     context['svg-depth']++;
   }
 
