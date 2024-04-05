@@ -83,6 +83,13 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
   .print .no-print {
     display: none;
   }
+
+  .print-only {
+    display: none;
+  }
+  .print .print-only {
+    display: initial;
+  }
 }
 
 @media print {
