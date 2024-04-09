@@ -24,7 +24,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\Docs\\letter.html",
+      "url": "${workspaceFolder}\\Docs\\pattern.html",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"

@@ -5207,7 +5207,7 @@ var safariDocsDetails = {
     'puzzleList': './index.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Architects+Daughter,Caveat',
+    'googleFonts': 'Caveat',
     'links': []
 };
 var safariSingleDetails = {
@@ -7328,6 +7328,7 @@ function startInputArea(src) {
     }
     if (literal) {
         span.innerText = textFromContext(literal);
+        toggleClass(span, 'literal');
         applyAllClasses(span, styles.literal);
     }
     else if (!isTag(src, 'pattern')) {

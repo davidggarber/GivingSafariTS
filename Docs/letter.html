@@ -16,15 +16,17 @@
 
     </script>
     <style>
+      table {
+        border-spacing: 0px;
+      }
       td {
         padding: 2px 4px;
         vertical-align: middle;
-      }
-      tr:nth-child(odd) td {
-        background-color:#ddd;
+        border-bottom: 1px gray solid;
       }
       .code {
         display: inline-block;
+        font-family: monospace;
         background-color: lightblue;
         border: blue solid 1px;
       }
@@ -33,6 +35,7 @@
   <body id="Letter`">
     <div id="pageBody">
       <build>
+        <h2>&lt;letter&gt;</h2>
         <p>
           Each &lt;letter&gt; is repeated 6 times, in 3 pairs.<br>
           &bullet; A space separates the first 2 pairs.<br>
@@ -41,21 +44,25 @@
         </p>
         <table>
           <tr>
-            <td>Default <use template="code" value="letter"></use></td>
+            <td><use template="tag" value="letter"></use> with default 
+              <use template="code" value="data-input-style='underline'"></use></td>
             <td><use template="4letters"></use></td>
           </tr>
           <tr>
-            <td><use template="code" value="letter data-input-style='box'"></use></td>
+            <td><use template="tag" value="letter data-input-style='box'"></use></td>
             <td><use template="4letters" dis="box"></use></td>
           </tr>
           <tr>
-            <td><use template="code" value="letter data-input-style='grid'"></use></td>
+            <td><use template="tag" value="letter data-input-style='grid'"></use></td>
             <td><use template="4letters" dis="grid"></use></td>
           </tr>
         </table>
       </build>
 
       <template id="code">
+        <span class="code">{value}</span>
+      </template>
+      <template id="tag">
         <span class="code">&lt;{value}&gt;</span>
       </template>
 

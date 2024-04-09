@@ -610,6 +610,7 @@ function startInputArea(src:HTMLElement):Node[] {
 
   if (literal) {
     span.innerText = textFromContext(literal);  
+    toggleClass(span, 'literal')
     applyAllClasses(span, styles.literal);
   }      
   else if (!isTag(src, 'pattern')) {

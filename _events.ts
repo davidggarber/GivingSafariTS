@@ -25,7 +25,7 @@ const safariDocsDetails:PuzzleEventDetails = {
   'puzzleList': './index.html',
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts.css',
-  'googleFonts': 'Architects+Daughter,Caveat',
+  'googleFonts': 'Caveat',
   'links': []
 };
 

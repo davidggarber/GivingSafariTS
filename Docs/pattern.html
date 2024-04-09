@@ -16,12 +16,95 @@
 
     </script>
     <style>
-      
+      table {
+        border-spacing: 0px;
+      }
+      td {
+        padding: 2px 4px;
+        vertical-align: middle;
+        border-bottom: 1px gray solid;
+      }
+      .code {
+        display: inline-block;
+        font-family: monospace;
+        background-color: lightblue;
+        border: blue solid 1px;
+      }
+      .code.different {
+        background-color: yellowgreen;
+      }
     </style>
   </head>
-  <body id="Pattern`">
+  <body id="Pattern">
     <div id="pageBody">
-    <p>asdf</p>
+      <build>
+        <h2>&lt;pattern&gt;</h2>
+        <table>
+          <tr>
+            <td colspan="2">
+              Each &lt;pattern&gt; specifies <use template="code" value="pattern='2 2-2'"></use>
+              and <use template="code" value="extract='1 5'"></use>.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              All defaults. Equivalent to<br>
+              <use template="code" value="data-input-style='underline'"></use>
+              <use template="code" value="data-extract-style='none'"></use>.
+            </td>
+            <td><use template="std-pattern"></use></td>
+          </tr>
+          <tr>
+            <td>
+              Henceforth, adding 
+              <use template="code" value="data-literal-style='none'"></use> to each.
+            </td>
+            <td data-literal-style='none'>
+              <use template="std-pattern"></use>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <use template="code" value="data-extract-style='box'">.
+            </td>
+            <td data-literal-style='none'>
+              <use template="std-pattern" des="box"></use></td>
+          </tr>
+          <tr>
+            <td>
+              <use template="code" value="data-extract-style='highlight'">.
+            </td>
+            <td data-literal-style='none'>
+              <use template="std-pattern" des="highlight"></use></td>
+          </tr>
+          <tr>
+            <td>
+              <use template="code" value="data-input-style='box'">.
+                <use template="code" value="data-extract-style='highlight'">.
+            </td>
+            <td data-literal-style='none'>
+              <use template="std-pattern" dis="box" des="highlight"></use></td>
+          </tr>
+        </table>
+      </build>
+      <h2>Compare with the old <use template="code" value="create-from-pattern"></use>...</h2>
+      <p class="letter-cell-block create-from-pattern" data-letter-pattern="2 2-2" data-extract-indeces="1"></p>
+
+      <template id="code">
+        <span class="code">{value}</span>
+      </template>
+      <template id="tag">
+        <span class="code">&lt;{value}&gt;</span>
+      </template>
+      <template id="diff">
+        <span class="code different">{value}</span>
+      </template>
+
+      <template id="std-pattern">
+        <span data-input-style="{dis?}" data-extract-style="{des?}">
+          <pattern pattern="2 2-2" extract="1 5"></pattern>
+        </span>
+      </template>
     </div>
   </body>
 </html>
