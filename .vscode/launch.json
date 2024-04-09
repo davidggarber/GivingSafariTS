@@ -20,6 +20,19 @@
     {
       "type": "msedge",
       "request": "launch",
+      "name": "Launch Docs",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "url": "${workspaceFolder}\\Docs\\letter.html",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/js/**/*.js"
+      ]
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
       "name": "Launch DGG",
       "skipFiles": [
         "<node_internals>/**"

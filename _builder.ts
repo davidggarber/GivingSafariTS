@@ -1,4 +1,5 @@
 import { theBoiler } from "./_boilerplate";
+import { anyFromContext, cloneAttributes, cloneTextNode, getBuilderContext, popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
 import { applyAllClasses, findParentOfTag, isTag, toggleClass } from "./_classUtil";
 import { svg_xmlns } from "./_tableBuilder";
 import { builtInTemplate, getTemplate } from "./_templates";
@@ -171,13 +172,86 @@ function identifyBuilders() {
   }
 }
 
-/**
- * The root context for all builder functions
- * @returns the builderLookup object on the boiler.
- */
-export function theBoilerContext() {
-  return theBoiler().builderLookup || {};
+let src_element_stack:Element[] = [];
+let dest_element_stack:Element[] = [];
+
+function initElementStack(elmt:Element|null) {
+  dest_element_stack = [];
+  src_element_stack = [];
+  const parent_stack:Element[] = [];
+  while (elmt !== null && elmt.nodeName != '#document-fragment' && elmt.tagName !== 'BODY') {
+    parent_stack.push(elmt);
+    elmt = elmt.parentElement;
+  }
+  // Invert stack
+  while (parent_stack.length > 0) {
+    src_element_stack.push(parent_stack.pop() as Element);
+  }
 }
+
+function pushDestElement(elmt:Element) {
+  dest_element_stack.push(elmt);
+}
+
+function popDestElement() {
+  dest_element_stack.pop();
+}
+
+/**
+ * See if any parent element in the builder stack matches a lambda
+ * @param fn a Lambda which takes an element and returns true for the desired condition
+ * @returns the first parent element that satisfies the lambda, or null if none do
+ */
+export function getBuilderParentIf(fn:(e:Element) => boolean):Element|null {
+  for (let i = dest_element_stack.length - 1; i >= 0; i--) {
+    if (fn(dest_element_stack[i])) {
+      return dest_element_stack[i];
+    }
+  }
+
+  for (let i = src_element_stack.length - 1; i >= 0; i--) {
+    if (fn(src_element_stack[i])) {
+      return src_element_stack[i];
+    }
+  }
+
+  return null;  // no parent satisfied lambda
+}
+
+/**
+ * See if any parent element, either in the builder stack, or src element tree, matches a lambda
+ * @param fn a Lambda which takes an element and returns true for the desired condition
+ * @returns the first parent element that satisfies the lambda, or null if none do
+ */
+export function getParentIf(elmt:Element|null, fn:(e:Element) => boolean):Element|null {
+  const bp = getBuilderParentIf(fn);
+  if (bp != null) {
+    return bp;
+  }
+
+  while (elmt !== null && elmt.nodeName != '#document-fragment' && elmt.tagName !== 'BODY') {
+    if (fn(elmt)) {
+      return elmt;
+    }
+    elmt = elmt.parentElement;
+  }
+
+  return null;
+}
+
+/**
+ * Is the current stack of building elements currently inside an SVG tag.
+ * @returns returns true if inside an SVG, unless further inside an EMBEDDED_OBJECT.
+ */
+export function inSvgNamespace():boolean {
+  // TODO: REVIEW Case: foreignObject
+  const elmt = getBuilderParentIf((e)=>e.tagName === 'SVG' || e.tagName === 'FOREIGNOBJECT');
+  if (elmt) {
+    return elmt.tagName === 'SVG';
+  }
+  return false;
+}
+
 
 /**
  * See if we are inside an existing <svg> tag. Or multiple!
@@ -199,25 +273,22 @@ function getSvgDepth(elmt:Element) {
  */
 export function expandControlTags() {
   identifyBuilders();
-  const context = theBoilerContext();
-  const inSvg = context['svg-depth'];
-
   let controls = document.getElementsByClassName('builder_control');
   while (controls.length > 0) {
     const src = controls[0] as HTMLElement;
-    context['svg-depth'] = getSvgDepth(src);
+    initElementStack(src);
     let dest:Node[] = [];
     if (isTag(src, 'build') || isTag(src, 'xml')) {
-      dest = expandContents(src, context);
+      dest = expandContents(src);
     }
     else if (isTag(src, 'for')) {
-      dest = startForLoop(src, context);
+      dest = startForLoop(src);
     }
     else if (isTag(src, 'if')) {
-      dest = startIfBlock(src, context);
+      dest = startIfBlock(src);
     }
     else if (isTag(src, 'use')) {
-      dest = useTemplate(src, context);
+      dest = useTemplate(src);
     }
     const parent = src.parentNode;
     for (let d = 0; d < dest.length; d++) {
@@ -228,8 +299,8 @@ export function expandControlTags() {
 
     // See if there are more
     controls = document.getElementsByClassName('builder_control');
-    context['svg-depth'] = inSvg;  // restore
   }
+  initElementStack(null);
 
   // Call any post-builder method
   const fn = theBoiler().postBuild;
@@ -271,7 +342,7 @@ function appendRange(parent:Node, add:Node[]) {
  * @param context the set of values that might get used by the for loop
  * @returns a list of nodes, which will replace this <for> element
  */
-function startForLoop(src:HTMLElement, context:object):Node[] {
+function startForLoop(src:HTMLElement):Node[] {
   const dest:Node[] = [];
 
   let iter:string|null = null;
@@ -281,29 +352,29 @@ function startForLoop(src:HTMLElement, context:object):Node[] {
   // <for each="variable_name" in="list">
   iter = src.getAttributeNS('', 'each');
   if (iter) {
-    list = parseForEach(src, context);
+    list = parseForEach(src);
   }
   else {
     iter = src.getAttributeNS('', 'char');
     if (iter) {
-      list = parseForText(src, context, '');
+      list = parseForText(src, '');
     }
     else {
       iter = src.getAttributeNS('', 'word');
       if (iter) {
-        list = parseForText(src, context, ' ');
+        list = parseForText(src, ' ');
       }
       else {
         iter = src.getAttributeNS('', 'key');
         if (iter) {
-          list = parseForKey(src, context);
+          list = parseForKey(src);
           vals = list[1];
           list = list[0];
         }
         else {
           iter = src.getAttributeNS('', 'range');
           if (iter) {
-            list = parseForRange(src, context);
+            list = parseForRange(src);
           }
           else {
             throw new Error('Unrecognized <for> tag type: ' + src);
@@ -317,17 +388,17 @@ function startForLoop(src:HTMLElement, context:object):Node[] {
     throw new Error('Unable to resolve from context: ' + src.outerHTML);
   }
 
+  const inner_context = pushBuilderContext();
   const iter_index = iter + '#';
   for (let i = 0; i < list.length; i++) {
-    context[iter_index] = i;
-    context[iter] = list[i];
+    inner_context[iter_index] = i;
+    inner_context[iter] = list[i];
     if (vals.length > 0) {
-      context[iter + '!'] = vals[i];
+      inner_context[iter + '!'] = vals[i];
     }
-    pushRange(dest, expandContents(src, context));
+    pushRange(dest, expandContents(src));
   }
-  context[iter_index] = undefined;
-  context[iter] = undefined;
+  popBuilderContext();
   
   return dest;
 }
@@ -338,20 +409,21 @@ function startForLoop(src:HTMLElement, context:object):Node[] {
  * @param context 
  * @returns a list of elements
  */
-function parseForEach(src:HTMLElement, context:object):any[] {
+function parseForEach(src:HTMLElement):any[] {
   const list_name = src.getAttributeNS('', 'in');
   if (!list_name) {
     throw new Error('for each requires "in" attribute');
   }
-  return anyFromContext(list_name, context);
+  return anyFromContext(list_name);
 }
 
-function parseForText(src:HTMLElement, context:object, delim:string) {
+function parseForText(src:HTMLElement, delim:string) {
   const list_name = src.getAttributeNS('', 'in');
   if (!list_name) {
     throw new Error('for char requires "in" attribute');
   }
   // The list_name can just be a literal string
+  const context = getBuilderContext();
   const list = (list_name in context) ? context[list_name] : list_name;
   if (!list) {
     throw new Error('unresolved context: ' + list_name);
@@ -359,19 +431,19 @@ function parseForText(src:HTMLElement, context:object, delim:string) {
   return list.split(delim);
 }
 
-function parseForRange(src:HTMLElement, context:object):any {
+function parseForRange(src:HTMLElement):any {
   const from = src.getAttributeNS('', 'in');
   let until = src.getAttributeNS('', 'until');
   const last = src.getAttributeNS('', 'to');
   const length = src.getAttributeNS('', 'len');
   const step = src.getAttributeNS('', 'step');
 
-  const start = from ? parseInt(textFromContext(from, context)) : 0;
-  let end = until ? parseInt(textFromContext(until, context))
-    : last ? (parseInt(textFromContext(last, context)) + 1)
-    : length ? (anyFromContext(length, context).length)
+  const start = from ? parseInt(textFromContext(from)) : 0;
+  let end = until ? parseInt(textFromContext(until))
+    : last ? (parseInt(textFromContext(last)) + 1)
+    : length ? (anyFromContext(length).length)
     : start;
-  const inc = step ? parseInt(textFromContext(step, context)) : 1;
+  const inc = step ? parseInt(textFromContext(step)) : 1;
   if (!until && inc < 0) {
     end -= 2;  // from 5 to 1 step -1 means i >= 0
   }
@@ -383,12 +455,12 @@ function parseForRange(src:HTMLElement, context:object):any {
   return list;
 }
 
-function parseForKey(src:HTMLElement, context:object):any {
+function parseForKey(src:HTMLElement):any {
   const obj_name = src.getAttributeNS('', 'in');
   if (!obj_name) {
     throw new Error('for each requires "in" attribute');
   }
-  const obj = anyFromContext(obj_name, context)
+  const obj = anyFromContext(obj_name)
   if (!obj) {
     throw new Error('unresolved list context: ' + obj_name);
   }
@@ -413,38 +485,38 @@ function parseForKey(src:HTMLElement, context:object):any {
  * @param context the set of values that might get used by or inside the if block
  * @returns a list of nodes, which will replace this <if> element
  */
-function startIfBlock(src:HTMLElement, context:object):Node[] {
+function startIfBlock(src:HTMLElement):Node[] {
   let test = src.getAttributeNS('', 'test');
   if (!test) {
     throw new Error('<if> tags must have a test attribute');
   }
-  test = textFromContext(test, context); 
+  test = textFromContext(test); 
 
   let pass:boolean = false;
   let value:string|null;
   if (value = src.getAttributeNS('', 'eq')) {  // equality
-    pass = test == textFromContext(value, context);
+    pass = test == textFromContext(value);
   }
   else if (value = src.getAttributeNS('', 'ne')) {  // not-equals
-    pass = test != textFromContext(value, context);
+    pass = test != textFromContext(value);
   }
   else if (value = src.getAttributeNS('', 'lt')) {  // less-than
-    pass = test < textFromContext(value, context);
+    pass = test < textFromContext(value);
   }
   else if (value = src.getAttributeNS('', 'le')) {  // less-than or equals
-    pass = test <= textFromContext(value, context);
+    pass = test <= textFromContext(value);
   }
   else if (value = src.getAttributeNS('', 'gt')) {  // greater-than
-    pass = test > textFromContext(value, context);
+    pass = test > textFromContext(value);
   }
   else if (value = src.getAttributeNS('', 'ge')) {  // greater-than or equals
-    pass = test >= textFromContext(value, context);
+    pass = test >= textFromContext(value);
   }
   else if (value = src.getAttributeNS('', 'in')) {  // string contains
-    pass = textFromContext(value, context).indexOf(test) >= 0;
+    pass = textFromContext(value).indexOf(test) >= 0;
   }
   else if (value = src.getAttributeNS('', 'ni')) {  // string doesn't contain
-    pass = textFromContext(value, context).indexOf(test) >= 0;
+    pass = textFromContext(value).indexOf(test) >= 0;
   }
   else {  // simple boolean
     pass = test === 'true';
@@ -452,7 +524,7 @@ function startIfBlock(src:HTMLElement, context:object):Node[] {
 
   if (pass) {
     // No change in context from the if
-    return expandContents(src, context);
+    return expandContents(src);
 
   }
   
@@ -476,12 +548,12 @@ const inputAreaTagNames = [
  * @param context A dictionary of all values that can be looked up
  * @returns a node array containing a single <span>
  */
-function startInputArea(src:HTMLElement, context:object):Node[] {
+function startInputArea(src:HTMLElement):Node[] {
   const span = document.createElement('span');
 
   // Copy most attributes. 
   // Special-cased ones are harmless - no meaning in generic spans
-  cloneAttributes(src, span, context);
+  cloneAttributes(src, span);
 
   let cloneContents = false;
   let literal:string|null = null;
@@ -523,13 +595,13 @@ function startInputArea(src:HTMLElement, context:object):Node[] {
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
     toggleClass(span, 'create-from-pattern', true);
     if (attr = src.getAttributeNS('', 'pattern')) {
-      span.setAttributeNS('', 'data-letter-pattern', textFromContext(attr, context));
+      span.setAttributeNS('', 'data-letter-pattern', textFromContext(attr));
     }
     if (attr = src.getAttributeNS('', 'extract')) {
-      span.setAttributeNS('', 'data-extract-indeces', textFromContext(attr, context));
+      span.setAttributeNS('', 'data-extract-indeces', textFromContext(attr));
     }
     if (attr = src.getAttributeNS('', 'numbers')) {
-      span.setAttributeNS('', 'data-number-assignments', textFromContext(attr, context));
+      span.setAttributeNS('', 'data-number-assignments', textFromContext(attr));
     }
   }
   else {
@@ -537,7 +609,7 @@ function startInputArea(src:HTMLElement, context:object):Node[] {
   }
 
   if (literal) {
-    span.innerText = textFromContext(literal, context);  
+    span.innerText = textFromContext(literal);  
     applyAllClasses(span, styles.literal);
   }      
   else if (!isTag(src, 'pattern')) {
@@ -548,7 +620,7 @@ function startInputArea(src:HTMLElement, context:object):Node[] {
   }
 
   if (cloneContents) {
-    appendRange(span, expandContents(src, context));
+    appendRange(span, expandContents(src));
   }
 
   return [span];
@@ -562,30 +634,30 @@ function startInputArea(src:HTMLElement, context:object):Node[] {
  * @param context A dictionary of all values that can be looked up
  * @returns A list of nodes
  */
-function expandContents(src:HTMLElement, context:object):Node[] {
+function expandContents(src:HTMLElement):Node[] {
   const dest:Node[] = [];
   for (let i = 0; i < src.childNodes.length; i++) {
     const child = src.childNodes[i];
     if (child.nodeType == Node.ELEMENT_NODE) {
       const child_elmt = child as HTMLElement;
       if (isTag(child_elmt, 'for')) {
-        pushRange(dest, startForLoop(child_elmt, context));
+        pushRange(dest, startForLoop(child_elmt));
       }
       else if (isTag(child_elmt, 'if')) {
-        pushRange(dest, startIfBlock(child_elmt, context));
+        pushRange(dest, startIfBlock(child_elmt));
       }
       else if (isTag(child_elmt, 'use')) {
-        pushRange(dest, useTemplate(child_elmt, context));
+        pushRange(dest, useTemplate(child_elmt));
       }
       else if (isTag(child_elmt, inputAreaTagNames)) {
-        pushRange(dest, startInputArea(child_elmt, context));
+        pushRange(dest, startInputArea(child_elmt));
       }
       else {
-        dest.push(cloneWithContext(child_elmt, context));
+        dest.push(cloneWithContext(child_elmt));
       }
     }
     else if (child.nodeType == Node.TEXT_NODE) {
-      pushRange(dest, cloneTextNode(child as Text, context));
+      pushRange(dest, cloneTextNode(child as Text));
     }
     else {
       dest.push(cloneNode(child));
@@ -602,7 +674,7 @@ function expandContents(src:HTMLElement, context:object):Node[] {
  * @param name Any tag or attribute name
  * @returns The name, or the the name without the _
  */
-function normalizeName(name:string):string {
+export function normalizeName(name:string):string {
   if (name.substring(0, 1) == '_') {
     return name.substring(1);
   }
@@ -628,450 +700,48 @@ const nameSpaces = {
  * @param context A dictionary of all accessible values
  * @returns A cloned element
  */
-function cloneWithContext(elmt:HTMLElement, context:object):Element {
+function cloneWithContext(elmt:HTMLElement):Element {
   const tagName = normalizeName(elmt.localName);
   let clone:Element;
-  if (context['svg-depth'] > 0 || tagName == 'svg') {
+  if (inSvgNamespace() || tagName == 'svg') {
     // TODO: contents of embedded objects aren't SVG
     clone = document.createElementNS(svg_xmlns, tagName);
   }
   else {
     clone = document.createElement(tagName);
   }
-  cloneAttributes(elmt, clone, context);
-
-  if (elmt.tagName == 'svg') {
-    context['svg-depth']++;
-  }
+  pushDestElement(clone);
+  cloneAttributes(elmt, clone);
 
   for (let i = 0; i < elmt.childNodes.length; i++) {
     const child = elmt.childNodes[i];
     if (child.nodeType == Node.ELEMENT_NODE) {
       const child_elmt = child as HTMLElement;
       if (isTag(child_elmt, 'for')) {
-        appendRange(clone, startForLoop(child_elmt, context));
+        appendRange(clone, startForLoop(child_elmt));
       }
       else if (isTag(child_elmt, 'if')) {
-        appendRange(clone, startIfBlock(child_elmt, context));
+        appendRange(clone, startIfBlock(child_elmt));
       }
       else if (isTag(child_elmt, 'use')) {
-        appendRange(clone, useTemplate(child_elmt, context));
+        appendRange(clone, useTemplate(child_elmt));
       }
       else if (isTag(child_elmt, inputAreaTagNames)) {
-        appendRange(clone, startInputArea(child_elmt, context));
+        appendRange(clone, startInputArea(child_elmt));
       }
       else {
-        clone.appendChild(cloneWithContext(child_elmt, context));
+        clone.appendChild(cloneWithContext(child_elmt));
       }
     }
     else if (child.nodeType == Node.TEXT_NODE) {
-      appendRange(clone, cloneTextNode(child as Text, context));
+      appendRange(clone, cloneTextNode(child as Text));
     }
     else {
       clone.insertBefore(cloneNode(child), null);
     }
   }
-
-  if (elmt.tagName == 'SVG') {
-    context['svg-depth']--;
-  }
-
+  popDestElement();
   return clone;
-}
-
-/**
- * Finish cloning an HTML element
- * @param src The element being cloned
- * @param dest The new element, still in need of attributes
- * @param context A dictionary of all accessible values
- */
-function cloneAttributes(src:Element, dest:Element, context:object) {
-  for (let i = 0; i < src.attributes.length; i++) {
-    const name = normalizeName(src.attributes[i].name);
-    let value = src.attributes[i].value;
-    value = cloneText(value, context);
-    if (name == 'id') {
-      dest.id = value;
-    }
-    else if (name == 'class') {
-      if (value) {
-        const classes = value.split(' ');
-        for (let i = 0; i < classes.length; i++) {
-          if (classes[i].length > 0) {
-            dest.classList.add(classes[i]);
-          }
-        }
-      }    
-    }
-    // REVIEW: special case 'style'?
-    else {
-      // Clone styles, using same XMLNS as the tag name
-      var ns = dest.getAttributeNS('', 'data-xmlns') || '';
-      const xmlns = nameSpaces[ns] || '';
-      if (xmlns) {
-        dest.setAttributeNS(xmlns, name, value);
-      }
-      else {
-        dest.setAttribute(name, value);
-      }
-    }
-  }
-}
-
-/**
- * Process a text node which may contain {curly} formatting.
- * @param text A text node
- * @param context A dictionary of all accessible values
- * @returns A list of text nodes
- */
-function cloneTextNode(text:Text, context:object):Node[] {
-  const dest:Node[] = [];
-  let str = text.textContent;
-  let i = str ? str.indexOf('{') : -1;
-  while (str && i >= 0) {
-    const j = str.indexOf('}', i);
-    if (j < 0) {
-      break;
-    }
-    if (i > 0) {
-      dest.push(document.createTextNode(str.substring(0, i)));
-    }
-    const key = str.substring(i + 1, j);
-    dest.push(document.createTextNode(textFromContext(key, context)));
-    str = str.substring(j + 1);
-    i = str.indexOf('{');
-  }
-  if (str) {
-    dest.push(document.createTextNode(str));
-  }
-  return dest;
-}
-
-/**
- * Process text which may contain {curly} formatting.
- * @param text Any text
- * @param context A dictionary of all accessible values
- * @returns Expanded text
- */
-function cloneText(str:string, context:object):string {
-  return contextFormula(str, context, false);
-}
-
-enum TokenType {
-  start = 0,
-  bracket,
-  operator,
-  text
-}
-
-/**
- * Divide up a string into sibling tokens.
- * Each token may be divisible into sub-tokens, but those are skipped here.
- * If we're not inside a {=formula}, the only tokens are { and }.
- * If we are inside a {=formula}, then operators and others brackets are tokens too.
- * @param str The parent string
- * @param inFormula True if str should be treated as already inside {}
- * @returns A list of token strings. Uninterpretted.
- */
-function tokenizeFormula(str:string, inFormula:boolean): string[] {
-  const tokens:string[] = [];
-  const stack:string[] = [];
-  let tok = '';
-  let tokType = TokenType.start;
-  for (let i = 0; i < str.length; i++) {
-    const prevTT = tokType;
-    const ch = str[i];
-    if (!inFormula && ch == '{') {
-      stack.push(bracketPairs[ch]);  // push the expected close
-      tokType = TokenType.bracket;
-    }
-    else if (inFormula && ch in bracketPairs) {
-      stack.push(bracketPairs[ch]);  // push the expected close
-      tokType = TokenType.bracket;
-    }
-    else if (stack.length > 0) {
-      tok += ch;
-      if (ch == stack[stack.length - 1]) {
-        stack.pop();
-        if (stack.length == 0) {
-          tokens.push(tok);
-          tok = '';
-          tokType = TokenType.start;
-        }
-      }
-      continue;
-    }
-    else if (inFormula && ch in binaryOperators) {
-      tokType = TokenType.operator;
-    }
-    else {
-      tokType = TokenType.text;
-    }
-
-    if (tokType != prevTT) {
-      if (tok) {
-        tokens.push(tok);
-      }
-      tok = ch;
-      if (tokType == TokenType.operator) {
-        tokens.push(ch);
-        tok = '';
-        tokType = TokenType.start;
-      }
-    }
-    else {
-      tok += ch;
-    }
-  }
-  if (tok) {
-    tokens.push(tok);
-  }
-  return tokens;
-}
-
-const bracketPairs = {
-  '(': ')',
-  // '[': ']',
-  '{': '}',
-  // '<': '>',  // should never be used for comparison operators in this context
-  '"': '"',
-  "'": "'",
-}
-
-const binaryOperators = {
-  '+': (a,b) => {return String(parseFloat(a) + parseFloat(b))},
-  '-': (a,b) => {return String(parseFloat(a) - parseFloat(b))},
-  '*': (a,b) => {return String(parseFloat(a) * parseFloat(b))},
-  '/': (a,b) => {return String(parseFloat(a) / parseFloat(b))},
-  '%': (a,b) => {return String(parseFloat(a) % parseInt(b))},
-  '&': (a,b) => {return String(a) + String(b)},
-}
-
-const unaryOperators = {
-  '-': (a) => {return String(-parseFloat(a))},
-}
-
-/**
- * Handle a mix of context tokens and operators
- * @param str Raw text of a token/operator string
- * @param context A dictionary of all accessible values
- * @param inFormula True if str should be treated as already inside {}
- * @returns Expanded text
- */
-function contextFormula(str:string, context:object, inFormula:boolean):string {
-  let dest = '';
-  const tokens = tokenizeFormula(str, inFormula);
-  let binaryOp:undefined|((a:string,b:string) => string);
-  let unaryOp:undefined|((a:string) => string);
-  for (let t = 0; t < tokens.length; t++) {
-    let tok = tokens[t];
-    if (!tok) {
-      continue;
-    }
-    if (tok in binaryOperators) {
-      if ((binaryOp || dest == '') && tok in unaryOperators) {
-        unaryOp = unaryOperators[tok];
-
-      }
-      else if (binaryOp) {
-        // TODO: consider unary operators
-        throw new Error("Consecutive binary operators: " + tok);
-      }
-      else {
-        binaryOp = binaryOperators[tok];
-      }
-      continue;  
-    }
-    if (tok[0] in bracketPairs) {
-      const inner = tok.substring(1, tok.length - 1);
-      if (tok[0] == '(') {
-        // (...) is a precedence operator
-        tok = contextFormula(inner, context, true);
-      }
-      else if (tok[0] == '{') {
-        if (tok[1] == '=') {
-          // {=...} is a nested formula
-          tok = contextFormula(inner.substring(1), context, true);
-        }
-        else {
-          // {...} is a context look-up
-          tok = textFromContext(inner, context);
-        }
-      }
-    }
-    if (unaryOp) {
-      tok = unaryOp(tok);
-      unaryOp = undefined;
-    }
-    if (binaryOp) {
-      // All operators read left-to-right
-      // TODO: if dest=='', consider unary operators
-      dest = binaryOp(dest, tok);
-      binaryOp = undefined;  // used up
-    }
-    else {
-      dest += tok;
-    }
-  }
-  if (unaryOp) {
-    throw new Error("Incomplete unary operation: " + str);
-  }
-  if (binaryOp) {
-    throw new Error("Incomplete binary operation: " + str);
-  }
-  return dest;
-}
-
-/**
- * Enable lookups into the context by key name.
- * Keys can be paths, separated by dots (.)
- * Paths can have other paths as nested arguments, using [ ]
- * Note, the dot separator is still required.
- *   example: foo.[bar].fuz       equivalent to foo[{bar}].fuz
- *   example: foo.[bar.baz].fuz   equivalent to foo[{bar.baz}].fuz
- * Even arrays use dot notation: foo.0 is the 0th item in foo
- * @param key A key, initially from {curly} notation
- * @param context A dictionary of all accessible values
- * @returns Resolved text
- */
-export function anyFromContext(key:string, context:object):any {
-  key = key.trim();
-  if (key[0] == '{' && key[key.length - 1] == '}') {
-    // Remove redundant {curly}, since some fields don't require them
-    key = key.substring(1, key.length - 1).trim();
-  }
-  const path = key.split('.');
-  const nested = [context];
-  for (let i = 0; i < path.length; i++) {
-    let step = path[i];
-    if (!step) {
-      continue;  // Ignore blank steps for now
-    }
-    const maybe = step.indexOf('?') == step.length - 1;
-    if (maybe) {
-      step = step.substring(0, step.length - 1);
-    }
-    const newNest = step[0] == '[';
-    if (newNest) {
-      step = step.substring(1);
-      nested.push(context);
-    }
-    // steps can end in one more more ']', which can't occur anywhere else
-    let unnest = step.indexOf(']');
-    if (unnest >= 0) {
-      unnest = step.length - unnest;
-      if (nested.length <= unnest) {
-        throw new Error('Malformed path has unmatched ] : ' + key);
-      }
-      step = step.substring(0, step.length - unnest);
-    }
-
-    if (!(step in nested[nested.length - 1])) {
-      if ((i == 0 && path.length == 1) || (newNest && unnest > 0)) {
-        nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
-      }
-      else if (maybe) {
-        if (i != path.length - 1) {
-          console.log('Optional key ' + step + '?' + ' before the end of ' + key);
-        }
-        return '';  // All missing optionals return ''
-      }
-      else {
-        throw new Error('Unrecognized key: ' + step + ' in ' + key);
-      }
-    }
-    else {
-      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
-    }
-
-    for (; unnest > 0; unnest--) {
-      const pop:string = '' + nested.pop();
-      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
-    }
-  }
-  if (nested.length > 1) {
-    throw new Error('Malformed path has unmatched [ : ' + key);
-  }
-  return nested.pop();
-}
-
-/**
- * Look up a value, according to the context path cached in an attribute
- * @param path A context path
- * @returns Any JSON object
- */
-export function globalContextData(path:string):any {
-  const context = theBoilerContext();
-  if (path && context) {
-    return anyFromContext(path, context);
-  }
-  return undefined;
-}
-
-/**
- * Test a key in the current context
- * @param key A key, initially from {curly} notation
- * @param context A dictionary of all accessible values
- * @returns true if key is a valid path within the context
- */
-function validateKeyInContet(key:string, context:object) {
-  try {
-    anyFromContext(key, context);
-    return true;
-  }
-  catch {
-    return false;
-  }
-}
-
-/**
- * Enable lookups into the context by key name.
- * Keys can be paths, separated by dots (.)
- * Paths can have other paths as nested arguments, using [ ]
- * Note, the dot separator is still required.
- *   example: foo.[bar].fuz       equivalent to foo[{bar}].fuz
- *   example: foo.[bar.baz].fuz   equivalent to foo[{bar.baz}].fuz
- * Even arrays use dot notation: foo.0 is the 0th item in foo
- * @param key A key, initially from {curly} notation
- * @param context A dictionary of all accessible values
- * @returns Resolved text
- */
-function textFromContext(key:string, context:object):string {
-  try {
-    return '' + anyFromContext(key, context);
-  }
-  catch(ex) {
-    if (key.indexOf('.') < 0) {
-      return key;  // key can be a literal value
-    }
-    throw ex;
-  }
-}
-
-
-/**
- * Get a keyed child of a parent, where the key is either a dictionary key 
- * or a list index or a string offset.
- * @param parent The parent object: a list, object, or string
- * @param key The identifier of the child: a dictionary key, a list index, or a string offset
- * @param maybe If true, and key does not work, return ''
- * @returns A child object, or a substring
- */
-function getKeyedChild(parent:any, key:string, maybe?:boolean) {
-  if (typeof(parent) == 'string') {
-    const i = parseInt(key);
-    if (maybe && (i < 0 || i >= (parent as string).length)) {
-      return '';
-    }
-    return (parent as string)[i];
-  }
-  if (!(key in parent)) {
-    if (maybe) {
-      return '';
-    }
-    throw new Error('Unrecognized key: ' + key);
-  }
-  return parent[key];
 }
 
 /**
@@ -1093,22 +763,20 @@ function cloneNode(node:Node):Node {
  * @param context The current context
  * @returns An array of nodes to insert into the document in place of the <use> tag
  */
-function useTemplate(node:HTMLElement, context:object):Node[] {
+function useTemplate(node:HTMLElement):Node[] {
   let dest:Node[] = [];
   
-  const popContext = {};
+  const inner_context = pushBuilderContext();
   for (var i = 0; i < node.attributes.length; i++) {
     const attr = node.attributes[i].name;
     const val = node.attributes[i].value;
     const attri = node.attributes[i].name.toLowerCase();
-    if (attri != 'template' && attri != 'builder_control') {
-      popContext[attr] = context[attr];
-      popContext[attr + '$'] = context[attr + '$'];
-      context[attr] = anyFromContext(val, context);
-      if (context[attr] === '') {
-        context[attr] = val;
+    if (attri != 'template' && attri != 'class') {
+      inner_context[attr] = anyFromContext(val);
+      if (inner_context[attr] === '') {
+        inner_context[attr] = val;
       }
-      context[attr + '$'] = val;  // Store the context path, so it can also be referenced
+      inner_context[attr + '$'] = val;  // Store the context path, so it can also be referenced
     }
   }
 
@@ -1123,19 +791,12 @@ function useTemplate(node:HTMLElement, context:object):Node[] {
     }
     // The template doesn't have any child nodes. Its content must first be cloned.
     const clone = template.content.cloneNode(true) as HTMLElement;
-    dest = expandContents(clone, context);
+    dest = expandContents(clone);
   }
   else {
-    dest = expandContents(node, context);
+    dest = expandContents(node);
   }
-
-  for (var i = 0; i < node.attributes.length; i++) {
-    const attr = node.attributes[i].name.toLowerCase();
-    if (attr != 'template' && attr != 'builder_control') {
-      context[attr] = popContext[attr];
-      context[attr + '$'] = popContext[attr + '$'];
-    }
-  }
+  popBuilderContext();
 
   return dest;
 }

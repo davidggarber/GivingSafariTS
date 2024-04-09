@@ -18,6 +18,17 @@ export type PuzzleEventDetails = {
   solverSite?: string;  // URL to another website
 }
 
+const safariDocsDetails:PuzzleEventDetails = {
+  'title': 'Puzzyl Utility Library',
+  'logo': './Images/Sample_Logo.png',
+  'icon': './Images/Sample_Icon.png',
+  'puzzleList': './index.html',
+  'cssRoot': '../Css/',
+  'fontCss': './Css/Fonts.css',
+  'googleFonts': 'Architects+Daughter,Caveat',
+  'links': []
+};
+
 const safariSingleDetails:PuzzleEventDetails = {
   'title': 'Puzzle',
   'logo': './Images/Sample_Logo.png',
@@ -51,6 +62,20 @@ const safari20Details:PuzzleEventDetails = {
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts20.css',
   'googleFonts': 'Architects+Daughter,Caveat',  // no whitespace
+  'links': [],
+  'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+                 'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
+  // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+}
+
+const safari21Details:PuzzleEventDetails = {
+  'title': 'Safari Labs',
+  'logo': './Images/PS20 logo.png',
+  'icon': './Images/Beaker_icon.png',
+  'puzzleList': './safari.html',
+  'cssRoot': '../Css/',
+  'fontCss': './Css/Fonts21.css',
+  'googleFonts': 'DM+Serif+Display,Caveat',  // no whitespace
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
@@ -101,9 +126,11 @@ const puzzylSafariTeamDetails:PuzzleEventDetails = {
 }
 
 const pastSafaris = {
+  'Docs': safariDocsDetails,
   'Sample': safariSampleDetails,
   'Single': safariSingleDetails,
   '20': safari20Details,
+  '21': safari21Details,
   'Dgg': safariDggDetails,
   '24': safari24Details,
   'team': puzzylSafariTeamDetails,

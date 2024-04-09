@@ -111,10 +111,9 @@ function dataFromTool(cell:HTMLElement, stampTools: StampToolDetails[]): string|
  * @returns Any JSON object
  */
 function contextDataFromRef(elmt:Element, attr:string):any {
-  const context = theBoilerContext();
   const path = getOptionalStyle(elmt, attr);
-  if (path && context) {
-    return anyFromContext(path, context);
+  if (path) {
+    return anyFromContext(path);
   }
   return undefined;
 }

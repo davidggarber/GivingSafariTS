@@ -1,3 +1,6 @@
+import { getParentIf } from "./_builder";
+import { textFromContext } from "./_builderContext";
+
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -332,17 +335,8 @@ export function getOptionalStyle(   elmt: Element|null,
     if (!elmt) {
         return null;
     }
-    var val = elmt.getAttribute(attrName);
-    while (val === null) {
-        elmt = elmt.parentNode as Element;
-        if (elmt === null || elmt.tagName === 'BODY') {
-            val = defaultStyle || null;
-            break;
-        }
-        else {
-            val = elmt.getAttribute(attrName);
-        }
-    }
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
+    let val = e ? textFromContext(e.getAttribute(attrName)) : (defaultStyle || null);
     return (val === null || prefix === undefined) ? val : (prefix + val);
 }
 

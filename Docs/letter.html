@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Docs',
+        'title': '&lt;letter&gt;',
+        // 'paperSize': 'minimalist',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true
+      };
+
+    </script>
+    <style>
+      td {
+        padding: 2px 4px;
+        vertical-align: middle;
+      }
+      tr:nth-child(odd) td {
+        background-color:#ddd;
+      }
+      .code {
+        display: inline-block;
+        background-color: lightblue;
+        border: blue solid 1px;
+      }
+    </style>
+  </head>
+  <body id="Letter`">
+    <div id="pageBody">
+      <build>
+        <p>
+          Each &lt;letter&gt; is repeated 6 times, in 3 pairs.<br>
+          &bullet; A space separates the first 2 pairs.<br>
+          &bullet; A &lt;letter literal='-'&gt; dash separates the last 2 pairs.<br>
+          &bullet; The 4th is also tagged for extraction.
+        </p>
+        <table>
+          <tr>
+            <td>Default <use template="code" value="letter"></use></td>
+            <td><use template="4letters"></use></td>
+          </tr>
+          <tr>
+            <td><use template="code" value="letter data-input-style='box'"></use></td>
+            <td><use template="4letters" dis="box"></use></td>
+          </tr>
+          <tr>
+            <td><use template="code" value="letter data-input-style='grid'"></use></td>
+            <td><use template="4letters" dis="grid"></use></td>
+          </tr>
+        </table>
+      </build>
+
+      <template id="code">
+        <span class="code">&lt;{value}&gt;</span>
+      </template>
+
+      <template id="4letters">
+        <span data-input-style="{dis?}">
+          <letter></letter><letter></letter> 
+          <letter></letter><letter></letter><letter literal="-"></letter><letter></letter><letter></letter>
+        </span>
+      </template>
+    </div>
+  </body>
+</html>
