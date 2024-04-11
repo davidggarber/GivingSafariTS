@@ -5656,7 +5656,9 @@ function boilerplate(bp) {
     page.appendChild(margins);
     margins.appendChild(pageBody);
     margins.appendChild(createSimpleDiv({ cls: 'title', html: bp.title }));
-    margins.appendChild(createSimpleDiv({ id: 'copyright', html: '&copy; ' + bp.copyright + ' ' + bp.author }));
+    if (bp.copyright || bp.author) {
+        margins.appendChild(createSimpleDiv({id:'copyright', html:'&copy; ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
+    }
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({ id: 'backlink', href: safariDetails.puzzleList, friendly: 'Puzzle list' }));
     }

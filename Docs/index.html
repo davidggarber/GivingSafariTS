@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Docs',
+        'title': 'Puzzyl Utility Documentation',
+        // 'paperSize': 'minimalist',
+        'abilities': {
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+          groups: [
+            { heading: 'Control Flow',
+              pages: ['for', 'if', 'use'] },
+            { heading: 'Text Input',
+              pages: ['letter', 'letters', 'literal', 'number', 'numbers', 'pattern', 'word'] },
+          ],
+        },        
+      };
+
+    </script>
+    <style>
+    </style>
+  </head>
+  <body id="Index">
+    <div id="pageBody">
+      <for each="group" in="{groups}">
+        <use template="group" title="{group.heading}" pages="{group.pages}"></use>
+      </for>
+    </div>
+
+    <template id="group">
+      <h2>{title}</h2>
+      <ul>
+        <for each="page" in="{pages}">
+          <li><a href="{page}.html"><code>&lt;{page}&gt;</code></a></li>
+        </for>
+      </ul>
+    </template>
+  </body>
+</html>

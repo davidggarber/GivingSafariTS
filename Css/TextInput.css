@@ -24,6 +24,10 @@
   margin-right: 0.05in;
 }
 
+.letter-cell.letter-underline {
+  width: 1.05em;
+}
+
 .letter-box {
   border: solid 1px black;
   margin-left: -1px;
