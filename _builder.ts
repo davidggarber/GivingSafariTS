@@ -1,5 +1,5 @@
 import { theBoiler } from "./_boilerplate";
-import { anyFromContext, cloneAttributes, cloneTextNode, getBuilderContext, popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
+import { anyFromContext, cloneAttributes, cloneText, cloneTextNode, getBuilderContext, popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
 import { applyAllClasses, findParentOfTag, isTag, toggleClass } from "./_classUtil";
 import { svg_xmlns } from "./_tableBuilder";
 import { builtInTemplate, getTemplate } from "./_templates";
@@ -438,12 +438,12 @@ function parseForRange(src:HTMLElement):any {
   const length = src.getAttributeNS('', 'len');
   const step = src.getAttributeNS('', 'step');
 
-  const start = from ? parseInt(textFromContext(from)) : 0;
-  let end = until ? parseInt(textFromContext(until))
-    : last ? (parseInt(textFromContext(last)) + 1)
+  const start = from ? parseInt(cloneText(from)) : 0;
+  let end = until ? parseInt(cloneText(until))
+    : last ? (parseInt(cloneText(last)) + 1)
     : length ? (anyFromContext(length).length)
     : start;
-  const inc = step ? parseInt(textFromContext(step)) : 1;
+  const inc = step ? parseInt(cloneText(step)) : 1;
   if (!until && inc < 0) {
     end -= 2;  // from 5 to 1 step -1 means i >= 0
   }
@@ -495,28 +495,28 @@ function startIfBlock(src:HTMLElement):Node[] {
   let pass:boolean = false;
   let value:string|null;
   if (value = src.getAttributeNS('', 'eq')) {  // equality
-    pass = test == textFromContext(value);
+    pass = test == cloneText(value);
   }
   else if (value = src.getAttributeNS('', 'ne')) {  // not-equals
-    pass = test != textFromContext(value);
+    pass = test != cloneText(value);
   }
   else if (value = src.getAttributeNS('', 'lt')) {  // less-than
-    pass = test < textFromContext(value);
+    pass = parseFloat(test) < parseFloat(cloneText(value));
   }
   else if (value = src.getAttributeNS('', 'le')) {  // less-than or equals
-    pass = test <= textFromContext(value);
+    pass = parseFloat(test) <= parseFloat(cloneText(value));
   }
   else if (value = src.getAttributeNS('', 'gt')) {  // greater-than
-    pass = test > textFromContext(value);
+    pass = parseFloat(test) > parseFloat(cloneText(value));
   }
   else if (value = src.getAttributeNS('', 'ge')) {  // greater-than or equals
-    pass = test >= textFromContext(value);
+    pass = parseFloat(test) >= parseFloat(cloneText(value));
   }
   else if (value = src.getAttributeNS('', 'in')) {  // string contains
-    pass = textFromContext(value).indexOf(test) >= 0;
+    pass = cloneText(value).indexOf(test) >= 0;
   }
   else if (value = src.getAttributeNS('', 'ni')) {  // string doesn't contain
-    pass = textFromContext(value).indexOf(test) >= 0;
+    pass = cloneText(value).indexOf(test) >= 0;
   }
   else {  // simple boolean
     pass = test === 'true';
@@ -595,27 +595,49 @@ function startInputArea(src:HTMLElement):Node[] {
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
     toggleClass(span, 'create-from-pattern', true);
     if (attr = src.getAttributeNS('', 'pattern')) {
-      span.setAttributeNS('', 'data-letter-pattern', textFromContext(attr));
+      span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
     }
     if (attr = src.getAttributeNS('', 'extract')) {
-      span.setAttributeNS('', 'data-extract-indeces', textFromContext(attr));
+      span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));
     }
     if (attr = src.getAttributeNS('', 'numbers')) {
-      span.setAttributeNS('', 'data-number-assignments', textFromContext(attr));
+      span.setAttributeNS('', 'data-number-assignments', cloneText(attr));
     }
   }
   else {
     return [src];  // Unknown tag. NYI?
   }
 
+  let block = src.getAttributeNS('', 'block');  // Used in grids
+  if (block) {
+    toggleClass(span, 'block', true);
+    literal = literal || block;
+  }
+
+  if (literal == '¤') {  // Special case (and back-compat)
+    toggleClass(span, 'block', true);
+    literal = ' ';
+  }
+  
   if (literal) {
-    span.innerText = textFromContext(literal);  
+    span.innerText = cloneText(literal);  
     toggleClass(span, 'literal')
     applyAllClasses(span, styles.literal);
   }      
   else if (!isTag(src, 'pattern')) {
     applyAllClasses(span, styles.letter);
     if (extract != null) {
+      toggleClass(span, 'extract', true);
+      if (parseInt(extract) > 0) {
+        toggleClass(span, 'numbered', true);
+        toggleClass(span, 'extract-numbered', true);
+        span.setAttributeNS('', 'data-number', extract);
+        
+        const under = document.createElement('span');
+        toggleClass(under, 'under-number');
+        under.innerText = extract;
+        span.appendChild(under);
+      }
       applyAllClasses(span, styles.extract);
     }
   }
@@ -773,9 +795,11 @@ function useTemplate(node:HTMLElement):Node[] {
     const val = node.attributes[i].value;
     const attri = node.attributes[i].name.toLowerCase();
     if (attri != 'template' && attri != 'class') {
-      inner_context[attr] = anyFromContext(val);
-      if (inner_context[attr] === '') {
-        inner_context[attr] = val;
+      if (val[0] == '{') {
+        inner_context[attr] = anyFromContext(val);
+      }
+      else {
+        inner_context[attr] = cloneText(val);
       }
       inner_context[attr + '$'] = val;  // Store the context path, so it can also be referenced
     }

@@ -51,8 +51,16 @@
 .literal-gridgap {
   width: 4ex;
   height: 4ex;
-  border: none;
+  border: solid 1px transparent;
   margin-left: -1px;
+}
+
+.literal-block {
+  width: 4ex;
+  height: 4ex;
+  border: solid 1px black;
+  margin-left: -1px;
+  background-color: #7f7f7f;  
 }
 
 .letter-cell.read-only-overlay {
@@ -151,11 +159,25 @@ input[type=number]::-webkit-outer-spin-button {
   position: absolute;
   width: 100%;
   text-align: center;
-  top: 0.5em;
   font-family: 'Verdana';
   font-size: 10pt;
   color: black;
-  
+}
+
+.letter-underline .letter-literal {
+  top: 0.5em;
+}
+
+.letter-grid .letter-literal {
+  top: 0.4em;
+}
+
+.literal-gridgap .letter-literal {
+  top: 0.4em;
+}
+
+.literal-block .letter-literal {
+  top: 0.4em;
 }
 
 .extract-image {

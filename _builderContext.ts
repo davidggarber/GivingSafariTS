@@ -111,7 +111,7 @@ export function cloneTextNode(text:Text):Node[] {
  * @param context A dictionary of all accessible values
  * @returns Expanded text
  */
-function cloneText(str:string):string {
+export function cloneText(str:string):string {
   return contextFormula(str, false);
 }
 
@@ -253,7 +253,7 @@ function contextFormula(str:string, inFormula:boolean):string {
         }
         else {
           // {...} is a context look-up
-          tok = textFromContext(inner);
+          tok = '' + anyFromContext(inner);
         }
       }
     }
@@ -266,6 +266,9 @@ function contextFormula(str:string, inFormula:boolean):string {
       // TODO: if dest=='', consider unary operators
       dest = binaryOp(dest, tok);
       binaryOp = undefined;  // used up
+    }
+    else if (inFormula) {
+      dest += anyFromContext(tok);
     }
     else {
       dest += tok;
@@ -281,6 +284,23 @@ function contextFormula(str:string, inFormula:boolean):string {
 }
 
 /**
+ * Trim a string without taking non-breaking-spaces
+ * @param str Any string
+ * @returns A substring
+ */
+function simpleTrim(str:string):string {
+  let s = 0;
+  let e = str.length;
+  while (s < e && (str.charCodeAt(s) || 33) <= 32) {
+    s++;
+  }
+  while (e > s && (str.charCodeAt(e) || 33) <= 32) {
+    e--;
+  }
+  return str.substring(s, e);
+}
+
+/**
  * Enable lookups into the context by key name.
  * Keys can be paths, separated by dots (.)
  * Paths can have other paths as nested arguments, using [ ]
@@ -293,14 +313,14 @@ function contextFormula(str:string, inFormula:boolean):string {
  * @returns Resolved text
  */
 export function anyFromContext(key:string):any {
+  key = simpleTrim(key);
   if (key === '') {
     return '';
   }
   const context = getBuilderContext();
-  key = key.trim();
   if (key[0] == '{' && key[key.length - 1] == '}') {
     // Remove redundant {curly}, since some fields don't require them
-    key = key.substring(1, key.length - 1).trim();
+    key = simpleTrim(key.substring(1, key.length - 1));
   }
   const path = key.split('.');
   const nested = [context];
@@ -401,7 +421,7 @@ export function textFromContext(key:string|null):string {
     return '';
   }
   try {
-    return '' + anyFromContext(key);
+    return contextFormula(key, true);
   }
   catch(ex) {
     if (key.indexOf('.') < 0) {

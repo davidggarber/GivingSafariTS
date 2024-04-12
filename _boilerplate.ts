@@ -184,9 +184,10 @@ function preSetup(bp:BoilerPlateData) {
 interface CreateSimpleDivArgs {
     id?: string;
     cls?: string;
-    html?: string;
+    text?: string;  // raw text, which will be entitized
+    html?: string;  // html code
 }
-function createSimpleDiv({id, cls, html}: CreateSimpleDivArgs) : HTMLDivElement {
+function createSimpleDiv({id, cls, text, html}: CreateSimpleDivArgs) : HTMLDivElement {
     let div: HTMLDivElement = document.createElement('DIV') as HTMLDivElement;
     if (id !== undefined) {
         div.id = id;
@@ -194,7 +195,10 @@ function createSimpleDiv({id, cls, html}: CreateSimpleDivArgs) : HTMLDivElement 
     if (cls !== undefined) {
         div.classList.add(cls);
     }
-    if (html !== undefined) {
+    if (text !== undefined) {
+        div.appendChild(document.createTextNode(text));
+    }
+    else if (html !== undefined) {
         div.innerHTML = html;
     }
     return div;
@@ -413,9 +417,9 @@ function boilerplate(bp: BoilerPlateData) {
     body.appendChild(page);
     page.appendChild(margins);
     margins.appendChild(pageBody);
-    margins.appendChild(createSimpleDiv({cls:'title', html:bp.title}));
+    margins.appendChild(createSimpleDiv({cls:'title', text:bp.title}));
     if (bp.copyright || bp.author) {
-        margins.appendChild(createSimpleDiv({id:'copyright', html:'&copy; ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
+        margins.appendChild(createSimpleDiv({id:'copyright', text:'© ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
     }
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:'Puzzle list'}));

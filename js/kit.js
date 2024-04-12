@@ -5,7 +5,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = void 0;
-exports.builtInTemplate = exports.getTemplate = exports.normalizeName = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.textFromContext = exports.globalContextData = exports.anyFromContext = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = void 0;
+exports.builtInTemplate = exports.getTemplate = exports.normalizeName = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.textFromContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -5451,7 +5451,7 @@ function preSetup(bp) {
     }
 }
 function createSimpleDiv(_a) {
-    var id = _a.id, cls = _a.cls, html = _a.html;
+    var id = _a.id, cls = _a.cls, text = _a.text, html = _a.html;
     var div = document.createElement('DIV');
     if (id !== undefined) {
         div.id = id;
@@ -5459,7 +5459,10 @@ function createSimpleDiv(_a) {
     if (cls !== undefined) {
         div.classList.add(cls);
     }
-    if (html !== undefined) {
+    if (text !== undefined) {
+        div.appendChild(document.createTextNode(text));
+    }
+    else if (html !== undefined) {
         div.innerHTML = html;
     }
     return div;
@@ -5655,9 +5658,9 @@ function boilerplate(bp) {
     body.appendChild(page);
     page.appendChild(margins);
     margins.appendChild(pageBody);
-    margins.appendChild(createSimpleDiv({ cls: 'title', html: bp.title }));
+    margins.appendChild(createSimpleDiv({ cls: 'title', text: bp.title }));
     if (bp.copyright || bp.author) {
-        margins.appendChild(createSimpleDiv({id:'copyright', html:'&copy; ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
+        margins.appendChild(createSimpleDiv({ id: 'copyright', text: '© ' + (bp.copyright || '') + ' ' + (bp.author || '') }));
     }
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({ id: 'backlink', href: safariDetails.puzzleList, friendly: 'Puzzle list' }));
@@ -6451,6 +6454,7 @@ exports.cloneTextNode = cloneTextNode;
 function cloneText(str) {
     return contextFormula(str, false);
 }
+exports.cloneText = cloneText;
 var TokenType;
 (function (TokenType) {
     TokenType[TokenType["start"] = 0] = "start";
@@ -6583,7 +6587,7 @@ function contextFormula(str, inFormula) {
                 }
                 else {
                     // {...} is a context look-up
-                    tok = textFromContext(inner);
+                    tok = '' + anyFromContext(inner);
                 }
             }
         }
@@ -6596,6 +6600,9 @@ function contextFormula(str, inFormula) {
             // TODO: if dest=='', consider unary operators
             dest = binaryOp(dest, tok);
             binaryOp = undefined; // used up
+        }
+        else if (inFormula) {
+            dest += anyFromContext(tok);
         }
         else {
             dest += tok;
@@ -6610,6 +6617,22 @@ function contextFormula(str, inFormula) {
     return dest;
 }
 /**
+ * Trim a string without taking non-breaking-spaces
+ * @param str Any string
+ * @returns A substring
+ */
+function simpleTrim(str) {
+    var s = 0;
+    var e = str.length;
+    while (s < e && (str.charCodeAt(s) || 33) <= 32) {
+        s++;
+    }
+    while (e > s && (str.charCodeAt(e) || 33) <= 32) {
+        e--;
+    }
+    return str.substring(s, e);
+}
+/**
  * Enable lookups into the context by key name.
  * Keys can be paths, separated by dots (.)
  * Paths can have other paths as nested arguments, using [ ]
@@ -6622,14 +6645,14 @@ function contextFormula(str, inFormula) {
  * @returns Resolved text
  */
 function anyFromContext(key) {
+    key = simpleTrim(key);
     if (key === '') {
         return '';
     }
     var context = getBuilderContext();
-    key = key.trim();
     if (key[0] == '{' && key[key.length - 1] == '}') {
         // Remove redundant {curly}, since some fields don't require them
-        key = key.substring(1, key.length - 1).trim();
+        key = simpleTrim(key.substring(1, key.length - 1));
     }
     var path = key.split('.');
     var nested = [context];
@@ -6727,7 +6750,7 @@ function textFromContext(key) {
         return '';
     }
     try {
-        return '' + anyFromContext(key);
+        return contextFormula(key, true);
     }
     catch (ex) {
         if (key.indexOf('.') < 0) {
@@ -7172,12 +7195,12 @@ function parseForRange(src) {
     var last = src.getAttributeNS('', 'to');
     var length = src.getAttributeNS('', 'len');
     var step = src.getAttributeNS('', 'step');
-    var start = from ? parseInt(textFromContext(from)) : 0;
-    var end = until ? parseInt(textFromContext(until))
-        : last ? (parseInt(textFromContext(last)) + 1)
+    var start = from ? parseInt(cloneText(from)) : 0;
+    var end = until ? parseInt(cloneText(until))
+        : last ? (parseInt(cloneText(last)) + 1)
             : length ? (anyFromContext(length).length)
                 : start;
-    var inc = step ? parseInt(textFromContext(step)) : 1;
+    var inc = step ? parseInt(cloneText(step)) : 1;
     if (!until && inc < 0) {
         end -= 2; // from 5 to 1 step -1 means i >= 0
     }
@@ -7225,28 +7248,28 @@ function startIfBlock(src) {
     var pass = false;
     var value;
     if (value = src.getAttributeNS('', 'eq')) { // equality
-        pass = test == textFromContext(value);
+        pass = test == cloneText(value);
     }
     else if (value = src.getAttributeNS('', 'ne')) { // not-equals
-        pass = test != textFromContext(value);
+        pass = test != cloneText(value);
     }
     else if (value = src.getAttributeNS('', 'lt')) { // less-than
-        pass = test < textFromContext(value);
+        pass = parseFloat(test) < parseFloat(cloneText(value));
     }
     else if (value = src.getAttributeNS('', 'le')) { // less-than or equals
-        pass = test <= textFromContext(value);
+        pass = parseFloat(test) <= parseFloat(cloneText(value));
     }
     else if (value = src.getAttributeNS('', 'gt')) { // greater-than
-        pass = test > textFromContext(value);
+        pass = parseFloat(test) > parseFloat(cloneText(value));
     }
     else if (value = src.getAttributeNS('', 'ge')) { // greater-than or equals
-        pass = test >= textFromContext(value);
+        pass = parseFloat(test) >= parseFloat(cloneText(value));
     }
     else if (value = src.getAttributeNS('', 'in')) { // string contains
-        pass = textFromContext(value).indexOf(test) >= 0;
+        pass = cloneText(value).indexOf(test) >= 0;
     }
     else if (value = src.getAttributeNS('', 'ni')) { // string doesn't contain
-        pass = textFromContext(value).indexOf(test) >= 0;
+        pass = cloneText(value).indexOf(test) >= 0;
     }
     else { // simple boolean
         pass = test === 'true';
@@ -7316,26 +7339,45 @@ function startInputArea(src) {
     else if (isTag(src, 'pattern')) { // multiple input cells for (usually) one character each
         toggleClass(span, 'create-from-pattern', true);
         if (attr = src.getAttributeNS('', 'pattern')) {
-            span.setAttributeNS('', 'data-letter-pattern', textFromContext(attr));
+            span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
         }
         if (attr = src.getAttributeNS('', 'extract')) {
-            span.setAttributeNS('', 'data-extract-indeces', textFromContext(attr));
+            span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));
         }
         if (attr = src.getAttributeNS('', 'numbers')) {
-            span.setAttributeNS('', 'data-number-assignments', textFromContext(attr));
+            span.setAttributeNS('', 'data-number-assignments', cloneText(attr));
         }
     }
     else {
         return [src]; // Unknown tag. NYI?
     }
+    var block = src.getAttributeNS('', 'block'); // Used in grids
+    if (block) {
+        toggleClass(span, 'block', true);
+        literal = literal || block;
+    }
+    if (literal == '¤') { // Special case (and back-compat)
+        toggleClass(span, 'block', true);
+        literal = ' ';
+    }
     if (literal) {
-        span.innerText = textFromContext(literal);
+        span.innerText = cloneText(literal);
         toggleClass(span, 'literal');
         applyAllClasses(span, styles.literal);
     }
     else if (!isTag(src, 'pattern')) {
         applyAllClasses(span, styles.letter);
         if (extract != null) {
+            toggleClass(span, 'extract', true);
+            if (parseInt(extract) > 0) {
+                toggleClass(span, 'numbered', true);
+                toggleClass(span, 'extract-numbered', true);
+                span.setAttributeNS('', 'data-number', extract);
+                var under = document.createElement('span');
+                toggleClass(under, 'under-number');
+                under.innerText = extract;
+                span.appendChild(under);
+            }
             applyAllClasses(span, styles.extract);
         }
     }
@@ -7483,9 +7525,11 @@ function useTemplate(node) {
         var val = node.attributes[i].value;
         var attri = node.attributes[i].name.toLowerCase();
         if (attri != 'template' && attri != 'class') {
-            inner_context[attr] = anyFromContext(val);
-            if (inner_context[attr] === '') {
-                inner_context[attr] = val;
+            if (val[0] == '{') {
+                inner_context[attr] = anyFromContext(val);
+            }
+            else {
+                inner_context[attr] = cloneText(val);
             }
             inner_context[attr + '$'] = val; // Store the context path, so it can also be referenced
         }
