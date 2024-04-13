@@ -344,22 +344,23 @@
               addend.innerText = ' ';  // &nbsp;
             }
           }
-          var inp = document.getElementById('ext-letter-' + p).getElementsByTagName('input')[0];
-          if (both == 2) {
-            var letter = String.fromCodePoint(64 + sum);
-            inp.value = letter;
-          }
-          else {
-            inp.value = '';
-          }
+          // var inp = document.getElementById('ext-letter-' + p).getElementsByTagName('input')[0];
+          // if (both == 2) {
+          //   var letter = String.fromCodePoint(64 + sum);
+          //   inp.value = letter;
+          // }
+          // else {
+          //   inp.value = '';
+          // }
         }
       }
 
       function buildSvgs() {
+        var pageBody = document.getElementById('pageBody');
         var svgArea = document.getElementById('svg-area');
-        svgArea.addEventListener('pointerleave', cancelDrag);
-        svgArea.addEventListener('pointermove', midDrag);
-        svgArea.addEventListener('pointerup', endDrag);
+        pageBody.addEventListener('pointerleave', cancelDrag);
+        pageBody.addEventListener('pointermove', midDrag);
+        pageBody.addEventListener('pointerup', endDrag);
         svgArea.addEventListener('pointerdown', clickCanvas);
         var board = document.getElementById('board');
         var extras = document.getElementById('extras');
@@ -444,6 +445,12 @@
         left: 0px;
         top: 0px;
         width: 2.25in;
+      }
+      #extraction {
+        position: absolute;
+        left: 0px;
+        top: 4.25in;
+        z-index: 100;
       }
       #extraction .pair {
         display: inline-block;
@@ -603,16 +610,16 @@
         <p>
           Afterwards, those dashed regions should make sum sense.
         </p>
-        <div id="extraction">
-          <for range="i" until="extractLen">
-            <div class="pair" id="extraction-{i}">
-              <span class="extract-letter"><letter id="ext-letter-{i}"></letter></span>
-              <span class="sum" id="ext-sum-{i}">
-                <span class="addend" id="ext-sum-{i}-0">&nbsp;</span>+<span class="addend" id="ext-sum-{i}-1">&nbsp;</span>
-              </span>
-            </div>
-          </for>  
-        </div>
+      </div>
+      <div id="extraction">
+        <for range="i" until="{extractLen}">
+          <div class="pair" id="extraction-{i}">
+            <span class="extract-letter"><letter id="ext-letter-{i}"></letter></span>
+            <span class="sum" id="ext-sum-{i}">
+              <span class="addend" id="ext-sum-{i}-0">&nbsp;</span>+<span class="addend" id="ext-sum-{i}-1">&nbsp;</span>
+            </span>
+          </div>
+        </for>  
       </div>
 
       <svg id="svg-area" width="816" height="1056">
