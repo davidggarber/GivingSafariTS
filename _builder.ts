@@ -574,7 +574,7 @@ function startInputArea(src:HTMLElement):Node[] {
   }
   else if (isTag(src, 'literal')) {  // 1 input cell for (usually) one character
     toggleClass(span, 'letter-cell', true);
-    toggleClass(span, 'literal', true);
+    literal = ' ';
     cloneContents = true;  // literal value
   }
   else if (isTag(src, 'number')) {  // 1 input cell for one numeric character
@@ -620,8 +620,10 @@ function startInputArea(src:HTMLElement):Node[] {
   }
   
   if (literal) {
-    span.innerText = cloneText(literal);  
-    toggleClass(span, 'literal')
+    if (!cloneContents) {
+      span.innerText = cloneText(literal);  
+    }
+    toggleClass(span, 'literal', true);
     applyAllClasses(span, styles.literal);
   }      
   else if (!isTag(src, 'pattern')) {

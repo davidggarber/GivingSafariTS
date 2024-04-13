@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Docs',
+        'title': '<letter> variants',
+        'paperSize': 'ledger',
+        'orientation': 'landscape',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true
+      };
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      #Letters .under-number {
+        font-size: 8pt;
+      }
+
+      #Letters.wide-cell .letter-cell {
+        width: 1.5em;
+      }
+      #Letters.wide-multi-letter .letter-cell.multiple-letter {
+        width: 2em;
+      }
+      #Letters.literal-font .letter-literal {
+        font-family: 'Caveat';
+        font-size: 14pt;
+        color: red;
+      }
+      #Letters.literal-vert .letter-literal {
+        top: 0px;
+      }
+    </style>
+  </head>
+  <body id="Letters">
+    <div id="pageBody">
+      <div id="examples" style="width:7.5in">
+        <build>
+          <p>All input styles are the same as <a href="letter.html">&lt;letter&gt;</a>.</p>
+          <h3>&lt;letters&gt;</h3>
+          <p>
+            The <use template="tag" value="letters"></use> tag will create a single input area, which can hold a couple letters.<br>
+            It is intended for scenarios where the player needs to decide how many letters should fit.<br>
+            Don't use it when the number of letters is clear from context - simply specify separate <use template="tag" value="letter"></use> tags.
+          </p>
+          <p>
+            The character spacing will automatically compress when as the input gets longer.<br>
+            Consider using CSS styles to widen the input areas.
+          </p>
+          <p>
+            When players input text, they will need to explicitly exit a &lt;letters&gt;, via click, arrow, or tab.
+          </p>
+          <p>
+            Each example specifies alternating &lt;letter&gt; and &lt;letters&gt;, with the latter two also tagged for extract.
+          </p>
+          <table>
+            <tr>
+              <td>All default</td>
+              <td><use template="letters"></use></td>
+            </tr>
+            <tr>
+              <td><use template="code" value="data-input-style='box' data-extract-style='highlight'"></use></td>
+              <td><use template="letters" dis="box" des="highlight"></use></td>
+            </tr>
+            <tr>
+              <td><use template="code" value="data-input-style='grid'"></use></td>
+              <td><use template="letters" dis="grid" des="highlight"></use></td>
+            </tr>
+          </table>
+
+          <h3>&lt;number&gt; and &lt;numbers&gt;</h3>
+          <p>
+            The <use template="tag" value="number"></use> and <use template="tag" value="numbers"></use> tags are the same as
+            <use template="tag" value="letter"></use> and <use template="tag" value="letters"></use>,<br>
+            except the inputs are constrained to numbers.
+          </p>
+          <p>
+            On touch devices, the numeric keyboard should be the default.
+          </p>
+          <p>
+            When players input text, they will need to explicitly exit a &lt;letters&gt;, via click, arrow, or tab.
+          </p>
+          <p>
+            Each example specifies alternating &lt;number&gt; and &lt;numbers&gt;, with the latter two also tagged for extract.
+          </p>
+          <table>
+            <tr>
+              <td>Default <use template="code" value="data-input-style='underline'"></use></td>
+              <td><use template="numbers"></use></td>
+            </tr>
+            <tr>
+              <td><use template="code" value="data-input-style='box'"></use></td>
+              <td><use template="numbers" dis="box" des="highlight"></use></td>
+            </tr>
+            <tr>
+              <td><use template="code" value="data-input-style='grid'"></use></td>
+              <td><use template="numbers" dis="grid" des="highlight"></use></td>
+            </tr>
+          </table>
+
+          <h3>&lt;literal&gt;</h3>
+          <p>
+            An alternative to <use template="tag" value="letter literal='?'"></use>,
+            where the literal text is the tag contents, rather than an attribute:
+            <use template="code" value="<literal>?</literal>"></use>.
+            The contents can be of any length.
+          </p>
+          <table>
+            <tr>
+              <td>All defaults</use></td>
+              <td><use template="literals"></use></td>
+            </tr>
+            <tr>
+              <td><use template="code" value="data-literal-style='none'"></use></td>
+              <td><use template="literals" dls="none"></use></td>
+            </tr>
+            <tr>
+              <td><use template="code" value="data-input-style='box'"></use></td>
+              <td><use template="literals" dis="box"></use></td>
+            </tr>
+            <tr>
+              <td><use template="code" value="data-input-style='box' data-literal-style='none'"></use></td>
+              <td><use template="literals" dis="box" dls="none"></use></td>
+            </tr>
+            <tr>
+              <td><use template="code" value="data-input-style='grid'"></use></td>
+              <td><use template="literals" dis="grid"></use></td>
+            </tr>
+            <tr>
+              <td><use template="code" value="data-input-style='grid' data-literal-style='gridgap'"></use></td>
+              <td><use template="literals" dis="grid" dls="gridgap"></use></td>
+            </tr>
+          </table>
+        </build>
+      </div>
+
+      <div id="css-styles">
+        <h2 style="margin-top: 0px;">Overridable CSS styles</h2>
+        <p>All styles for <a href="letter.html">&lt;letter&gt;</a> work for these variants too.</p>
+        <p>Defaults are in <a href="../Css/TextInput.css">TextInput.css</a>. Here are examples of overrides.<br>
+          See tips for <a href="overridingCss">overriding default CSS</a>.
+        </p>
+        <p>Toggle any of these sample style overrides to view.</p>
+        <table style="width:100%;">
+          <tr>
+            <td colspan="2">
+              <h3>Widening inputs for multiple letters</h3>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('wide-cell')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.letter-cell {                     <i>// for all inputs</pre>
+                <pre>  width: 1.5em;</pre>
+                <pre>}</pre>
+              </code>    
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('wide-multi-letter')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.letter-cell.multiple-letter {     <i>// for only &lt;letters&gt; and &lt;numbers&gt;</i></pre>
+                  <pre>  width: 2em;</pre>
+                  <pre>}</pre>
+              </code>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <h3>Literals could have the same font as inputs</h3>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('literal-font')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.letter-literal {</pre>
+                <pre>  font-family: 'Caveat';</pre>
+                <pre>  font-size: 14pt;</pre>
+                <pre>  color: red;</pre>
+                <pre>}</pre>
+              </code>  
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <h3>Vertical alignment of literals</h3>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('literal-vert')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.letter-literal {                  <i>// to (un-)compensate for font size, for example</pre>
+                <pre>  top: 0px;</pre>
+                <pre>}</pre>
+              </code>  
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <template id="code">
+        <code ondblclick="selectCode(this, event)">{value}</code>
+      </template>
+      <template id="tag">
+        <use template="code" value="&lt;{value}&gt;"></use>
+      </template>
+
+      <template id="letters">
+        <span data-input-style="{dis?}" data-extract-style="{des?}">
+          <letter></letter><letters></letters><letter extract></letter><letters extract></letters>
+        </span>
+      </template>
+
+      <template id="numbers">
+        <span data-input-style="{dis?}" data-extract-style="{des?}">
+          <number></number><numbers></numbers><number extract></number><numbers extract></numbers>
+        </span>
+      </template>
+
+      <template id="literals">
+        <span data-input-style="{dis?}" data-literal-style="{dls?}">
+          <letter></letter><literal>+</literal><letter></letter><literal>:)</literal><letter></letter>
+        </span>
+      </template>
+      <template id="gridblocks">
+        <div data-input-style="grid" data-literal-style="{dls?}">
+          <div class="letter-cell-block"><letter literal="¤"></letter><letter></letter><letter></letter><letter literal=" "></letter><letter></letter><letter literal="$"></letter></div>
+        </div>
+      </template>
+    </div>
+  </body>
+</html>
