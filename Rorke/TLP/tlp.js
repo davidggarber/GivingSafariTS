@@ -74,23 +74,6 @@ function reset() {
   playerSpan.appendChild(playerChar);
 }
 
-function updatePlayerImg(alive, color) {
-  if (!playerChar) {
-    playerChar = document.createElement('img');
-    playerChar.id = 'player';
-    playerSpan.appendChild(playerChar);
-  }
-  playerChar.src = alive ? "Images/TLP/At.png" : "Images/TLP/Tomb.png";
-  playerChar.title = alive ? 'Click horizontally or vertically to move' : 'Dead. Play again to restart.';
-
-  if (color) {
-    // Color the player with the twist they can do next
-    var nextColor = twistShadows[nextTwistColor[color]];
-    var filter = 'drop-shadow(0 0 2px ' + nextColor + ') ';
-    //playerChar.style.filter = filter + filter;
-  }
-}
-
 function updatePlayerChar(alive, color) {
   if (!playerChar) {
     playerChar = document.createElement('div');
@@ -98,7 +81,6 @@ function updatePlayerChar(alive, color) {
     playerWiggle = document.createElement('div');
     playerWiggle.id = 'playerWiggle';
     playerChar.appendChild(playerWiggle);
-    // playerChar.innerText = '@';
     playerSpan.appendChild(playerChar);
   }
   toggleClass(playerChar, 'dead', playerHP <= 0);
@@ -117,7 +99,6 @@ function updatePlayerChar(alive, color) {
 }
 
 function updatePlayer(alive, color) {
-  // updatePlayerImg(alive, color);  
   updatePlayerChar(alive, color);
 }
 
@@ -359,17 +340,17 @@ function animateMove(dx, dy) {
 }
 
 var sound = {
-  start: new Audio('Sounds/TLP/start.mp3'),
-  color: new Audio('Sounds/TLP/color.mp3'),
-  bump: new Audio('Sounds/TLP/bump.mp3'),
-  fightW: new Audio('Sounds/TLP/fight-weak.mp3'),
-  fightM: new Audio('Sounds/TLP/fight-medium.mp3'),
-  fightS: new Audio('Sounds/TLP/fight-strong.mp3'),
-  health: new Audio('Sounds/TLP/health.mp3'),
-  loot: new Audio('Sounds/TLP/loot.mp3'),
-  undo: new Audio('Sounds/TLP/undo.mp3'),
-  dead: new Audio('Sounds/TLP/dead.mp3'),
-  exit: new Audio('Sounds/TLP/exit.mp3'),
+  start: new Audio('TLP/start.mp3'),
+  color: new Audio('TLP/color.mp3'),
+  bump: new Audio('TLP/bump.mp3'),
+  fightW: new Audio('TLP/fight-weak.mp3'),
+  fightM: new Audio('TLP/fight-medium.mp3'),
+  fightS: new Audio('TLP/fight-strong.mp3'),
+  health: new Audio('TLP/health.mp3'),
+  loot: new Audio('TLP/loot.mp3'),
+  undo: new Audio('TLP/undo.mp3'),
+  dead: new Audio('TLP/dead.mp3'),
+  exit: new Audio('TLP/exit.mp3'),
 }
 
 var muted = false;
@@ -384,7 +365,7 @@ function playAudio(aud) {
 function toggleMute() {
   muted = !muted;
   var btn = document.getElementById('mute-button');
-  btn.src = muted ? 'Images/TLP/muted.png' : 'Images/TLP/unmuted.png';
+  btn.src = muted ? 'TLP/muted.png' : 'TLP/unmuted.png';
   btn.title = (muted ? 'Unmute' : 'Mute sound') + ': Ctrl+M';
 }
 
