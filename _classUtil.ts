@@ -1,5 +1,5 @@
 import { getParentIf } from "./_builder";
-import { textFromContext } from "./_builderContext";
+import { anyFromContext, cloneText, textFromContext } from "./_builderContext";
 
 /**
  * Add or remove a class from a classlist, based on a boolean test.
@@ -336,8 +336,26 @@ export function getOptionalStyle(   elmt: Element|null,
         return null;
     }
     const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
-    let val = e ? textFromContext(e.getAttribute(attrName)) : (defaultStyle || null);
+    let val = e ? e.getAttribute(attrName) : null;
+    val = val !== null ? cloneText(val) : (defaultStyle || null);
     return (val === null || prefix === undefined) ? val : (prefix + val);
+}
+
+/**
+ * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
+ * @param elmt - A page element
+ * @param attrName - An attribute name
+ * @returns The found data, looked up in context
+ */
+export function getOptionalContext( elmt: Element|null, 
+                                    attrName: string)
+                                    : any {
+    if (!elmt) {
+        return null;
+    }
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
+    const val = e ? e.getAttribute(attrName) : null;
+    return val !== null ? anyFromContext(val) : null;
 }
 
 /**
