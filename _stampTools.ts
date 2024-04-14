@@ -138,7 +138,7 @@ function onSelectStampTool(event:MouseEvent) {
  * @param toolFromErase An override because we're erasing/rotating
  * @returns the name of a draw tool
  */
-function getStampTool(event:MouseEvent, toolFromErase:string|null):string|null {
+function getStampTool(event:PointerEvent, toolFromErase:string|null):string|null {
     // Shift keys always win
     if (event.shiftKey || event.altKey || event.ctrlKey) {
         for (let i = 0; i < _stampTools.length; i++) {
@@ -311,7 +311,10 @@ let _lastDrawTool:string|null = null;
  * Which tool is taken from selected state, click modifiers, and current target state.
  * @param event The mouse click
  */
-function onClickStamp(event:MouseEvent) {
+function onClickStamp(event:PointerEvent) {
+    if (event.pointerType != 'mouse') {
+        event.preventDefault();
+    }
     const target = findParentOfClass(event.target as HTMLElement, 'stampable') as HTMLElement;
     let nextTool = eraseStamp(target);
     nextTool = getStampTool(event, nextTool);
@@ -326,7 +329,10 @@ function onClickStamp(event:MouseEvent) {
  * Continue drawing when the mouse is dragged, using the same tool as in the cell we just left.
  * @param event The mouse enter event
  */
-function onMoveStamp(event:MouseEvent) {
+function onMoveStamp(event:PointerEvent) {
+    if (event.pointerType != 'mouse') {
+        event.preventDefault();
+    }
     if (event.buttons == 1 && _dragDrawTool != null) {
         const target = findParentOfClass(event.target as HTMLElement, 'stampable') as HTMLElement;
         eraseStamp(target);
@@ -341,7 +347,10 @@ function onMoveStamp(event:MouseEvent) {
  * If dragging unrelated to drawing, flag the coming onMoveStamp to do nothing.
  * @param event The mouse leave event
  */
-function preMoveStamp(event:MouseEvent) {
+function preMoveStamp(event:PointerEvent) {
+    if (event.pointerType != 'mouse') {
+        event.preventDefault();
+    }
     if (event.buttons == 1) {
         const target = findParentOfClass(event.target as HTMLElement, 'stampable');
         if (target != null) {
