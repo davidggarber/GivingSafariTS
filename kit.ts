@@ -339,7 +339,7 @@ export function getOptionalStyle(   elmt: Element|null,
     if (!elmt) {
         return null;
     }
-    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName)) !== '');
     let val = e ? e.getAttribute(attrName) : null;
     val = val !== null ? cloneText(val) : (defaultStyle || null);
     return (val === null || prefix === undefined) ? val : (prefix + val);
@@ -4431,6 +4431,8 @@ export type StampToolDetails = {
     data?: string,  // extra data, depending on context
 };
 
+let stamps_can_drag = false;
+
 /**
  * Scan the page for anything marked stampable or a draw tool
  */
@@ -4461,15 +4463,31 @@ export function preprocessStampObjects() {
                 }
             }
         }
+        container.addEventListener('pointerdown', pointerDownInContainer);
+        if (hasClass(container, 'stamp-drag')) {
+            stamps_can_drag = true;
+            container.addEventListener('pointerup', pointerUpInContainer);
+            container.addEventListener('pointermove', pointerMoveInContainer);
+            container.addEventListener('pointerleave', pointerLeaveContainer);    
+        }
     }
 
     let elems = document.getElementsByClassName('stampable');
-    for (let i = 0; i < elems.length; i++) {
-        const elmt = elems[i] as HTMLElement;
-        elmt.onpointerdown=function(e){onClickStamp(e)};
-        //elmt.ondrag=function(e){onMoveStamp(e)};
-        elmt.onpointerenter=function(e){onMoveStamp(e)}; 
-        elmt.onpointerleave=function(e){preMoveStamp(e)};
+    if (containers.length == 0 && elems.length > 0) {
+        const container = document.getElementById('pageBody');
+        if (container) {
+            container.addEventListener('pointerdown', pointerDownInContainer);
+            // container.addEventListener('pointerup', pointerUpInContainer);
+            // container.addEventListener('pointermove', pointerMoveInContainer);
+            // container.addEventListener('pointerleave', pointerLeaveContainer);
+        }
+        // for (let i = 0; i < elems.length; i++) {
+        //     const elmt = elems[i] as HTMLElement;
+        //     elmt.onpointerdown=function(e){onClickStamp(e, findStampableAtPointer(e))};
+        //     //elmt.ondrag=function(e){onMoveStamp(e)};
+        //     elmt.onpointerenter=function(e){onMoveStamp(e)}; 
+        //     elmt.onpointerleave=function(e){preMoveStamp(e)};
+        // }
     }
 
     elems = document.getElementsByClassName('stampTool');
@@ -4489,6 +4507,75 @@ export function preprocessStampObjects() {
     if (!_firstTool) {
         _firstTool = _stampTools[0].getAttributeNS('', 'data-template-id');
     }
+}
+
+let prevStampablePointer:HTMLElement|null = null;
+function pointerDownInContainer(event:PointerEvent) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    const elmt = findStampableAtPointer(event);
+    if (elmt) {
+        prevStampablePointer = elmt;
+        onClickStamp(event, elmt);
+    }
+}
+
+function pointerUpInContainer(event:PointerEvent) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    prevStampablePointer = null;
+}
+
+function pointerMoveInContainer(event:PointerEvent) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    const elmt = findStampableAtPointer(event);
+    if (elmt !== prevStampablePointer) {
+        if (prevStampablePointer) {
+            preMoveStamp(event, prevStampablePointer);
+        }
+        if (elmt) {
+            onMoveStamp(event, elmt);
+        }
+        prevStampablePointer = elmt;
+    }
+}
+
+function pointerLeaveContainer(event:PointerEvent) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    if (prevStampablePointer) {
+        preMoveStamp(event, prevStampablePointer);
+    }
+    prevStampablePointer = null;
+}
+
+function findStampableAtPointer(event:PointerEvent):HTMLElement|null {
+    const stampable = document.getElementsByClassName('stampable');
+    for (let i = 0; i < stampable.length; i++) {
+        const rect = stampable[i].getBoundingClientRect();
+        if (rect.left <= event.clientX && rect.right > event.clientX
+                && rect.top <= event.clientY && rect.bottom > event.clientY) {
+            return stampable[i] as HTMLElement;
+        }
+    }
+    return null;
 }
 
 /**
@@ -4526,7 +4613,7 @@ function onSelectStampTool(event:MouseEvent) {
  * @param toolFromErase An override because we're erasing/rotating
  * @returns the name of a draw tool
  */
-function getStampTool(event:MouseEvent, toolFromErase:string|null):string|null {
+function getStampTool(event:PointerEvent, toolFromErase:string|null):string|null {
     // Shift keys always win
     if (event.shiftKey || event.altKey || event.ctrlKey) {
         for (let i = 0; i < _stampTools.length; i++) {
@@ -4699,8 +4786,7 @@ let _lastDrawTool:string|null = null;
  * Which tool is taken from selected state, click modifiers, and current target state.
  * @param event The mouse click
  */
-function onClickStamp(event:MouseEvent) {
-    const target = findParentOfClass(event.target as HTMLElement, 'stampable') as HTMLElement;
+function onClickStamp(event:PointerEvent, target:HTMLElement) {
     let nextTool = eraseStamp(target);
     nextTool = getStampTool(event, nextTool);
     if (nextTool) {
@@ -4710,13 +4796,16 @@ function onClickStamp(event:MouseEvent) {
     _dragDrawTool = null;
 }
 
+function isPrimaryButton(event:PointerEvent) {
+    return event.pointerType != 'mouse' || event.buttons == 1;
+}
+
 /**
  * Continue drawing when the mouse is dragged, using the same tool as in the cell we just left.
  * @param event The mouse enter event
  */
-function onMoveStamp(event:MouseEvent) {
-    if (event.buttons == 1 && _dragDrawTool != null) {
-        const target = findParentOfClass(event.target as HTMLElement, 'stampable') as HTMLElement;
+function onMoveStamp(event:PointerEvent, target:HTMLElement) {
+    if (_dragDrawTool != null) {
         eraseStamp(target);
         doStamp(target, _dragDrawTool);
         _dragDrawTool = null;
@@ -4729,21 +4818,18 @@ function onMoveStamp(event:MouseEvent) {
  * If dragging unrelated to drawing, flag the coming onMoveStamp to do nothing.
  * @param event The mouse leave event
  */
-function preMoveStamp(event:MouseEvent) {
-    if (event.buttons == 1) {
-        const target = findParentOfClass(event.target as HTMLElement, 'stampable');
-        if (target != null) {
-            const cur = findFirstChildOfClass(target, 'stampedObject');
-            if (cur != null) {
-                _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
-            }
-            else {
-                _dragDrawTool = _lastDrawTool;
-            }
+function preMoveStamp(event:PointerEvent, target:HTMLElement) {
+    if (target != null) {
+        const cur = findFirstChildOfClass(target, 'stampedObject');
+        if (cur != null) {
+            _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
         }
         else {
-            _dragDrawTool = null;
+            _dragDrawTool = _lastDrawTool;
         }
+    }
+    else {
+        _dragDrawTool = null;
     }
 }
 
@@ -7178,7 +7264,10 @@ export function cloneTextNode(text:Text):Node[] {
  * @param context A dictionary of all accessible values
  * @returns Expanded text
  */
-export function cloneText(str:string):string {
+export function cloneText(str:string|null):string {
+  if (str === null) {
+    return '';
+  }
   return contextFormula(str, false);
 }
 
@@ -8407,7 +8496,7 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
   temp.innerHTML = 
-  `<table_ class="paint-by-numbers bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
+  `<table_ class="paint-by-numbers stampable-container stamp-drag bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
     <thead_>
       <tr_ class="pbn-col-headers">
         <th_ class="pbn-corner">
@@ -8465,7 +8554,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
   temp.innerHTML = 
-  `<table_ class="paint-by-numbers pbn-two-color bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
+  `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
     <thead_>
       <tr_ class="pbn-col-headers">
         <th_ class="pbn-corner">

@@ -312,7 +312,7 @@ function getOptionalStyle(elmt, attrName, defaultStyle, prefix) {
     if (!elmt) {
         return null;
     }
-    var e = getParentIf(elmt, function (e) { return e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== ''; });
+    var e = getParentIf(elmt, function (e) { return e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName)) !== ''; });
     var val = e ? e.getAttribute(attrName) : null;
     val = val !== null ? cloneText(val) : (defaultStyle || null);
     return (val === null || prefix === undefined) ? val : (prefix + val);
@@ -4049,6 +4049,7 @@ var _extractorTool = null;
  * The tool name that would erase things.
  */
 var _eraseTool = null;
+var stamps_can_drag = false;
 /**
  * Scan the page for anything marked stampable or a draw tool
  */
@@ -4079,14 +4080,30 @@ function preprocessStampObjects() {
                 }
             }
         }
+        container.addEventListener('pointerdown', pointerDownInContainer);
+        if (hasClass(container, 'stamp-drag')) {
+            stamps_can_drag = true;
+            container.addEventListener('pointerup', pointerUpInContainer);
+            container.addEventListener('pointermove', pointerMoveInContainer);
+            container.addEventListener('pointerleave', pointerLeaveContainer);
+        }
     }
     var elems = document.getElementsByClassName('stampable');
-    for (var i = 0; i < elems.length; i++) {
-        var elmt = elems[i];
-        elmt.onpointerdown = function (e) { onClickStamp(e); };
-        //elmt.ondrag=function(e){onMoveStamp(e)};
-        elmt.onpointerenter = function (e) { onMoveStamp(e); };
-        elmt.onpointerleave = function (e) { preMoveStamp(e); };
+    if (containers.length == 0 && elems.length > 0) {
+        var container = document.getElementById('pageBody');
+        if (container) {
+            container.addEventListener('pointerdown', pointerDownInContainer);
+            // container.addEventListener('pointerup', pointerUpInContainer);
+            // container.addEventListener('pointermove', pointerMoveInContainer);
+            // container.addEventListener('pointerleave', pointerLeaveContainer);
+        }
+        // for (let i = 0; i < elems.length; i++) {
+        //     const elmt = elems[i] as HTMLElement;
+        //     elmt.onpointerdown=function(e){onClickStamp(e, findStampableAtPointer(e))};
+        //     //elmt.ondrag=function(e){onMoveStamp(e)};
+        //     elmt.onpointerenter=function(e){onMoveStamp(e)}; 
+        //     elmt.onpointerleave=function(e){preMoveStamp(e)};
+        // }
     }
     elems = document.getElementsByClassName('stampTool');
     for (var i = 0; i < elems.length; i++) {
@@ -4105,6 +4122,70 @@ function preprocessStampObjects() {
     }
 }
 exports.preprocessStampObjects = preprocessStampObjects;
+var prevStampablePointer = null;
+function pointerDownInContainer(event) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    var elmt = findStampableAtPointer(event);
+    if (elmt) {
+        prevStampablePointer = elmt;
+        onClickStamp(event, elmt);
+    }
+}
+function pointerUpInContainer(event) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    prevStampablePointer = null;
+}
+function pointerMoveInContainer(event) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    var elmt = findStampableAtPointer(event);
+    if (elmt !== prevStampablePointer) {
+        if (prevStampablePointer) {
+            preMoveStamp(event, prevStampablePointer);
+        }
+        if (elmt) {
+            onMoveStamp(event, elmt);
+        }
+        prevStampablePointer = elmt;
+    }
+}
+function pointerLeaveContainer(event) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    if (prevStampablePointer) {
+        preMoveStamp(event, prevStampablePointer);
+    }
+    prevStampablePointer = null;
+}
+function findStampableAtPointer(event) {
+    var stampable = document.getElementsByClassName('stampable');
+    for (var i = 0; i < stampable.length; i++) {
+        var rect = stampable[i].getBoundingClientRect();
+        if (rect.left <= event.clientX && rect.right > event.clientX
+            && rect.top <= event.clientY && rect.bottom > event.clientY) {
+            return stampable[i];
+        }
+    }
+    return null;
+}
 /**
  * Called when a draw tool is selected from the palette
  * @param event The click event
@@ -4298,8 +4379,7 @@ var _lastDrawTool = null;
  * Which tool is taken from selected state, click modifiers, and current target state.
  * @param event The mouse click
  */
-function onClickStamp(event) {
-    var target = findParentOfClass(event.target, 'stampable');
+function onClickStamp(event, target) {
     var nextTool = eraseStamp(target);
     nextTool = getStampTool(event, nextTool);
     if (nextTool) {
@@ -4308,13 +4388,15 @@ function onClickStamp(event) {
     _lastDrawTool = nextTool;
     _dragDrawTool = null;
 }
+function isPrimaryButton(event) {
+    return event.pointerType != 'mouse' || event.buttons == 1;
+}
 /**
  * Continue drawing when the mouse is dragged, using the same tool as in the cell we just left.
  * @param event The mouse enter event
  */
-function onMoveStamp(event) {
-    if (event.buttons == 1 && _dragDrawTool != null) {
-        var target = findParentOfClass(event.target, 'stampable');
+function onMoveStamp(event, target) {
+    if (_dragDrawTool != null) {
         eraseStamp(target);
         doStamp(target, _dragDrawTool);
         _dragDrawTool = null;
@@ -4326,21 +4408,18 @@ function onMoveStamp(event) {
  * If dragging unrelated to drawing, flag the coming onMoveStamp to do nothing.
  * @param event The mouse leave event
  */
-function preMoveStamp(event) {
-    if (event.buttons == 1) {
-        var target = findParentOfClass(event.target, 'stampable');
-        if (target != null) {
-            var cur = findFirstChildOfClass(target, 'stampedObject');
-            if (cur != null) {
-                _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
-            }
-            else {
-                _dragDrawTool = _lastDrawTool;
-            }
+function preMoveStamp(event, target) {
+    if (target != null) {
+        var cur = findFirstChildOfClass(target, 'stampedObject');
+        if (cur != null) {
+            _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
         }
         else {
-            _dragDrawTool = null;
+            _dragDrawTool = _lastDrawTool;
         }
+    }
+    else {
+        _dragDrawTool = null;
     }
 }
 /**
@@ -6468,6 +6547,9 @@ exports.cloneTextNode = cloneTextNode;
  * @returns Expanded text
  */
 function cloneText(str) {
+    if (str === null) {
+        return '';
+    }
     return contextFormula(str, false);
 }
 exports.cloneText = cloneText;
@@ -7622,7 +7704,7 @@ function paintByNumbersTemplate() {
     var temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"group\" in=\"col\"><span class=\"pbn-col-group\" onclick=\"togglePbnClue(this)\">{.group}</span></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n    <for each=\"row\" in=\"rowGroups\">\n      <tr_ class=\"pbn-row\">\n        <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n          &hairsp; <for each=\"group\" in=\"row\"><span class=\"pbn-row-group\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>&hairsp;\n        </td_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">&times;</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">\n          \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n          <br>\u2190&nbsp;validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
+        "<table_ class=\"paint-by-numbers stampable-container stamp-drag bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"group\" in=\"col\"><span class=\"pbn-col-group\" onclick=\"togglePbnClue(this)\">{.group}</span></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n    <for each=\"row\" in=\"rowGroups\">\n      <tr_ class=\"pbn-row\">\n        <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n          &hairsp; <for each=\"group\" in=\"row\"><span class=\"pbn-row-group\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>&hairsp;\n        </td_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">&times;</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">\n          \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n          <br>\u2190&nbsp;validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
     return temp;
 }
 /**
@@ -7635,7 +7717,7 @@ function paintByColorNumbersTemplate() {
     var temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        "<table_ class=\"paint-by-numbers pbn-two-color bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\" data-stamp-list=\"{stamplist$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"https://help.puzzyl.net/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"colorGroup\" in=\"col\"><for key=\"color\" in=\"colorGroup\"><for each=\"group\" in=\"color!\"><span class=\"pbn-col-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span></for></for></for>\n          </td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n        </if>\n      </tr_>\n    </thead_>\n      <for each=\"row\" in=\"rowGroups\">\n        <tr_ class=\"pbn-row\">\n          <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n            &hairsp; \n            <for each=\"colorGroup\" in=\"row\"><for key=\"color\" in=\"colorGroup\">\n              <for each=\"group\" in=\"color!\"><span class=\"pbn-row-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>\n            &hairsp;</for></for>\n          </td_>\n          <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">{blank?}</td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n        </if>\n      </tr_>\n    </for>\n    <if test=\"validate?\" ne=\"false\">\n      <tfoot_>\n        <tr_ class=\"pbn-col-footer\">\n          <th_ class=\"pbn-corner\">&nbsp;</th_>\n          <for each=\"col\" in=\"colGroups\">\n            <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n          </for>\n          <th_ class=\"pbn-corner-validation\">\n            \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n            <br>\u2190&nbsp;validation</th_>\n        </tr_>\n      </tfoot_>\n    </if>\n  </table_>";
+        "<table_ class=\"paint-by-numbers stampable-container stamp-drag pbn-two-color bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\" data-stamp-list=\"{stamplist$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"https://help.puzzyl.net/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"colorGroup\" in=\"col\"><for key=\"color\" in=\"colorGroup\"><for each=\"group\" in=\"color!\"><span class=\"pbn-col-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span></for></for></for>\n          </td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n        </if>\n      </tr_>\n    </thead_>\n      <for each=\"row\" in=\"rowGroups\">\n        <tr_ class=\"pbn-row\">\n          <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n            &hairsp; \n            <for each=\"colorGroup\" in=\"row\"><for key=\"color\" in=\"colorGroup\">\n              <for each=\"group\" in=\"color!\"><span class=\"pbn-row-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>\n            &hairsp;</for></for>\n          </td_>\n          <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">{blank?}</td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n        </if>\n      </tr_>\n    </for>\n    <if test=\"validate?\" ne=\"false\">\n      <tfoot_>\n        <tr_ class=\"pbn-col-footer\">\n          <th_ class=\"pbn-corner\">&nbsp;</th_>\n          <for each=\"col\" in=\"colGroups\">\n            <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n          </for>\n          <th_ class=\"pbn-corner-validation\">\n            \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n            <br>\u2190&nbsp;validation</th_>\n        </tr_>\n      </tfoot_>\n    </if>\n  </table_>";
     return temp;
 }
 /**

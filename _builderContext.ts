@@ -111,7 +111,10 @@ export function cloneTextNode(text:Text):Node[] {
  * @param context A dictionary of all accessible values
  * @returns Expanded text
  */
-export function cloneText(str:string):string {
+export function cloneText(str:string|null):string {
+  if (str === null) {
+    return '';
+  }
   return contextFormula(str, false);
 }
 
