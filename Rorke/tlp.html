@@ -310,10 +310,9 @@
       <div id="maze">
         <for each="row" in="mazeText">
           <div><for char="ch" in="row"><span 
-            id="m{row#}_{ch#}" onclick="walkTo(this)" 
+            id="m{row#}_{ch#}"
             class="maze-color-{mazeColors.[row#].[ch#]}"
-            title="{hover.[ch]?}">{ch}</span></for></div>
-          
+            title="{hover.[ch]?}">{ch}</span></for></div>          
         </for>
 
       </div>

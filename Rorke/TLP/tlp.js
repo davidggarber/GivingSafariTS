@@ -25,6 +25,10 @@ var nextTwistColor = {r:'g', g:'b', b:'y', y:'r'};
 var twistShadows = {r:'#ff0000', g:'#8aea23', b:'#45c4f3', y:'#FFFF00'};
 
 function tlpInit() {
+  var maze = document.getElementById('maze');
+  maze.addEventListener('pointermove', mouseMove);
+  maze.addEventListener('pointerdown', mouseMove);
+
   // Find @ and ! in map
   exits = [];
   for (let y = 0; y < mazeHeight; y++) {
@@ -207,6 +211,20 @@ function walkTo(span) {
 
   mapReachable();
   return true;
+}
+
+function mouseMove(evt) {
+  if (evt.pointerType != 'mouse' || evt.buttons == 1) {
+    var cells = document.getElementsByClassName('maze-cell');
+    for (var cell of cells) {
+      var rect = cell.getBoundingClientRect();
+      if (rect.left <= evt.clientX && rect.right > evt.clientX && rect.top <= evt.clientY && rect.bottom >= evt.clientY) {
+        walkTo(cell);
+        evt.preventDefault();
+        return;
+      }
+    }
+  }
 }
 
 function colorAt(x, y) {
