@@ -1,4 +1,28 @@
 <!DOCTYPE html>
+<!--
+    Twister Little Passages, for Microsoft Puzzle Safari 2024
+    © 2024 by Rorke Haining, Jess McGatha, David Garber, and Gabe Stocco
+    Sound effects from pixabay.com users Pixabay and floraphonic.
+
+    Hint:  the answer to the puzzle can't be found by reading the source code.
+
+    Feedback welcome!  twisterlittlepassages at gmail dot com
+
+    If you enjoyed this puzzle, try creating your own maze and sharing with us!
+
+    Or try these BONUS ACHIEVEMENTS:
+    * Can you exit the maze in less than 1 minute?
+    * Can you collect potions of all 9 strengths?
+    * Can you defeat 31 monsters?
+    * Can you defeat 6 Orcs in a row?
+    * Can you defeat 7 of the same type of monster in a row?
+    * Can you defeat a sequence of monsters to spell an old ASCII-era roguelike?
+    * Across multiple runs or using undo, can you defeat every type of monster?
+    * As the puzzle is written, can you both exit the maze and collect $1?
+    * As the puzzle is written, can you both exit the maze and collect $2?
+    * As the puzzle is written, can you exit from the TUNNEL?
+    * How many monsters can never be defeated?
+-->
 <html>
   <head>
     <meta charset="UTF-8"></meta>
@@ -249,6 +273,9 @@
       #game-status th {
         text-align: right;
       }
+      #rules {
+        margin-top: 40px;
+      }
       #rules p {
         margin-top: 8px;
         margin-bottom: 8px;
@@ -263,6 +290,7 @@
         }
         #monster-list {
           top: 0px;
+          line-height: 12.5pt;
         }
         #maze {
           line-height: 19pt;
@@ -272,6 +300,7 @@
         }
         #rules p {
           line-height: 14pt;
+          margin-bottom: 10pt;
         }
       }
     </style>
@@ -294,10 +323,10 @@
         </for>
       </div>
 
-      <img id="start-button" src="Images/TLP/Play.png" title="Start game!" onclick="startGame()">
+      <img id="start-button" src="TLP/Play.png" title="Start game!" onclick="startGame()">
       <div id="game-help">
-        <img id="undo-button" class="no-undo" src="Images/TLP/Undo.png" title="Undo move: Ctrl+Z" onclick="undoStep()">
-        <img id="mute-button" src="Images/TLP/unmuted.png" title="Mute sound: Ctrl+M" onclick="toggleMute()">
+        <img id="undo-button" class="no-undo" src="TLP/Undo.png" title="Undo move: Ctrl+Z" onclick="undoStep()">
+        <img id="mute-button" src="TLP/unmuted.png" title="Mute sound: Ctrl+M" onclick="toggleMute()">
         <p>
           You are <b>@</b>. Use arrow<br>
           keys or click to move.<br>
@@ -311,11 +340,11 @@
             <th style="width:1in;">Last color:</th><td id="lastTwist" style="width: 0.6in;"></td>
             <th style="width:0.5in;">Loot:</th><td id="loot" style="width:1.5in;"></td>
           </tr>
-          <tr><th>Monsters:</th><td id="beaten" colspan="5"></td></tr>
+          <tr><th style="vertical-align: top;">Monsters:</th><td id="beaten" colspan="5"></td></tr>
         </table>
       </div>
 
-      <div id="rules" style="margin-top: 20px;">
+      <div id="rules">
         <p>
           <b>Objective:</b>
           You (@) are a Rogue in search of adventure, but alas have fallen into a maze of twisty little passages, 
@@ -334,24 +363,22 @@
         </p>
         <p>
           <b>Health:</b>
-          You start with 10 health. If your health ever falls to zero or below, you die. Positive digits (1-9) 
-          represent magic healing potions. Moving onto a potion's square immediately consumes the potion and 
-          increases your health by that amount. You may have more than 10 health. That square is then open, but 
-          its color, if any, does not change. 
+          You start with 10 health. If your health falls to zero or below, you die. Positive digits (1-9) 
+          are healing potions. Moving onto a potion immediately consumes it and increases your health by that amount. 
+          You may have more than 10 health. That square is then open, but its color, if any, does not change. 
         </p>
         <p>
           <b>Combat:</b>
           Capital letters (A-Z) are monsters. The table above right shows each monster’s type and 
-          strength in parentheses. Moving onto a monster’s square initiates combat to the death. The monster 
-          reduces your health by its strength amount, then dies. If you survive, that square is then open, but its 
-          color, if any, does not change. Fortunately, monsters do not move or chase you and wait for you to 
-          initiate combat.
+          strength in parentheses. Moving onto a monster initiates combat to the death. The monster reduces your 
+          health by its strength amount, then dies. If you survive, that square is then open, but its color, if any, 
+          does not change. Fortunately, monsters do not move or chase you and wait for you to initiate combat.
         </p>
         <p>
-          <b>Play interactively:</b>
-          Turn up your sound and play this puzzle as a game!
-          <a href="https://aka.ms/ps24-twister-jdg">https://aka.ms/ps24-twister-jdg</a>.
-
+          <b>Play:</b>
+          Turn up your sound and play this puzzle as an interactive game!
+          <span class="print-only"><a href="https://safari.puzzyl.net/twister.html">https://aka.ms/ps24-twister-jdg</a></span>
+          Works best in Edge, Chrome,and Firefox.
         </p>
         <p>Good luck, adventurer!</p>
       </div>
