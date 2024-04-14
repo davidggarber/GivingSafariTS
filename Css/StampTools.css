@@ -91,6 +91,14 @@
   cursor: pointer;
 }
 
+.stampable-container.stamp-drag {
+  touch-action: none;
+}
+
+.stampable-container.stamp-drag .stampable {
+  touch-action: none;
+}
+
 .stampIcon img {
   width: 64px;
   height: 64px;

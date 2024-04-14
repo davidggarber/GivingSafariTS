@@ -50,7 +50,7 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
   temp.innerHTML = 
-  `<table_ class="paint-by-numbers bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
+  `<table_ class="paint-by-numbers stampable-container stamp-drag bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
     <thead_>
       <tr_ class="pbn-col-headers">
         <th_ class="pbn-corner">
@@ -108,7 +108,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
   temp.innerHTML = 
-  `<table_ class="paint-by-numbers pbn-two-color bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
+  `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
     <thead_>
       <tr_ class="pbn-col-headers">
         <th_ class="pbn-corner">
