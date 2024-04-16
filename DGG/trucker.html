@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '24',
+        'title': 'Galaxy Trucker',
+        'author': 'Andrew Giese',
+        'copyright': '2024',
+        'orientation': 'landscape',
+        'abilities': {
+          // 'dragDrop': true,
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+      };
+
+      var tiles = [
+        ['cabin1', 'cabin1', 'cabin1', 'cabin1', 'cabin1'],
+        ['cabin1', 'cabin1', 'cabin1', 'cabin1', 'cabin1'],
+        ['laser1', 'laser1', 'laser1', 'laser1', 'laser1'],
+        ['cargo1', 'cargo1', 'cargo1', 'cargo1', 'cargo1'],
+        ['cargo1', 'cargo1', 'cargo1', 'cargo1', ' '],
+        ['engine1', 'engine1', 'engine1', 'shield', ' '],
+      ];
+
+      var grid = [
+        "    O    ",
+        "   SR7   ",
+        "G ROUTE P",
+        "1337*ABEL",
+        "BASICUSKY",
+        "TO NPI KS"
+      ];
+
+      var rules = [
+        "All components must be placed within the blueprint and must not be rotated (red triangles in the top right denote orientation)",
+        "Universal connectors can connect to single or double connectors but single connectors cannot connect to double connectors",
+        "The final ship should have no exposed connectors (every connector joins with another piece)",
+        "The numbers along the borders indicate how many cargo containers are in each row/column",
+        "No component connects to another component of the same type",
+        "The double cannons must be placed symmetrically opposite each other on the ship",
+        "Every crew cabin is connected to at least one cargo hold",
+      ]
+
+      boiler['builderLookup'] =
+      {
+        tiles: tiles,
+        grid: grid,
+        rules: rules,
+      };
+
+      var svg_xmlns = 'http://www.w3.org/2000/svg';
+
+      var cellSize = 92;  // width & height of each cell within the Sudoku and tiles
+
+      ///////////////////////// CODE SHARED WITH BLOKUS
+      var selected = null;
+      var dragging = null;
+
+      function parseTransform(trans) {
+        var splt = trans.split('translate(');
+        if (splt.length != 2) {
+          return {x:NaN, y:NaN};
+        }
+        splt = splt[1].split(',').map(s => parseInt(s));
+        if (splt.length < 2) {
+          return {x:NaN, y:NaN};
+        }
+        return {x:splt[0], y:splt[1]};
+      }
+
+      function startDrag(evt) {
+        if (evt.pointerType != 'mouse') {
+          evt.preventDefault();
+        }
+
+        if (dragging) {
+          cancelDrag()
+        }
+        var g = evt.currentTarget;
+        var board = document.getElementById('board');
+        var bounds = evt.currentTarget.getBoundingClientRect();
+        var translate = parseTransform(g.style.transform);
+
+        dragging = {
+          id: g.id.substring(5),
+          g: g,
+          inBoard: g.parentNode == board,
+          size: { x: parseInt(g.getAttributeNS('', 'data-width')), y: parseInt(g.getAttributeNS('', 'data-height')) },
+          bounds: bounds,
+          start: { x: evt.clientX, y: evt.clientY },
+          rel: { x: evt.clientX - bounds.left, y: evt.clientY - bounds.top },
+          transform: g.style.transform,
+          translate: translate,
+          click: true,  // this might just be a click, not a drag
+        };
+
+        if (dragging.inBoard) {
+          var hx = g.getAttributeNS('', 'data-homex');
+          var hy = g.getAttributeNS('', 'data-homey');
+          dragging.home = { x: parseInt(hx), y: parseInt(hy) };
+          liftValues(dragging.g, dragging.home);
+        }
+        toggleClass(dragging.g, 'dragging', true);
+        toggleClass(dragging.g, 'selected', true);
+      }
+
+      function midDrag(evt) {
+        if (dragging) {
+          var dx = evt.clientX - dragging.start.x;
+          var dy = evt.clientY - dragging.start.y;
+          dragging.g.style.transform = dragging.transform + ' translate(' + dx + 'px,' + dy + 'px)';
+
+          var info = calcDropInfo(dragging, evt);
+          if (dragging.click) {
+            // Look for thresholds where this is clearly a drag, not a click
+            if (Math.abs(dx) + Math.abs(dy) >= cellSize / 2) {
+              dragging.click = false;
+            }
+            else if (info.board && dragging.home && (info.x != dragging.home.x || info.y != dragging.home.y)) {
+              dragging.click = false;  // We've moved to another cell
+            }
+          }
+          toggleClass(dragging.g, 'collision', info == null);
+        }
+      }
+
+      function calcDropInfo(progress, evt) {
+        if (progress) {
+
+          var g = progress.g.getBoundingClientRect();
+          var board = document.getElementById('board').getBoundingClientRect();
+          var bx = Math.round((g.left - board.left) / cellSize);
+          var by = Math.round((g.top - board.top) / cellSize);
+          if (bx >= 1 && bx <= 9 && by >= 1 && by <= 9) {
+            var info = {board: true, x: bx, y: by};
+            if (checkBoardFit(progress, info)) {
+              return info;
+            }
+            return null;
+          }
+
+          var extras = document.getElementById('extraOrigin').getBoundingClientRect();
+          bx = Math.round((g.left - extras.left) / cellSize);
+          by = Math.round((g.top - extras.top) / cellSize);
+          return {board: false, x: bx, y: by};
+        }
+        return null;
+      }
+
+      function checkBoardFit(progress, info) {
+        if (info.x < 1 || (info.x + progress.size.x) > 10 || info.y < 1 || (info.y + progress.size.y) > 10) {
+          return false;
+        }
+        var rects = progress.g.getElementsByTagNameNS(svg_xmlns, 'rect');
+        for (var r of rects) {
+          var dx = parseInt(r.getAttributeNS('', 'data-x'));
+          var dy = parseInt(r.getAttributeNS('', 'data-y'));
+          if (sudokuGrid[info.y + dy - 1][info.x + dx - 1]) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function endDrag(evt) {
+        if (dragging) {
+          // REVIEW: could endDrag be called twice?
+          let info = calcDropInfo(dragging, evt);
+          if (dragging.click) {
+            clickSelect();
+            return;
+          }
+
+          toggleClass(dragging.g, 'dragging', false);
+          toggleClass(dragging.g, 'selected', false);
+          toggleClass(dragging.g, 'collision', false);
+
+          if (!info) {
+            cancelDrag();
+            return;
+          }
+          if (!info.board) {
+            var extras = document.getElementById('extras');
+            var extraOrigin = document.getElementById('extraOrigin').getBoundingClientRect();
+            var extraBounds = document.getElementById('extraArea').getBoundingClientRect();
+            var pos = dragging.g.getBoundingClientRect();
+            var x = pos.left - extraOrigin.left;
+            var y = pos.top - extraOrigin.top;
+            if (pos.left < extraBounds.left) {
+              x += extraBounds.left - pos.left;
+            }
+            else if (pos.right > extraBounds.right) {
+              x -= pos.right - extraBounds.right;
+            }
+            if (y < 0) {
+              y = 0;
+            }
+            else if (pos.bottom > extraBounds.bottom) {
+              y -= pos.bottom - extraBounds.bottom;
+            }
+            dragging.g.setAttributeNS('', 'data-homex', '');
+            dragging.g.setAttributeNS('', 'data-homey', '');
+            dragging.g.parentNode.removeChild(dragging.g);
+            extras.appendChild(dragging.g);
+            dragging.g.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+            dragging.g.style.fill = '';
+          }
+          else {  // info.board
+            var board = document.getElementById('board');
+            dragging.g.parentNode.removeChild(dragging.g);
+            board.appendChild(dragging.g);
+            dragging.g.style.transform = 'translate(' + (info.x * cellSize) + 'px,' + (info.y * cellSize) + 'px)';
+            dragging.g.setAttributeNS('', 'data-homex', info.x);
+            dragging.g.setAttributeNS('', 'data-homey', info.y);
+            insertValues(dragging.g, info);
+            var ninePurples = [
+              '#9FD6FB','#E79BFF','#c2ed1a',
+              '#925BFF','#DB7AFE','#98A4FE',
+              '#6d29f4','#ad0ef7','#b474f4',
+              '#28ed91','#2faaed','#ed2f42',
+              '#0911ed','#cccc00',
+            ];
+            dragging.g.style.fill = ninePurples[tiles[dragging.id].color];
+          }
+          updateExtractions();
+          dragging = null;
+        }
+      }
+
+      function cancelDrag() {
+        if (dragging) {
+          toggleClass(dragging.g, 'dragging', false);
+          toggleClass(dragging.g, 'collision', false);
+          toggleClass(dragging.g, 'selected', false);
+          dragging.g.style.transform = dragging.transform;
+          dragging = null;
+        }
+        if (selected) {
+          toggleClass(selected.g, 'selected', false);
+        }
+      }
+
+      function clickSelect() {
+        selected = dragging;
+        cancelDrag();
+        toggleClass(selected.g, 'selected', true);  // after cancelDrag
+      }
+
+      function clickCanvas(evt) {
+        if (selected) {
+          toggleClass(selected.g, 'selected', false);
+          dragging = selected;
+          selected = null;
+          midDrag(evt);
+          dragging.click = false;
+          endDrag(evt);
+        }
+      }
+
+      ///////////////////////// CODE SHARED WITH BLOKUS
+
+    </script>
+    <style>
+      #ship-grid {
+        display: grid;
+        grid-template-columns: repeat(9, 60px); /* Creates 9 columns */
+        grid-template-rows: repeat(6, 60px); /* Creates 6 rows */
+      }
+
+      #tile-grid {
+        position: absolute;
+        top: 1in;
+        right: 20px;
+        display: grid;
+        grid-template-columns: repeat(5, 60px);
+        grid-template-rows: repeat(5, 60px);
+      }
+
+      .tile-img {
+        width: 60px;
+        height: 60px;
+      }
+
+      #rule-list {
+        margin-top: 0.5in;
+      }
+      #rule-list li {
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body id="Blokus">
+    <div id="pageBody">
+      <div id="flavor">
+        <p>
+          Don’t panic! Or, you know what, go ahead. Panic. You’ve been tasked with building an entire spaceship out of a pile of junk and corporate has 
+          passed down a bunch of guidelines for how they want this thing put together. They demanded that the ship be packed with cargo and crew to 
+          maximize profits. Even though they didn’t provide enough pieces to make a full ship, I’m sure we can make something of the leftovers.
+        </p>
+      </div>
+
+      <div id="ship-grid">
+        <for each="row" in="{grid}">
+          <for each="ch" in="{row}">
+            <if test="{ch}" ne=" ">
+              <span id="sg{row#}{ch#}" class="ship-cell">{ch}</span>
+            </if>
+            <if test="{ch}" eq=" ">
+              <span class="ship-blank">&nbsp;</span>
+            </if>
+          </for>
+        </for>        
+      </div>
+
+      <div id="tile-grid">
+        <for each="row" in="{tiles}">
+          <for each="col" in="{row}">
+            <span id="tg{row#}{col#}" class="tile-cell">
+              <if test="{col}" ne=" ">
+                <img id="{col}" src="Trucker/{col}.png" class="tile-img">
+              </if>
+            </span>
+          </for>
+        </for>        
+      </div>
+
+      <div id="rule-list">
+        <ol>
+          <for each="rule" in="{rules}">
+            <li>{rule}</li>
+          </for>
+        </ol>
+      </div>
+
+    </div>
+  </body>
+</html>
