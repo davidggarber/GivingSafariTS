@@ -5516,6 +5516,8 @@ function forceReload() {
     return undefined;
 }
 exports.forceReload = forceReload;
+var print_as_color = { id: 'printAs', html: "<div style='color:#666;'>Print as <span style='color:#FF0000;'>c</span><span style='color:#538135;'>o</span><span style='color:#00B0F0;'>l</span><span style='color:#806000;'>o</span><span style='color:#7030A0;'>r</span>.</div>" };
+var print_as_grayscale = { id: 'printAs', text: "<div style='color:#666;'>Print as grayscale</div>" };
 /**
  * Do some basic setup before of the page and boilerplate, before building new components
  * @param bp
@@ -5759,6 +5761,9 @@ function boilerplate(bp) {
     }
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({ id: 'backlink', href: safariDetails.puzzleList, friendly: 'Puzzle list' }));
+    }
+    if (bp.printAsColor !== undefined) {
+        margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));
     }
     // Set tab icon for safari event
     var tabIcon = document.createElement('link');

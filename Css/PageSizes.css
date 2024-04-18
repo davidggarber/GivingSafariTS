@@ -311,6 +311,17 @@ body, p, td {
     display: none;
   }
 
+  #printAs {
+    display: none;
+  }
+  .print #printAs {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    font-family: 'Verdana';
+    font-size: 10pt;
+  }
+
   #qr {
       display: none;
   }
@@ -371,6 +382,14 @@ body, p, td {
 
   .submit-button {
       display: none;
+  }
+
+  #printAs {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    font-family: 'Verdana';
+    font-size: 10pt;
   }
 }
 

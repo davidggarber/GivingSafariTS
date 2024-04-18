@@ -6114,7 +6114,7 @@ type BoilerPlateData = {
     lang?: string;  // en-us by default
     paperSize?: string;  // letter by default
     orientation?: string;  // portrait by default
-    printAsColor: boolean;  // True=color, false=grayscale
+    printAsColor?: boolean;  // true=color, false=grayscale, unset=unmentioned
     textInput?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
@@ -6132,6 +6132,9 @@ type BoilerPlateData = {
     onStamp?: (stampTarget:HTMLElement) => void;
     onRestore?: () => void;
 }
+
+const print_as_color = { id:'printAs', html:"<div style='color:#666;'>Print as <span style='color:#FF0000;'>c</span><span style='color:#538135;'>o</span><span style='color:#00B0F0;'>l</span><span style='color:#806000;'>o</span><span style='color:#7030A0;'>r</span>.</div>" };
+const print_as_grayscale = { id:'printAs', text: "<div style='color:#666;'>Print as grayscale</div>"};
 
 /**
  * Do some basic setup before of the page and boilerplate, before building new components
@@ -6405,6 +6408,9 @@ function boilerplate(bp: BoilerPlateData) {
     }
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:'Puzzle list'}));
+    }
+    if (bp.printAsColor !== undefined) {
+        margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));
     }
 
     // Set tab icon for safari event
