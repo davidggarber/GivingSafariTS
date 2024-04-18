@@ -16,8 +16,12 @@ kitFiles = [
     '_events.ts',
     '_boilerplate.ts',
     '_confirmation.ts',
-    '_builderContext.ts',
     '_builder.ts',
+    '_builderContext.ts',
+    '_builderFor.ts',
+    '_builderIf.ts',
+    '_builderInput.ts',
+    '_builderUse.ts',
     '_templates.ts',
     '_validatePBN.ts',
 ]

@@ -243,11 +243,13 @@ function contextFormula(str:string, inFormula:boolean):string {
       }
       continue;  
     }
+    let fromContext = false;
     if (tok[0] in bracketPairs) {
       const inner = tok.substring(1, tok.length - 1);
       if (tok[0] == '(') {
         // (...) is a precedence operator
         tok = contextFormula(inner, true);
+        fromContext = true;
       }
       else if (tok[0] == '{') {
         if (tok[1] == '=') {
@@ -258,6 +260,7 @@ function contextFormula(str:string, inFormula:boolean):string {
           // {...} is a context look-up
           tok = '' + anyFromContext(inner);
         }
+        fromContext = true;
       }
     }
     if (unaryOp) {
@@ -270,7 +273,7 @@ function contextFormula(str:string, inFormula:boolean):string {
       dest = binaryOp(dest, tok);
       binaryOp = undefined;  // used up
     }
-    else if (inFormula) {
+    else if (inFormula && !fromContext) {
       dest += anyFromContext(tok);
     }
     else {

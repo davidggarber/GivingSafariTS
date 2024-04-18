@@ -37,7 +37,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\DGG\\BridgesOfCatan.html",
+      "url": "${workspaceFolder}\\DGG\\trucker.html",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"

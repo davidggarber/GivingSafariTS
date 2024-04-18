@@ -1,9 +1,11 @@
 import { theBoiler } from "./_boilerplate";
-import { anyFromContext, cloneAttributes, cloneText, cloneTextNode, getBuilderContext, popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
-import { applyAllClasses, findParentOfTag, isTag, toggleClass } from "./_classUtil";
+import { cloneAttributes, cloneTextNode } from "./_builderContext";
+import { startForLoop } from "./_builderFor";
+import { startIfBlock } from "./_builderIf";
+import { inputAreaTagNames, startInputArea } from "./_builderInput";
+import { useTemplate } from "./_builderUse";
+import { findParentOfTag, isTag, toggleClass } from "./_classUtil";
 import { svg_xmlns } from "./_tableBuilder";
-import { builtInTemplate, getTemplate } from "./_templates";
-import { getLetterStyles } from "./_textSetup";
 
 /****************************************************************************
  *          BUILDER
@@ -314,7 +316,7 @@ export function expandControlTags() {
  * @param list The list to modified
  * @param add The list to add to the end
  */
-function pushRange(list:Node[], add:Node[]) {
+export function pushRange(list:Node[], add:Node[]) {
   for (let i = 0; i < add.length; i++) {
     list.push(add[i]);
   }
@@ -325,330 +327,10 @@ function pushRange(list:Node[], add:Node[]) {
  * @param parent The parent node
  * @param add A list of new children
  */
-function appendRange(parent:Node, add:Node[]) {
+export function appendRange(parent:Node, add:Node[]) {
   for (let i = 0; i < add.length; i++) {
     parent.insertBefore(add[i], null);
   }
-}
-
-/**
- * Potentially several kinds of for loops:
- * for each: <for each="var" in="list">  // ideas for optional args: first, last, skip
- * for char: <for char="var" in="text">  // every character in a string
- * for word: <for word="var" in="text">  // space-delimited substrings
- * for range: <for range="var" from="first" to="last" or until="after"> 
- * for key: <for key="var" in="object">  // idea for optional arg: sort
- * @param src the <for> element
- * @param context the set of values that might get used by the for loop
- * @returns a list of nodes, which will replace this <for> element
- */
-function startForLoop(src:HTMLElement):Node[] {
-  const dest:Node[] = [];
-
-  let iter:string|null = null;
-  let list:any[] = [];
-  let vals:any[] = [];  // not always used
-
-  // <for each="variable_name" in="list">
-  iter = src.getAttributeNS('', 'each');
-  if (iter) {
-    list = parseForEach(src);
-  }
-  else {
-    iter = src.getAttributeNS('', 'char');
-    if (iter) {
-      list = parseForText(src, '');
-    }
-    else {
-      iter = src.getAttributeNS('', 'word');
-      if (iter) {
-        list = parseForText(src, ' ');
-      }
-      else {
-        iter = src.getAttributeNS('', 'key');
-        if (iter) {
-          list = parseForKey(src);
-          vals = list[1];
-          list = list[0];
-        }
-        else {
-          iter = src.getAttributeNS('', 'range');
-          if (iter) {
-            list = parseForRange(src);
-          }
-          else {
-            throw new Error('Unrecognized <for> tag type: ' + src);
-          }
-        }
-      }
-    }
-  }
-
-  if (!list) {
-    throw new Error('Unable to resolve from context: ' + src.outerHTML);
-  }
-
-  const inner_context = pushBuilderContext();
-  const iter_index = iter + '#';
-  for (let i = 0; i < list.length; i++) {
-    inner_context[iter_index] = i;
-    inner_context[iter] = list[i];
-    if (vals.length > 0) {
-      inner_context[iter + '!'] = vals[i];
-    }
-    pushRange(dest, expandContents(src));
-  }
-  popBuilderContext();
-  
-  return dest;
-}
-
-/**
- * Syntax: <for each="var" in="list">
- * @param src 
- * @param context 
- * @returns a list of elements
- */
-function parseForEach(src:HTMLElement):any[] {
-  const list_name = src.getAttributeNS('', 'in');
-  if (!list_name) {
-    throw new Error('for each requires "in" attribute');
-  }
-  return anyFromContext(list_name);
-}
-
-function parseForText(src:HTMLElement, delim:string) {
-  const list_name = src.getAttributeNS('', 'in');
-  if (!list_name) {
-    throw new Error('for char requires "in" attribute');
-  }
-  // The list_name can just be a literal string
-  const context = getBuilderContext();
-  const list = (list_name in context) ? context[list_name] : list_name;
-  if (!list) {
-    throw new Error('unresolved context: ' + list_name);
-  }
-  return list.split(delim);
-}
-
-function parseForRange(src:HTMLElement):any {
-  const from = src.getAttributeNS('', 'in');
-  let until = src.getAttributeNS('', 'until');
-  const last = src.getAttributeNS('', 'to');
-  const length = src.getAttributeNS('', 'len');
-  const step = src.getAttributeNS('', 'step');
-
-  const start = from ? parseInt(cloneText(from)) : 0;
-  let end = until ? parseInt(cloneText(until))
-    : last ? (parseInt(cloneText(last)) + 1)
-    : length ? (anyFromContext(length).length)
-    : start;
-  const inc = step ? parseInt(cloneText(step)) : 1;
-  if (!until && inc < 0) {
-    end -= 2;  // from 5 to 1 step -1 means i >= 0
-  }
-
-  const list:number[] = [];
-  for (let i = start; inc > 0 ? (i < end) : (i > end); i += inc) {
-    list.push(i);
-  }
-  return list;
-}
-
-function parseForKey(src:HTMLElement):any {
-  const obj_name = src.getAttributeNS('', 'in');
-  if (!obj_name) {
-    throw new Error('for each requires "in" attribute');
-  }
-  const obj = anyFromContext(obj_name)
-  if (!obj) {
-    throw new Error('unresolved list context: ' + obj_name);
-  }
-  const keys = Object.keys(obj);
-  const vals = keys.map(k => obj[k]);
-  return [keys, vals];
-}
-
-/**
- * Potentially several kinds of if expressions:
- *   equality: <if test="var" eq="value">  
- *   not-equality: <if test="var" ne="value">  
- *   less-than: <if test="var" lt="value">  
- *   less-or-equal: <if test="var" le="value">  
- *   greater-than: <if test="var" gt="value">  
- *   greater-or-equal: <if test="var" ge="value">  
- *   contains: <if test="var" in="value">  
- *   not-contains: <if test="var" ni="value">  
- *   boolean: <if test="var">
- * Note there is no else or else-if block, because there are no scoping blocks
- * @param src the <if> element
- * @param context the set of values that might get used by or inside the if block
- * @returns a list of nodes, which will replace this <if> element
- */
-function startIfBlock(src:HTMLElement):Node[] {
-  let test = src.getAttributeNS('', 'test');
-  if (!test) {
-    throw new Error('<if> tags must have a test attribute');
-  }
-  test = textFromContext(test); 
-
-  let pass:boolean = false;
-  let value:string|null;
-  if (value = src.getAttributeNS('', 'eq')) {  // equality
-    pass = test == cloneText(value);
-  }
-  else if (value = src.getAttributeNS('', 'ne')) {  // not-equals
-    pass = test != cloneText(value);
-  }
-  else if (value = src.getAttributeNS('', 'lt')) {  // less-than
-    pass = parseFloat(test) < parseFloat(cloneText(value));
-  }
-  else if (value = src.getAttributeNS('', 'le')) {  // less-than or equals
-    pass = parseFloat(test) <= parseFloat(cloneText(value));
-  }
-  else if (value = src.getAttributeNS('', 'gt')) {  // greater-than
-    pass = parseFloat(test) > parseFloat(cloneText(value));
-  }
-  else if (value = src.getAttributeNS('', 'ge')) {  // greater-than or equals
-    pass = parseFloat(test) >= parseFloat(cloneText(value));
-  }
-  else if (value = src.getAttributeNS('', 'in')) {  // string contains
-    pass = cloneText(value).indexOf(test) >= 0;
-  }
-  else if (value = src.getAttributeNS('', 'ni')) {  // string doesn't contain
-    pass = cloneText(value).indexOf(test) >= 0;
-  }
-  else {  // simple boolean
-    pass = test === 'true';
-  }
-
-  if (pass) {
-    // No change in context from the if
-    return expandContents(src);
-
-  }
-  
-  return [];
-}
-
-const inputAreaTagNames = [
-  'letter', 'letters', 'literal', 'number', 'numbers', 'pattern', 'word'
-];
-
-/**
- * Shortcut tags for text input. These include:
- *  letter: any single character
- *  letters: a few characters, in a single input
- *  literal: readonly single character
- *  number: any numeric digit
- *  numbers: a few numeric digits
- *  word: full multi-character
- *  pattern: multiple inputs, generated from a pattern
- * @param src One of the input shortcut tags
- * @param context A dictionary of all values that can be looked up
- * @returns a node array containing a single <span>
- */
-function startInputArea(src:HTMLElement):Node[] {
-  const span = document.createElement('span');
-
-  // Copy most attributes. 
-  // Special-cased ones are harmless - no meaning in generic spans
-  cloneAttributes(src, span);
-
-  let cloneContents = false;
-  let literal:string|null = null;
-  const extract = src.getAttributeNS('', 'extract');
-
-  var styles = getLetterStyles(src, 'underline', '', 'box');
-
-  // Convert special attributes to data-* attributes for later text setup
-  let attr:string|null;
-  if (isTag(src, 'letter')) {  // 1 input cell for (usually) one character
-    toggleClass(span, 'letter-cell', true);
-    literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
-  }
-  else if (isTag(src, 'letters')) {  // 1 input cell for a few characters
-    toggleClass(span, 'letter-cell', true);
-    toggleClass(span, 'multiple-letter', true);
-    literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
-  }
-  else if (isTag(src, 'literal')) {  // 1 input cell for (usually) one character
-    toggleClass(span, 'letter-cell', true);
-    literal = ' ';
-    cloneContents = true;  // literal value
-  }
-  else if (isTag(src, 'number')) {  // 1 input cell for one numeric character
-    toggleClass(span, 'letter-cell', true);
-    toggleClass(span, 'numeric', true);
-    literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
-  }
-  else if (isTag(src, 'numbers')) {  // 1 input cell for multiple numeric digits
-    toggleClass(span, 'letter-cell', true);
-    toggleClass(span, 'multiple-letter', true);
-    toggleClass(span, 'numeric', true);
-    // To support longer (or negative) numbers, set class = 'multiple-letter'
-    literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
-  }
-  else if (isTag(src, 'word')) {  // 1 input cell for (usually) one character
-    toggleClass(span, 'word-cell', true);
-  }
-  else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
-    toggleClass(span, 'create-from-pattern', true);
-    if (attr = src.getAttributeNS('', 'pattern')) {
-      span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
-    }
-    if (attr = src.getAttributeNS('', 'extract')) {
-      span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));
-    }
-    if (attr = src.getAttributeNS('', 'numbers')) {
-      span.setAttributeNS('', 'data-number-assignments', cloneText(attr));
-    }
-  }
-  else {
-    return [src];  // Unknown tag. NYI?
-  }
-
-  let block = src.getAttributeNS('', 'block');  // Used in grids
-  if (block) {
-    toggleClass(span, 'block', true);
-    literal = literal || block;
-  }
-
-  if (literal == '¤') {  // Special case (and back-compat)
-    toggleClass(span, 'block', true);
-    literal = ' ';
-  }
-  
-  if (literal) {
-    if (!cloneContents) {
-      span.innerText = cloneText(literal);  
-    }
-    toggleClass(span, 'literal', true);
-    applyAllClasses(span, styles.literal);
-  }      
-  else if (!isTag(src, 'pattern')) {
-    applyAllClasses(span, styles.letter);
-    if (extract != null) {
-      toggleClass(span, 'extract', true);
-      if (parseInt(extract) > 0) {
-        toggleClass(span, 'numbered', true);
-        toggleClass(span, 'extract-numbered', true);
-        span.setAttributeNS('', 'data-number', extract);
-        
-        const under = document.createElement('span');
-        toggleClass(under, 'under-number');
-        under.innerText = extract;
-        span.appendChild(under);
-      }
-      applyAllClasses(span, styles.extract);
-    }
-  }
-
-  if (cloneContents) {
-    appendRange(span, expandContents(src));
-  }
-
-  return [span];
 }
 
 /**
@@ -659,7 +341,7 @@ function startInputArea(src:HTMLElement):Node[] {
  * @param context A dictionary of all values that can be looked up
  * @returns A list of nodes
  */
-function expandContents(src:HTMLElement):Node[] {
+export function expandContents(src:HTMLElement):Node[] {
   const dest:Node[] = [];
   for (let i = 0; i < src.childNodes.length; i++) {
     const child = src.childNodes[i];
@@ -776,54 +458,4 @@ function cloneWithContext(elmt:HTMLElement):Element {
  */
 function cloneNode(node:Node):Node {
   return node;  // STUB: keep original node
-}
-
-/**
- * Replace a <use> tag with the contents of a <template>.
- * Along the way, push any attributes of the <use> tag onto the context.
- * Also push the context paths (as strings) as separate attributes.
- * Afterwards, pop them all back off.
- * Optionally, a <use> tag without a template="" attribute is a way to modify the context for the use's children.
- * @param node a <use> tag
- * @param context The current context
- * @returns An array of nodes to insert into the document in place of the <use> tag
- */
-function useTemplate(node:HTMLElement):Node[] {
-  let dest:Node[] = [];
-  
-  const inner_context = pushBuilderContext();
-  for (var i = 0; i < node.attributes.length; i++) {
-    const attr = node.attributes[i].name;
-    const val = node.attributes[i].value;
-    const attri = node.attributes[i].name.toLowerCase();
-    if (attri != 'template' && attri != 'class') {
-      if (val[0] == '{') {
-        inner_context[attr] = anyFromContext(val);
-      }
-      else {
-        inner_context[attr] = cloneText(val);
-      }
-      inner_context[attr + '$'] = val;  // Store the context path, so it can also be referenced
-    }
-  }
-
-  const tempId = node.getAttribute('template');
-  if (tempId) {
-    const template = getTemplate(tempId);
-    if (!template) {
-      throw new Error('Template not found: ' + tempId);
-    }
-    if (!template.content) {
-      throw new Error('Invalid template: ' + tempId);
-    }
-    // The template doesn't have any child nodes. Its content must first be cloned.
-    const clone = template.content.cloneNode(true) as HTMLElement;
-    dest = expandContents(clone);
-  }
-  else {
-    dest = expandContents(node);
-  }
-  popBuilderContext();
-
-  return dest;
 }

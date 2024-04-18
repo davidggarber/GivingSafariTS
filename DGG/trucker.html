@@ -12,7 +12,7 @@
         'copyright': '2024',
         'orientation': 'landscape',
         'abilities': {
-          // 'dragDrop': true,
+          'dragDrop': true,
         },
         'reactiveBuilder': true,
         'builderLookup': {
@@ -293,6 +293,33 @@
       #rule-list li {
         margin-top: 6px;
       }
+      .ship-cell {
+        position: relative;
+      }
+      .ship-box {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 60px;
+        height: 60px;
+        border: solid 0.1px #666;
+      }
+      .ship-text {
+        position: absolute;
+        left: 0px;
+        width: 60px;
+        text-align: center;
+        top: 20px;
+        z-index: 100;
+      }
+      .ship-drop {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 60px;
+        height: 60px;
+        z-index: 200;
+      }
     </style>
   </head>
   <body id="Blokus">
@@ -309,7 +336,10 @@
         <for each="row" in="{grid}">
           <for each="ch" in="{row}">
             <if test="{ch}" ne=" ">
-              <span id="sg{row#}{ch#}" class="ship-cell">{ch}</span>
+              <span id="sg{row#}{ch#}" class="ship-cell" data-text="{ch}">
+                <span class="ship-box"><span class="ship-text">{ch}</span></span>
+                <span class="ship-drop drop-target"></span>
+              </span>
             </if>
             <if test="{ch}" eq=" ">
               <span class="ship-blank">&nbsp;</span>
@@ -321,9 +351,9 @@
       <div id="tile-grid">
         <for each="row" in="{tiles}">
           <for each="col" in="{row}">
-            <span id="tg{row#}{col#}" class="tile-cell">
+            <span id="tg{row#}{col#}" class="tile-cell drag-source drop-target">
               <if test="{col}" ne=" ">
-                <img id="{col}" src="Trucker/{col}.png" class="tile-img">
+                <img id="{col}" src="Trucker/{col}.png" class="tile-img moveable">
               </if>
             </span>
           </for>
