@@ -70,16 +70,16 @@ const safari20Details:PuzzleEventDetails = {
 
 const safari21Details:PuzzleEventDetails = {
   'title': 'Safari Labs',
-  'logo': './Images/PS20 logo.png',
+  'logo': './Images/PS21 logo.png',
   'icon': './Images/Beaker_icon.png',
   'puzzleList': './safari.html',
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts21.css',
-  'googleFonts': 'DM+Serif+Display,Caveat',  // no whitespace
+  'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',  // no whitespace
   'links': [],
-  'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
-                 'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
-  // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+  'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+                 'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+  // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
 }
 
 const safari24Details:PuzzleEventDetails = {
@@ -133,6 +133,7 @@ const pastSafaris = {
   '21': safari21Details,
   'Dgg': safariDggDetails,
   '24': safari24Details,
+  'gs24': safari21Details,
   'team': puzzylSafariTeamDetails,
 }
 
