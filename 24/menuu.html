@@ -39,12 +39,12 @@
               </th_>
             </tr_>
             <tr_ id="sortHeader">
-              <th_ class="icons" onclick="sortTable(1)">Type</th_>
-              <th_ class="html" onclick="sortTable(2)">Puzzle</th_>
+              <th_ class="icons" onclick="sortTable(this)">Type</th_>
+              <th_ class="html" onclick="sortTable(this)">Puzzle</th_>
               <if test="feeders">
-                <th_ class="feeders" onclick="sortTable(3)">Feeder</th_>
+                <th_ class="feeders" onclick="sortTable(this)">Feeder</th_>
               </if>
-              <th_ class="author" onclick="sortTable(4)">Author</th_>
+              <th_ class="author" onclick="sortTable(this)">Author</th_>
               <if test="submitable">
                 <th_ class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png"></span></th_>
               </if>

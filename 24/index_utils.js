@@ -184,7 +184,17 @@ function updateProgress() {
 }
 
 var sortOrder = 3;
-function sortTable(col) {
+function sortTable(th) {
+  var tr = th.parentNode;
+  var allThs = tr.getElementsByTagName('th');
+  var col = 0;
+  for (var c of allThs) {
+    col++;
+    if (c == th) {
+      break;
+    }
+  }
+
   var tbody = document.getElementById('puzzle_list');
   var rows = document.getElementsByClassName('sortable');
   var lookup = {};
