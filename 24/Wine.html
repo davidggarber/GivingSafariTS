@@ -13,6 +13,7 @@
         'type': 'Word',
         'textInput': true,
         'abilities': {
+          checkMarks:true,
         },
         'reactiveBuilder': true
       };
@@ -93,6 +94,8 @@
         top: 20px;
         width: 90px;
         text-align: center;
+        user-select: none;
+        -webkit-user-select: none;
       }
     </style>
   </head>
@@ -101,7 +104,7 @@
       <p class="flavor">
         Rats, I’ve mixed up all my wine pairings.  Can you help?
       </p>
-      <table_ id="table">
+      <table_ id="table" class="letter-grid-2d">
         <for each="hint" in="hints">
           <tr_>
             <td_ class="left">
@@ -112,14 +115,19 @@
           </tr_>
         </for>
       </table_>
-    <div id="bottles">
-      <for each="bottle" in="bottles">
-        <div class="bottle-row">
-          <img src="Images/Wine/bottle.png">
-          <span>{bottle}</span>
-        </div>
-      </for>  
-    </div>
+      <div id="bottles">
+        <for each="bottle" in="bottles">
+          <div class="bottle-row" class_="cross-off">
+            <img src="Images/Wine/bottle.png">
+            <span class="label">{bottle}</span>
+          </div>
+        </for>  
+      </div>
+
+      <div class="no-print" style="position:absolute; bottom: -0.5in; left: 2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:1.5in; text-transform: uppercase;"></input>
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
 
     </div>
   </body>
