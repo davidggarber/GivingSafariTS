@@ -246,10 +246,9 @@ export function getParentIf(elmt:Element|null, fn:(e:Element) => boolean):Elemen
  * @returns returns true if inside an SVG, unless further inside an EMBEDDED_OBJECT.
  */
 export function inSvgNamespace():boolean {
-  // TODO: REVIEW Case: foreignObject
-  const elmt = getBuilderParentIf((e)=>e.tagName === 'SVG' || e.tagName === 'FOREIGNOBJECT');
+  const elmt = getBuilderParentIf((e)=>isTag(e, 'SVG') || isTag(e, 'FOREIGNOBJECT'));
   if (elmt) {
-    return elmt.tagName === 'SVG';
+    return isTag(elmt, 'SVG');
   }
   return false;
 }
