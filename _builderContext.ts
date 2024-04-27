@@ -401,10 +401,11 @@ export function globalContextData(path:string):any {
  * @param key A key, initially from {curly} notation
  * @returns true if key is a valid path within the context
  */
-function validateKeyInContext(key:string) {
+export function keyExistsInContext(key:string) {
   try {
-    anyFromContext(key);
-    return true;
+    const a = anyFromContext(key);
+    // null, undefined, or '' count as not existing
+    return a !== null && a !== undefined && a !== '';
   }
   catch {
     return false;

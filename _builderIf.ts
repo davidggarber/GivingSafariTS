@@ -1,5 +1,5 @@
 import { expandContents } from "./_builder";
-import { cloneText, textFromContext } from "./_builderContext";
+import { anyFromContext, cloneText, keyExistsInContext, textFromContext } from "./_builderContext";
 
 /**
  * Potentially several kinds of if expressions:
@@ -18,6 +18,16 @@ import { cloneText, textFromContext } from "./_builderContext";
  * @returns a list of nodes, which will replace this <if> element
  */
 export function startIfBlock(src:HTMLElement):Node[] {
+  let exists = src.getAttributeNS('', 'exists');
+  let notex = src.getAttributeNS('', 'not');
+  if (exists || notex) {
+    // Does this attribute exist at all?
+    if ((exists && keyExistsInContext(exists)) || (notex && !keyExistsInContext(notex))) {
+      return expandContents(src);
+    }
+    return [];
+  }
+
   let test = src.getAttributeNS('', 'test');
   if (!test) {
     throw new Error('<if> tags must have a test attribute');

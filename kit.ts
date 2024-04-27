@@ -5902,8 +5902,8 @@ const safari20Details:PuzzleEventDetails = {
 
 const safari21Details:PuzzleEventDetails = {
   'title': 'Safari Labs',
-  'logo': './Images/PS21 logo.png',
-  'icon': './Images/Beaker_icon.png',
+  'logo': './Images/GS24_banner.png',  // PS21 logo.png',
+  'icon': './Images/Plate_icon.png',
   'puzzleList': './safari.html',
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts21.css',
@@ -7400,10 +7400,9 @@ export function getParentIf(elmt:Element|null, fn:(e:Element) => boolean):Elemen
  * @returns returns true if inside an SVG, unless further inside an EMBEDDED_OBJECT.
  */
 export function inSvgNamespace():boolean {
-  // TODO: REVIEW Case: foreignObject
-  const elmt = getBuilderParentIf((e)=>e.tagName === 'SVG' || e.tagName === 'FOREIGNOBJECT');
+  const elmt = getBuilderParentIf((e)=>isTag(e, 'SVG') || isTag(e, 'FOREIGNOBJECT'));
   if (elmt) {
-    return elmt.tagName === 'SVG';
+    return isTag(elmt, 'SVG');
   }
   return false;
 }
@@ -8020,10 +8019,11 @@ export function globalContextData(path:string):any {
  * @param key A key, initially from {curly} notation
  * @returns true if key is a valid path within the context
  */
-function validateKeyInContext(key:string) {
+export function keyExistsInContext(key:string) {
   try {
-    anyFromContext(key);
-    return true;
+    const a = anyFromContext(key);
+    // null, undefined, or '' count as not existing
+    return a !== null && a !== undefined && a !== '';
   }
   catch {
     return false;
@@ -8250,6 +8250,16 @@ function parseForKey(src:HTMLElement):any {
  * @returns a list of nodes, which will replace this <if> element
  */
 export function startIfBlock(src:HTMLElement):Node[] {
+  let exists = src.getAttributeNS('', 'exists');
+  let notex = src.getAttributeNS('', 'not');
+  if (exists || notex) {
+    // Does this attribute exist at all?
+    if ((exists && keyExistsInContext(exists)) || (notex && !keyExistsInContext(notex))) {
+      return expandContents(src);
+    }
+    return [];
+  }
+
   let test = src.getAttributeNS('', 'test');
   if (!test) {
     throw new Error('<if> tags must have a test attribute');
@@ -8589,7 +8599,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
   temp.innerHTML = 
-  `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
+  `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
     <thead_>
       <tr_ class="pbn-col-headers">
         <th_ class="pbn-corner">

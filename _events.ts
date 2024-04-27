@@ -70,8 +70,8 @@ const safari20Details:PuzzleEventDetails = {
 
 const safari21Details:PuzzleEventDetails = {
   'title': 'Safari Labs',
-  'logo': './Images/PS21 logo.png',
-  'icon': './Images/Beaker_icon.png',
+  'logo': './Images/GS24_banner.png',  // PS21 logo.png',
+  'icon': './Images/Plate_icon.png',
   'puzzleList': './safari.html',
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts21.css',
