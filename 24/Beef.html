@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '21',
+        'title': 'Beef',
+        'author': 'Rorke Haining',
+        'copyright': '2021',
+        'type': 'Word',
+        'textInput': true,
+        'abilities': {
+          checkMarks:true,
+          notes:true,
+        },
+        'reactiveBuilder': true
+      };
+      var blocks = [
+        ['ARO', 'CH', 'COR', 'CRI', 'DER'],
+        ['ECK', 'ME', 'NER', 'RED', 'REP'],
+        ['RK', 'SH', 'SHA', 'ST', 'UND']
+      ];
+      var hints = [
+        ['It may need fighting', '5'],
+        ['It may need clearing', '5'],
+        ['It may need turning', '6'],
+        ['It may need unjamming', '8'],
+        ['It may need culturing', '5'],
+        ['It may need jumping', '5'],
+        ['It may need wrapping', '6'],
+      ];
+      boiler.builderLookup = {
+        blocks: blocks,
+        hints: hints,
+      }
+    </script>
+    <style>
+      #blocks {
+        border-spacing: 50px;
+      }
+      #blocks td {
+        width: 0.5in;
+        padding: 8px 16px;
+        border: solid 1px black;
+        text-align: center;
+        user-select: none;
+        -webkit-user-select: none;
+        position: relative;
+        font-family: 'lucida console', monospace;
+        font-size: 14pt;
+      }
+      #hints {
+        margin-left: 1in;
+        margin-top: 1in;
+      }
+      #hints td.left {
+        height: 0.5in;
+        width: 2in;
+        font-size: 11pt;
+      }
+      #hints .letter-cell {
+        margin-right: 10px;
+      }
+      #hints .note-right {
+        width: 0.5in;
+        height: 16pt;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body id="Beef">
+    <div id="pageBody">
+      <table_ id="blocks">
+        <for each="row" in="blocks">
+          <tr_>
+            <for each="cell" in="row">
+              <td_ class="cross-off">{cell}</td_>
+            </for>
+          </tr_>
+        </for>
+      </table_>
+
+      <table_ id="hints" class="letter-grid-2d">
+        <for each="hint" in="hints">
+          <tr_>
+            <td_ class="left">{hint.[0]}</td_>
+            <td_ class="right" class_="notes-right"><pattern pattern="{hint.[1]}"></pattern></td_>
+          </tr_>
+        </for>
+      </table_>
+      <p style="margin-top: 0.75in; margin-left: 1.5in; font-size: 11pt;">
+        So… where’s the beef?  All of the above may need correcting.
+      </p>
+
+      <div class="no-print" style="position:absolute; bottom: -0.5in; left: 2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:1.5in; text-transform: uppercase;"></input>
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>
