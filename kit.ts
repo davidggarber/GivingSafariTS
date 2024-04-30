@@ -5904,7 +5904,7 @@ const safari21Details:PuzzleEventDetails = {
   'title': 'Safari Labs',
   'logo': './Images/GS24_banner.png',  // PS21 logo.png',
   'icon': './Images/Plate_icon.png',
-  'puzzleList': './safari.html',
+  'puzzleList': './menuu.html',
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts21.css',
   'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',  // no whitespace
