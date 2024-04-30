@@ -8,11 +8,12 @@
       const boiler = {
         'safari': 'gs24',
         'title': 'Chicken',
-        'author': 'Rorke Haining',
+        'author': 'Rorke Haining & Jess McGatha',
         'copyright': '2021',
         'type': 'Word',
         'textInput': true,
         'abilities': {
+          checkMarks:true,
         },
         'reactiveBuilder': true,
         'builderLookup': {
@@ -20,34 +21,81 @@
       };
 
       var hints = [
-        ['Revenge', 7, 4],
-        ['Betting place', 7, 4],
-        ['Kitchen danger', 7, 4],
-        ['Assault', 7, 4],
-        ['Newbord descendent', 7, 4],
-        ['Religious holiday', 7, 4],
-        ['Distant ancestor', 7, 4],
-        ['Approve', 7, 4],
-        ['Metal baking dish', 7, 4],
-      ]
+        ['Playroom', 7, 4],
+        ['Like a Granny Smith apple', 10, 7],
+        ['Overdue funds', 7, 6],
+        ['Delicious but unhealthy', 7, 4],
+        ['Divert', 9, 9],
+        ['911 call destination', 9, 5],
+        ['Gloomy or slow', 8, 6],
+        ['Type of bridge', 8, 6],
+        ['Fancy, cute instrument', 9, 9],
+      ];
 
-      var images = [
-          ['baby', 0, 0],
-          ['back', 0, 0],
-          ['bulb', 0, 0],
-          ['chicken', 0, 0],
-          ['down', 0, 0],
-          ['fire', 0, 0],
-          ['mario', 0, 0],
-          ['men', 0, 0],
-          ['pan', 0, 0],
-          ['pentagon', 0, 0],
-        ];
+      boiler.builderLookup = {
+        hints:hints,
+      };
     </script>
     <style>
       .flavor .title-font {
         font-size: 24pt;
       }
+
+      #center {
+        width: 3.8in;
+        padding: 0.1in;
+        border: solid 1px black;
+        display: grid;
+        grid-template-columns: 2.1in 1.7in;
+        grid-template-rows: repeat(9, 36pt);
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      .right {
+        padding-top: 5px;
+      }
+
+      .extract-chicken::after {
+        background-image: url('Images/Chicken/chicken.png');
+        background-size: 1.2em 1.2em;
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 1.2em;
+        height: 1.2em;
+        top: 25px;
+        left: -0.1em;
+      }
+
+      .img-list img {
+        margin-bottom: 0.25in;
+        max-width: 1.5in;
+        max-height: 1.5in;
+      }
+
+      .img-list div {
+        position: relative;
+      }
+
+      .img-list .check {
+        left: initial;
+        right: 10px;
+      }
+
+      #question {
+        width: 3in;
+        margin-left: 2.25in;
+        border: solid 1px black;
+        padding: 10px;
+        text-align: center;
+      }
+
+      #extracted {
+        width: 100%;
+        text-align: center;
+      }
+
     </style>
   </head>
   <body id="Chicken">
@@ -55,6 +103,44 @@
       <p class="flavor">
         Remember: <span class="title-font">Chicken</span> words, like the 9 images below, always come first, before <span class="title-font">Egg</span> words!
       </p>
+
+      <build>
+        <div style="width: 7.5in; display:grid; grid-template-columns:1.8in 3.9in 1.8in; margin-top: 0.5in;">
+          <div class="img-list" style="text-align: center;">
+            <div class_="cross-off"><img src="Images/Chicken/fire.png"></div>
+            <div class_="cross-off"><img src="Images/Chicken/pentagon.png"></div>
+            <div class_="cross-off"><img src="Images/Chicken/bulb.png"></div>
+          </div>
+
+          <div>
+            <div id="center" data-extract-style="chicken" class="letter-grid-2d">
+              <for each="hint" in="hints">
+                <span class="left"><pattern pattern="{hint.[1]}" extract="{hint.[2]}"></pattern></span>
+                <span class="right">{hint.[0]}</span>
+              </for>
+            </div>
+          </div>
+
+          <div class="img-list" style="text-align: center;">
+            <div class_="cross-off"><img src="Images/Chicken/mario.png"></div>
+            <div class_="cross-off"><img src="Images/Chicken/down.png"></div>
+            <div class_="cross-off"><img src="Images/Chicken/men.png"></div>
+          </div>
+        </div>
+
+        <div class="img-list" style="width: 7.5in; display: flex; justify-content: space-around;">
+          <div class_="cross-off"><img src="Images/Chicken/pan.png"></div>
+          <div class_="cross-off"><img src="Images/Chicken/back.png"></div>
+          <div class_="cross-off"><img src="Images/Chicken/baby.png"></div>
+        </div>
+
+        <div id="question">
+          What do we call our arch-rival?
+        </div>
+
+        <div id="extracted"></div>
+
+      </build>
 
 
     </div>

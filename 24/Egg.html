@@ -8,7 +8,7 @@
       const boiler = {
         'safari': 'gs24',
         'title': 'Egg',
-        'author': 'Rorke Haining',
+        'author': 'Rorke Haining & Jess McGatha',
         'copyright': '2021',
         'type': 'Word',
         'textInput': true,
@@ -18,18 +18,129 @@
         'builderLookup': {
         },
       };
+
+
+      var hints = [
+        ['Revenge', 7, 4],
+        ['Betting place', 9, 7],
+        ['Kitchen danger', 9, 8],
+        ['Assault', 8, 5],
+        ['Newbord descendent', 9, 8],
+        ['Religious holiday', 8, 8],
+        ['Distant ancestor', 7, 6],
+        ['Approve', 10, 7],
+        ['Metal baking dish', 7, 7],
+      ];
+
+      boiler.builderLookup = {
+        hints:hints,
+      };
     </script>
     <style>
       .flavor .title-font {
         font-size: 24pt;
       }
+
+      #center {
+        width: 3.6in;
+        padding: 0.1in;
+        border: solid 1px black;
+        display: grid;
+        grid-template-columns: 2.1in 1.5in;
+        grid-template-rows: repeat(9, 36pt);
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      .right {
+        padding-top: 5px;
+      }
+
+      .extract-chicken::after {
+        background-image: url('Images/Egg/egg.png');
+        background-size: 1.2em 1.7em;
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 1.2em;
+        height: 1.7em;
+        top: 25px;
+        left: -0.1em;
+      }
+
+      .img-list img {
+        margin-bottom: 0.5in;
+        max-width: 1.5in;
+        max-height: 1.5in;
+      }
+
+      .img-list div {
+        position: relative;
+      }
+
+      .img-list .check {
+        left: initial;
+        right: 10px;
+      }
+
+      #question {
+        width: 3in;
+        margin-left: 2.25in;
+        border: solid 1px black;
+        padding: 10px;
+        text-align: center;
+      }
+
+      #extracted {
+        width: 100%;
+        text-align: center;
+      }
+
     </style>
   </head>
   <body id="Egg">
     <div id="pageBody">
       <p class="flavor">
-        Remember: <span class="title-font">Egg</span> words, like the 9 images below, always come first, before <span class="title-font">Chicken</span> words!
+        Remember: <span class="title-font">Egg</span> words, like the 9 images below, always come first, before <span class="title-font">Egg</span> words!
       </p>
+
+      <build>
+        <div style="width: 7.5in; display:grid; grid-template-columns:1.8in 3.9in 1.8in; margin-top: 0.5in;">
+          <div class="img-list" style="text-align: center;">
+            <div class_="cross-off"><img src="Images/Egg/cave.png"></div>
+            <div class_="cross-off"><img src="Images/Egg/green.png"></div>
+            <div class_="cross-off"><img src="Images/Egg/beat.png"></div>
+          </div>
+
+          <div>
+            <div id="center" data-extract-style="chicken" class="letter-grid-2d">
+              <for each="hint" in="hints">
+                <span class="left"><pattern pattern="{hint.[1]}" extract="{hint.[2]}"></pattern></span>
+                <span class="right">{hint.[0]}</span>
+              </for>
+            </div>
+          </div>
+
+          <div class="img-list" style="text-align: center;">
+            <div class_="cross-off"><img src="Images/Egg/quarterback.jpg"></div>
+            <div class_="cross-off"><img src="Images/Egg/thousand.png"></div>
+            <div class_="cross-off"><img src="Images/Egg/cake.png"></div>
+          </div>
+        </div>
+
+        <div class="img-list" style="width: 7.5in; display: flex; justify-content: space-around;">
+          <div class_="cross-off"><img src="Images/Egg/credit.png"></div>
+          <div class_="cross-off"><img src="Images/Egg/house.png"></div>
+          <div class_="cross-off"><img src="Images/Egg/track.png"></div>
+        </div>
+
+        <div id="question">
+          What do we call our arch-rival?
+        </div>
+
+        <div id="extracted"></div>
+
+      </build>
 
 
     </div>
