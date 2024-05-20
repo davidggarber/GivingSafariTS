@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Radio Waves -- Forget',
+        'author': '',
+        'copyright': '2023',
+        'type': '',
+        'abilities': {
+        },
+        'postSetup': forgetFeeders
+      };
+
+      function forgetFeeders() {
+        for (var page = 1; page <= 3; page++) {
+          saveMetaMaterials('Radio', 0, page, null);
+        }
+      }
+    </script>
+    <style>
+      .faded {
+        margin-top: 1.5in;
+        width: 7.5in;
+        opacity: 10%;
+      }
+      #Materials #copyright {
+        display: none;
+      }
+      #Materials #backlink {
+        display: none;
+      }
+    </style>
+  </head>
+  <body id="Materials">
+    <div id="pageBody">
+      <h1>All unlocked materials have been forgotten.</h1>
+      <img class="faded" src="Icons/radio.png">
+    </div>
+  </body>
+</html>

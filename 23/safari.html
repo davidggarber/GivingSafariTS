@@ -24,6 +24,13 @@
             background-color: #ECEEEE;
         }
 
+        #table tr.solved:nth-child(odd) {
+            background-color: #afa;
+        }
+        #table tr.solved:nth-child(even) {
+            background-color: #8d8;
+        }
+
         td {
             position: relative;
             line-height: 8pt;
@@ -83,13 +90,40 @@
             top: -6px;
             color: black;
         }
+        .feeders .radio sub {
+            position: relative;
+            left: -19px;
+            top: -8px;
+            color: white;
+        }
         .feeders .science.unlocked sub {
             color: white;
         }
-        #logo {
+        #logo-div {
             position: absolute;
+            left: 7.2in;
+            top: 0.5in;
             height: 7.12in;
-            right: -4.8in;
+        }
+        #decoder-frame {
+            position: absolute;
+            left: 8.6in;
+            top: 6.2in;
+        }
+        .submital {
+            text-align: center;
+        }
+        .no-solver .if-solver {
+            display: none;
+        }
+        .if-no-solver {
+            display: none;
+        }
+        .no-solver .if-no-solver {
+            display: inline;
+        }
+        img.solve-check {
+            height: 0.25in;
         }
         tr {
             position: relative;
@@ -117,9 +151,22 @@
             transform-origin: bottom;
             border: solid 0.5px #ddd;
         }
+        #table tr.big td,th {
+            background-color: #ee9;
+        }
+        @keyframes grow-big {
+            from { transform: scale(1) translate(0px,0px) rotate(0deg); }
+            to { transform: scale(4) translate(1px,0px) rotate(5deg); }
+        }
+        @keyframes shrink-little {
+            from { transform: scale(4) rotate(5deg); }
+            to { transform: scale(1) translate(0px,0px) rotate(0deg); }
+        }
     </style>
     <script src="puzzle_list.js"></script>
     <script>
+        const theSafariDetails = safari20Details;
+
         function onLoad() {
             simpleSetup();
             expandPuzzles();
@@ -128,77 +175,115 @@
         }
 
         var feeders = {
-            'science': { locked: 'Images/Science/bubbling.png', unlocked: 'Images/Science/green_flask.png', tooltip: 'Weird Science feeder piece', materials: {} },
-            'bus': { locked: 'Images/Bus/locked.png', unlocked: 'Images/Bus/unlocked.png', tooltip: 'Magic Schoolbus feeder piece', materials: {} },
-            'exp-cosmos': { locked: 'Icons/exp-cosmos-locked.png', unlocked: 'Icons/exp-cosmos.png', tooltip: 'Challenge ticket: Cosmos', materials: {} },
-            'exp-trivia': { locked: 'Icons/exp-trivia-locked.png', unlocked: 'Icons/exp-trivia.png', tooltip: 'Challenge ticket: Science Trivia', materials: {} },
-            'exp-tunes': { locked: 'Icons/exp-tunes-locked.png', unlocked: 'Icons/exp-tunes.png', tooltip: 'Challenge ticket: Name That Tune', materials: {} },
+            'science': { type:'meta', locked: 'Images/Science/bubbling.png', unlocked: 'Images/Science/green_flask.png', tooltip: 'Weird Science feeder piece', materials: {}, count:5, store:'Science' },
+            'bus': { type:'meta', locked: 'Images/Bus/locked.png', unlocked: 'Images/Bus/unlocked.png', tooltip: 'Magic Schoolbus feeder piece', materials: {}, count:4, store:'Schoolbus' },
+            'radio': { type:'meta', locked: 'Images/Radio/locked.png', unlocked: 'Images/Radio/unlocked.png', tooltip: 'Radio Wave feeder piece', materials: {}, count:3, store:'Radio' },
+            'exp-cosmos': { type:'challenge', locked: 'Icons/exp-cosmos-locked.png', unlocked: 'Icons/exp-cosmos.png', tooltip: 'Challenge ticket: Cosmos', materials: {} },
+            'exp-magic': { type:'challenge', locked: 'Icons/exp-magic-locked.png', unlocked: 'Icons/exp-magic.png', tooltip: 'Challenge ticket: Science or Magic', materials: {} },
+            'exp-cartrip': { type:'challenge', locked: 'Icons/exp-cartrip-locked.png', unlocked: 'Icons/exp-cartrip.png', tooltip: 'Challenge ticket: Car Trip', materials: {} },
         }
 
         function expandPuzzles() {
+            toggleClass(document.getElementById('table'), 'no-solver', !theSafariDetails.solverSite);
             var list = document.getElementById('puzzle_list');
             var metas = document.getElementById('meta_list');
             for (var i = 0; i < puzzles.length; i++) {
                 var puz = puzzles[i];
-                if (puz.group != group.puzzle) {
-                    continue;
-                }
+                if (puz.group == group.puzzle) {
+                    var tr = document.createElement('tr');
+                    var thIcon = document.createElement('td');
+                    var tdTitle = document.createElement('td');
+                    var tdAuthor = document.createElement('td');
+                    var tdFeeder = document.createElement('td');
+                    var tdSubmit = document.createElement('td');
+                    tr.id = puzzleFile(puz);
+                    tr.classList.add('sortable');
+                    thIcon.classList.add('icons');
+                    tdTitle.classList.add('html');
+                    tdAuthor.classList.add('author');
+                    tdFeeder.classList.add('feeders');
+                    tdSubmit.classList.add('submital')
 
-                var tr = document.createElement('tr');
-                var thIcon = document.createElement('td');
-                var tdTitle = document.createElement('td');
-                var tdAuthor = document.createElement('td');
-                var tdFeeder = document.createElement('td');
-                tr.classList.add('sortable');
-                thIcon.classList.add('icons');
-                tdTitle.classList.add('html');
-                tdAuthor.classList.add('author');
-                tdFeeder.classList.add('feeders');
-                var imgIcon = document.createElement('img');
-                var aTitle = document.createElement('a');
-                if (puz.icon) {
-                    imgIcon.src = 'Icons/' + puz.icon + '.png';
-                }
-                else {
-                    imgIcon.src = 'Icons/' + puz.type.icon + '.png';
-                    imgIcon.title = puz.type.alt;
-                }
-                if (puz.group != group.pending) {
-                    aTitle.href = puzzleHref(puz);
-                }
-                aTitle.target = '_blank';
-                aTitle.innerText = puz.title;
-                aTitle.classList.add('hover');
-                tdAuthor.innerText = puz.author;
-                var imgThumb = document.createElement('img');
-                imgThumb.classList.add('thumb');
-                imgThumb.src = 'Thumbs/' + puz.thumb + '.png';
-                aTitle.appendChild(imgThumb);
+                    var imgIcon = document.createElement('img');
+                    var aTitle = document.createElement('a');
+                    if (puz.icon) {
+                        imgIcon.src = 'Icons/' + puz.icon + '.png';
+                    }
+                    else {
+                        imgIcon.src = 'Icons/' + puz.type.icon + '.png';
+                        imgIcon.title = puz.type.alt;
+                    }
+                    if (puz.group != group.pending) {
+                        aTitle.href = puzzleHref(puz);
+                    }
+                    aTitle.target = '_blank';
+                    aTitle.innerText = puz.title;
+                    aTitle.classList.add('hover');
+                    tdAuthor.innerText = puz.author;
+                    var imgThumb = document.createElement('img');
+                    imgThumb.classList.add('thumb');
+                    imgThumb.src = 'Thumbs/' + puz.thumb + '.png';
+                    aTitle.appendChild(imgThumb);
 
-                if (puz.feeder) {
-                    tdFeeder.appendChild(createFeeder(puz.feeder, false));
-                }
+                    if (puz.feeder) {
+                        tdFeeder.appendChild(createFeeder(puz.feeder, false));
+                    }
 
-                tr.appendChild(thIcon);
-                tr.appendChild(tdTitle);
-                tr.appendChild(tdFeeder);
-                tr.appendChild(tdAuthor);
-                thIcon.appendChild(imgIcon);
-                tdTitle.appendChild(aTitle);
+                    tr.appendChild(thIcon);
+                    tr.appendChild(tdTitle);
+                    tr.appendChild(tdFeeder);
+                    tr.appendChild(tdAuthor);
+                    tr.appendChild(tdSubmit);
+                    thIcon.appendChild(imgIcon);
+                    tdTitle.appendChild(aTitle);
 
-                if (puz.group == group.meta) {
-                    metas.appendChild(tr);
+                    if (puz.group == group.meta) {
+                        metas.appendChild(tr);
+                    }
+                    else {
+                        list.appendChild(tr);
+                    }
                 }
-                else {
-                    list.appendChild(tr);
-                }
+                addSolverLink(puz);
+                markAsSolved(puzzleFile(puz));
             }
 
             var hovers = document.getElementsByClassName('hover');
             for (var i = 0; i < hovers.length; i++) {
                 var aTitle = hovers[i];
-                aTitle.onmouseover=function(e){bigThumb(e)};
-                aTitle.onmouseout=function(e){littleThumb(e)};
+                var td = findParentOfTag(aTitle, 'td');
+                td.onmouseover=function(e){bigThumb(e)};
+                td.onmouseout=function(e){littleThumb(e)};
+            }
+        }
+
+        function addSolverLink(puz) {
+            var tr = document.getElementById(puzzleFile(puz));
+            if (tr) {
+                var td = tr.getElementsByClassName('submital')[0];
+                if (theSafariDetails.solverSite) {
+                    var aSubmit = document.createElement('a');
+                    aSubmit.href = theSafariDetails.solverSite + '/Solve?id=' + puzzleSolveId(puz);
+                    aSubmit.target = '_blank';
+                    aSubmit.appendChild(document.createTextNode('submit'));
+                    td.appendChild(aSubmit);
+                }
+            }
+        }
+
+        function markAsSolved(puzFile) {
+            var tr = document.getElementById(puzFile);
+            if (tr && !hasClass(tr, 'solved')) {
+                var pStatus = getPuzzleStatus(puzFile);
+                if (pStatus == 'solved') {
+                    var check = document.createElement('img');
+                    check.src = '../Icons/Check.png';
+                    toggleClass(check, 'solve-check', true);
+
+                    var td = tr.getElementsByClassName('submital')[0];
+                    td.appendChild(check);
+                    toggleClass(tr, 'solved', true);
+                }
             }
         }
 
@@ -208,6 +293,7 @@
             spanFeed.classList.add(feed[0]);
             spanFeed.title = feeders[feed[0]].tooltip;
             var imgFeed = document.createElement('img');
+            imgFeed.classList.add(feed[0] + '-' + feed[1]);
 
             if (unlocked) {
                 imgFeed.src = feeders[feed[0]].unlocked;
@@ -223,51 +309,62 @@
                 imgFeed.src = altImg;
             }
             spanFeed.appendChild(imgFeed);
+            var subFeed = document.createElement('sub');
             if (feed.length > 1 && feed[1] > 0) {
-                var subFeed = document.createElement('sub');
                 subFeed.innerText = feed[1];
-                spanFeed.appendChild(subFeed);
             }
+            else {
+                subFeed.innerText = ' ';  // need something, or else rows with subs will be taller
+            }
+            spanFeed.appendChild(subFeed);
             return spanFeed;
         }
 
         function updateProgress() {
-            var td = document.getElementById('science-unlocked');
-            for (var i = 1; i <= 5; i++) {
-                if (i in feeders['science'].materials) {
-                    continue;
+            var feederKeys = Object.keys(feeders);
+            for (var f = 0; f < feederKeys.length; f++) {
+                var key = feederKeys[f];
+                var feed = feeders[key];
+                if (feed.type == 'meta') {
+                    var store = feed.store;
+                    var td = document.getElementById(key + '-unlocked');
+                    for (var i = 1; i <= feed.count; i++) {
+                        if (i in feed.materials) {
+                            continue;
+                        }
+                        var materials = loadMetaMaterials(store, 0, i);
+                        if (materials != null) {
+                            feed.materials[i] = materials['src'];
+                            td.appendChild(createFeeder([key, i], true));
+
+                            var imgs = document.getElementsByClassName(key + '-' + i);
+                            for (var m = 0; m < imgs.length; m++) {
+                                var img = imgs[m];
+                                img.src = feeders[key].unlocked;
+                                var span = img.parentNode;
+                                span.classList.remove('locked');  // span
+                                span.classList.add('unlocked');  // span
+                            }
+                        }
+                    }
                 }
-                var materials = loadMetaMaterials('Science', 0, i);
-                if (materials != null) {
-                    feeders['science'].materials[i] = materials['src'];
-                    td.appendChild(createFeeder(['science', i], true));
+                else {  // feed.type == 'challenge'
+                    td = document.getElementById(key + '-unlocked');
+                    if (!td || Object.keys(feed.materials).length > 0) {
+                        continue;
+                    }
+                    var materials = loadMetaMaterials(chal, 0, 1);
+                    if (materials != null) {
+                        feed.materials[0] = materials['src'];
+                        td.appendChild(createFeeder([chal, 0], true, 'Icons/ticket.png'));
+                    }
                 }
             }
 
-            td = document.getElementById('bus-unlocked');
-            for (var i = 1; i <= 4; i++) {
-                if (i in feeders['bus'].materials) {
-                    continue;
-                }
-                var materials = loadMetaMaterials('Schoolbus', 0, i);
-                if (materials != null) {
-                    feeders['bus'].materials[i] = materials['src'];
-                    td.appendChild(createFeeder(['bus', i], true));
-                }
-            }
-
-            challenges = ['exp-cosmos', 'exp-trivia', 'exp-tunes'];
-            for (var i = 0; i < challenges.length; i++) {
-                var chal = challenges[i];  
-                td = document.getElementById(chal + '-unlocked');
-                if (Object.keys(feeders[chal].materials).length > 0) {
-                    continue;
-                }
-                var materials = loadMetaMaterials(chal, 0, 1);
-                if (materials != null) {
-                    feeders[chal].materials[0] = materials['src'];
-                    td.appendChild(createFeeder([chal, 0], true, 'Icons/ticket.png'));
-                }
+            var solved = listPuzzlesOfStatus('solved');
+            for (var i = 0; i < solved.length; i++) {
+                var name = solved[i];
+                markAsSolved(name);
             }
         }
 
@@ -308,6 +405,9 @@
                 td = td.parentNode;
             }
             td.classList.add('big');
+            td.classList.remove('little');
+            var tr = findParentOfTag(td, 'tr');
+            tr.classList.add('big');
         }
         function littleThumb(evt) {
             var td = evt.target;
@@ -315,23 +415,31 @@
                 td = td.parentNode;
             }
             td.classList.remove('big');
+            td.classList.add('little');
+            var tr = findParentOfTag(td, 'tr');
+            tr.classList.remove('big');
         }
 
     </script>
 </head>
 <body id="index" style="background-color: #D1D6D7;" onload="onLoad()">
+    <div id="logo-div">
+        <img id="logo" src="Images/PS20 watermark.png" style="height: 569px;">
+    </div>
+    <iframe id="decoder-frame"></iframe>
+
     <table id="table" style="border-collapse: collapse">
         <thead>
             <tr class="title" style="text-align: center;">
-                <th colspan="4" class="title" style="text-align: center;">Giving Safari 2023</th>
+                <th colspan="5" class="title" style="text-align: center;">Giving Safari 2023</th>
             </tr>
             <tr id="sortHeader">
                 <th class="icons" onclick="sortTable(1)">Type</th>
                 <th class="html" onclick="sortTable(2)">Puzzle</th>
                 <th class="feeders" onclick="sortTable(3)">Feeder</th>
-                <th class="author" onclick="sortTable(4)">Author
-                    <img id="logo" src="Images/PS20 logo.png" style="width: 440px; height: 569px;">
-                </th>
+                <th class="author" onclick="sortTable(4)">Author</th>
+                <th class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png"></span></th>
+
             </tr>    
         </thead>
         <tbody id="puzzle_list">
@@ -346,19 +454,31 @@
                 <th class="html" style="text-align: left;">Meta-Puzzles</th>
                 <th>Unlocked</th>
                 <th class="author" style="text-align: left;">Author</th>
+                <th class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png"></span></th>
+
             </tr>    
-            <tr>
+            <tr id="RadioWaves">
+                <td class="icons"><img src="Icons/radio.png"></td>
+                <td class="html"><a href="RadioWaves.html" target="_blank" class="hover">Radio Waves<img class="thumb" src="Thumbs/Rw.png"></a></td>
+                <td id="radio-unlocked" class="feeders"></td>
+                <td class="author">David Garber</td>
+                <td class="submital"></td>
+            </tr>
+            <tr id="TheMagicSchoolBus">
                 <td class="icons"><img src="Icons/bus.png"></td>
                 <td class="html"><a href="TheMagicSchoolBus.html" target="_blank" class="hover">The Magic School Bus<img class="thumb" src="Thumbs/Tmsb.png"></a></td>
                 <td id="bus-unlocked" class="feeders"></td>
                 <td class="author">Philippe Nicolle</td>
+                <td class="submital"></td>
             </tr>
-            <tr>
+            <tr id="WeirdScience">
                 <td class="icons"><img src="Icons/science.png"></td>
                 <td class="html"><a href="WeirdScience.html" target="_blank" class="hover">Weird Science<img class="thumb" src="Thumbs/Ws.png"></a></td>
                 <td id="science-unlocked" class="feeders"></td>
                 <td class="author">Martyn Lovell</td>
+                <td class="submital"></td>
             </tr>
+<!--
             <tr>
                 <td colspan="4" style="background-color: #D1D6D7">&nbsp;</th>
             </tr>
@@ -367,25 +487,30 @@
                 <th class="html" style="text-align: left;">Challenges</th>
                 <th>Ticket</th>
                 <th class="author" style="text-align: left;">Author</th>
+                <th class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png"></span></th>
             </tr>    
-            <tr>
+            <tr id="Cosmos">
                 <td class="icons"><img src="Icons/exp-cosmos.png"></td>
                 <td class="html">Cosmos</td>
                 <td id="exp-cosmos-unlocked" class="feeders"></td>
                 <td class="author">Rorke Haining</td>
+                <td class="submital"></td>
             </tr>
-            <tr>
-                <td class="icons"><img src="Icons/exp-trivia.png"></td>
-                <td class="html">Science Trivia</td>
-                <td id="exp-trivia-unlocked" class="feeders"></td>
-                <td class="author">Cele Wolman</td>
+            <tr id="ScienceMagic">
+                <td class="icons"><img src="Icons/exp-magic.png"></td>
+                <td class="html">Science or Magic</td>
+                <td id="exp-magic-unlocked" class="feeders"></td>
+                <td class="author">David Garber<br>&amp; Ken Showman</td>
+                <td class="submital"></td>
             </tr>
-            <tr>
-                <td class="icons"><img src="Icons/exp-tunes.png"></td>
-                <td class="html">Name That Tune</td>
-                <td id="exp-tunes-unlocked" class="feeders"></td>
-                <td class="author">Arwen Pond</td>
+            <tr id="CarTrip">
+                <td class="icons"><img src="Icons/exp-cartrip.png"></td>
+                <td class="html">Car Trip</td>
+                <td id="exp-cartrip-unlocked" class="feeders"></td>
+                <td class="author">David Garber</td>
+                <td class="submital"></td>
             </tr>
+-->
         </tfoot>
     </table>
 
@@ -446,7 +571,6 @@
                 <br>Both are found in "More settings"
             </td>
         </tr>
-        <iframe id="decoder-frame" style="top: 1px; left: 6.25in;"></iframe>
     </table>
 </body>
 </html>

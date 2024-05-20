@@ -170,7 +170,7 @@ interface LetterStyles {
  * @param defExtract - A default extraction style
  * @returns An object with a style name for each role
  */
-function getLetterStyles(   elmt: Element, 
+export function getLetterStyles(   elmt: Element, 
                             defLetter: string, 
                             defLiteral: string|undefined, 
                             defExtract: string)

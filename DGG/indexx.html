@@ -1,0 +1,399 @@
+<html>
+<head>
+    <title>Giving Puzzle Safari 20: Safari Labs</title>
+    <meta charset="UTF-8">
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+    <link href="Css/Fonts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="../Css/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="../Css/TextInput.css" rel="Stylesheet" type="text/css"></link>
+    <link rel="shortcut icon" type="image/png" href="Images/octopus_icon.png">
+    <style>
+        th {
+            background-color: #7019ae;
+            color: #debdf6;
+            font-family: 'Bookman Old Style';
+        }
+        #sortHeader th {
+            cursor: s-resize;
+        }
+
+        #table tr:nth-child(odd) {
+            background-color: #f5f5f5;
+        }
+        #table tr:nth-child(even) {
+            background-color: #ECEEEE;
+        }
+
+        td {
+            position: relative;
+            line-height: 8pt;
+            padding: 0px;
+        }
+        
+        .icons {
+            width: 1in; 
+            text-align: center;
+        }
+        .html {
+            width: 3in; 
+            text-align: left;
+        }
+        .author {
+            width: 1.5in; 
+            position: relative;
+            text-align: left; 
+        }
+        .year {
+            width: 0.75in;
+            text-align: center;
+        }
+        .year img {
+            height: 0.3in;
+        }
+
+        .feeders {
+            text-align: center;
+        }
+        .feeders img {
+            height: 0.25in;
+        }
+        .feeders sub {
+            font-weight: bold;
+            font-size: 7pt;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+        }
+        .bus {
+            position: relative;
+        }
+        .bus sub {
+            position: absolute;
+            left: 9px;
+            top: -4px;
+            color: black;
+            text-shadow: 0 0 5px yellow;
+        }
+        .radio {
+            position: relative;
+        }
+        .radio sub {
+            position: absolute;
+            left: 5px;
+            top: -3px;
+            color: white;
+            text-shadow: 0 0 5px yellow;
+        }
+        .flask {
+            position: relative;
+        }
+        .flask sub {
+            position: absolute;
+            left: 6px;
+            top: 0px;
+            color: pink;
+        }
+        #logo-div {
+            position: absolute;
+            left: 7.2in;
+            top: 0px;
+            height: 7.12in;
+            text-align: center;
+        }
+        #logo img {
+            height: 7.12in;
+        }
+        tr {
+            position: relative;
+        }
+        .check {
+            left: .7in;
+            top: 0in;
+        }
+        .feeders sub.car {
+            color: white;
+            left: -19.5px;
+            top: -11px;
+        }
+        .feeders sub.seven {
+            cursor: pointer;
+        }
+        #legend td {
+            vertical-align: top;
+        }
+        .icons img {
+            height: 0.25in;
+            border: solid 1px transparent;
+        }
+        img.thumb {
+            vertical-align: middle;
+            margin-left: 0.35in;
+            max-height: 0.25in;
+            max-width: 0.25in;
+            border: solid 1px #ccc;
+        }
+        .big img.thumb {
+            transform: scale(4);
+            transform-origin: bottom;
+            border: solid 0.5px #ddd;
+        }
+    </style>
+    <script src="puzzle_list.js"></script>
+    <script>
+        function onLoad() {
+            simpleSetup();
+            expandPuzzles();
+        }
+
+        function expandPuzzles() {
+            var list = document.getElementById('puzzle_list');
+            var metas = document.getElementById('meta_list');
+            for (var i = 0; i < puzzles.length; i++) {
+                var puz = puzzles[i];
+                if (puz.group != group.puzzle) {
+                    continue;
+                }
+
+                var tr = document.createElement('tr');
+                var thIcon = document.createElement('td');
+                var tdTitle = document.createElement('td');
+                var tdYear = document.createElement('td');
+                var tdAuthor = document.createElement('td');
+                tr.classList.add('sortable');
+                thIcon.classList.add('icons');
+                tdTitle.classList.add('html');
+                tdYear.classList.add('year');
+                tdAuthor.classList.add('author');
+                
+                var imgIcon = document.createElement('img');
+                var aTitle = document.createElement('a');
+                if (puz.icon) {
+                    imgIcon.src = 'Icons/' + puz.icon + '.png';
+                }
+                else {
+                    imgIcon.src = 'Icons/' + puz.mech.icon + '.png';
+                    imgIcon.title = puz.mech.alt;
+                }
+                if (puz.group != group.pending) {
+                    aTitle.href = puzzleHref(puz);
+                }
+                aTitle.target = '_blank';
+                aTitle.innerText = puz.title;
+                aTitle.classList.add('hover');
+
+                if (puz.safari) {
+                    var imgYear = document.createElement('img');
+                    imgYear.src = 'Icons/ps' + puz.safari + '.png';
+                    imgYear.alt = 'Puzzle Safari ' + puz.safari;
+                    imgYear.title = imgYear.alt;
+                    tdYear.appendChild(imgYear);
+                }
+
+                tdAuthor.innerText = puz.author;
+                if (puz.thumb) {
+                    var imgThumb = document.createElement('img');
+                    imgThumb.classList.add('thumb');
+                    imgThumb.src = 'Thumbs/' + puz.thumb + '.png';
+                    aTitle.appendChild(imgThumb);
+                }
+
+                tr.appendChild(thIcon);
+                tr.appendChild(tdTitle);
+                tr.appendChild(tdYear);
+                tr.appendChild(tdAuthor);
+                thIcon.appendChild(imgIcon);
+                tdTitle.appendChild(aTitle);
+
+                if (puz.group == group.meta) {
+                    metas.appendChild(tr);
+                }
+                else {
+                    list.appendChild(tr);
+                }
+            }
+
+            var hovers = document.getElementsByClassName('hover');
+            for (var i = 0; i < hovers.length; i++) {
+                var aTitle = hovers[i];
+                aTitle.onmouseover=function(e){bigThumb(e)};
+                aTitle.onmouseout=function(e){littleThumb(e)};
+            }
+        }
+
+        var sortOrder = 3;
+        function sortTable(col) {
+            var tbody = document.getElementById('puzzle_list');
+            var rows = document.getElementsByClassName('sortable');
+            var lookup = {};
+            var order = [];
+            for (var i = rows.length - 1; i >= 0; i--) {
+                var row = rows[i];
+                if (row.parentNode != tbody) {
+                    continue;
+                }
+                var cols = row.getElementsByTagName('td');
+                var cell = cols[col - 1];
+                var prevOrder = String(i).padStart(2, '0');
+                var val = cell.innerHTML + ' ' + prevOrder;
+                order.push(val);
+                lookup[val] = row;
+                tbody.removeChild(row);
+            }
+            order.sort();
+            sortOrder = (sortOrder == col) ? -col : col;
+            if (sortOrder < 0) {
+                order.reverse();
+            }
+            for (var i = 0; i < order.length; i++) {
+                var row = lookup[order[i]];
+                tbody.appendChild(row);
+            }
+            // TODO: update header with arrow indicating sort order
+        }
+
+        function bigThumb(evt) {
+            var td = evt.target;
+            if (td.tagName != 'A') {
+                td = td.parentNode;
+            }
+            td.classList.add('big');
+        }
+        function littleThumb(evt) {
+            var td = evt.target;
+            if (td.tagName != 'A') {
+                td = td.parentNode;
+            }
+            td.classList.remove('big');
+        }
+
+        /**
+         * Reset all cached data in each puzzle,
+         * as well as for the list as a whole.
+         */
+        function resetAll() {
+            for (var i = 0; i < puzzles.length; i++) {
+                var puz = puzzles[i];
+                resetPuzzleProgress(puzzleHref(puz));
+            }
+            var loaded = listPuzzlesOfStatus('loaded');
+            for (var i = 0; i < loaded.length; i++) {
+                resetPuzzleProgress(loaded[i]);
+            }
+            resetAllPuzzleStatus();
+        }
+    </script>
+</head>
+<body style="background-color: #D1D6D7;" onload="onLoad()">
+    <div id="logo-div">
+        <img id="logo" src="Images/octopus_watermark.png" style="height: 569px;">
+        <br>
+        <!--<a href="safari.html" target="_blank">Giving Safari home page</a>-->
+    </div>
+
+    <table id="table" style="border-collapse: collapse; width:5in">
+        <thead>
+            <tr class="title" style="text-align: center;">
+                <th colspan="4" class="title" style="text-align: center;">David&rsquo;s puzzles</th>
+            </tr>
+            <tr id="sortHeader">
+                <th class="icon" onclick="sortTable(1)">Type</th>
+                <th class="html" onclick="sortTable(2)">Puzzle</th>
+                <th class="year" onclick="sortTable(3)">Year</th>
+                <th class="author" onclick="sortTable(4)">Author</th>
+            </tr>    
+        </thead>
+        <tbody id="puzzle_list">
+
+        </tbody>
+        <tfoot id="meta_list">
+            <tr>
+                <td colspan="4" style="background-color: #D1D6D7">&nbsp;</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th class="html" style="text-align: left;">Meta-Puzzles</th>
+                <th class="year" style="text-align: left;">Year</th>
+                <th class="author" style="text-align: left;">Author</th>
+            </tr>
+            <tr>
+                <td colspan="4" style="background-color: #D1D6D7">&nbsp;</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th class="html" style="text-align: left;">Challenges</th>
+                <th class="year" style="text-align: left;">Year</th>
+                <th class="author" style="text-align: left;">Author</th>
+            </tr>    
+            <tr>
+                <td colspan="4" style="text-align: center;">
+                    <a href="javascript:resetAll()">Reset all puzzle progress</a>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <table id="legend" style="margin-top: 0.5in; margin-left: 0.25in;">
+        <tr>
+            <th colspan="2">Special web-ready features in HTML puzzles</th>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; width: 1.25in;">Text entry</td>
+            <td>Any underlines, boxes, etc. that look like they take text entry do.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;"><span style="box-shadow:0px 0px 5px orange; color:blue;">Show Notes</span></td>
+            <td>Click on this to enable and <span style="box-shadow:0px 0px 5px orange;">highlight</span> all the note-taking fields next to most hints</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;"><span style="border:dotted 1px #999999; color:blue;">Dim Notes</span></td>
+            <td>Click on this to enable note-taking fields next to most hints, but with a more <span style="border:dotted 1px #999999;">subtle</span> UI</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; color:blue;">Disable Notes</td>
+            <td>Click on this to disable the note-taking fields next to most hints</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;"><span style="box-shadow:0px 0px 5px fuchsia;"><a href="javascript:toggleDecoder()">Show Decoders</a></span></td>
+            <td>Click on this to open a side-panel to decode <a href="https://www.decrypt.fun/index.html" target="_blank">common puzzle encodings</a></td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;">&#x2714;&#xFE0F;<!--✔️--></td>
+            <td>When this icon is in the bottom-right, clicking on hints will check them off as you utilize them.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px black;">&#x1f4a1;<!--💡--></td>
+            <td>When this icon is in the bottom-right, clicking on cells will highlight them.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px black;">&#x1f448;<!--👈--></td>
+            <td>When this icon is in the bottom-right, elements of the page may be drag-dropped around the page.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px #ff0;">&#x1F4D0;<!--📐--></td>
+            <td>When this icon is in the bottom-right, a line drawing tool will connect vertices.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px black;">&#x1F48A;<!--💊--></td>
+            <td>When this icon is in the bottom-right, a word-circling tool is available.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px black;"><img src="Icons/stamp-glow.png" style="height:3ex;"><!--✒️--></td>
+            <td>Some puzzles offer stamping tools to mark directly on elements of the page.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;">Printing <span style="text-shadow: 0 0 10px yellow;">&#x1f5a8;&#xfe0f;</span></td>
+            <td style="line-height:normal;"><b>Important steps to print</b>
+                <br>Puzzles printed from this site require two settings to render correctly.
+                <br>&nbsp; &bullet; &nbsp; Margins = None
+                <br>&nbsp; &bullet; &nbsp; Background graphics = checked
+                <br>Both are found in "More settings"
+            </td>
+        </tr>
+        <iframe id="decoder-frame" style="top: 1px; left: 6.25in;"></iframe>
+    </table>
+</body>
+</html>

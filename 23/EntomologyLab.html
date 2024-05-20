@@ -15,6 +15,12 @@
         'abilities': {
           'wordSearch': true
         },
+        "validation":{"final-answer":{
+          "UNAXCLZ":"1|4GZFO_GveERr.ugzy^n zrgn cvrpr sbe Gur Zntvp Fpubby Ohf|5GZFO_GveERr.ugzy",
+          "QEUNAXCLZ":"1|4GZFO_GveERr.ugzy^n zrgn cvrpr sbe Gur Zntvp Fpubby Ohf|5GZFO_GveERr.ugzy",
+          "CNHYEHQQ":"3Jr ner abg ybbxvat sbe npgbef. Xrrc tbvat.",
+          "ZVPUNRYQBHTYNF":"3Jr ner abg ybbxvat sbe npgbef. Xrrc tbvat.",
+          "JUBVFSVEFGNAGZNA":"3"}},
         'tableBuilder': {
           'rootId': 'grid-root',
           'data': [
@@ -104,6 +110,11 @@
           <rect id="border" width="624" height="624"></rect>
         </g>
       </svg>
+
+      <div class="no-print" style="position:absolute; bottom: -0.5in; left: 2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:2.5in; text-transform: uppercase;"></input>
+        <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
 
     </div>
   </body>

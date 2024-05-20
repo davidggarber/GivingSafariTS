@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'gs24',
+        'title': 'Moby Dick’s Drive-In',
+        'author': 'David Garber',
+        'copyright': '2021',
+        'printAsColor': false,
+        'type': 'Trivia',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+        "validation":{"extracted":{"OHETREZNFGRENAQPBZZNAQRE":"1"}}
+      };
+      var row_data = [
+        {
+          friendly: 'A famous rock star, battling addiction, encounters a new raw talent at a café. She can sing, but also dreams about espresso. While his career and life crash and burn, she succeeds wildly, eventually founding a global coffee empire.',
+          pattern: '1 9 2 4',
+          extract: '6 7',
+        },
+        {
+          friendly: 'An orphan discovers she is a chess prodigy after consuming soft serve ice cream with mix ins, enabling her to visualize chess pieces move on her ceiling.',
+          pattern: '5 5’1 6',
+          extract: '4 12',
+        },
+        {
+          friendly: 'Musical about a British school teacher who travels to Siam as part of its ruler’s program to modernize the country with flame broiled beef patties.',
+          pattern: '6 4 3 1',
+          extract: '5 6',
+        },
+        {
+          friendly: 'Kevin joins a group of dwarves who use a mystical map to jump through history, stealing Tex-Mex fast food from the likes of King Agamemnon, Napoleon, and Robin Hood.',
+          pattern: '4 4 7',
+          extract: '7 10',
+        },
+        {
+          friendly: 'A Fallen Woman from Gilead takes a forbidden trip to the Market for some flagship dairy wedges.',
+          pattern: '7’1 8 6 4',
+          extract: '21 23',
+        },
+        {
+          friendly: 'Eleanor Shellstrop discovers that heaven is a Post Alley storefront full of delicious soups, bisques, and bread bowls - or is it?',
+          pattern: '3 4 4 5 7',
+          extract: '16 23',
+        },
+        {
+          friendly: 'A white mouse is adopted into a human family, but struggles to feel like he truly belongs. He gains respect by racing toy cars and boats. Each time he wins, he shouts the non-sequitur "Pizza! Pizza!"',
+          pattern: '6 6 7',
+          extract: '4',
+        },
+        {
+          friendly: 'Prom nights are best enjoyed with your date and your bestie at this restaurant that needs no introduction. Now, how can we get Duckie up on that trapeze?',
+          pattern: '6 2 4 4',
+          extract: '11 13',
+        },
+        {
+          friendly: 'Teenagers flee the evil Jason and his hockey mask, choosing to hide out at a Seattle-area restaurant known for being open all night long.',
+          pattern: '6 3 2 5',
+          extract: '12 13',
+        },
+        {
+          friendly: 'Cher celebrates every Oscar win with a big scoop of Scout Mint.',
+          pattern: '5 10',
+          extract: '1 6',
+        },
+        {
+          friendly: 'A Rolling Stones journalist and a groupie convince a band that no tour is complete without a stop for some fried bird.',
+          pattern: '5’1 6 6 7',
+          extract: '7 25',
+        },
+        {
+          friendly: 'Arcade games ding the news of these nuptials! Hosted by a giant rat, guests to this event will be treated to pizza, diminutive place settings, and a good deal of murderous Child’s Play.',
+          pattern: '5 2 5 1. 6',
+          extract: '4 13',
+        },
+        {
+          friendly: 'An outlaw lives in Sherwood forest, stealing gourmet hamburgers from the rich, and feeding them to the poor. Yum!',
+          pattern: '3 5 4',
+          extract: '4',
+        }
+      ];
+      boiler['builderLookup']['row_data'] = row_data;
+
+    </script>
+    <style>
+      .hint {
+        font-size: 10pt;
+        margin-bottom: 0px;
+        margin-top: 10px;
+      }
+      .inputs {
+        margin: 0px;
+        margin-left: 0.5in;
+        font-family: 'Caveat';
+        font-size: 14pt;
+      }
+      .letter-cell.letter-box {
+        position: relative;
+        width: 2.5ex;
+      }
+      .letter-input {
+        position: relative;
+        top: -3px;
+      }
+      #MobyDick .letter-literal {
+        top: -1px;
+      }
+      #extract-and-submit {
+        margin-top: 0.1in;
+        margin-left: 2in;
+      }
+    </style>
+  </head>
+  <body id="MobyDick">
+    <div id="pageBody">
+      <div data-input-style="box" data-literal-style="none" data-extract-style="highlight">
+        <for each="row" in="row_data">
+          <div class="row">
+            <p class="hint">{row.friendly}</p>
+            <p class="inputs"><span class="letter-cell-block create-from-pattern" data-letter-pattern="{row.pattern}" data-extract-indeces="{row.extract}"></span></p>  
+          </div>
+        </for>
+      </div>
+
+      <div id="extract-and-submit">
+        <span id="extracted" data-show-ready="submit-extracted"></span>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

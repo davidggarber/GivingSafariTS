@@ -4,6 +4,7 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 
+
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -70,6 +71,19 @@ export function applyAllClasses(obj: Node|string,
     var list = classes.split(' ');
     for (let cls of list) {
         toggleClass(obj, cls, true);
+    }
+}
+
+/**
+ * Apply all classes in a list of classes.
+ * @param obj - A page element, or id of an element
+ * @param classes - A list of class names, delimited by spaces
+ */
+export function clearAllClasses(obj: Node|string, 
+                                classes:string) {
+    var list = classes.split(' ');
+    for (let cls of list) {
+        toggleClass(obj, cls, false);
     }
 }
 
@@ -204,10 +218,20 @@ export function findEndInContainer( current: Element,
 /**
  * Determine the tag type, based on the tag name (case-insenstive)
  * @param elmt An HTML element
- * @param tag a tag name
+ * @param tag a tag name, or array of names
  */
-export function isTag(elmt: Element, tag: string) {
-    return elmt.tagName.toUpperCase() == tag.toUpperCase();
+export function isTag(elmt: Element, tag: string|string[]) {
+    const tagName = elmt.tagName.toUpperCase();
+    if (typeof(tag) == 'string') {
+        return tagName == tag.toUpperCase();
+    }
+    const tags = tag as string[];
+    for (let i = 0; i < tags.length; i++) {
+        if (tagName == tags[i].toUpperCase()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -233,6 +257,22 @@ export function findParentOfClass(elmt: Element,
         elmt = elmt.parentNode as Element;
     }
     return null;
+}
+
+/**
+ * Is the element anywhere underneath parent (including itself)
+ * @param elmt An element
+ * @param parent An element
+ * @returns true if parent is anywhere in elmt's parent chain
+ */
+export function isSelfOrParent(elmt: Element, parent: Element) {
+    while (elmt !== null && elmt.tagName !== 'BODY') {
+        if (elmt === parent) {
+            return true;
+        }
+        elmt = elmt.parentNode as Element;
+    }
+    return false;
 }
 
 /**
@@ -291,23 +331,63 @@ export function findFirstChildOfClass(  elmt: Element,
  * @param prefix - (optional) - A prefix to apply to the answer
  * @returns The found or default style, optional with prefix added
  */
-export function getOptionalStyle(   elmt: Element, 
+export function getOptionalStyle(   elmt: Element|null, 
                                     attrName: string, 
                                     defaultStyle?: string, 
                                     prefix?: string)
                                     : string|null {
-    var val = elmt.getAttribute(attrName);
-    while (val === null) {
-        elmt = elmt.parentNode as Element;
-        if (elmt === null || elmt.tagName === 'BODY') {
-            val = defaultStyle || null;
-            break;
-        }
-        else {
-            val = elmt.getAttribute(attrName);
+    if (!elmt) {
+        return null;
+    }
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName)) !== '');
+    let val = e ? e.getAttribute(attrName) : null;
+    val = val !== null ? cloneText(val) : (defaultStyle || null);
+    return (val === null || prefix === undefined) ? val : (prefix + val);
+}
+
+/**
+ * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
+ * @param elmt - A page element
+ * @param attrName - An attribute name
+ * @returns The found data, looked up in context
+ */
+export function getOptionalContext( elmt: Element|null, 
+                                    attrName: string)
+                                    : any {
+    if (!elmt) {
+        return null;
+    }
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
+    const val = e ? e.getAttribute(attrName) : null;
+    return val !== null ? anyFromContext(val) : null;
+}
+
+/**
+ * Loop through all elements in a DOM sub-tree, looking for any elements with an optional tag.
+ * Recurse as needed. But once found, don't recurse within the find.
+ * @param root The node to look through. Can also be 'document'
+ * @param attr The name of an attribute. It must be present and non-empty to count
+ * @returns A list of zero or more elements
+ */
+export function getAllElementsWithAttribute(root: Node, attr:string):HTMLElement[] {
+    const list:HTMLElement[] = [];
+    for (let i = 0; i < root.childNodes.length; i++) {
+        const child = root.childNodes[i];
+        if (child.nodeType == Node.ELEMENT_NODE) {
+            const elmt = child as HTMLElement;
+            if (elmt.getAttribute(attr)) {
+                list.push(elmt);
+                // once found, don't recurse
+            }
+            else {
+                const recurse = getAllElementsWithAttribute(elmt, attr);
+                for (let r = 0; r < recurse.length; r++) {
+                    list.push(recurse[r]);
+                }
+            }
         }
     }
-    return (val === null || prefix === undefined) ? val : (prefix + val);
+    return list;
 }
 
 /**
@@ -333,6 +413,47 @@ export function moveFocus(input: HTMLInputElement,
         return true;
     }
     return false;
+}
+
+/**
+ * Sort a collection of elements into an array
+ * @param src A collection of elements, as from document.getElementsByClassName
+ * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
+ * @returns An array of the same elements, either sorted, or else in original document order
+ */
+export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = 'data-extract-order'): Element[] {
+    const lookup = {};
+    const indeces:number[] = [];
+    const sorted:Element[] = [];
+    for (let i = 0; i < src.length; i++) {
+        const elmt = src[i];
+        const order = getOptionalStyle(elmt, sort_attr);
+        if (order) {
+            // track order values we've seen
+            if (!(order in lookup)) {
+                indeces.push(parseInt(order));
+                lookup[order] = [];
+            }
+            // make elements findable by their order
+            lookup[order].push(elmt);
+        }
+        else {
+            // elements without an explicit order go document order
+            sorted.push(elmt);
+        }
+    }
+
+    // Sort indeces, then build array from them
+    indeces.sort();
+    for (let i = 0; i < indeces.length; i++) {
+        const order = '' + indeces[i];
+        const peers = lookup[order];
+        for (let p = 0; p < peers.length; p++) {
+            sorted.push(peers[p]);
+        }
+    }
+
+    return sorted;
 }
 
 
@@ -501,7 +622,10 @@ export function setupNotes(margins:HTMLDivElement) {
     index = setupNotesCells('notes-abs', undefined, index);
     setupNotesToggle(margins);
     indexAllNoteFields();
-    if (isBodyDebug()) {
+    if (isPrint()) {
+        setNoteState(NoteState.Disabled);
+    }
+    else if (isBodyDebug()) {
         setNoteState(NoteState.Visible);
     }
 }
@@ -877,13 +1001,14 @@ type LocalCacheStruct = {
     checks: object;     // number => boolean
     containers: object; // number => number
     positions: object;  // number => Position
-    stamps: object;   // number => string
+    stamps: object;     // number => string
     highlights: object; // number => boolean
-    edges: string[]; // strings
+    edges: string[];    // strings
+    guesses: GuessLog[];
     time: Date|null;
 }
 
-var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], time: null };
+var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], guesses: [], time: null };
 
 ////////////////////////////////////////////////////////////////////////
 // User interface
@@ -1083,7 +1208,7 @@ function saveCache() {
  * @param element an letter-input element
  */
 export function saveLetterLocally(input:HTMLInputElement) {
-    if (input) {
+    if (input && input != currently_restoring) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.letters[index] = input.value;
@@ -1097,7 +1222,7 @@ export function saveLetterLocally(input:HTMLInputElement) {
  * @param element an word-input element
  */
 export function saveWordLocally(input:HTMLInputElement) {
-    if (input) {
+    if (input && input != currently_restoring) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.words[index] = input.value;
@@ -1177,6 +1302,9 @@ export function saveStampingLocally(element:HTMLElement) {
             if (drawn) {
                 localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
             }
+            else if (hasClass(parent, 'stampedObject')) {
+                localCache.stamps[index] = parent.getAttributeNS('', 'data-template-id');
+            }
             else {
                 delete localCache.stamps[index];
             }
@@ -1214,6 +1342,15 @@ export function saveStraightEdge(vertexList: string, add:boolean) {
             localCache.edges.splice(i, 1);
         }
     }
+    saveCache();
+}
+
+/**
+ * Update the local cache with the full set of guesses for this puzzle
+ * @param guesses An array of guesses, in time order
+ */
+export function saveGuessHistory(guesses: GuessLog[]) {
+    localCache.guesses = guesses;
     saveCache();
 }
 
@@ -1382,6 +1519,7 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreStamps(storage.stamps);
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
+    restoreGuesses(storage.guesses);
     reloading = false;
 
     const fn = theBoiler().onRestore;
@@ -1389,6 +1527,8 @@ function loadLocalStorage(storage:LocalCacheStruct) {
         fn();
     }
 }
+
+let currently_restoring:HTMLElement|null = null;
 
 /**
  * Restore any saved letter input values
@@ -1398,13 +1538,15 @@ function restoreLetters(values:object) {
     localCache.letters = values;
     var inputs = document.getElementsByClassName('letter-input');
     for (var i = 0; i < inputs.length; i++) {
+        currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
         if(value != undefined){
             input.value = value;
-            afterInputUpdate(input);
+            afterInputUpdate(input, values[i]);
         }
     }
+    currently_restoring = null;
 }
 
 /**
@@ -1415,16 +1557,21 @@ function restoreWords(values:object) {
     localCache.words = values;
     var inputs = document.getElementsByClassName('word-input');
     for (var i = 0; i < inputs.length; i++) {
+        currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
         if(value != undefined){
             input.value = value;
+            if (value.length > 0) {
+                afterInputUpdate(input, value.substring(value.length - 1));
+            }
             var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
             if (extractId != null) {
                 updateWordExtraction(extractId);
             }            
         }
     }
+    currently_restoring = null;
     if (inputs.length > 0) {
         updateWordExtraction(null);
     }
@@ -1547,6 +1694,128 @@ function restoreEdges(vertexLists:string[]) {
     }
 }
 
+/**
+ * Recreate any saved guesses and their responses
+ * @param guesses A list of guess structures
+ */
+function restoreGuesses(guesses:GuessLog[]) {
+    if (!guesses) {
+        guesses = [];
+    }
+    for (var i = 0; i < guesses.length; i++) {
+        const src = guesses[i];
+        // Rebuild the GuessLog, to convert the string back to a DateTime
+        const gl:GuessLog = { field:src.field, guess:src.guess, time:new Date(String(src.time)) };
+        decodeAndValidate(gl);
+        // Decoding will rebuild the localCache
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Utils for working with the shared puzzle list
+//
+
+/**
+ * A limited list of meaningful puzzle statuses
+ */
+export const PuzzleStatus = {
+    Hidden: 'hidden',  // A puzzle the player should not even see
+    Locked: 'locked',  // A puzzle the player should not have a link to
+    Unlocked: 'unlocked',  // A puzzle that the player can now reach
+    Loaded: 'loaded',  // A puzzle which has been loaded, possibly triggering secondary storage
+    Solved: 'solved',  // A puzzle which is fully solved
+}
+
+/**
+ * Update the master list of puzzles for this event
+ * @param puzzle The name of this puzzle (not the filename)
+ * @param status One of the statuses in PuzzleStatus
+ */
+export function updatePuzzleList(puzzle:string|null, status:string) {
+    if (!puzzle) {
+        puzzle = getCurFileName();
+    }
+    var key = getOtherFileHref('puzzle_list', 0);
+    let pList = {};
+    if (key in localStorage) {
+        const item = localStorage.getItem(key);
+        if (item) {
+            pList = JSON.parse(item);
+        }
+    }
+    if (!pList) {
+        pList = {};
+    }
+    pList[puzzle] = status;
+    localStorage.setItem(key, JSON.stringify(pList));
+}
+
+/**
+ * Lookup the status of a puzzle
+ * @param puzzle The name of a puzzle
+ * @param defaultStatus The initial status, before a player updates it
+ * @returns The saved status
+ */
+export function getPuzzleStatus(puzzle:string|null, defaultStatus?:string): string|undefined {
+    if (!puzzle) {
+        puzzle = getCurFileName();
+    }
+    var key = getOtherFileHref('puzzle_list', 0);
+    let pList = {};
+    if (key in localStorage) {
+        const item = localStorage.getItem(key);
+        if (item) {
+            pList = JSON.parse(item);
+            if (pList && puzzle in pList) {
+                return pList[puzzle];
+            }
+        }
+    }
+    return defaultStatus;
+}
+
+/**
+ * Return a list of puzzles we are tracking, which currently have the indicated status
+ * @param status one of the valid status strings
+ */
+export function listPuzzlesOfStatus(status:string): string[] {
+    const list:string[] = [];
+    var key = getOtherFileHref('puzzle_list', 0);
+    if (key in localStorage) {
+        const item = localStorage.getItem(key);
+        if (item) {
+            const pList = JSON.parse(item);
+            if (pList) {
+                const names = Object.keys(pList);
+                for (let i = 0; i < names.length; i++) {
+                    const name = names[i];
+                    if (pList[name] === status) {
+                        list.push(name);
+                    }
+                }
+            }
+        }
+    }
+    return list;
+}
+
+/**
+ * Clear the list of which puzzles have been saved, unlocked, etc.
+ */
+export function resetAllPuzzleStatus() {
+    var key = getOtherFileHref('puzzle_list', 0);
+    localStorage.setItem(key, JSON.stringify(null));
+}
+
+/**
+ * Clear any saved progress on this puzzle
+ * @param puzzleFile a puzzle filename
+ */
+export function resetPuzzleProgress(puzzleFile:string) {
+    var key = getOtherFileHref(puzzleFile, 0);
+    localStorage.setItem(key, JSON.stringify(null));
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Utils for sharing data between puzzles
 //
@@ -1581,8 +1850,26 @@ function loadMetaMaterials(puzzle, up, page): object|undefined {
     return undefined;
 }
 
+/**
+ * Get the last level of the URL's pathname
+ */
+export function getCurFileName(no_extension:boolean = true) {
+    const key = window.location.pathname;
+    const bslash = key.lastIndexOf('\\');
+    const fslash = key.lastIndexOf('/');
+    const parts = key.split(fslash >= bslash ? '/' : '\\');
+    let name = parts[parts.length - 1];
+    if (no_extension) {
+        const dot = name.split('.');
+        if (dot.length > 1) {
+            name = name.substring(0, name.length - 1 - dot[dot.length - 1].length);
+        }
+    }
+    return name;
+}
+
 // Convert the absolute href of the current window to a relative href
-// levels: 1=just this file, 2=parent folder + fiole, etc.
+// levels: 1=just this file, 2=parent folder + file, etc.
 function getRelFileHref(levels) {
     const key = storageKey();
     const bslash = key.lastIndexOf('\\');
@@ -1775,7 +2062,7 @@ export function onLetterKeyDown(event: KeyboardEvent) {
                     }
                 }
             }
-            afterInputUpdate(input);
+            afterInputUpdate(input, event.key);
             event.preventDefault();
             return;
         }
@@ -1786,7 +2073,7 @@ export function onLetterKeyDown(event: KeyboardEvent) {
             }
             if (matchInputRules(input, event)) {
                 input.value = event.key;
-                afterInputUpdate(input);
+                afterInputUpdate(input, event.key);
             }
             event.preventDefault();
             return;
@@ -1901,14 +2188,15 @@ export function onLetterKey(event:KeyboardEvent) {
             }
         }
     }
-    afterInputUpdate(input);
+    afterInputUpdate(input, event.key);
 }
 
 /**
  * Re-scan for extractions
  * @param input The input which just changed
+ * @param key The key from the event that led here
  */
-export function afterInputUpdate(input:HTMLInputElement) {
+export function afterInputUpdate(input:HTMLInputElement, key:string) {
     var text = input.value;
     if (hasClass(input.parentNode, 'lower-case')) {
         text = text.toLocaleLowerCase();
@@ -1922,13 +2210,22 @@ export function afterInputUpdate(input:HTMLInputElement) {
         : findNextInput(input, plusX, 0, 'letter-input', 'letter-non-input');
 
     var multiLetter = hasClass(input.parentNode, 'multiple-letter');
-    if (!multiLetter && text.length > 1) {
+    var word = multiLetter || hasClass(input.parentNode, 'word-cell') || hasClass(input, 'word-input');
+    if (!word && text.length > 1) {
         overflow = text.substring(1);
         text = text.substring(0, 1);
     }
     input.value = text;
     
     ExtractFromInput(input);
+    
+    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
+    if (showReady) {
+        const btn = document.getElementById(showReady) as HTMLButtonElement;
+        if (btn) {
+            validateInputReady(btn, key);
+        }    
+    }
 
     if (!multiLetter) {
         if (nextInput != null) {
@@ -1937,7 +2234,7 @@ export function afterInputUpdate(input:HTMLInputElement) {
                 nextInput.value = overflow;
                 moveFocus(nextInput);
                 // Then do the same post-processing as this cell
-                afterInputUpdate(nextInput);
+                afterInputUpdate(nextInput, key);
             }
             else if (text.length > 0) {
                 // Just move the focus
@@ -1945,15 +2242,20 @@ export function afterInputUpdate(input:HTMLInputElement) {
             }
         }
     }
-    else if (!hasClass(input.parentNode, 'fixed-spacing')) {
+    else if (!hasClass(input.parentNode, 'getElementsByClassName')) {
         var spacing = (text.length - 1) * 0.05;
         input.style.letterSpacing = -spacing + 'em';
         input.style.paddingRight = (2 * spacing) + 'em';
         //var rotate = text.length <= 2 ? 0 : (text.length * 5);
         //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
-    saveLetterLocally(input);
-    inputChangeCallback(input);
+    if (word) {
+        saveWordLocally(input);
+    }
+    else {
+        saveLetterLocally(input);
+    }
+    inputChangeCallback(input, key);
 }
 
 /**
@@ -1978,31 +2280,35 @@ function ExtractFromInput(input:HTMLInputElement) {
  * @param extractedId The id of an element that collects extractions
  */
 function UpdateExtraction(extractedId:string|null) {
-    const extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
-
+    const extracted = document.getElementById(extractedId || 'extracted');
+    
     if (extracted == null) {
         return;
     }
     const join = getOptionalStyle(extracted, 'data-extract-join') || '';
     
-    if (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null) {
+    if (extracted.getAttribute('data-extraction-source') != 'data'
+        && (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null)) {
         UpdateNumbered(extractedId);
-        return;
+        return;    
     }
     
     const delayLiterals = DelayLiterals(extractedId);
     const inputs = document.getElementsByClassName('extract-input');
+    const sorted_inputs = SortElements(inputs);
     let extraction = '';
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    let ready = true;
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
         let letter = '';
-        if (hasClass(inputs[i], 'extract-literal')) {
+        if (hasClass(input, 'extract-literal')) {
             // Several ways to extract literals:
-            const de = getOptionalStyle(inputs[i], 'data-extract-delay');  // placeholder value to extract, until player has finished other work
-            const ev = getOptionalStyle(inputs[i], 'data-extract-value');  // always extract this value
-            const ec = getOptionalStyle(inputs[i], 'data-extract-copy');  // this extraction is a copy of another
+            const de = getOptionalStyle(input, 'data-extract-delay');  // placeholder value to extract, until player has finished other work
+            const ev = getOptionalStyle(input, 'data-extract-value');  // always extract this value
+            const ec = getOptionalStyle(input, 'data-extract-copy');  // this extraction is a copy of another
             if (delayLiterals && de) {
                 letter = de;
             }
@@ -2014,7 +2320,7 @@ function UpdateExtraction(extractedId:string|null) {
             }
         }
         else {
-            const inp = inputs[i] as HTMLInputElement;
+            const inp = input as HTMLInputElement;
             letter = inp.value || '';
             letter = letter.trim();    
         }
@@ -2023,13 +2329,54 @@ function UpdateExtraction(extractedId:string|null) {
         }
         if (letter.length == 0) {
             extraction += '_';
+            ready = false;
         }
         else {
             extraction += letter;
         }
     }
 
-    ApplyExtraction(extraction, extracted);
+    if (extracted.getAttribute('data-letter-pattern') != null) {
+        const inps = extracted.getElementsByClassName('extractor-input');
+        if (inps.length > extraction.length) {
+            extraction += Array(1 + inps.length - extraction.length).join('_');
+        }
+        let ready = true;
+        for (var i = 0; i < inps.length; i++) {
+            const inp = inps[i] as HTMLInputElement;
+            if (extraction[i] != '_') {
+                inp.value = extraction.substring(i, i+1);
+            }
+            else {
+                inp.value = '';
+                ready = false;
+            }
+        }
+        updateExtractionData(extracted, extraction, ready);
+    }
+    else {
+        ApplyExtraction(extraction, extracted, ready);
+    }
+}
+
+/**
+ * Cause a value to be extracted directly from data- attributes, rather than from inputs.
+ * @param elmt Any element - probably not an input
+ * @param value Any text, or null to revert
+ * @param extractedId The id of an element that collects extractions
+ */
+function ExtractViaData(elmt:HTMLElement, value:string|null, extractedId:string|null) {
+    if (value == null) {
+        elmt.removeAttribute('data-extract-value');
+        toggleClass(elmt, 'extract-input', false);
+        toggleClass(elmt, 'extract-literal', false);
+    }
+    else {
+        elmt.setAttribute('data-extract-value', value);
+        toggleClass(elmt, 'extract-literal', true);
+        toggleClass(elmt, 'extract-input', true);
+    }
+    UpdateExtraction(extractedId);
 }
 
 /**
@@ -2042,17 +2389,19 @@ function DelayLiterals(extractedId:string|null) :boolean {
     let delayedLiterals = false;
     let isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    const sorted_inputs = SortElements(inputs);
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        if (hasClass(inputs[i], 'extract-literal')) {
-            if (getOptionalStyle(inputs[i], 'data-extract-delay')) {
+        if (hasClass(input, 'extract-literal')) {
+            if (getOptionalStyle(input, 'data-extract-delay')) {
                 delayedLiterals = true;
             }
         }
         else {
-            const inp = inputs[i] as HTMLInputElement;
+            const inp = input as HTMLInputElement;
             let letter = inp.value || '';
             letter = letter.trim();
             if (letter.length == 0) {
@@ -2081,7 +2430,8 @@ function ExtractionIsInteresting(text:string): boolean {
  * @param dest The container for the extraction. Can be a div or an input
  */
 function ApplyExtraction(   text:string, 
-                            dest:HTMLElement) {
+                            dest:HTMLElement,
+                            ready:boolean) {
     if (hasClass(dest, 'lower-case')) {
         text = text.toLocaleLowerCase();
     }
@@ -2108,6 +2458,8 @@ function ApplyExtraction(   text:string,
     else {
         dest.innerText = text;
     }
+
+    updateExtractionData(dest, text, ready);
 }
 
 /**
@@ -2115,17 +2467,31 @@ function ApplyExtraction(   text:string,
  * @param extractedId The id of an extraction area
  */
 function UpdateNumbered(extractedId:string|null) {
+    extractedId = extractedId || 'extracted';
+    const div = document.getElementById(extractedId);
+    var outputs = div?.getElementsByTagName('input');
     var inputs = document.getElementsByClassName('extract-input');
-    for (var i = 0; i < inputs.length; i++) {
-        const inp = inputs[i] as HTMLInputElement
-        const index = inputs[i].getAttribute('data-number');
-        const extractCell = document.getElementById('extractor-' + index) as HTMLInputElement;
+    const sorted_inputs = SortElements(inputs);
+    let concat = '';
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        const inp = input as HTMLInputElement
+        const index = input.getAttribute('data-number');
+        let output = document.getElementById('extractor-' + index) as HTMLInputElement;
+        if (!output && outputs) {
+            output = outputs[i];
+        }
         let letter = inp.value || '';
         letter = letter.trim();
-        if (letter.length > 0 || extractCell.value.length > 0) {
-            extractCell.value = letter;
+        if (letter.length > 0 || output.value.length > 0) {
+            output.value = letter;
         }
+        concat += letter;
     }
+    if (div) {
+        updateExtractionData(extractedId, concat, concat.length == inputs.length);
+    }
+
 }
 
 /**
@@ -2148,15 +2514,49 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     if (index === null) {
         return;
     }
+    
     var sources = document.getElementsByClassName('extract-input');
+    let extractId:any;
+    const extraction:string[] = [];
     for (var i = 0; i < sources.length; i++) {
         var src = sources[i] as HTMLInputElement;
         var dataNumber = getOptionalStyle(src, 'data-number');
-        if (dataNumber != null && dataNumber == index) {
-            src.value = input.value;
-            return;
+        if (dataNumber != null) {
+            if (dataNumber == index) {
+                src.value = input.value;
+                extractId = getOptionalStyle(src, 'data-extracted-id', undefined, 'extracted-');
+            }
+            extraction[parseInt(dataNumber)] = src.value;
         }
     }
+
+    // Update data-extraction when the user type directly into an extraction element
+    const extractionText = extraction.join('');
+    updateExtractionData(extractId, extractionText, extractionText.length == sources.length);
+}
+
+function updateExtractionData(extracted:string|HTMLElement, value:string, ready:boolean) {
+    const container = !extracted
+        ? document.getElementById('extracted')
+        : (typeof extracted === "string")
+            ? document.getElementById(extracted as string)
+            : extracted;
+    if (container) {
+        container.setAttribute('data-extraction', value);
+        let btnId = container.getAttribute('data-show-ready');
+        if (btnId) {
+            const btn = document.getElementById(btnId);
+            toggleClass(btn, 'ready', ready);
+        }
+        else {
+            btnId = getOptionalStyle(container, 'data-show-ready');
+            if (btnId) {
+                const btn = document.getElementById(btnId);
+                validateInputReady(btn as HTMLButtonElement, value);
+            }
+        }
+    }
+
 }
 
 /**
@@ -2169,6 +2569,8 @@ export function onWordKey(event:KeyboardEvent) {
     }
 
     const input = event.currentTarget as HTMLInputElement;
+    inputChangeCallback(input, event.key);
+
     if (getOptionalStyle(input, 'data-extract-index') != null) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         updateWordExtraction(extractId);
@@ -2193,33 +2595,76 @@ export function onWordKey(event:KeyboardEvent) {
  * @param extractedId The ID of an extraction area
  */
 export function updateWordExtraction(extractedId:string|null) {
-    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
+    var extracted = document.getElementById(extractedId || 'extracted');
 
     if (extracted == null) {
         return;
     }
     
     var inputs = document.getElementsByClassName('word-input');
+    const sorted_inputs = SortElements(inputs);
     var extraction = '';
+    var hasWordExtraction = false;
     var partial = false;
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        var index = getOptionalStyle(inputs[i], 'data-extract-index', '') as string;
+        var index = getOptionalStyle(input, 'data-extract-index', '') as string;
+        if (index === null) {
+            continue;
+        }
+        hasWordExtraction = true;
         const indeces = index.split(' ');
         for (var j = 0; j < indeces.length; j++) {
-            var extractIndex = parseInt(indeces[j]);
-            if (extractIndex > 0) {  // indeces start at 1
-                const inp = inputs[i] as HTMLInputElement;  
-                var letter = inp.value.length >= extractIndex ? inp.value[extractIndex - 1] : '_';
+            const inp = input as HTMLInputElement;  
+            const letter = extractWordIndex(inp.value, indeces[j]);
+            if (letter) {
                 extraction += letter;
                 partial = partial || (letter != '_');
             }
         }
     }
 
-    ApplyExtraction(extraction, extracted);
+    if (hasWordExtraction) {
+        ApplyExtraction(extraction, extracted, !partial);
+    }
+}
+
+/**
+ * Extract a single letter from an input. Either using an absolute index, or else a word.letter index.
+ * @param input User's input string
+ * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
+ */
+export function extractWordIndex(input:string, index:string) {
+    const dot = index.split('.');
+    let letter_index:number;
+    if (dot.length == 2) {
+        let word_index = parseInt(dot[0]);
+        letter_index = parseInt(dot[1]) - 1;
+        const words = input.split(' ');
+        input = '';
+        for (var i = 0; i < words.length; i++) {
+            const word = words[i];
+            if (words[i].length > 0) {
+                if (--word_index == 0) {
+                    input = word;
+                    break;
+                }
+            }
+        }
+    }
+    else {
+        letter_index = parseInt(index) - 1;
+    }
+    if (letter_index < 0) {
+        return null;  // bogus index
+    }
+    if (letter_index < input.length) {
+        return input[letter_index];
+    }
+    return '_';
 }
 
 /**
@@ -2233,7 +2678,7 @@ export function onLetterChange(event:KeyboardEvent) {
 
     const input = findParentOfClass(event.currentTarget as Element, 'letter-input') as HTMLInputElement;
     saveLetterLocally(input);
-    inputChangeCallback(input);
+    inputChangeCallback(input, event.key);
 }
 
 /**
@@ -2246,18 +2691,26 @@ export function onWordChange(event:KeyboardEvent) {
     }
 
     const input = findParentOfClass(event.currentTarget as Element, 'word-input') as HTMLInputElement;
+    inputChangeCallback(input, event.key);
     saveWordLocally(input);
-    inputChangeCallback(input);
 }
 
 /**
  * Anytime any note changes, inform any custom callback
  * @param inp The affected input
+ * @param key The key from the event that led here
  */
-function inputChangeCallback(inp: HTMLInputElement) {
+function inputChangeCallback(inp: HTMLInputElement, key:string) {
     const fn = theBoiler().onInputChange;
     if (fn) {
         fn(inp);
+    }
+    const doc = getOptionalStyle(inp, 'data-onchange');
+    if (doc) {
+        const func = window[doc];
+        if (func) {
+            func(inp, key);
+        }
     }
 }
 
@@ -2613,6 +3066,33 @@ function findNextDiscover(root: Element,
     return nearest;
 }
 
+/**
+ * Autocomplete the contents of a multi-letter input from a restricted list of options.
+ * Existing text must match the beginning of exactly one option (case-insensitive).
+ * @param input a text <input> or <textarea>
+ * @param list a list of potential values to complete to
+ * @returns true if a single match was found, else false for 0 or multiple matches
+ */
+export function autoCompleteWord(input:HTMLInputElement|HTMLTextAreaElement, list:string[]) {
+    var value = input.value.toLowerCase();
+    var match:string|null = null;
+    for (var i of list) {
+      if (i.toLowerCase().indexOf(value) == 0) {
+        if (match) {
+          return false;  // multiple matches
+        }
+        match = i;
+      }
+    }
+    if (match) {
+      var len = input.value.length;
+      input.value = match;
+      input.setSelectionRange(len, match.length);  // Select the remainder of the word
+      return true;
+    }
+    return false;  // no matches
+}
+
 /*-----------------------------------------------------------
  * _textSetup.ts
  *-----------------------------------------------------------*/
@@ -2786,7 +3266,7 @@ interface LetterStyles {
  * @param defExtract - A default extraction style
  * @returns An object with a style name for each role
  */
-function getLetterStyles(   elmt: Element, 
+export function getLetterStyles(   elmt: Element, 
                             defLetter: string, 
                             defLiteral: string|undefined, 
                             defExtract: string)
@@ -3258,11 +3738,16 @@ function createSubway(subway:HTMLElement) {
  */
 function verticalSubway(subway:HTMLElement) :SubwayPath|undefined {
   const origin = subway.getBoundingClientRect();
-  const sLefts:string = subway.getAttributeNS('', 'data-left-end') || '';
-  const sRights:string = subway.getAttributeNS('', 'data-right-end') || '';
+  let sLefts:string = subway.getAttributeNS('', 'data-left-end') || '';
+  let sRights:string = subway.getAttributeNS('', 'data-right-end') || '';
   if (sLefts.length == 0 && sRights.length == 0) {
     return undefined;
   }
+
+  const leftId:string|null = subway.getAttributeNS('', 'data-left-id');
+  const rightId:string|null = subway.getAttributeNS('', 'data-right-id');
+  sLefts = joinIds(leftId, sLefts);
+  sRights = joinIds(rightId, sRights);
 
   let bounds:DOMRect|undefined;
   const yLefts:number[] = [];
@@ -3344,6 +3829,14 @@ function verticalSubway(subway:HTMLElement) :SubwayPath|undefined {
   } as SubwayPath;
 }
 
+function joinIds(id:string|null, indeces:string) :string {
+  if (!id || !indeces) {
+    return indeces;
+  }
+  const list = indeces.split(' ').map(i => id + '.' + i);
+  return list.join(' ');
+}
+
 /**
  * Build the paths of a horizontally-oriented subway
  * @param subway The <div class='subway' with coordinate info
@@ -3351,11 +3844,16 @@ function verticalSubway(subway:HTMLElement) :SubwayPath|undefined {
  */
 function horizontalSubway(subway:HTMLElement) :SubwayPath|undefined {
   const origin = subway.getBoundingClientRect();
-  const sTops:string = subway.getAttributeNS('', 'data-top-end') || '';
-  const sBottoms:string = subway.getAttributeNS('', 'data-bottom-end') || '';
+  let sTops:string = subway.getAttributeNS('', 'data-top-end') || '';
+  let sBottoms:string = subway.getAttributeNS('', 'data-bottom-end') || '';
   if (sTops.length == 0 && sBottoms.length == 0) {
     return undefined;
   }
+
+  const topId:string|null = subway.getAttributeNS('', 'data-top-id');
+  const bottomId:string|null = subway.getAttributeNS('', 'data-bottom-id');
+  sTops = joinIds(topId, sTops);
+  sBottoms = joinIds(bottomId, sBottoms);
 
   let bounds:DOMRect|undefined;
   const xTops:number[] = [];
@@ -3867,7 +4365,7 @@ function findEmptySource():HTMLElement|null {
  * @param destination The container to place it in
  */
 export function quickMove(moveable:HTMLElement, destination:HTMLElement) {
-    if (moveable != null && destination != null) {
+    if (moveable != null && destination != null && !isSelfOrParent(moveable, destination)) {
         pickUp(moveable);
         doDrop(destination);    
     }
@@ -3909,6 +4407,10 @@ const _stampTools:Array<HTMLElement> = [];
  */
 let _selectedTool:HTMLElement|null = null;
 /**
+ * The tool name to cycle to first.
+ */
+let _firstTool:string|null = null;
+/**
  * A tool name which, as a side effect, extract an answer from the content under it.
  */
 let _extractorTool:string|null = null;
@@ -3916,6 +4418,20 @@ let _extractorTool:string|null = null;
  * The tool name that would erase things.
  */
 let _eraseTool:string|null = null;
+
+/**
+ * Type structure of a stamp tool, as provided to a classStampPalette template
+ */
+export type StampToolDetails = {
+    id: string,
+    modifier?: string,
+    label?: string,
+    img?: string,  // img src url
+    next?: string,  // id of another tool
+    data?: string,  // extra data, depending on context
+};
+
+let stamps_can_drag = false;
 
 /**
  * Scan the page for anything marked stampable or a draw tool
@@ -3947,15 +4463,31 @@ export function preprocessStampObjects() {
                 }
             }
         }
+        container.addEventListener('pointerdown', pointerDownInContainer);
+        if (hasClass(container, 'stamp-drag')) {
+            stamps_can_drag = true;
+            container.addEventListener('pointerup', pointerUpInContainer);
+            container.addEventListener('pointermove', pointerMoveInContainer);
+            container.addEventListener('pointerleave', pointerLeaveContainer);    
+        }
     }
 
     let elems = document.getElementsByClassName('stampable');
-    for (let i = 0; i < elems.length; i++) {
-        const elmt = elems[i] as HTMLElement;
-        elmt.onpointerdown=function(e){onClickStamp(e)};
-        //elmt.ondrag=function(e){onMoveStamp(e)};
-        elmt.onpointerenter=function(e){onMoveStamp(e)}; 
-        elmt.onpointerleave=function(e){preMoveStamp(e)};
+    if (containers.length == 0 && elems.length > 0) {
+        const container = document.getElementById('pageBody');
+        if (container) {
+            container.addEventListener('pointerdown', pointerDownInContainer);
+            // container.addEventListener('pointerup', pointerUpInContainer);
+            // container.addEventListener('pointermove', pointerMoveInContainer);
+            // container.addEventListener('pointerleave', pointerLeaveContainer);
+        }
+        // for (let i = 0; i < elems.length; i++) {
+        //     const elmt = elems[i] as HTMLElement;
+        //     elmt.onpointerdown=function(e){onClickStamp(e, findStampableAtPointer(e))};
+        //     //elmt.ondrag=function(e){onMoveStamp(e)};
+        //     elmt.onpointerenter=function(e){onMoveStamp(e)}; 
+        //     elmt.onpointerleave=function(e){preMoveStamp(e)};
+        // }
     }
 
     elems = document.getElementsByClassName('stampTool');
@@ -3969,7 +4501,81 @@ export function preprocessStampObjects() {
     if (palette != null) {
         _extractorTool = palette.getAttributeNS('', 'data-tool-extractor');
         _eraseTool = palette.getAttributeNS('', 'data-tool-erase');
+        _firstTool = palette.getAttributeNS('', 'data-tool-first');
     }
+
+    if (!_firstTool) {
+        _firstTool = _stampTools[0].getAttributeNS('', 'data-template-id');
+    }
+}
+
+let prevStampablePointer:HTMLElement|null = null;
+function pointerDownInContainer(event:PointerEvent) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    const elmt = findStampableAtPointer(event);
+    if (elmt) {
+        prevStampablePointer = elmt;
+        onClickStamp(event, elmt);
+    }
+}
+
+function pointerUpInContainer(event:PointerEvent) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    prevStampablePointer = null;
+}
+
+function pointerMoveInContainer(event:PointerEvent) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    const elmt = findStampableAtPointer(event);
+    if (elmt !== prevStampablePointer) {
+        if (prevStampablePointer) {
+            preMoveStamp(event, prevStampablePointer);
+        }
+        if (elmt) {
+            onMoveStamp(event, elmt);
+        }
+        prevStampablePointer = elmt;
+    }
+}
+
+function pointerLeaveContainer(event:PointerEvent) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    if (prevStampablePointer) {
+        preMoveStamp(event, prevStampablePointer);
+    }
+    prevStampablePointer = null;
+}
+
+function findStampableAtPointer(event:PointerEvent):HTMLElement|null {
+    const stampable = document.getElementsByClassName('stampable');
+    for (let i = 0; i < stampable.length; i++) {
+        const rect = stampable[i].getBoundingClientRect();
+        if (rect.left <= event.clientX && rect.right > event.clientX
+                && rect.top <= event.clientY && rect.bottom > event.clientY) {
+            return stampable[i] as HTMLElement;
+        }
+    }
+    return null;
 }
 
 /**
@@ -3978,6 +4584,7 @@ export function preprocessStampObjects() {
  */
 function onSelectStampTool(event:MouseEvent) {
     const tool = findParentOfClass(event.target as HTMLElement, 'stampTool') as HTMLElement;
+    const prevToolId = getCurrentStampToolId();
     if (tool != null) {
         for (let i = 0; i < _stampTools.length; i++) {
             toggleClass(_stampTools[i], 'selected', false);
@@ -3990,6 +4597,11 @@ function onSelectStampTool(event:MouseEvent) {
             _selectedTool = null;
         }
     }
+
+    const fn = theBoiler().onStampChange;
+    if (fn) {
+        fn(getCurrentStampToolId(), prevToolId);
+    }
 }
 
 /**
@@ -4001,7 +4613,8 @@ function onSelectStampTool(event:MouseEvent) {
  * @param toolFromErase An override because we're erasing/rotating
  * @returns the name of a draw tool
  */
-function getStampTool(event:MouseEvent, toolFromErase:string|null):string|null {
+function getStampTool(event:PointerEvent, toolFromErase:string|null):string|null {
+    // Shift keys always win
     if (event.shiftKey || event.altKey || event.ctrlKey) {
         for (let i = 0; i < _stampTools.length; i++) {
             const mods = _stampTools[i].getAttributeNS('', 'data-click-modifier');
@@ -4014,13 +4627,20 @@ function getStampTool(event:MouseEvent, toolFromErase:string|null):string|null {
         }
     }
     
+    // toolFromErase is set by how the stamping began.
+    // If it begins on a pre-stamped cell, shift to the next stamp.
+    // After the first click, subsequent dragging keeps the same tool.
     if (toolFromErase != null) {
         return toolFromErase;
     }
+
+    // Lacking other inputs, use the selected tool.
     if (_selectedTool != null) {
         return _selectedTool.getAttributeNS('', 'data-template-id');
     }
-    return _stampTools[0].getAttributeNS('', 'data-template-id');
+
+    // If no selection, the first tool is the default
+    return _firstTool;
 }
 
 /**
@@ -4065,22 +4685,65 @@ function eraseStamp(target:HTMLElement):string|null {
     const parent = getStampParent(target);
 
     const cur = findFirstChildOfClass(parent, 'stampedObject');
+    let curId:string|null;
+    let nextId:string|null = '';
     if (cur != null) {
-        const curTool = cur.getAttributeNS('', 'data-template-id');
-        toggleClass(target, curTool, false);
+        curId = cur.getAttributeNS('', 'data-template-id');
+        toggleClass(target, curId, false);
         parent.removeChild(cur);
         if (_extractorTool != null) {
             updateStampExtraction();
         }
-
-        if (_selectedTool == null) {
-            return cur.getAttributeNS('', 'data-next-template-id');  // rotate
-        }
-        if (_selectedTool.getAttributeNS('', 'data-template-id') == curTool) {
-            return _eraseTool;  // erase
+        nextId = cur.getAttributeNS('', 'data-next-template-id');   
+    }
+    else if (hasClass(target, 'stampedObject')) {
+        // Template is a class on the container itself
+        curId = target.getAttributeNS('', 'data-template-id');
+        toggleClass(target, 'stampedObject', false);
+        toggleClass(target, curId, false);
+        target.removeAttributeNS('', 'data-template-id');
+        if (_extractorTool != null) {
+            updateStampExtraction();
         }
     }
-    return null;  // normal
+    else {
+        return null;  // This cell is currently blank
+    }
+
+    if (_selectedTool == null) {
+        // rotate through the tools
+        if (!nextId && curId) {
+            const stampTool = findStampTool(curId);
+            nextId = stampTool.getAttributeNS('', 'data-next-template-id');
+        }
+        if (nextId) {
+            return nextId;
+        }
+        
+    }
+    if (_selectedTool && _selectedTool.getAttributeNS('', 'data-template-id') == curId) {
+        // When a tool is explicitly selected, clicking on that type toggles it back off
+        return _eraseTool;
+    }
+
+    // No guidance on what to replace this cell with
+    return null;
+}
+
+/**
+ * Given a stamp ID from a stamped element, find the tool that applied it.
+ * @param templateId A string that must match a stampTool in this document.
+ * @returns The stampTool element.
+ */
+function findStampTool(templateId:string):HTMLElement {
+    const tools = document.getElementsByClassName('stampTool');
+    for (let i = 0; i < tools.length; i++) {
+        const tool = tools[i];
+        if (tool.getAttributeNS('', 'data-template-id') == templateId) {
+            return tool as HTMLElement;
+        }
+    }
+    throw new Error('Unrecognized stamp tool: ' + templateId);
 }
 
 /**
@@ -4094,14 +4757,25 @@ export function doStamp(target:HTMLElement, tool:string) {
     // Template can be null if tool removes drawn objects
     let template = document.getElementById(tool) as HTMLTemplateElement;
     if (template != null) {
+        // Inject the template into the stampable container
         const clone = template.content.cloneNode(true);
         parent.appendChild(clone);
-        toggleClass(target, tool, true);
     }
+    else if (tool) {
+        // Apply the template ID as a style. The container is itself the stamped object
+        toggleClass(target, 'stampedObject', true);
+        target.setAttributeNS('', 'data-template-id', tool);
+    }
+    toggleClass(target, tool, true);
     if (_extractorTool != null) {
         updateStampExtraction();
     }
     saveStampingLocally(target);
+
+    const fn = theBoiler().onStamp;
+    if (fn) {
+        fn(target);
+    }
 }
 
 let _dragDrawTool:string|null = null;
@@ -4112,8 +4786,7 @@ let _lastDrawTool:string|null = null;
  * Which tool is taken from selected state, click modifiers, and current target state.
  * @param event The mouse click
  */
-function onClickStamp(event:MouseEvent) {
-    const target = findParentOfClass(event.target as HTMLElement, 'stampable') as HTMLElement;
+function onClickStamp(event:PointerEvent, target:HTMLElement) {
     let nextTool = eraseStamp(target);
     nextTool = getStampTool(event, nextTool);
     if (nextTool) {
@@ -4123,13 +4796,16 @@ function onClickStamp(event:MouseEvent) {
     _dragDrawTool = null;
 }
 
+function isPrimaryButton(event:PointerEvent) {
+    return event.pointerType != 'mouse' || event.buttons == 1;
+}
+
 /**
  * Continue drawing when the mouse is dragged, using the same tool as in the cell we just left.
  * @param event The mouse enter event
  */
-function onMoveStamp(event:MouseEvent) {
-    if (event.buttons == 1 && _dragDrawTool != null) {
-        const target = findParentOfClass(event.target as HTMLElement, 'stampable') as HTMLElement;
+function onMoveStamp(event:PointerEvent, target:HTMLElement) {
+    if (_dragDrawTool != null) {
         eraseStamp(target);
         doStamp(target, _dragDrawTool);
         _dragDrawTool = null;
@@ -4142,21 +4818,18 @@ function onMoveStamp(event:MouseEvent) {
  * If dragging unrelated to drawing, flag the coming onMoveStamp to do nothing.
  * @param event The mouse leave event
  */
-function preMoveStamp(event:MouseEvent) {
-    if (event.buttons == 1) {
-        const target = findParentOfClass(event.target as HTMLElement, 'stampable');
-        if (target != null) {
-            const cur = findFirstChildOfClass(target, 'stampedObject');
-            if (cur != null) {
-                _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
-            }
-            else {
-                _dragDrawTool = _lastDrawTool;
-            }
+function preMoveStamp(event:PointerEvent, target:HTMLElement) {
+    if (target != null) {
+        const cur = findFirstChildOfClass(target, 'stampedObject');
+        if (cur != null) {
+            _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
         }
         else {
-            _dragDrawTool = null;
+            _dragDrawTool = _lastDrawTool;
         }
+    }
+    else {
+        _dragDrawTool = null;
     }
 }
 
@@ -4279,7 +4952,8 @@ function preprocessRulerRange(elem:HTMLElement) {
  */
 export const EdgeTypes = {
     straightEdge: 'straight-edge',
-    wordSelect: 'word-select'
+    wordSelect: 'word-select',
+    hashiBridge: 'hashi-bridge',
 }
 
 /**
@@ -4291,7 +4965,7 @@ let selector_class:string;
  */
 let selector_fill_class:string|null;
 /**
- * What is the class of the container: straight-edge-are or word-select-area
+ * What is the class of the container: straight-edge-area or word-select-area
  */
 let area_class:string;
 
@@ -4332,12 +5006,48 @@ type RulerEventData = {
     maxPoints: number;
     canShareVertices: boolean;
     canCrossSelf: boolean;
+    maxBridges: number,
+    bridgeOffset: number,
     hoverRange: number;
     angleConstraints?: number;
+    angleConstraintsOffset: number;
     showOpenDrag: boolean;
     evtPos: DOMPoint;
     evtPoint: SVGPoint;
     nearest?: VertexData;
+}
+
+function createPartialRulerData(range:Element):RulerEventData {
+    const svg = findParentOfTag(range, 'SVG') as SVGSVGElement;
+    const containers = svg.getElementsByClassName(selector_class + '-container');
+    const bounds = svg.getBoundingClientRect();
+    const max_points = range.getAttributeNS('', 'data-max-points');
+    const maxPoints = max_points ? parseInt(max_points) : 2;
+    const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
+    const canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
+    const maxBridges = range.getAttributeNS('', 'data-max-bridges');
+    const bridgeOffset = range.getAttributeNS('', 'data-bridge-offset');
+    const hoverRange = range.getAttributeNS('', 'data-hover-range');
+    const angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
+    const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
+    const angleConstraints2 = angleConstraints ? (angleConstraints+'+0').split('+').map(c => parseInt(c)) : undefined;
+    const data:RulerEventData = {
+        svg: svg, 
+        container: (containers && containers.length > 0) ? containers[0] : svg,
+        bounds: bounds,
+        maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
+        canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
+        canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
+        maxBridges: maxBridges ? parseInt(maxBridges) : selector_class == EdgeTypes.hashiBridge ? 2 : 1,
+        bridgeOffset: bridgeOffset ? parseInt(bridgeOffset) : 2,
+        hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
+        angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
+        angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
+        showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
+        evtPos: new DOMPoint(NaN, NaN),  // stub
+        evtPoint: svg.createSVGPoint(),  // stub 
+    };
+    return data;
 }
 
 /**
@@ -4347,33 +5057,11 @@ type RulerEventData = {
  */
 function getRulerData(evt:MouseEvent):RulerEventData {
     const range = findParentOfClass(evt.target as Element, area_class) as HTMLElement;
-    const svg = findParentOfTag(range, 'SVG') as SVGSVGElement;
-    const containers = svg.getElementsByClassName(selector_class + '-container');
-    const bounds = svg.getBoundingClientRect();
-    const max_points = range.getAttributeNS('', 'data-max-points');
-    const maxPoints = max_points ? parseInt(max_points) : 2;
-    const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
-    const canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
-    const hoverRange = range.getAttributeNS('', 'data-hover-range');
-    const angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
-    const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
-    const pos = new DOMPoint(evt.x, evt.y);
-    let spt = svg.createSVGPoint();
-        spt.x = pos.x - bounds.left;
-        spt.y = pos.y - bounds.top;
-    const data:RulerEventData = {
-        svg: svg, 
-        container: (containers && containers.length > 0) ? containers[0] : svg,
-        bounds: bounds,
-        maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
-        canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
-        canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
-        hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
-        showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
-        evtPos: pos,
-        evtPoint: spt,
-    };
+    const data = createPartialRulerData(range);
+    data.evtPos = new DOMPoint(evt.x, evt.y);
+    data.evtPoint = data.svg.createSVGPoint();
+    data.evtPoint.x = data.evtPos.x - data.bounds.left;
+    data.evtPoint.y = data.evtPos.y - data.bounds.top;
 
     let near = findNearestVertex(data) as HTMLElement;
     if (near) {
@@ -4389,34 +5077,12 @@ function getRulerData(evt:MouseEvent):RulerEventData {
  */
 function getRulerDataFromVertex(vertex:HTMLElement):RulerEventData {
     const range = findParentOfClass(vertex, area_class) as HTMLElement;
-    const svg = findParentOfTag(range, 'SVG') as SVGSVGElement;
-    const containers = svg.getElementsByClassName(selector_class + '-container');
-    const bounds = svg.getBoundingClientRect();
-    const max_points = range.getAttributeNS('', 'data-max-points');
-    const maxPoints = max_points ? parseInt(max_points) : 2;
-    const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
-    const canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
-    const hoverRange = range.getAttributeNS('', 'data-hover-range');
-    const angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
-    const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
+    const data = createPartialRulerData(range);
     const vBounds = vertex.getBoundingClientRect();
-    const pos = new DOMPoint(vBounds.x + vBounds.width / 2, vBounds.y + vBounds.height / 2);
-    let spt = svg.createSVGPoint();
-        spt.x = pos.x - bounds.left;
-        spt.y = pos.y - bounds.top;
-    const data:RulerEventData = {
-        svg: svg, 
-        container: (containers && containers.length > 0) ? containers[0] : svg,
-        bounds: bounds,
-        maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
-        canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
-        canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
-        hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
-        showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
-        evtPos: pos,
-        evtPoint: spt,
-    };
+    data.evtPos = new DOMPoint(vBounds.x + vBounds.width / 2, vBounds.y + vBounds.height / 2);
+    data.evtPoint = data.svg.createSVGPoint();
+    data.evtPoint.x = data.evtPos.x - data.bounds.left;
+    data.evtPoint.y = data.evtPos.y - data.bounds.top;
 
     let near = findNearestVertex(data) as HTMLElement;
     if (near) {
@@ -4619,6 +5285,34 @@ function openStraightLineTo(ruler:RulerEventData) {
 }
 
 /**
+ * Vertex lists are identifiers, so normalize them to be low-to-high
+ * @param vertexList A comma-delimited list of vertex indeces
+ * @param edge A Polyline, whose points would also need to be reversed
+ * @returns An equivalent list, where the first is always < last
+ */
+function normalizeVertexList(vertexList:string, edge?:SVGPolylineElement):string {
+    let list = vertexList.split(',').map(v => parseInt(v));
+    if (list.length > 2 && list[1] > list[list.length - 2]) {
+        // Reverse the point list too
+        if (edge) {
+            const pts:SVGPoint[] = [];
+            for (let i = edge.points.length - 1; i >= 0; i--) {
+                pts.push(edge.points[i]);
+            }
+            edge.points.clear();
+            for (let i = 0; i < pts.length; i++) {
+                edge.points.appendItem(pts[i]);
+            }
+        }
+
+        // Reverse the vertex list
+        const rev = list.map(n => isNaN(n) ? '' : String(n)).reverse();
+        return rev.join(',');
+    }
+    return vertexList;  // unchanged
+}
+
+/**
  * Convert the straight line being built to a finished line
  * @param ruler The containing area and rules
  * @param vertexList A string join of all the vertex indeces
@@ -4639,6 +5333,14 @@ function completeStraightLine(ruler:RulerEventData, vertexList:string, save:bool
         toggleClass(_straightEdgeBuilder, 'open-ended', false);
     }
 
+    vertexList = normalizeVertexList(vertexList, _straightEdgeBuilder);
+    const dupes:Element[] = findDuplicateEdges('data-vertices', vertexList, selector_class, []);
+    if (dupes.length >= ruler.maxBridges && _straightEdgeBuilder) {
+        // Disallow any more duplicates
+        ruler.container.removeChild(_straightEdgeBuilder);
+        _straightEdgeBuilder = null;
+    }
+
     if (_straightEdgeBuilder) {
         toggleClass(_straightEdgeBuilder, 'building', false);
         _straightEdgeBuilder.setAttributeNS('', 'data-vertices', vertexList);
@@ -4651,8 +5353,27 @@ function completeStraightLine(ruler:RulerEventData, vertexList:string, save:bool
                 fill.points.appendItem(_straightEdgeBuilder.points[i]);
             }
             ruler.container.appendChild(fill);  // will always be after the original
+            fill.onmouseenter=function(e){onEdgeHoverStart(e)};
+            fill.onmouseleave=function(e){onEdgeHoverEnd(e)};
+            fill.onclick=function(e){onDeleteEdge(e)};    
+        }
+        else {
+            _straightEdgeBuilder.onmouseenter=function(e){onEdgeHoverStart(e)};
+            _straightEdgeBuilder.onmouseleave=function(e){onEdgeHoverEnd(e)};
+            _straightEdgeBuilder.onclick=function(e){onDeleteEdge(e)};        
         }
 
+        dupes.push(_straightEdgeBuilder);
+        if (dupes.length > 1) {
+            // We have duplicates, so spread them apart
+            for (let d = 0; d < dupes.length; d++) {
+                const offset = dupes.length == 1 ? 0
+                : dupes.length == 2 ? ruler.bridgeOffset * (d * 2 - 1)
+                : ruler.bridgeOffset * (d - Math.floor(dupes.length / 2));
+                offsetBridge(ruler, dupes[d] as SVGPolylineElement, offset);
+            }
+        }
+        
         if (save) {
             saveStraightEdge(vertexList, true);
         }
@@ -4660,6 +5381,50 @@ function completeStraightLine(ruler:RulerEventData, vertexList:string, save:bool
 
     _straightEdgeVertices = [];
     _straightEdgeBuilder = null;
+}
+
+/**
+ * Move an edge sideways by some amount by turning a simple segment into a C shape.
+ * Alternatively, remove the C shape, and return to the simple segment.
+ * @param edge The polyline to modify
+ * @param offset The amount to offset, or 0 to remove the C shape
+ */
+function offsetBridge(ruler:RulerEventData, edge:SVGPolylineElement, offset:number) {
+    if (edge.points.length < 2) {
+        return;
+    }
+
+    const oldPoints = (edge as Element).getAttributeNS('', 'points') || '';
+
+    const start = edge.points[0];
+    const end = edge.points[edge.points.length - 1];
+
+    const normal = {x:start.y - end.y, y:end.x - start.x}
+    const lenNormal = Math.sqrt(normal.x * normal.x + normal.y * normal.y);
+    normal.x /= lenNormal;
+    normal.y /= lenNormal;
+
+    edge.points.clear();
+    edge.points.appendItem(start);
+    if (offset != 0) {
+        const p1 = ruler.svg.createSVGPoint();
+        const p2 = ruler.svg.createSVGPoint();
+        p1.x = start.x + normal.x * offset;
+        p1.y = start.y + normal.y * offset
+        p2.x = end.x + normal.x * offset;
+        p2.y = end.y + normal.y * offset
+        edge.points.appendItem(p1);
+        edge.points.appendItem(p2);
+    }
+    edge.points.appendItem(end);
+
+    if (selector_fill_class) {
+        const fills = findDuplicateEdges('points', oldPoints, selector_fill_class, []);
+        if (fills.length > 0) {
+            // Change just 1 to match
+            fills[0].setAttributeNS('', 'points', edge.getAttributeNS('', 'points') || '');
+        }
+    }
 }
 
 /**
@@ -4795,7 +5560,7 @@ function isReachable(data:RulerEventData, vert: VertexData):boolean {
         return true;  // Any other point is valid
     }
     const degrees = Math.atan2(dy, dx) * 180 / Math.PI + 360;
-    let mod = Math.abs(degrees % data.angleConstraints);
+    let mod = Math.abs((degrees + data.angleConstraintsOffset) % data.angleConstraints);
     if (mod > data.angleConstraints / 2) {
         mod = data.angleConstraints - mod;
     }
@@ -4803,10 +5568,31 @@ function isReachable(data:RulerEventData, vert: VertexData):boolean {
 }
 
 /**
+ * For various reasons, multiple edges can ocupy the same space. Find them all.
+ * @param attr The attribute to check
+ * @param points The points attribute
+ * @param cls A class name to search through
+ * @param dupes A list of elements to append to
+ */
+function findDuplicateEdges(attr:string, points:string, cls:string, dupes:Element[]):Element[] {
+    const list = document.getElementsByClassName(cls);
+    for (let i = 0; i < list.length; i++) {
+        const elmt = list[i] as Element;
+        if (elmt.getAttributeNS('', attr) === points) {
+            dupes.push(elmt);
+        }
+    }
+    return dupes;
+}
+
+/**
  * Delete an existing straight-edge
  * @param edge The edge to remove
  */
 function deleteStraightEdge(edge:SVGPolylineElement) {
+    const range = findParentOfClass(edge, area_class) as HTMLElement;
+    const data = createPartialRulerData(range);
+
     for (let i = 0; i < _straightEdges.length; i++) {
         if (_straightEdges[i] === edge) {
             _straightEdges.splice(i, 1);
@@ -4814,23 +5600,39 @@ function deleteStraightEdge(edge:SVGPolylineElement) {
         }
     }
 
-    // See if there's a duplicate straight-edge, of class word-select2
-    if (selector_fill_class) {
-        const points = (edge as Element).getAttributeNS('', 'points');
-        const second = document.getElementsByClassName(selector_fill_class);
-        for (let i = 0; i < second.length; i++) {
-            const sec = second[i] as HTMLElement;
-            if (sec.getAttributeNS('', 'points') === points) {
-                edge.parentNode?.removeChild(sec);
-                break;
-            }
+    // See if there's a duplicate straight-edge, of class word-select
+    let dupes:Element[] = [];
+    const points = (edge as Element).getAttributeNS('', 'points');
+    if (points) {
+        dupes = findDuplicateEdges('points', points, selector_class, []);
+        if (selector_fill_class) {
+            dupes = findDuplicateEdges('points', points, selector_fill_class, dupes);
         }
     }
 
-    const indexList = edge.getAttributeNS('', 'data-vertices');
-    saveStraightEdge(indexList as string, false);  // Deletes from the saved list
+    let vertexList:string = '';
+    for (let d = 0; d < dupes.length; d++) {
+        const dupe = dupes[d];
+        if (!vertexList) {
+            vertexList = dupe.getAttributeNS('', 'data-vertices') || '';
+            if (vertexList) {
+                saveStraightEdge(vertexList as string, false);  // Deletes from the saved list
+            }        
+        }
+        dupe.parentNode?.removeChild(dupe);
+    }
 
-    edge.parentNode?.removeChild(edge);
+    // See if there were any parallel bridges
+    dupes = findDuplicateEdges('data-vertices', vertexList, selector_class, []);
+    if (dupes.length >= 1) {
+        // If so, re-layout to show fewer
+        for (let d = 0; d < dupes.length; d++) {
+            const offset = dupes.length == 1 ? 0
+                : dupes.length == 2 ? data.bridgeOffset * (d * 2 - 1)
+                : data.bridgeOffset * (d - Math.floor(dupes.length / 2));
+            offsetBridge(data, dupes[d] as SVGPolylineElement, offset);
+        }
+    }
 }
 
 /**
@@ -4849,6 +5651,66 @@ function findNearestVertex(data:RulerEventData):Element|null {
         if (min < 0 || dist < min) {
             min = dist;
             nearest = end;
+        }
+    }
+    return nearest;
+}
+
+function distanceToLine(edge: SVGPolylineElement, pt: SVGPoint) {
+    const ret = {
+        distance: NaN,
+        ptOnLine: {x:NaN, y:NaN},
+        fractionAlongLine: NaN
+    };
+
+    // For our uses, points attribute is always x0 y0 x1 y1
+    if (!edge.points || edge.points.length != 2) { 
+        return ret; 
+    }
+    const p0 = edge.points[0];
+    const p1 = edge.points[1];
+
+    // Line form: ax + by + c = 0
+    const line = {
+        a: p0.y - p1.y,
+        b: p1.x - p0.x,
+        c: -p0.x * (p0.y - p1.y) - p0.y * (p1.x - p1.x) };
+    const edgeLen = Math.sqrt(line.a * line.a + line.b * line.b);  // Length of edge
+    ret.distance = Math.abs(line.a * pt.x + line.b * pt.y + line.c) / edgeLen;
+
+    // Normal vector
+    const nx = line.b / edgeLen;
+    const ny = -line.a / edgeLen;
+    // Not sure which direction, so consider both directions along normal
+    const n1 = {x:nx * ret.distance, y:ny * ret.distance};
+    const n2 = {x:nx * -ret.distance, y:ny * -ret.distance};
+    // To find point p2 on the line
+    ret.ptOnLine = Math.abs(line.a * n1.x + line.b * n1.y) < Math.abs(line.a * n2.x + line.b * n2.y) ? n1 : n2;
+
+    // Calculate where on line, where 0 == p0 and 1 == p1
+    ret.fractionAlongLine = line.b != 0 
+        ? (ret.ptOnLine.x - p0.x) / line.b
+        : (ret.ptOnLine.y - p0.y) / -line.a;
+    
+        return ret;
+}
+
+/**
+ * Find the vertex nearest to the mouse event, and within any snap limit
+ * @param data The containing area and rules, including mouse event details
+ * @returns A vertex data, or null if none close enough
+ */
+function findEdgeUnder(data:RulerEventData):Element|null {
+    let min = data.hoverRange;
+    const edges = data.svg.getElementsByClassName(selector_class);
+    let nearest:Element|null = null;
+    for (let i = 0; i < edges.length; i++) {
+        const edge = edges[i];
+        const dtl = distanceToLine(edge as SVGPolylineElement, data.evtPoint);
+        if (dtl.distance < min && dtl.fractionAlongLine > 0.1 && dtl.fractionAlongLine < 0.9) {
+            // We're reasonably near the line segment
+            min = dtl.distance;
+            nearest = edge;
         }
     }
     return nearest;
@@ -4948,6 +5810,186 @@ export function clearAllStraightEdges(id:string) {
     _straightEdgeBuilder = null;
 }
 
+function onEdgeHoverStart(evt:MouseEvent) {
+    const edge = evt.target as SVGPolylineElement;
+
+}
+
+function onEdgeHoverEnd(evt:MouseEvent) {
+    const edge = evt.target as SVGPolylineElement;
+
+}
+
+function onDeleteEdge(evt:MouseEvent) {
+    const edge = evt.target as SVGPolylineElement;
+    deleteStraightEdge(edge);
+}
+
+
+/*-----------------------------------------------------------
+ * _events.ts
+ *-----------------------------------------------------------*/
+
+export type LinkDetails = {
+  rel: string;  // 'preconnect', 'stylesheet', ...
+  href: string;
+  type?: string;  // example: 'text/css'
+  crossorigin?: string;  // if anything, ''
+}
+
+export type PuzzleEventDetails = {
+  title: string;
+  logo?: string;  // path from root
+  icon: string;  // path from root
+  puzzleList?: string;
+  cssRoot: string;  // path from root
+  fontCss: string;  // path from root
+  googleFonts?: string;  // comma-delimeted list
+  links: LinkDetails[];
+  qr_folders?: {};  // folder lookup
+  solverSite?: string;  // URL to another website
+}
+
+const safariDocsDetails:PuzzleEventDetails = {
+  'title': 'Puzzyl Utility Library',
+  'logo': './Images/Sample_Logo.png',
+  'icon': './Images/Sample_Icon.png',
+  'puzzleList': './index.html',
+  'cssRoot': '../Css/',
+  'fontCss': './Css/Fonts.css',
+  'googleFonts': 'Caveat',
+  'links': []
+};
+
+const safariSingleDetails:PuzzleEventDetails = {
+  'title': 'Puzzle',
+  'logo': './Images/Sample_Logo.png',
+  'icon': './Images/Sample_Icon.png',
+  'puzzleList': '',
+  'cssRoot': '../Css/',
+  'fontCss': './Css/Fonts.css',
+  'googleFonts': 'Caveat',
+  'links': [
+//        { rel:'preconnect', href:'https://fonts.googleapis.com' },
+//        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
+  ]
+}
+
+const safariSampleDetails:PuzzleEventDetails = {
+  'title': 'Puzzle Safari',
+  'logo': './Images/Sample_Logo.png',
+  'icon': './Images/Sample_Icon.png',
+  'puzzleList': './index.html',
+  'cssRoot': '../Css/',
+  'fontCss': './Css/Fonts.css',
+  'googleFonts': 'Caveat',
+  'links': []
+}
+
+const safari20Details:PuzzleEventDetails = {
+  'title': 'Safari Labs',
+  'logo': './Images/PS20 logo.png',
+  'icon': './Images/Beaker_icon.png',
+  'puzzleList': './safari.html',
+  'cssRoot': '../Css/',
+  'fontCss': './Css/Fonts20.css',
+  'googleFonts': 'Architects+Daughter,Caveat',  // no whitespace
+  'links': [],
+  'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+                 'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
+  // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+}
+
+const safari21Details:PuzzleEventDetails = {
+  'title': 'Safari Labs',
+  'logo': './Images/GS24_banner.png',  // PS21 logo.png',
+  'icon': './Images/Plate_icon.png',
+  'puzzleList': './menuu.html',
+  'cssRoot': '../Css/',
+  'fontCss': './Css/Fonts21.css',
+  'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',  // no whitespace
+  'links': [],
+  'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+                 'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+  // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+}
+
+const safari24Details:PuzzleEventDetails = {
+  'title': 'Game Night',
+  // 'logo': './Images/PS24 logo.png',
+  'icon': '../24/Images/Sample_Icon.png',
+  // 'puzzleList': './safari.html',
+  'cssRoot': '../Css/',
+  'fontCss': '../24/Css/Fonts24.css',
+  'googleFonts': 'Goblin+One,Caveat',  // no whitespace
+  'links': [],
+  // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+              //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+  // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+}
+
+const safariDggDetails:PuzzleEventDetails = {
+  'title': 'David’s Puzzles',
+  'logo': './Images/octopus_watermark.png',
+  'icon': './Images/octopus_icon.png',
+  'puzzleList': './indexx.html',
+  'cssRoot': '../Css/',
+  'fontCss': './Css/Fonts.css',
+  'googleFonts': 'Caveat,Righteous,Cormorant+Upright',  // no whitespace
+  'links': [],
+  'qr_folders': {'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
+                 'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/'},
+  // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+}
+
+// Event for the PuzzylSafariTeam branch
+const puzzylSafariTeamDetails:PuzzleEventDetails = {
+  'title': 'Game Night',
+  // 'logo': './Images/Sample_Logo.png',
+  'icon': '24/favicon.png',
+  'puzzleList': '',
+  'cssRoot': 'Css/',
+  'fontCss': '24/Fonts24.css',
+  'googleFonts': 'Goblin+One,Caveat',
+  'links': [
+//        { rel:'preconnect', href:'https://fonts.googleapis.com' },
+//        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
+  ]
+}
+
+const pastSafaris = {
+  'Docs': safariDocsDetails,
+  'Sample': safariSampleDetails,
+  'Single': safariSingleDetails,
+  '20': safari20Details,
+  '21': safari21Details,
+  'Dgg': safariDggDetails,
+  '24': safari24Details,
+  'gs24': safari21Details,
+  'team': puzzylSafariTeamDetails,
+}
+
+let safariDetails:PuzzleEventDetails;
+
+/**
+* Initialize a global reference to Safari event details
+*/
+export function initSafariDetails(safariId:string): PuzzleEventDetails {
+  if (!(safariId in pastSafaris)) {
+    throw new Error('Unrecognized Safari Event ID: ' + safariId);
+  }
+  safariDetails = pastSafaris[safariId];
+  return safariDetails;
+}
+
+/**
+* Return the details of this puzzle event
+*/
+export function getSafariDetails(): PuzzleEventDetails {
+  return safariDetails;
+}
+
+
 /*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
@@ -5019,6 +6061,15 @@ export function isPrint() {
 }
 
 /**
+ * Determines if this document's URL was tagged with ?icon
+ * This is intended to as an alternative way to generate icons for each puzzle
+ * @returns true if this page's URL contains a print argument (other than false)
+ */
+export function isIcon() {
+    return urlArgs['icon'] != undefined && urlArgs['icon'] !== false;
+}
+
+/**
  * Special url arg to override any cached storage. Always restarts.
  * @returns true if this page's URL contains a restart argument (other than =false)
  */
@@ -5037,77 +6088,6 @@ export function forceReload(): boolean|undefined {
     return undefined;
 }
 
-type LinkDetails = {
-    rel: string;  // 'preconnect', 'stylesheet', ...
-    href: string;
-    type?: string;  // example: 'text/css'
-    crossorigin?: string;  // if anything, ''
-}
-
-type PuzzleEventDetails = {
-    title: string;
-    logo: string;  // path from root
-    icon: string;  // path from root
-    puzzleList: string;
-    cssRoot: string;  // path from root
-    fontCss: string;  // path from root
-    googleFonts?: string;  // comma-delimeted list
-    links: LinkDetails[];
-    qr_folders?: {};  // folder lookup
-}
-
-const safariSingleDetails:PuzzleEventDetails = {
-    'title': 'Puzzle',
-    'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
-    'puzzleList': '',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
-    'links': [
-//        { rel:'preconnect', href:'https://fonts.googleapis.com' },
-//        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
-    ]
-}
-
-const safariSampleDetails:PuzzleEventDetails = {
-    'title': 'Puzzle Safari',
-    'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
-    'puzzleList': './index.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
-    'links': []
-}
-
-const safari20Details:PuzzleEventDetails = {
-    'title': 'Safari Labs',
-    'logo': './Images/PS20 logo.png',
-    'icon': './Images/Beaker_icon.png',
-    'puzzleList': './safari.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts20.css',
-    'googleFonts': 'Architects+Daughter,Caveat',
-    'links': [],
-    'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
-                   'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
-}
-
-const pastSafaris = {
-    'Sample': safariSampleDetails,
-    'Single': safariSingleDetails,
-    '20': safari20Details,
-}
-
-let safariDetails:PuzzleEventDetails;
-
-/**
- * Return the details of this puzzle event
- */
-export function getSafariDetails(): PuzzleEventDetails {
-    return safariDetails;
-}
 
 type AbilityData = {
     notes?: boolean;
@@ -5119,6 +6099,7 @@ type AbilityData = {
     stamping?: boolean;
     straightEdge?: boolean;
     wordSearch?: boolean;
+    hashiBridge?: boolean;
     subway?: boolean;
 }
 
@@ -5134,24 +6115,34 @@ type BoilerPlateData = {
     lang?: string;  // en-us by default
     paperSize?: string;  // letter by default
     orientation?: string;  // portrait by default
+    printAsColor?: boolean;  // true=color, false=grayscale, unset=unmentioned
     textInput?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
+    validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
+    reactiveBuilder?: boolean;  // invoke the new reactive builder
+    builderLookup?: object;  // a dictionary of javascript objects and/or pointers
+    postBuild?: () => void;  // invoked after the builder is done
     preSetup?: () => void;
     postSetup?: () => void;
     googleFonts?: string;  // A list of fonts, separated by commas
     onNoteChange?: (inp:HTMLInputElement) => void;
     onInputChange?: (inp:HTMLInputElement) => void;
+    onStampChange?: (newTool:string, prevTool:string) => void;
+    onStamp?: (stampTarget:HTMLElement) => void;
     onRestore?: () => void;
 }
+
+const print_as_color = { id:'printAs', html:"<div style='color:#666;'>Print as <span style='color:#FF0000;'>c</span><span style='color:#538135;'>o</span><span style='color:#00B0F0;'>l</span><span style='color:#806000;'>o</span><span style='color:#7030A0;'>r</span>.</div>" };
+const print_as_grayscale = { id:'printAs', text: "<div style='color:#666;'>Print as grayscale</div>"};
 
 /**
  * Do some basic setup before of the page and boilerplate, before building new components
  * @param bp 
  */
 function preSetup(bp:BoilerPlateData) {
-    safariDetails = pastSafaris[bp.safari];
+    const safariDetails = initSafariDetails(bp.safari);
     debugSetup();
     var bodies = document.getElementsByTagName('BODY');
     if (isIFrame()) {
@@ -5159,6 +6150,9 @@ function preSetup(bp:BoilerPlateData) {
     }
     if (isPrint()) {
         bodies[0].classList.add('print');
+    }
+    if (isIcon()) {
+        bodies[0].classList.add('icon');
     }
     if (bp.pathToRoot) {
         if (safariDetails.logo) { 
@@ -5176,9 +6170,10 @@ function preSetup(bp:BoilerPlateData) {
 interface CreateSimpleDivArgs {
     id?: string;
     cls?: string;
-    html?: string;
+    text?: string;  // raw text, which will be entitized
+    html?: string;  // html code
 }
-function createSimpleDiv({id, cls, html}: CreateSimpleDivArgs) : HTMLDivElement {
+function createSimpleDiv({id, cls, text, html}: CreateSimpleDivArgs) : HTMLDivElement {
     let div: HTMLDivElement = document.createElement('DIV') as HTMLDivElement;
     if (id !== undefined) {
         div.id = id;
@@ -5186,7 +6181,10 @@ function createSimpleDiv({id, cls, html}: CreateSimpleDivArgs) : HTMLDivElement 
     if (cls !== undefined) {
         div.classList.add(cls);
     }
-    if (html !== undefined) {
+    if (text !== undefined) {
+        div.appendChild(document.createTextNode(text));
+    }
+    else if (html !== undefined) {
         div.innerHTML = html;
     }
     return div;
@@ -5240,6 +6238,7 @@ function createPrintQrBase64(data:string):HTMLImageElement {
 }
 
 function getQrPath():string|undefined {
+    const safariDetails = getSafariDetails();
     if (safariDetails.qr_folders) {
         const url = window.location.href;
         for (const key of Object.keys(safariDetails.qr_folders)) {
@@ -5327,6 +6326,10 @@ function boilerplate(bp: BoilerPlateData) {
      *   </html>
      */
 
+    if (bp.reactiveBuilder) {
+        expandControlTags();
+    }
+
     if (bp.tableBuilder) {
         constructTable(bp.tableBuilder);
     }
@@ -5340,6 +6343,7 @@ function boilerplate(bp: BoilerPlateData) {
     
     html.lang = bp.lang || 'en-us';
 
+    const safariDetails = getSafariDetails();
     for (var i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
@@ -5350,7 +6354,7 @@ function boilerplate(bp: BoilerPlateData) {
     head.appendChild(viewport);
 
     if (safariDetails.fontCss) {
-        linkCss(head, safariDetails.fontCss);
+        linkCss(safariDetails.fontCss);
     }
     let gFonts = bp.googleFonts;
     if (safariDetails.googleFonts) {
@@ -5378,8 +6382,8 @@ function boilerplate(bp: BoilerPlateData) {
         }
         addLink(head, link);
     }
-    linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
-    linkCss(head, safariDetails.cssRoot + 'TextInput.css');
+    linkCss(safariDetails.cssRoot + 'PageSizes.css');
+    linkCss(safariDetails.cssRoot + 'TextInput.css');
     if (!bp.paperSize) {
         bp.paperSize = 'letter';
     }
@@ -5399,10 +6403,15 @@ function boilerplate(bp: BoilerPlateData) {
     body.appendChild(page);
     page.appendChild(margins);
     margins.appendChild(pageBody);
-    margins.appendChild(createSimpleDiv({cls:'title', html:bp.title}));
-    margins.appendChild(createSimpleDiv({id:'copyright', html:'&copy; ' + bp.copyright + ' ' + bp.author}));
+    margins.appendChild(createSimpleDiv({cls:'title', text:bp.title}));
+    if (bp.copyright || bp.author) {
+        margins.appendChild(createSimpleDiv({id:'copyright', text:'© ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
+    }
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:'Puzzle list'}));
+    }
+    if (bp.printAsColor !== undefined) {
+        margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));
     }
 
     // Set tab icon for safari event
@@ -5440,10 +6449,20 @@ function boilerplate(bp: BoilerPlateData) {
     }
     setupAbilities(head, margins, bp.abilities || {});
 
+    if (bp.validation) {
+        linkCss(safariDetails.cssRoot + 'Guesses.css');
+        setupValidation();
+    }
+
+
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);
     }
 
+}
+
+function theHead(): HTMLHeadElement {
+    return document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
 }
 
 /**
@@ -5456,7 +6475,8 @@ let cssToLoad = 1;
  * @param head the head tag
  * @param det the attributes of the link tag
  */
-function addLink(head:HTMLHeadElement, det:LinkDetails) {
+export function addLink(head:HTMLHeadElement, det:LinkDetails) {
+    head = head || theHead();
     const link = document.createElement('link');
     link.href = det.href;
     link.rel = det.rel;
@@ -5473,12 +6493,20 @@ function addLink(head:HTMLHeadElement, det:LinkDetails) {
     head.appendChild(link);
 }
 
+const linkedCss = {};
+
 /**
  * Append a CSS link to the header
- * @param head the head tag
  * @param relPath The contents of the link's href
+ * @param head the head tag
  */
-function linkCss(head:HTMLHeadElement, relPath:string) {
+export function linkCss(relPath:string, head?:HTMLHeadElement) {
+    if (relPath in linkedCss) {
+        return;  // Don't re-add
+    }
+    linkedCss[relPath] = true;
+    
+    head = head || theHead();
     const link = document.createElement('link');
     link.href=relPath;
     link.rel = "Stylesheet";
@@ -5505,6 +6533,7 @@ function cssLoaded() {
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
 function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:AbilityData) {
+    const safariDetails = getSafariDetails();
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;
@@ -5546,29 +6575,35 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         preprocessDragFunctions();
         indexAllDragDropFields();
-        linkCss(head, safariDetails.cssRoot + 'DragDrop.css');
+        linkCss(safariDetails.cssRoot + 'DragDrop.css');
         count++;
     }
     if (data.stamping) {
         preprocessStampObjects();
         indexAllDrawableFields();
-        linkCss(head, safariDetails.cssRoot + 'StampTools.css');
+        linkCss(safariDetails.cssRoot + 'StampTools.css');
         // No ability icon
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions(EdgeTypes.straightEdge, false);
-        linkCss(head, safariDetails.cssRoot + 'StraightEdge.css');
+        linkCss(safariDetails.cssRoot + 'StraightEdge.css');
         //indexAllVertices();
     }
     if (data.wordSearch) {
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
         preprocessRulerFunctions(EdgeTypes.wordSelect, true);
-        linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
+        linkCss(safariDetails.cssRoot + 'WordSearch.css');
+        //indexAllVertices();
+    }
+    if (data.hashiBridge) {
+        // fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">🌉</span>';
+        preprocessRulerFunctions(EdgeTypes.hashiBridge, true);
+        linkCss(safariDetails.cssRoot + 'HashiBridge.css');
         //indexAllVertices();
     }
     if (data.subway) {
-        linkCss(head, safariDetails.cssRoot + 'Subway.css');
+        linkCss(safariDetails.cssRoot + 'Subway.css');
         // Don't setupSubways() until all styles have applied, so CSS-derived locations are final
     }
     if (data.notes) {
@@ -5617,3 +6652,2503 @@ export function theBoiler():BoilerPlateData {
 }
 
 window.onload = function(){boilerplate(boiler as BoilerPlateData)};  // error if boiler still undefined
+
+
+/*-----------------------------------------------------------
+ * _confirmation.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * Response codes for different kinds of responses
+ */
+const ResponseType = {
+    Error: 0,
+    Correct: 1,  // aka solved
+    Confirm: 2,  // confirm an intermediate step
+    KeepGoing: 3,// a wrong guess that deserves a hint
+    Unlock: 4,   // offer players a link to a hidden page
+    Load: 5,     // load another page in a hidden iframe
+    Show: 6,     // cause another cell to show
+//    Save: 7,     // write a key/value directly to storage
+};
+
+/**
+ * CSS classes for each response type
+ */
+const ResponseTypeClasses = [
+    'rt-error',
+    'rt-correct',
+    'rt-confirm',
+    'rt-keepgoing',
+    'rt-unlock',
+    'rt-load',
+//    'rt-save',
+];
+
+/**
+ * The generic response for unknown submissions
+ */
+const no_match_response = "0";
+
+/**
+ * Default response text, if the validation block only specifies a type
+ */
+const default_responses = [
+    "Incorrect",    // Error
+    "Correct!",     // Correct
+    "Confirmed",    // Confirmation
+    "Keep going",   // Keep Going
+];
+
+/**
+ * img src= URLs for icons to further indicate whether guesses were correct or not
+ */
+const response_img = [
+    "../Icons/X.png",         // Error
+    "../Icons/Check.png",     // Correct
+    "../Icons/Thumb.png",     // Confirmation
+    "../Icons/Thinking.png",  // Keep Going
+    "../Icons/Unlocked.png",  // Unlock
+];
+
+/**
+ * A single guess submitted by a player, noting also when it was submitted
+ */
+export type GuessLog = {
+    field: string;  // Which field did the user guess on
+    guess: string;  // What the user guessed
+    time: Date;     // When the guess was submitted
+};
+
+/**
+ * The full history of guesses on the current puzzle
+ */
+let guess_history:GuessLog[] = [];
+
+/**
+ * This puzzle has a validation block, so there must be either a place for the
+ * player to propose an answer, or an automatic extraction for other elements.
+ */
+export function setupValidation() {
+    const buttons = document.getElementsByClassName('validater');
+    if (buttons.length > 0) {
+        let hist = getHistoryDiv('');
+        if (!hist) {
+            // Create a standard <div id="guess-log"> to track the all guesses
+            const log = document.createElement('div');
+            log.id = 'guess-log';
+            const div = document.createElement('div');
+            div.id = 'guess-history';
+            const span = document.createElement('span');
+            span.id = 'guess-titlebar';
+            span.appendChild(document.createTextNode('Guesses'));
+            log.appendChild(span);
+            log.appendChild(div);
+            document.getElementById('pageBody')?.appendChild(log);
+        }
+    }
+    for (let i = 0; i < buttons.length; i++) {
+        const btn = buttons[i] as HTMLElement;
+        if (isTag(btn, 'button')) {
+            btn.onclick=function(e){clickValidationButton(e.target as HTMLButtonElement)};
+            const srcId = getOptionalStyle(btn, 'data-extracted-id') || 'extracted';
+            const src = document.getElementById(srcId);
+            // If button is connected to a text field, hook up ENTER to submit
+            if (src && ((isTag(src, 'input') && (src as HTMLInputElement).type == 'text')
+                        || isTag(src, 'textarea'))) {  // TODO: not multiline
+                src.onkeyup=function(e){validateInputReady(btn as HTMLButtonElement, e.key)};
+            }
+        }
+    }
+}
+
+function calculateTextExtents(src:HTMLElement, value:string):number {
+    let fe = document.getElementById('fontExtents');
+    if (!fe) {
+        fe = document.createElement('span');
+        fe.id = 'fontExtents';
+        fe.style.position = 'absolute';
+        document.getElementsByTagName('body')[0].appendChild(fe);
+    }
+
+    fe.innerText = value;
+    const styles = window.getComputedStyle(src, null);
+    fe.style.fontFamily = styles.getPropertyValue('font-family');
+    fe.style.fontSize = styles.getPropertyValue('font-size');
+    fe.style.fontWeight = styles.getPropertyValue('font-weight');
+    fe.style.fontStretch = styles.getPropertyValue('font-stretch');
+    fe.style.textTransform = styles.getPropertyValue('text-transform');
+//    fe.style.transform = styles.getPropertyValue('transform');
+    return fe.scrollWidth;
+}
+
+/**
+ * When a user types an over-long value into an input, shrink the font
+ * @param input An input or textarea element
+ * @param value The current text
+ */
+function horzScaleToFit(input:HTMLElement, value:string) {
+    let widthPx = parseFloat(input.getAttribute('data-original-width') || '');
+    if (!widthPx) {
+        widthPx = calcPxStyle(input, 'width');
+        input.setAttribute('data-original-width', '' + widthPx);
+    }
+    if (value.length == 0) {
+        input.style.transform = 'scale(100%, 100%)';
+        input.style.width = widthPx + 'px';
+    }
+    const curScale = calcTransform(input, 'scale', matrix.scaleX, 1);
+    const needPx = calculateTextExtents(input, value + '|');  // account for borders
+    if (needPx * curScale > widthPx) {
+        const wantPx = calculateTextExtents(input, value + ' 12345678');  // one more word
+        const newScalePct = Math.floor(widthPx * 100 / wantPx);
+         if (newScalePct > 33) {  // Maximum compression before unreadable
+            input.style.transformOrigin = 'left';
+            input.style.transform = 'scale(' + newScalePct + '%, 100%)';
+            input.style.width = Math.floor(widthPx * 100 / newScalePct) + 'px';
+        }
+        const test = calculateTextExtents(input, value);
+    }
+}
+
+function calcPxStyle(elmt:HTMLElement, prop:string):number {
+    const val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
+    return parseFloat(val.substring(0, val.length - 2));  // px
+}
+
+function calcPctStyle(elmt:HTMLElement, prop:string):number {
+    const val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
+    return parseFloat(val.substring(0, val.length - 1));  // %
+}
+
+const matrix = {
+    scaleX: 0,
+    rotX: 1,
+    rotY: 2,
+    scaleY: 3,
+    translateX: 4,
+    translateY: 5
+}
+
+function calcTransform(elmt:HTMLElement, prop:string, index:number, defValue:number):number {
+    const trans = window.getComputedStyle(elmt, null).getPropertyValue('transform');
+    let matrix = '1, 0, 0, 0, 1, 0';  // unit transform
+    if (trans && trans.substring(0, 7) == 'matrix(') {
+        matrix = trans.substring(7, trans.length - 8);
+    }
+    const split = matrix.split(',');
+    if (index < split.length) {
+        const val = split[index];
+        if (val.substring(val.length - 1) == '%') {
+            return parseFloat(val.substring(0, val.length - 1)) * 0.01;
+        }
+        else if (val.substring(val.length - 2) == 'px') {
+            return parseFloat(val.substring(0, val.length - 2));
+        }
+        else return parseFloat(val);
+    }
+    return defValue;
+}
+
+
+/**
+ * When typing in an input connect to a validate button,
+ * Any non-empty string indicates ready (TODO: add other rules)
+ * and ENTER triggers a button click
+ * @param btn The button to enable/disable as ready
+ * @param key What key was just typed, if any
+ */
+export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
+    const id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
+    const ext = id ? document.getElementById(id) : null;
+    if (!ext) {
+        return;
+    }
+    const value = getValueToValidate(ext);
+    const ready = isValueReady(btn, value);
+
+    toggleClass(btn, 'ready', ready);
+    if (ready && key == 'Enter') {
+        clickValidationButton(btn as HTMLButtonElement); 
+    }
+    else if (isTag(ext, 'input') || isTag(ext, 'textarea')) {
+        horzScaleToFit(ext, value);
+    }
+}
+
+/**
+ * Submit buttons can be associated with various constructs.
+ * Extract an appropriate value to submit
+ * @param container The container of the value to submit.
+ * @returns The value, or concatenation of values.
+ */
+function getValueToValidate(container:HTMLElement):string {
+    // If the extraction has alredy been cached, use it
+    const cached = container.getAttribute('data-extraction');
+    if (cached) {
+        return cached;
+    }
+    // If container is an input, get its value
+    if (isTag(container, 'input')) {
+        return (container as HTMLInputElement).value;
+    }
+    if (isTag(container, 'textarea')) {
+        return (container as HTMLTextAreaElement).value;
+    }
+    // If we contain multiple inputs, concat them
+    const inputs = container.getElementsByClassName('letter-input');
+    if (inputs.length > 0) {
+        let value = '';
+        for (let i = 0; i < inputs.length; i++) {
+            value += (inputs[i] as HTMLInputElement).value;
+        }
+        return value;
+    }
+    // If we contain multiple other extractions, concat them
+    const datas = getAllElementsWithAttribute(container, 'data-extraction');
+    if (datas.length > 0) {
+        let value = '';
+        for (let i = 0; i < datas.length; i++) {
+            value += datas[i].getAttribute('data-extraction');
+        }
+        return value;
+    }
+    // No recognized combo
+    console.error('Unrecognized value container: ' + container);
+    return '';
+}
+
+/**
+ * Is this value complete, such that submitting is possible?
+ * @param btn The button to submit
+ * @param value The value to submit
+ * @returns true if the value is long enough and contains no blanks
+ */
+function isValueReady(btn:HTMLButtonElement, value:string|null):boolean {
+    if (!value) {
+        return false;
+    }
+    if (value.indexOf('_') >= 0) {
+        return false;
+    }
+    const minLength = getOptionalStyle(btn, 'data-min-length')
+    if (minLength) {
+        return value.length >= parseInt(minLength);
+    }
+    return value.length > 0;
+}
+
+/**
+ * There should be a singleton guess history, which we likely created above
+ * @param id The ID, or 'guess-history' by default
+ */
+function getHistoryDiv(id:string): HTMLDivElement {
+    return document.getElementById('guess-history') as HTMLDivElement;
+}
+
+/**
+ * The user has clicked a "Submit" button next to their answer.
+ * @param btn The target of the click event
+ * The button can have parameters pointing to the extraction.
+ */
+function clickValidationButton(btn:HTMLButtonElement) {
+    const id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
+    if (!id) {
+        return;
+    }
+    const ext = document.getElementById(id);
+    if (!ext) {
+        return;
+    }
+
+    const value = getValueToValidate(ext);
+    const ready = isValueReady(btn, value);
+
+    if (ready) {
+        const now = new Date();
+        const gl:GuessLog = { field:id, guess: value, time: now };
+        decodeAndValidate(gl);
+    }
+}
+
+/**
+ * Validate a user's input against the encoded set of validations
+ * @param gl the guess information, but not the response
+ */
+export function decodeAndValidate(gl:GuessLog) {
+    const validation = theBoiler().validation;
+    if (validation && gl.field in validation) {
+        const obj = validation[gl.field];
+
+        // Normalize guesses
+        // TODO: make this optional, in theBoiler, if a puzzle needs
+        gl.guess = gl.guess.toUpperCase();  // All caps (permanent)
+        let guess = gl.guess.replace(/ /g, '');  // Remove spaces for hashing - keep in UI
+        // Keep all other punctuation
+
+        const hash = rot13(guess);  // TODO: more complicated hashing
+        const block = appendGuess(gl);
+        if (hash in obj) {
+            const encoded = obj[hash];
+    
+            // Guess was expected. It may have multiple responses.
+            const multi = encoded.split('|');
+            for (let i = 0; i < multi.length; i++) {
+                appendResponse(block, multi[i]);
+            }
+        }
+        else {
+            // Guess does not match any hashes
+            appendResponse(block, no_match_response);
+        }
+    }
+    else {
+        console.error('Unrecognized validation field: ' + gl.field);
+    }
+}
+
+/**
+ * Build a guess/response block, initialized with the guess
+ * @param gl The user's guess info
+ * @returns The block, to which responses can be appended
+ */
+function appendGuess(gl:GuessLog): HTMLDivElement {
+    // Save
+    guess_history.push(gl);
+    saveGuessHistory(guess_history);
+
+    // Build a block for the guess and any connected responses
+    const hist = getHistoryDiv(gl.field);
+    const block = document.createElement('div');
+    block.classList.add('rt-block');
+
+    const div = document.createElement('div');
+    div.classList.add('rt-guess');
+    div.appendChild(document.createTextNode(gl.guess));
+
+    const now = gl.time;
+    const time = now.getHours() + ":" 
+        + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes() + ":"
+        + (now.getSeconds() < 10 ? "0" : "") + now.getSeconds();
+    const span = document.createElement('span');
+    span.classList.add('rt-time');
+    span.appendChild(document.createTextNode(time));
+    div.appendChild(span);
+    block.appendChild(div);
+
+    // Newer guesses are inserted at the top
+    hist.insertAdjacentElement('afterbegin', block);
+    return block;
+}
+
+/**
+ * Append a response to a guess block.
+ * @param block The div containing the guess, and any other responses to the same guess
+ * @param response The response, prefixed with the response type
+ * The type is pulled off, and dictates the formatting.
+ * Some types have side-effects, in addition to text.
+ * If the response is only the type, pre-canned text is used instead.
+ */
+function appendResponse(block:HTMLDivElement, response:string) {
+    const type = parseInt(response[0]);
+    response = response.substring(1);
+    if (response.length == 0 && type < default_responses.length) {
+        response = default_responses[type];
+    }
+    else {
+        response = rot13(response);
+    }
+
+    const div = document.createElement('div');
+    div.classList.add('response');
+    div.classList.add(ResponseTypeClasses[type]);
+
+    if (type == ResponseType.Unlock) {
+        // Create a link to a newly unlocked page.
+        // The (decrypted) response is either just a URL, 
+        // or else URL^Friendly (separated by a caret)
+        const caret = response.indexOf('^');
+        const friendly = caret < 0 ? response : response.substring(caret + 1);
+        if (caret >= 0) {
+            response = response.substring(0, caret);
+        }
+        const parts = response.split('^');  // caret not allowed in a URL
+        div.appendChild(document.createTextNode('You have unlocked '));
+        const link = document.createElement('a');
+        link.href = response;
+        link.target = '_blank';
+        link.appendChild(document.createTextNode(friendly));
+        div.appendChild(link);
+    }
+    else if (type == ResponseType.Load) {
+        // Use an iframe to navigate immediately to the response URL.
+        // The iframe will be hidden, but any scripts will run immediately.
+        const iframe = document.createElement('iframe');
+        iframe.src = response;
+        div.appendChild(iframe);
+    }
+    else if (type == ResponseType.Show) {
+        const parts = response.split('^');  // caret not allowed in a URL
+        const elmt = document.getElementById(parts[0]);
+        if (elmt) {
+            if (parts.length > 1) {
+                toggleClass(elmt, parts[1]);
+            }
+            else {
+                elmt.style.display = 'block';
+            }    
+        }
+    }
+    else {
+        // The response (which may be canned) is displayed verbatim.
+        div.appendChild(document.createTextNode(response));
+    }
+
+    if (type < response_img.length) {
+        const img = document.createElement('img');
+        img.classList.add('rt-img');
+        img.src = response_img[type];
+        div.appendChild(img);    
+    }
+
+    block.appendChild(div);
+
+    if (type == ResponseType.Correct) {
+        // Tag this puzzle as solved
+        toggleClass(document.getElementsByTagName('body')[0], 'solved', true);
+        // Cache that the puzzle is solved, to be indicated in tables of contents
+        updatePuzzleList(getCurFileName(), PuzzleStatus.Solved);
+    }
+}
+
+/**
+ * Rot-13 cipher, maintaining case.
+ * Chars other than A-Z are preserved as-is
+ * @param source Text to be encoded, or encoded text to be decoded
+ */
+function rot13(source:string) {
+    let rot = '';
+    for (var i = 0; i < source.length; i++) {
+        const ch = source[i];
+        let r = ch;
+        if (ch >= 'A' && ch <= 'Z') {
+            r = String.fromCharCode(((ch.charCodeAt(0) - 52) % 26) + 65);
+        }
+        else if (ch >= 'a' && ch <= 'z') {
+            r = String.fromCharCode(((ch.charCodeAt(0) - 84) % 26) + 97);
+        }
+        rot += r;
+    }
+    return rot;
+}
+
+/**
+ * Calculate the 256-bit (32-byte) SHA hash of any input string
+ * @param source An input string
+ * @returns A 32-character string
+ */
+// async function sha256(source) {
+//     const sourceBytes = new TextEncoder().encode(source);
+//     const digest = await window.crypto.subtle.digest("SHA-256", sourceBytes);
+//     const resultBytes = [...new Uint8Array(digest)];
+//     return resultBytes.map(x => x.toString(16).padStart(2, '0')).join("");
+// }
+
+
+/*-----------------------------------------------------------
+ * _builder.ts
+ *-----------------------------------------------------------*/
+
+
+/****************************************************************************
+ *          BUILDER
+ * 
+ * Buider HTML is loosely inspired by React.
+ * It defines the data first.
+ * Then the HTML supports special tags for loops and conditionals,
+ * and the text and attributes support lookups into the data.
+ * 
+ * Data initialization:
+ *    In the script block of the page, add two values to the boilerplate:
+ *        const boiler = {
+ *          ...
+ *          'reactiveBuilder': true,  // required
+ *          'builderLookup': {        // free-form, for example...
+ *            magic: 123,
+ *            line: { start: {x:1, y:2}, end: {x:3, y:4} },
+ *            fonts: [ 'bold', 'italic' ],
+ *            grid: [
+ *              [1, 2, 3],
+ *              [4, 5, 6]
+ *            ]
+ *          }
+ *        };
+ *
+ * Data lookup:
+ *    In text or attribute values, use curly-brace syntax to inject named values:
+ *    Examples in text:
+ *      {magic}             =>  123
+ *      {line.end.x}        =>  3
+ *      {grid.0.1}          =>  2   // note that .0 and .1 are indeces
+ *     
+ *    Examples in attributes:
+ *      <div id="{magic}" class="{fonts.0} {fonts.1}">
+ *                          =>  <div id="123" class="bold italic">
+ * 
+*    There is a special rule for tags and attributes prefixed with _
+ *    when you need to avoid the pre-processed tags/attributes being acted upon by the DOM.
+ *      <_img _src="{fonts.0}Icon.png">
+ *                          =>  <img src="boldIcon.png">
+ * 
+ *   Parameterized lookups allow one lookup to be used to name the child of another.
+ *   Any nested pair of [brackets] restarts the lookup context at the root.
+ *      {grid.[line.start.x].[line.start.y]}
+ *                          ==  {grid.1.2}      =>  5
+ * 
+ * <for> Loops:
+ *    Use the new <for> tag to loop over a set of values, 
+ *    cloning and re-evaluating the contents of the loop for each.
+ * 
+ *    The targets of loops are implicitly lookups, so the {curly} syntax is not needed.
+ *    As they expand, new nested values are dynamically added to the lookup table, to reflect the loop state.
+ *
+ *    Loop over elements in a list:
+ *      <for each="font" in="fonts">{font#}:{font} </for>
+ *                          =>  0:bold 1:italic
+ *        Note: in="fonts" could have been in="{fonts}"
+ *        Inside the <for> tags, new temporary named values exist based on the name specified in each=""
+ *          {font} for each value in the list,
+ *          and {font#} for the index of that item (starting at 0)
+ * 
+ *    Loop over fields in an object:
+ *      <for key="a" in="line.start">{a#}:{a}={a!} </for>
+ *                          =>  0:x=1 1:y=2
+ *        Inside the <for> tags, an additional temporary:
+ *          {a} for each key in the object, {a#} for the index of that key,
+ *          and {a!} for the value corresponding to that key.
+ * 
+ *    Loop over characters in text:
+ *      <for char="ch" in="fonts.0">{ch} </for>
+ *                          =>  b o l d
+ *      <for char="ch" in="other">{ch} </for>
+ *                          =>  o t h e r
+ * 
+ *        Note that the in="value" can be a literal.
+ * 
+ *    Loop over words in text:
+ *      <for char="w" in="Hello World!">{w}-{w}</for>
+ *                          =>  Hello-HelloWorld!-World!
+ *
+ *        Word is really anything delimited by spaces.
+ * 
+ *    Loop over a range of values:
+ *      <for range="i" from="1" to="3">{i}</for>
+ *                          =>  123
+ *      <for range="i" from="1" until="3">{i}</for>
+ *                          =>  12
+ *      <for range="i" from="5" to="0" step="-2">{i}</for>
+ *                          =>  531
+ *
+ *        from=""   specifies the start value
+ *        to=""     specifies the last value (inclusive)
+ *        until=""  specifies a stop value (exclusive)
+ *        step=""   specifies a step value, if not 1
+ * 
+ *    Use ranges to in compound lookups:
+ *      <for range="row" from="0" to="1">
+ *        <for range="col" from="0" to="2">
+ *          {grid.[row].[col]}
+ *      </for>,</for>
+ *                          =>  1 2 3 , 4 5 6
+ * 
+ *  <if> conditionals
+ *    Use the new <if> tag to check a lookup against various states.
+ *    The checked values are implicitly lookups, so the {curly} syntax is not needed.
+ *    No new temporary values are generated by ifs.
+ * 
+ *    Note: there is no else syntax. Instead, concatenate multiple ifs.
+ *      As such, be careful not to nest, unless intended.
+ *
+ *    <if test="magic" eq="123">Magic!</if>
+ *    <if test="magic" ne="123">Lame.</if>
+ *                          =>  Magic!
+ *    <if test="magic" ge="100">Big!
+ *    <if test="magic" ge="120">Bigger!</if>
+ *    </if>
+ *                          =>  Big!Bigger!
+ * 
+ *        Relative operators:
+ *          eq=""       Equality (case-sensitive, in all cases)
+ *          ne=""       Not-equals
+ *          gt=""       Greater than
+ *          lt=""       Less than
+ *          ge=""       Greater than or equals
+ *          le=""       Less than or equals
+ *        Containment operators:
+ *          in="super"  Test value is IN (a substring of) "super"
+ *          ni="super"  Test value is NOT IN (not a substring of) "super"
+ *        There is no NOT modifier. Instead, use the converse operator.
+ *
+ * 
+ *  Loops and Tables:
+ *    It is tempting to use loops inside <table> tags.
+ *    However, the DOM will likely refactor them if found inside a <table> but not inside <td>.
+ *    
+ *    Two options: _prefix and CSS
+ *      <_table>
+ *        <for ...>
+ *          <_tr>
+ *            <if eq ...><_th></_th></if>
+ *            <if ne ...><_td></_td></if>
+ *          </_tr>
+ *        </for>
+ *      </_table>
+ * 
+ *      <div style="display:table">
+ *        <for ...>
+ *          <div style="display:table-row">
+ *            <if eq ...><div style="display:table-header"></div></if>
+ *            <if ne ...><div style="display:table-cell"></div></if>
+ *          </div>
+ *        </for>
+ *      </div>
+ */
+
+
+const builder_tags = [
+  'build', 'use', 'for', 'if', 'xml'
+];
+function identifyBuilders() {
+  for (const t of builder_tags) {
+    const tags = document.getElementsByTagName(t);
+    for (let i=0; i < tags.length; i++) {
+      toggleClass(tags[i], 'builder_control', true);
+    }  
+  }
+}
+
+let src_element_stack:Element[] = [];
+let dest_element_stack:Element[] = [];
+
+function initElementStack(elmt:Element|null) {
+  dest_element_stack = [];
+  src_element_stack = [];
+  const parent_stack:Element[] = [];
+  while (elmt !== null && elmt.nodeName != '#document-fragment' && elmt.tagName !== 'BODY') {
+    parent_stack.push(elmt);
+    elmt = elmt.parentElement;
+  }
+  // Invert stack
+  while (parent_stack.length > 0) {
+    src_element_stack.push(parent_stack.pop() as Element);
+  }
+}
+
+function pushDestElement(elmt:Element) {
+  dest_element_stack.push(elmt);
+}
+
+function popDestElement() {
+  dest_element_stack.pop();
+}
+
+/**
+ * See if any parent element in the builder stack matches a lambda
+ * @param fn a Lambda which takes an element and returns true for the desired condition
+ * @returns the first parent element that satisfies the lambda, or null if none do
+ */
+export function getBuilderParentIf(fn:(e:Element) => boolean):Element|null {
+  for (let i = dest_element_stack.length - 1; i >= 0; i--) {
+    if (fn(dest_element_stack[i])) {
+      return dest_element_stack[i];
+    }
+  }
+
+  for (let i = src_element_stack.length - 1; i >= 0; i--) {
+    if (fn(src_element_stack[i])) {
+      return src_element_stack[i];
+    }
+  }
+
+  return null;  // no parent satisfied lambda
+}
+
+/**
+ * See if any parent element, either in the builder stack, or src element tree, matches a lambda
+ * @param fn a Lambda which takes an element and returns true for the desired condition
+ * @returns the first parent element that satisfies the lambda, or null if none do
+ */
+export function getParentIf(elmt:Element|null, fn:(e:Element) => boolean):Element|null {
+  const bp = getBuilderParentIf(fn);
+  if (bp != null) {
+    return bp;
+  }
+
+  while (elmt !== null && elmt.nodeName != '#document-fragment' && elmt.tagName !== 'BODY') {
+    if (fn(elmt)) {
+      return elmt;
+    }
+    elmt = elmt.parentElement;
+  }
+
+  return null;
+}
+
+/**
+ * Is the current stack of building elements currently inside an SVG tag.
+ * @returns returns true if inside an SVG, unless further inside an EMBEDDED_OBJECT.
+ */
+export function inSvgNamespace():boolean {
+  const elmt = getBuilderParentIf((e)=>isTag(e, 'SVG') || isTag(e, 'FOREIGNOBJECT'));
+  if (elmt) {
+    return isTag(elmt, 'SVG');
+  }
+  return false;
+}
+
+
+/**
+ * See if we are inside an existing <svg> tag. Or multiple!
+ * @param elmt Any element
+ * @returns How many <svg> tags are in its parent chain
+ */
+function getSvgDepth(elmt:Element) {
+  let s = 0;
+  let parent = findParentOfTag(elmt, 'SVG');
+  while (parent) {
+    s++;
+    parent = parent.parentElement ? findParentOfTag(parent.parentElement, 'SVG') : null;
+  }
+  return s;
+}
+
+/**
+ * Look for control tags like for loops and if branches.
+ */
+export function expandControlTags() {
+  identifyBuilders();
+  let controls = document.getElementsByClassName('builder_control');
+  while (controls.length > 0) {
+    const src = controls[0] as HTMLElement;
+    initElementStack(src);
+    let dest:Node[] = [];
+    if (isTag(src, 'build') || isTag(src, 'xml')) {
+      dest = expandContents(src);
+    }
+    else if (isTag(src, 'for')) {
+      dest = startForLoop(src);
+    }
+    else if (isTag(src, 'if')) {
+      dest = startIfBlock(src);
+    }
+    else if (isTag(src, 'use')) {
+      dest = useTemplate(src);
+    }
+    const parent = src.parentNode;
+    for (let d = 0; d < dest.length; d++) {
+      const node = dest[d];
+      parent?.insertBefore(node, src);
+    }
+    parent?.removeChild(src);
+
+    // See if there are more
+    controls = document.getElementsByClassName('builder_control');
+  }
+  initElementStack(null);
+
+  // Call any post-builder method
+  const fn = theBoiler().postBuild;
+  if (fn) {
+      fn();
+  }
+}
+
+/**
+ * Concatenate one list onto another
+ * @param list The list to modified
+ * @param add The list to add to the end
+ */
+export function pushRange(list:Node[], add:Node[]) {
+  for (let i = 0; i < add.length; i++) {
+    list.push(add[i]);
+  }
+}
+
+/**
+ * Append more than one child node to the end of a parent's child list
+ * @param parent The parent node
+ * @param add A list of new children
+ */
+export function appendRange(parent:Node, add:Node[]) {
+  for (let i = 0; i < add.length; i++) {
+    parent.insertBefore(add[i], null);
+  }
+}
+
+/**
+ * Clone every node inside a parent element.
+ * Any occurence of {curly} braces is in fact a lookup.
+ * It can be in body text or an element attribute value
+ * @param src The containing element
+ * @param context A dictionary of all values that can be looked up
+ * @returns A list of nodes
+ */
+export function expandContents(src:HTMLElement):Node[] {
+  const dest:Node[] = [];
+  for (let i = 0; i < src.childNodes.length; i++) {
+    const child = src.childNodes[i];
+    if (child.nodeType == Node.ELEMENT_NODE) {
+      const child_elmt = child as HTMLElement;
+      if (isTag(child_elmt, 'for')) {
+        pushRange(dest, startForLoop(child_elmt));
+      }
+      else if (isTag(child_elmt, 'if')) {
+        pushRange(dest, startIfBlock(child_elmt));
+      }
+      else if (isTag(child_elmt, 'use')) {
+        pushRange(dest, useTemplate(child_elmt));
+      }
+      else if (isTag(child_elmt, inputAreaTagNames)) {
+        pushRange(dest, startInputArea(child_elmt));
+      }
+      else {
+        dest.push(cloneWithContext(child_elmt));
+      }
+    }
+    else if (child.nodeType == Node.TEXT_NODE) {
+      pushRange(dest, cloneTextNode(child as Text));
+    }
+    else {
+      dest.push(cloneNode(child));
+    }
+  }
+
+  return dest;
+}
+
+/**
+ * Some HTML elements and attributes are immediately acted upon by the DOM.
+ * To delay that until after builds (especially <for> and <if>), 
+ * use _prefx or suffix_, and the tag or attribute will be renamed when cloned.
+ * @param name Any tag or attribute name
+ * @returns The name, or the the name without the _
+ */
+export function normalizeName(name:string):string {
+  if (name.substring(0, 1) == '_') {
+    return name.substring(1);
+  }
+  if (name.substring(name.length - 1) == '_') {
+    return name.substring(0, name.length - 1);
+  }
+  // Any other interior underscores are kept
+  return name;
+}
+
+const nameSpaces = {
+  '': '',
+  'svg': svg_xmlns,
+  's': svg_xmlns,
+  'html': null,
+  'h': null,
+}
+
+/**
+ * Deep-clone an HTML element
+ * Note that element and attribute names with _prefix will be renamed without _
+ * @param elmt The original element
+ * @param context A dictionary of all accessible values
+ * @returns A cloned element
+ */
+function cloneWithContext(elmt:HTMLElement):Element {
+  const tagName = normalizeName(elmt.localName);
+  let clone:Element;
+  if (inSvgNamespace() || tagName == 'svg') {
+    // TODO: contents of embedded objects aren't SVG
+    clone = document.createElementNS(svg_xmlns, tagName);
+  }
+  else {
+    clone = document.createElement(tagName);
+  }
+  pushDestElement(clone);
+  cloneAttributes(elmt, clone);
+
+  for (let i = 0; i < elmt.childNodes.length; i++) {
+    const child = elmt.childNodes[i];
+    if (child.nodeType == Node.ELEMENT_NODE) {
+      const child_elmt = child as HTMLElement;
+      if (isTag(child_elmt, 'for')) {
+        appendRange(clone, startForLoop(child_elmt));
+      }
+      else if (isTag(child_elmt, 'if')) {
+        appendRange(clone, startIfBlock(child_elmt));
+      }
+      else if (isTag(child_elmt, 'use')) {
+        appendRange(clone, useTemplate(child_elmt));
+      }
+      else if (isTag(child_elmt, inputAreaTagNames)) {
+        appendRange(clone, startInputArea(child_elmt));
+      }
+      else {
+        clone.appendChild(cloneWithContext(child_elmt));
+      }
+    }
+    else if (child.nodeType == Node.TEXT_NODE) {
+      appendRange(clone, cloneTextNode(child as Text));
+    }
+    else {
+      clone.insertBefore(cloneNode(child), null);
+    }
+  }
+  popDestElement();
+  return clone;
+}
+
+/**
+ * Clone other node types, besides HTML elements and Text
+ * @param node Original node
+ * @returns A node to use in the clone
+ */
+function cloneNode(node:Node):Node {
+  return node;  // STUB: keep original node
+}
+
+
+/*-----------------------------------------------------------
+ * _builderContext.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * The root context for all builder functions
+ * @returns the builderLookup object on the boiler.
+ */
+export function theBoilerContext() {
+  return theBoiler().builderLookup || {};
+}
+
+const contextStack:object[] = [];
+
+/**
+ * Get the current builder context.
+ * If needed, initialized from boilerplate.builderLookup
+ * @returns The top context on the stack.
+ */
+export function getBuilderContext():object {
+  if (contextStack.length == 0) {
+    contextStack.push(theBoilerContext());
+  }
+  return contextStack[contextStack.length - 1];
+}
+
+/**
+ * Start a new top level builder context.
+ * @param newContext If specified, this is the new context. If not, start from a clone of the current top context.
+ * @returns The new context, which the caller may want to modify.
+ */
+export function pushBuilderContext(newContext?:object):object {
+  if (newContext === undefined) {
+    newContext = structuredClone(getBuilderContext());
+  }
+  contextStack.push(newContext);
+  return getBuilderContext();
+}
+
+/**
+ * Pop the builder context stack.
+ * @returns The new top-level builder context.
+ */
+export function popBuilderContext():object {
+  contextStack.pop();
+  return getBuilderContext();
+}
+
+/**
+ * Finish cloning an HTML element
+ * @param src The element being cloned
+ * @param dest The new element, still in need of attributes
+ * @param context A dictionary of all accessible values
+ */
+export function cloneAttributes(src:Element, dest:Element) {
+  for (let i = 0; i < src.attributes.length; i++) {
+    const name = normalizeName(src.attributes[i].name);
+    let value = src.attributes[i].value;
+    value = cloneText(value);
+    if (name == 'id') {
+      dest.id = value;
+    }
+    else if (name == 'class') {
+      if (value) {
+        const classes = value.split(' ');
+        for (let i = 0; i < classes.length; i++) {
+          if (classes[i].length > 0) {
+            dest.classList.add(classes[i]);
+          }
+        }
+      }    
+    }
+    // REVIEW: special case 'style'?
+    else {
+      dest.setAttributeNS('', name, value);
+    }
+  }
+}
+
+/**
+ * Process a text node which may contain {curly} formatting.
+ * @param text A text node
+ * @param context A dictionary of all accessible values
+ * @returns A list of text nodes
+ */
+export function cloneTextNode(text:Text):Node[] {
+  const dest:Node[] = [];
+  let str = text.textContent;
+  let i = str ? str.indexOf('{') : -1;
+  while (str && i >= 0) {
+    const j = str.indexOf('}', i);
+    if (j < 0) {
+      break;
+    }
+    if (i > 0) {
+      dest.push(document.createTextNode(str.substring(0, i)));
+    }
+    const key = str.substring(i + 1, j);
+    dest.push(document.createTextNode(textFromContext(key)));
+    str = str.substring(j + 1);
+    i = str.indexOf('{');
+  }
+  if (str) {
+    dest.push(document.createTextNode(str));
+  }
+  return dest;
+}
+
+/**
+ * Process text which may contain {curly} formatting.
+ * @param text Any text
+ * @param context A dictionary of all accessible values
+ * @returns Expanded text
+ */
+export function cloneText(str:string|null):string {
+  if (str === null) {
+    return '';
+  }
+  return contextFormula(str, false);
+}
+
+enum TokenType {
+  start = 0,
+  bracket,
+  operator,
+  text
+}
+
+/**
+ * Divide up a string into sibling tokens.
+ * Each token may be divisible into sub-tokens, but those are skipped here.
+ * If we're not inside a {=formula}, the only tokens are { and }.
+ * If we are inside a {=formula}, then operators and others brackets are tokens too.
+ * @param str The parent string
+ * @param inFormula True if str should be treated as already inside {}
+ * @returns A list of token strings. Uninterpretted.
+ */
+function tokenizeFormula(str:string, inFormula:boolean): string[] {
+  const tokens:string[] = [];
+  const stack:string[] = [];
+  let tok = '';
+  let tokType = TokenType.start;
+  for (let i = 0; i < str.length; i++) {
+    const prevTT = tokType;
+    const ch = str[i];
+    if (!inFormula && ch == '{') {
+      stack.push(bracketPairs[ch]);  // push the expected close
+      tokType = TokenType.bracket;
+    }
+    else if (inFormula && ch in bracketPairs) {
+      stack.push(bracketPairs[ch]);  // push the expected close
+      tokType = TokenType.bracket;
+    }
+    else if (stack.length > 0) {
+      tok += ch;
+      if (ch == stack[stack.length - 1]) {
+        stack.pop();
+        if (stack.length == 0) {
+          tokens.push(tok);
+          tok = '';
+          tokType = TokenType.start;
+        }
+      }
+      continue;
+    }
+    else if (inFormula && ch in binaryOperators) {
+      tokType = TokenType.operator;
+    }
+    else {
+      tokType = TokenType.text;
+    }
+
+    if (tokType != prevTT) {
+      if (tok) {
+        tokens.push(tok);
+      }
+      tok = ch;
+      if (tokType == TokenType.operator) {
+        tokens.push(ch);
+        tok = '';
+        tokType = TokenType.start;
+      }
+    }
+    else {
+      tok += ch;
+    }
+  }
+  if (tok) {
+    tokens.push(tok);
+  }
+  return tokens;
+}
+
+const bracketPairs = {
+  '(': ')',
+  // '[': ']',
+  '{': '}',
+  // '<': '>',  // should never be used for comparison operators in this context
+  '"': '"',
+  "'": "'",
+}
+
+const binaryOperators = {
+  '+': (a,b) => {return String(parseFloat(a) + parseFloat(b))},
+  '-': (a,b) => {return String(parseFloat(a) - parseFloat(b))},
+  '*': (a,b) => {return String(parseFloat(a) * parseFloat(b))},
+  '/': (a,b) => {return String(parseFloat(a) / parseFloat(b))},
+  '%': (a,b) => {return String(parseFloat(a) % parseInt(b))},
+  '&': (a,b) => {return String(a) + String(b)},
+}
+
+const unaryOperators = {
+  '-': (a) => {return String(-parseFloat(a))},
+}
+
+/**
+ * Handle a mix of context tokens and operators
+ * @param str Raw text of a token/operator string
+ * @param context A dictionary of all accessible values
+ * @param inFormula True if str should be treated as already inside {}
+ * @returns Expanded text
+ */
+function contextFormula(str:string, inFormula:boolean):string {
+  let dest = '';
+  const tokens = tokenizeFormula(str, inFormula);
+  let binaryOp:undefined|((a:string,b:string) => string);
+  let unaryOp:undefined|((a:string) => string);
+  for (let t = 0; t < tokens.length; t++) {
+    let tok = tokens[t];
+    if (!tok) {
+      continue;
+    }
+    if (inFormula && tok in binaryOperators) {
+      if ((binaryOp || dest == '') && tok in unaryOperators) {
+        unaryOp = unaryOperators[tok];
+
+      }
+      else if (binaryOp) {
+        // TODO: consider unary operators
+        throw new Error("Consecutive binary operators: " + tok);
+      }
+      else {
+        binaryOp = binaryOperators[tok];
+      }
+      continue;  
+    }
+    let fromContext = false;
+    if (tok[0] in bracketPairs) {
+      const inner = tok.substring(1, tok.length - 1);
+      if (tok[0] == '(') {
+        // (...) is a precedence operator
+        tok = contextFormula(inner, true);
+        fromContext = true;
+      }
+      else if (tok[0] == '{') {
+        if (tok[1] == '=') {
+          // {=...} is a nested formula
+          tok = contextFormula(inner.substring(1), true);
+        }
+        else {
+          // {...} is a context look-up
+          tok = '' + anyFromContext(inner);
+        }
+        fromContext = true;
+      }
+    }
+    if (unaryOp) {
+      tok = unaryOp(tok);
+      unaryOp = undefined;
+    }
+    if (binaryOp) {
+      // All operators read left-to-right
+      // TODO: if dest=='', consider unary operators
+      dest = binaryOp(dest, tok);
+      binaryOp = undefined;  // used up
+    }
+    else if (inFormula && !fromContext) {
+      dest += anyFromContext(tok);
+    }
+    else {
+      dest += tok;
+    }
+  }
+  if (unaryOp) {
+    throw new Error("Incomplete unary operation: " + str);
+  }
+  if (binaryOp) {
+    throw new Error("Incomplete binary operation: " + str);
+  }
+  return dest;
+}
+
+/**
+ * Trim a string without taking non-breaking-spaces
+ * @param str Any string
+ * @returns A substring
+ */
+function simpleTrim(str:string):string {
+  let s = 0;
+  let e = str.length;
+  while (s < e && (str.charCodeAt(s) || 33) <= 32) {
+    s++;
+  }
+  while (e > s && (str.charCodeAt(e) || 33) <= 32) {
+    e--;
+  }
+  return str.substring(s, e);
+}
+
+/**
+ * Enable lookups into the context by key name.
+ * Keys can be paths, separated by dots (.)
+ * Paths can have other paths as nested arguments, using [ ]
+ * Note, the dot separator is still required.
+ *   example: foo.[bar].fuz       equivalent to foo[{bar}].fuz
+ *   example: foo.[bar.baz].fuz   equivalent to foo[{bar.baz}].fuz
+ * Even arrays use dot notation: foo.0 is the 0th item in foo
+ * @param key A key, initially from {curly} notation
+ * @param context A dictionary of all accessible values
+ * @returns Resolved text
+ */
+export function anyFromContext(key:string):any {
+  key = simpleTrim(key);
+  if (key === '') {
+    return '';
+  }
+  const context = getBuilderContext();
+  if (key[0] == '{' && key[key.length - 1] == '}') {
+    // Remove redundant {curly}, since some fields don't require them
+    key = simpleTrim(key.substring(1, key.length - 1));
+  }
+  const path = key.split('.');
+  const nested = [context];
+  for (let i = 0; i < path.length; i++) {
+    let step = path[i];
+    if (!step) {
+      continue;  // Ignore blank steps for now
+    }
+    const maybe = step.indexOf('?') == step.length - 1;
+    if (maybe) {
+      step = step.substring(0, step.length - 1);
+    }
+    const newNest = step[0] == '[';
+    if (newNest) {
+      step = step.substring(1);
+      nested.push(context);
+    }
+    // steps can end in one more more ']', which can't occur anywhere else
+    let unnest = step.indexOf(']');
+    if (unnest >= 0) {
+      unnest = step.length - unnest;
+      if (nested.length <= unnest) {
+        throw new Error('Malformed path has unmatched ] : ' + key);
+      }
+      step = step.substring(0, step.length - unnest);
+    }
+
+    if (!(step in nested[nested.length - 1])) {
+      if (maybe) {
+        if (i != path.length - 1) {
+          console.log('Optional key ' + step + '?' + ' before the end of ' + key);
+        }
+        return '';  // All missing optionals return ''
+      }
+      if ((i == 0 && path.length == 1) || (newNest && unnest > 0)) {
+        nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
+      }
+      else {
+        throw new Error('Unrecognized key: ' + step + ' in ' + key);
+      }
+    }
+    else {
+      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
+    }
+
+    for (; unnest > 0; unnest--) {
+      const pop:string = '' + nested.pop();
+      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
+    }
+  }
+  if (nested.length > 1) {
+    throw new Error('Malformed path has unmatched [ : ' + key);
+  }
+  return nested.pop();
+}
+
+/**
+ * Look up a value, according to the context path cached in an attribute
+ * @param path A context path
+ * @returns Any JSON object
+ */
+export function globalContextData(path:string):any {
+  const context = theBoilerContext();
+  if (path && context) {
+    return anyFromContext(path);
+  }
+  return undefined;
+}
+
+/**
+ * Test a key in the current context
+ * @param key A key, initially from {curly} notation
+ * @returns true if key is a valid path within the context
+ */
+export function keyExistsInContext(key:string) {
+  try {
+    const a = anyFromContext(key);
+    // null, undefined, or '' count as not existing
+    return a !== null && a !== undefined && a !== '';
+  }
+  catch {
+    return false;
+  }
+}
+
+/**
+ * Enable lookups into the context by key name.
+ * Keys can be paths, separated by dots (.)
+ * Paths can have other paths as nested arguments, using [ ]
+ * Note, the dot separator is still required.
+ *   example: foo.[bar].fuz       equivalent to foo[{bar}].fuz
+ *   example: foo.[bar.baz].fuz   equivalent to foo[{bar.baz}].fuz
+ * Even arrays use dot notation: foo.0 is the 0th item in foo
+ * @param key A key, initially from {curly} notation
+ * @returns Resolved text
+ */
+export function textFromContext(key:string|null):string {
+  if (!key) {
+    return '';
+  }
+  try {
+    return contextFormula(key, true);
+  }
+  catch(ex) {
+    if (key.indexOf('.') < 0) {
+      return key;  // key can be a literal value
+    }
+    throw ex;
+  }
+}
+
+
+/**
+ * Get a keyed child of a parent, where the key is either a dictionary key 
+ * or a list index or a string offset.
+ * @param parent The parent object: a list, object, or string
+ * @param key The identifier of the child: a dictionary key, a list index, or a string offset
+ * @param maybe If true, and key does not work, return ''
+ * @returns A child object, or a substring
+ */
+function getKeyedChild(parent:any, key:string, maybe?:boolean) {
+  if (typeof(parent) == 'string') {
+    const i = parseInt(key);
+    if (maybe && (i < 0 || i >= (parent as string).length)) {
+      return '';
+    }
+    return (parent as string)[i];
+  }
+  if (!(key in parent)) {
+    if (maybe) {
+      return '';
+    }
+    throw new Error('Unrecognized key: ' + key);
+  }
+  return parent[key];
+}
+
+
+/*-----------------------------------------------------------
+ * _builderFor.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * Potentially several kinds of for loops:
+ * for each: <for each="var" in="list">  // ideas for optional args: first, last, skip
+ * for char: <for char="var" in="text">  // every character in a string
+ * for word: <for word="var" in="text">  // space-delimited substrings
+ * for range: <for range="var" from="first" to="last" or until="after"> 
+ * for key: <for key="var" in="object">  // idea for optional arg: sort
+ * @param src the <for> element
+ * @param context the set of values that might get used by the for loop
+ * @returns a list of nodes, which will replace this <for> element
+ */
+export function startForLoop(src:HTMLElement):Node[] {
+  const dest:Node[] = [];
+
+  let iter:string|null = null;
+  let list:any[] = [];
+  let vals:any[] = [];  // not always used
+
+  // <for each="variable_name" in="list">
+  iter = src.getAttributeNS('', 'each');
+  if (iter) {
+    list = parseForEach(src);
+  }
+  else {
+    iter = src.getAttributeNS('', 'char');
+    if (iter) {
+      list = parseForText(src, '');
+    }
+    else {
+      iter = src.getAttributeNS('', 'word');
+      if (iter) {
+        list = parseForText(src, ' ');
+      }
+      else {
+        iter = src.getAttributeNS('', 'key');
+        if (iter) {
+          list = parseForKey(src);
+          vals = list[1];
+          list = list[0];
+        }
+        else {
+          iter = src.getAttributeNS('', 'range');
+          if (iter) {
+            list = parseForRange(src);
+          }
+          else {
+            throw new Error('Unrecognized <for> tag type: ' + src);
+          }
+        }
+      }
+    }
+  }
+
+  if (!list) {
+    throw new Error('Unable to resolve from context: ' + src.outerHTML);
+  }
+
+  const inner_context = pushBuilderContext();
+  const iter_index = iter + '#';
+  for (let i = 0; i < list.length; i++) {
+    inner_context[iter_index] = i;
+    inner_context[iter] = list[i];
+    if (vals.length > 0) {
+      inner_context[iter + '!'] = vals[i];
+    }
+    pushRange(dest, expandContents(src));
+  }
+  popBuilderContext();
+  
+  return dest;
+}
+
+/**
+ * Syntax: <for each="var" in="list">
+ * @param src 
+ * @param context 
+ * @returns a list of elements
+ */
+function parseForEach(src:HTMLElement):any[] {
+  const list_name = src.getAttributeNS('', 'in');
+  if (!list_name) {
+    throw new Error('for each requires "in" attribute');
+  }
+  return anyFromContext(list_name);
+}
+
+function parseForText(src:HTMLElement, delim:string) {
+  const list_name = src.getAttributeNS('', 'in');
+  if (!list_name) {
+    throw new Error('for char requires "in" attribute');
+  }
+  // The list_name can just be a literal string
+  const context = getBuilderContext();
+  const list = (list_name in context) ? context[list_name] : list_name;
+  if (!list) {
+    throw new Error('unresolved context: ' + list_name);
+  }
+  return list.split(delim);
+}
+
+function parseForRange(src:HTMLElement):any {
+  const from = src.getAttributeNS('', 'in');
+  let until = src.getAttributeNS('', 'until');
+  const last = src.getAttributeNS('', 'to');
+  const length = src.getAttributeNS('', 'len');
+  const step = src.getAttributeNS('', 'step');
+
+  const start = from ? parseInt(cloneText(from)) : 0;
+  let end = until ? parseInt(cloneText(until))
+    : last ? (parseInt(cloneText(last)) + 1)
+    : length ? (anyFromContext(length).length)
+    : start;
+  const inc = step ? parseInt(cloneText(step)) : 1;
+  if (!until && inc < 0) {
+    end -= 2;  // from 5 to 1 step -1 means i >= 0
+  }
+
+  const list:number[] = [];
+  for (let i = start; inc > 0 ? (i < end) : (i > end); i += inc) {
+    list.push(i);
+  }
+  return list;
+}
+
+function parseForKey(src:HTMLElement):any {
+  const obj_name = src.getAttributeNS('', 'in');
+  if (!obj_name) {
+    throw new Error('for each requires "in" attribute');
+  }
+  const obj = anyFromContext(obj_name)
+  if (!obj) {
+    throw new Error('unresolved list context: ' + obj_name);
+  }
+  const keys = Object.keys(obj);
+  const vals = keys.map(k => obj[k]);
+  return [keys, vals];
+}
+
+
+
+/*-----------------------------------------------------------
+ * _builderIf.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * Potentially several kinds of if expressions:
+ *   equality: <if test="var" eq="value">  
+ *   not-equality: <if test="var" ne="value">  
+ *   less-than: <if test="var" lt="value">  
+ *   less-or-equal: <if test="var" le="value">  
+ *   greater-than: <if test="var" gt="value">  
+ *   greater-or-equal: <if test="var" ge="value">  
+ *   contains: <if test="var" in="value">  
+ *   not-contains: <if test="var" ni="value">  
+ *   boolean: <if test="var">
+ * Note there is no else or else-if block, because there are no scoping blocks
+ * @param src the <if> element
+ * @param context the set of values that might get used by or inside the if block
+ * @returns a list of nodes, which will replace this <if> element
+ */
+export function startIfBlock(src:HTMLElement):Node[] {
+  let exists = src.getAttributeNS('', 'exists');
+  let notex = src.getAttributeNS('', 'not');
+  if (exists || notex) {
+    // Does this attribute exist at all?
+    if ((exists && keyExistsInContext(exists)) || (notex && !keyExistsInContext(notex))) {
+      return expandContents(src);
+    }
+    return [];
+  }
+
+  let test = src.getAttributeNS('', 'test');
+  if (!test) {
+    throw new Error('<if> tags must have a test attribute');
+  }
+  test = textFromContext(test); 
+
+  let pass:boolean = false;
+  let value:string|null;
+  if (value = src.getAttributeNS('', 'eq')) {  // equality
+    pass = test == cloneText(value);
+  }
+  else if (value = src.getAttributeNS('', 'ne')) {  // not-equals
+    pass = test != cloneText(value);
+  }
+  else if (value = src.getAttributeNS('', 'lt')) {  // less-than
+    pass = parseFloat(test) < parseFloat(cloneText(value));
+  }
+  else if (value = src.getAttributeNS('', 'le')) {  // less-than or equals
+    pass = parseFloat(test) <= parseFloat(cloneText(value));
+  }
+  else if (value = src.getAttributeNS('', 'gt')) {  // greater-than
+    pass = parseFloat(test) > parseFloat(cloneText(value));
+  }
+  else if (value = src.getAttributeNS('', 'ge')) {  // greater-than or equals
+    pass = parseFloat(test) >= parseFloat(cloneText(value));
+  }
+  else if (value = src.getAttributeNS('', 'in')) {  // string contains
+    pass = cloneText(value).indexOf(test) >= 0;
+  }
+  else if (value = src.getAttributeNS('', 'ni')) {  // string doesn't contain
+    pass = cloneText(value).indexOf(test) >= 0;
+  }
+  else {  // simple boolean
+    pass = test === 'true';
+  }
+
+  if (pass) {
+    // No change in context from the if
+    return expandContents(src);
+  }
+  
+  return [];
+}
+
+
+
+/*-----------------------------------------------------------
+ * _builderInput.ts
+ *-----------------------------------------------------------*/
+
+
+export const inputAreaTagNames = [
+  'letter', 'letters', 'literal', 'number', 'numbers', 'pattern', 'word'
+];
+
+/**
+ * Shortcut tags for text input. These include:
+ *  letter: any single character
+ *  letters: a few characters, in a single input
+ *  literal: readonly single character
+ *  number: any numeric digit
+ *  numbers: a few numeric digits
+ *  word: full multi-character
+ *  pattern: multiple inputs, generated from a pattern
+ * @param src One of the input shortcut tags
+ * @param context A dictionary of all values that can be looked up
+ * @returns a node array containing a single <span>
+ */
+export function startInputArea(src:HTMLElement):Node[] {
+  const span = document.createElement('span');
+
+  // Copy most attributes. 
+  // Special-cased ones are harmless - no meaning in generic spans
+  cloneAttributes(src, span);
+
+  let cloneContents = false;
+  let literal:string|null = null;
+  const extract = src.getAttributeNS('', 'extract');
+
+  var styles = getLetterStyles(src, 'underline', '', 'box');
+
+  // Convert special attributes to data-* attributes for later text setup
+  let attr:string|null;
+  if (isTag(src, 'letter')) {  // 1 input cell for (usually) one character
+    toggleClass(span, 'letter-cell', true);
+    literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
+  }
+  else if (isTag(src, 'letters')) {  // 1 input cell for a few characters
+    toggleClass(span, 'letter-cell', true);
+    toggleClass(span, 'multiple-letter', true);
+    literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
+  }
+  else if (isTag(src, 'literal')) {  // 1 input cell for (usually) one character
+    toggleClass(span, 'letter-cell', true);
+    literal = ' ';
+    cloneContents = true;  // literal value
+  }
+  else if (isTag(src, 'number')) {  // 1 input cell for one numeric character
+    toggleClass(span, 'letter-cell', true);
+    toggleClass(span, 'numeric', true);
+    literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
+  }
+  else if (isTag(src, 'numbers')) {  // 1 input cell for multiple numeric digits
+    toggleClass(span, 'letter-cell', true);
+    toggleClass(span, 'multiple-letter', true);
+    toggleClass(span, 'numeric', true);
+    // To support longer (or negative) numbers, set class = 'multiple-letter'
+    literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
+  }
+  else if (isTag(src, 'word')) {  // 1 input cell for (usually) one character
+    toggleClass(span, 'word-cell', true);
+  }
+  else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
+    toggleClass(span, 'create-from-pattern', true);
+    if (attr = src.getAttributeNS('', 'pattern')) {
+      span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+    }
+    if (attr = src.getAttributeNS('', 'extract')) {
+      span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));
+    }
+    if (attr = src.getAttributeNS('', 'numbers')) {
+      span.setAttributeNS('', 'data-number-assignments', cloneText(attr));
+    }
+  }
+  else {
+    return [src];  // Unknown tag. NYI?
+  }
+
+  let block = src.getAttributeNS('', 'block');  // Used in grids
+  if (block) {
+    toggleClass(span, 'block', true);
+    literal = literal || block;
+  }
+
+  if (literal == '¤') {  // Special case (and back-compat)
+    toggleClass(span, 'block', true);
+    literal = ' ';
+  }
+  
+  if (literal) {
+    if (!cloneContents) {
+      span.innerText = cloneText(literal);  
+    }
+    toggleClass(span, 'literal', true);
+    applyAllClasses(span, styles.literal);
+  }      
+  else if (!isTag(src, 'pattern')) {
+    applyAllClasses(span, styles.letter);
+    if (extract != null) {
+      toggleClass(span, 'extract', true);
+      if (parseInt(extract) > 0) {
+        toggleClass(span, 'numbered', true);
+        toggleClass(span, 'extract-numbered', true);
+        span.setAttributeNS('', 'data-number', extract);
+        
+        const under = document.createElement('span');
+        toggleClass(under, 'under-number');
+        under.innerText = extract;
+        span.appendChild(under);
+      }
+      applyAllClasses(span, styles.extract);
+    }
+  }
+
+  if (cloneContents) {
+    appendRange(span, expandContents(src));
+  }
+
+  return [span];
+}
+
+
+/*-----------------------------------------------------------
+ * _builderUse.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * Replace a <use> tag with the contents of a <template>.
+ * Along the way, push any attributes of the <use> tag onto the context.
+ * Also push the context paths (as strings) as separate attributes.
+ * Afterwards, pop them all back off.
+ * Optionally, a <use> tag without a template="" attribute is a way to modify the context for the use's children.
+ * @param node a <use> tag
+ * @param context The current context
+ * @returns An array of nodes to insert into the document in place of the <use> tag
+ */
+export function useTemplate(node:HTMLElement):Node[] {
+  let dest:Node[] = [];
+  
+  const inner_context = pushBuilderContext();
+  for (var i = 0; i < node.attributes.length; i++) {
+    const attr = node.attributes[i].name;
+    const val = node.attributes[i].value;
+    const attri = node.attributes[i].name.toLowerCase();
+    if (attri != 'template' && attri != 'class') {
+      if (val[0] == '{') {
+        inner_context[attr] = anyFromContext(val);
+      }
+      else {
+        inner_context[attr] = cloneText(val);
+      }
+      inner_context[attr + '$'] = val;  // Store the context path, so it can also be referenced
+    }
+  }
+
+  const tempId = node.getAttribute('template');
+  if (tempId) {
+    const template = getTemplate(tempId);
+    if (!template) {
+      throw new Error('Template not found: ' + tempId);
+    }
+    if (!template.content) {
+      throw new Error('Invalid template: ' + tempId);
+    }
+    // The template doesn't have any child nodes. Its content must first be cloned.
+    const clone = template.content.cloneNode(true) as HTMLElement;
+    dest = expandContents(clone);
+  }
+  else {
+    dest = expandContents(node);
+  }
+  popBuilderContext();
+
+  return dest;
+}
+
+/*-----------------------------------------------------------
+ * _templates.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * Find a template that matches an ID.
+ * Could be on the local page, or a built-in one
+ * @param tempId The ID of the template (must be valid)
+ * @returns An HTMLTemplateElement, or throws
+ */
+export function getTemplate(tempId:string) :HTMLTemplateElement {
+  if (tempId) {
+    let elmt = document.getElementById(tempId);
+    if (elmt) {
+      return elmt as HTMLTemplateElement;
+    }
+    const template = builtInTemplate(tempId);
+    if (template) {
+      return template;
+    }
+  }
+  throw new Error('Unresolved template ID: ' + tempId);
+}
+
+const builtInTemplates = {
+  paintByNumbers: paintByNumbersTemplate,
+  paintByColorNumbers: paintByColorNumbersTemplate,
+  classStampPalette: classStampPaletteTemplate,
+  classStampNoTools: classStampNoToolsTemplate,
+}
+
+/**
+ * Match a template name to a built-in template object
+ * @param tempId The ID
+ * @returns A template element (not part of the document), or undefined if unrecognized.
+ */
+export function builtInTemplate(tempId:string) :HTMLTemplateElement|undefined {
+  if (tempId in builtInTemplates) {
+    return builtInTemplates[tempId]();
+  }
+};
+
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ */
+function paintByNumbersTemplate() :HTMLTemplateElement {
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
+
+  const temp = document.createElement('template');
+  temp.id = 'paintByNumbers';
+  temp.innerHTML = 
+  `<table_ class="paint-by-numbers stampable-container stamp-drag bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
+    <thead_>
+      <tr_ class="pbn-col-headers">
+        <th_ class="pbn-corner">
+          <span class="pbn-instructions">
+            This is a nonogram<br>(aka paint-by-numbers).<br>
+            For instructions, see 
+            <a href="https://help.puzzyl.net/PBN" target="_blank">
+              https://help.puzzyl.net/PBN<br>
+              <img src="../Images/Intro/pbn.png">
+            </a>
+          </span>
+        </th_>
+        <for each="col" in="colGroups">
+          <td_ id="colHeader-{col#}" class="pbn-col-header">
+            <for each="group" in="col"><span class="pbn-col-group" onclick="togglePbnClue(this)">{.group}</span></for>
+          </td_>
+        </for>
+        <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
+      </tr_>
+    </thead_>
+    <for each="row" in="rowGroups">
+      <tr_ class="pbn-row">
+        <td_ id="rowHeader-{row#}" class="pbn-row-header">
+          &hairsp; <for each="group" in="row"><span class="pbn-row-group" onclick="togglePbnClue(this)">{.group}</span> </for>&hairsp;
+        </td_>
+        <for each="col" in="colGroups">
+          <td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>
+        </for>
+        <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
+      </tr_>
+    </for>
+    <tfoot_>
+      <tr_ class="pbn-col-footer">
+        <th_ class="pbn-corner">&nbsp;</th_>
+        <for each="col" in="colGroups">
+          <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
+        </for>
+        <th_ class="pbn-corner-validation">
+          ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ
+          <br>←&nbsp;validation</th_>
+      </tr_>
+    </tfoot_>
+  </table_>`;
+  return temp;
+}
+
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ */
+function paintByColorNumbersTemplate() :HTMLTemplateElement {
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
+
+  const temp = document.createElement('template');
+  temp.id = 'paintByNumbers';
+  temp.innerHTML = 
+  `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
+    <thead_>
+      <tr_ class="pbn-col-headers">
+        <th_ class="pbn-corner">
+          <span class="pbn-instructions">
+            This is a nonogram<br>(aka paint-by-numbers).<br>
+            For instructions, see 
+            <a href="https://help.puzzyl.net/PBN" target="_blank">
+              https://help.puzzyl.net/PBN<br>
+              <img src="https://help.puzzyl.net/pbn.png">
+            </a>
+          </span>
+        </th_>
+        <for each="col" in="colGroups">
+          <td_ id="colHeader-{col#}" class="pbn-col-header">
+            <for each="colorGroup" in="col"><for key="color" in="colorGroup"><for each="group" in="color!"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span></for></for></for>
+          </td_>
+        </for>
+        <if test="validate?" ne="false">
+          <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
+        </if>
+      </tr_>
+    </thead_>
+      <for each="row" in="rowGroups">
+        <tr_ class="pbn-row">
+          <td_ id="rowHeader-{row#}" class="pbn-row-header">
+            &hairsp; 
+            <for each="colorGroup" in="row"><for key="color" in="colorGroup">
+              <for each="group" in="color!"><span class="pbn-row-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span> </for>
+            &hairsp;</for></for>
+          </td_>
+          <for each="col" in="colGroups">
+          <td_ id="{row#}_{col#}" class="pbn-cell stampable">{blank?}</td_>
+        </for>
+        <if test="validate?" ne="false">
+          <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
+        </if>
+      </tr_>
+    </for>
+    <if test="validate?" ne="false">
+      <tfoot_>
+        <tr_ class="pbn-col-footer">
+          <th_ class="pbn-corner">&nbsp;</th_>
+          <for each="col" in="colGroups">
+            <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
+          </for>
+          <th_ class="pbn-corner-validation">
+            ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ
+            <br>←&nbsp;validation</th_>
+        </tr_>
+      </tfoot_>
+    </if>
+  </table_>`;
+  return temp;
+}
+
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ * @remarks This template takes the following arguments:
+ *   size: Optional descriptor of stamp toolbar button size.
+ *         Choices are "medium" and "small". The default is large.
+ *   erase: the tool id of the eraser
+ *   tools: A list of objects, each of which contain:
+ *     id: the name of the stamp.
+ *     next: Optional id of the next stamp, for rotational clicking.
+ *           If absent, clicking on pre-stamped cells does nothing differnt.
+ *     modifier: Optional shift state for clicks. 
+ *               Choices are "ctrl", "alt", "shift".
+ *     img: The image source path to the button.
+ *     label: Optional text to render below the toolbar button
+ * @remarks Invoking this stamping template also loads the PaintByNumbers.css
+ * Top candidates of styles to override include:
+ *   stampLabel: to change or suppress the display of the label.
+ *   stampMod: to change of suppress the modifier as a simple label.
+ */
+function classStampPaletteTemplate() :HTMLTemplateElement {
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
+
+  const temp = document.createElement('template');
+  temp.id = 'classStampPalette';
+  temp.innerHTML = 
+  `<div id="stampPalette" data-tool-count="3" data-tool-erase="{erase}">
+    <for each="tool" in="tools">
+      <div class="stampTool {size?}" data-template-id="{tool.id}" data-click-modifier="{tool.modifier?}" title="{tool.modifier?} + draw" data-next-template-id="{tool.next}">
+        <div class="roundTool {tool.id}-button">
+          <span id="{tool.id}-icon" class="stampIcon"><img src_="{tool.img}"></span>
+          <span id="{tool.id}-label" class="stampLabel">{tool.label?}</span>
+          <span id="{tool.id}-mod" class="stampMod">{tool.modifier?}+click</span>
+        </div>
+      </div>
+    </for>
+  </div>`;
+  return temp;
+}
+
+function classStampNoToolsTemplate() :HTMLTemplateElement {
+  linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
+
+  const temp = document.createElement('template');
+  temp.id = 'classStampPalette';
+  temp.innerHTML = 
+  `<div id="stampPalette" class="hidden" data-tool-erase="{erase}">
+    <for each="tool" in="tools">
+      <div class="stampTool" data-template-id="{tool.id}" data-next-template-id="{tool.next}">
+      </div>
+    </for>
+  </div>`;
+  return temp;
+}
+
+function stampPaletteTemplate() :HTMLTemplateElement {
+  linkCss(getSafariDetails().cssRoot + 'StampTools.css');
+
+  const temp = document.createElement('template');
+  temp.innerHTML = 
+  `<table_ class="paint-by-numbers bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
+  </table_>`;
+  return temp;
+}
+
+var pbnStampTools = [
+  {id:'stampPaint', modifier:'ctrl', label:'Paint', img:'../Images/Stamps/brushH.png', next:'stampBlank'},
+  {id:'stampBlank', modifier:'shift', label:'Blank', img:'../Images/Stamps/blankH.png', next:'stampErase'},
+  {id:'stampErase', modifier:'alt', label:'Erase', img:'../Images/Stamps/eraserH.png', next:'stampPaint'},
+];
+
+
+/*-----------------------------------------------------------
+ * _validatePBN.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * Validate the paint-by-numbers grid that contains this cell
+ * @param target The cell that was just modified
+ */
+function validatePBN(target:HTMLElement) {
+  const table = findParentOfClass(target, 'paint-by-numbers');
+  if (!table) {
+    return;
+  }
+  const stampList = getOptionalStyle(table, 'data-stamp-list');
+  if (stampList) {
+    validateColorPBN(target, table as HTMLElement, stampList);
+    return;
+  }
+
+  let pos = target.id.split('_');
+  const row = parseInt(pos[0]);
+  const col = parseInt(pos[1]);
+  const rSum = document.getElementById('rowSummary-' + row);
+  const cSum = document.getElementById('colSummary-' + col);
+
+  if (!rSum && !cSum) {
+    return;  // this PBN does not have a UI for validation
+  }
+
+  // Scan all cells in this PBN table, looking for those in the current row & column
+  // Track the painted ones as a list of row/column indices
+  const cells = table.getElementsByClassName('stampable');
+  const rowOn:number[] = [];
+  const colOn:number[] = [];
+  for (let i = 0; i < cells.length; i++) {
+    const cell = cells[i];
+    if (hasClass(cell, 'stampPaint')) {
+      pos = cell.id.split('_');
+      const r = parseInt(pos[0]);
+      const c = parseInt(pos[1]);
+      if (r == row) {
+        rowOn.push(c);
+      }
+      if (c == col) {
+        colOn.push(r);
+      }
+    }
+  }
+
+  const rows = contextDataFromRef(table, 'data-row-context');
+  if (rSum && rows) {
+    // Convert a list of column indices to group notation
+    const groups = summarizePBN(rowOn);
+    rSum.innerHTML = '';
+    for (const g of groups) {
+      if (g > 0) {
+        const span = document.createElement('span');
+        toggleClass(span, 'pbn-row-group', true);
+        span.innerText = g.toString();
+        rSum.appendChild(span);
+      }
+    }
+    const header = rows[row];
+    const comp = compareGroupsPBN(header, groups);
+    toggleClass(rSum, 'done', comp == 0);
+    toggleClass(rSum, 'exceeded', comp > 0);
+    const rHead = document.getElementById('rowHeader-' + row);
+    toggleClass(rHead, 'done', comp == 0);
+  }
+
+  const cols = contextDataFromRef(table, 'data-col-context');
+  if (cSum) {
+    const groups = summarizePBN(colOn);
+    cSum.innerHTML = '';
+    for (const g of groups) {
+      if (g > 0) {
+        const span = document.createElement('span');
+        toggleClass(span, 'pbn-col-group', true);
+        span.innerText = g.toString();
+        cSum.appendChild(span);
+      }
+    }
+    const header = cols[col];
+    const comp = compareGroupsPBN(header, groups);
+    toggleClass(cSum, 'done', comp == 0);
+    toggleClass(cSum, 'exceeded', comp > 0);
+    const cHead = document.getElementById('colHeader-' + col);
+    toggleClass(cHead, 'done', comp == 0);
+  }
+
+}
+
+/**
+ * Is a given cell tagged with a (non-blank) stamp id?
+ * @param cell 
+ * @param stampTools 
+ * @returns the stamp data, or undefined if none found
+ */
+function dataFromTool(cell:HTMLElement, stampTools: StampToolDetails[]): string|undefined {
+  for (let i = 0; i < stampTools.length; i++) {
+    if (stampTools[i].data && hasClass(cell, stampTools[i].id))
+      return stampTools[i].data;
+  }
+  return undefined;
+}
+
+/**
+ * Look up a value, according to the context path cached in an attribute
+ * @param elmt Any element
+ * @param attr An attribute name, which should exist in elmt or any parent
+ * @returns Any JSON object
+ */
+function contextDataFromRef(elmt:Element, attr:string):any {
+  const path = getOptionalStyle(elmt, attr);
+  if (path) {
+    return anyFromContext(path);
+  }
+  return undefined;
+}
+
+/**
+ * Read the user's actual painting within the PBN grid as a list of group sizes.
+ * @param list A list of numbers, indicating row or column indices
+ * @returns A list of groups separated by gaps. Positive numbers are consecutive painted. Negative are consecutive un-painted.
+ * The leading- and trailing- empty cells are ignored. But if the whole series is empty, return [0]
+ */
+function summarizePBN(list) {
+  let prev = NaN;
+  let consec = 0;
+  const summary:number[] = [];
+  list.push(NaN);
+  for (const next of list) {
+    if (next == prev + 1) {
+      consec++;
+    }
+    else {
+      if (consec > 0) {
+        summary.push(consec);
+        const gap = next - prev - 1;
+        if (!isNaN(gap) && gap > 0) {
+          summary.push(-gap);
+        }
+      }
+      consec = (!isNaN(next)) ? 1 : 0;
+    }
+    prev = next;
+  }
+  if (summary.length == 0) {
+    return [0];
+  }
+  return summary;
+}
+
+/**
+ * Compare the actual panted cells vs. the clues.
+ * The actual cells could indicate either more than was clued, or less than was clued, or exactly what was clued.
+ * @param expect A list of expected groups (positives only)
+ * @param have A list of actual groups (positives indicate groups, negatives indicates gaps between groups)
+ * @returns 0 if exact, 1 if actual exceeds expected, or -1 if actual is not yet expected, but hasn't contradicted it yet
+ */
+function compareGroupsPBN(expect:number[], have:number[]) {
+  let exact = true;
+  let e = 0;
+  let gap = 0;
+  let prevH = 0;
+  let curE = expect.length > 0 ? expect[0] : 0;
+  for (const h of have) {
+    if (h <= 0) {
+      gap = -h;
+      continue;
+    }
+    prevH = prevH > 0 ? (prevH + gap + h) : h;
+    if (prevH <= curE) {
+      exact = exact && h == curE;
+      gap = 0;
+      if (prevH == curE) {
+        prevH = 0;
+        e++;
+        curE = e < expect.length ? expect[e] : 0;
+      }
+    }
+    else {
+      exact = false;
+      prevH = 0;
+      gap = 0;
+      e++;
+      while (e < expect.length && h > expect[e]) {
+        e++;
+      }
+      curE = e < expect.length ? expect[e] : 0;
+      if (h < curE) {
+        prevH = h;
+      }
+      else if (h == curE) {
+        e++;
+        curE = e < expect.length ? expect[e] : 0;
+      }
+      else {
+        return 1;  // too big
+      }
+    }
+  }
+  // return 0 for exact match
+  // return -1 for incomplete match - groups thus far do not exceed expected
+  return (exact && e == expect.length) ? 0 : -1;
+}
+
+/**
+ * When a PBN group in row or col header is checked,
+ * toggle a check- or cross-off effect.
+ * @param group The group that was clicked.
+ */
+function togglePbnClue(group:HTMLSpanElement) {
+  toggleClass(group, 'pbn-check');
+}
+
+type indexTag = {
+  index: number,
+  tag: string
+}
+
+const nonIndexTag:indexTag = {index:NaN, tag: ''};
+
+type linearTag = {
+  len: number,
+  tag: string
+}
+
+const nonLinearTag:linearTag = {len: 0, tag: ''};
+const outerGapTag:linearTag = {len: 1, tag: ''};
+
+/**
+* Validate the paint-by-numbers grid that contains this cell
+* @param target The cell that was just modified
+* @param table The containing table
+* @param stampList
+*/
+function validateColorPBN(target:HTMLElement, table:HTMLElement, stampList:string) {
+  const stampTools = globalContextData(stampList) as StampToolDetails[];
+
+  let pos = target.id.split('_');
+  const row = parseInt(pos[0]);
+  const col = parseInt(pos[1]);
+  const rSum = document.getElementById('rowSummary-' + row);
+  const cSum = document.getElementById('colSummary-' + col);
+
+  if (!rSum && !cSum) {
+    return;  // this PBN does not have a UI for validation
+  }
+
+  // Scan all cells in this PBN table, looking for those in the current row & column
+  // Track the painted ones as a list of row/column indices
+  const cells = table.getElementsByClassName('stampable');
+  const rowOn:indexTag[] = [];
+  const colOn:indexTag[] = [];
+  for (let i = 0; i < cells.length; i++) {
+    const cell = cells[i];
+    const data = dataFromTool(cell as HTMLElement, stampTools);
+    if (data) {
+      pos = cell.id.split('_');
+      const r = parseInt(pos[0]);
+      const c = parseInt(pos[1]);
+      if (r == row) {
+        const it:indexTag = {index:c, tag:data};
+        rowOn.push(it);
+      }
+      if (c == col) {
+        const it:indexTag = {index:r, tag:data};
+        colOn.push(it);
+      }
+    }
+  }
+
+  const rows = contextDataFromRef(table, 'data-row-context');
+  if (rSum && rows) {
+    // Convert a list of column indices to group notation
+    const groups = summarizeTaggedPBN(rowOn);
+    rSum.innerHTML = '';
+    for (const g of groups) {
+      if (g.tag != '') {
+        const span = document.createElement('span');
+        toggleClass(span, 'pbn-row-group', true);
+        toggleClass(span, 'pbn-color-' + g.tag, true);
+        span.innerText = g.len.toString();
+        rSum.appendChild(span);
+      }
+    }
+    const header = invertColorTags(rows[row]);
+    const comp = compareTaggedGroupsPBN(header, groups);
+    toggleClass(rSum, 'done', comp == 0);
+    toggleClass(rSum, 'exceeded', comp > 0);
+    const rHead = document.getElementById('rowHeader-' + row);
+    toggleClass(rHead, 'done', comp == 0);
+  }
+
+  const cols = contextDataFromRef(table, 'data-col-context');
+  if (cSum) {
+    const groups = summarizeTaggedPBN(colOn);
+    cSum.innerHTML = '';
+    for (const g of groups) {
+      if (g.tag != '') {
+        const span = document.createElement('span');
+        toggleClass(span, 'pbn-col-group', true);
+        toggleClass(span, 'pbn-color-' + g.tag, true);
+        span.innerText = g.len.toString();
+        cSum.appendChild(span);
+      }
+    }
+    const header = invertColorTags(cols[col]);
+    const comp = compareTaggedGroupsPBN(header, groups);
+    toggleClass(cSum, 'done', comp == 0);
+    toggleClass(cSum, 'exceeded', comp > 0);
+    const cHead = document.getElementById('colHeader-' + col);
+    toggleClass(cHead, 'done', comp == 0);
+  }
+
+}
+
+/**
+* Starting from a tag-clumped header input:
+*  [ {tag1:[1,2]}, {tag2:[3,4]} ]
+* Convert to linear groups with tags
+*  [ [1,tag1], [2,tag1], [3,tag2], [4,tag2]]
+* @param header input-style header
+* @returns linear-style header
+*/
+function invertColorTags(header:object[]): linearTag[] {
+  const linear:linearTag[] = [];
+  for (let i = 0; i < header.length; i++) {
+    const tagged = header[i];  // {tag:[1,2]}
+    const tag = Object.keys(tagged)[0];
+    const groups = tagged[tag] as number[];
+    for (var g = 0; g < groups.length; g++) {
+      const lt:linearTag = {len:groups[g], tag:tag};
+      linear.push(lt);
+    }
+  }
+  return linear;
+}
+
+/**
+ * Read the user's actual painting within the PBN grid as a list of group sizes.
+ * @param list A list of numbers, indicating row or column indices
+ * @returns A list of groups and gaps, trimming exterior gaps.
+ */
+function summarizeTaggedPBN(list:indexTag[]): linearTag[] {
+  let prev = nonIndexTag;
+  let consec = 0;
+  const summary:linearTag[] = [];
+  list.push(nonIndexTag);
+  for (const next of list) {
+    if (next.tag == prev.tag && next.index == prev.index + 1) {
+      consec++;
+    }
+    else {
+      if (consec > 0) {
+        const line:linearTag = {len: consec, tag:prev.tag}
+        summary.push(line);
+        const gap:linearTag = {len: next.index - prev.index - 1, tag:''};
+        if (next.tag != '') {
+          summary.push(gap);
+        }
+      }
+      consec = next == nonIndexTag ? 0 : 1;
+    }
+    prev = next;
+  }
+  if (summary.length == 0) {
+    return [];
+  }
+  return summary;
+}
+
+/**
+ * Compare the actual painted cells vs. the clues.
+ * The actual cells could indicate either more than was clued, or less than was clued, or exactly what was clued.
+ * @param expect A list of expected groups (omitting gaps)
+ * @param have A list of actual groups (including gaps between groups)
+ * @returns 0 if exact, 1 if actual exceeds expected, or -1 if actual is not yet expected, but hasn't contradicted it yet
+ */
+function compareTaggedGroupsPBN(expect:linearTag[], have:linearTag[]) {
+  let exact = true;
+  let e = 0;
+  let gap = outerGapTag;
+  let prevH = nonLinearTag;
+  let curE = expect.length == 0 ? nonLinearTag : expect[0];
+  for (const h of have) {
+    if (h.tag == '') {
+      gap = h;
+      continue;
+    }
+    
+    if (h.tag == prevH.tag) {
+      // Two groups of the same type, separated by a gap, could fit within a single expected range
+      prevH.len += gap.len + h.len;
+      if (prevH.len <= curE.len) {        
+        continue;
+      }
+      // curE has already accomodated prevH. If this new, bigger prevH doesn't fit, move on to the next E, and forget prevH
+      e++;
+    }
+
+    // If the next expected group is either a different type, or too small, fast forward to one that fits
+    while (e < expect.length && (expect[e].tag != h.tag || expect[e].len < h.len)) {
+      exact = false;
+      e++;
+    }
+    if (e >= expect.length) {
+      return 1;  // We're past the end, while still having cells that don't fit
+    }
+    if (h.len == curE.len) {
+      e++;
+      prevH = nonLinearTag;
+    } else {
+      exact = false;
+      prevH = h;
+    }
+    curE = expect[e];
+  }
+  // return 0 for exact match
+  // return -1 for incomplete match - groups thus far do not exceed expected
+  return (exact && e == expect.length) ? 0 : -1;
+}

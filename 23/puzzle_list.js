@@ -24,27 +24,28 @@ var orient = {
 var meta = {
     science: 'science',
     bus: 'bus',
+    radio: 'radio',
 };
 var challenge = {
     cosmos: 'exp-cosmos',
-    trivia: 'exp-trivia',
-    tunes: 'exp-tunes',
+    magic: 'exp-magic',
+    cartrip: 'exp-cartrip',
 }
 
 var puzzles = [
-    { title: 'Aaaaaaaa!', file: 'Aaaaaaaa', thumb: 'Aa', author: 'Jeffrey Lin', type: types.math, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.tunes] },
-    { title: 'Animal Magnetism', thumb: 'Am', author: 'Dana Young', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.trivia] },
+    { title: 'Aaaaaaaa!', file: 'Aaaaaaaa', thumb: 'Aa', author: 'Jeffrey Lin', type: types.math, group: group.puzzle, orientation: orient.portrait, feeder: [meta.radio,1] },
+    { title: 'Animal Magnetism', thumb: 'Am', author: 'Dana Young', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.radio,2] },
     { title: 'At The Waterworks', thumb: 'Atw', author: 'Philippe Nicolle', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.bus,1] },
     { title: 'Buried Logic', thumb: 'Bl', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,1]  },
     { title: 'Chemical Compounds', thumb: 'Cc', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,3] },
     { title: 'Complex Molecules', thumb: 'Cm', author: 'Philippe Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.bus,2] },
     { title: 'Computers', thumb: 'Comp', author: 'Rorke Haining', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,1] },
-    { title: 'Crop Dusters', thumb: 'Cd', author: 'Dana Young', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.tunes] },
+    { title: 'Crop Dusters', thumb: 'CdL', author: 'Dana Young', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.radio,1] },
     { title: 'Elementary Charge', thumb: 'Ec', author: 'Dana Young', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,4] },
     { title: 'Engineering', thumb: 'Eng', author: 'Dana Young', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,5] },
     { title: 'Entomology Lab', thumb: 'El', author: 'Peter Golde', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.bus,4] },
-    { title: 'Evolution', thumb: 'Evo', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.cosmos] },
-    { title: 'Exoplanets', thumb: 'Exo', author: 'Jess McGatha', type: types.code, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.cosmos] },
+    { title: 'Evolution', thumb: 'Evo', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.radio,3] },
+    { title: 'Exoplanets', thumb: 'Exo', author: 'Jess McGatha', type: types.code, group: group.puzzle, orientation: orient.portrait, feeder: [meta.radio,3] },
     { title: 'Fish Story', thumb: 'Fs', author: 'Dana Young', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [meta.bus,1] },
     { title: 'Genetics Of Humor', thumb: 'Goh', author: 'Colin Robertson', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,2] },
     { title: 'Lifecycle', thumb: 'Life', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [meta.bus,3] },
@@ -55,12 +56,13 @@ var puzzles = [
     { title: 'Tipping Point', thumb: 'Tp', author: 'Ken Pacquer', type: types.math, group: group.puzzle, orientation: orient.landscape, feeder: [meta.science,3] },
     { title: 'Weird Maths', thumb: 'Wm', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,4] },
     { title: 'Weird, You Nits', file: 'WeirdYouNits', thumb: 'Wyn', author: 'Martyn Lovell', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [meta.science,5] },
-    { title: 'Zoology', thumb: 'Zoo', author: 'David Garber', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [challenge.trivia] },
+    { title: 'Zoology', thumb: 'Zoo', author: 'David Garber', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [meta.radio,2] },
     { title: 'The Magic School Bus', thumb: 'Tmsb', author: 'Philippe Nicolle', type: types.meta, group: group.meta, icon: meta.bus, orientation: orient.portrait },
     { title: 'Weird Science', thumb: 'Ws', author: 'Martyn Lovell', type: types.meta, group: group.meta, icon: meta.science, orientation: orient.portrait },
-    { title: 'Cosmos', file: 'Experiment_Cosmos', thumb: 'Cos', author: 'Rorke Haining', type: types.challenge, group: group.challenge, icon: challenge.cosmos, orientation: orient.portrait },
-    { title: 'Trivia', file: 'Experiment_Trivia', thumb: 'Tri', author: 'Cele Wolman', type: types.challenge, group: group.challenge, icon: challenge.trivia, orientation: orient.portrait },
-    { title: 'Name That Tune', file: 'Experiment_Tunes', thumb: 'Ntt', author: 'Arwen Pond', type: types.challenge, group: group.challenge, icon: challenge.tunes, orientation: orient.portrait },
+    { title: 'Radio Waves', thumb: 'Rw', author: 'David Garber', type: types.meta, group: group.meta, icon: meta.radio, orientation: orient.portrait },
+    { title: 'Cosmos', file: 'Cosmos', thumb: 'Cos', author: 'Rorke Haining', type: types.challenge, group: group.challenge, icon: challenge.cosmos, orientation: orient.portrait },
+    { title: 'Car Trip', file: 'CarTrip', thumb: 'Ct', author: 'David Garber', type: types.challenge, group: group.challenge, icon: challenge.ascent, orientation: orient.portrait },
+    { title: 'Science or Magic', file: 'ScienceMagic', thumb: 'Sm', author: 'Ken Showman', type: types.challenge, group: group.challenge, icon: challenge.magic, orientation: orient.portrait },
 ];
 
 function puzzleFile(puz) {
@@ -72,4 +74,23 @@ function puzzleFile(puz) {
 
 function puzzleHref(puz) {
     return puzzleFile(puz) + '.html';
+}
+
+var first_puzzle_solve_id_ = 500;
+var first_meta_solve_id_ = first_puzzle_solve_id_ - 2;
+var first_challenge_solve_id_ = first_puzzle_solve_id_ - 5;
+function puzzleSolveId(puz) {
+    // Each group is in a separate id range
+    var id = puz.group == group.puzzle ? first_puzzle_solve_id_ 
+        : puz.group == group.meta ? first_meta_solve_id_ : first_challenge_solve_id_;
+    for (var i = 0; i < puzzles.length; i++) {
+        if (puzzles[i].group != puz.group) {
+            continue;
+        }
+        if (puz == puzzles[i]) {
+            return id;
+        }
+        id++;
+    }
+    return -1;
 }

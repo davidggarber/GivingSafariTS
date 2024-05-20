@@ -24,6 +24,10 @@
   margin-right: 0.05in;
 }
 
+.letter-cell.letter-underline {
+  width: 1.05em;
+}
+
 .letter-box {
   border: solid 1px black;
   margin-left: -1px;
@@ -47,8 +51,16 @@
 .literal-gridgap {
   width: 4ex;
   height: 4ex;
-  border: none;
+  border: solid 1px transparent;
   margin-left: -1px;
+}
+
+.literal-block {
+  width: 4ex;
+  height: 4ex;
+  border: solid 1px black;
+  margin-left: -1px;
+  background-color: #7f7f7f;  
 }
 
 .letter-cell.read-only-overlay {
@@ -78,6 +90,21 @@
   border: solid 1px black;
 }
 
+#fontExtents {
+  position: absolute;
+  top: 0px;
+  color: transparent;
+}
+
+.print #fontExtents {
+  display: none;
+}
+
+.horzScaleBox {
+  position: relative; 
+  display: inline-block; 
+}
+
 @media screen {
   .extract-highlight {
       background-color: #cccccc;
@@ -86,6 +113,10 @@
 @media print {
   .extract-highlight {
       background-color: #999999;
+  }
+
+  #fontExtents {
+    display: none;
   }
 }
 
@@ -128,11 +159,25 @@ input[type=number]::-webkit-outer-spin-button {
   position: absolute;
   width: 100%;
   text-align: center;
-  top: 0.5em;
   font-family: 'Verdana';
   font-size: 10pt;
   color: black;
-  
+}
+
+.letter-underline .letter-literal {
+  top: 0.5em;
+}
+
+.letter-grid .letter-literal {
+  top: 0.4em;
+}
+
+.literal-gridgap .letter-literal {
+  top: 0.4em;
+}
+
+.literal-block .letter-literal {
+  top: 0.4em;
 }
 
 .extract-image {
@@ -219,7 +264,7 @@ input[type=number]::-webkit-outer-spin-button {
   width: 1in;
 }
 
-.disabled-notes .note-input {
+.disable-notes .note-input {
   display: none;
 }
 
@@ -245,7 +290,7 @@ input[type=number]::-webkit-outer-spin-button {
   width: 1em;
 }
 .check::before {
-  background-image: url('Check.png');
+  background-image: url('../Icons/Check.png');
   background-size: 30px 27px;
   display: inline-block;
   width: 30px; 

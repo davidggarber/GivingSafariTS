@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Dgg',
+        'title': 'Zoology',
+        'author': 'David Garber',
+        'print_qr': true,
+        'copyright': '2020',
+        'type': 'rebus',
+        'textInput': true,
+        'abilities': {
+          'checkMarks': true,
+          'subway': true,
+          'notes': true
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+        "validation":{"extracted":{"PUNHIVAVFGCVT":"1|4EJ_Pubcva.ugzy^n zrgn cvrpr sbe Enqvb Jnirf|5EJ_Pubcva.ugzy"}}
+      };
+      var imgCols = [
+        {
+          prefix: 'a',
+          top: 'no-offset',
+          shapes: [
+            'wide', 'tall', 'wide', 'wide', 'wide', 'tall', 'tall'
+          ]
+        },
+        {
+          prefix: 'b',
+          top: 'half-offset',
+          shapes: [
+            'wide', 'wide', 'wide', 'wide', 'wide', 'tall'
+          ]
+        },
+        {
+          prefix: 'c',
+          top: 'no-offset',
+          shapes: [
+            'tall', 'tall', 'wide', 'tall', 'wide', 'wide', 'tall'
+          ]
+        },
+        {
+          prefix: 'd',
+          top: 'half-offset',
+          shapes: [
+            'wide', 'wide', 'wide', 'tall', 'tall', 'wide'
+          ]
+        }
+      ];
+
+      var phrases = [
+        {
+          row_id: 'row1',
+          next_row_id: 'row2',
+          letter_pattern: "4 6",
+          extract_indeces: "1",
+          subways: [
+            { color: 'red', tops: "2", bottoms: "7", center: "60%" },
+            { color: 'blue', tops: "6", bottoms: "4", center: "40%" },
+            { color: 'green', tops: "8", bottoms: "8", center: '' },
+            { color: 'orange', tops: "10", bottoms: "10", center: '' }
+          ]
+        },
+        {
+          row_id: 'row2',
+          next_row_id: 'row3',
+          letter_pattern: "4 5",
+          extract_indeces: "5",
+          subways: [
+            { color: 'orange', tops: "1", bottoms: "4", center: "60%" },
+            { color: 'indigo', tops: "2", bottoms: "2", center: "50%" },
+            { color: 'blue', tops: "4", bottoms: "8", center: "40%" },
+          ]
+        },
+        {
+          row_id: 'row3',
+          next_row_id: 'row4',
+          letter_pattern: "4 3",
+          extract_indeces: "6",
+          subways: [
+            { color: 'pink', tops: "7", bottoms: "2", center: "40%" },
+            { color: 'purple', tops: "1", bottoms: "6", center: "60%" },
+          ]
+        },
+        {
+          row_id: 'row4',
+          next_row_id: 'row5',
+          letter_pattern: "4 4",
+          extract_indeces: "6",
+          subways: [
+            { color: 'orange', tops: "1", bottoms: "9", center: "35%" },
+            { color: 'indigo', tops: "2", bottoms: "2 8", center: "65%" },
+            { color: 'green', tops: "4", bottoms: "7", center: "50%" },
+          ]
+        },
+        {
+          row_id: 'row5',
+          next_row_id: 'row6',
+          letter_pattern: "4 4",
+          extract_indeces: "3",
+          subways: [
+            { color: 'blue', tops: "1", bottoms: "12", center: "35%" },
+            { color: 'red', tops: "6", bottoms: "1", center: "50%" },
+            { color: 'green', tops: "7", bottoms: "10", center: "50%" },
+            { color: 'orange', tops: "9", bottoms: "5", center: "65%" },
+          ]
+        },
+        {
+          row_id: 'row6',
+          next_row_id: 'row7',
+          letter_pattern: "5 6",
+          extract_indeces: "7",
+          subways: [
+            { color: 'indigo', tops: "9", bottoms: "11", center: "40%" },
+            { color: 'green', tops: "10", bottoms: "2 6", center: "60%" },
+          ]
+        },
+        {
+          row_id: 'row7',
+          next_row_id: 'row8',
+          letter_pattern: "3 7",
+          extract_indeces: "9",
+          subways: [
+            { color: 'blue', tops: "1 7 8", bottoms: "12", center: "20%" },
+            { color: 'red', tops: "3", bottoms: "13", center: "40%" },
+            { color: 'pink', tops: "10", bottoms: "4", center: "60%" },
+            { color: 'indigo', tops: "11", bottoms: "5", center: "80%" },
+          ]
+        },
+        {
+          row_id: 'row8',
+          next_row_id: 'row9',
+          letter_pattern: "6 6",
+          extract_indeces: "8",
+          subways: [
+            { color: 'green', tops: "11", bottoms: "2 8", center: "35%" },
+            { color: 'blue', tops: "12", bottoms: "3", center: "50%" },
+            { color: 'red', tops: "13", bottoms: "4", center: "65%" },
+          ]
+        },
+        {
+          row_id: 'row9',
+          next_row_id: 'row10',
+          letter_pattern: "4 5",
+          extract_indeces: "5",
+          subways: [
+            { color: 'orange', tops: "1", bottoms: "5", center: "40%" },
+            { color: 'green', tops: "2 8", bottoms: "2 6", center: "60%" },
+          ]
+        },
+        {
+          row_id: 'row10',
+          next_row_id: 'row11',
+          letter_pattern: "3 3",
+          extract_indeces: "3",
+          subways: [
+            { color: 'green', tops: "2 6", bottoms: "3", center: "40%" },
+            { color: 'red', tops: "1", bottoms: "6", center: "60%" },
+          ]
+        },
+        {
+          row_id: 'row11',
+          next_row_id: 'row12',
+          letter_pattern: "4 4",
+          extract_indeces: "4",
+          subways: [
+            { color: 'red', tops: "6", bottoms: "4", center: "65%" },
+            { color: 'blue', tops: "8", bottoms: "2", center: "50%" },
+            { color: 'orange', tops: "9", bottoms: "1", center: "35%" },
+          ]
+        },
+        {
+          row_id: 'row12',
+          next_row_id: 'row13',
+          letter_pattern: "2 4",
+          extract_indeces: "4",
+          subways: [
+            { color: 'blue', tops: "2", bottoms: "9", center: "40%" },
+            { color: 'green', tops: "6", bottoms: "5", center: "60%" },
+            { color: 'indigo', tops: "1", bottoms: "1", center: "" },
+          ]
+        },
+        {
+          row_id: 'row13',
+          next_row_id: 'row13',
+          letter_pattern: "6 6",
+          extract_indeces: "1",
+          subways: [
+            { color: 'pink', tops: "3 6 12", bottoms: "", center: "10" },
+          ]
+        },
+      ];
+
+      boiler['builderLookup'] =
+      {
+        imgCols: imgCols,
+        phrases: phrases,
+      };
+
+    </script>
+    <style>
+      #table {
+        margin-top: 0.25in;
+      }
+      .clue-column {
+        display: inline-block;
+      }
+      .half-offset {
+        padding-top: 0.6in;
+        padding-bottom: 0.6in;
+      }
+      .gap {
+        height: 0.5in;
+      }
+      .clue {
+        position: relative;
+        display: table;
+        width: 1in;
+        height: 1.2in;
+        text-align: center;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .clue .check {
+        top: 0.25in;
+        left: 0px;
+      }
+      .clue .note-input.note-below {
+        bottom: -12px;
+        width: 60%;
+        left: 20%;
+        height: 1.9ex;
+      }
+      .clue-row {
+        display: table-row;
+      }
+      .clue-cell {
+        display: table-cell;
+        vertical-align: middle;        
+      }
+      .tall {
+        height: 0.9in;
+      }
+      .wide {
+        width: 0.9in;
+      }
+      #phrases {
+        position: absolute;
+        top: 0.75in;
+        right: -24px;
+        width: 3.4in;
+      }
+      .row-space {
+        position: relative;
+        height:0.3in;
+      }
+      #Zoology .letter-cell {
+        font-size: 14pt;
+      }
+      #Zoology .letter-grid {
+        width: 25px;
+        height: 25px;
+      }
+      #Zoology .letter-input {
+        position: relative;
+        top: -1.5px;
+      }
+      #Zoology .literal-gridgap {
+        width: 2ex;
+        height: 2.4ex;
+      }
+      #Zoology #phrases .letter-cell-block {
+        white-space: nowrap;
+      }
+      #extract-and-submit {
+        position: absolute;
+        bottom: 0px;
+        left: 3in;
+      }
+    </style>
+  </head>
+  <body id="Zoology">
+    <div id="pageBody">
+      <div id="table">
+        <for each="col" in="imgCols">
+          <div class="clue-column {col.top}">
+            <for each="row" in="col.shapes">
+              <div class="clue">
+                <div class="clue-row">
+                  <div class="clue-cell">
+                    <div class="cross-off notes-below">
+                      <img class="{row}" _src="Images/Zoo/{col.prefix}{row#}.png">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </for>
+          </div>
+        </for>
+      </div>
+
+      <div id="phrases" class="letter-grid-2d" data-input-style="grid" data-literal-style="gridgap" data-extract-style="highlight">
+        <for each="row" in="phrases">
+          <div _id="{row.row_id}" class="letter-cell-block create-from-pattern" data-letter-pattern="{row.letter_pattern}" data-extract-indeces="{row.extract_indeces}"></div>
+          <div class="row-space">
+            <for each="sub" in="row.subways">
+              <div class="subway {sub.color}" data-top-id="{row.row_id}" data-bottom-id="{row.next_row_id}" data-top-end="{sub.tops}" data-bottom-end="{sub.bottoms}" data-center-line="{sub.center}"></div>
+            </for>
+          </div>
+        </for>
+      </div>
+
+      <div id="extract-and-submit">
+        <span id="extracted" data-show-ready="submit-extracted"></span>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

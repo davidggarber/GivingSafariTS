@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Radio Waves',
+        'author': 'David Garber',
+        'copyright': '2023',
+        'feeder': 'radio',
+        'textInput': true,
+        'abilities': {
+        },
+        "validation":{"table":{"IVENYZHFVPBYBTL":"1"}},
+        'preSetup': initTable,
+        'postSetup': prepMaterials
+      };
+
+      function prepMaterials() {
+        // Refresh materials every time the user switches back to this page
+        document.addEventListener('visibilitychange', function (event) {
+          if (!document.hidden) {
+            initMaterials();
+          }
+        });
+        var body = document.getElementById('RadioWaves');
+        body.onfocus = function(e){initMaterials()};
+
+        initMaterials();
+      }
+
+      function initMaterials() {
+        if (!isIFrame()) {
+          for (var m = 1; m <= 3; m++) {
+            var materials = loadMetaMaterials('Radio', 0, m);
+            if (materials != null) {
+              var clues = materials['clues'];
+              var indeces = Object.keys(clues);
+              for (var i = 0; i < indeces.length; i++) {
+                var index = indeces[i];
+                var science = clues[index];
+                if (!data[index]['audio-src']) {
+                  data[index]['science'] =  science;
+                  data[index]['audio-src'] = 'Mp3/Radio/'
+                    + science.toLowerCase().split(' ')[0] + '.mp3';
+                  updateRow(index);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      var data = [
+        { 'extract-index': '3.3', 'science': '?', 'audio-src': null },
+        { 'extract-index': '2.1', 'science': '?', 'audio-src': null },
+        { 'extract-index': '1', 'science': '?', 'audio-src': null },
+        { 'extract-index': '3', 'science': '?', 'audio-src': null },
+        { 'extract-index': '2', 'science': '?', 'audio-src': null },
+        { 'extract-index': '2.1', 'science': '?', 'audio-src': null },
+        { 'extract-index': '1', 'science': '?', 'audio-src': null },
+        { 'extract-index': '1', 'science': '?', 'audio-src': null },
+        { 'extract-index': '1', 'science': '?', 'audio-src': null },
+        { 'extract-index': '2.1', 'science': '?', 'audio-src': null },
+        { 'extract-index': '2.1', 'science': '?', 'audio-src': null },
+        { 'extract-index': '1', 'science': '?', 'audio-src': null },
+        { 'extract-index': '3', 'science': '?', 'audio-src': null },
+        { 'extract-index': '2.1', 'science': '?', 'audio-src': null },
+        { 'extract-index': '2.1', 'science': '?', 'audio-src': null },
+      ];
+
+      function initTable() {
+        var table = document.getElementById('table');
+        for (var i = 0; i < data.length; i++) {
+          var tr = document.createElement('tr');
+          tr.id = 'row-' + i;
+          var tdS = document.createElement('td');
+          var tdA = document.createElement('td');
+          var tdW = document.createElement('td');
+          var tdE = document.createElement('td');
+          tdS.classList.add('science');
+          tdA.classList.add('audio');
+          tdW.classList.add('word-cell');
+          tdE.classList.add('extracted');
+          if (data[i]['audio-src']) {
+            var audio = document.createElement('audio');
+            audio.onplay = function(){onPlay(audio)};
+            audio.setAttribute('src', data[i]['audio-src']);
+            audio.setAttribute('controls', true);
+            tdS.innerText = data[i]['science'];
+            tdA.appendChild(audio);
+          }
+          else {
+            var img = document.createElement('img');
+            img.src = 'Images/Radio/static-' + (i % 5) + '.png';
+            tdS.appendChild(img);
+            img = document.createElement('img');
+            img.src = 'Images/Radio/no-audio.png';
+            tdA.appendChild(img);
+          }
+          tdW.setAttribute('data-extract-index', data[i]['extract-index']);
+          tdW.setAttribute('data-extracted-id', i);
+          tdE.id = 'extracted-' + i;
+          tr.appendChild(tdS);
+          tr.appendChild(tdA);
+          tr.appendChild(tdW);
+          tr.appendChild(tdE);
+          table.appendChild(tr);
+        }
+      }
+
+      function updateRow(index) {
+        if (data[index]['audio-src']) {
+          var tr = document.getElementById('row-' + index);
+          var tdS = tr.getElementsByClassName('science')[0];
+          tdS.innerText = data[index]['science'];
+
+          var tdA = tr.getElementsByClassName('audio')[0];
+          var audio = document.createElement('audio');
+          audio.onplay = function(){onPlay(audio)};
+          audio.setAttribute('src', data[index]['audio-src']);
+          audio.setAttribute('controls', true);
+          tdA.innerHTML = '';
+          tdA.appendChild(audio);
+        }
+      }
+
+
+      var playing = null;
+      function onPlay(aud) {
+        if (playing != null && playing != aud) {
+          playing.pause();
+          toggleClass(playing.parentNode.parentNode, 'playing', false);
+        }
+        {
+          playing = aud;
+          toggleClass(aud.parentNode.parentNode, 'playing', true);
+        }
+      }
+      function toggleAudio(inp) {
+        // Whenever the user types ENTER, play (or pause) the audio on that row
+        var td = findParentOfClass(inp, 'letter-cell-block');
+        if (td != null) {
+          var tr = td.parentNode;
+          var aud = tr.getElementsByTagName('audio')[0];
+          if (aud == undefined) {
+            return;
+          }
+          if (aud == playing) {
+            aud.pause();
+            onPlay(null);
+          }
+          else {
+            onPlay(aud);
+            aud.play();
+          }
+        }
+      }
+      customOnEnter = toggleAudio;
+    </script>
+    <style>
+      #RoadTripRadio #icons img {
+        width: 1in;
+        height: 1in;
+      }
+      table {
+        width: 100%;
+      }
+      
+      td {
+        padding: 2px;
+      }
+      .playing td {
+        background-color: yellow;
+      }
+      
+      #RoadTripRadio .word-input {
+        width: 2.5in;
+      }
+
+      audio {
+        height: 30px;
+        width: 200px;
+      }
+      td.science {
+        width: 1.75in;
+      }
+      td.science img {
+        height: 30px;
+      }
+      td.audio {
+        width: 2.5in;
+      }
+      td.audio img {
+        width: 200px;
+      }
+      td.word-cell {
+        width: 2.5in;
+      }
+      td.extracted {
+        width: 0.75in;
+        text-align: center;
+        text-transform: capitalize;
+      }
+      audio::-webkit-media-controls-timeline-container,
+      audio::-webkit-media-controls-current-time-display,
+      audio::-webkit-media-controls-time-remaining-display,
+      audio::-webkit-media-controls-mute-button {
+        display: none;
+      }
+      #custom-enter {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        font-size: 7pt;
+        cursor: help;
+      }
+      #custom-enter button {
+        font-size: 7pt;
+      }
+      #submit-extracted {
+        position: absolute;
+        top: 8in;
+        right: 0px;
+      }
+    </style>
+  </head>
+  <body id="RadioWaves">
+    <div id="pageBody">
+      <div id="custom-enter"><button>⏎ Enter</button> toggles music, <button>⟳ Refresh</button> to start over</div>
+      <p class="friendly" style="margin-top: 0.25in;">
+        This is a meta puzzle.
+      </p>
+      <p class="friendly">
+        You decide to scan through the local radio stations. Oddly, it appears every station has a scientific theme.
+        Unfortunately, your old clunker of a radio is having trouble picking up the stations clearly. 
+        You'll need to solve the feeder puzzles to improve your reception.
+      </p>
+      <p class="friendly">
+        Once the stations are clear enough &mdash; you'll know, because the scientific station names will resolve &mdash;
+        identify the song title associated with each science. The titles will self-extract a letter.
+      </p>
+      <table id="table" data-literal-style="box" data-extract-style="none" class="text-input-group" data-show-ready="submit-extracted">
+      </table>
+
+      <button class="validater" id="submit-extracted" data-extracted-id="table" data-min-length="15">Submit</button>
+    </div>
+  </body>
+  </html>
+</div>  
+  
+  

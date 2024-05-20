@@ -1,10 +1,11 @@
 import { isTag, hasClass, getOptionalStyle,
     findParentOfClass, findFirstChildOfClass, findNextOfClass, 
     findInNextContainer, findEndInContainer,
-    indexInContainer, childAtIndex, moveFocus } from "./_classUtil";
+    indexInContainer, childAtIndex, moveFocus, toggleClass, SortElements } from "./_classUtil";
 import { toggleHighlight } from "./_notes";
 import { isDebug, theBoiler } from "./_boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./_storage";
+import { validateInputReady } from "./_confirmation";
 
 /**
  * Any event stemming from key in this list should be ignored
@@ -145,7 +146,7 @@ export function onLetterKeyDown(event: KeyboardEvent) {
                     }
                 }
             }
-            afterInputUpdate(input);
+            afterInputUpdate(input, event.key);
             event.preventDefault();
             return;
         }
@@ -156,7 +157,7 @@ export function onLetterKeyDown(event: KeyboardEvent) {
             }
             if (matchInputRules(input, event)) {
                 input.value = event.key;
-                afterInputUpdate(input);
+                afterInputUpdate(input, event.key);
             }
             event.preventDefault();
             return;
@@ -271,14 +272,15 @@ export function onLetterKey(event:KeyboardEvent) {
             }
         }
     }
-    afterInputUpdate(input);
+    afterInputUpdate(input, event.key);
 }
 
 /**
  * Re-scan for extractions
  * @param input The input which just changed
+ * @param key The key from the event that led here
  */
-export function afterInputUpdate(input:HTMLInputElement) {
+export function afterInputUpdate(input:HTMLInputElement, key:string) {
     var text = input.value;
     if (hasClass(input.parentNode, 'lower-case')) {
         text = text.toLocaleLowerCase();
@@ -292,13 +294,22 @@ export function afterInputUpdate(input:HTMLInputElement) {
         : findNextInput(input, plusX, 0, 'letter-input', 'letter-non-input');
 
     var multiLetter = hasClass(input.parentNode, 'multiple-letter');
-    if (!multiLetter && text.length > 1) {
+    var word = multiLetter || hasClass(input.parentNode, 'word-cell') || hasClass(input, 'word-input');
+    if (!word && text.length > 1) {
         overflow = text.substring(1);
         text = text.substring(0, 1);
     }
     input.value = text;
     
     ExtractFromInput(input);
+    
+    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
+    if (showReady) {
+        const btn = document.getElementById(showReady) as HTMLButtonElement;
+        if (btn) {
+            validateInputReady(btn, key);
+        }    
+    }
 
     if (!multiLetter) {
         if (nextInput != null) {
@@ -307,7 +318,7 @@ export function afterInputUpdate(input:HTMLInputElement) {
                 nextInput.value = overflow;
                 moveFocus(nextInput);
                 // Then do the same post-processing as this cell
-                afterInputUpdate(nextInput);
+                afterInputUpdate(nextInput, key);
             }
             else if (text.length > 0) {
                 // Just move the focus
@@ -315,15 +326,20 @@ export function afterInputUpdate(input:HTMLInputElement) {
             }
         }
     }
-    else if (!hasClass(input.parentNode, 'fixed-spacing')) {
+    else if (!hasClass(input.parentNode, 'getElementsByClassName')) {
         var spacing = (text.length - 1) * 0.05;
         input.style.letterSpacing = -spacing + 'em';
         input.style.paddingRight = (2 * spacing) + 'em';
         //var rotate = text.length <= 2 ? 0 : (text.length * 5);
         //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
-    saveLetterLocally(input);
-    inputChangeCallback(input);
+    if (word) {
+        saveWordLocally(input);
+    }
+    else {
+        saveLetterLocally(input);
+    }
+    inputChangeCallback(input, key);
 }
 
 /**
@@ -348,31 +364,35 @@ function ExtractFromInput(input:HTMLInputElement) {
  * @param extractedId The id of an element that collects extractions
  */
 function UpdateExtraction(extractedId:string|null) {
-    const extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
-
+    const extracted = document.getElementById(extractedId || 'extracted');
+    
     if (extracted == null) {
         return;
     }
     const join = getOptionalStyle(extracted, 'data-extract-join') || '';
     
-    if (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null) {
+    if (extracted.getAttribute('data-extraction-source') != 'data'
+        && (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null)) {
         UpdateNumbered(extractedId);
-        return;
+        return;    
     }
     
     const delayLiterals = DelayLiterals(extractedId);
     const inputs = document.getElementsByClassName('extract-input');
+    const sorted_inputs = SortElements(inputs);
     let extraction = '';
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    let ready = true;
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
         let letter = '';
-        if (hasClass(inputs[i], 'extract-literal')) {
+        if (hasClass(input, 'extract-literal')) {
             // Several ways to extract literals:
-            const de = getOptionalStyle(inputs[i], 'data-extract-delay');  // placeholder value to extract, until player has finished other work
-            const ev = getOptionalStyle(inputs[i], 'data-extract-value');  // always extract this value
-            const ec = getOptionalStyle(inputs[i], 'data-extract-copy');  // this extraction is a copy of another
+            const de = getOptionalStyle(input, 'data-extract-delay');  // placeholder value to extract, until player has finished other work
+            const ev = getOptionalStyle(input, 'data-extract-value');  // always extract this value
+            const ec = getOptionalStyle(input, 'data-extract-copy');  // this extraction is a copy of another
             if (delayLiterals && de) {
                 letter = de;
             }
@@ -384,7 +404,7 @@ function UpdateExtraction(extractedId:string|null) {
             }
         }
         else {
-            const inp = inputs[i] as HTMLInputElement;
+            const inp = input as HTMLInputElement;
             letter = inp.value || '';
             letter = letter.trim();    
         }
@@ -393,13 +413,54 @@ function UpdateExtraction(extractedId:string|null) {
         }
         if (letter.length == 0) {
             extraction += '_';
+            ready = false;
         }
         else {
             extraction += letter;
         }
     }
 
-    ApplyExtraction(extraction, extracted);
+    if (extracted.getAttribute('data-letter-pattern') != null) {
+        const inps = extracted.getElementsByClassName('extractor-input');
+        if (inps.length > extraction.length) {
+            extraction += Array(1 + inps.length - extraction.length).join('_');
+        }
+        let ready = true;
+        for (var i = 0; i < inps.length; i++) {
+            const inp = inps[i] as HTMLInputElement;
+            if (extraction[i] != '_') {
+                inp.value = extraction.substring(i, i+1);
+            }
+            else {
+                inp.value = '';
+                ready = false;
+            }
+        }
+        updateExtractionData(extracted, extraction, ready);
+    }
+    else {
+        ApplyExtraction(extraction, extracted, ready);
+    }
+}
+
+/**
+ * Cause a value to be extracted directly from data- attributes, rather than from inputs.
+ * @param elmt Any element - probably not an input
+ * @param value Any text, or null to revert
+ * @param extractedId The id of an element that collects extractions
+ */
+function ExtractViaData(elmt:HTMLElement, value:string|null, extractedId:string|null) {
+    if (value == null) {
+        elmt.removeAttribute('data-extract-value');
+        toggleClass(elmt, 'extract-input', false);
+        toggleClass(elmt, 'extract-literal', false);
+    }
+    else {
+        elmt.setAttribute('data-extract-value', value);
+        toggleClass(elmt, 'extract-literal', true);
+        toggleClass(elmt, 'extract-input', true);
+    }
+    UpdateExtraction(extractedId);
 }
 
 /**
@@ -412,17 +473,19 @@ function DelayLiterals(extractedId:string|null) :boolean {
     let delayedLiterals = false;
     let isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    const sorted_inputs = SortElements(inputs);
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        if (hasClass(inputs[i], 'extract-literal')) {
-            if (getOptionalStyle(inputs[i], 'data-extract-delay')) {
+        if (hasClass(input, 'extract-literal')) {
+            if (getOptionalStyle(input, 'data-extract-delay')) {
                 delayedLiterals = true;
             }
         }
         else {
-            const inp = inputs[i] as HTMLInputElement;
+            const inp = input as HTMLInputElement;
             let letter = inp.value || '';
             letter = letter.trim();
             if (letter.length == 0) {
@@ -451,7 +514,8 @@ function ExtractionIsInteresting(text:string): boolean {
  * @param dest The container for the extraction. Can be a div or an input
  */
 function ApplyExtraction(   text:string, 
-                            dest:HTMLElement) {
+                            dest:HTMLElement,
+                            ready:boolean) {
     if (hasClass(dest, 'lower-case')) {
         text = text.toLocaleLowerCase();
     }
@@ -478,6 +542,8 @@ function ApplyExtraction(   text:string,
     else {
         dest.innerText = text;
     }
+
+    updateExtractionData(dest, text, ready);
 }
 
 /**
@@ -485,17 +551,31 @@ function ApplyExtraction(   text:string,
  * @param extractedId The id of an extraction area
  */
 function UpdateNumbered(extractedId:string|null) {
+    extractedId = extractedId || 'extracted';
+    const div = document.getElementById(extractedId);
+    var outputs = div?.getElementsByTagName('input');
     var inputs = document.getElementsByClassName('extract-input');
-    for (var i = 0; i < inputs.length; i++) {
-        const inp = inputs[i] as HTMLInputElement
-        const index = inputs[i].getAttribute('data-number');
-        const extractCell = document.getElementById('extractor-' + index) as HTMLInputElement;
+    const sorted_inputs = SortElements(inputs);
+    let concat = '';
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        const inp = input as HTMLInputElement
+        const index = input.getAttribute('data-number');
+        let output = document.getElementById('extractor-' + index) as HTMLInputElement;
+        if (!output && outputs) {
+            output = outputs[i];
+        }
         let letter = inp.value || '';
         letter = letter.trim();
-        if (letter.length > 0 || extractCell.value.length > 0) {
-            extractCell.value = letter;
+        if (letter.length > 0 || output.value.length > 0) {
+            output.value = letter;
         }
+        concat += letter;
     }
+    if (div) {
+        updateExtractionData(extractedId, concat, concat.length == inputs.length);
+    }
+
 }
 
 /**
@@ -518,15 +598,49 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     if (index === null) {
         return;
     }
+    
     var sources = document.getElementsByClassName('extract-input');
+    let extractId:any;
+    const extraction:string[] = [];
     for (var i = 0; i < sources.length; i++) {
         var src = sources[i] as HTMLInputElement;
         var dataNumber = getOptionalStyle(src, 'data-number');
-        if (dataNumber != null && dataNumber == index) {
-            src.value = input.value;
-            return;
+        if (dataNumber != null) {
+            if (dataNumber == index) {
+                src.value = input.value;
+                extractId = getOptionalStyle(src, 'data-extracted-id', undefined, 'extracted-');
+            }
+            extraction[parseInt(dataNumber)] = src.value;
         }
     }
+
+    // Update data-extraction when the user type directly into an extraction element
+    const extractionText = extraction.join('');
+    updateExtractionData(extractId, extractionText, extractionText.length == sources.length);
+}
+
+function updateExtractionData(extracted:string|HTMLElement, value:string, ready:boolean) {
+    const container = !extracted
+        ? document.getElementById('extracted')
+        : (typeof extracted === "string")
+            ? document.getElementById(extracted as string)
+            : extracted;
+    if (container) {
+        container.setAttribute('data-extraction', value);
+        let btnId = container.getAttribute('data-show-ready');
+        if (btnId) {
+            const btn = document.getElementById(btnId);
+            toggleClass(btn, 'ready', ready);
+        }
+        else {
+            btnId = getOptionalStyle(container, 'data-show-ready');
+            if (btnId) {
+                const btn = document.getElementById(btnId);
+                validateInputReady(btn as HTMLButtonElement, value);
+            }
+        }
+    }
+
 }
 
 /**
@@ -539,6 +653,8 @@ export function onWordKey(event:KeyboardEvent) {
     }
 
     const input = event.currentTarget as HTMLInputElement;
+    inputChangeCallback(input, event.key);
+
     if (getOptionalStyle(input, 'data-extract-index') != null) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         updateWordExtraction(extractId);
@@ -563,33 +679,76 @@ export function onWordKey(event:KeyboardEvent) {
  * @param extractedId The ID of an extraction area
  */
 export function updateWordExtraction(extractedId:string|null) {
-    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
+    var extracted = document.getElementById(extractedId || 'extracted');
 
     if (extracted == null) {
         return;
     }
     
     var inputs = document.getElementsByClassName('word-input');
+    const sorted_inputs = SortElements(inputs);
     var extraction = '';
+    var hasWordExtraction = false;
     var partial = false;
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        var index = getOptionalStyle(inputs[i], 'data-extract-index', '') as string;
+        var index = getOptionalStyle(input, 'data-extract-index', '') as string;
+        if (index === null) {
+            continue;
+        }
+        hasWordExtraction = true;
         const indeces = index.split(' ');
         for (var j = 0; j < indeces.length; j++) {
-            var extractIndex = parseInt(indeces[j]);
-            if (extractIndex > 0) {  // indeces start at 1
-                const inp = inputs[i] as HTMLInputElement;  
-                var letter = inp.value.length >= extractIndex ? inp.value[extractIndex - 1] : '_';
+            const inp = input as HTMLInputElement;  
+            const letter = extractWordIndex(inp.value, indeces[j]);
+            if (letter) {
                 extraction += letter;
                 partial = partial || (letter != '_');
             }
         }
     }
 
-    ApplyExtraction(extraction, extracted);
+    if (hasWordExtraction) {
+        ApplyExtraction(extraction, extracted, !partial);
+    }
+}
+
+/**
+ * Extract a single letter from an input. Either using an absolute index, or else a word.letter index.
+ * @param input User's input string
+ * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
+ */
+export function extractWordIndex(input:string, index:string) {
+    const dot = index.split('.');
+    let letter_index:number;
+    if (dot.length == 2) {
+        let word_index = parseInt(dot[0]);
+        letter_index = parseInt(dot[1]) - 1;
+        const words = input.split(' ');
+        input = '';
+        for (var i = 0; i < words.length; i++) {
+            const word = words[i];
+            if (words[i].length > 0) {
+                if (--word_index == 0) {
+                    input = word;
+                    break;
+                }
+            }
+        }
+    }
+    else {
+        letter_index = parseInt(index) - 1;
+    }
+    if (letter_index < 0) {
+        return null;  // bogus index
+    }
+    if (letter_index < input.length) {
+        return input[letter_index];
+    }
+    return '_';
 }
 
 /**
@@ -603,7 +762,7 @@ export function onLetterChange(event:KeyboardEvent) {
 
     const input = findParentOfClass(event.currentTarget as Element, 'letter-input') as HTMLInputElement;
     saveLetterLocally(input);
-    inputChangeCallback(input);
+    inputChangeCallback(input, event.key);
 }
 
 /**
@@ -616,18 +775,26 @@ export function onWordChange(event:KeyboardEvent) {
     }
 
     const input = findParentOfClass(event.currentTarget as Element, 'word-input') as HTMLInputElement;
+    inputChangeCallback(input, event.key);
     saveWordLocally(input);
-    inputChangeCallback(input);
 }
 
 /**
  * Anytime any note changes, inform any custom callback
  * @param inp The affected input
+ * @param key The key from the event that led here
  */
-function inputChangeCallback(inp: HTMLInputElement) {
+function inputChangeCallback(inp: HTMLInputElement, key:string) {
     const fn = theBoiler().onInputChange;
     if (fn) {
         fn(inp);
+    }
+    const doc = getOptionalStyle(inp, 'data-onchange');
+    if (doc) {
+        const func = window[doc];
+        if (func) {
+            func(inp, key);
+        }
     }
 }
 
@@ -981,4 +1148,31 @@ function findNextDiscover(root: Element,
         }
     }
     return nearest;
+}
+
+/**
+ * Autocomplete the contents of a multi-letter input from a restricted list of options.
+ * Existing text must match the beginning of exactly one option (case-insensitive).
+ * @param input a text <input> or <textarea>
+ * @param list a list of potential values to complete to
+ * @returns true if a single match was found, else false for 0 or multiple matches
+ */
+export function autoCompleteWord(input:HTMLInputElement|HTMLTextAreaElement, list:string[]) {
+    var value = input.value.toLowerCase();
+    var match:string|null = null;
+    for (var i of list) {
+      if (i.toLowerCase().indexOf(value) == 0) {
+        if (match) {
+          return false;  // multiple matches
+        }
+        match = i;
+      }
+    }
+    if (match) {
+      var len = input.value.length;
+      input.value = match;
+      input.setSelectionRange(len, match.length);  // Select the remainder of the word
+      return true;
+    }
+    return false;  // no matches
 }

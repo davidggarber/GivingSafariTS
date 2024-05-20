@@ -1,0 +1,34 @@
+table {
+  border-spacing: 0px;
+}
+
+#examples {
+  width:7.5in;
+}
+#examples tr:nth-child(odd) td {
+  background-color: #ffffdd;
+}
+td {
+  padding: 2px 4px;
+  vertical-align: middle;
+}
+
+#css-styles {
+  position: absolute;
+  top: 0px;
+  left: 8in;
+  width: 7in;
+}
+#css-styles code {
+  width: 100%;
+}
+
+code {
+  display: inline-block;
+  font-family: monospace;
+  background-color: lightblue;
+  border: blue solid 1px;
+}
+code pre {
+  margin: 4px;
+}

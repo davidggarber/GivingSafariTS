@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Dgg',
+        'title': '___',
+        'author': 'David Garber',
+        'copyright': '2021',
+        'type': '___',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+      };
+
+      var data = [
+        "  2 3 4 5",
+        " 1 6   9 ",
+        "4    78  ",
+      ];
+      boiler['builderLookup']['data'] = data;
+
+    </script>
+    <style>
+      #nines {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        display: table;
+        border-top: solid 5px black;
+        border-left: solid 5px black;
+      }
+      div.big-tr {
+        display: table-row;
+      }
+      div.big-td {
+        display: table-cell;
+        border-right: solid 5px black;
+        border-bottom: solid 5px black;
+        width: 208px;
+        height: 208px;
+      }
+      #table {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        display: table;
+      }
+      div.tr {
+        display: table-row;
+      }
+      div.td {
+        display: table-cell;
+        border: solid 1px red;
+        width: 70px;
+        height: 70px;
+        text-align: center;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body id="__puzzle_name">
+    <div id="pageBody">
+
+      <div id="nines">
+        <for range="row" from="0" until="3">
+          <div class="big-tr">
+            <for range="col" from="0" until="3">
+              <div class="big-td">&nbsp;</div>
+            </for>
+          </div>
+        </for>
+      </div>
+      <div class="table">
+        <for each="row" in="data">
+          <div class="tr">
+            <for char="cell" in="row">
+              <div class="td">{cell}</div>
+            </for>
+          </div>
+        </for>
+      </div>
+
+
+
+    </div>
+  </body>
+</html>

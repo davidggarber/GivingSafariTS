@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '24',
+        'title': 'Andrew2',
+        'author': 'Andrew Giese',
+        'copyright': '2024',
+        'abilities': {
+          'dragDrop': true
+        },
+        'reactiveBuilder': true,
+      };
+
+      var colors = [
+        'red', 'orange', 'yellow','lime', 'cyan', 'darkblue','purple', '','',
+      ];
+
+      boiler['builderLookup'] =
+      {
+        colors: colors,
+      };
+
+    </script>
+    <style>
+      #grid {
+        display: grid;
+        grid-template-columns: repeat(3, 100px); /* Creates 3 columns */
+        grid-template-rows: repeat(3, 100px); /* Creates 3 rows */
+      }
+      .drop-target {
+        position: relative;
+        width:100px; 
+        height:100px;
+      }
+      .circle {
+        margin: 10px;
+        width: 80px; /* Smaller than the square to fit inside */
+        height: 80px;
+        border-radius: 50%; /* Makes the shape a circle */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="pageBody">
+      <p class="flavor">
+        Move the balls around within the grid
+      </p>
+
+      <div id="grid">
+        
+        <for each="col" in="colors">
+            <div class="drop-target">
+              <div class="moveable circle" style="background-color:{col}"></div>
+            </div>
+        </for>
+
+      </div>
+
+    </div>
+  </body>
+</html>

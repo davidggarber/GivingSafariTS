@@ -1,0 +1,107 @@
+<html>
+<head>
+    <title>Giving Puzzle Safari 24: Epicurious Enigmas</title>
+    <meta charset="UTF-8">
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <link href="index.css" rel="Stylesheet" type="text/css"></link>
+    <script src="puzzle_list.js"></script>
+    <script src="index_utils.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'gs24',
+        paperSize: 'minimalist',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+          puzzles: puzzles,
+          feeders: false,
+          submitable: false,
+          table_cols: 4,
+        },
+      };
+    </script>
+    <style>
+    </style>
+  </head>
+  <body id="Menu">
+    <div id="pageBody">
+
+      <build>
+        <table_ id="table" style="border-collapse: collapse">
+          <thead_>
+            <tr_ style="text-align: center;">
+              <th_ colspan="{table_cols}" class="title-font" style="text-align: center; position: relative;">
+                Giving Safari 2024
+                <img src="Images/PS21_logo.png" style="position:absolute; right: -4in; width: 3.75in;">
+              </th_>
+            </tr_>
+            <tr_ id="sortHeader">
+              <th_ class="icons" onclick="sortTable(this)">Type</th_>
+              <th_ class="html" onclick="sortTable(this)">Puzzle</th_>
+              <if test="feeders">
+                <th_ class="feeders" onclick="sortTable(this)">Feeder</th_>
+              </if>
+              <th_ class="author" onclick="sortTable(this)">Author</th_>
+              <if test="submitable">
+                <th_ class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png"></span></th_>
+              </if>
+            </tr_>    
+          </thead_>
+
+          <tbody_ id="puzzle_list">
+            <for each="puz" in="puzzles">
+              <tr_ class_="sortable">
+                <td_ class_="icons">
+                  <if exists="puz.icon">
+                    <img src_="Icons/{puz.icon}.png">
+                  </if>
+                  <if not="puz.icon">
+                    <img src_="Icons/{puz.type.icon}.png" title="puz.type.alt">
+                  </if>
+                </td_>
+                <td_ class_="html">
+                  <a class_="hover" href="{puz.href}" target="_blank">
+                    {puz.title}
+                    <if exists="{puz.thumb}">
+                      <img class_="thumb" src_="Thumbs/{puz.thumb}.png">
+                    </if>
+                  </a>
+                </td_>
+                <if test="feeders">
+                  <td_ class_="feeders"></td_>
+                </if>
+                <td_ class_="authors">
+                  {puz.author}
+                </td_>
+                <if test="submitable">
+                  <td_ class_="submital"></td_>
+                </if>
+              </tr_>
+            </for>
+          </tbody_>
+
+          <tfoot_ id="meta_list">
+              <tr_>
+                  <th_ colspan="{table_cols}" style="background-color: #D1D6D7">&nbsp;</th_>
+              </tr_>
+              <tr_>
+                  <th_>&nbsp;</th_>
+                  <th_ class="html" style="text-align: left;">Meta-Puzzles</th_>
+                  <if test="feeders">
+                    <th_>Unlocked</th_>
+                  </if>
+                  <th_ class="author" style="text-align: left;">Author</th_>
+                  <if test="submitable">
+                    <th_ class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png"></span></th_>
+                  </if>
+              </tr_>    
+          </tfoot_>
+        </table_>
+      </build>
+
+    </div>
+  </body>
+</html>

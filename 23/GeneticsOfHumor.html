@@ -18,7 +18,8 @@
         'abilities': {
           'straightEdge': true,
           'checkMarks': true,
-        }
+        },
+        "validation":{"final-answer":{"QNQ":"1|4JF_Uvccbybtl.ugzy^n zrgn cvrpr sbe Jrveq Fpvrapr|5JF_Uvccbybtl.ugzy"}}
       };
     </script>
     <style>
@@ -150,7 +151,11 @@
         <li class="cross-off">I&rsquo;m traveling light.</li>
       </ol>
 
+      <div class="no-print" style="position:absolute; bottom: -0.5in; left: 3in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:1in; text-transform: uppercase;"></input>
+        <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
       </div>
+
     </div>
   </body>
 </html>

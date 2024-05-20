@@ -15,7 +15,8 @@
         'textInput': true,
         'abilities': {
           'notes': true
-        }
+        },
+        "validation":{"extracted":{"QRABZVANGR":"1|4JF_Klybybtl.ugzy^n zrgn cvrpr sbe Jrveq Fpvrapr|5JF_Klybybtl.ugzy"}}
       };
     </script>
     <style>
@@ -101,8 +102,9 @@
         </tr>
       </table>
 
-      <p style="text-align: center; margin-top: 2px;">
-        Final Answer: <span id="extracted" data-letter-pattern="10"></span>
+      <p style="margin-top: 2px; margin-left:1.12in;">
+        Final Answer: <span id="extracted" data-letter-pattern="10" data-show-ready="submit-extracted"></span>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
       </p>
 
     </div>

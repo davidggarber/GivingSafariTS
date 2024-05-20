@@ -11,7 +11,33 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\Samples\\StampTool.html",
+      "url": "${workspaceFolder}\\23\\CropDusters.html",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/js/**/*.js"
+      ]
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
+      "name": "Launch Docs",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "url": "${workspaceFolder}\\Docs\\letter.html",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/js/**/*.js"
+      ]
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
+      "name": "Launch DGG",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "url": "${workspaceFolder}\\DGG\\trucker.html",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"
@@ -25,6 +51,19 @@
         "<node_internals>/**"
       ],
       "url": "${workspaceFolder}\\23\\indexx.html",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/js/**/*.js"
+      ]
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
+      "name": "Launch GS 24",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "url": "${workspaceFolder}\\24\\menuu.html",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"

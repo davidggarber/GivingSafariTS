@@ -7,7 +7,7 @@
     <script>
       const boiler = {
         'safari': '20',
-        'title': 'Experiment: Cosmos',
+        'title': 'Challenge: Cosmos',
         'print_qr': true,
         'author': 'Rorke Haining',
         'copyright': '2020',
@@ -29,23 +29,42 @@
         width: 3in;
         height: 2.5em;
       }
+      .flavor img {
+        height: 14pt;
+      }
+      .flavor a {
+        white-space: nowrap;
+      }
+      #big-icon {
+        margin-top: 1in;
+        text-align: center;
+      }
+      #big-icon img {
+        width: 4in;
+        height: 4in;
+      }
     </style>
   </head>
   <body id="Cosmos">
     <div id="pageBody">
-      <p class="flavor">
+      <p class="flavor" style="margin-top: 1in;">
         Your team is invited to participate in the COSMOS challenge.
       </p>
       <p class="flavor">
         If playing in person, have Safari staff point you to the COSMOS station.
       </p>
       <p class="flavor">
-        If playing online, contact Safari game control at [TBD], and send a link to your Teams group.
+        If playing online, contact Safari game control
+        at <a href="mailto:givingps@microsoft.com">📧 givingps@microsoft.com</a>
+        or <a href="Aka.ms/GivingPuzzleSafari"><img src="Icons/ms-teams.png"> aka.ms/GivingPuzzleSafari</a>,
+        and send a link to your Teams group.
       </p>
       <p style="margin-top: 1in;">
         Once you have succeeded at this challenge, you will earn an answer phrase:
         <br><span class="word-cell"></span>
       </p>
+
+      <div id="big-icon"><img src="Icons/exp-cosmos.png"></div>
 
     </div>
   </body>

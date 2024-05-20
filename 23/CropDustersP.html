@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Crop Dusters',
+        'print_qr': true,
+        'author': 'Dana Young',
+        'copyright': '2020',
+        'type': 'logic',
+        'textInput': true,
+        'abilities': {
+          'stamping': true,
+          'notes': true,
+        }
+      };
+    </script>
+    <style>
+      .flavor {
+        font-size: 9pt;
+      }
+      path {
+        fill: none;
+        stroke: black;
+        stroke-width: 3.5px;
+      }
+      path.asparagus {
+        fill: #00C800;
+      }
+      path.blackberries {
+        fill: #3B3B3B;
+      }
+      path.sunflowers {
+        fill: #FFC800;
+      }
+      path.watermelons {
+        fill: red;
+      }
+      path.open {
+        fill: transparent;
+      }
+      #answer {
+        position: absolute;
+        right: 0px;
+        bottom: -0.6in;
+      }
+      #fields foreignObject {
+        width: 48px;
+        height: 38px;
+        pointer-events: none;
+      }
+      foreignObject div {
+        position: fixed;
+        width: 48px;
+        height: 38px;
+      }
+      #stampPalette .stampTool {
+        width: 72px;
+        margin: 0px;
+      }
+      #CropDusters .stampTool.selected div {
+        border: solid 3px transparent;
+      }
+      .stampTool img {
+        border-bottom: solid transparent 2px;
+      }
+      .stampTool.selected img {
+        background-color: #ccc;
+        border-bottom: solid black 2px;
+      }
+      path.open.asparagus-stamp {
+        fill: #00C80090;
+      }
+      path.open.blackberry-stamp {
+        fill: #3B3B3B90;
+      }
+      path.open.sunflower-stamp {
+        fill: #FFC80090;
+      }
+      path.open.watermelon-stamp {
+        fill: #ff000090;
+      }
+      #CropDusters #notes-toggle {
+        bottom: 20px;
+      }
+      #CropDusters .note-input.note-below {
+        bottom: -1.5em;
+        height: 0.2in;
+      }
+    </style>
+  </head>
+  <body id="CropDusters">
+    <div id="pageBody">
+      <p class="flavor">
+        Farmers Al Minnack and Mark Itt want to plant four types of crops. They’ve already decided where some 
+        <span style="background-color:lime;">ASPARAGUS</span>, 
+        <span style="background-color:gray;">BLACKBERRIES</span>, 
+        <span style="background-color:yellow;">SUNFLOWERS</span>, and
+        <span style="background-color:red;">WATERMELONS</span>, 
+        will be planted. Help them finish the plans such that no two regions sharing a boundary have the same crop. 
+        Two regions which meet only diagonally at a point may have the same crop. 
+        Use the number of each type of crop as an ordering and an index into that crop to get your answer.
+      </p>
+
+      <svg id="fields" style="position: absolute; left: 0px; bottom: 25px; width:7.5in; height:8.1in; user-select: none;">
+        <g transform="translate(3,7)">
+
+          <path d="M0,0 h141 v38 h-141 Z" class="asparagus" />
+          <path d="M141,0 h94 v114 l-47,38 h-94 v-38 l-47,-38 v-38 h94 Z" class="open stampable" data-stamp-parent="fo-2" />
+          <path d="M235,0 h188 v38 l47,38 v38 h-188 v-38 h-47 Z" class="asparagus" />
+          <path d="M423,0 h282 v304 h-47 l-47,-38 v-152 l-47,-38 v-38 h-47 v76 h-47 v-38 l-47,-38 Z" class="open stampable" data-stamp-parent="fo-3" />
+          <path d="M0,38 h47 v38 h-47 Z" class="open stampable" data-stamp-parent="fo-1" />
+          <path d="M0,76 h47 l47,38 v38 l-47,38 h-47 Z" class="sunflowers"/>
+          <path d="M94,152 h94 v76 h-188 v-38 h47 Z" class="open stampable" data-stamp-parent="fo-4" />
+          <path d="M188,152 l47,-38 v-38 h47 v76 h47 l47,38 v76 h-94 v-38 h-47 v38 h-47 Z" class="open stampable" data-stamp-parent="fo-5" />
+          <path d="M282,114 h188 v38 h47 l47,38 l-47,38 v38 l-47,38 h-47 l-47,-38 v-76 l-47,-38 h-47 Z" class="open stampable" data-stamp-parent="fo-6" />
+          <path d="M470,114 h47 v-76 h47 v38 l47,38 v152 h-94 v-38 l47,-38 l-47,-38 h-47 Z" class="watermelons" />
+          <path d="M0,228 h188 v76 l-47,38 l-47,-38 l-47,38 v38 h-47 Z" class="watermelons" />
+          <path d="M47,342 l47,-38 l47,38 l47,-38 v-38 h47 v-38 h47 v190 l-47,38 h-47 v38 h-47 l-94,-76 Z" class="open stampable" data-stamp-parent="fo-7" />
+          <path d="M282,266 h94 l47,38 v38 l-47,38 v38 h-47 v-38 h-47 Z" class="open stampable" data-stamp-parent="fo-8" />
+          <path d="M423,304 h47 l47,-38 h47 v114 h-47 l-47,38 h-94 v-38 l47,-38 Z" class="asparagus" />
+          <path d="M564,266 h47 l47,38 h47 v38 h-47 v38 h-94 Z" class="open stampable" data-stamp-parent="fo-9" />
+          <path d="M0,380 h47 v38 l94,76 v76 l-47,38 v38 h-94 Z" class="open stampable" data-stamp-parent="fo-10" />
+          <path d="M188,456 h47 l47,-38 v-38 h47 v38 h47 v38 h-47 l-47,38 h-94 Z" class="open stampable" data-stamp-parent="fo-11" />
+          <path d="M376,418 h94 v38 l-47,38 l47,38 l-47,38 v76 h-47 v-38 h-47 v38 h-47 v-76 l-47,-38 v-38 h47 l47,-38 h47 Z" class="open stampable" data-stamp-parent="fo-12" />
+          <path d="M470,418 l47,-38 h94 v76 h-141 Z" class="open stampable" data-stamp-parent="fo-13" />
+          <path d="M611,380 h47 v38 h-47 Z" class="sunflowers" />
+          <path d="M611,418 h47 v38 h-47 Z" class="open stampable" data-stamp-parent="fo-14" />
+          <path d="M658,342 h47 v152 h-47 Z" class="open stampable" data-stamp-parent="fo-15" />
+          <path d="M611,456 h47 v38 h47 v76 h-94 Z" class="blackberries" />
+          <path d="M470,456 h141 v114 l-94,76 l-47,-38 h-47 v-38 l47,-38 l-47,-38 Z" class="open stampable" data-stamp-parent="fo-16" />
+          <path d="M141,494 h94 v38 l47,38 v76 h-94 l-47,38 l-47,-38 v-38 l47,-38 Z" class="blackberries" />
+          <path d="M0,646 h94 l47,38 v76 h-141 Z" class="open stampable" data-stamp-parent="fo-17" />
+          <path d="M141,684 l47,-38 h141 v114 h-188 Z" class="watermelons" />
+          <path d="M329,608 h47 v38 h47 v-38 h47 l47,38 v38 h-47 l-47,38 h-94 Z" class="open stampable" data-stamp-parent="fo-18" />
+          <path d="M611,570 h94 v190 h-94 v-38 l-47,-38 h-47 v-38 Z" class="sunflowers" />
+          <path d="M329,722 h94 l47,-38 h94 l47,38 v38 h-282 Z" class="open stampable" data-stamp-parent="fo-19" />
+
+          <foreignObject x="0" y="38"><div id="fo-1"></div></foreignObject>
+          <foreignObject x="141" y="56"><div id="fo-2"></div></foreignObject>
+          <foreignObject x="611" y="76"><div id="fo-3"></div></foreignObject>
+          <foreignObject x="94" y="172"><div id="fo-4"></div></foreignObject>
+          <foreignObject x="259" y="172"><div id="fo-5"></div></foreignObject>
+          <foreignObject x="423" y="190"><div id="fo-6"></div></foreignObject>
+          <foreignObject x="150" y="370"><div id="fo-7"></div></foreignObject>
+          <foreignObject x="329" y="312"><div id="fo-8"></div></foreignObject>
+          <foreignObject x="587" y="304"><div id="fo-9"></div></foreignObject>
+          <foreignObject x="40" y="500"><div id="fo-10"></div></foreignObject>
+          <foreignObject x="258" y="430"><div id="fo-11"></div></foreignObject>
+          <foreignObject x="329" y="500"><div id="fo-12"></div></foreignObject>
+          <foreignObject x="517" y="398"><div id="fo-13"></div></foreignObject>
+          <foreignObject x="611" y="418"><div id="fo-14"></div></foreignObject>
+          <foreignObject x="658" y="400"><div id="fo-15"></div></foreignObject>
+          <foreignObject x="517" y="504"><div id="fo-16"></div></foreignObject>
+          <foreignObject x="47" y="684"><div id="fo-17"></div></foreignObject>
+          <foreignObject x="400" y="664"><div id="fo-18"></div></foreignObject>
+          <foreignObject x="470" y="702"><div id="fo-19"></div></foreignObject>
+        </g>
+      </svg>
+
+      <div id="stampPalette" data-tool-count="5" data-tool-erase="erase-stamp" style="position: absolute; left:1.75in; bottom: -0.6in;">
+        <div class="stampTool" data-template-id="asparagus-stamp" style="display:inline-block; ">
+          <div class="notes-below"><img src="Images/Crops/Asparagus.png" style="width: 72px;"></div>
+        </div>
+        <div class="stampTool" data-template-id="blackberry-stamp" style="display:inline-block; ">
+          <div class="notes-below"><img src="Images/Crops/Blackberry.png" style="width: 72px;" class="notes-below"></div>
+        </div>
+        <div class="stampTool" data-template-id="sunflower-stamp" style="display:inline-block; ">
+          <div class="notes-below"><img src="Images/Crops/Sunflower.png" style="width: 72px;" class="notes-below"></div>
+        </div>
+        <div class="stampTool" data-template-id="watermelon-stamp" style="display:inline-block; ">
+          <div class="notes-below"><img src="Images/Crops/Watermelon.png" style="width: 72px;" class="notes-below"></div>
+        </div>
+        <div class="stampTool" data-template-id="erase-stamp" style="display:inline-block; ">
+          <img src="Images/Crops/Shovel.png" style="width: 72px;">
+        </div>
+      </div>
+      <div class="stampToolTemplates" id="drawTool1">
+        <template id="asparagus-stamp">
+          <img src="Images/Crops/Asparagus.png" style="width: 44px; margin:2px;" class="stampedObject" data-template-id="asparagus-stamp" data-next-template-id="blackberry-stamp">
+        </template>
+        <template id="blackberry-stamp">
+          <img src="Images/Crops/Blackberry.png" style="width: 44px; margin:2px;" class="stampedObject" data-template-id="blackberry-stamp" data-next-template-id="sunflower-stamp">
+        </template>
+        <template id="sunflower-stamp">
+          <img src="Images/Crops/Sunflower.png" style="width: 44px; margin:2px;" class="stampedObject" data-template-id="sunflower-stamp" data-next-template-id="watermelon-stamp">
+        </template>
+        <template id="watermelon-stamp">
+          <img src="Images/Crops/Watermelon.png" style="width: 44px; margin:2px;" class="stampedObject" data-template-id="watermelon-stamp" data-next-template-id="erase-stamp">
+        </template>
+      </div>  
+
+      <div id="answer" class="screen-only">Answer: <span class="letter-cell-block create-from-pattern" data-letter-pattern="4"></span></div>
+
+    </div>
+  </body>
+</html>

@@ -52,12 +52,18 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
 }
 
 .print.iframe.letter.landscape #page {
-  transform: rotate(90deg);
+  transform: rotate(90deg) translate(0px, 48px);
   transform-origin: 408px 408px;
+}
+
+.icon.print.iframe.letter.landscape #page {
+  transform: rotate(90deg) translate(0px, 48px);
+  transform-origin: 432px 432px;
 }
 
 @media screen {
   .printedPage {
+    background-color: white;
     margin-top:0.25in;
     margin-left:0.25in;
     padding-left:0.5in;
@@ -73,9 +79,26 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
     padding: 0.5in;
     box-shadow: none;
   }
+
+  .print .no-print {
+    display: none;
+  }
+
+  .print-only {
+    display: none;
+  }
+  .print .print-only {
+    display: initial;
+  }
 }
+
 @media print {
+  .no-print {
+    display: none;
+  }
+
   .printedPage {
+    background-color: white;
     margin-top:0.5in; 
     margin-left:0.5in;
     margin-right:0.5in; 
@@ -143,13 +166,13 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
 }    
 
 .scrapbook #pageBody {
-  height: 11.75in;
+  height: 10.5in;
 }    
 .scrapbook.portrait #pageBody {
-  height: 11.75in;
+  height: 10.5in;
 }    
 .scrapbook.landscape #pageBody {
-  height: 11.75in;
+  height: 10.5in;
 }    
 
 .debug #pageBody {
@@ -288,11 +311,25 @@ body, p, td {
     display: none;
   }
 
+  #printAs {
+    display: none;
+  }
+  .print #printAs {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    font-family: 'Verdana';
+    font-size: 10pt;
+  }
+
   #qr {
       display: none;
   }
   .print #qr {
     display: block;
+  }
+  .print.icon #qr {
+    display: none;
   }
   .thumb.print #qr {
     display: none;
@@ -345,6 +382,14 @@ body, p, td {
 
   .submit-button {
       display: none;
+  }
+
+  #printAs {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    font-family: 'Verdana';
+    font-size: 10pt;
   }
 }
 
@@ -411,4 +456,24 @@ body, p, td {
   padding: 5px 10px 3px;
   border-radius: 10px;
   margin-right: 10px;
+}
+
+.minimalist .printedPage {
+  background-color: white;
+  margin: 0px;
+  padding: 0px;
+  position: relative; 
+  box-shadow: none; 
+}
+.minimalist #pageBody {
+  top: 0px;
+}
+.minimalist .title {
+  display: none;
+}
+.minimalist .copyright {
+  display: none;
+}
+.minimalist .ability {
+  display: none;
 }

@@ -1,0 +1,69 @@
+#grid-container {
+  display: grid;
+  grid-template-columns: repeat(8, 50px); /* Creates 8 columns */
+  grid-template-rows: repeat(8, 50px); /* Creates 8 rows */
+  user-select: none;
+}
+
+.grid-square {
+  width: 50px;
+  height: 50px;
+  background-color: #158336; /* Initial color */
+  border: 1px solid #000000; /* Optional: adds a border to each square */
+  position: relative; /* Needed to position the circle inside the square */
+  color: #000000; /* Default text color for empty cell or cell with white circle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px; /* Adjust as needed */
+  cursor: pointer;
+}
+
+.circle {
+  width: 45px; /* Smaller than the square to fit inside */
+  height: 45px;
+  background-color: #ff0000; /* Circle color */
+  border: 1px solid #000000;
+  border-radius: 50%; /* Makes the shape a circle */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centers the circle in the square */
+}
+
+.black-circle {
+  background-color: #000000; /* Black circle */
+}
+
+.white-circle {
+  background-color: #ffffff; /* White circle */
+}
+
+/* When a black circle is present, change the text color to white */
+.grid-square.has-black-circle {
+  color: #ffffff;
+}
+
+.grid-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  z-index: 1; /* Ensures the text is above the circle */
+}
+
+.underlined-text {
+  text-decoration: underline; /* Underlines the text */
+  cursor: default;
+}
+
+ol {
+  counter-reset: list;
+}
+ol > li {
+  list-style: none;
+  margin-bottom: 12pt;
+}
+ol > li:before {
+  content: counter(list) ")  ";
+  counter-increment: list;
+}

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '24',
+        'title': 'Blokus',
+        'author': 'David Garber',
+        'copyright': '2024',
+        'orientation': 'portrait',
+        'textInput': true,
+        'abilities': {
+          // 'dragDrop': true,
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+        'preSetup': buildSvgs,
+      };
+
+      // Tile shapes, which will never rotate.
+      //   1-9 and dot indicate visible contents of each cell.
+      //   Spaces fill out bounding rectangle.
+      var tiles = {
+        a: {board:false, x:0, y:9, color:12, values:   ['52896']},
+        b: {board:true, x:7, y:6, color:0, values:     ['548.',
+                                                        '   .']},
+        c: {board:false, x:14, y:3, color:1, values:   [' 5',
+                                                        ' 1',
+                                                        '14',
+                                                        ' 6']},
+        d: {board:false, x:13, y:0, color:0, values:   ['352',
+                                                        ' 14']},
+        e: {board:true, x:6, y:0, color:0, values:     ['..',
+                                                        '3 ',
+                                                        '78']},
+        f: {board:true, x:3, y:8, color:0, values:     [' 89',
+                                                        ' 3 ',
+                                                        '.. ']},
+        g: {board:false, x:7, y:7, color:3, values:    [' 3 ',
+                                                        '91 ',
+                                                        ' 96']},
+        h: {board:false, x:5, y:0, color:2, values:    ['714',
+                                                        '  2',
+                                                        '  6']},
+        i: {board:true, x:0, y:2, color:0, values:     [' 96',
+                                                        '.1 ',
+                                                        '.  ']},
+        j: {board:false, x:10, y:5, color:10, values:  ['5 ',
+                                                        '9 ',
+                                                        '27',
+                                                        ' 3']},
+        k: {board:false, x:5, y:4, color:7, values:    [' 3 ',
+                                                        '475',
+                                                        ' 5 ']},
+        l: {board:false, x:10, y:2, color:12, values:  ['  5',
+                                                        '471',
+                                                        '  9']},
+        m: {board:false, x:3, y:1, color:11, values:   ['4 ',
+                                                        '2 ',
+                                                        '63']},
+        n: {board:false, x:13, y:8, color:4, values:   ['14 ',
+                                                        ' 28']},
+        o: {board:true, x:4, y:4, color:0, values:     ['63',
+                                                        '48']},
+        p: {board:false, x:0, y:7, color:8, values:    ['5268']},
+        q: {board:false, x:9, y:0, color:6, values:    ['927',
+                                                        ' 7 ']},
+        r: {board:false, x:0, y:2, color:5, values:    ['8 ',
+                                                        '71']},
+        s: {board:false, x:0, y:5, color:13, values:   ['896']},
+        t: {board:false, x:0, y:0, color:9, values:    ['23']},
+        u: {board:true, x:1, y:9, color:0, values:     ['7']},
+      }
+
+      // Extraction coordinates, where active board is 1-9, 
+      // while 0 and 10 are border areas
+      var extractPairs = [
+        [{x:2,y:1},{x:3,y:1}],
+        [{x:7,y:2},{x:8,y:2}],
+        [{x:1,y:3},{x:2,y:3}],
+        [{x:7,y:4},{x:8,y:4}],
+        [{x:1,y:6},{x:1,y:7}],
+        [{x:7,y:7},{x:7,y:8}],
+      ];
+
+      boiler['builderLookup'] =
+      {
+        tiles: tiles,
+        extractLen: extractPairs.length,
+      };
+
+      var svg_xmlns = 'http://www.w3.org/2000/svg';
+
+      var cellSize = 40;  // width & height of each cell within the Sudoku and tiles
+      var extraWidth = 16;
+      var extraHeight = 10;
+
+      var sudokuGrid = [Array(9),Array(9),Array(9),Array(9),Array(9),Array(9),Array(9),Array(9),Array(9)];
+
+      var selected = null;
+      var dragging = null;
+
+      function parseTransform(trans) {
+        var splt = trans.split('translate(');
+        if (splt.length != 2) {
+          return {x:NaN, y:NaN};
+        }
+        splt = splt[1].split(',').map(s => parseInt(s));
+        if (splt.length < 2) {
+          return {x:NaN, y:NaN};
+        }
+        return {x:splt[0], y:splt[1]};
+      }
+
+      function startDrag(evt) {
+        if (evt.pointerType != 'mouse') {
+          evt.preventDefault();
+        }
+
+        if (dragging) {
+          cancelDrag()
+        }
+        var g = evt.currentTarget;
+        var board = document.getElementById('board');
+        var bounds = evt.currentTarget.getBoundingClientRect();
+        var translate = parseTransform(g.style.transform);
+
+        dragging = {
+          id: g.id.substring(5),
+          g: g,
+          inBoard: g.parentNode == board,
+          size: { x: parseInt(g.getAttributeNS('', 'data-width')), y: parseInt(g.getAttributeNS('', 'data-height')) },
+          bounds: bounds,
+          start: { x: evt.clientX, y: evt.clientY },
+          rel: { x: evt.clientX - bounds.left, y: evt.clientY - bounds.top },
+          transform: g.style.transform,
+          translate: translate,
+          click: true,  // this might just be a click, not a drag
+        };
+
+        if (dragging.inBoard) {
+          var hx = g.getAttributeNS('', 'data-homex');
+          var hy = g.getAttributeNS('', 'data-homey');
+          dragging.home = { x: parseInt(hx), y: parseInt(hy) };
+          liftValues(dragging.g, dragging.home);
+        }
+        toggleClass(dragging.g, 'dragging', true);
+        toggleClass(dragging.g, 'selected', true);
+      }
+
+      function midDrag(evt) {
+        if (dragging) {
+          var dx = evt.clientX - dragging.start.x;
+          var dy = evt.clientY - dragging.start.y;
+          dragging.g.style.transform = dragging.transform + ' translate(' + dx + 'px,' + dy + 'px)';
+
+          var info = calcDropInfo(dragging, evt);
+          if (dragging.click) {
+            // Look for thresholds where this is clearly a drag, not a click
+            if (Math.abs(dx) + Math.abs(dy) >= cellSize / 2) {
+              dragging.click = false;
+            }
+            else if (info.board && dragging.home && (info.x != dragging.home.x || info.y != dragging.home.y)) {
+              dragging.click = false;  // We've moved to another cell
+            }
+          }
+          toggleClass(dragging.g, 'collision', info == null);
+        }
+      }
+
+      function calcDropInfo(progress, evt) {
+        if (progress) {
+
+          var g = progress.g.getBoundingClientRect();
+          var board = document.getElementById('board').getBoundingClientRect();
+          var bx = Math.round((g.left - board.left) / cellSize);
+          var by = Math.round((g.top - board.top) / cellSize);
+          if (bx >= 1 && bx <= 9 && by >= 1 && by <= 9) {
+            var info = {board: true, x: bx, y: by};
+            if (checkBoardFit(progress, info)) {
+              return info;
+            }
+            return null;
+          }
+
+          var extras = document.getElementById('extraOrigin').getBoundingClientRect();
+          bx = Math.round((g.left - extras.left) / cellSize);
+          by = Math.round((g.top - extras.top) / cellSize);
+          return {board: false, x: bx, y: by};
+        }
+        return null;
+      }
+
+      function checkBoardFit(progress, info) {
+        if (info.x < 1 || (info.x + progress.size.x) > 10 || info.y < 1 || (info.y + progress.size.y) > 10) {
+          return false;
+        }
+        var rects = progress.g.getElementsByTagNameNS(svg_xmlns, 'rect');
+        for (var r of rects) {
+          var dx = parseInt(r.getAttributeNS('', 'data-x'));
+          var dy = parseInt(r.getAttributeNS('', 'data-y'));
+          if (sudokuGrid[info.y + dy - 1][info.x + dx - 1]) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function insertValues(g, info) {
+        if (info && info.board) {
+          var rects = g.getElementsByTagNameNS(svg_xmlns, 'rect');
+          for (var r of rects) {
+            var dx = parseInt(r.getAttributeNS('', 'data-x'));
+            var dy = parseInt(r.getAttributeNS('', 'data-y'));
+            sudokuGrid[info.y + dy - 1][info.x + dx - 1] = r.getAttributeNS('', 'data-val');
+          }
+        }
+      }
+
+      function liftValues(g, pos) {
+        if (g && pos) {
+          var rects = g.getElementsByTagNameNS(svg_xmlns, 'rect');
+          for (var r of rects) {
+            var dx = parseInt(r.getAttributeNS('', 'data-x'));
+            var dy = parseInt(r.getAttributeNS('', 'data-y'));
+            sudokuGrid[pos.y + dy - 1][pos.x + dx - 1] = null;
+          }
+        }
+      }
+
+      function endDrag(evt) {
+        if (dragging) {
+          // REVIEW: could endDrag be called twice?
+          let info = calcDropInfo(dragging, evt);
+          if (dragging.click) {
+            clickSelect();
+            return;
+          }
+
+          toggleClass(dragging.g, 'dragging', false);
+          toggleClass(dragging.g, 'selected', false);
+          toggleClass(dragging.g, 'collision', false);
+
+          if (!info) {
+            cancelDrag();
+            return;
+          }
+          if (!info.board) {
+            var extras = document.getElementById('extras');
+            var extraOrigin = document.getElementById('extraOrigin').getBoundingClientRect();
+            var extraBounds = document.getElementById('extraArea').getBoundingClientRect();
+            var pos = dragging.g.getBoundingClientRect();
+            var x = pos.left - extraOrigin.left;
+            var y = pos.top - extraOrigin.top;
+            if (pos.left < extraBounds.left) {
+              x += extraBounds.left - pos.left;
+            }
+            else if (pos.right > extraBounds.right) {
+              x -= pos.right - extraBounds.right;
+            }
+            if (y < 0) {
+              y = 0;
+            }
+            else if (pos.bottom > extraBounds.bottom) {
+              y -= pos.bottom - extraBounds.bottom;
+            }
+            dragging.g.setAttributeNS('', 'data-homex', '');
+            dragging.g.setAttributeNS('', 'data-homey', '');
+            dragging.g.parentNode.removeChild(dragging.g);
+            extras.appendChild(dragging.g);
+            dragging.g.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+            dragging.g.style.fill = '';
+          }
+          else {  // info.board
+            var board = document.getElementById('board');
+            dragging.g.parentNode.removeChild(dragging.g);
+            board.appendChild(dragging.g);
+            dragging.g.style.transform = 'translate(' + (info.x * cellSize) + 'px,' + (info.y * cellSize) + 'px)';
+            dragging.g.setAttributeNS('', 'data-homex', info.x);
+            dragging.g.setAttributeNS('', 'data-homey', info.y);
+            insertValues(dragging.g, info);
+            var ninePurples = [
+              '#9FD6FB','#E79BFF','#c2ed1a',
+              '#925BFF','#DB7AFE','#98A4FE',
+              '#6d29f4','#ad0ef7','#b474f4',
+              '#28ed91','#2faaed','#ed2f42',
+              '#0911ed','#cccc00',
+            ];
+            dragging.g.style.fill = ninePurples[tiles[dragging.id].color];
+          }
+          updateExtractions();
+          dragging = null;
+        }
+      }
+
+      function cancelDrag() {
+        if (dragging) {
+          toggleClass(dragging.g, 'dragging', false);
+          toggleClass(dragging.g, 'collision', false);
+          toggleClass(dragging.g, 'selected', false);
+          dragging.g.style.transform = dragging.transform;
+          dragging = null;
+        }
+        if (selected) {
+          toggleClass(selected.g, 'selected', false);
+        }
+      }
+
+      function clickSelect() {
+        selected = dragging;
+        cancelDrag();
+        toggleClass(selected.g, 'selected', true);  // after cancelDrag
+      }
+
+      function clickCanvas(evt) {
+        if (selected) {
+          toggleClass(selected.g, 'selected', false);
+          dragging = selected;
+          selected = null;
+          midDrag(evt);
+          dragging.click = false;
+          endDrag(evt);
+        }
+      }
+
+      function updateExtractions() {
+        for (var p = 0; p < extractPairs.length; p++) {
+          var pair = extractPairs[p];
+          var sum = 0;
+          var both = 0;
+          for (var i = 0; i < 2; i++) {
+            var ch = sudokuGrid[pair[i].y][pair[i].x];
+            var addend = document.getElementById('ext-sum-' + p + '-' + i);
+            if (ch) {
+              addend.innerText = ch;
+              both++;
+              sum += parseInt(ch);
+            }
+            else {
+              addend.innerText = ' ';  // &nbsp;
+            }
+          }
+          // var inp = document.getElementById('ext-letter-' + p).getElementsByTagName('input')[0];
+          // if (both == 2) {
+          //   var letter = String.fromCodePoint(64 + sum);
+          //   inp.value = letter;
+          // }
+          // else {
+          //   inp.value = '';
+          // }
+        }
+      }
+
+      function buildSvgs() {
+        var pageBody = document.getElementById('pageBody');
+        var svgArea = document.getElementById('svg-area');
+        pageBody.addEventListener('pointerleave', cancelDrag);
+        pageBody.addEventListener('pointermove', midDrag);
+        pageBody.addEventListener('pointerup', endDrag);
+        svgArea.addEventListener('pointerdown', clickCanvas);
+        var board = document.getElementById('board');
+        var extras = document.getElementById('extras');
+        for (var id of Object.keys(tiles)) {
+          var tile = tiles[id];
+          var g = document.createElementNS(svg_xmlns, 'g');
+          g.id = 'tile-' + id;
+          g.classList.add('tile');
+          if (tile.board) {
+            g.classList.add('fixed');
+          }
+          else {
+            g.classList.add('moveable');
+            g.addEventListener('pointerdown', startDrag);
+            g.addEventListener('pointermove', midDrag);
+            g.addEventListener('pointerup', endDrag);
+          }
+          g.setAttributeNS('', 'data-height', tile.values.length);
+          g.setAttributeNS('', 'data-width', tile.values[0].length);
+          g.style.transform = 'translate(' + (tile.x * cellSize) + 'px,' + (tile.y * cellSize) + 'px)';
+          for (var y = 0; y < tile.values.length; y++) {
+            for (var x = 0; x < tile.values[y].length; x++) {
+              var ch = tile.values[y][x];
+              if (ch != ' ') {
+                if (tile.board && ch != '.') {
+                  sudokuGrid[tile.y + y - 1][tile.x + x - 1] = ch;  // y-first, for debugging readability
+                }
+                var rect = document.createElementNS(svg_xmlns, 'rect');
+                rect.setAttributeNS('', 'x', x * cellSize);
+                rect.setAttributeNS('', 'y', y * cellSize);
+                rect.setAttributeNS('', 'width', cellSize);
+                rect.setAttributeNS('', 'height', cellSize);
+                rect.setAttributeNS('', 'data-x', x);
+                rect.setAttributeNS('', 'data-y', y);
+                rect.setAttributeNS('', 'data-val', ch);
+                g.appendChild(rect);
+                var highlight = document.createElementNS(svg_xmlns, 'path');
+                highlight.classList.add('highlight');
+                var m = 'M' + (x * cellSize) + '.5,' + (y * cellSize + 39) + '.5';
+                highlight.setAttributeNS('', 'd', m + ' v-39 h39');
+                g.appendChild(highlight);
+                var shadow = document.createElementNS(svg_xmlns, 'path');
+                shadow.classList.add('shadow');
+                shadow.setAttributeNS('', 'd', m + ' h39 v-39');
+                g.appendChild(shadow);
+                var t = document.createElementNS(svg_xmlns, 'text');
+                t.setAttributeNS('', 'x', x * cellSize + 20);
+                t.setAttributeNS('', 'y', y * cellSize + 24);                
+                t.innerHTML = ch;
+                g.appendChild(t);
+              }
+            }
+          }
+          if (tile.board) {
+            g.setAttributeNS('', 'data-homex', tile.x);
+            g.setAttributeNS('', 'data-homey', tile.y);
+            board.appendChild(g);
+          }
+          else {
+            extras.appendChild(g);
+          }
+        }
+
+        var circles = document.getElementById('circles');
+        for (var pair of extractPairs) {
+          var circle = document.createElementNS(svg_xmlns, 'rect');
+          circle.classList.add('circle');
+          circle.setAttributeNS('', 'x', pair[0].x * cellSize + 3);
+          circle.setAttributeNS('', 'y', pair[0].y * cellSize + 3);
+          circle.setAttributeNS('', 'width', (pair[1].x + 1 - pair[0].x) * cellSize - 6);
+          circle.setAttributeNS('', 'height', (pair[1].y + 1 - pair[0].y) * cellSize - 6);
+          circle.setAttributeNS('', 'rx', (cellSize/4) + 'px');
+          circle.setAttributeNS('', 'ry', (cellSize/4) + 'px');
+          circles.appendChild(circle);
+        }
+      }
+
+    </script>
+    <style>
+      #flavor {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 2.25in;
+      }
+      #extraction {
+        position: absolute;
+        left: 0px;
+        top: 4.25in;
+        z-index: 100;
+      }
+      #extraction .pair {
+        display: inline-block;
+        margin: 0px;
+      }
+      #extraction .letter-cell {
+        display: block;
+        text-align: center;
+        margin: 3px;
+        font-size: 18pt;
+      }
+      #extraction .sum {
+        display: block;
+        text-align: center;
+        font-size: 8pt;
+      }
+      #svg-area {
+        position: absolute;
+        top: -96px;
+        right: -48px;
+        user-select: none;
+      }
+      #drop-rect {
+        fill: #ffffff00;
+      }
+      #sudoku {
+        transform:translate(300px,100px);
+      }
+      #extras {
+        transform:translate(100px,560px);
+      }
+      .circle {
+        fill: transparent;
+        stroke: #7030A0;
+        stroke-width: 3px;
+        stroke-dasharray: 7 2;
+      }
+
+      #sudoku .border {
+        fill: #cccccc;
+      }
+      #sudoku .interior {
+        fill: white;
+      }
+      #sudoku .minors {
+        fill: none;
+        stroke: #888;
+        stroke-width: 0.5px;
+      }
+      #sudoku .majors {
+        fill: none;
+        stroke: black;
+        stroke-width: 1.5px;
+      }
+
+      .tile path {
+        stroke-width: 1px;
+        fill: none;
+      }
+      .tile text {
+        text-anchor: middle;
+      }
+      .tile.fixed text {
+        fill: white;
+        stroke: black;
+        stroke-width: 0.75px;
+        font-weight: 700;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+      }
+
+      .tile rect {
+        stroke: none;
+        opacity: 40%;
+      }
+      .tile .highlight {
+        stroke: #ffffff80;
+      }
+      .tile .shadow {
+        stroke: #99999940;
+      }
+      .tile text {
+        fill: black;
+      }
+
+      #extras .tile {
+        fill: #b474f4;
+      }
+
+      #board .tile rect {
+        opacity: 87%;
+      }
+      #board .tile.moveable rect {
+        opacity: 66%;
+      }
+
+      #tile-u {
+        fill: #7300ff;
+      }
+      #tile-e {
+        fill: #ff771c;
+      }
+      #tile-i {
+        fill: #FFC000;
+      }
+      #tile-o {
+        fill: #F141C7;
+      }
+      #tile-b {
+        fill: #92D050;
+      }
+      #tile-f {
+        fill: #5B9BD5;
+      }
+
+      .tile.moveable {
+        touch-action: none;
+        cursor: pointer;
+      }
+
+      .tile.collision rect {
+        fill: #999;
+      }
+
+      .drop-target {
+        fill: transparent;
+      }
+
+      .tile.selected .highlight {
+        stroke: #99999940;
+        stroke-width: 2px;
+      }
+      .tile.selected .shadow {
+        stroke: #ffffff80;
+        stroke-width: 2px;
+      }
+      .tile.selected text {
+        font-size: 16pt;
+        transform: translate(0,4px);
+      }
+
+</style>
+  </head>
+  <body id="Blokus">
+    <div id="pageBody">
+      <div id="flavor">
+        <p>
+          Someone has taken some liberties with their Blokus <br>game and turned it into a jigsaw-Sudoku hybrid! 
+        </p>
+        <p>
+          They’ve taken one full set of the 21 unique pieces, and written the numbers 1-9 all over them. Six of the pieces have been glued in place on this 9×9 mini-board. A few <br>cells stick beyond the edges, but those lack digits.
+        </p>
+        <p>
+          Please pack the rest back together! It looks like they’ll just barely fit, following a mix of Sudoku rules and jigsaw strategies.
+          <b>No rotations needed!</b>
+        </p>
+        <p>
+          Afterwards, those dashed regions should make sum sense.
+        </p>
+      </div>
+      <div id="extraction">
+        <for range="i" until="{extractLen}">
+          <div class="pair" id="extraction-{i}">
+            <span class="extract-letter"><letter id="ext-letter-{i}"></letter></span>
+            <span class="sum" id="ext-sum-{i}">
+              <span class="addend" id="ext-sum-{i}-0">&nbsp;</span>+<span class="addend" id="ext-sum-{i}-1">&nbsp;</span>
+            </span>
+          </div>
+        </for>  
+      </div>
+
+      <svg id="svg-area" width="816" height="1056">
+        <g id="sudoku">
+          <path class="border" d="M0,0 h440 v440 h-440 Z"></path>
+          <path class="interior" d="M40,40 h360 v360 h-360 v-360"></path>
+          <path class="minors" d="M40,80 h360 M40,120 h360 M40,200 h360 M40,240 h360 M40,320 h360 M40,360 h360"></path>
+          <path class="minors" d="M80,40 v360 M120,40 v360 M200,40 v360 M240,40 v360 M320,40 v360 M360,40 v360"></path>
+        <g id="circles" style="transform:translate(40px,40px)"></g>
+          <g id="board"></g>
+          <g id="gridlines">
+            <path class="majors" d="M40,160 h360 M40,280 h360"></path>
+            <path class="majors" d="M160,40 v360 M280,40 v360"></path>  
+          </g>
+        </g>
+        <g id="extras">
+          <rect id="extraArea" x="-84" y="0" width="784" height="480" fill="transparent"></rect>
+          <rect id="extraOrigin" x="0" y="0" width="0" height="0" fill="transparent"></rect>
+        </g>
+      </svg>
+      <p style="position:absolute; bottom: -16px; width: 100%; text-align: center; font-style: italic;">No rotations needed</p>
+
+    </div>
+  </body>
+</html>

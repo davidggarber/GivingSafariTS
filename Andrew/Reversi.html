@@ -1,0 +1,90 @@
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <meta charset="UTF-8">
+      <title>Reversi</title>
+      <link href="Reversi.css" rel="Stylesheet" type="text/css"></link>
+      <script src="Reversi.js"></script>
+  </head>
+  <body>
+    <p>Fill in the game board below while obeying the following rules:</p>
+    <ol>
+      <li>Each row and column must contain exactly 4 black and 4 white pieces</li>
+      <li>No row or column can have more than 2 consecutive pieces of the same color</li>
+    </ol>
+    <div id="grid-container">
+      <!-- First row -->
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="black"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="white"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <!-- Second row -->
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="black"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="black"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <!-- Third row -->
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="white"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="white"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <!-- Fourth row -->
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="black"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="black"></div>
+      <!-- Fifth row -->
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="white"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="black"></div>
+      <!-- Sixth row -->
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="black"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <!-- Seventh row -->
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="black"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="black"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <!-- Eighth row -->
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="true" data-locked-color="white"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+      <div class="grid-square" data-locked="false"></div>
+    </div>
+  </body>
+</html>

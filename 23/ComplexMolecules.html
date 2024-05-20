@@ -15,7 +15,8 @@
         'textInput': true,
         'abilities': {
           'notes': true
-        }
+        },
+        "validation": {"extracted":{"ARHGEBA":"1|4GZFO_QbBbEe.ugzy^n zrgn cvrpr sbe Gur Zntvp Fpubby Ohf|5GZFO_QbBbEe.ugzy"}},
       };
     </script>
     <style>
@@ -77,7 +78,7 @@
       .atom input {
         font-size: 20pt;
       }
-      #ComplexMolecules #extracted {
+      #ComplexMolecules #extract-and-submit {
         width: 100%;
         text-align: center;
         font-size: 24pt;
@@ -270,7 +271,10 @@
       </svg>
 
       <div style="display: none;" class="extract-input extract-literal" data-extract-delay="_" data-extract-copy="1"></div>
-      <div id="extracted"></div>
+      <div id="extract-and-submit">
+        <span id="extracted" data-show-ready="submit-extracted"></span>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
 
     </div>
   </body>

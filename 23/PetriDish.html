@@ -18,6 +18,7 @@
           'notes': true,
           'wordSearch': true
         },
+        "validation":{"final-answer":{"ABEBIVEHF":"1|4GZFO_SvAafF.ugzy^n zrgn cvrpr sbe Gur Zntvp Fpubby Ohf|5GZFO_SvAafF.ugzy"}},
         'tableBuilder': {
           'rootId': 'grid-root',
           'data': [
@@ -138,6 +139,12 @@
           <td></td>
         </tr>
       </table>
+
+      <div class="no-print" style="position:absolute; bottom: -0.5in; left: 2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:2in; text-transform: uppercase;"></input>
+        <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+
     </div>
   </body>
 </html>

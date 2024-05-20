@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Radio Waves -- Materials #2',
+        'print_qr': true,
+        'author': '',
+        'copyright': '2023',
+        'type': '',
+        'googleFonts': 'Caveat',
+        'abilities': {
+        },
+        'postSetup': unlockFeeder
+      };
+
+      function unlockFeeder() {
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials('Radio', 0, 2, {
+            'clues': {
+              1: 'Erosion Science',
+              4: 'Entomology',
+              7: 'Agronomy',
+              10: 'Zoology',
+              13: 'Marine Biology'
+            },
+            'src': window.location.href });
+          updatePuzzleList('Radio-2', 'loaded');
+        }
+      }
+    </script>
+    <style>
+      .flavor img {
+        position: relative;
+        height: 0.3in;
+        top: 0.05in;
+        margin-left: 0.1in;
+      }
+      #reels {
+        width: 7.5in;
+      }
+      #Materials #copyright {
+        display: none;
+      }
+      #Materials #backlink {
+        display: none;
+      }
+    </style>
+  </head>
+  <body id="Materials">
+    <div id="pageBody">
+      <p class="flavor">
+        You have unlocked 5 musical tracks for <a href="RadioWaves.html">Radio Waves<img src="Icons/radio.png"></a>.
+      </p>
+      <img id="reels" src="Images/Radio/reels-2.png">
+    </div>
+  </body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '20',
+        'title': 'Road Trip Radio',
+        'author': 'David Garber',
+        'copyright': '2023',
+        'feeder': 'exp-cartrip',
+        'textInput': true,
+        'abilities': {
+        }
+      };
+
+      var playing = null;
+      function onPlay(aud) {
+        if (playing != null && playing != aud) {
+          playing.pause();
+          toggleClass(playing.parentNode.parentNode, 'playing', false);
+        }
+        {
+          playing = aud;
+          toggleClass(aud.parentNode.parentNode, 'playing', true);
+        }
+      }
+      function toggleAudio(inp) {
+        // Whenever the user types ENTER, play (or pause) the audio on that row
+        var td = findParentOfClass(inp, 'letter-cell-block');
+        if (td != null) {
+          var tr = td.parentNode;
+          var aud = tr.getElementsByTagName('audio')[0];
+          if (aud == undefined) {
+            return;
+          }
+          if (aud == playing) {
+            aud.pause();
+            onPlay(null);
+          }
+          else {
+            onPlay(aud);
+            aud.play();
+          }
+        }
+      }
+      customOnEnter = toggleAudio;
+    </script>
+    <style>
+      #RoadTripRadio #icons img {
+        width: 1in;
+        height: 1in;
+      }
+      table {
+        width: 100%;
+      }
+      
+      td {
+        padding: 2px;
+      }
+      .playing td {
+        background-color: yellow;
+      }
+      
+      #RoadTripRadio .word-input {
+        width: 2.5in;
+      }
+
+      audio {
+        height: 30px;
+        width: 200px;
+      }
+      td.science {
+        width: 1.75in;
+      }
+      td.audio {
+        width: 2.5in;
+      }
+      td.word-cell {
+        width: 2.5in;
+      }
+      td.extracted {
+        width: 0.75in;
+        text-align: center;
+        text-transform: capitalize;
+      }
+      audio::-webkit-media-controls-timeline-container,
+      audio::-webkit-media-controls-current-time-display,
+      audio::-webkit-media-controls-time-remaining-display,
+      audio::-webkit-media-controls-mute-button {
+        display: none;
+      }
+      #custom-enter {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        font-size: 7pt;
+        cursor: help;
+      }
+      #custom-enter button {
+        font-size: 7pt;
+      }
+    </style>
+  </head>
+  <body id="RoadTripRadio">
+    <div id="pageBody">
+      <div id="custom-enter"><button>⏎ Enter</button> toggles music, <button>⟳ Refresh</button> to start over</div>
+      <p class="friendly" style="margin-top: 1in;">
+        On our car trip, we've stumbled into what must be the local college science department's radio station.
+        The DJ only tells us which science each song evokes. 
+        But many are ear-worms, so I feel we should be able to recall the titles.
+      </p>
+      <table data-literal-style="box" data-extract-style="none" class="text-input-group">
+        <tr>
+          <td class="science">Gastronomy</td>
+          <td class="audio"><audio src="Mp3/Radio/gastronomy.mp3" onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="3" data-extracted-id="1"></td>
+          <td class="extracted" id="extracted-1"></td>
+        </tr>
+        <tr>
+          <td class="science">Erosion Science</td>
+          <td class="audio"><audio src="Mp3/Radio/erosion.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="2.1" data-extracted-id="2"></td>
+          <td class="extracted" id="extracted-2"></td>
+        </tr>
+        <tr>
+          <td class="science">Meteorolgy</td>
+          <td class="audio"><audio src="Mp3/Radio/meteorology.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="1" data-extracted-id="3"></td>
+          <td class="extracted" id="extracted-3"></td>
+        </tr>
+        <tr>
+          <td class="science">Ornithology</td>
+          <td class="audio"><audio src="Mp3/Radio/ornithology.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="3" data-extracted-id="4"></td>
+          <td class="extracted" id="extracted-4"></td>
+        </tr>
+        <tr>
+          <td class="science">Entomology</td>
+          <td class="audio"><audio src="Mp3/Radio/entomology.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="2" data-extracted-id="5"></td>
+          <td class="extracted" id="extracted-5"></td>
+        </tr>
+        <tr>
+          <td class="science">Aeronautics</td>
+          <td class="audio"><audio src="Mp3/Radio/aeronautics.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="2.1" data-extracted-id="6"></td>
+          <td class="extracted" id="extracted-6"></td>
+        </tr>
+        <tr>
+          <td class="science">Oceanography</td>
+          <td class="audio"><audio src="Mp3/Radio/oceanography.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="1" data-extracted-id="7"></td>
+          <td class="extracted" id="extracted-7"></td>
+        </tr>
+        <tr>
+          <td class="science">Agronomy</td>
+          <td class="audio"><audio src="Mp3/Radio/agronomy.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="1" data-extracted-id="8"></td>
+          <td class="extracted" id="extracted-8"></td>
+        </tr>
+        <tr>
+          <td class="science">Seismology</td>
+          <td class="audio"><audio src="Mp3/Radio/seismology.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="1" data-extracted-id="9"></td>
+          <td class="extracted" id="extracted-9"></td>
+        </tr>
+        <tr>
+          <td class="science">Optics</td>
+          <td class="audio"><audio src="Mp3/Radio/optics.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="2.1" data-extracted-id="10"></td>
+          <td class="extracted" id="extracted-10"></td>
+        </tr>
+        <tr>
+          <td class="science">Zoology</td>
+          <td class="audio"><audio src="Mp3/Radio/zoology.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="2.1" data-extracted-id="11"></td>
+          <td class="extracted" id="extracted-11"></td>
+        </tr>
+        <tr>
+          <td class="science">Chemistry</td>
+          <td class="audio"><audio src="Mp3/Radio/chemistry.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="1" data-extracted-id="12"></td>
+          <td class="extracted" id="extracted-12"></td>
+        </tr>
+        <tr>
+          <td class="science">Veterinary Science</td>
+          <td class="audio"><audio src="Mp3/Radio/veterinary.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="3" data-extracted-id="13"></td>
+          <td class="extracted" id="extracted-13"></td>
+        </tr>
+        <tr>
+          <td class="science">Marine Biology</td>
+          <td class="audio"><audio src="Mp3/Radio/marine.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="2.1" data-extracted-id="14"></td>
+          <td class="extracted" id="extracted-14"></td>
+        </tr>
+        <tr>
+          <td class="science">Astronomy</td>
+          <td class="audio"><audio src="Mp3/Radio/astronomy.mp3" controls onplay="onPlay(this)"></audio></td>
+          <td class="word-cell" data-extract-index="2.1" data-extracted-id="15"></td>
+          <td class="extracted" id="extracted-15"></td>
+        </tr>
+      </table>
+      <p class="friendly" style="margin-top: 0.5in">
+        Enter your answer in the <a href="CarTrip.html">Car Trip</a> challenge.
+      </p>
+    </div>
+  </body>
+  </html>
+</div>  
+  
+  

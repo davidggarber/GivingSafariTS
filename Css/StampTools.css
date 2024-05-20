@@ -1,6 +1,6 @@
 @media screen {
   #stampPalette {
-      display: block;
+    display: block;
   }
   .print #stampPalette {
     display: none;
@@ -18,6 +18,10 @@
   -webkit-user-select: none;
   -o-user-select: none;
   user-select: none;
+}
+
+#stampPalette.hidden {
+  display: none;
 }
 
 .stampTool {
@@ -85,4 +89,66 @@
 .stampable {
   position: relative;
   cursor: pointer;
+}
+
+.stampable-container.stamp-drag {
+  touch-action: none;
+}
+
+.stampable-container.stamp-drag .stampable {
+  touch-action: none;
+}
+
+.stampIcon img {
+  width: 64px;
+  height: 64px;
+}
+
+.stampTool.medium .stampIcon img {
+  width: 54px;
+  height: 54px;
+}
+
+.stampTool.small .stampIcon img {
+  width: 40px;
+  height: 40px;
+}
+
+.stampTool .stampLabel {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  text-align: center;
+}
+
+.stampTool .stampMod {
+  position: absolute;
+  bottom: -10pt;
+  left: 0px;
+  width: 100%;
+  text-align: center;
+}
+
+.stampTool.medium .stampLabel {
+  font-size: 8pt;
+}
+
+.stampTool.medium .stampMod {
+  font-size: 6pt;
+}
+
+.stampTool.small .stampLabel {
+  font-size: 7pt;
+}
+.stampTool.small .stampMod {
+  font-size: 5pt;
+}
+
+.stampTool.selected .stampMod {
+  display: none;
+}
+
+#stampPaint-label {
+  color: #aaa;
 }

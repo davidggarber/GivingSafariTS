@@ -14,7 +14,8 @@
         'type': 'Rebus',
         'textInput': true,
         'abilities': {
-        }
+        },
+        "validation":{"extracted":{"ARJOBEA":"1|4JF_Euvabybtl.ugzy^n zrgn cvrpr sbe Jrveq Fpvrapr|5JF_Euvabybtl.ugzy"}}
       };
     </script>
     <style>
@@ -29,9 +30,9 @@
   </head>
   <body>
     <div id="pageBody">
-      <img src="Images/Elem/Table.png" style="position:absolute; width:6.87in; bottom: 0.2in; left: 0.31in;">
+      <img src="Images/Elem/Table.png" style="position:absolute; width:6.87in; bottom: 0.2in; left: 0.31in; z-index: 1;">
 
-      <div id="inputs" style="position: absolute; top: 1.35in; right: 0.35in; width:1.5in; text-align: center;">
+      <div id="inputs" style="position: absolute; top: 1.35in; right: 0.35in; width:1.5in; text-align: center; z-index: 10;">
         <div class="letter-cell-block create-from-pattern" data-letter-pattern="2" data-extract-indeces="1 2"></div>
         <div style="margin-top: 1.05in;" class="letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></div>
         <div style="margin-top: 1.02in;" class="letter-cell-block create-from-pattern" data-letter-pattern="1" data-extract-indeces="1"></div>
@@ -39,7 +40,11 @@
         <div style="margin-top: 1.02in;" class="letter-cell-block create-from-pattern" data-letter-pattern="2" data-extract-indeces="1 2"></div>
       </div>
 
-      <div id="extracted" style="margin-top: 0.5in; margin-left:-0.1in;"></div>
+      <div id="extract-and-submit" style="position:absolute; top: 0.5in; left:-0.1in; z-index: 100;">
+        <span id="extracted" data-show-ready="submit-extracted"></span><br>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
+
     </div>
   </body>
 </html>

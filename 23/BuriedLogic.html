@@ -14,7 +14,11 @@
         'type': 'word',
         'textInput': true,
         'abilities': {
-        }
+        },
+        'validation': { 
+          "extracted": {"GREZVABVPNYYL":"3Bar zber gb haohel|6erfhozvg|6fhozvg-rkgenpgrq2^ernql"},
+          "final-answer": {"GREZVABYBTVPNYYL":"1|4JF_Qvcgrebybtl.ugzy^n zrgn cvrpr sbe Jrveq Fpvrapr|5JF_Qvcgrebybtl.ugzy"} 
+        },
       };
     </script>
     <style>
@@ -44,6 +48,15 @@
       }
       #BuriedLogic .letter-underline {
         margin-right: 4px;
+      }
+      #submit-extracted {
+        position: absolute;
+        right: 0px;
+        bottom: -0.3in;
+      }
+      #final-answer {
+        width: 3in;
+        text-transform: uppercase;
       }
     </style>
   </head>
@@ -110,8 +123,13 @@
         </tr>
       </table>
 
-      <p>
-        Extract letters in order for final answer: <span id="extracted" data-letter-pattern="7~6"></span>
+      <p style="position: relative;">
+        Extract letters in order for final answer: <span id="extracted" data-letter-pattern="7~6" data-show-ready="submit-extracted"></span>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </p>
+      <p id="resubmit" style="position: relative; display:none">
+        Final answer: <input id="final-answer" class="extracted" type="text"></input>
+        <button class="validater" id="submit-extracted2" data-extracted-id="final-answer" data-text-transform="uppercase" >Submit</button>
       </p>
 
     </div>

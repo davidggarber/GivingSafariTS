@@ -15,6 +15,8 @@
         'textInput': true,
         'abilities': {
         },
+        "validation":{"answer":{"GRNPUHF":"1",
+          "GURZNTVPFPUBBYOHF":"3Lhc, gung’f gur zntvp fpubby ohf. Ybbx ng gur chmmyr qbphzrag ntnva sbe n uvag."}},
         'postSetup': prepMaterials
       };
 
@@ -99,6 +101,7 @@
         left: 0px;
         top: 0px;
         width: 7.5in;
+        max-height: 565px;
         opacity: 5%;
       }
       .feeder.show {
@@ -159,10 +162,10 @@
         <button id="b2" class="toggle disabled" onclick="toggleFeeder('f2', this)"><span id="bt2" class="btntext">?</span></button>
         <button id="b3" class="toggle disabled" onclick="toggleFeeder('f3', this)"><span id="bt3" class="btntext">?</span></button>
         <button id="b4" class="toggle disabled" onclick="toggleFeeder('f4', this)"><span id="bt4" class="btntext">?</span></button>
-
-        <div id="final">
-          <span class="letter-cell-block create-from-pattern" data-letter-pattern="7"></span>
-        </div>
+      </div>
+      <div id="final" style="margin-left: 2.6in;">
+        <span id="answer" class="letter-cell-block create-from-pattern" data-letter-pattern="7" data-show-ready="submit-extracted"></span>
+        <button class="validater" id="submit-extracted" data-extracted-id="answer">Submit</button>
       </div>
 
 

@@ -1,4 +1,5 @@
 import os
+from stat import S_IREAD, S_IRGRP, S_IROTH, S_IWRITE
 
 kitFiles = [
     '_classUtil.ts',
@@ -12,7 +13,17 @@ kitFiles = [
     '_dragDrop.ts',
     '_stampTools.ts',
     '_straightEdge.ts',
-    '_boilerplate.ts'
+    '_events.ts',
+    '_boilerplate.ts',
+    '_confirmation.ts',
+    '_builder.ts',
+    '_builderContext.ts',
+    '_builderFor.ts',
+    '_builderIf.ts',
+    '_builderInput.ts',
+    '_builderUse.ts',
+    '_templates.ts',
+    '_validatePBN.ts',
 ]
 
 merged = []
@@ -41,6 +52,8 @@ for srcFile in kitFiles:
   merged += [' *-----------------------------------------------------------*/\n', '\n']
   merged += lines[afterImport:]
 
+os.chmod('kit.ts', S_IWRITE|S_IREAD|S_IRGRP|S_IROTH)  # Temporarily writable by owner
 out = open('kit.ts', mode="w", encoding="utf-8")
 out.writelines(merged)
 out.close()
+os.chmod('kit.ts', S_IREAD|S_IRGRP|S_IROTH)  # Readable by anyone (owner/group/others)

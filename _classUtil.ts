@@ -1,3 +1,6 @@
+import { getParentIf } from "./_builder";
+import { anyFromContext, cloneText, textFromContext } from "./_builderContext";
+
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -64,6 +67,19 @@ export function applyAllClasses(obj: Node|string,
     var list = classes.split(' ');
     for (let cls of list) {
         toggleClass(obj, cls, true);
+    }
+}
+
+/**
+ * Apply all classes in a list of classes.
+ * @param obj - A page element, or id of an element
+ * @param classes - A list of class names, delimited by spaces
+ */
+export function clearAllClasses(obj: Node|string, 
+                                classes:string) {
+    var list = classes.split(' ');
+    for (let cls of list) {
+        toggleClass(obj, cls, false);
     }
 }
 
@@ -198,10 +214,20 @@ export function findEndInContainer( current: Element,
 /**
  * Determine the tag type, based on the tag name (case-insenstive)
  * @param elmt An HTML element
- * @param tag a tag name
+ * @param tag a tag name, or array of names
  */
-export function isTag(elmt: Element, tag: string) {
-    return elmt.tagName.toUpperCase() == tag.toUpperCase();
+export function isTag(elmt: Element, tag: string|string[]) {
+    const tagName = elmt.tagName.toUpperCase();
+    if (typeof(tag) == 'string') {
+        return tagName == tag.toUpperCase();
+    }
+    const tags = tag as string[];
+    for (let i = 0; i < tags.length; i++) {
+        if (tagName == tags[i].toUpperCase()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -227,6 +253,22 @@ export function findParentOfClass(elmt: Element,
         elmt = elmt.parentNode as Element;
     }
     return null;
+}
+
+/**
+ * Is the element anywhere underneath parent (including itself)
+ * @param elmt An element
+ * @param parent An element
+ * @returns true if parent is anywhere in elmt's parent chain
+ */
+export function isSelfOrParent(elmt: Element, parent: Element) {
+    while (elmt !== null && elmt.tagName !== 'BODY') {
+        if (elmt === parent) {
+            return true;
+        }
+        elmt = elmt.parentNode as Element;
+    }
+    return false;
 }
 
 /**
@@ -285,23 +327,63 @@ export function findFirstChildOfClass(  elmt: Element,
  * @param prefix - (optional) - A prefix to apply to the answer
  * @returns The found or default style, optional with prefix added
  */
-export function getOptionalStyle(   elmt: Element, 
+export function getOptionalStyle(   elmt: Element|null, 
                                     attrName: string, 
                                     defaultStyle?: string, 
                                     prefix?: string)
                                     : string|null {
-    var val = elmt.getAttribute(attrName);
-    while (val === null) {
-        elmt = elmt.parentNode as Element;
-        if (elmt === null || elmt.tagName === 'BODY') {
-            val = defaultStyle || null;
-            break;
-        }
-        else {
-            val = elmt.getAttribute(attrName);
+    if (!elmt) {
+        return null;
+    }
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName)) !== '');
+    let val = e ? e.getAttribute(attrName) : null;
+    val = val !== null ? cloneText(val) : (defaultStyle || null);
+    return (val === null || prefix === undefined) ? val : (prefix + val);
+}
+
+/**
+ * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
+ * @param elmt - A page element
+ * @param attrName - An attribute name
+ * @returns The found data, looked up in context
+ */
+export function getOptionalContext( elmt: Element|null, 
+                                    attrName: string)
+                                    : any {
+    if (!elmt) {
+        return null;
+    }
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
+    const val = e ? e.getAttribute(attrName) : null;
+    return val !== null ? anyFromContext(val) : null;
+}
+
+/**
+ * Loop through all elements in a DOM sub-tree, looking for any elements with an optional tag.
+ * Recurse as needed. But once found, don't recurse within the find.
+ * @param root The node to look through. Can also be 'document'
+ * @param attr The name of an attribute. It must be present and non-empty to count
+ * @returns A list of zero or more elements
+ */
+export function getAllElementsWithAttribute(root: Node, attr:string):HTMLElement[] {
+    const list:HTMLElement[] = [];
+    for (let i = 0; i < root.childNodes.length; i++) {
+        const child = root.childNodes[i];
+        if (child.nodeType == Node.ELEMENT_NODE) {
+            const elmt = child as HTMLElement;
+            if (elmt.getAttribute(attr)) {
+                list.push(elmt);
+                // once found, don't recurse
+            }
+            else {
+                const recurse = getAllElementsWithAttribute(elmt, attr);
+                for (let r = 0; r < recurse.length; r++) {
+                    list.push(recurse[r]);
+                }
+            }
         }
     }
-    return (val === null || prefix === undefined) ? val : (prefix + val);
+    return list;
 }
 
 /**
@@ -327,4 +409,45 @@ export function moveFocus(input: HTMLInputElement,
         return true;
     }
     return false;
+}
+
+/**
+ * Sort a collection of elements into an array
+ * @param src A collection of elements, as from document.getElementsByClassName
+ * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
+ * @returns An array of the same elements, either sorted, or else in original document order
+ */
+export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = 'data-extract-order'): Element[] {
+    const lookup = {};
+    const indeces:number[] = [];
+    const sorted:Element[] = [];
+    for (let i = 0; i < src.length; i++) {
+        const elmt = src[i];
+        const order = getOptionalStyle(elmt, sort_attr);
+        if (order) {
+            // track order values we've seen
+            if (!(order in lookup)) {
+                indeces.push(parseInt(order));
+                lookup[order] = [];
+            }
+            // make elements findable by their order
+            lookup[order].push(elmt);
+        }
+        else {
+            // elements without an explicit order go document order
+            sorted.push(elmt);
+        }
+    }
+
+    // Sort indeces, then build array from them
+    indeces.sort();
+    for (let i = 0; i < indeces.length; i++) {
+        const order = '' + indeces[i];
+        const peers = lookup[order];
+        for (let p = 0; p < peers.length; p++) {
+            sorted.push(peers[p]);
+        }
+    }
+
+    return sorted;
 }

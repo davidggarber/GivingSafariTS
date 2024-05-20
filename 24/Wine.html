@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'gs24',
+        'title': 'Wine',
+        'author': 'Rorke Haining',
+        'copyright': '2021',
+        'type': 'Word',
+        'textInput': true,
+        'abilities': {
+          checkMarks:true,
+        },
+        'reactiveBuilder': true
+      };
+      var hints = [
+        'To serve professional food at an event',
+        'Burglar deterrents',
+        'Sartre’s chief rival',
+        'Type of event at a stadium or arena',
+        'Humor that criticizes, e.g. a politician',
+        'Catholic aid organization founded by Lorenz Werthmann',
+        'The work of giving birth',
+        'Traveling salesman lodging',
+        'The player that can use his/her hands in soccer',
+        'It doesn’t boil if you watch it',
+        'Rental agreements',
+        'Member of Seattle’s baseball team',
+        'Ventilates',
+      ];
+      var inputs = [ 5,6,5,8,6,7,5,5,6,3,6,7,4 ];
+      var bottles = [
+        'ALIGOTÉ',
+        'AUSLESE',
+        'BAROLO',
+        'CLARET',
+        'FRASCATI',
+        'MARSALA',
+        'MERLOT',
+        'MUSCAT',
+        'PINOT GRIS',
+        'PORT',
+        'RETSINA',
+        'SIRAH',
+        'TRAMINER'
+      ];
+      boiler.builderLookup = {
+        hints: hints,
+        inputs: inputs,
+        bottles: bottles,
+      }
+    </script>
+    <style>
+      #table {
+        border-spacing: 0px;
+      }
+      #table td {
+        border: solid 1px black;
+        padding: 8px;
+      }
+      .left {
+        width: 4.12in;
+        height: 40px;
+      }
+      .left p {
+        margin: 0px;
+      }
+      .right {
+        width: 0.5in;
+        text-align: center;
+        vertical-align: middle;
+      }
+      .right input {
+        
+      }
+      #bottles {
+        position: absolute;
+        right: 0px;
+        top: 42px;
+      }
+      .bottle-row {
+        position: relative;
+      }
+      .bottle-row img {
+        height: 0.6in;
+      }
+      .bottle-row span {
+        position: absolute;
+        left: 48px;
+        top: 20px;
+        width: 90px;
+        text-align: center;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+    </style>
+  </head>
+  <body id="Wine">
+    <div id="pageBody">
+      <p class="flavor">
+        Rats, I’ve mixed up all my wine pairings.  Can you help?
+      </p>
+      <table_ id="table" class="letter-grid-2d">
+        <for each="hint" in="hints">
+          <tr_>
+            <td_ class="left">
+                <p class="hint">{hint}</p>
+                <p class="inputs"><pattern pattern="{inputs.[hint#]}"></pattern></p>
+            </td_>
+            <td_ class="right"><letter class="extract" data-input-style="none"></letter></td_>
+          </tr_>
+        </for>
+      </table_>
+      <div id="bottles">
+        <for each="bottle" in="bottles">
+          <div class="bottle-row" class_="cross-off">
+            <img src="Images/Wine/bottle.png">
+            <span class="label">{bottle}</span>
+          </div>
+        </for>  
+      </div>
+
+      <div class="no-print" style="position:absolute; bottom: -0.5in; left: 2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:1.5in; text-transform: uppercase;"></input>
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

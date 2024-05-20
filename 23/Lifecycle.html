@@ -16,7 +16,8 @@
         'abilities': {
           'notes': true,
           'checkMarks': true,
-        }
+        },
+        "validation":{"extracted":{"NIVEGHBHFPVEPYR":"1|4GZFO_SvAafF.ugzy^n zrgn cvrpr sbe Gur Zntvp Fpubby Ohf|5GZFO_SvAafF.ugzy"}}
       };
     </script>
     <style>
@@ -46,10 +47,11 @@
         padding: 5px;
         width: 2.5in;
       }
-      #extracted {
+      #extract-and-submit {
         position: absolute;
-        right: 24px;
+        left: 1in;
         bottom: 36px;
+        white-space:nowrap;
       }
       #Lifecycle .note-input.note-right {
         right: 1px;
@@ -141,7 +143,10 @@
         </tr>
       </table>
 
-      <div id="extracted" data-number-pattern="15"></div>
+      <div id="extract-and-submit">
+        <span id="extracted" data-number-pattern="15" data-show-ready="submit-extracted"></span>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
 
     </div>
   </body>

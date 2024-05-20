@@ -1,9 +1,11 @@
-import { forceReload, getSafariDetails, isIFrame, isRestart, theBoiler } from "./_boilerplate";
+import { forceReload, isIFrame, isRestart, theBoiler } from "./_boilerplate";
 import { hasClass, toggleClass, getOptionalStyle, findFirstChildOfClass } from "./_classUtil";
 import { afterInputUpdate, updateWordExtraction } from "./_textInput";
 import { quickMove, quickFreeMove, Position, positionFromStyle } from "./_dragDrop";
 import { doStamp, getStampParent } from "./_stampTools";
 import { createFromVertexList } from "./_straightEdge";
+import { GuessLog, decodeAndValidate } from "./_confirmation";
+import { getSafariDetails } from "./_events";
 
 ////////////////////////////////////////////////////////////////////////
 // Types
@@ -20,13 +22,14 @@ type LocalCacheStruct = {
     checks: object;     // number => boolean
     containers: object; // number => number
     positions: object;  // number => Position
-    stamps: object;   // number => string
+    stamps: object;     // number => string
     highlights: object; // number => boolean
-    edges: string[]; // strings
+    edges: string[];    // strings
+    guesses: GuessLog[];
     time: Date|null;
 }
 
-var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], time: null };
+var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], guesses: [], time: null };
 
 ////////////////////////////////////////////////////////////////////////
 // User interface
@@ -226,7 +229,7 @@ function saveCache() {
  * @param element an letter-input element
  */
 export function saveLetterLocally(input:HTMLInputElement) {
-    if (input) {
+    if (input && input != currently_restoring) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.letters[index] = input.value;
@@ -240,7 +243,7 @@ export function saveLetterLocally(input:HTMLInputElement) {
  * @param element an word-input element
  */
 export function saveWordLocally(input:HTMLInputElement) {
-    if (input) {
+    if (input && input != currently_restoring) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.words[index] = input.value;
@@ -320,6 +323,9 @@ export function saveStampingLocally(element:HTMLElement) {
             if (drawn) {
                 localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
             }
+            else if (hasClass(parent, 'stampedObject')) {
+                localCache.stamps[index] = parent.getAttributeNS('', 'data-template-id');
+            }
             else {
                 delete localCache.stamps[index];
             }
@@ -357,6 +363,15 @@ export function saveStraightEdge(vertexList: string, add:boolean) {
             localCache.edges.splice(i, 1);
         }
     }
+    saveCache();
+}
+
+/**
+ * Update the local cache with the full set of guesses for this puzzle
+ * @param guesses An array of guesses, in time order
+ */
+export function saveGuessHistory(guesses: GuessLog[]) {
+    localCache.guesses = guesses;
     saveCache();
 }
 
@@ -525,6 +540,7 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreStamps(storage.stamps);
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
+    restoreGuesses(storage.guesses);
     reloading = false;
 
     const fn = theBoiler().onRestore;
@@ -532,6 +548,8 @@ function loadLocalStorage(storage:LocalCacheStruct) {
         fn();
     }
 }
+
+let currently_restoring:HTMLElement|null = null;
 
 /**
  * Restore any saved letter input values
@@ -541,13 +559,15 @@ function restoreLetters(values:object) {
     localCache.letters = values;
     var inputs = document.getElementsByClassName('letter-input');
     for (var i = 0; i < inputs.length; i++) {
+        currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
         if(value != undefined){
             input.value = value;
-            afterInputUpdate(input);
+            afterInputUpdate(input, values[i]);
         }
     }
+    currently_restoring = null;
 }
 
 /**
@@ -558,16 +578,21 @@ function restoreWords(values:object) {
     localCache.words = values;
     var inputs = document.getElementsByClassName('word-input');
     for (var i = 0; i < inputs.length; i++) {
+        currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
         if(value != undefined){
             input.value = value;
+            if (value.length > 0) {
+                afterInputUpdate(input, value.substring(value.length - 1));
+            }
             var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
             if (extractId != null) {
                 updateWordExtraction(extractId);
             }            
         }
     }
+    currently_restoring = null;
     if (inputs.length > 0) {
         updateWordExtraction(null);
     }
@@ -690,6 +715,128 @@ function restoreEdges(vertexLists:string[]) {
     }
 }
 
+/**
+ * Recreate any saved guesses and their responses
+ * @param guesses A list of guess structures
+ */
+function restoreGuesses(guesses:GuessLog[]) {
+    if (!guesses) {
+        guesses = [];
+    }
+    for (var i = 0; i < guesses.length; i++) {
+        const src = guesses[i];
+        // Rebuild the GuessLog, to convert the string back to a DateTime
+        const gl:GuessLog = { field:src.field, guess:src.guess, time:new Date(String(src.time)) };
+        decodeAndValidate(gl);
+        // Decoding will rebuild the localCache
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Utils for working with the shared puzzle list
+//
+
+/**
+ * A limited list of meaningful puzzle statuses
+ */
+export const PuzzleStatus = {
+    Hidden: 'hidden',  // A puzzle the player should not even see
+    Locked: 'locked',  // A puzzle the player should not have a link to
+    Unlocked: 'unlocked',  // A puzzle that the player can now reach
+    Loaded: 'loaded',  // A puzzle which has been loaded, possibly triggering secondary storage
+    Solved: 'solved',  // A puzzle which is fully solved
+}
+
+/**
+ * Update the master list of puzzles for this event
+ * @param puzzle The name of this puzzle (not the filename)
+ * @param status One of the statuses in PuzzleStatus
+ */
+export function updatePuzzleList(puzzle:string|null, status:string) {
+    if (!puzzle) {
+        puzzle = getCurFileName();
+    }
+    var key = getOtherFileHref('puzzle_list', 0);
+    let pList = {};
+    if (key in localStorage) {
+        const item = localStorage.getItem(key);
+        if (item) {
+            pList = JSON.parse(item);
+        }
+    }
+    if (!pList) {
+        pList = {};
+    }
+    pList[puzzle] = status;
+    localStorage.setItem(key, JSON.stringify(pList));
+}
+
+/**
+ * Lookup the status of a puzzle
+ * @param puzzle The name of a puzzle
+ * @param defaultStatus The initial status, before a player updates it
+ * @returns The saved status
+ */
+export function getPuzzleStatus(puzzle:string|null, defaultStatus?:string): string|undefined {
+    if (!puzzle) {
+        puzzle = getCurFileName();
+    }
+    var key = getOtherFileHref('puzzle_list', 0);
+    let pList = {};
+    if (key in localStorage) {
+        const item = localStorage.getItem(key);
+        if (item) {
+            pList = JSON.parse(item);
+            if (pList && puzzle in pList) {
+                return pList[puzzle];
+            }
+        }
+    }
+    return defaultStatus;
+}
+
+/**
+ * Return a list of puzzles we are tracking, which currently have the indicated status
+ * @param status one of the valid status strings
+ */
+export function listPuzzlesOfStatus(status:string): string[] {
+    const list:string[] = [];
+    var key = getOtherFileHref('puzzle_list', 0);
+    if (key in localStorage) {
+        const item = localStorage.getItem(key);
+        if (item) {
+            const pList = JSON.parse(item);
+            if (pList) {
+                const names = Object.keys(pList);
+                for (let i = 0; i < names.length; i++) {
+                    const name = names[i];
+                    if (pList[name] === status) {
+                        list.push(name);
+                    }
+                }
+            }
+        }
+    }
+    return list;
+}
+
+/**
+ * Clear the list of which puzzles have been saved, unlocked, etc.
+ */
+export function resetAllPuzzleStatus() {
+    var key = getOtherFileHref('puzzle_list', 0);
+    localStorage.setItem(key, JSON.stringify(null));
+}
+
+/**
+ * Clear any saved progress on this puzzle
+ * @param puzzleFile a puzzle filename
+ */
+export function resetPuzzleProgress(puzzleFile:string) {
+    var key = getOtherFileHref(puzzleFile, 0);
+    localStorage.setItem(key, JSON.stringify(null));
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Utils for sharing data between puzzles
 //
@@ -724,8 +871,26 @@ function loadMetaMaterials(puzzle, up, page): object|undefined {
     return undefined;
 }
 
+/**
+ * Get the last level of the URL's pathname
+ */
+export function getCurFileName(no_extension:boolean = true) {
+    const key = window.location.pathname;
+    const bslash = key.lastIndexOf('\\');
+    const fslash = key.lastIndexOf('/');
+    const parts = key.split(fslash >= bslash ? '/' : '\\');
+    let name = parts[parts.length - 1];
+    if (no_extension) {
+        const dot = name.split('.');
+        if (dot.length > 1) {
+            name = name.substring(0, name.length - 1 - dot[dot.length - 1].length);
+        }
+    }
+    return name;
+}
+
 // Convert the absolute href of the current window to a relative href
-// levels: 1=just this file, 2=parent folder + fiole, etc.
+// levels: 1=just this file, 2=parent folder + file, etc.
 function getRelFileHref(levels) {
     const key = storageKey();
     const bslash = key.lastIndexOf('\\');

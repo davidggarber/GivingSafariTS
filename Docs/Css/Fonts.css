@@ -1,0 +1,59 @@
+.title {
+  font-size: 22pt;
+  font-family: 'Lucida Console';
+  letter-spacing: -1.5px;
+}
+
+.title-font {
+  font-family: 'Lucida Console';
+}
+
+.input-font {
+  font-family: 'Caveat';
+}
+
+._Docs .letter-cell {
+  font-family: 'Caveat';
+  font-size: 14pt;
+}
+
+.word-cell {
+  font-family: 'Caveat';
+  font-size: 14pt;
+}
+
+#final .letter-cell {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+#extracted {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+.extracted {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+#extracted .letter-cell {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+#extracted .letter-input {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+@media print {
+  .screen-only {
+    display: none;
+  }
+}

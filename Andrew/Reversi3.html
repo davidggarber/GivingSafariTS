@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': '24',
+        'title': 'Reversi',
+        'author': 'Andrew Giese',
+        'copyright': '2024',
+        'paperSize': 'minimalist',
+        'abilities': {
+          'stamping': true,
+        },
+        'reactiveBuilder': true,
+      };
+
+      var letters = [
+        "SVHJNAKA",
+        "EGSGPBCE",
+        "YANRLENP",
+        "LATNYZAR",
+        "UBLTEERE",
+        "BENNATAE",
+        "GAGMNTEB",
+        "ANVAMFGE",
+      ];
+      var colors = [
+        "xBxxxWxx",
+        "xBxxxxBx",
+        "xxxWxWxx",
+        "xxxBxxxB",
+        "xxWxxxxB",
+        "xBxxxxxx",
+        "xxxxBBxx",
+        "xxxWxxxx",
+      ];
+      var stampable = {
+        B: '',
+        W: '',
+        x: 'stampable'
+      }
+
+      var circleStamps = [
+        {id:'has-B', next:'has-W'},
+        {id:'has-W', next:'clear'},
+        {id:'clear', next:'has-B'},
+      ];
+
+      boiler['builderLookup'] =
+      {
+        letters: letters,
+        colors: colors,
+        stamps: circleStamps,
+        stampable: stampable,
+      };
+    </script>
+    <style>
+      #grid-container {
+        margin-left: 0.1in;
+        display: grid;
+        grid-template-columns: repeat(8, 50px); /* Creates 8 columns */
+        grid-template-rows: repeat(8, 50px); /* Creates 8 rows */
+        user-select: none;
+      }
+
+      .grid-square {
+        width: 50px;
+        height: 50px;
+        background-color: #158336; /* Initial color */
+        border: 1px solid #000000; /* Optional: adds a border to each square */
+        position: relative; /* Needed to position the circle inside the square */
+        color: #000000; /* Default text color for empty cell or cell with white circle */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px; /* Adjust as needed */
+        cursor: pointer;
+      }
+
+      .locked-B,.locked-W {
+        cursor: default;
+      }
+
+      .circle {
+        width: 45px; /* Smaller than the square to fit inside */
+        height: 45px;
+        background-color: transparent; /* Circle color */
+        border: 1px solid transparent;
+        border-radius: 50%; /* Makes the shape a circle */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Centers the circle in the square */
+      }
+
+      .has-B .circle {
+        background-color: #000000; /* Black circle */
+        border-color: #000000;
+      }
+
+      .has-W .circle {
+        background-color: #ffffff; /* White circle */
+        border-color: #000000;
+      }
+
+      .grid-text {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        z-index: 1; /* Ensures the text is above the circle */
+      }
+
+      .has-B .grid-text {
+        color: white; /* When a black circle is present, change the text color to white */
+      }
+
+      .locked-W .grid-text,.locked-B .grid-text {
+        text-decoration: underline; /* Underlines the text */
+        cursor: default;
+      }
+      ol {
+        counter-reset: list;
+      }
+      ol > li {
+        list-style: none;
+        margin-bottom: 12pt;
+      }
+      ol > li:before {
+        content: counter(list) ")  ";
+        counter-increment: list;
+      }
+    </style>
+  </head>
+  <body id="Reversi">
+    <div id="pageBody">
+
+      <div id="flavor">
+        <p>Fill in the game board below while obeying the following rules:</p>
+        <ol>
+          <li>Each row and column must contain exactly 4 black and 4 white pieces</li>
+          <li>No row or column can have more than 2 consecutive pieces of the same color</li>
+        </ol>
+      </div>
+
+      <div id="grid-container">
+        <for each="row" in="letters">
+          <for each="ch" in="row">
+            <div class="grid-square has-{colors.[row#].[ch#]} locked-{colors.[row#].[ch#]} {stampable.[colors.[row#].[ch#]]}">
+              <div class="circle"></div>
+              <span class="grid-text">{ch}</span>
+            </div>
+          </for>
+        </for>
+      </div>
+
+      <div style="position: absolute; top: -1in; right: 1in;">
+        <use template="classStampNoTools" tools="{stamps}" erase="clear"></use>
+      </div>
+
+    </div>
+  </body>
+</html>

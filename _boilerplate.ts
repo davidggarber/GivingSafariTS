@@ -8,6 +8,9 @@ import { preprocessDragFunctions } from "./_dragDrop";
 import { EdgeTypes, preprocessRulerFunctions } from "./_straightEdge";
 import { TableDetails, constructTable } from "./_tableBuilder";
 import { setupSubways } from "./_subway";
+import { setupValidation } from "./_confirmation";
+import { expandControlTags } from "./_builder";
+import { LinkDetails, getSafariDetails, initSafariDetails } from "./_events";
 
 
 /**
@@ -75,6 +78,15 @@ export function isPrint() {
 }
 
 /**
+ * Determines if this document's URL was tagged with ?icon
+ * This is intended to as an alternative way to generate icons for each puzzle
+ * @returns true if this page's URL contains a print argument (other than false)
+ */
+export function isIcon() {
+    return urlArgs['icon'] != undefined && urlArgs['icon'] !== false;
+}
+
+/**
  * Special url arg to override any cached storage. Always restarts.
  * @returns true if this page's URL contains a restart argument (other than =false)
  */
@@ -93,77 +105,6 @@ export function forceReload(): boolean|undefined {
     return undefined;
 }
 
-type LinkDetails = {
-    rel: string;  // 'preconnect', 'stylesheet', ...
-    href: string;
-    type?: string;  // example: 'text/css'
-    crossorigin?: string;  // if anything, ''
-}
-
-type PuzzleEventDetails = {
-    title: string;
-    logo: string;  // path from root
-    icon: string;  // path from root
-    puzzleList: string;
-    cssRoot: string;  // path from root
-    fontCss: string;  // path from root
-    googleFonts?: string;  // comma-delimeted list
-    links: LinkDetails[];
-    qr_folders?: {};  // folder lookup
-}
-
-const safariSingleDetails:PuzzleEventDetails = {
-    'title': 'Puzzle',
-    'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
-    'puzzleList': '',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
-    'links': [
-//        { rel:'preconnect', href:'https://fonts.googleapis.com' },
-//        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
-    ]
-}
-
-const safariSampleDetails:PuzzleEventDetails = {
-    'title': 'Puzzle Safari',
-    'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
-    'puzzleList': './index.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
-    'links': []
-}
-
-const safari20Details:PuzzleEventDetails = {
-    'title': 'Safari Labs',
-    'logo': './Images/PS20 logo.png',
-    'icon': './Images/Beaker_icon.png',
-    'puzzleList': './safari.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts20.css',
-    'googleFonts': 'Architects+Daughter,Caveat',
-    'links': [],
-    'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
-                   'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
-}
-
-const pastSafaris = {
-    'Sample': safariSampleDetails,
-    'Single': safariSingleDetails,
-    '20': safari20Details,
-}
-
-let safariDetails:PuzzleEventDetails;
-
-/**
- * Return the details of this puzzle event
- */
-export function getSafariDetails(): PuzzleEventDetails {
-    return safariDetails;
-}
 
 type AbilityData = {
     notes?: boolean;
@@ -175,6 +116,7 @@ type AbilityData = {
     stamping?: boolean;
     straightEdge?: boolean;
     wordSearch?: boolean;
+    hashiBridge?: boolean;
     subway?: boolean;
 }
 
@@ -190,24 +132,34 @@ type BoilerPlateData = {
     lang?: string;  // en-us by default
     paperSize?: string;  // letter by default
     orientation?: string;  // portrait by default
+    printAsColor?: boolean;  // true=color, false=grayscale, unset=unmentioned
     textInput?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
+    validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
+    reactiveBuilder?: boolean;  // invoke the new reactive builder
+    builderLookup?: object;  // a dictionary of javascript objects and/or pointers
+    postBuild?: () => void;  // invoked after the builder is done
     preSetup?: () => void;
     postSetup?: () => void;
     googleFonts?: string;  // A list of fonts, separated by commas
     onNoteChange?: (inp:HTMLInputElement) => void;
     onInputChange?: (inp:HTMLInputElement) => void;
+    onStampChange?: (newTool:string, prevTool:string) => void;
+    onStamp?: (stampTarget:HTMLElement) => void;
     onRestore?: () => void;
 }
+
+const print_as_color = { id:'printAs', html:"<div style='color:#666;'>Print as <span style='color:#FF0000;'>c</span><span style='color:#538135;'>o</span><span style='color:#00B0F0;'>l</span><span style='color:#806000;'>o</span><span style='color:#7030A0;'>r</span>.</div>" };
+const print_as_grayscale = { id:'printAs', text: "<div style='color:#666;'>Print as grayscale</div>"};
 
 /**
  * Do some basic setup before of the page and boilerplate, before building new components
  * @param bp 
  */
 function preSetup(bp:BoilerPlateData) {
-    safariDetails = pastSafaris[bp.safari];
+    const safariDetails = initSafariDetails(bp.safari);
     debugSetup();
     var bodies = document.getElementsByTagName('BODY');
     if (isIFrame()) {
@@ -215,6 +167,9 @@ function preSetup(bp:BoilerPlateData) {
     }
     if (isPrint()) {
         bodies[0].classList.add('print');
+    }
+    if (isIcon()) {
+        bodies[0].classList.add('icon');
     }
     if (bp.pathToRoot) {
         if (safariDetails.logo) { 
@@ -232,9 +187,10 @@ function preSetup(bp:BoilerPlateData) {
 interface CreateSimpleDivArgs {
     id?: string;
     cls?: string;
-    html?: string;
+    text?: string;  // raw text, which will be entitized
+    html?: string;  // html code
 }
-function createSimpleDiv({id, cls, html}: CreateSimpleDivArgs) : HTMLDivElement {
+function createSimpleDiv({id, cls, text, html}: CreateSimpleDivArgs) : HTMLDivElement {
     let div: HTMLDivElement = document.createElement('DIV') as HTMLDivElement;
     if (id !== undefined) {
         div.id = id;
@@ -242,7 +198,10 @@ function createSimpleDiv({id, cls, html}: CreateSimpleDivArgs) : HTMLDivElement 
     if (cls !== undefined) {
         div.classList.add(cls);
     }
-    if (html !== undefined) {
+    if (text !== undefined) {
+        div.appendChild(document.createTextNode(text));
+    }
+    else if (html !== undefined) {
         div.innerHTML = html;
     }
     return div;
@@ -296,6 +255,7 @@ function createPrintQrBase64(data:string):HTMLImageElement {
 }
 
 function getQrPath():string|undefined {
+    const safariDetails = getSafariDetails();
     if (safariDetails.qr_folders) {
         const url = window.location.href;
         for (const key of Object.keys(safariDetails.qr_folders)) {
@@ -383,6 +343,10 @@ function boilerplate(bp: BoilerPlateData) {
      *   </html>
      */
 
+    if (bp.reactiveBuilder) {
+        expandControlTags();
+    }
+
     if (bp.tableBuilder) {
         constructTable(bp.tableBuilder);
     }
@@ -396,6 +360,7 @@ function boilerplate(bp: BoilerPlateData) {
     
     html.lang = bp.lang || 'en-us';
 
+    const safariDetails = getSafariDetails();
     for (var i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
@@ -406,7 +371,7 @@ function boilerplate(bp: BoilerPlateData) {
     head.appendChild(viewport);
 
     if (safariDetails.fontCss) {
-        linkCss(head, safariDetails.fontCss);
+        linkCss(safariDetails.fontCss);
     }
     let gFonts = bp.googleFonts;
     if (safariDetails.googleFonts) {
@@ -434,8 +399,8 @@ function boilerplate(bp: BoilerPlateData) {
         }
         addLink(head, link);
     }
-    linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
-    linkCss(head, safariDetails.cssRoot + 'TextInput.css');
+    linkCss(safariDetails.cssRoot + 'PageSizes.css');
+    linkCss(safariDetails.cssRoot + 'TextInput.css');
     if (!bp.paperSize) {
         bp.paperSize = 'letter';
     }
@@ -455,10 +420,15 @@ function boilerplate(bp: BoilerPlateData) {
     body.appendChild(page);
     page.appendChild(margins);
     margins.appendChild(pageBody);
-    margins.appendChild(createSimpleDiv({cls:'title', html:bp.title}));
-    margins.appendChild(createSimpleDiv({id:'copyright', html:'&copy; ' + bp.copyright + ' ' + bp.author}));
+    margins.appendChild(createSimpleDiv({cls:'title', text:bp.title}));
+    if (bp.copyright || bp.author) {
+        margins.appendChild(createSimpleDiv({id:'copyright', text:'© ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
+    }
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:'Puzzle list'}));
+    }
+    if (bp.printAsColor !== undefined) {
+        margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));
     }
 
     // Set tab icon for safari event
@@ -496,10 +466,20 @@ function boilerplate(bp: BoilerPlateData) {
     }
     setupAbilities(head, margins, bp.abilities || {});
 
+    if (bp.validation) {
+        linkCss(safariDetails.cssRoot + 'Guesses.css');
+        setupValidation();
+    }
+
+
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);
     }
 
+}
+
+function theHead(): HTMLHeadElement {
+    return document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
 }
 
 /**
@@ -512,7 +492,8 @@ let cssToLoad = 1;
  * @param head the head tag
  * @param det the attributes of the link tag
  */
-function addLink(head:HTMLHeadElement, det:LinkDetails) {
+export function addLink(head:HTMLHeadElement, det:LinkDetails) {
+    head = head || theHead();
     const link = document.createElement('link');
     link.href = det.href;
     link.rel = det.rel;
@@ -529,12 +510,20 @@ function addLink(head:HTMLHeadElement, det:LinkDetails) {
     head.appendChild(link);
 }
 
+const linkedCss = {};
+
 /**
  * Append a CSS link to the header
- * @param head the head tag
  * @param relPath The contents of the link's href
+ * @param head the head tag
  */
-function linkCss(head:HTMLHeadElement, relPath:string) {
+export function linkCss(relPath:string, head?:HTMLHeadElement) {
+    if (relPath in linkedCss) {
+        return;  // Don't re-add
+    }
+    linkedCss[relPath] = true;
+    
+    head = head || theHead();
     const link = document.createElement('link');
     link.href=relPath;
     link.rel = "Stylesheet";
@@ -561,6 +550,7 @@ function cssLoaded() {
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
 function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:AbilityData) {
+    const safariDetails = getSafariDetails();
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;
@@ -602,29 +592,35 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         preprocessDragFunctions();
         indexAllDragDropFields();
-        linkCss(head, safariDetails.cssRoot + 'DragDrop.css');
+        linkCss(safariDetails.cssRoot + 'DragDrop.css');
         count++;
     }
     if (data.stamping) {
         preprocessStampObjects();
         indexAllDrawableFields();
-        linkCss(head, safariDetails.cssRoot + 'StampTools.css');
+        linkCss(safariDetails.cssRoot + 'StampTools.css');
         // No ability icon
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions(EdgeTypes.straightEdge, false);
-        linkCss(head, safariDetails.cssRoot + 'StraightEdge.css');
+        linkCss(safariDetails.cssRoot + 'StraightEdge.css');
         //indexAllVertices();
     }
     if (data.wordSearch) {
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
         preprocessRulerFunctions(EdgeTypes.wordSelect, true);
-        linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
+        linkCss(safariDetails.cssRoot + 'WordSearch.css');
+        //indexAllVertices();
+    }
+    if (data.hashiBridge) {
+        // fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">🌉</span>';
+        preprocessRulerFunctions(EdgeTypes.hashiBridge, true);
+        linkCss(safariDetails.cssRoot + 'HashiBridge.css');
         //indexAllVertices();
     }
     if (data.subway) {
-        linkCss(head, safariDetails.cssRoot + 'Subway.css');
+        linkCss(safariDetails.cssRoot + 'Subway.css');
         // Don't setupSubways() until all styles have applied, so CSS-derived locations are final
     }
     if (data.notes) {

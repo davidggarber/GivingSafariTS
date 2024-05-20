@@ -3,8 +3,9 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onLetterKey = exports.onLetterKeyDown = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveFocus = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.theBoiler = exports.getSafariDetails = exports.forceReload = exports.isRestart = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.textSetup = exports.onWordChange = exports.onLetterChange = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = void 0;
+exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = void 0;
+exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -70,6 +71,19 @@ function applyAllClasses(obj, classes) {
     }
 }
 exports.applyAllClasses = applyAllClasses;
+/**
+ * Apply all classes in a list of classes.
+ * @param obj - A page element, or id of an element
+ * @param classes - A list of class names, delimited by spaces
+ */
+function clearAllClasses(obj, classes) {
+    var list = classes.split(' ');
+    for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
+        var cls = list_2[_i];
+        toggleClass(obj, cls, false);
+    }
+}
+exports.clearAllClasses = clearAllClasses;
 /**
  * Given one element, find the next one in the document that matches the desired class
  * @param current - An existing element
@@ -186,10 +200,20 @@ exports.findEndInContainer = findEndInContainer;
 /**
  * Determine the tag type, based on the tag name (case-insenstive)
  * @param elmt An HTML element
- * @param tag a tag name
+ * @param tag a tag name, or array of names
  */
 function isTag(elmt, tag) {
-    return elmt.tagName.toUpperCase() == tag.toUpperCase();
+    var tagName = elmt.tagName.toUpperCase();
+    if (typeof (tag) == 'string') {
+        return tagName == tag.toUpperCase();
+    }
+    var tags = tag;
+    for (var i = 0; i < tags.length; i++) {
+        if (tagName == tags[i].toUpperCase()) {
+            return true;
+        }
+    }
+    return false;
 }
 exports.isTag = isTag;
 /**
@@ -215,6 +239,22 @@ function findParentOfClass(elmt, parentClass) {
     return null;
 }
 exports.findParentOfClass = findParentOfClass;
+/**
+ * Is the element anywhere underneath parent (including itself)
+ * @param elmt An element
+ * @param parent An element
+ * @returns true if parent is anywhere in elmt's parent chain
+ */
+function isSelfOrParent(elmt, parent) {
+    while (elmt !== null && elmt.tagName !== 'BODY') {
+        if (elmt === parent) {
+            return true;
+        }
+        elmt = elmt.parentNode;
+    }
+    return false;
+}
+exports.isSelfOrParent = isSelfOrParent;
 /**
  * Find the nearest containing node of the specified tag type.
  * @param elmt - An existing element
@@ -269,20 +309,58 @@ exports.findFirstChildOfClass = findFirstChildOfClass;
  * @returns The found or default style, optional with prefix added
  */
 function getOptionalStyle(elmt, attrName, defaultStyle, prefix) {
-    var val = elmt.getAttribute(attrName);
-    while (val === null) {
-        elmt = elmt.parentNode;
-        if (elmt === null || elmt.tagName === 'BODY') {
-            val = defaultStyle || null;
-            break;
-        }
-        else {
-            val = elmt.getAttribute(attrName);
-        }
+    if (!elmt) {
+        return null;
     }
+    var e = getParentIf(elmt, function (e) { return e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName)) !== ''; });
+    var val = e ? e.getAttribute(attrName) : null;
+    val = val !== null ? cloneText(val) : (defaultStyle || null);
     return (val === null || prefix === undefined) ? val : (prefix + val);
 }
 exports.getOptionalStyle = getOptionalStyle;
+/**
+ * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
+ * @param elmt - A page element
+ * @param attrName - An attribute name
+ * @returns The found data, looked up in context
+ */
+function getOptionalContext(elmt, attrName) {
+    if (!elmt) {
+        return null;
+    }
+    var e = getParentIf(elmt, function (e) { return e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== ''; });
+    var val = e ? e.getAttribute(attrName) : null;
+    return val !== null ? anyFromContext(val) : null;
+}
+exports.getOptionalContext = getOptionalContext;
+/**
+ * Loop through all elements in a DOM sub-tree, looking for any elements with an optional tag.
+ * Recurse as needed. But once found, don't recurse within the find.
+ * @param root The node to look through. Can also be 'document'
+ * @param attr The name of an attribute. It must be present and non-empty to count
+ * @returns A list of zero or more elements
+ */
+function getAllElementsWithAttribute(root, attr) {
+    var list = [];
+    for (var i = 0; i < root.childNodes.length; i++) {
+        var child = root.childNodes[i];
+        if (child.nodeType == Node.ELEMENT_NODE) {
+            var elmt = child;
+            if (elmt.getAttribute(attr)) {
+                list.push(elmt);
+                // once found, don't recurse
+            }
+            else {
+                var recurse = getAllElementsWithAttribute(elmt, attr);
+                for (var r = 0; r < recurse.length; r++) {
+                    list.push(recurse[r]);
+                }
+            }
+        }
+    }
+    return list;
+}
+exports.getAllElementsWithAttribute = getAllElementsWithAttribute;
 /**
  * Move focus to the given input (if not null), and select the entire contents.
  * If input is of type number, do nothing.
@@ -306,6 +384,46 @@ function moveFocus(input, caret) {
     return false;
 }
 exports.moveFocus = moveFocus;
+/**
+ * Sort a collection of elements into an array
+ * @param src A collection of elements, as from document.getElementsByClassName
+ * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
+ * @returns An array of the same elements, either sorted, or else in original document order
+ */
+function SortElements(src, sort_attr) {
+    if (sort_attr === void 0) { sort_attr = 'data-extract-order'; }
+    var lookup = {};
+    var indeces = [];
+    var sorted = [];
+    for (var i = 0; i < src.length; i++) {
+        var elmt = src[i];
+        var order = getOptionalStyle(elmt, sort_attr);
+        if (order) {
+            // track order values we've seen
+            if (!(order in lookup)) {
+                indeces.push(parseInt(order));
+                lookup[order] = [];
+            }
+            // make elements findable by their order
+            lookup[order].push(elmt);
+        }
+        else {
+            // elements without an explicit order go document order
+            sorted.push(elmt);
+        }
+    }
+    // Sort indeces, then build array from them
+    indeces.sort();
+    for (var i = 0; i < indeces.length; i++) {
+        var order = '' + indeces[i];
+        var peers = lookup[order];
+        for (var p = 0; p < peers.length; p++) {
+            sorted.push(peers[p]);
+        }
+    }
+    return sorted;
+}
+exports.SortElements = SortElements;
 /**
  * Create a generic TR tag for each row in a table.
  * Available for TableDetails.onRow where that is all that's needed
@@ -444,7 +562,10 @@ function setupNotes(margins) {
     index = setupNotesCells('notes-abs', undefined, index);
     setupNotesToggle(margins);
     indexAllNoteFields();
-    if (isBodyDebug()) {
+    if (isPrint()) {
+        setNoteState(NoteState.Disabled);
+    }
+    else if (isBodyDebug()) {
         setNoteState(NoteState.Visible);
     }
 }
@@ -773,7 +894,7 @@ function toggleDecoder() {
     setupDecoderToggle(null);
 }
 exports.toggleDecoder = toggleDecoder;
-var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], time: null };
+var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], guesses: [], time: null };
 ////////////////////////////////////////////////////////////////////////
 // User interface
 //
@@ -963,7 +1084,7 @@ function saveCache() {
  * @param element an letter-input element
  */
 function saveLetterLocally(input) {
-    if (input) {
+    if (input && input != currently_restoring) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.letters[index] = input.value;
@@ -977,7 +1098,7 @@ exports.saveLetterLocally = saveLetterLocally;
  * @param element an word-input element
  */
 function saveWordLocally(input) {
-    if (input) {
+    if (input && input != currently_restoring) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.words[index] = input.value;
@@ -1057,6 +1178,9 @@ function saveStampingLocally(element) {
             if (drawn) {
                 localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
             }
+            else if (hasClass(parent_1, 'stampedObject')) {
+                localCache.stamps[index] = parent_1.getAttributeNS('', 'data-template-id');
+            }
             else {
                 delete localCache.stamps[index];
             }
@@ -1097,6 +1221,15 @@ function saveStraightEdge(vertexList, add) {
     saveCache();
 }
 exports.saveStraightEdge = saveStraightEdge;
+/**
+ * Update the local cache with the full set of guesses for this puzzle
+ * @param guesses An array of guesses, in time order
+ */
+function saveGuessHistory(guesses) {
+    localCache.guesses = guesses;
+    saveCache();
+}
+exports.saveGuessHistory = saveGuessHistory;
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -1258,12 +1391,14 @@ function loadLocalStorage(storage) {
     restoreStamps(storage.stamps);
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
+    restoreGuesses(storage.guesses);
     reloading = false;
     var fn = theBoiler().onRestore;
     if (fn) {
         fn();
     }
 }
+var currently_restoring = null;
 /**
  * Restore any saved letter input values
  * @param values A dictionary of index=>string
@@ -1272,13 +1407,15 @@ function restoreLetters(values) {
     localCache.letters = values;
     var inputs = document.getElementsByClassName('letter-input');
     for (var i = 0; i < inputs.length; i++) {
+        currently_restoring = inputs[i];
         var input = inputs[i];
         var value = values[i];
         if (value != undefined) {
             input.value = value;
-            afterInputUpdate(input);
+            afterInputUpdate(input, values[i]);
         }
     }
+    currently_restoring = null;
 }
 /**
  * Restore any saved word input values
@@ -1288,16 +1425,21 @@ function restoreWords(values) {
     localCache.words = values;
     var inputs = document.getElementsByClassName('word-input');
     for (var i = 0; i < inputs.length; i++) {
+        currently_restoring = inputs[i];
         var input = inputs[i];
         var value = values[i];
         if (value != undefined) {
             input.value = value;
+            if (value.length > 0) {
+                afterInputUpdate(input, value.substring(value.length - 1));
+            }
             var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
             if (extractId != null) {
                 updateWordExtraction(extractId);
             }
         }
     }
+    currently_restoring = null;
     if (inputs.length > 0) {
         updateWordExtraction(null);
     }
@@ -1412,6 +1554,125 @@ function restoreEdges(vertexLists) {
         createFromVertexList(vertexLists[i]);
     }
 }
+/**
+ * Recreate any saved guesses and their responses
+ * @param guesses A list of guess structures
+ */
+function restoreGuesses(guesses) {
+    if (!guesses) {
+        guesses = [];
+    }
+    for (var i = 0; i < guesses.length; i++) {
+        var src = guesses[i];
+        // Rebuild the GuessLog, to convert the string back to a DateTime
+        var gl = { field: src.field, guess: src.guess, time: new Date(String(src.time)) };
+        decodeAndValidate(gl);
+        // Decoding will rebuild the localCache
+    }
+}
+////////////////////////////////////////////////////////////////////////
+// Utils for working with the shared puzzle list
+//
+/**
+ * A limited list of meaningful puzzle statuses
+ */
+exports.PuzzleStatus = {
+    Hidden: 'hidden',
+    Locked: 'locked',
+    Unlocked: 'unlocked',
+    Loaded: 'loaded',
+    Solved: 'solved', // A puzzle which is fully solved
+};
+/**
+ * Update the master list of puzzles for this event
+ * @param puzzle The name of this puzzle (not the filename)
+ * @param status One of the statuses in PuzzleStatus
+ */
+function updatePuzzleList(puzzle, status) {
+    if (!puzzle) {
+        puzzle = getCurFileName();
+    }
+    var key = getOtherFileHref('puzzle_list', 0);
+    var pList = {};
+    if (key in localStorage) {
+        var item = localStorage.getItem(key);
+        if (item) {
+            pList = JSON.parse(item);
+        }
+    }
+    if (!pList) {
+        pList = {};
+    }
+    pList[puzzle] = status;
+    localStorage.setItem(key, JSON.stringify(pList));
+}
+exports.updatePuzzleList = updatePuzzleList;
+/**
+ * Lookup the status of a puzzle
+ * @param puzzle The name of a puzzle
+ * @param defaultStatus The initial status, before a player updates it
+ * @returns The saved status
+ */
+function getPuzzleStatus(puzzle, defaultStatus) {
+    if (!puzzle) {
+        puzzle = getCurFileName();
+    }
+    var key = getOtherFileHref('puzzle_list', 0);
+    var pList = {};
+    if (key in localStorage) {
+        var item = localStorage.getItem(key);
+        if (item) {
+            pList = JSON.parse(item);
+            if (pList && puzzle in pList) {
+                return pList[puzzle];
+            }
+        }
+    }
+    return defaultStatus;
+}
+exports.getPuzzleStatus = getPuzzleStatus;
+/**
+ * Return a list of puzzles we are tracking, which currently have the indicated status
+ * @param status one of the valid status strings
+ */
+function listPuzzlesOfStatus(status) {
+    var list = [];
+    var key = getOtherFileHref('puzzle_list', 0);
+    if (key in localStorage) {
+        var item = localStorage.getItem(key);
+        if (item) {
+            var pList = JSON.parse(item);
+            if (pList) {
+                var names = Object.keys(pList);
+                for (var i = 0; i < names.length; i++) {
+                    var name_3 = names[i];
+                    if (pList[name_3] === status) {
+                        list.push(name_3);
+                    }
+                }
+            }
+        }
+    }
+    return list;
+}
+exports.listPuzzlesOfStatus = listPuzzlesOfStatus;
+/**
+ * Clear the list of which puzzles have been saved, unlocked, etc.
+ */
+function resetAllPuzzleStatus() {
+    var key = getOtherFileHref('puzzle_list', 0);
+    localStorage.setItem(key, JSON.stringify(null));
+}
+exports.resetAllPuzzleStatus = resetAllPuzzleStatus;
+/**
+ * Clear any saved progress on this puzzle
+ * @param puzzleFile a puzzle filename
+ */
+function resetPuzzleProgress(puzzleFile) {
+    var key = getOtherFileHref(puzzleFile, 0);
+    localStorage.setItem(key, JSON.stringify(null));
+}
+exports.resetPuzzleProgress = resetPuzzleProgress;
 ////////////////////////////////////////////////////////////////////////
 // Utils for sharing data between puzzles
 //
@@ -1443,8 +1704,27 @@ function loadMetaMaterials(puzzle, up, page) {
     }
     return undefined;
 }
+/**
+ * Get the last level of the URL's pathname
+ */
+function getCurFileName(no_extension) {
+    if (no_extension === void 0) { no_extension = true; }
+    var key = window.location.pathname;
+    var bslash = key.lastIndexOf('\\');
+    var fslash = key.lastIndexOf('/');
+    var parts = key.split(fslash >= bslash ? '/' : '\\');
+    var name = parts[parts.length - 1];
+    if (no_extension) {
+        var dot = name.split('.');
+        if (dot.length > 1) {
+            name = name.substring(0, name.length - 1 - dot[dot.length - 1].length);
+        }
+    }
+    return name;
+}
+exports.getCurFileName = getCurFileName;
 // Convert the absolute href of the current window to a relative href
-// levels: 1=just this file, 2=parent folder + fiole, etc.
+// levels: 1=just this file, 2=parent folder + file, etc.
 function getRelFileHref(levels) {
     var key = storageKey();
     var bslash = key.lastIndexOf('\\');
@@ -1620,7 +1900,7 @@ function onLetterKeyDown(event) {
                     }
                 }
             }
-            afterInputUpdate(input);
+            afterInputUpdate(input, event.key);
             event.preventDefault();
             return;
         }
@@ -1630,7 +1910,7 @@ function onLetterKeyDown(event) {
             }
             if (matchInputRules(input, event)) {
                 input.value = event.key;
-                afterInputUpdate(input);
+                afterInputUpdate(input, event.key);
             }
             event.preventDefault();
             return;
@@ -1738,14 +2018,15 @@ function onLetterKey(event) {
             }
         }
     }
-    afterInputUpdate(input);
+    afterInputUpdate(input, event.key);
 }
 exports.onLetterKey = onLetterKey;
 /**
  * Re-scan for extractions
  * @param input The input which just changed
+ * @param key The key from the event that led here
  */
-function afterInputUpdate(input) {
+function afterInputUpdate(input, key) {
     var text = input.value;
     if (hasClass(input.parentNode, 'lower-case')) {
         text = text.toLocaleLowerCase();
@@ -1758,12 +2039,20 @@ function afterInputUpdate(input) {
         ? findNextInput(input, 0, 1, 'letter-input', 'letter-non-input')
         : findNextInput(input, plusX, 0, 'letter-input', 'letter-non-input');
     var multiLetter = hasClass(input.parentNode, 'multiple-letter');
-    if (!multiLetter && text.length > 1) {
+    var word = multiLetter || hasClass(input.parentNode, 'word-cell') || hasClass(input, 'word-input');
+    if (!word && text.length > 1) {
         overflow = text.substring(1);
         text = text.substring(0, 1);
     }
     input.value = text;
     ExtractFromInput(input);
+    var showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
+    if (showReady) {
+        var btn = document.getElementById(showReady);
+        if (btn) {
+            validateInputReady(btn, key);
+        }
+    }
     if (!multiLetter) {
         if (nextInput != null) {
             if (overflow.length > 0 && nextInput.value.length == 0) {
@@ -1771,7 +2060,7 @@ function afterInputUpdate(input) {
                 nextInput.value = overflow;
                 moveFocus(nextInput);
                 // Then do the same post-processing as this cell
-                afterInputUpdate(nextInput);
+                afterInputUpdate(nextInput, key);
             }
             else if (text.length > 0) {
                 // Just move the focus
@@ -1779,15 +2068,20 @@ function afterInputUpdate(input) {
             }
         }
     }
-    else if (!hasClass(input.parentNode, 'fixed-spacing')) {
+    else if (!hasClass(input.parentNode, 'getElementsByClassName')) {
         var spacing = (text.length - 1) * 0.05;
         input.style.letterSpacing = -spacing + 'em';
         input.style.paddingRight = (2 * spacing) + 'em';
         //var rotate = text.length <= 2 ? 0 : (text.length * 5);
         //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
-    saveLetterLocally(input);
-    inputChangeCallback(input);
+    if (word) {
+        saveWordLocally(input);
+    }
+    else {
+        saveLetterLocally(input);
+    }
+    inputChangeCallback(input, key);
 }
 exports.afterInputUpdate = afterInputUpdate;
 /**
@@ -1811,28 +2105,32 @@ function ExtractFromInput(input) {
  * @param extractedId The id of an element that collects extractions
  */
 function UpdateExtraction(extractedId) {
-    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
+    var extracted = document.getElementById(extractedId || 'extracted');
     if (extracted == null) {
         return;
     }
     var join = getOptionalStyle(extracted, 'data-extract-join') || '';
-    if (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null) {
+    if (extracted.getAttribute('data-extraction-source') != 'data'
+        && (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null)) {
         UpdateNumbered(extractedId);
         return;
     }
     var delayLiterals = DelayLiterals(extractedId);
     var inputs = document.getElementsByClassName('extract-input');
+    var sorted_inputs = SortElements(inputs);
     var extraction = '';
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    var ready = true;
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        var input = sorted_inputs[i];
+        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
         var letter = '';
-        if (hasClass(inputs[i], 'extract-literal')) {
+        if (hasClass(input, 'extract-literal')) {
             // Several ways to extract literals:
-            var de = getOptionalStyle(inputs[i], 'data-extract-delay'); // placeholder value to extract, until player has finished other work
-            var ev = getOptionalStyle(inputs[i], 'data-extract-value'); // always extract this value
-            var ec = getOptionalStyle(inputs[i], 'data-extract-copy'); // this extraction is a copy of another
+            var de = getOptionalStyle(input, 'data-extract-delay'); // placeholder value to extract, until player has finished other work
+            var ev = getOptionalStyle(input, 'data-extract-value'); // always extract this value
+            var ec = getOptionalStyle(input, 'data-extract-copy'); // this extraction is a copy of another
             if (delayLiterals && de) {
                 letter = de;
             }
@@ -1844,7 +2142,7 @@ function UpdateExtraction(extractedId) {
             }
         }
         else {
-            var inp = inputs[i];
+            var inp = input;
             letter = inp.value || '';
             letter = letter.trim();
         }
@@ -1853,12 +2151,52 @@ function UpdateExtraction(extractedId) {
         }
         if (letter.length == 0) {
             extraction += '_';
+            ready = false;
         }
         else {
             extraction += letter;
         }
     }
-    ApplyExtraction(extraction, extracted);
+    if (extracted.getAttribute('data-letter-pattern') != null) {
+        var inps = extracted.getElementsByClassName('extractor-input');
+        if (inps.length > extraction.length) {
+            extraction += Array(1 + inps.length - extraction.length).join('_');
+        }
+        var ready_1 = true;
+        for (var i = 0; i < inps.length; i++) {
+            var inp = inps[i];
+            if (extraction[i] != '_') {
+                inp.value = extraction.substring(i, i + 1);
+            }
+            else {
+                inp.value = '';
+                ready_1 = false;
+            }
+        }
+        updateExtractionData(extracted, extraction, ready_1);
+    }
+    else {
+        ApplyExtraction(extraction, extracted, ready);
+    }
+}
+/**
+ * Cause a value to be extracted directly from data- attributes, rather than from inputs.
+ * @param elmt Any element - probably not an input
+ * @param value Any text, or null to revert
+ * @param extractedId The id of an element that collects extractions
+ */
+function ExtractViaData(elmt, value, extractedId) {
+    if (value == null) {
+        elmt.removeAttribute('data-extract-value');
+        toggleClass(elmt, 'extract-input', false);
+        toggleClass(elmt, 'extract-literal', false);
+    }
+    else {
+        elmt.setAttribute('data-extract-value', value);
+        toggleClass(elmt, 'extract-literal', true);
+        toggleClass(elmt, 'extract-input', true);
+    }
+    UpdateExtraction(extractedId);
 }
 /**
  * Puzzles can specify delayed literals within their extraction,
@@ -1870,17 +2208,19 @@ function DelayLiterals(extractedId) {
     var delayedLiterals = false;
     var isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    var sorted_inputs = SortElements(inputs);
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        var input = sorted_inputs[i];
+        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        if (hasClass(inputs[i], 'extract-literal')) {
-            if (getOptionalStyle(inputs[i], 'data-extract-delay')) {
+        if (hasClass(input, 'extract-literal')) {
+            if (getOptionalStyle(input, 'data-extract-delay')) {
                 delayedLiterals = true;
             }
         }
         else {
-            var inp = inputs[i];
+            var inp = input;
             var letter = inp.value || '';
             letter = letter.trim();
             if (letter.length == 0) {
@@ -1906,7 +2246,7 @@ function ExtractionIsInteresting(text) {
  * @param text The current extraction
  * @param dest The container for the extraction. Can be a div or an input
  */
-function ApplyExtraction(text, dest) {
+function ApplyExtraction(text, dest, ready) {
     if (hasClass(dest, 'lower-case')) {
         text = text.toLocaleLowerCase();
     }
@@ -1932,22 +2272,36 @@ function ApplyExtraction(text, dest) {
     else {
         dest.innerText = text;
     }
+    updateExtractionData(dest, text, ready);
 }
 /**
  * Update an extraction that uses numbered indicators
  * @param extractedId The id of an extraction area
  */
 function UpdateNumbered(extractedId) {
+    extractedId = extractedId || 'extracted';
+    var div = document.getElementById(extractedId);
+    var outputs = div === null || div === void 0 ? void 0 : div.getElementsByTagName('input');
     var inputs = document.getElementsByClassName('extract-input');
-    for (var i = 0; i < inputs.length; i++) {
-        var inp = inputs[i];
-        var index = inputs[i].getAttribute('data-number');
-        var extractCell = document.getElementById('extractor-' + index);
+    var sorted_inputs = SortElements(inputs);
+    var concat = '';
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        var input = sorted_inputs[i];
+        var inp = input;
+        var index = input.getAttribute('data-number');
+        var output = document.getElementById('extractor-' + index);
+        if (!output && outputs) {
+            output = outputs[i];
+        }
         var letter = inp.value || '';
         letter = letter.trim();
-        if (letter.length > 0 || extractCell.value.length > 0) {
-            extractCell.value = letter;
+        if (letter.length > 0 || output.value.length > 0) {
+            output.value = letter;
         }
+        concat += letter;
+    }
+    if (div) {
+        updateExtractionData(extractedId, concat, concat.length == inputs.length);
     }
 }
 /**
@@ -1971,12 +2325,42 @@ function UpdateExtractionSource(input) {
         return;
     }
     var sources = document.getElementsByClassName('extract-input');
+    var extractId;
+    var extraction = [];
     for (var i = 0; i < sources.length; i++) {
         var src = sources[i];
         var dataNumber = getOptionalStyle(src, 'data-number');
-        if (dataNumber != null && dataNumber == index) {
-            src.value = input.value;
-            return;
+        if (dataNumber != null) {
+            if (dataNumber == index) {
+                src.value = input.value;
+                extractId = getOptionalStyle(src, 'data-extracted-id', undefined, 'extracted-');
+            }
+            extraction[parseInt(dataNumber)] = src.value;
+        }
+    }
+    // Update data-extraction when the user type directly into an extraction element
+    var extractionText = extraction.join('');
+    updateExtractionData(extractId, extractionText, extractionText.length == sources.length);
+}
+function updateExtractionData(extracted, value, ready) {
+    var container = !extracted
+        ? document.getElementById('extracted')
+        : (typeof extracted === "string")
+            ? document.getElementById(extracted)
+            : extracted;
+    if (container) {
+        container.setAttribute('data-extraction', value);
+        var btnId = container.getAttribute('data-show-ready');
+        if (btnId) {
+            var btn = document.getElementById(btnId);
+            toggleClass(btn, 'ready', ready);
+        }
+        else {
+            btnId = getOptionalStyle(container, 'data-show-ready');
+            if (btnId) {
+                var btn = document.getElementById(btnId);
+                validateInputReady(btn, value);
+            }
         }
     }
 }
@@ -1989,6 +2373,7 @@ function onWordKey(event) {
         return; // Don't interfere with IMEs
     }
     var input = event.currentTarget;
+    inputChangeCallback(input, event.key);
     if (getOptionalStyle(input, 'data-extract-index') != null) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         updateWordExtraction(extractId);
@@ -2012,32 +2397,75 @@ exports.onWordKey = onWordKey;
  * @param extractedId The ID of an extraction area
  */
 function updateWordExtraction(extractedId) {
-    var extracted = document.getElementById(extractedId === null ? 'extracted' : extractedId);
+    var extracted = document.getElementById(extractedId || 'extracted');
     if (extracted == null) {
         return;
     }
     var inputs = document.getElementsByClassName('word-input');
+    var sorted_inputs = SortElements(inputs);
     var extraction = '';
+    var hasWordExtraction = false;
     var partial = false;
-    for (var i = 0; i < inputs.length; i++) {
-        if (extractedId != null && getOptionalStyle(inputs[i], 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+    for (var i = 0; i < sorted_inputs.length; i++) {
+        var input = sorted_inputs[i];
+        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        var index = getOptionalStyle(inputs[i], 'data-extract-index', '');
+        var index = getOptionalStyle(input, 'data-extract-index', '');
+        if (index === null) {
+            continue;
+        }
+        hasWordExtraction = true;
         var indeces = index.split(' ');
         for (var j = 0; j < indeces.length; j++) {
-            var extractIndex = parseInt(indeces[j]);
-            if (extractIndex > 0) { // indeces start at 1
-                var inp = inputs[i];
-                var letter = inp.value.length >= extractIndex ? inp.value[extractIndex - 1] : '_';
+            var inp = input;
+            var letter = extractWordIndex(inp.value, indeces[j]);
+            if (letter) {
                 extraction += letter;
                 partial = partial || (letter != '_');
             }
         }
     }
-    ApplyExtraction(extraction, extracted);
+    if (hasWordExtraction) {
+        ApplyExtraction(extraction, extracted, !partial);
+    }
 }
 exports.updateWordExtraction = updateWordExtraction;
+/**
+ * Extract a single letter from an input. Either using an absolute index, or else a word.letter index.
+ * @param input User's input string
+ * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
+ */
+function extractWordIndex(input, index) {
+    var dot = index.split('.');
+    var letter_index;
+    if (dot.length == 2) {
+        var word_index = parseInt(dot[0]);
+        letter_index = parseInt(dot[1]) - 1;
+        var words = input.split(' ');
+        input = '';
+        for (var i = 0; i < words.length; i++) {
+            var word = words[i];
+            if (words[i].length > 0) {
+                if (--word_index == 0) {
+                    input = word;
+                    break;
+                }
+            }
+        }
+    }
+    else {
+        letter_index = parseInt(index) - 1;
+    }
+    if (letter_index < 0) {
+        return null; // bogus index
+    }
+    if (letter_index < input.length) {
+        return input[letter_index];
+    }
+    return '_';
+}
+exports.extractWordIndex = extractWordIndex;
 /**
  * Callback when user has changed the text in a letter-input
  * @param event A keyboard event
@@ -2048,7 +2476,7 @@ function onLetterChange(event) {
     }
     var input = findParentOfClass(event.currentTarget, 'letter-input');
     saveLetterLocally(input);
-    inputChangeCallback(input);
+    inputChangeCallback(input, event.key);
 }
 exports.onLetterChange = onLetterChange;
 /**
@@ -2060,18 +2488,26 @@ function onWordChange(event) {
         return; // Don't interfere with IMEs
     }
     var input = findParentOfClass(event.currentTarget, 'word-input');
+    inputChangeCallback(input, event.key);
     saveWordLocally(input);
-    inputChangeCallback(input);
 }
 exports.onWordChange = onWordChange;
 /**
  * Anytime any note changes, inform any custom callback
  * @param inp The affected input
+ * @param key The key from the event that led here
  */
-function inputChangeCallback(inp) {
+function inputChangeCallback(inp, key) {
     var fn = theBoiler().onInputChange;
     if (fn) {
         fn(inp);
+    }
+    var doc = getOptionalStyle(inp, 'data-onchange');
+    if (doc) {
+        var func = window[doc];
+        if (func) {
+            func(inp, key);
+        }
     }
 }
 /**
@@ -2389,6 +2825,34 @@ function findNextDiscover(root, start, dx, dy, cls, clsSkip) {
     }
     return nearest;
 }
+/**
+ * Autocomplete the contents of a multi-letter input from a restricted list of options.
+ * Existing text must match the beginning of exactly one option (case-insensitive).
+ * @param input a text <input> or <textarea>
+ * @param list a list of potential values to complete to
+ * @returns true if a single match was found, else false for 0 or multiple matches
+ */
+function autoCompleteWord(input, list) {
+    var value = input.value.toLowerCase();
+    var match = null;
+    for (var _i = 0, list_3 = list; _i < list_3.length; _i++) {
+        var i = list_3[_i];
+        if (i.toLowerCase().indexOf(value) == 0) {
+            if (match) {
+                return false; // multiple matches
+            }
+            match = i;
+        }
+    }
+    if (match) {
+        var len = input.value.length;
+        input.value = match;
+        input.setSelectionRange(len, match.length); // Select the remainder of the word
+        return true;
+    }
+    return false; // no matches
+}
+exports.autoCompleteWord = autoCompleteWord;
 /*-----------------------------------------------------------
  * _textSetup.ts
  *-----------------------------------------------------------*/
@@ -2561,6 +3025,7 @@ function getLetterStyles(elmt, defLetter, defLiteral, defExtract) {
         'literal': literal
     };
 }
+exports.getLetterStyles = getLetterStyles;
 /**
  * Create a span block for a literal character, which can be a sibling of text input fields.
  * It should occupy the same space, although may not have the same decorations such as underline.
@@ -2968,6 +3433,10 @@ function verticalSubway(subway) {
     if (sLefts.length == 0 && sRights.length == 0) {
         return undefined;
     }
+    var leftId = subway.getAttributeNS('', 'data-left-id');
+    var rightId = subway.getAttributeNS('', 'data-right-id');
+    sLefts = joinIds(leftId, sLefts);
+    sRights = joinIds(rightId, sRights);
     var bounds;
     var yLefts = [];
     var yRights = [];
@@ -3041,6 +3510,13 @@ function verticalSubway(subway) {
         shift: new DOMPoint(shift_left, 0)
     };
 }
+function joinIds(id, indeces) {
+    if (!id || !indeces) {
+        return indeces;
+    }
+    var list = indeces.split(' ').map(function (i) { return id + '.' + i; });
+    return list.join(' ');
+}
 /**
  * Build the paths of a horizontally-oriented subway
  * @param subway The <div class='subway' with coordinate info
@@ -3053,6 +3529,10 @@ function horizontalSubway(subway) {
     if (sTops.length == 0 && sBottoms.length == 0) {
         return undefined;
     }
+    var topId = subway.getAttributeNS('', 'data-top-id');
+    var bottomId = subway.getAttributeNS('', 'data-bottom-id');
+    sTops = joinIds(topId, sTops);
+    sBottoms = joinIds(bottomId, sBottoms);
     var bounds;
     var xTops = [];
     var xBottoms = [];
@@ -3519,7 +3999,7 @@ function findEmptySource() {
  * @param destination The container to place it in
  */
 function quickMove(moveable, destination) {
-    if (moveable != null && destination != null) {
+    if (moveable != null && destination != null && !isSelfOrParent(moveable, destination)) {
         pickUp(moveable);
         doDrop(destination);
     }
@@ -3558,6 +4038,10 @@ var _stampTools = [];
  */
 var _selectedTool = null;
 /**
+ * The tool name to cycle to first.
+ */
+var _firstTool = null;
+/**
  * A tool name which, as a side effect, extract an answer from the content under it.
  */
 var _extractorTool = null;
@@ -3565,6 +4049,7 @@ var _extractorTool = null;
  * The tool name that would erase things.
  */
 var _eraseTool = null;
+var stamps_can_drag = false;
 /**
  * Scan the page for anything marked stampable or a draw tool
  */
@@ -3595,14 +4080,30 @@ function preprocessStampObjects() {
                 }
             }
         }
+        container.addEventListener('pointerdown', pointerDownInContainer);
+        if (hasClass(container, 'stamp-drag')) {
+            stamps_can_drag = true;
+            container.addEventListener('pointerup', pointerUpInContainer);
+            container.addEventListener('pointermove', pointerMoveInContainer);
+            container.addEventListener('pointerleave', pointerLeaveContainer);
+        }
     }
     var elems = document.getElementsByClassName('stampable');
-    for (var i = 0; i < elems.length; i++) {
-        var elmt = elems[i];
-        elmt.onpointerdown = function (e) { onClickStamp(e); };
-        //elmt.ondrag=function(e){onMoveStamp(e)};
-        elmt.onpointerenter = function (e) { onMoveStamp(e); };
-        elmt.onpointerleave = function (e) { preMoveStamp(e); };
+    if (containers.length == 0 && elems.length > 0) {
+        var container = document.getElementById('pageBody');
+        if (container) {
+            container.addEventListener('pointerdown', pointerDownInContainer);
+            // container.addEventListener('pointerup', pointerUpInContainer);
+            // container.addEventListener('pointermove', pointerMoveInContainer);
+            // container.addEventListener('pointerleave', pointerLeaveContainer);
+        }
+        // for (let i = 0; i < elems.length; i++) {
+        //     const elmt = elems[i] as HTMLElement;
+        //     elmt.onpointerdown=function(e){onClickStamp(e, findStampableAtPointer(e))};
+        //     //elmt.ondrag=function(e){onMoveStamp(e)};
+        //     elmt.onpointerenter=function(e){onMoveStamp(e)}; 
+        //     elmt.onpointerleave=function(e){preMoveStamp(e)};
+        // }
     }
     elems = document.getElementsByClassName('stampTool');
     for (var i = 0; i < elems.length; i++) {
@@ -3614,15 +4115,84 @@ function preprocessStampObjects() {
     if (palette != null) {
         _extractorTool = palette.getAttributeNS('', 'data-tool-extractor');
         _eraseTool = palette.getAttributeNS('', 'data-tool-erase');
+        _firstTool = palette.getAttributeNS('', 'data-tool-first');
+    }
+    if (!_firstTool) {
+        _firstTool = _stampTools[0].getAttributeNS('', 'data-template-id');
     }
 }
 exports.preprocessStampObjects = preprocessStampObjects;
+var prevStampablePointer = null;
+function pointerDownInContainer(event) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    var elmt = findStampableAtPointer(event);
+    if (elmt) {
+        prevStampablePointer = elmt;
+        onClickStamp(event, elmt);
+    }
+}
+function pointerUpInContainer(event) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    prevStampablePointer = null;
+}
+function pointerMoveInContainer(event) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    var elmt = findStampableAtPointer(event);
+    if (elmt !== prevStampablePointer) {
+        if (prevStampablePointer) {
+            preMoveStamp(event, prevStampablePointer);
+        }
+        if (elmt) {
+            onMoveStamp(event, elmt);
+        }
+        prevStampablePointer = elmt;
+    }
+}
+function pointerLeaveContainer(event) {
+    if (!isPrimaryButton(event)) {
+        return;
+    }
+    if (event.pointerType != 'mouse' && stamps_can_drag) {
+        event.preventDefault();
+    }
+    if (prevStampablePointer) {
+        preMoveStamp(event, prevStampablePointer);
+    }
+    prevStampablePointer = null;
+}
+function findStampableAtPointer(event) {
+    var stampable = document.getElementsByClassName('stampable');
+    for (var i = 0; i < stampable.length; i++) {
+        var rect = stampable[i].getBoundingClientRect();
+        if (rect.left <= event.clientX && rect.right > event.clientX
+            && rect.top <= event.clientY && rect.bottom > event.clientY) {
+            return stampable[i];
+        }
+    }
+    return null;
+}
 /**
  * Called when a draw tool is selected from the palette
  * @param event The click event
  */
 function onSelectStampTool(event) {
     var tool = findParentOfClass(event.target, 'stampTool');
+    var prevToolId = getCurrentStampToolId();
     if (tool != null) {
         for (var i = 0; i < _stampTools.length; i++) {
             toggleClass(_stampTools[i], 'selected', false);
@@ -3635,6 +4205,10 @@ function onSelectStampTool(event) {
             _selectedTool = null;
         }
     }
+    var fn = theBoiler().onStampChange;
+    if (fn) {
+        fn(getCurrentStampToolId(), prevToolId);
+    }
 }
 /**
  * If the user has any shift key pressed, that trumps all other modes.
@@ -3646,6 +4220,7 @@ function onSelectStampTool(event) {
  * @returns the name of a draw tool
  */
 function getStampTool(event, toolFromErase) {
+    // Shift keys always win
     if (event.shiftKey || event.altKey || event.ctrlKey) {
         for (var i = 0; i < _stampTools.length; i++) {
             var mods = _stampTools[i].getAttributeNS('', 'data-click-modifier');
@@ -3657,13 +4232,18 @@ function getStampTool(event, toolFromErase) {
             }
         }
     }
+    // toolFromErase is set by how the stamping began.
+    // If it begins on a pre-stamped cell, shift to the next stamp.
+    // After the first click, subsequent dragging keeps the same tool.
     if (toolFromErase != null) {
         return toolFromErase;
     }
+    // Lacking other inputs, use the selected tool.
     if (_selectedTool != null) {
         return _selectedTool.getAttributeNS('', 'data-template-id');
     }
-    return _stampTools[0].getAttributeNS('', 'data-template-id');
+    // If no selection, the first tool is the default
+    return _firstTool;
 }
 /**
  * Expose current stamp tool, in case other features want to react
@@ -3706,21 +4286,61 @@ function eraseStamp(target) {
     }
     var parent = getStampParent(target);
     var cur = findFirstChildOfClass(parent, 'stampedObject');
+    var curId;
+    var nextId = '';
     if (cur != null) {
-        var curTool = cur.getAttributeNS('', 'data-template-id');
-        toggleClass(target, curTool, false);
+        curId = cur.getAttributeNS('', 'data-template-id');
+        toggleClass(target, curId, false);
         parent.removeChild(cur);
         if (_extractorTool != null) {
             updateStampExtraction();
         }
-        if (_selectedTool == null) {
-            return cur.getAttributeNS('', 'data-next-template-id'); // rotate
-        }
-        if (_selectedTool.getAttributeNS('', 'data-template-id') == curTool) {
-            return _eraseTool; // erase
+        nextId = cur.getAttributeNS('', 'data-next-template-id');
+    }
+    else if (hasClass(target, 'stampedObject')) {
+        // Template is a class on the container itself
+        curId = target.getAttributeNS('', 'data-template-id');
+        toggleClass(target, 'stampedObject', false);
+        toggleClass(target, curId, false);
+        target.removeAttributeNS('', 'data-template-id');
+        if (_extractorTool != null) {
+            updateStampExtraction();
         }
     }
-    return null; // normal
+    else {
+        return null; // This cell is currently blank
+    }
+    if (_selectedTool == null) {
+        // rotate through the tools
+        if (!nextId && curId) {
+            var stampTool = findStampTool(curId);
+            nextId = stampTool.getAttributeNS('', 'data-next-template-id');
+        }
+        if (nextId) {
+            return nextId;
+        }
+    }
+    if (_selectedTool && _selectedTool.getAttributeNS('', 'data-template-id') == curId) {
+        // When a tool is explicitly selected, clicking on that type toggles it back off
+        return _eraseTool;
+    }
+    // No guidance on what to replace this cell with
+    return null;
+}
+/**
+ * Given a stamp ID from a stamped element, find the tool that applied it.
+ * @param templateId A string that must match a stampTool in this document.
+ * @returns The stampTool element.
+ */
+function findStampTool(templateId) {
+    var tools = document.getElementsByClassName('stampTool');
+    for (var i = 0; i < tools.length; i++) {
+        var tool = tools[i];
+        if (tool.getAttributeNS('', 'data-template-id') == templateId) {
+            return tool;
+        }
+    }
+    throw new Error('Unrecognized stamp tool: ' + templateId);
 }
 /**
  * Draw on the target surface, using the named tool.
@@ -3732,14 +4352,24 @@ function doStamp(target, tool) {
     // Template can be null if tool removes drawn objects
     var template = document.getElementById(tool);
     if (template != null) {
+        // Inject the template into the stampable container
         var clone = template.content.cloneNode(true);
         parent.appendChild(clone);
-        toggleClass(target, tool, true);
     }
+    else if (tool) {
+        // Apply the template ID as a style. The container is itself the stamped object
+        toggleClass(target, 'stampedObject', true);
+        target.setAttributeNS('', 'data-template-id', tool);
+    }
+    toggleClass(target, tool, true);
     if (_extractorTool != null) {
         updateStampExtraction();
     }
     saveStampingLocally(target);
+    var fn = theBoiler().onStamp;
+    if (fn) {
+        fn(target);
+    }
 }
 exports.doStamp = doStamp;
 var _dragDrawTool = null;
@@ -3749,8 +4379,7 @@ var _lastDrawTool = null;
  * Which tool is taken from selected state, click modifiers, and current target state.
  * @param event The mouse click
  */
-function onClickStamp(event) {
-    var target = findParentOfClass(event.target, 'stampable');
+function onClickStamp(event, target) {
     var nextTool = eraseStamp(target);
     nextTool = getStampTool(event, nextTool);
     if (nextTool) {
@@ -3759,13 +4388,15 @@ function onClickStamp(event) {
     _lastDrawTool = nextTool;
     _dragDrawTool = null;
 }
+function isPrimaryButton(event) {
+    return event.pointerType != 'mouse' || event.buttons == 1;
+}
 /**
  * Continue drawing when the mouse is dragged, using the same tool as in the cell we just left.
  * @param event The mouse enter event
  */
-function onMoveStamp(event) {
-    if (event.buttons == 1 && _dragDrawTool != null) {
-        var target = findParentOfClass(event.target, 'stampable');
+function onMoveStamp(event, target) {
+    if (_dragDrawTool != null) {
         eraseStamp(target);
         doStamp(target, _dragDrawTool);
         _dragDrawTool = null;
@@ -3777,21 +4408,18 @@ function onMoveStamp(event) {
  * If dragging unrelated to drawing, flag the coming onMoveStamp to do nothing.
  * @param event The mouse leave event
  */
-function preMoveStamp(event) {
-    if (event.buttons == 1) {
-        var target = findParentOfClass(event.target, 'stampable');
-        if (target != null) {
-            var cur = findFirstChildOfClass(target, 'stampedObject');
-            if (cur != null) {
-                _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
-            }
-            else {
-                _dragDrawTool = _lastDrawTool;
-            }
+function preMoveStamp(event, target) {
+    if (target != null) {
+        var cur = findFirstChildOfClass(target, 'stampedObject');
+        if (cur != null) {
+            _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
         }
         else {
-            _dragDrawTool = null;
+            _dragDrawTool = _lastDrawTool;
         }
+    }
+    else {
+        _dragDrawTool = null;
     }
 }
 /**
@@ -3905,7 +4533,8 @@ function preprocessRulerRange(elem) {
  */
 exports.EdgeTypes = {
     straightEdge: 'straight-edge',
-    wordSelect: 'word-select'
+    wordSelect: 'word-select',
+    hashiBridge: 'hashi-bridge',
 };
 /**
  * Which class are we looking for: should be one of the EdgeTypes
@@ -3916,16 +4545,10 @@ var selector_class;
  */
 var selector_fill_class;
 /**
- * What is the class of the container: straight-edge-are or word-select-area
+ * What is the class of the container: straight-edge-area or word-select-area
  */
 var area_class;
-/**
- * Looks up the containing area, and any optional settings
- * @param evt A mouse event within the area
- * @returns A RulerEventData
- */
-function getRulerData(evt) {
-    var range = findParentOfClass(evt.target, area_class);
+function createPartialRulerData(range) {
     var svg = findParentOfTag(range, 'SVG');
     var containers = svg.getElementsByClassName(selector_class + '-container');
     var bounds = svg.getBoundingClientRect();
@@ -3933,13 +4556,12 @@ function getRulerData(evt) {
     var maxPoints = max_points ? parseInt(max_points) : 2;
     var canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
     var canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
+    var maxBridges = range.getAttributeNS('', 'data-max-bridges');
+    var bridgeOffset = range.getAttributeNS('', 'data-bridge-offset');
     var hoverRange = range.getAttributeNS('', 'data-hover-range');
     var angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
     var showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
-    var pos = new DOMPoint(evt.x, evt.y);
-    var spt = svg.createSVGPoint();
-    spt.x = pos.x - bounds.left;
-    spt.y = pos.y - bounds.top;
+    var angleConstraints2 = angleConstraints ? (angleConstraints + '+0').split('+').map(function (c) { return parseInt(c); }) : undefined;
     var data = {
         svg: svg,
         container: (containers && containers.length > 0) ? containers[0] : svg,
@@ -3947,12 +4569,29 @@ function getRulerData(evt) {
         maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
         canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
+        maxBridges: maxBridges ? parseInt(maxBridges) : selector_class == exports.EdgeTypes.hashiBridge ? 2 : 1,
+        bridgeOffset: bridgeOffset ? parseInt(bridgeOffset) : 2,
         hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
+        angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
+        angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
-        evtPos: pos,
-        evtPoint: spt,
+        evtPos: new DOMPoint(NaN, NaN),
+        evtPoint: svg.createSVGPoint(), // stub 
     };
+    return data;
+}
+/**
+ * Looks up the containing area, and any optional settings
+ * @param evt A mouse event within the area
+ * @returns A RulerEventData
+ */
+function getRulerData(evt) {
+    var range = findParentOfClass(evt.target, area_class);
+    var data = createPartialRulerData(range);
+    data.evtPos = new DOMPoint(evt.x, evt.y);
+    data.evtPoint = data.svg.createSVGPoint();
+    data.evtPoint.x = data.evtPos.x - data.bounds.left;
+    data.evtPoint.y = data.evtPos.y - data.bounds.top;
     var near = findNearestVertex(data);
     if (near) {
         data.nearest = getVertexData(data, near);
@@ -3966,34 +4605,12 @@ function getRulerData(evt) {
  */
 function getRulerDataFromVertex(vertex) {
     var range = findParentOfClass(vertex, area_class);
-    var svg = findParentOfTag(range, 'SVG');
-    var containers = svg.getElementsByClassName(selector_class + '-container');
-    var bounds = svg.getBoundingClientRect();
-    var max_points = range.getAttributeNS('', 'data-max-points');
-    var maxPoints = max_points ? parseInt(max_points) : 2;
-    var canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
-    var canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
-    var hoverRange = range.getAttributeNS('', 'data-hover-range');
-    var angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
-    var showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
+    var data = createPartialRulerData(range);
     var vBounds = vertex.getBoundingClientRect();
-    var pos = new DOMPoint(vBounds.x + vBounds.width / 2, vBounds.y + vBounds.height / 2);
-    var spt = svg.createSVGPoint();
-    spt.x = pos.x - bounds.left;
-    spt.y = pos.y - bounds.top;
-    var data = {
-        svg: svg,
-        container: (containers && containers.length > 0) ? containers[0] : svg,
-        bounds: bounds,
-        maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
-        canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
-        canCrossSelf: canCrossSelf ? (canCrossSelf.toLowerCase() == 'true') : false,
-        hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
-        angleConstraints: angleConstraints ? parseInt(angleConstraints) : undefined,
-        showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
-        evtPos: pos,
-        evtPoint: spt,
-    };
+    data.evtPos = new DOMPoint(vBounds.x + vBounds.width / 2, vBounds.y + vBounds.height / 2);
+    data.evtPoint = data.svg.createSVGPoint();
+    data.evtPoint.x = data.evtPos.x - data.bounds.left;
+    data.evtPoint.y = data.evtPos.y - data.bounds.top;
     var near = findNearestVertex(data);
     if (near) {
         data.nearest = getVertexData(data, near);
@@ -4182,6 +4799,32 @@ function openStraightLineTo(ruler) {
     _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.points.appendItem(ruler.evtPoint);
 }
 /**
+ * Vertex lists are identifiers, so normalize them to be low-to-high
+ * @param vertexList A comma-delimited list of vertex indeces
+ * @param edge A Polyline, whose points would also need to be reversed
+ * @returns An equivalent list, where the first is always < last
+ */
+function normalizeVertexList(vertexList, edge) {
+    var list = vertexList.split(',').map(function (v) { return parseInt(v); });
+    if (list.length > 2 && list[1] > list[list.length - 2]) {
+        // Reverse the point list too
+        if (edge) {
+            var pts = [];
+            for (var i = edge.points.length - 1; i >= 0; i--) {
+                pts.push(edge.points[i]);
+            }
+            edge.points.clear();
+            for (var i = 0; i < pts.length; i++) {
+                edge.points.appendItem(pts[i]);
+            }
+        }
+        // Reverse the vertex list
+        var rev = list.map(function (n) { return isNaN(n) ? '' : String(n); }).reverse();
+        return rev.join(',');
+    }
+    return vertexList; // unchanged
+}
+/**
  * Convert the straight line being built to a finished line
  * @param ruler The containing area and rules
  * @param vertexList A string join of all the vertex indeces
@@ -4202,6 +4845,13 @@ function completeStraightLine(ruler, vertexList, save) {
         _straightEdgeBuilder.points.removeItem(_straightEdgeVertices.length);
         toggleClass(_straightEdgeBuilder, 'open-ended', false);
     }
+    vertexList = normalizeVertexList(vertexList, _straightEdgeBuilder);
+    var dupes = findDuplicateEdges('data-vertices', vertexList, selector_class, []);
+    if (dupes.length >= ruler.maxBridges && _straightEdgeBuilder) {
+        // Disallow any more duplicates
+        ruler.container.removeChild(_straightEdgeBuilder);
+        _straightEdgeBuilder = null;
+    }
     if (_straightEdgeBuilder) {
         toggleClass(_straightEdgeBuilder, 'building', false);
         _straightEdgeBuilder.setAttributeNS('', 'data-vertices', vertexList);
@@ -4213,6 +4863,24 @@ function completeStraightLine(ruler, vertexList, save) {
                 fill.points.appendItem(_straightEdgeBuilder.points[i]);
             }
             ruler.container.appendChild(fill); // will always be after the original
+            fill.onmouseenter = function (e) { onEdgeHoverStart(e); };
+            fill.onmouseleave = function (e) { onEdgeHoverEnd(e); };
+            fill.onclick = function (e) { onDeleteEdge(e); };
+        }
+        else {
+            _straightEdgeBuilder.onmouseenter = function (e) { onEdgeHoverStart(e); };
+            _straightEdgeBuilder.onmouseleave = function (e) { onEdgeHoverEnd(e); };
+            _straightEdgeBuilder.onclick = function (e) { onDeleteEdge(e); };
+        }
+        dupes.push(_straightEdgeBuilder);
+        if (dupes.length > 1) {
+            // We have duplicates, so spread them apart
+            for (var d = 0; d < dupes.length; d++) {
+                var offset = dupes.length == 1 ? 0
+                    : dupes.length == 2 ? ruler.bridgeOffset * (d * 2 - 1)
+                        : ruler.bridgeOffset * (d - Math.floor(dupes.length / 2));
+                offsetBridge(ruler, dupes[d], offset);
+            }
         }
         if (save) {
             saveStraightEdge(vertexList, true);
@@ -4220,6 +4888,44 @@ function completeStraightLine(ruler, vertexList, save) {
     }
     _straightEdgeVertices = [];
     _straightEdgeBuilder = null;
+}
+/**
+ * Move an edge sideways by some amount by turning a simple segment into a C shape.
+ * Alternatively, remove the C shape, and return to the simple segment.
+ * @param edge The polyline to modify
+ * @param offset The amount to offset, or 0 to remove the C shape
+ */
+function offsetBridge(ruler, edge, offset) {
+    if (edge.points.length < 2) {
+        return;
+    }
+    var oldPoints = edge.getAttributeNS('', 'points') || '';
+    var start = edge.points[0];
+    var end = edge.points[edge.points.length - 1];
+    var normal = { x: start.y - end.y, y: end.x - start.x };
+    var lenNormal = Math.sqrt(normal.x * normal.x + normal.y * normal.y);
+    normal.x /= lenNormal;
+    normal.y /= lenNormal;
+    edge.points.clear();
+    edge.points.appendItem(start);
+    if (offset != 0) {
+        var p1 = ruler.svg.createSVGPoint();
+        var p2 = ruler.svg.createSVGPoint();
+        p1.x = start.x + normal.x * offset;
+        p1.y = start.y + normal.y * offset;
+        p2.x = end.x + normal.x * offset;
+        p2.y = end.y + normal.y * offset;
+        edge.points.appendItem(p1);
+        edge.points.appendItem(p2);
+    }
+    edge.points.appendItem(end);
+    if (selector_fill_class) {
+        var fills = findDuplicateEdges('points', oldPoints, selector_fill_class, []);
+        if (fills.length > 0) {
+            // Change just 1 to match
+            fills[0].setAttributeNS('', 'points', edge.getAttributeNS('', 'points') || '');
+        }
+    }
 }
 /**
  * Checks to see if an vertex is already in the current straightline
@@ -4345,39 +5051,74 @@ function isReachable(data, vert) {
         return true; // Any other point is valid
     }
     var degrees = Math.atan2(dy, dx) * 180 / Math.PI + 360;
-    var mod = Math.abs(degrees % data.angleConstraints);
+    var mod = Math.abs((degrees + data.angleConstraintsOffset) % data.angleConstraints);
     if (mod > data.angleConstraints / 2) {
         mod = data.angleConstraints - mod;
     }
     return mod < 1; // Within 1 degree of constraint angle pattern
 }
 /**
+ * For various reasons, multiple edges can ocupy the same space. Find them all.
+ * @param attr The attribute to check
+ * @param points The points attribute
+ * @param cls A class name to search through
+ * @param dupes A list of elements to append to
+ */
+function findDuplicateEdges(attr, points, cls, dupes) {
+    var list = document.getElementsByClassName(cls);
+    for (var i = 0; i < list.length; i++) {
+        var elmt = list[i];
+        if (elmt.getAttributeNS('', attr) === points) {
+            dupes.push(elmt);
+        }
+    }
+    return dupes;
+}
+/**
  * Delete an existing straight-edge
  * @param edge The edge to remove
  */
 function deleteStraightEdge(edge) {
-    var _a, _b;
+    var _a;
+    var range = findParentOfClass(edge, area_class);
+    var data = createPartialRulerData(range);
     for (var i = 0; i < _straightEdges.length; i++) {
         if (_straightEdges[i] === edge) {
             _straightEdges.splice(i, 1);
             break;
         }
     }
-    // See if there's a duplicate straight-edge, of class word-select2
-    if (selector_fill_class) {
-        var points = edge.getAttributeNS('', 'points');
-        var second = document.getElementsByClassName(selector_fill_class);
-        for (var i = 0; i < second.length; i++) {
-            var sec = second[i];
-            if (sec.getAttributeNS('', 'points') === points) {
-                (_a = edge.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(sec);
-                break;
-            }
+    // See if there's a duplicate straight-edge, of class word-select
+    var dupes = [];
+    var points = edge.getAttributeNS('', 'points');
+    if (points) {
+        dupes = findDuplicateEdges('points', points, selector_class, []);
+        if (selector_fill_class) {
+            dupes = findDuplicateEdges('points', points, selector_fill_class, dupes);
         }
     }
-    var indexList = edge.getAttributeNS('', 'data-vertices');
-    saveStraightEdge(indexList, false); // Deletes from the saved list
-    (_b = edge.parentNode) === null || _b === void 0 ? void 0 : _b.removeChild(edge);
+    var vertexList = '';
+    for (var d = 0; d < dupes.length; d++) {
+        var dupe = dupes[d];
+        if (!vertexList) {
+            vertexList = dupe.getAttributeNS('', 'data-vertices') || '';
+            if (vertexList) {
+                saveStraightEdge(vertexList, false); // Deletes from the saved list
+            }
+        }
+        (_a = dupe.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(dupe);
+    }
+    // See if there were any parallel bridges
+    dupes = findDuplicateEdges('data-vertices', vertexList, selector_class, []);
+    if (dupes.length >= 1) {
+        // If so, re-layout to show fewer
+        for (var d = 0; d < dupes.length; d++) {
+            var offset = dupes.length == 1 ? 0
+                : dupes.length == 2 ? data.bridgeOffset * (d * 2 - 1)
+                    : data.bridgeOffset * (d - Math.floor(dupes.length / 2));
+            offsetBridge(data, dupes[d], offset);
+        }
+    }
 }
 /**
  * Find the vertex nearest to the mouse event, and within any snap limit
@@ -4395,6 +5136,60 @@ function findNearestVertex(data) {
         if (min < 0 || dist < min) {
             min = dist;
             nearest = end;
+        }
+    }
+    return nearest;
+}
+function distanceToLine(edge, pt) {
+    var ret = {
+        distance: NaN,
+        ptOnLine: { x: NaN, y: NaN },
+        fractionAlongLine: NaN
+    };
+    // For our uses, points attribute is always x0 y0 x1 y1
+    if (!edge.points || edge.points.length != 2) {
+        return ret;
+    }
+    var p0 = edge.points[0];
+    var p1 = edge.points[1];
+    // Line form: ax + by + c = 0
+    var line = {
+        a: p0.y - p1.y,
+        b: p1.x - p0.x,
+        c: -p0.x * (p0.y - p1.y) - p0.y * (p1.x - p1.x)
+    };
+    var edgeLen = Math.sqrt(line.a * line.a + line.b * line.b); // Length of edge
+    ret.distance = Math.abs(line.a * pt.x + line.b * pt.y + line.c) / edgeLen;
+    // Normal vector
+    var nx = line.b / edgeLen;
+    var ny = -line.a / edgeLen;
+    // Not sure which direction, so consider both directions along normal
+    var n1 = { x: nx * ret.distance, y: ny * ret.distance };
+    var n2 = { x: nx * -ret.distance, y: ny * -ret.distance };
+    // To find point p2 on the line
+    ret.ptOnLine = Math.abs(line.a * n1.x + line.b * n1.y) < Math.abs(line.a * n2.x + line.b * n2.y) ? n1 : n2;
+    // Calculate where on line, where 0 == p0 and 1 == p1
+    ret.fractionAlongLine = line.b != 0
+        ? (ret.ptOnLine.x - p0.x) / line.b
+        : (ret.ptOnLine.y - p0.y) / -line.a;
+    return ret;
+}
+/**
+ * Find the vertex nearest to the mouse event, and within any snap limit
+ * @param data The containing area and rules, including mouse event details
+ * @returns A vertex data, or null if none close enough
+ */
+function findEdgeUnder(data) {
+    var min = data.hoverRange;
+    var edges = data.svg.getElementsByClassName(selector_class);
+    var nearest = null;
+    for (var i = 0; i < edges.length; i++) {
+        var edge = edges[i];
+        var dtl = distanceToLine(edge, data.evtPoint);
+        if (dtl.distance < min && dtl.fractionAlongLine > 0.1 && dtl.fractionAlongLine < 0.9) {
+            // We're reasonably near the line segment
+            min = dtl.distance;
+            nearest = edge;
         }
     }
     return nearest;
@@ -4490,6 +5285,145 @@ function clearAllStraightEdges(id) {
     _straightEdgeBuilder = null;
 }
 exports.clearAllStraightEdges = clearAllStraightEdges;
+function onEdgeHoverStart(evt) {
+    var edge = evt.target;
+}
+function onEdgeHoverEnd(evt) {
+    var edge = evt.target;
+}
+function onDeleteEdge(evt) {
+    var edge = evt.target;
+    deleteStraightEdge(edge);
+}
+var safariDocsDetails = {
+    'title': 'Puzzyl Utility Library',
+    'logo': './Images/Sample_Logo.png',
+    'icon': './Images/Sample_Icon.png',
+    'puzzleList': './index.html',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts.css',
+    'googleFonts': 'Caveat',
+    'links': []
+};
+var safariSingleDetails = {
+    'title': 'Puzzle',
+    'logo': './Images/Sample_Logo.png',
+    'icon': './Images/Sample_Icon.png',
+    'puzzleList': '',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts.css',
+    'googleFonts': 'Caveat',
+    'links': [
+    //        { rel:'preconnect', href:'https://fonts.googleapis.com' },
+    //        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
+    ]
+};
+var safariSampleDetails = {
+    'title': 'Puzzle Safari',
+    'logo': './Images/Sample_Logo.png',
+    'icon': './Images/Sample_Icon.png',
+    'puzzleList': './index.html',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts.css',
+    'googleFonts': 'Caveat',
+    'links': []
+};
+var safari20Details = {
+    'title': 'Safari Labs',
+    'logo': './Images/PS20 logo.png',
+    'icon': './Images/Beaker_icon.png',
+    'puzzleList': './safari.html',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts20.css',
+    'googleFonts': 'Architects+Daughter,Caveat',
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
+    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+};
+var safari21Details = {
+    'title': 'Safari Labs',
+    'logo': './Images/GS24_banner.png',
+    'icon': './Images/Plate_icon.png',
+    'puzzleList': './menuu.html',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts21.css',
+    'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/' },
+    // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+};
+var safari24Details = {
+    'title': 'Game Night',
+    // 'logo': './Images/PS24 logo.png',
+    'icon': '../24/Images/Sample_Icon.png',
+    // 'puzzleList': './safari.html',
+    'cssRoot': '../Css/',
+    'fontCss': '../24/Css/Fonts24.css',
+    'googleFonts': 'Goblin+One,Caveat',
+    'links': [],
+    // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+    //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+    // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+};
+var safariDggDetails = {
+    'title': 'David’s Puzzles',
+    'logo': './Images/octopus_watermark.png',
+    'icon': './Images/octopus_icon.png',
+    'puzzleList': './indexx.html',
+    'cssRoot': '../Css/',
+    'fontCss': './Css/Fonts.css',
+    'googleFonts': 'Caveat,Righteous,Cormorant+Upright',
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/' },
+    // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+};
+// Event for the PuzzylSafariTeam branch
+var puzzylSafariTeamDetails = {
+    'title': 'Game Night',
+    // 'logo': './Images/Sample_Logo.png',
+    'icon': '24/favicon.png',
+    'puzzleList': '',
+    'cssRoot': 'Css/',
+    'fontCss': '24/Fonts24.css',
+    'googleFonts': 'Goblin+One,Caveat',
+    'links': [
+    //        { rel:'preconnect', href:'https://fonts.googleapis.com' },
+    //        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
+    ]
+};
+var pastSafaris = {
+    'Docs': safariDocsDetails,
+    'Sample': safariSampleDetails,
+    'Single': safariSingleDetails,
+    '20': safari20Details,
+    '21': safari21Details,
+    'Dgg': safariDggDetails,
+    '24': safari24Details,
+    'gs24': safari21Details,
+    'team': puzzylSafariTeamDetails,
+};
+var safariDetails;
+/**
+* Initialize a global reference to Safari event details
+*/
+function initSafariDetails(safariId) {
+    if (!(safariId in pastSafaris)) {
+        throw new Error('Unrecognized Safari Event ID: ' + safariId);
+    }
+    safariDetails = pastSafaris[safariId];
+    return safariDetails;
+}
+exports.initSafariDetails = initSafariDetails;
+/**
+* Return the details of this puzzle event
+*/
+function getSafariDetails() {
+    return safariDetails;
+}
+exports.getSafariDetails = getSafariDetails;
 /*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
@@ -4556,6 +5490,15 @@ function isPrint() {
 }
 exports.isPrint = isPrint;
 /**
+ * Determines if this document's URL was tagged with ?icon
+ * This is intended to as an alternative way to generate icons for each puzzle
+ * @returns true if this page's URL contains a print argument (other than false)
+ */
+function isIcon() {
+    return urlArgs['icon'] != undefined && urlArgs['icon'] !== false;
+}
+exports.isIcon = isIcon;
+/**
  * Special url arg to override any cached storage. Always restarts.
  * @returns true if this page's URL contains a restart argument (other than =false)
  */
@@ -4574,60 +5517,14 @@ function forceReload() {
     return undefined;
 }
 exports.forceReload = forceReload;
-var safariSingleDetails = {
-    'title': 'Puzzle',
-    'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
-    'puzzleList': '',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
-    'links': [
-    //        { rel:'preconnect', href:'https://fonts.googleapis.com' },
-    //        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
-    ]
-};
-var safariSampleDetails = {
-    'title': 'Puzzle Safari',
-    'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
-    'puzzleList': './index.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat',
-    'links': []
-};
-var safari20Details = {
-    'title': 'Safari Labs',
-    'logo': './Images/PS20 logo.png',
-    'icon': './Images/Beaker_icon.png',
-    'puzzleList': './safari.html',
-    'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts20.css',
-    'googleFonts': 'Architects+Daughter,Caveat',
-    'links': [],
-    'qr_folders': { 'https://www.puzzyl.net/23/': './Qr/puzzyl/',
-        'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
-};
-var pastSafaris = {
-    'Sample': safariSampleDetails,
-    'Single': safariSingleDetails,
-    '20': safari20Details,
-};
-var safariDetails;
-/**
- * Return the details of this puzzle event
- */
-function getSafariDetails() {
-    return safariDetails;
-}
-exports.getSafariDetails = getSafariDetails;
+var print_as_color = { id: 'printAs', html: "<div style='color:#666;'>Print as <span style='color:#FF0000;'>c</span><span style='color:#538135;'>o</span><span style='color:#00B0F0;'>l</span><span style='color:#806000;'>o</span><span style='color:#7030A0;'>r</span>.</div>" };
+var print_as_grayscale = { id: 'printAs', text: "<div style='color:#666;'>Print as grayscale</div>" };
 /**
  * Do some basic setup before of the page and boilerplate, before building new components
  * @param bp
  */
 function preSetup(bp) {
-    safariDetails = pastSafaris[bp.safari];
+    var safariDetails = initSafariDetails(bp.safari);
     debugSetup();
     var bodies = document.getElementsByTagName('BODY');
     if (isIFrame()) {
@@ -4635,6 +5532,9 @@ function preSetup(bp) {
     }
     if (isPrint()) {
         bodies[0].classList.add('print');
+    }
+    if (isIcon()) {
+        bodies[0].classList.add('icon');
     }
     if (bp.pathToRoot) {
         if (safariDetails.logo) {
@@ -4649,7 +5549,7 @@ function preSetup(bp) {
     }
 }
 function createSimpleDiv(_a) {
-    var id = _a.id, cls = _a.cls, html = _a.html;
+    var id = _a.id, cls = _a.cls, text = _a.text, html = _a.html;
     var div = document.createElement('DIV');
     if (id !== undefined) {
         div.id = id;
@@ -4657,7 +5557,10 @@ function createSimpleDiv(_a) {
     if (cls !== undefined) {
         div.classList.add(cls);
     }
-    if (html !== undefined) {
+    if (text !== undefined) {
+        div.appendChild(document.createTextNode(text));
+    }
+    else if (html !== undefined) {
         div.innerHTML = html;
     }
     return div;
@@ -4701,6 +5604,7 @@ function createPrintQrBase64(data) {
     return qr;
 }
 function getQrPath() {
+    var safariDetails = getSafariDetails();
     if (safariDetails.qr_folders) {
         var url = window.location.href;
         for (var _i = 0, _a = Object.keys(safariDetails.qr_folders); _i < _a.length; _i++) {
@@ -4708,8 +5612,8 @@ function getQrPath() {
             if (url.indexOf(key) == 0) {
                 var folder = safariDetails.qr_folders[key];
                 var names = window.location.pathname.split('/'); // trim off path before last slash
-                var name_3 = names[names.length - 1].split('.')[0]; // trim off extension
-                return folder + '/' + name_3 + '.png';
+                var name_4 = names[names.length - 1].split('.')[0]; // trim off extension
+                return folder + '/' + name_4 + '.png';
             }
         }
     }
@@ -4784,6 +5688,9 @@ function boilerplate(bp) {
      *    </body>
      *   </html>
      */
+    if (bp.reactiveBuilder) {
+        expandControlTags();
+    }
     if (bp.tableBuilder) {
         constructTable(bp.tableBuilder);
     }
@@ -4793,6 +5700,7 @@ function boilerplate(bp) {
     var pageBody = document.getElementById('pageBody');
     document.title = bp.title;
     html.lang = bp.lang || 'en-us';
+    var safariDetails = getSafariDetails();
     for (var i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
@@ -4801,7 +5709,7 @@ function boilerplate(bp) {
     viewport.content = 'width=device-width, initial-scale=1';
     head.appendChild(viewport);
     if (safariDetails.fontCss) {
-        linkCss(head, safariDetails.fontCss);
+        linkCss(safariDetails.fontCss);
     }
     var gFonts = bp.googleFonts;
     if (safariDetails.googleFonts) {
@@ -4828,8 +5736,8 @@ function boilerplate(bp) {
         };
         addLink(head, link);
     }
-    linkCss(head, safariDetails.cssRoot + 'PageSizes.css');
-    linkCss(head, safariDetails.cssRoot + 'TextInput.css');
+    linkCss(safariDetails.cssRoot + 'PageSizes.css');
+    linkCss(safariDetails.cssRoot + 'TextInput.css');
     if (!bp.paperSize) {
         bp.paperSize = 'letter';
     }
@@ -4848,10 +5756,15 @@ function boilerplate(bp) {
     body.appendChild(page);
     page.appendChild(margins);
     margins.appendChild(pageBody);
-    margins.appendChild(createSimpleDiv({ cls: 'title', html: bp.title }));
-    margins.appendChild(createSimpleDiv({ id: 'copyright', html: '&copy; ' + bp.copyright + ' ' + bp.author }));
+    margins.appendChild(createSimpleDiv({ cls: 'title', text: bp.title }));
+    if (bp.copyright || bp.author) {
+        margins.appendChild(createSimpleDiv({ id: 'copyright', text: '© ' + (bp.copyright || '') + ' ' + (bp.author || '') }));
+    }
     if (safariDetails.puzzleList) {
         margins.appendChild(createSimpleA({ id: 'backlink', href: safariDetails.puzzleList, friendly: 'Puzzle list' }));
+    }
+    if (bp.printAsColor !== undefined) {
+        margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));
     }
     // Set tab icon for safari event
     var tabIcon = document.createElement('link');
@@ -4882,9 +5795,16 @@ function boilerplate(bp) {
         textSetup();
     }
     setupAbilities(head, margins, bp.abilities || {});
+    if (bp.validation) {
+        linkCss(safariDetails.cssRoot + 'Guesses.css');
+        setupValidation();
+    }
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);
     }
+}
+function theHead() {
+    return document.getElementsByTagName('HEAD')[0];
 }
 /**
  * Count-down before we know all delay-linked CSS have been loaded
@@ -4896,6 +5816,7 @@ var cssToLoad = 1;
  * @param det the attributes of the link tag
  */
 function addLink(head, det) {
+    head = head || theHead();
     var link = document.createElement('link');
     link.href = det.href;
     link.rel = det.rel;
@@ -4911,12 +5832,19 @@ function addLink(head, det) {
     }
     head.appendChild(link);
 }
+exports.addLink = addLink;
+var linkedCss = {};
 /**
  * Append a CSS link to the header
- * @param head the head tag
  * @param relPath The contents of the link's href
+ * @param head the head tag
  */
-function linkCss(head, relPath) {
+function linkCss(relPath, head) {
+    if (relPath in linkedCss) {
+        return; // Don't re-add
+    }
+    linkedCss[relPath] = true;
+    head = head || theHead();
     var link = document.createElement('link');
     link.href = relPath;
     link.rel = "Stylesheet";
@@ -4925,6 +5853,7 @@ function linkCss(head, relPath) {
     cssToLoad++;
     head.appendChild(link);
 }
+exports.linkCss = linkCss;
 /**
  * Each CSS file that is delay-linked needs time to load.
  * Decrement the count after each one.
@@ -4941,6 +5870,7 @@ function cssLoaded() {
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
 function setupAbilities(head, margins, data) {
+    var safariDetails = getSafariDetails();
     var ability = document.getElementById('ability');
     if (ability != null) {
         var text = ability.innerText;
@@ -4982,29 +5912,35 @@ function setupAbilities(head, margins, data) {
         fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         preprocessDragFunctions();
         indexAllDragDropFields();
-        linkCss(head, safariDetails.cssRoot + 'DragDrop.css');
+        linkCss(safariDetails.cssRoot + 'DragDrop.css');
         count++;
     }
     if (data.stamping) {
         preprocessStampObjects();
         indexAllDrawableFields();
-        linkCss(head, safariDetails.cssRoot + 'StampTools.css');
+        linkCss(safariDetails.cssRoot + 'StampTools.css');
         // No ability icon
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
         preprocessRulerFunctions(exports.EdgeTypes.straightEdge, false);
-        linkCss(head, safariDetails.cssRoot + 'StraightEdge.css');
+        linkCss(safariDetails.cssRoot + 'StraightEdge.css');
         //indexAllVertices();
     }
     if (data.wordSearch) {
         fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">💊</span>';
         preprocessRulerFunctions(exports.EdgeTypes.wordSelect, true);
-        linkCss(head, safariDetails.cssRoot + 'WordSearch.css');
+        linkCss(safariDetails.cssRoot + 'WordSearch.css');
+        //indexAllVertices();
+    }
+    if (data.hashiBridge) {
+        // fancy += '<span id="drag-ability" title="word-search enabled" style="text-shadow: 0 0 3px black;">🌉</span>';
+        preprocessRulerFunctions(exports.EdgeTypes.hashiBridge, true);
+        linkCss(safariDetails.cssRoot + 'HashiBridge.css');
         //indexAllVertices();
     }
     if (data.subway) {
-        linkCss(head, safariDetails.cssRoot + 'Subway.css');
+        linkCss(safariDetails.cssRoot + 'Subway.css');
         // Don't setupSubways() until all styles have applied, so CSS-derived locations are final
     }
     if (data.notes) {
@@ -5046,4 +5982,2225 @@ function theBoiler() {
 }
 exports.theBoiler = theBoiler;
 window.onload = function () { boilerplate(boiler); }; // error if boiler still undefined
+/*-----------------------------------------------------------
+ * _confirmation.ts
+ *-----------------------------------------------------------*/
+/**
+ * Response codes for different kinds of responses
+ */
+var ResponseType = {
+    Error: 0,
+    Correct: 1,
+    Confirm: 2,
+    KeepGoing: 3,
+    Unlock: 4,
+    Load: 5,
+    Show: 6, // cause another cell to show
+    //    Save: 7,     // write a key/value directly to storage
+};
+/**
+ * CSS classes for each response type
+ */
+var ResponseTypeClasses = [
+    'rt-error',
+    'rt-correct',
+    'rt-confirm',
+    'rt-keepgoing',
+    'rt-unlock',
+    'rt-load',
+    //    'rt-save',
+];
+/**
+ * The generic response for unknown submissions
+ */
+var no_match_response = "0";
+/**
+ * Default response text, if the validation block only specifies a type
+ */
+var default_responses = [
+    "Incorrect",
+    "Correct!",
+    "Confirmed",
+    "Keep going", // Keep Going
+];
+/**
+ * img src= URLs for icons to further indicate whether guesses were correct or not
+ */
+var response_img = [
+    "../Icons/X.png",
+    "../Icons/Check.png",
+    "../Icons/Thumb.png",
+    "../Icons/Thinking.png",
+    "../Icons/Unlocked.png", // Unlock
+];
+/**
+ * The full history of guesses on the current puzzle
+ */
+var guess_history = [];
+/**
+ * This puzzle has a validation block, so there must be either a place for the
+ * player to propose an answer, or an automatic extraction for other elements.
+ */
+function setupValidation() {
+    var _a;
+    var buttons = document.getElementsByClassName('validater');
+    if (buttons.length > 0) {
+        var hist = getHistoryDiv('');
+        if (!hist) {
+            // Create a standard <div id="guess-log"> to track the all guesses
+            var log = document.createElement('div');
+            log.id = 'guess-log';
+            var div = document.createElement('div');
+            div.id = 'guess-history';
+            var span = document.createElement('span');
+            span.id = 'guess-titlebar';
+            span.appendChild(document.createTextNode('Guesses'));
+            log.appendChild(span);
+            log.appendChild(div);
+            (_a = document.getElementById('pageBody')) === null || _a === void 0 ? void 0 : _a.appendChild(log);
+        }
+    }
+    var _loop_1 = function (i) {
+        var btn = buttons[i];
+        if (isTag(btn, 'button')) {
+            btn.onclick = function (e) { clickValidationButton(e.target); };
+            var srcId = getOptionalStyle(btn, 'data-extracted-id') || 'extracted';
+            var src = document.getElementById(srcId);
+            // If button is connected to a text field, hook up ENTER to submit
+            if (src && ((isTag(src, 'input') && src.type == 'text')
+                || isTag(src, 'textarea'))) { // TODO: not multiline
+                src.onkeyup = function (e) { validateInputReady(btn, e.key); };
+            }
+        }
+    };
+    for (var i = 0; i < buttons.length; i++) {
+        _loop_1(i);
+    }
+}
+exports.setupValidation = setupValidation;
+function calculateTextExtents(src, value) {
+    var fe = document.getElementById('fontExtents');
+    if (!fe) {
+        fe = document.createElement('span');
+        fe.id = 'fontExtents';
+        fe.style.position = 'absolute';
+        document.getElementsByTagName('body')[0].appendChild(fe);
+    }
+    fe.innerText = value;
+    var styles = window.getComputedStyle(src, null);
+    fe.style.fontFamily = styles.getPropertyValue('font-family');
+    fe.style.fontSize = styles.getPropertyValue('font-size');
+    fe.style.fontWeight = styles.getPropertyValue('font-weight');
+    fe.style.fontStretch = styles.getPropertyValue('font-stretch');
+    fe.style.textTransform = styles.getPropertyValue('text-transform');
+    //    fe.style.transform = styles.getPropertyValue('transform');
+    return fe.scrollWidth;
+}
+/**
+ * When a user types an over-long value into an input, shrink the font
+ * @param input An input or textarea element
+ * @param value The current text
+ */
+function horzScaleToFit(input, value) {
+    var widthPx = parseFloat(input.getAttribute('data-original-width') || '');
+    if (!widthPx) {
+        widthPx = calcPxStyle(input, 'width');
+        input.setAttribute('data-original-width', '' + widthPx);
+    }
+    if (value.length == 0) {
+        input.style.transform = 'scale(100%, 100%)';
+        input.style.width = widthPx + 'px';
+    }
+    var curScale = calcTransform(input, 'scale', matrix.scaleX, 1);
+    var needPx = calculateTextExtents(input, value + '|'); // account for borders
+    if (needPx * curScale > widthPx) {
+        var wantPx = calculateTextExtents(input, value + ' 12345678'); // one more word
+        var newScalePct = Math.floor(widthPx * 100 / wantPx);
+        if (newScalePct > 33) { // Maximum compression before unreadable
+            input.style.transformOrigin = 'left';
+            input.style.transform = 'scale(' + newScalePct + '%, 100%)';
+            input.style.width = Math.floor(widthPx * 100 / newScalePct) + 'px';
+        }
+        var test = calculateTextExtents(input, value);
+    }
+}
+function calcPxStyle(elmt, prop) {
+    var val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
+    return parseFloat(val.substring(0, val.length - 2)); // px
+}
+function calcPctStyle(elmt, prop) {
+    var val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
+    return parseFloat(val.substring(0, val.length - 1)); // %
+}
+var matrix = {
+    scaleX: 0,
+    rotX: 1,
+    rotY: 2,
+    scaleY: 3,
+    translateX: 4,
+    translateY: 5
+};
+function calcTransform(elmt, prop, index, defValue) {
+    var trans = window.getComputedStyle(elmt, null).getPropertyValue('transform');
+    var matrix = '1, 0, 0, 0, 1, 0'; // unit transform
+    if (trans && trans.substring(0, 7) == 'matrix(') {
+        matrix = trans.substring(7, trans.length - 8);
+    }
+    var split = matrix.split(',');
+    if (index < split.length) {
+        var val = split[index];
+        if (val.substring(val.length - 1) == '%') {
+            return parseFloat(val.substring(0, val.length - 1)) * 0.01;
+        }
+        else if (val.substring(val.length - 2) == 'px') {
+            return parseFloat(val.substring(0, val.length - 2));
+        }
+        else
+            return parseFloat(val);
+    }
+    return defValue;
+}
+/**
+ * When typing in an input connect to a validate button,
+ * Any non-empty string indicates ready (TODO: add other rules)
+ * and ENTER triggers a button click
+ * @param btn The button to enable/disable as ready
+ * @param key What key was just typed, if any
+ */
+function validateInputReady(btn, key) {
+    var id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
+    var ext = id ? document.getElementById(id) : null;
+    if (!ext) {
+        return;
+    }
+    var value = getValueToValidate(ext);
+    var ready = isValueReady(btn, value);
+    toggleClass(btn, 'ready', ready);
+    if (ready && key == 'Enter') {
+        clickValidationButton(btn);
+    }
+    else if (isTag(ext, 'input') || isTag(ext, 'textarea')) {
+        horzScaleToFit(ext, value);
+    }
+}
+exports.validateInputReady = validateInputReady;
+/**
+ * Submit buttons can be associated with various constructs.
+ * Extract an appropriate value to submit
+ * @param container The container of the value to submit.
+ * @returns The value, or concatenation of values.
+ */
+function getValueToValidate(container) {
+    // If the extraction has alredy been cached, use it
+    var cached = container.getAttribute('data-extraction');
+    if (cached) {
+        return cached;
+    }
+    // If container is an input, get its value
+    if (isTag(container, 'input')) {
+        return container.value;
+    }
+    if (isTag(container, 'textarea')) {
+        return container.value;
+    }
+    // If we contain multiple inputs, concat them
+    var inputs = container.getElementsByClassName('letter-input');
+    if (inputs.length > 0) {
+        var value = '';
+        for (var i = 0; i < inputs.length; i++) {
+            value += inputs[i].value;
+        }
+        return value;
+    }
+    // If we contain multiple other extractions, concat them
+    var datas = getAllElementsWithAttribute(container, 'data-extraction');
+    if (datas.length > 0) {
+        var value = '';
+        for (var i = 0; i < datas.length; i++) {
+            value += datas[i].getAttribute('data-extraction');
+        }
+        return value;
+    }
+    // No recognized combo
+    console.error('Unrecognized value container: ' + container);
+    return '';
+}
+/**
+ * Is this value complete, such that submitting is possible?
+ * @param btn The button to submit
+ * @param value The value to submit
+ * @returns true if the value is long enough and contains no blanks
+ */
+function isValueReady(btn, value) {
+    if (!value) {
+        return false;
+    }
+    if (value.indexOf('_') >= 0) {
+        return false;
+    }
+    var minLength = getOptionalStyle(btn, 'data-min-length');
+    if (minLength) {
+        return value.length >= parseInt(minLength);
+    }
+    return value.length > 0;
+}
+/**
+ * There should be a singleton guess history, which we likely created above
+ * @param id The ID, or 'guess-history' by default
+ */
+function getHistoryDiv(id) {
+    return document.getElementById('guess-history');
+}
+/**
+ * The user has clicked a "Submit" button next to their answer.
+ * @param btn The target of the click event
+ * The button can have parameters pointing to the extraction.
+ */
+function clickValidationButton(btn) {
+    var id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
+    if (!id) {
+        return;
+    }
+    var ext = document.getElementById(id);
+    if (!ext) {
+        return;
+    }
+    var value = getValueToValidate(ext);
+    var ready = isValueReady(btn, value);
+    if (ready) {
+        var now = new Date();
+        var gl = { field: id, guess: value, time: now };
+        decodeAndValidate(gl);
+    }
+}
+/**
+ * Validate a user's input against the encoded set of validations
+ * @param gl the guess information, but not the response
+ */
+function decodeAndValidate(gl) {
+    var validation = theBoiler().validation;
+    if (validation && gl.field in validation) {
+        var obj = validation[gl.field];
+        // Normalize guesses
+        // TODO: make this optional, in theBoiler, if a puzzle needs
+        gl.guess = gl.guess.toUpperCase(); // All caps (permanent)
+        var guess = gl.guess.replace(/ /g, ''); // Remove spaces for hashing - keep in UI
+        // Keep all other punctuation
+        var hash = rot13(guess); // TODO: more complicated hashing
+        var block = appendGuess(gl);
+        if (hash in obj) {
+            var encoded = obj[hash];
+            // Guess was expected. It may have multiple responses.
+            var multi = encoded.split('|');
+            for (var i = 0; i < multi.length; i++) {
+                appendResponse(block, multi[i]);
+            }
+        }
+        else {
+            // Guess does not match any hashes
+            appendResponse(block, no_match_response);
+        }
+    }
+    else {
+        console.error('Unrecognized validation field: ' + gl.field);
+    }
+}
+exports.decodeAndValidate = decodeAndValidate;
+/**
+ * Build a guess/response block, initialized with the guess
+ * @param gl The user's guess info
+ * @returns The block, to which responses can be appended
+ */
+function appendGuess(gl) {
+    // Save
+    guess_history.push(gl);
+    saveGuessHistory(guess_history);
+    // Build a block for the guess and any connected responses
+    var hist = getHistoryDiv(gl.field);
+    var block = document.createElement('div');
+    block.classList.add('rt-block');
+    var div = document.createElement('div');
+    div.classList.add('rt-guess');
+    div.appendChild(document.createTextNode(gl.guess));
+    var now = gl.time;
+    var time = now.getHours() + ":"
+        + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes() + ":"
+        + (now.getSeconds() < 10 ? "0" : "") + now.getSeconds();
+    var span = document.createElement('span');
+    span.classList.add('rt-time');
+    span.appendChild(document.createTextNode(time));
+    div.appendChild(span);
+    block.appendChild(div);
+    // Newer guesses are inserted at the top
+    hist.insertAdjacentElement('afterbegin', block);
+    return block;
+}
+/**
+ * Append a response to a guess block.
+ * @param block The div containing the guess, and any other responses to the same guess
+ * @param response The response, prefixed with the response type
+ * The type is pulled off, and dictates the formatting.
+ * Some types have side-effects, in addition to text.
+ * If the response is only the type, pre-canned text is used instead.
+ */
+function appendResponse(block, response) {
+    var type = parseInt(response[0]);
+    response = response.substring(1);
+    if (response.length == 0 && type < default_responses.length) {
+        response = default_responses[type];
+    }
+    else {
+        response = rot13(response);
+    }
+    var div = document.createElement('div');
+    div.classList.add('response');
+    div.classList.add(ResponseTypeClasses[type]);
+    if (type == ResponseType.Unlock) {
+        // Create a link to a newly unlocked page.
+        // The (decrypted) response is either just a URL, 
+        // or else URL^Friendly (separated by a caret)
+        var caret = response.indexOf('^');
+        var friendly = caret < 0 ? response : response.substring(caret + 1);
+        if (caret >= 0) {
+            response = response.substring(0, caret);
+        }
+        var parts = response.split('^'); // caret not allowed in a URL
+        div.appendChild(document.createTextNode('You have unlocked '));
+        var link = document.createElement('a');
+        link.href = response;
+        link.target = '_blank';
+        link.appendChild(document.createTextNode(friendly));
+        div.appendChild(link);
+    }
+    else if (type == ResponseType.Load) {
+        // Use an iframe to navigate immediately to the response URL.
+        // The iframe will be hidden, but any scripts will run immediately.
+        var iframe = document.createElement('iframe');
+        iframe.src = response;
+        div.appendChild(iframe);
+    }
+    else if (type == ResponseType.Show) {
+        var parts = response.split('^'); // caret not allowed in a URL
+        var elmt = document.getElementById(parts[0]);
+        if (elmt) {
+            if (parts.length > 1) {
+                toggleClass(elmt, parts[1]);
+            }
+            else {
+                elmt.style.display = 'block';
+            }
+        }
+    }
+    else {
+        // The response (which may be canned) is displayed verbatim.
+        div.appendChild(document.createTextNode(response));
+    }
+    if (type < response_img.length) {
+        var img = document.createElement('img');
+        img.classList.add('rt-img');
+        img.src = response_img[type];
+        div.appendChild(img);
+    }
+    block.appendChild(div);
+    if (type == ResponseType.Correct) {
+        // Tag this puzzle as solved
+        toggleClass(document.getElementsByTagName('body')[0], 'solved', true);
+        // Cache that the puzzle is solved, to be indicated in tables of contents
+        updatePuzzleList(getCurFileName(), exports.PuzzleStatus.Solved);
+    }
+}
+/**
+ * Rot-13 cipher, maintaining case.
+ * Chars other than A-Z are preserved as-is
+ * @param source Text to be encoded, or encoded text to be decoded
+ */
+function rot13(source) {
+    var rot = '';
+    for (var i = 0; i < source.length; i++) {
+        var ch = source[i];
+        var r = ch;
+        if (ch >= 'A' && ch <= 'Z') {
+            r = String.fromCharCode(((ch.charCodeAt(0) - 52) % 26) + 65);
+        }
+        else if (ch >= 'a' && ch <= 'z') {
+            r = String.fromCharCode(((ch.charCodeAt(0) - 84) % 26) + 97);
+        }
+        rot += r;
+    }
+    return rot;
+}
+/**
+ * Calculate the 256-bit (32-byte) SHA hash of any input string
+ * @param source An input string
+ * @returns A 32-character string
+ */
+// async function sha256(source) {
+//     const sourceBytes = new TextEncoder().encode(source);
+//     const digest = await window.crypto.subtle.digest("SHA-256", sourceBytes);
+//     const resultBytes = [...new Uint8Array(digest)];
+//     return resultBytes.map(x => x.toString(16).padStart(2, '0')).join("");
+// }
+/*-----------------------------------------------------------
+ * _builder.ts
+ *-----------------------------------------------------------*/
+/****************************************************************************
+ *          BUILDER
+ *
+ * Buider HTML is loosely inspired by React.
+ * It defines the data first.
+ * Then the HTML supports special tags for loops and conditionals,
+ * and the text and attributes support lookups into the data.
+ *
+ * Data initialization:
+ *    In the script block of the page, add two values to the boilerplate:
+ *        const boiler = {
+ *          ...
+ *          'reactiveBuilder': true,  // required
+ *          'builderLookup': {        // free-form, for example...
+ *            magic: 123,
+ *            line: { start: {x:1, y:2}, end: {x:3, y:4} },
+ *            fonts: [ 'bold', 'italic' ],
+ *            grid: [
+ *              [1, 2, 3],
+ *              [4, 5, 6]
+ *            ]
+ *          }
+ *        };
+ *
+ * Data lookup:
+ *    In text or attribute values, use curly-brace syntax to inject named values:
+ *    Examples in text:
+ *      {magic}             =>  123
+ *      {line.end.x}        =>  3
+ *      {grid.0.1}          =>  2   // note that .0 and .1 are indeces
+ *
+ *    Examples in attributes:
+ *      <div id="{magic}" class="{fonts.0} {fonts.1}">
+ *                          =>  <div id="123" class="bold italic">
+ *
+*    There is a special rule for tags and attributes prefixed with _
+ *    when you need to avoid the pre-processed tags/attributes being acted upon by the DOM.
+ *      <_img _src="{fonts.0}Icon.png">
+ *                          =>  <img src="boldIcon.png">
+ *
+ *   Parameterized lookups allow one lookup to be used to name the child of another.
+ *   Any nested pair of [brackets] restarts the lookup context at the root.
+ *      {grid.[line.start.x].[line.start.y]}
+ *                          ==  {grid.1.2}      =>  5
+ *
+ * <for> Loops:
+ *    Use the new <for> tag to loop over a set of values,
+ *    cloning and re-evaluating the contents of the loop for each.
+ *
+ *    The targets of loops are implicitly lookups, so the {curly} syntax is not needed.
+ *    As they expand, new nested values are dynamically added to the lookup table, to reflect the loop state.
+ *
+ *    Loop over elements in a list:
+ *      <for each="font" in="fonts">{font#}:{font} </for>
+ *                          =>  0:bold 1:italic
+ *        Note: in="fonts" could have been in="{fonts}"
+ *        Inside the <for> tags, new temporary named values exist based on the name specified in each=""
+ *          {font} for each value in the list,
+ *          and {font#} for the index of that item (starting at 0)
+ *
+ *    Loop over fields in an object:
+ *      <for key="a" in="line.start">{a#}:{a}={a!} </for>
+ *                          =>  0:x=1 1:y=2
+ *        Inside the <for> tags, an additional temporary:
+ *          {a} for each key in the object, {a#} for the index of that key,
+ *          and {a!} for the value corresponding to that key.
+ *
+ *    Loop over characters in text:
+ *      <for char="ch" in="fonts.0">{ch} </for>
+ *                          =>  b o l d
+ *      <for char="ch" in="other">{ch} </for>
+ *                          =>  o t h e r
+ *
+ *        Note that the in="value" can be a literal.
+ *
+ *    Loop over words in text:
+ *      <for char="w" in="Hello World!">{w}-{w}</for>
+ *                          =>  Hello-HelloWorld!-World!
+ *
+ *        Word is really anything delimited by spaces.
+ *
+ *    Loop over a range of values:
+ *      <for range="i" from="1" to="3">{i}</for>
+ *                          =>  123
+ *      <for range="i" from="1" until="3">{i}</for>
+ *                          =>  12
+ *      <for range="i" from="5" to="0" step="-2">{i}</for>
+ *                          =>  531
+ *
+ *        from=""   specifies the start value
+ *        to=""     specifies the last value (inclusive)
+ *        until=""  specifies a stop value (exclusive)
+ *        step=""   specifies a step value, if not 1
+ *
+ *    Use ranges to in compound lookups:
+ *      <for range="row" from="0" to="1">
+ *        <for range="col" from="0" to="2">
+ *          {grid.[row].[col]}
+ *      </for>,</for>
+ *                          =>  1 2 3 , 4 5 6
+ *
+ *  <if> conditionals
+ *    Use the new <if> tag to check a lookup against various states.
+ *    The checked values are implicitly lookups, so the {curly} syntax is not needed.
+ *    No new temporary values are generated by ifs.
+ *
+ *    Note: there is no else syntax. Instead, concatenate multiple ifs.
+ *      As such, be careful not to nest, unless intended.
+ *
+ *    <if test="magic" eq="123">Magic!</if>
+ *    <if test="magic" ne="123">Lame.</if>
+ *                          =>  Magic!
+ *    <if test="magic" ge="100">Big!
+ *    <if test="magic" ge="120">Bigger!</if>
+ *    </if>
+ *                          =>  Big!Bigger!
+ *
+ *        Relative operators:
+ *          eq=""       Equality (case-sensitive, in all cases)
+ *          ne=""       Not-equals
+ *          gt=""       Greater than
+ *          lt=""       Less than
+ *          ge=""       Greater than or equals
+ *          le=""       Less than or equals
+ *        Containment operators:
+ *          in="super"  Test value is IN (a substring of) "super"
+ *          ni="super"  Test value is NOT IN (not a substring of) "super"
+ *        There is no NOT modifier. Instead, use the converse operator.
+ *
+ *
+ *  Loops and Tables:
+ *    It is tempting to use loops inside <table> tags.
+ *    However, the DOM will likely refactor them if found inside a <table> but not inside <td>.
+ *
+ *    Two options: _prefix and CSS
+ *      <_table>
+ *        <for ...>
+ *          <_tr>
+ *            <if eq ...><_th></_th></if>
+ *            <if ne ...><_td></_td></if>
+ *          </_tr>
+ *        </for>
+ *      </_table>
+ *
+ *      <div style="display:table">
+ *        <for ...>
+ *          <div style="display:table-row">
+ *            <if eq ...><div style="display:table-header"></div></if>
+ *            <if ne ...><div style="display:table-cell"></div></if>
+ *          </div>
+ *        </for>
+ *      </div>
+ */
+var builder_tags = [
+    'build', 'use', 'for', 'if', 'xml'
+];
+function identifyBuilders() {
+    for (var _i = 0, builder_tags_1 = builder_tags; _i < builder_tags_1.length; _i++) {
+        var t = builder_tags_1[_i];
+        var tags = document.getElementsByTagName(t);
+        for (var i = 0; i < tags.length; i++) {
+            toggleClass(tags[i], 'builder_control', true);
+        }
+    }
+}
+var src_element_stack = [];
+var dest_element_stack = [];
+function initElementStack(elmt) {
+    dest_element_stack = [];
+    src_element_stack = [];
+    var parent_stack = [];
+    while (elmt !== null && elmt.nodeName != '#document-fragment' && elmt.tagName !== 'BODY') {
+        parent_stack.push(elmt);
+        elmt = elmt.parentElement;
+    }
+    // Invert stack
+    while (parent_stack.length > 0) {
+        src_element_stack.push(parent_stack.pop());
+    }
+}
+function pushDestElement(elmt) {
+    dest_element_stack.push(elmt);
+}
+function popDestElement() {
+    dest_element_stack.pop();
+}
+/**
+ * See if any parent element in the builder stack matches a lambda
+ * @param fn a Lambda which takes an element and returns true for the desired condition
+ * @returns the first parent element that satisfies the lambda, or null if none do
+ */
+function getBuilderParentIf(fn) {
+    for (var i = dest_element_stack.length - 1; i >= 0; i--) {
+        if (fn(dest_element_stack[i])) {
+            return dest_element_stack[i];
+        }
+    }
+    for (var i = src_element_stack.length - 1; i >= 0; i--) {
+        if (fn(src_element_stack[i])) {
+            return src_element_stack[i];
+        }
+    }
+    return null; // no parent satisfied lambda
+}
+exports.getBuilderParentIf = getBuilderParentIf;
+/**
+ * See if any parent element, either in the builder stack, or src element tree, matches a lambda
+ * @param fn a Lambda which takes an element and returns true for the desired condition
+ * @returns the first parent element that satisfies the lambda, or null if none do
+ */
+function getParentIf(elmt, fn) {
+    var bp = getBuilderParentIf(fn);
+    if (bp != null) {
+        return bp;
+    }
+    while (elmt !== null && elmt.nodeName != '#document-fragment' && elmt.tagName !== 'BODY') {
+        if (fn(elmt)) {
+            return elmt;
+        }
+        elmt = elmt.parentElement;
+    }
+    return null;
+}
+exports.getParentIf = getParentIf;
+/**
+ * Is the current stack of building elements currently inside an SVG tag.
+ * @returns returns true if inside an SVG, unless further inside an EMBEDDED_OBJECT.
+ */
+function inSvgNamespace() {
+    var elmt = getBuilderParentIf(function (e) { return isTag(e, 'SVG') || isTag(e, 'FOREIGNOBJECT'); });
+    if (elmt) {
+        return isTag(elmt, 'SVG');
+    }
+    return false;
+}
+exports.inSvgNamespace = inSvgNamespace;
+/**
+ * See if we are inside an existing <svg> tag. Or multiple!
+ * @param elmt Any element
+ * @returns How many <svg> tags are in its parent chain
+ */
+function getSvgDepth(elmt) {
+    var s = 0;
+    var parent = findParentOfTag(elmt, 'SVG');
+    while (parent) {
+        s++;
+        parent = parent.parentElement ? findParentOfTag(parent.parentElement, 'SVG') : null;
+    }
+    return s;
+}
+/**
+ * Look for control tags like for loops and if branches.
+ */
+function expandControlTags() {
+    identifyBuilders();
+    var controls = document.getElementsByClassName('builder_control');
+    while (controls.length > 0) {
+        var src = controls[0];
+        initElementStack(src);
+        var dest = [];
+        if (isTag(src, 'build') || isTag(src, 'xml')) {
+            dest = expandContents(src);
+        }
+        else if (isTag(src, 'for')) {
+            dest = startForLoop(src);
+        }
+        else if (isTag(src, 'if')) {
+            dest = startIfBlock(src);
+        }
+        else if (isTag(src, 'use')) {
+            dest = useTemplate(src);
+        }
+        var parent_2 = src.parentNode;
+        for (var d = 0; d < dest.length; d++) {
+            var node = dest[d];
+            parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.insertBefore(node, src);
+        }
+        parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.removeChild(src);
+        // See if there are more
+        controls = document.getElementsByClassName('builder_control');
+    }
+    initElementStack(null);
+    // Call any post-builder method
+    var fn = theBoiler().postBuild;
+    if (fn) {
+        fn();
+    }
+}
+exports.expandControlTags = expandControlTags;
+/**
+ * Concatenate one list onto another
+ * @param list The list to modified
+ * @param add The list to add to the end
+ */
+function pushRange(list, add) {
+    for (var i = 0; i < add.length; i++) {
+        list.push(add[i]);
+    }
+}
+exports.pushRange = pushRange;
+/**
+ * Append more than one child node to the end of a parent's child list
+ * @param parent The parent node
+ * @param add A list of new children
+ */
+function appendRange(parent, add) {
+    for (var i = 0; i < add.length; i++) {
+        parent.insertBefore(add[i], null);
+    }
+}
+exports.appendRange = appendRange;
+/**
+ * Clone every node inside a parent element.
+ * Any occurence of {curly} braces is in fact a lookup.
+ * It can be in body text or an element attribute value
+ * @param src The containing element
+ * @param context A dictionary of all values that can be looked up
+ * @returns A list of nodes
+ */
+function expandContents(src) {
+    var dest = [];
+    for (var i = 0; i < src.childNodes.length; i++) {
+        var child = src.childNodes[i];
+        if (child.nodeType == Node.ELEMENT_NODE) {
+            var child_elmt = child;
+            if (isTag(child_elmt, 'for')) {
+                pushRange(dest, startForLoop(child_elmt));
+            }
+            else if (isTag(child_elmt, 'if')) {
+                pushRange(dest, startIfBlock(child_elmt));
+            }
+            else if (isTag(child_elmt, 'use')) {
+                pushRange(dest, useTemplate(child_elmt));
+            }
+            else if (isTag(child_elmt, exports.inputAreaTagNames)) {
+                pushRange(dest, startInputArea(child_elmt));
+            }
+            else {
+                dest.push(cloneWithContext(child_elmt));
+            }
+        }
+        else if (child.nodeType == Node.TEXT_NODE) {
+            pushRange(dest, cloneTextNode(child));
+        }
+        else {
+            dest.push(cloneNode(child));
+        }
+    }
+    return dest;
+}
+exports.expandContents = expandContents;
+/**
+ * Some HTML elements and attributes are immediately acted upon by the DOM.
+ * To delay that until after builds (especially <for> and <if>),
+ * use _prefx or suffix_, and the tag or attribute will be renamed when cloned.
+ * @param name Any tag or attribute name
+ * @returns The name, or the the name without the _
+ */
+function normalizeName(name) {
+    if (name.substring(0, 1) == '_') {
+        return name.substring(1);
+    }
+    if (name.substring(name.length - 1) == '_') {
+        return name.substring(0, name.length - 1);
+    }
+    // Any other interior underscores are kept
+    return name;
+}
+exports.normalizeName = normalizeName;
+var nameSpaces = {
+    '': '',
+    'svg': exports.svg_xmlns,
+    's': exports.svg_xmlns,
+    'html': null,
+    'h': null,
+};
+/**
+ * Deep-clone an HTML element
+ * Note that element and attribute names with _prefix will be renamed without _
+ * @param elmt The original element
+ * @param context A dictionary of all accessible values
+ * @returns A cloned element
+ */
+function cloneWithContext(elmt) {
+    var tagName = normalizeName(elmt.localName);
+    var clone;
+    if (inSvgNamespace() || tagName == 'svg') {
+        // TODO: contents of embedded objects aren't SVG
+        clone = document.createElementNS(exports.svg_xmlns, tagName);
+    }
+    else {
+        clone = document.createElement(tagName);
+    }
+    pushDestElement(clone);
+    cloneAttributes(elmt, clone);
+    for (var i = 0; i < elmt.childNodes.length; i++) {
+        var child = elmt.childNodes[i];
+        if (child.nodeType == Node.ELEMENT_NODE) {
+            var child_elmt = child;
+            if (isTag(child_elmt, 'for')) {
+                appendRange(clone, startForLoop(child_elmt));
+            }
+            else if (isTag(child_elmt, 'if')) {
+                appendRange(clone, startIfBlock(child_elmt));
+            }
+            else if (isTag(child_elmt, 'use')) {
+                appendRange(clone, useTemplate(child_elmt));
+            }
+            else if (isTag(child_elmt, exports.inputAreaTagNames)) {
+                appendRange(clone, startInputArea(child_elmt));
+            }
+            else {
+                clone.appendChild(cloneWithContext(child_elmt));
+            }
+        }
+        else if (child.nodeType == Node.TEXT_NODE) {
+            appendRange(clone, cloneTextNode(child));
+        }
+        else {
+            clone.insertBefore(cloneNode(child), null);
+        }
+    }
+    popDestElement();
+    return clone;
+}
+/**
+ * Clone other node types, besides HTML elements and Text
+ * @param node Original node
+ * @returns A node to use in the clone
+ */
+function cloneNode(node) {
+    return node; // STUB: keep original node
+}
+/*-----------------------------------------------------------
+ * _builderContext.ts
+ *-----------------------------------------------------------*/
+/**
+ * The root context for all builder functions
+ * @returns the builderLookup object on the boiler.
+ */
+function theBoilerContext() {
+    return theBoiler().builderLookup || {};
+}
+exports.theBoilerContext = theBoilerContext;
+var contextStack = [];
+/**
+ * Get the current builder context.
+ * If needed, initialized from boilerplate.builderLookup
+ * @returns The top context on the stack.
+ */
+function getBuilderContext() {
+    if (contextStack.length == 0) {
+        contextStack.push(theBoilerContext());
+    }
+    return contextStack[contextStack.length - 1];
+}
+exports.getBuilderContext = getBuilderContext;
+/**
+ * Start a new top level builder context.
+ * @param newContext If specified, this is the new context. If not, start from a clone of the current top context.
+ * @returns The new context, which the caller may want to modify.
+ */
+function pushBuilderContext(newContext) {
+    if (newContext === undefined) {
+        newContext = structuredClone(getBuilderContext());
+    }
+    contextStack.push(newContext);
+    return getBuilderContext();
+}
+exports.pushBuilderContext = pushBuilderContext;
+/**
+ * Pop the builder context stack.
+ * @returns The new top-level builder context.
+ */
+function popBuilderContext() {
+    contextStack.pop();
+    return getBuilderContext();
+}
+exports.popBuilderContext = popBuilderContext;
+/**
+ * Finish cloning an HTML element
+ * @param src The element being cloned
+ * @param dest The new element, still in need of attributes
+ * @param context A dictionary of all accessible values
+ */
+function cloneAttributes(src, dest) {
+    for (var i = 0; i < src.attributes.length; i++) {
+        var name_5 = normalizeName(src.attributes[i].name);
+        var value = src.attributes[i].value;
+        value = cloneText(value);
+        if (name_5 == 'id') {
+            dest.id = value;
+        }
+        else if (name_5 == 'class') {
+            if (value) {
+                var classes = value.split(' ');
+                for (var i_5 = 0; i_5 < classes.length; i_5++) {
+                    if (classes[i_5].length > 0) {
+                        dest.classList.add(classes[i_5]);
+                    }
+                }
+            }
+        }
+        // REVIEW: special case 'style'?
+        else {
+            dest.setAttributeNS('', name_5, value);
+        }
+    }
+}
+exports.cloneAttributes = cloneAttributes;
+/**
+ * Process a text node which may contain {curly} formatting.
+ * @param text A text node
+ * @param context A dictionary of all accessible values
+ * @returns A list of text nodes
+ */
+function cloneTextNode(text) {
+    var dest = [];
+    var str = text.textContent;
+    var i = str ? str.indexOf('{') : -1;
+    while (str && i >= 0) {
+        var j = str.indexOf('}', i);
+        if (j < 0) {
+            break;
+        }
+        if (i > 0) {
+            dest.push(document.createTextNode(str.substring(0, i)));
+        }
+        var key = str.substring(i + 1, j);
+        dest.push(document.createTextNode(textFromContext(key)));
+        str = str.substring(j + 1);
+        i = str.indexOf('{');
+    }
+    if (str) {
+        dest.push(document.createTextNode(str));
+    }
+    return dest;
+}
+exports.cloneTextNode = cloneTextNode;
+/**
+ * Process text which may contain {curly} formatting.
+ * @param text Any text
+ * @param context A dictionary of all accessible values
+ * @returns Expanded text
+ */
+function cloneText(str) {
+    if (str === null) {
+        return '';
+    }
+    return contextFormula(str, false);
+}
+exports.cloneText = cloneText;
+var TokenType;
+(function (TokenType) {
+    TokenType[TokenType["start"] = 0] = "start";
+    TokenType[TokenType["bracket"] = 1] = "bracket";
+    TokenType[TokenType["operator"] = 2] = "operator";
+    TokenType[TokenType["text"] = 3] = "text";
+})(TokenType || (TokenType = {}));
+/**
+ * Divide up a string into sibling tokens.
+ * Each token may be divisible into sub-tokens, but those are skipped here.
+ * If we're not inside a {=formula}, the only tokens are { and }.
+ * If we are inside a {=formula}, then operators and others brackets are tokens too.
+ * @param str The parent string
+ * @param inFormula True if str should be treated as already inside {}
+ * @returns A list of token strings. Uninterpretted.
+ */
+function tokenizeFormula(str, inFormula) {
+    var tokens = [];
+    var stack = [];
+    var tok = '';
+    var tokType = TokenType.start;
+    for (var i = 0; i < str.length; i++) {
+        var prevTT = tokType;
+        var ch = str[i];
+        if (!inFormula && ch == '{') {
+            stack.push(bracketPairs[ch]); // push the expected close
+            tokType = TokenType.bracket;
+        }
+        else if (inFormula && ch in bracketPairs) {
+            stack.push(bracketPairs[ch]); // push the expected close
+            tokType = TokenType.bracket;
+        }
+        else if (stack.length > 0) {
+            tok += ch;
+            if (ch == stack[stack.length - 1]) {
+                stack.pop();
+                if (stack.length == 0) {
+                    tokens.push(tok);
+                    tok = '';
+                    tokType = TokenType.start;
+                }
+            }
+            continue;
+        }
+        else if (inFormula && ch in binaryOperators) {
+            tokType = TokenType.operator;
+        }
+        else {
+            tokType = TokenType.text;
+        }
+        if (tokType != prevTT) {
+            if (tok) {
+                tokens.push(tok);
+            }
+            tok = ch;
+            if (tokType == TokenType.operator) {
+                tokens.push(ch);
+                tok = '';
+                tokType = TokenType.start;
+            }
+        }
+        else {
+            tok += ch;
+        }
+    }
+    if (tok) {
+        tokens.push(tok);
+    }
+    return tokens;
+}
+var bracketPairs = {
+    '(': ')',
+    // '[': ']',
+    '{': '}',
+    // '<': '>',  // should never be used for comparison operators in this context
+    '"': '"',
+    "'": "'",
+};
+var binaryOperators = {
+    '+': function (a, b) { return String(parseFloat(a) + parseFloat(b)); },
+    '-': function (a, b) { return String(parseFloat(a) - parseFloat(b)); },
+    '*': function (a, b) { return String(parseFloat(a) * parseFloat(b)); },
+    '/': function (a, b) { return String(parseFloat(a) / parseFloat(b)); },
+    '%': function (a, b) { return String(parseFloat(a) % parseInt(b)); },
+    '&': function (a, b) { return String(a) + String(b); },
+};
+var unaryOperators = {
+    '-': function (a) { return String(-parseFloat(a)); },
+};
+/**
+ * Handle a mix of context tokens and operators
+ * @param str Raw text of a token/operator string
+ * @param context A dictionary of all accessible values
+ * @param inFormula True if str should be treated as already inside {}
+ * @returns Expanded text
+ */
+function contextFormula(str, inFormula) {
+    var dest = '';
+    var tokens = tokenizeFormula(str, inFormula);
+    var binaryOp;
+    var unaryOp;
+    for (var t = 0; t < tokens.length; t++) {
+        var tok = tokens[t];
+        if (!tok) {
+            continue;
+        }
+        if (inFormula && tok in binaryOperators) {
+            if ((binaryOp || dest == '') && tok in unaryOperators) {
+                unaryOp = unaryOperators[tok];
+            }
+            else if (binaryOp) {
+                // TODO: consider unary operators
+                throw new Error("Consecutive binary operators: " + tok);
+            }
+            else {
+                binaryOp = binaryOperators[tok];
+            }
+            continue;
+        }
+        var fromContext = false;
+        if (tok[0] in bracketPairs) {
+            var inner = tok.substring(1, tok.length - 1);
+            if (tok[0] == '(') {
+                // (...) is a precedence operator
+                tok = contextFormula(inner, true);
+                fromContext = true;
+            }
+            else if (tok[0] == '{') {
+                if (tok[1] == '=') {
+                    // {=...} is a nested formula
+                    tok = contextFormula(inner.substring(1), true);
+                }
+                else {
+                    // {...} is a context look-up
+                    tok = '' + anyFromContext(inner);
+                }
+                fromContext = true;
+            }
+        }
+        if (unaryOp) {
+            tok = unaryOp(tok);
+            unaryOp = undefined;
+        }
+        if (binaryOp) {
+            // All operators read left-to-right
+            // TODO: if dest=='', consider unary operators
+            dest = binaryOp(dest, tok);
+            binaryOp = undefined; // used up
+        }
+        else if (inFormula && !fromContext) {
+            dest += anyFromContext(tok);
+        }
+        else {
+            dest += tok;
+        }
+    }
+    if (unaryOp) {
+        throw new Error("Incomplete unary operation: " + str);
+    }
+    if (binaryOp) {
+        throw new Error("Incomplete binary operation: " + str);
+    }
+    return dest;
+}
+/**
+ * Trim a string without taking non-breaking-spaces
+ * @param str Any string
+ * @returns A substring
+ */
+function simpleTrim(str) {
+    var s = 0;
+    var e = str.length;
+    while (s < e && (str.charCodeAt(s) || 33) <= 32) {
+        s++;
+    }
+    while (e > s && (str.charCodeAt(e) || 33) <= 32) {
+        e--;
+    }
+    return str.substring(s, e);
+}
+/**
+ * Enable lookups into the context by key name.
+ * Keys can be paths, separated by dots (.)
+ * Paths can have other paths as nested arguments, using [ ]
+ * Note, the dot separator is still required.
+ *   example: foo.[bar].fuz       equivalent to foo[{bar}].fuz
+ *   example: foo.[bar.baz].fuz   equivalent to foo[{bar.baz}].fuz
+ * Even arrays use dot notation: foo.0 is the 0th item in foo
+ * @param key A key, initially from {curly} notation
+ * @param context A dictionary of all accessible values
+ * @returns Resolved text
+ */
+function anyFromContext(key) {
+    key = simpleTrim(key);
+    if (key === '') {
+        return '';
+    }
+    var context = getBuilderContext();
+    if (key[0] == '{' && key[key.length - 1] == '}') {
+        // Remove redundant {curly}, since some fields don't require them
+        key = simpleTrim(key.substring(1, key.length - 1));
+    }
+    var path = key.split('.');
+    var nested = [context];
+    for (var i = 0; i < path.length; i++) {
+        var step = path[i];
+        if (!step) {
+            continue; // Ignore blank steps for now
+        }
+        var maybe = step.indexOf('?') == step.length - 1;
+        if (maybe) {
+            step = step.substring(0, step.length - 1);
+        }
+        var newNest = step[0] == '[';
+        if (newNest) {
+            step = step.substring(1);
+            nested.push(context);
+        }
+        // steps can end in one more more ']', which can't occur anywhere else
+        var unnest = step.indexOf(']');
+        if (unnest >= 0) {
+            unnest = step.length - unnest;
+            if (nested.length <= unnest) {
+                throw new Error('Malformed path has unmatched ] : ' + key);
+            }
+            step = step.substring(0, step.length - unnest);
+        }
+        if (!(step in nested[nested.length - 1])) {
+            if (maybe) {
+                if (i != path.length - 1) {
+                    console.log('Optional key ' + step + '?' + ' before the end of ' + key);
+                }
+                return ''; // All missing optionals return ''
+            }
+            if ((i == 0 && path.length == 1) || (newNest && unnest > 0)) {
+                nested[nested.length - 1] = new String(step); // A lone step (or nested step) can be a literal
+            }
+            else {
+                throw new Error('Unrecognized key: ' + step + ' in ' + key);
+            }
+        }
+        else {
+            nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
+        }
+        for (; unnest > 0; unnest--) {
+            var pop = '' + nested.pop();
+            nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
+        }
+    }
+    if (nested.length > 1) {
+        throw new Error('Malformed path has unmatched [ : ' + key);
+    }
+    return nested.pop();
+}
+exports.anyFromContext = anyFromContext;
+/**
+ * Look up a value, according to the context path cached in an attribute
+ * @param path A context path
+ * @returns Any JSON object
+ */
+function globalContextData(path) {
+    var context = theBoilerContext();
+    if (path && context) {
+        return anyFromContext(path);
+    }
+    return undefined;
+}
+exports.globalContextData = globalContextData;
+/**
+ * Test a key in the current context
+ * @param key A key, initially from {curly} notation
+ * @returns true if key is a valid path within the context
+ */
+function keyExistsInContext(key) {
+    try {
+        var a = anyFromContext(key);
+        // null, undefined, or '' count as not existing
+        return a !== null && a !== undefined && a !== '';
+    }
+    catch (_a) {
+        return false;
+    }
+}
+exports.keyExistsInContext = keyExistsInContext;
+/**
+ * Enable lookups into the context by key name.
+ * Keys can be paths, separated by dots (.)
+ * Paths can have other paths as nested arguments, using [ ]
+ * Note, the dot separator is still required.
+ *   example: foo.[bar].fuz       equivalent to foo[{bar}].fuz
+ *   example: foo.[bar.baz].fuz   equivalent to foo[{bar.baz}].fuz
+ * Even arrays use dot notation: foo.0 is the 0th item in foo
+ * @param key A key, initially from {curly} notation
+ * @returns Resolved text
+ */
+function textFromContext(key) {
+    if (!key) {
+        return '';
+    }
+    try {
+        return contextFormula(key, true);
+    }
+    catch (ex) {
+        if (key.indexOf('.') < 0) {
+            return key; // key can be a literal value
+        }
+        throw ex;
+    }
+}
+exports.textFromContext = textFromContext;
+/**
+ * Get a keyed child of a parent, where the key is either a dictionary key
+ * or a list index or a string offset.
+ * @param parent The parent object: a list, object, or string
+ * @param key The identifier of the child: a dictionary key, a list index, or a string offset
+ * @param maybe If true, and key does not work, return ''
+ * @returns A child object, or a substring
+ */
+function getKeyedChild(parent, key, maybe) {
+    if (typeof (parent) == 'string') {
+        var i = parseInt(key);
+        if (maybe && (i < 0 || i >= parent.length)) {
+            return '';
+        }
+        return parent[i];
+    }
+    if (!(key in parent)) {
+        if (maybe) {
+            return '';
+        }
+        throw new Error('Unrecognized key: ' + key);
+    }
+    return parent[key];
+}
+/*-----------------------------------------------------------
+ * _builderFor.ts
+ *-----------------------------------------------------------*/
+/**
+ * Potentially several kinds of for loops:
+ * for each: <for each="var" in="list">  // ideas for optional args: first, last, skip
+ * for char: <for char="var" in="text">  // every character in a string
+ * for word: <for word="var" in="text">  // space-delimited substrings
+ * for range: <for range="var" from="first" to="last" or until="after">
+ * for key: <for key="var" in="object">  // idea for optional arg: sort
+ * @param src the <for> element
+ * @param context the set of values that might get used by the for loop
+ * @returns a list of nodes, which will replace this <for> element
+ */
+function startForLoop(src) {
+    var dest = [];
+    var iter = null;
+    var list = [];
+    var vals = []; // not always used
+    // <for each="variable_name" in="list">
+    iter = src.getAttributeNS('', 'each');
+    if (iter) {
+        list = parseForEach(src);
+    }
+    else {
+        iter = src.getAttributeNS('', 'char');
+        if (iter) {
+            list = parseForText(src, '');
+        }
+        else {
+            iter = src.getAttributeNS('', 'word');
+            if (iter) {
+                list = parseForText(src, ' ');
+            }
+            else {
+                iter = src.getAttributeNS('', 'key');
+                if (iter) {
+                    list = parseForKey(src);
+                    vals = list[1];
+                    list = list[0];
+                }
+                else {
+                    iter = src.getAttributeNS('', 'range');
+                    if (iter) {
+                        list = parseForRange(src);
+                    }
+                    else {
+                        throw new Error('Unrecognized <for> tag type: ' + src);
+                    }
+                }
+            }
+        }
+    }
+    if (!list) {
+        throw new Error('Unable to resolve from context: ' + src.outerHTML);
+    }
+    var inner_context = pushBuilderContext();
+    var iter_index = iter + '#';
+    for (var i = 0; i < list.length; i++) {
+        inner_context[iter_index] = i;
+        inner_context[iter] = list[i];
+        if (vals.length > 0) {
+            inner_context[iter + '!'] = vals[i];
+        }
+        pushRange(dest, expandContents(src));
+    }
+    popBuilderContext();
+    return dest;
+}
+exports.startForLoop = startForLoop;
+/**
+ * Syntax: <for each="var" in="list">
+ * @param src
+ * @param context
+ * @returns a list of elements
+ */
+function parseForEach(src) {
+    var list_name = src.getAttributeNS('', 'in');
+    if (!list_name) {
+        throw new Error('for each requires "in" attribute');
+    }
+    return anyFromContext(list_name);
+}
+function parseForText(src, delim) {
+    var list_name = src.getAttributeNS('', 'in');
+    if (!list_name) {
+        throw new Error('for char requires "in" attribute');
+    }
+    // The list_name can just be a literal string
+    var context = getBuilderContext();
+    var list = (list_name in context) ? context[list_name] : list_name;
+    if (!list) {
+        throw new Error('unresolved context: ' + list_name);
+    }
+    return list.split(delim);
+}
+function parseForRange(src) {
+    var from = src.getAttributeNS('', 'in');
+    var until = src.getAttributeNS('', 'until');
+    var last = src.getAttributeNS('', 'to');
+    var length = src.getAttributeNS('', 'len');
+    var step = src.getAttributeNS('', 'step');
+    var start = from ? parseInt(cloneText(from)) : 0;
+    var end = until ? parseInt(cloneText(until))
+        : last ? (parseInt(cloneText(last)) + 1)
+            : length ? (anyFromContext(length).length)
+                : start;
+    var inc = step ? parseInt(cloneText(step)) : 1;
+    if (!until && inc < 0) {
+        end -= 2; // from 5 to 1 step -1 means i >= 0
+    }
+    var list = [];
+    for (var i = start; inc > 0 ? (i < end) : (i > end); i += inc) {
+        list.push(i);
+    }
+    return list;
+}
+function parseForKey(src) {
+    var obj_name = src.getAttributeNS('', 'in');
+    if (!obj_name) {
+        throw new Error('for each requires "in" attribute');
+    }
+    var obj = anyFromContext(obj_name);
+    if (!obj) {
+        throw new Error('unresolved list context: ' + obj_name);
+    }
+    var keys = Object.keys(obj);
+    var vals = keys.map(function (k) { return obj[k]; });
+    return [keys, vals];
+}
+/*-----------------------------------------------------------
+ * _builderIf.ts
+ *-----------------------------------------------------------*/
+/**
+ * Potentially several kinds of if expressions:
+ *   equality: <if test="var" eq="value">
+ *   not-equality: <if test="var" ne="value">
+ *   less-than: <if test="var" lt="value">
+ *   less-or-equal: <if test="var" le="value">
+ *   greater-than: <if test="var" gt="value">
+ *   greater-or-equal: <if test="var" ge="value">
+ *   contains: <if test="var" in="value">
+ *   not-contains: <if test="var" ni="value">
+ *   boolean: <if test="var">
+ * Note there is no else or else-if block, because there are no scoping blocks
+ * @param src the <if> element
+ * @param context the set of values that might get used by or inside the if block
+ * @returns a list of nodes, which will replace this <if> element
+ */
+function startIfBlock(src) {
+    var exists = src.getAttributeNS('', 'exists');
+    var notex = src.getAttributeNS('', 'not');
+    if (exists || notex) {
+        // Does this attribute exist at all?
+        if ((exists && keyExistsInContext(exists)) || (notex && !keyExistsInContext(notex))) {
+            return expandContents(src);
+        }
+        return [];
+    }
+    var test = src.getAttributeNS('', 'test');
+    if (!test) {
+        throw new Error('<if> tags must have a test attribute');
+    }
+    test = textFromContext(test);
+    var pass = false;
+    var value;
+    if (value = src.getAttributeNS('', 'eq')) { // equality
+        pass = test == cloneText(value);
+    }
+    else if (value = src.getAttributeNS('', 'ne')) { // not-equals
+        pass = test != cloneText(value);
+    }
+    else if (value = src.getAttributeNS('', 'lt')) { // less-than
+        pass = parseFloat(test) < parseFloat(cloneText(value));
+    }
+    else if (value = src.getAttributeNS('', 'le')) { // less-than or equals
+        pass = parseFloat(test) <= parseFloat(cloneText(value));
+    }
+    else if (value = src.getAttributeNS('', 'gt')) { // greater-than
+        pass = parseFloat(test) > parseFloat(cloneText(value));
+    }
+    else if (value = src.getAttributeNS('', 'ge')) { // greater-than or equals
+        pass = parseFloat(test) >= parseFloat(cloneText(value));
+    }
+    else if (value = src.getAttributeNS('', 'in')) { // string contains
+        pass = cloneText(value).indexOf(test) >= 0;
+    }
+    else if (value = src.getAttributeNS('', 'ni')) { // string doesn't contain
+        pass = cloneText(value).indexOf(test) >= 0;
+    }
+    else { // simple boolean
+        pass = test === 'true';
+    }
+    if (pass) {
+        // No change in context from the if
+        return expandContents(src);
+    }
+    return [];
+}
+exports.startIfBlock = startIfBlock;
+/*-----------------------------------------------------------
+ * _builderInput.ts
+ *-----------------------------------------------------------*/
+exports.inputAreaTagNames = [
+    'letter', 'letters', 'literal', 'number', 'numbers', 'pattern', 'word'
+];
+/**
+ * Shortcut tags for text input. These include:
+ *  letter: any single character
+ *  letters: a few characters, in a single input
+ *  literal: readonly single character
+ *  number: any numeric digit
+ *  numbers: a few numeric digits
+ *  word: full multi-character
+ *  pattern: multiple inputs, generated from a pattern
+ * @param src One of the input shortcut tags
+ * @param context A dictionary of all values that can be looked up
+ * @returns a node array containing a single <span>
+ */
+function startInputArea(src) {
+    var span = document.createElement('span');
+    // Copy most attributes. 
+    // Special-cased ones are harmless - no meaning in generic spans
+    cloneAttributes(src, span);
+    var cloneContents = false;
+    var literal = null;
+    var extract = src.getAttributeNS('', 'extract');
+    var styles = getLetterStyles(src, 'underline', '', 'box');
+    // Convert special attributes to data-* attributes for later text setup
+    var attr;
+    if (isTag(src, 'letter')) { // 1 input cell for (usually) one character
+        toggleClass(span, 'letter-cell', true);
+        literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
+    }
+    else if (isTag(src, 'letters')) { // 1 input cell for a few characters
+        toggleClass(span, 'letter-cell', true);
+        toggleClass(span, 'multiple-letter', true);
+        literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
+    }
+    else if (isTag(src, 'literal')) { // 1 input cell for (usually) one character
+        toggleClass(span, 'letter-cell', true);
+        literal = ' ';
+        cloneContents = true; // literal value
+    }
+    else if (isTag(src, 'number')) { // 1 input cell for one numeric character
+        toggleClass(span, 'letter-cell', true);
+        toggleClass(span, 'numeric', true);
+        literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
+    }
+    else if (isTag(src, 'numbers')) { // 1 input cell for multiple numeric digits
+        toggleClass(span, 'letter-cell', true);
+        toggleClass(span, 'multiple-letter', true);
+        toggleClass(span, 'numeric', true);
+        // To support longer (or negative) numbers, set class = 'multiple-letter'
+        literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
+    }
+    else if (isTag(src, 'word')) { // 1 input cell for (usually) one character
+        toggleClass(span, 'word-cell', true);
+    }
+    else if (isTag(src, 'pattern')) { // multiple input cells for (usually) one character each
+        toggleClass(span, 'create-from-pattern', true);
+        if (attr = src.getAttributeNS('', 'pattern')) {
+            span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+        }
+        if (attr = src.getAttributeNS('', 'extract')) {
+            span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));
+        }
+        if (attr = src.getAttributeNS('', 'numbers')) {
+            span.setAttributeNS('', 'data-number-assignments', cloneText(attr));
+        }
+    }
+    else {
+        return [src]; // Unknown tag. NYI?
+    }
+    var block = src.getAttributeNS('', 'block'); // Used in grids
+    if (block) {
+        toggleClass(span, 'block', true);
+        literal = literal || block;
+    }
+    if (literal == '¤') { // Special case (and back-compat)
+        toggleClass(span, 'block', true);
+        literal = ' ';
+    }
+    if (literal) {
+        if (!cloneContents) {
+            span.innerText = cloneText(literal);
+        }
+        toggleClass(span, 'literal', true);
+        applyAllClasses(span, styles.literal);
+    }
+    else if (!isTag(src, 'pattern')) {
+        applyAllClasses(span, styles.letter);
+        if (extract != null) {
+            toggleClass(span, 'extract', true);
+            if (parseInt(extract) > 0) {
+                toggleClass(span, 'numbered', true);
+                toggleClass(span, 'extract-numbered', true);
+                span.setAttributeNS('', 'data-number', extract);
+                var under = document.createElement('span');
+                toggleClass(under, 'under-number');
+                under.innerText = extract;
+                span.appendChild(under);
+            }
+            applyAllClasses(span, styles.extract);
+        }
+    }
+    if (cloneContents) {
+        appendRange(span, expandContents(src));
+    }
+    return [span];
+}
+exports.startInputArea = startInputArea;
+/*-----------------------------------------------------------
+ * _builderUse.ts
+ *-----------------------------------------------------------*/
+/**
+ * Replace a <use> tag with the contents of a <template>.
+ * Along the way, push any attributes of the <use> tag onto the context.
+ * Also push the context paths (as strings) as separate attributes.
+ * Afterwards, pop them all back off.
+ * Optionally, a <use> tag without a template="" attribute is a way to modify the context for the use's children.
+ * @param node a <use> tag
+ * @param context The current context
+ * @returns An array of nodes to insert into the document in place of the <use> tag
+ */
+function useTemplate(node) {
+    var dest = [];
+    var inner_context = pushBuilderContext();
+    for (var i = 0; i < node.attributes.length; i++) {
+        var attr = node.attributes[i].name;
+        var val = node.attributes[i].value;
+        var attri = node.attributes[i].name.toLowerCase();
+        if (attri != 'template' && attri != 'class') {
+            if (val[0] == '{') {
+                inner_context[attr] = anyFromContext(val);
+            }
+            else {
+                inner_context[attr] = cloneText(val);
+            }
+            inner_context[attr + '$'] = val; // Store the context path, so it can also be referenced
+        }
+    }
+    var tempId = node.getAttribute('template');
+    if (tempId) {
+        var template = getTemplate(tempId);
+        if (!template) {
+            throw new Error('Template not found: ' + tempId);
+        }
+        if (!template.content) {
+            throw new Error('Invalid template: ' + tempId);
+        }
+        // The template doesn't have any child nodes. Its content must first be cloned.
+        var clone = template.content.cloneNode(true);
+        dest = expandContents(clone);
+    }
+    else {
+        dest = expandContents(node);
+    }
+    popBuilderContext();
+    return dest;
+}
+exports.useTemplate = useTemplate;
+/*-----------------------------------------------------------
+ * _templates.ts
+ *-----------------------------------------------------------*/
+/**
+ * Find a template that matches an ID.
+ * Could be on the local page, or a built-in one
+ * @param tempId The ID of the template (must be valid)
+ * @returns An HTMLTemplateElement, or throws
+ */
+function getTemplate(tempId) {
+    if (tempId) {
+        var elmt = document.getElementById(tempId);
+        if (elmt) {
+            return elmt;
+        }
+        var template = builtInTemplate(tempId);
+        if (template) {
+            return template;
+        }
+    }
+    throw new Error('Unresolved template ID: ' + tempId);
+}
+exports.getTemplate = getTemplate;
+var builtInTemplates = {
+    paintByNumbers: paintByNumbersTemplate,
+    paintByColorNumbers: paintByColorNumbersTemplate,
+    classStampPalette: classStampPaletteTemplate,
+    classStampNoTools: classStampNoToolsTemplate,
+};
+/**
+ * Match a template name to a built-in template object
+ * @param tempId The ID
+ * @returns A template element (not part of the document), or undefined if unrecognized.
+ */
+function builtInTemplate(tempId) {
+    if (tempId in builtInTemplates) {
+        return builtInTemplates[tempId]();
+    }
+}
+exports.builtInTemplate = builtInTemplate;
+;
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ */
+function paintByNumbersTemplate() {
+    linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
+    var temp = document.createElement('template');
+    temp.id = 'paintByNumbers';
+    temp.innerHTML =
+        "<table_ class=\"paint-by-numbers stampable-container stamp-drag bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"group\" in=\"col\"><span class=\"pbn-col-group\" onclick=\"togglePbnClue(this)\">{.group}</span></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n    <for each=\"row\" in=\"rowGroups\">\n      <tr_ class=\"pbn-row\">\n        <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n          &hairsp; <for each=\"group\" in=\"row\"><span class=\"pbn-row-group\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>&hairsp;\n        </td_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">&times;</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">\n          \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n          <br>\u2190&nbsp;validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
+    return temp;
+}
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ */
+function paintByColorNumbersTemplate() {
+    linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
+    var temp = document.createElement('template');
+    temp.id = 'paintByNumbers';
+    temp.innerHTML =
+        "<table_ class=\"paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\" data-stamp-list=\"{stamplist$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"https://help.puzzyl.net/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"colorGroup\" in=\"col\"><for key=\"color\" in=\"colorGroup\"><for each=\"group\" in=\"color!\"><span class=\"pbn-col-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span></for></for></for>\n          </td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n        </if>\n      </tr_>\n    </thead_>\n      <for each=\"row\" in=\"rowGroups\">\n        <tr_ class=\"pbn-row\">\n          <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n            &hairsp; \n            <for each=\"colorGroup\" in=\"row\"><for key=\"color\" in=\"colorGroup\">\n              <for each=\"group\" in=\"color!\"><span class=\"pbn-row-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>\n            &hairsp;</for></for>\n          </td_>\n          <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">{blank?}</td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n        </if>\n      </tr_>\n    </for>\n    <if test=\"validate?\" ne=\"false\">\n      <tfoot_>\n        <tr_ class=\"pbn-col-footer\">\n          <th_ class=\"pbn-corner\">&nbsp;</th_>\n          <for each=\"col\" in=\"colGroups\">\n            <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n          </for>\n          <th_ class=\"pbn-corner-validation\">\n            \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n            <br>\u2190&nbsp;validation</th_>\n        </tr_>\n      </tfoot_>\n    </if>\n  </table_>";
+    return temp;
+}
+/**
+ * Create a standard pant-by-numbers template element.
+ * Also load the accompanying CSS file.
+ * @returns The template.
+ * @remarks This template takes the following arguments:
+ *   size: Optional descriptor of stamp toolbar button size.
+ *         Choices are "medium" and "small". The default is large.
+ *   erase: the tool id of the eraser
+ *   tools: A list of objects, each of which contain:
+ *     id: the name of the stamp.
+ *     next: Optional id of the next stamp, for rotational clicking.
+ *           If absent, clicking on pre-stamped cells does nothing differnt.
+ *     modifier: Optional shift state for clicks.
+ *               Choices are "ctrl", "alt", "shift".
+ *     img: The image source path to the button.
+ *     label: Optional text to render below the toolbar button
+ * @remarks Invoking this stamping template also loads the PaintByNumbers.css
+ * Top candidates of styles to override include:
+ *   stampLabel: to change or suppress the display of the label.
+ *   stampMod: to change of suppress the modifier as a simple label.
+ */
+function classStampPaletteTemplate() {
+    linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
+    var temp = document.createElement('template');
+    temp.id = 'classStampPalette';
+    temp.innerHTML =
+        "<div id=\"stampPalette\" data-tool-count=\"3\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool {size?}\" data-template-id=\"{tool.id}\" data-click-modifier=\"{tool.modifier?}\" title=\"{tool.modifier?} + draw\" data-next-template-id=\"{tool.next}\">\n        <div class=\"roundTool {tool.id}-button\">\n          <span id=\"{tool.id}-icon\" class=\"stampIcon\"><img src_=\"{tool.img}\"></span>\n          <span id=\"{tool.id}-label\" class=\"stampLabel\">{tool.label?}</span>\n          <span id=\"{tool.id}-mod\" class=\"stampMod\">{tool.modifier?}+click</span>\n        </div>\n      </div>\n    </for>\n  </div>";
+    return temp;
+}
+function classStampNoToolsTemplate() {
+    linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
+    var temp = document.createElement('template');
+    temp.id = 'classStampPalette';
+    temp.innerHTML =
+        "<div id=\"stampPalette\" class=\"hidden\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool\" data-template-id=\"{tool.id}\" data-next-template-id=\"{tool.next}\">\n      </div>\n    </for>\n  </div>";
+    return temp;
+}
+function stampPaletteTemplate() {
+    linkCss(getSafariDetails().cssRoot + 'StampTools.css');
+    var temp = document.createElement('template');
+    temp.innerHTML =
+        "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n  </table_>";
+    return temp;
+}
+var pbnStampTools = [
+    { id: 'stampPaint', modifier: 'ctrl', label: 'Paint', img: '../Images/Stamps/brushH.png', next: 'stampBlank' },
+    { id: 'stampBlank', modifier: 'shift', label: 'Blank', img: '../Images/Stamps/blankH.png', next: 'stampErase' },
+    { id: 'stampErase', modifier: 'alt', label: 'Erase', img: '../Images/Stamps/eraserH.png', next: 'stampPaint' },
+];
+/*-----------------------------------------------------------
+ * _validatePBN.ts
+ *-----------------------------------------------------------*/
+/**
+ * Validate the paint-by-numbers grid that contains this cell
+ * @param target The cell that was just modified
+ */
+function validatePBN(target) {
+    var table = findParentOfClass(target, 'paint-by-numbers');
+    if (!table) {
+        return;
+    }
+    var stampList = getOptionalStyle(table, 'data-stamp-list');
+    if (stampList) {
+        validateColorPBN(target, table, stampList);
+        return;
+    }
+    var pos = target.id.split('_');
+    var row = parseInt(pos[0]);
+    var col = parseInt(pos[1]);
+    var rSum = document.getElementById('rowSummary-' + row);
+    var cSum = document.getElementById('colSummary-' + col);
+    if (!rSum && !cSum) {
+        return; // this PBN does not have a UI for validation
+    }
+    // Scan all cells in this PBN table, looking for those in the current row & column
+    // Track the painted ones as a list of row/column indices
+    var cells = table.getElementsByClassName('stampable');
+    var rowOn = [];
+    var colOn = [];
+    for (var i = 0; i < cells.length; i++) {
+        var cell = cells[i];
+        if (hasClass(cell, 'stampPaint')) {
+            pos = cell.id.split('_');
+            var r = parseInt(pos[0]);
+            var c = parseInt(pos[1]);
+            if (r == row) {
+                rowOn.push(c);
+            }
+            if (c == col) {
+                colOn.push(r);
+            }
+        }
+    }
+    var rows = contextDataFromRef(table, 'data-row-context');
+    if (rSum && rows) {
+        // Convert a list of column indices to group notation
+        var groups = summarizePBN(rowOn);
+        rSum.innerHTML = '';
+        for (var _i = 0, groups_1 = groups; _i < groups_1.length; _i++) {
+            var g = groups_1[_i];
+            if (g > 0) {
+                var span = document.createElement('span');
+                toggleClass(span, 'pbn-row-group', true);
+                span.innerText = g.toString();
+                rSum.appendChild(span);
+            }
+        }
+        var header = rows[row];
+        var comp = compareGroupsPBN(header, groups);
+        toggleClass(rSum, 'done', comp == 0);
+        toggleClass(rSum, 'exceeded', comp > 0);
+        var rHead = document.getElementById('rowHeader-' + row);
+        toggleClass(rHead, 'done', comp == 0);
+    }
+    var cols = contextDataFromRef(table, 'data-col-context');
+    if (cSum) {
+        var groups = summarizePBN(colOn);
+        cSum.innerHTML = '';
+        for (var _a = 0, groups_2 = groups; _a < groups_2.length; _a++) {
+            var g = groups_2[_a];
+            if (g > 0) {
+                var span = document.createElement('span');
+                toggleClass(span, 'pbn-col-group', true);
+                span.innerText = g.toString();
+                cSum.appendChild(span);
+            }
+        }
+        var header = cols[col];
+        var comp = compareGroupsPBN(header, groups);
+        toggleClass(cSum, 'done', comp == 0);
+        toggleClass(cSum, 'exceeded', comp > 0);
+        var cHead = document.getElementById('colHeader-' + col);
+        toggleClass(cHead, 'done', comp == 0);
+    }
+}
+/**
+ * Is a given cell tagged with a (non-blank) stamp id?
+ * @param cell
+ * @param stampTools
+ * @returns the stamp data, or undefined if none found
+ */
+function dataFromTool(cell, stampTools) {
+    for (var i = 0; i < stampTools.length; i++) {
+        if (stampTools[i].data && hasClass(cell, stampTools[i].id))
+            return stampTools[i].data;
+    }
+    return undefined;
+}
+/**
+ * Look up a value, according to the context path cached in an attribute
+ * @param elmt Any element
+ * @param attr An attribute name, which should exist in elmt or any parent
+ * @returns Any JSON object
+ */
+function contextDataFromRef(elmt, attr) {
+    var path = getOptionalStyle(elmt, attr);
+    if (path) {
+        return anyFromContext(path);
+    }
+    return undefined;
+}
+/**
+ * Read the user's actual painting within the PBN grid as a list of group sizes.
+ * @param list A list of numbers, indicating row or column indices
+ * @returns A list of groups separated by gaps. Positive numbers are consecutive painted. Negative are consecutive un-painted.
+ * The leading- and trailing- empty cells are ignored. But if the whole series is empty, return [0]
+ */
+function summarizePBN(list) {
+    var prev = NaN;
+    var consec = 0;
+    var summary = [];
+    list.push(NaN);
+    for (var _i = 0, list_4 = list; _i < list_4.length; _i++) {
+        var next = list_4[_i];
+        if (next == prev + 1) {
+            consec++;
+        }
+        else {
+            if (consec > 0) {
+                summary.push(consec);
+                var gap = next - prev - 1;
+                if (!isNaN(gap) && gap > 0) {
+                    summary.push(-gap);
+                }
+            }
+            consec = (!isNaN(next)) ? 1 : 0;
+        }
+        prev = next;
+    }
+    if (summary.length == 0) {
+        return [0];
+    }
+    return summary;
+}
+/**
+ * Compare the actual panted cells vs. the clues.
+ * The actual cells could indicate either more than was clued, or less than was clued, or exactly what was clued.
+ * @param expect A list of expected groups (positives only)
+ * @param have A list of actual groups (positives indicate groups, negatives indicates gaps between groups)
+ * @returns 0 if exact, 1 if actual exceeds expected, or -1 if actual is not yet expected, but hasn't contradicted it yet
+ */
+function compareGroupsPBN(expect, have) {
+    var exact = true;
+    var e = 0;
+    var gap = 0;
+    var prevH = 0;
+    var curE = expect.length > 0 ? expect[0] : 0;
+    for (var _i = 0, have_1 = have; _i < have_1.length; _i++) {
+        var h = have_1[_i];
+        if (h <= 0) {
+            gap = -h;
+            continue;
+        }
+        prevH = prevH > 0 ? (prevH + gap + h) : h;
+        if (prevH <= curE) {
+            exact = exact && h == curE;
+            gap = 0;
+            if (prevH == curE) {
+                prevH = 0;
+                e++;
+                curE = e < expect.length ? expect[e] : 0;
+            }
+        }
+        else {
+            exact = false;
+            prevH = 0;
+            gap = 0;
+            e++;
+            while (e < expect.length && h > expect[e]) {
+                e++;
+            }
+            curE = e < expect.length ? expect[e] : 0;
+            if (h < curE) {
+                prevH = h;
+            }
+            else if (h == curE) {
+                e++;
+                curE = e < expect.length ? expect[e] : 0;
+            }
+            else {
+                return 1; // too big
+            }
+        }
+    }
+    // return 0 for exact match
+    // return -1 for incomplete match - groups thus far do not exceed expected
+    return (exact && e == expect.length) ? 0 : -1;
+}
+/**
+ * When a PBN group in row or col header is checked,
+ * toggle a check- or cross-off effect.
+ * @param group The group that was clicked.
+ */
+function togglePbnClue(group) {
+    toggleClass(group, 'pbn-check');
+}
+var nonIndexTag = { index: NaN, tag: '' };
+var nonLinearTag = { len: 0, tag: '' };
+var outerGapTag = { len: 1, tag: '' };
+/**
+* Validate the paint-by-numbers grid that contains this cell
+* @param target The cell that was just modified
+* @param table The containing table
+* @param stampList
+*/
+function validateColorPBN(target, table, stampList) {
+    var stampTools = globalContextData(stampList);
+    var pos = target.id.split('_');
+    var row = parseInt(pos[0]);
+    var col = parseInt(pos[1]);
+    var rSum = document.getElementById('rowSummary-' + row);
+    var cSum = document.getElementById('colSummary-' + col);
+    if (!rSum && !cSum) {
+        return; // this PBN does not have a UI for validation
+    }
+    // Scan all cells in this PBN table, looking for those in the current row & column
+    // Track the painted ones as a list of row/column indices
+    var cells = table.getElementsByClassName('stampable');
+    var rowOn = [];
+    var colOn = [];
+    for (var i = 0; i < cells.length; i++) {
+        var cell = cells[i];
+        var data = dataFromTool(cell, stampTools);
+        if (data) {
+            pos = cell.id.split('_');
+            var r = parseInt(pos[0]);
+            var c = parseInt(pos[1]);
+            if (r == row) {
+                var it = { index: c, tag: data };
+                rowOn.push(it);
+            }
+            if (c == col) {
+                var it = { index: r, tag: data };
+                colOn.push(it);
+            }
+        }
+    }
+    var rows = contextDataFromRef(table, 'data-row-context');
+    if (rSum && rows) {
+        // Convert a list of column indices to group notation
+        var groups = summarizeTaggedPBN(rowOn);
+        rSum.innerHTML = '';
+        for (var _i = 0, groups_3 = groups; _i < groups_3.length; _i++) {
+            var g = groups_3[_i];
+            if (g.tag != '') {
+                var span = document.createElement('span');
+                toggleClass(span, 'pbn-row-group', true);
+                toggleClass(span, 'pbn-color-' + g.tag, true);
+                span.innerText = g.len.toString();
+                rSum.appendChild(span);
+            }
+        }
+        var header = invertColorTags(rows[row]);
+        var comp = compareTaggedGroupsPBN(header, groups);
+        toggleClass(rSum, 'done', comp == 0);
+        toggleClass(rSum, 'exceeded', comp > 0);
+        var rHead = document.getElementById('rowHeader-' + row);
+        toggleClass(rHead, 'done', comp == 0);
+    }
+    var cols = contextDataFromRef(table, 'data-col-context');
+    if (cSum) {
+        var groups = summarizeTaggedPBN(colOn);
+        cSum.innerHTML = '';
+        for (var _a = 0, groups_4 = groups; _a < groups_4.length; _a++) {
+            var g = groups_4[_a];
+            if (g.tag != '') {
+                var span = document.createElement('span');
+                toggleClass(span, 'pbn-col-group', true);
+                toggleClass(span, 'pbn-color-' + g.tag, true);
+                span.innerText = g.len.toString();
+                cSum.appendChild(span);
+            }
+        }
+        var header = invertColorTags(cols[col]);
+        var comp = compareTaggedGroupsPBN(header, groups);
+        toggleClass(cSum, 'done', comp == 0);
+        toggleClass(cSum, 'exceeded', comp > 0);
+        var cHead = document.getElementById('colHeader-' + col);
+        toggleClass(cHead, 'done', comp == 0);
+    }
+}
+/**
+* Starting from a tag-clumped header input:
+*  [ {tag1:[1,2]}, {tag2:[3,4]} ]
+* Convert to linear groups with tags
+*  [ [1,tag1], [2,tag1], [3,tag2], [4,tag2]]
+* @param header input-style header
+* @returns linear-style header
+*/
+function invertColorTags(header) {
+    var linear = [];
+    for (var i = 0; i < header.length; i++) {
+        var tagged = header[i]; // {tag:[1,2]}
+        var tag = Object.keys(tagged)[0];
+        var groups = tagged[tag];
+        for (var g = 0; g < groups.length; g++) {
+            var lt = { len: groups[g], tag: tag };
+            linear.push(lt);
+        }
+    }
+    return linear;
+}
+/**
+ * Read the user's actual painting within the PBN grid as a list of group sizes.
+ * @param list A list of numbers, indicating row or column indices
+ * @returns A list of groups and gaps, trimming exterior gaps.
+ */
+function summarizeTaggedPBN(list) {
+    var prev = nonIndexTag;
+    var consec = 0;
+    var summary = [];
+    list.push(nonIndexTag);
+    for (var _i = 0, list_5 = list; _i < list_5.length; _i++) {
+        var next = list_5[_i];
+        if (next.tag == prev.tag && next.index == prev.index + 1) {
+            consec++;
+        }
+        else {
+            if (consec > 0) {
+                var line = { len: consec, tag: prev.tag };
+                summary.push(line);
+                var gap = { len: next.index - prev.index - 1, tag: '' };
+                if (next.tag != '') {
+                    summary.push(gap);
+                }
+            }
+            consec = next == nonIndexTag ? 0 : 1;
+        }
+        prev = next;
+    }
+    if (summary.length == 0) {
+        return [];
+    }
+    return summary;
+}
+/**
+ * Compare the actual painted cells vs. the clues.
+ * The actual cells could indicate either more than was clued, or less than was clued, or exactly what was clued.
+ * @param expect A list of expected groups (omitting gaps)
+ * @param have A list of actual groups (including gaps between groups)
+ * @returns 0 if exact, 1 if actual exceeds expected, or -1 if actual is not yet expected, but hasn't contradicted it yet
+ */
+function compareTaggedGroupsPBN(expect, have) {
+    var exact = true;
+    var e = 0;
+    var gap = outerGapTag;
+    var prevH = nonLinearTag;
+    var curE = expect.length == 0 ? nonLinearTag : expect[0];
+    for (var _i = 0, have_2 = have; _i < have_2.length; _i++) {
+        var h = have_2[_i];
+        if (h.tag == '') {
+            gap = h;
+            continue;
+        }
+        if (h.tag == prevH.tag) {
+            // Two groups of the same type, separated by a gap, could fit within a single expected range
+            prevH.len += gap.len + h.len;
+            if (prevH.len <= curE.len) {
+                continue;
+            }
+            // curE has already accomodated prevH. If this new, bigger prevH doesn't fit, move on to the next E, and forget prevH
+            e++;
+        }
+        // If the next expected group is either a different type, or too small, fast forward to one that fits
+        while (e < expect.length && (expect[e].tag != h.tag || expect[e].len < h.len)) {
+            exact = false;
+            e++;
+        }
+        if (e >= expect.length) {
+            return 1; // We're past the end, while still having cells that don't fit
+        }
+        if (h.len == curE.len) {
+            e++;
+            prevH = nonLinearTag;
+        }
+        else {
+            exact = false;
+            prevH = h;
+        }
+        curE = expect[e];
+    }
+    // return 0 for exact match
+    // return -1 for incomplete match - groups thus far do not exceed expected
+    return (exact && e == expect.length) ? 0 : -1;
+}
 //# sourceMappingURL=kit.js.map
