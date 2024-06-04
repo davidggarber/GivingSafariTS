@@ -1,5 +1,5 @@
 import { hasClass, toggleClass, applyAllClasses, getOptionalStyle, findParentOfClass } from "./_classUtil";
-import { onLetterKeyDown, onLetterKey, onLetterChange, onWordKey, onWordChange } from "./_textInput";
+import { onLetterKeyDown, onLetterKey, onLetterChange, onWordKey, onWordChange, onLetterKeyUp } from "./_textInput";
 import { indexAllInputFields } from "./_storage"
 
 /**
@@ -357,6 +357,13 @@ function setupLetterCells() {
         // Place a small text input field in each cell
         const inp:HTMLInputElement = document.createElement('input');
         inp.type = 'text';
+
+        // Allow container to inject ID
+        let attr:string|null;
+        if (attr = cell.getAttributeNS('', 'input-id')) {
+            inp.id = attr;
+        }     
+
         if (hasClass(cell, 'numeric')) {
             // We never submit, so this doesn't have to be exact. But it should trigger the mobile numeric keyboard
             inp.pattern = '[0-9]*';  // iOS
@@ -422,7 +429,7 @@ function setupLetterInputs() {
     for (var i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         inp.onkeydown=function(e){onLetterKeyDown(e)};
-        inp.onkeyup=function(e){onLetterKey(e)};
+        inp.onkeyup=function(e){onLetterKeyUp(e)};
         inp.onchange=function(e){onLetterChange(e as KeyboardEvent)};
     }
 }
@@ -442,6 +449,12 @@ function setupWordCells() {
         const inp:HTMLInputElement = document.createElement('input');
         inp.type = 'text';
         toggleClass(inp, 'word-input');
+
+        // Allow container to inject ID
+        let attr:string|null;
+        if (attr = cell.getAttributeNS('', 'input-id')) {
+            inp.id = attr;
+        }     
 
         if (inpStyle != null) {
             toggleClass(inp, inpStyle);

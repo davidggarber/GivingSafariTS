@@ -2130,11 +2130,23 @@ function matchInputRules(input:HTMLInputElement, evt:KeyboardEvent) {
  * Callback when a user releases a keyboard key from any letter-input or word-input text field
  * @param event - A keyboard event
  */
-export function onLetterKey(event:KeyboardEvent) {
+export function onLetterKeyUp(event:KeyboardEvent) {
     if (event.isComposing) {
         return;  // Don't interfere with IMEs
     }
+    var post = onLetterKey(event);
+    if (post) {
+        var input:HTMLInputElement = event.currentTarget as HTMLInputElement;
+        inputChangeCallback(input, event.key);
+    }
+}
 
+/**
+ * Process the end of a keystroke
+ * @param event - A keyboard event
+ * @return true if some post-processing is still needed
+ */
+export function onLetterKey(event:KeyboardEvent): boolean {
     if (isDebug()) {
         alert('code:' + event.code + ', key:' + event.key);
     }
@@ -2143,7 +2155,7 @@ export function onLetterKey(event:KeyboardEvent) {
     if (input != keyDownTarget) {
         keyDownTarget = null;
         // key-down likely caused a navigation
-        return;
+        return true;
     }
     keyDownTarget = null;
 
@@ -2157,24 +2169,24 @@ export function onLetterKey(event:KeyboardEvent) {
     if (code == 'Tab') { // includes shift-Tab
         // Do nothing. User is just passing through
         // TODO: Add special-case exception to wrap around from end back to start
-        return;
+        return true;
     }
     else if (code == 'Home') {
         moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 1) as HTMLInputElement);
-        return;
+        return true;
     }
     else if (code == 'End') {
         moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', -1) as HTMLInputElement);
-        return;
+        return true;
     }
     else if (code == 'Backquote') {
-        return;  // Highlight already handled in key down
+        return true;  // Highlight already handled in key down
     }
     if (input.value.length == 0 || ignoreKeys.indexOf(code) >= 0) {
         var multiLetter = hasClass(input.parentNode, 'multiple-letter');
         // Don't move focus if nothing was typed
         if (!multiLetter) {
-            return;
+            return true;
         }
     }
     else if (input.value.length === 1 && !input.value.match(/[a-z0-9]/i)) {
@@ -2184,11 +2196,12 @@ export function onLetterKey(event:KeyboardEvent) {
         if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
             if (prior.getAttribute('data-literal') == input.value) {
                 input.value = '';  // abort this space
-                return;
+                return true;
             }
         }
     }
     afterInputUpdate(input, event.key);
+    return false;
 }
 
 /**
@@ -2455,11 +2468,16 @@ function ApplyExtraction(   text:string,
         destText.innerHTML = '';
         destText.appendChild(document.createTextNode(text));
     }
-    else {
+    else if (!hasClass(dest, 'create-from-pattern')) {
         dest.innerText = text;
     }
 
     updateExtractionData(dest, text, ready);
+
+    if (isTag(dest, 'input')) {
+        // It's possible that the destination is itself an extract source
+        ExtractFromInput(dest as HTMLInputElement);
+    }
 }
 
 /**
@@ -2588,6 +2606,8 @@ export function onWordKey(event:KeyboardEvent) {
         moveFocus(findNextOfClass(input, 'word-input') as HTMLInputElement);
         return;
     }
+
+    saveWordLocally(input);
 }
 
 /**
@@ -3453,6 +3473,13 @@ function setupLetterCells() {
         // Place a small text input field in each cell
         const inp:HTMLInputElement = document.createElement('input');
         inp.type = 'text';
+
+        // Allow container to inject ID
+        let attr:string|null;
+        if (attr = cell.getAttributeNS('', 'input-id')) {
+            inp.id = attr;
+        }     
+
         if (hasClass(cell, 'numeric')) {
             // We never submit, so this doesn't have to be exact. But it should trigger the mobile numeric keyboard
             inp.pattern = '[0-9]*';  // iOS
@@ -3518,7 +3545,7 @@ function setupLetterInputs() {
     for (var i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         inp.onkeydown=function(e){onLetterKeyDown(e)};
-        inp.onkeyup=function(e){onLetterKey(e)};
+        inp.onkeyup=function(e){onLetterKeyUp(e)};
         inp.onchange=function(e){onLetterChange(e as KeyboardEvent)};
     }
 }
@@ -3538,6 +3565,12 @@ function setupWordCells() {
         const inp:HTMLInputElement = document.createElement('input');
         inp.type = 'text';
         toggleClass(inp, 'word-input');
+
+        // Allow container to inject ID
+        let attr:string|null;
+        if (attr = cell.getAttributeNS('', 'input-id')) {
+            inp.id = attr;
+        }     
 
         if (inpStyle != null) {
             toggleClass(inp, inpStyle);
@@ -5906,7 +5939,7 @@ const safari21Details:PuzzleEventDetails = {
   'icon': './Images/Plate_icon.png',
   'puzzleList': './menuu.html',
   'cssRoot': '../Css/',
-  'fontCss': './Css/Fonts21.css',
+  'fontCss': '../24/Css/Fonts21.css',
   'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',  // no whitespace
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
@@ -6465,6 +6498,43 @@ function theHead(): HTMLHeadElement {
     return document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
 }
 
+function baseHref(): string {
+    const bases = document.getElementsByTagName('BASE');
+    for (let i = 0; i < bases.length; i++) {
+        var href = bases[i].getAttribute('href');
+        if (href) {
+            return relHref(href, document.location.href || '');
+        }
+    }
+    return document.location.href;
+}
+
+function relHref(path:string, fromBase?:string): string {
+    const paths = path.split('/');
+    if (paths[0].length == 0 || paths[0].indexOf(':') >= 0) {
+        // Absolute path
+        return path;
+    }
+    if (fromBase === undefined) {
+        fromBase = baseHref();
+    }
+    const bases = fromBase.split('/');
+    bases.pop();  // Remove filename at end of base path
+    let i = 0;
+    for (; i < paths.length; i++) {
+        if (paths[i] == '..') {
+            if (bases.length == 0 || (bases.length == 1 && bases[0].indexOf(':') > 0)) {
+                throw new Error('Relative path beyond base: ' + path);
+            }
+            bases.pop();
+        }
+        else if (paths[i] != '.') {
+            bases.push(paths[i]);
+        }
+    }
+    return bases.join('/');
+}
+
 /**
  * Count-down before we know all delay-linked CSS have been loaded
  */
@@ -6478,7 +6548,7 @@ let cssToLoad = 1;
 export function addLink(head:HTMLHeadElement, det:LinkDetails) {
     head = head || theHead();
     const link = document.createElement('link');
-    link.href = det.href;
+    link.href = relHref(det.href);
     link.rel = det.rel;
     if (det.type) {
         link.type = det.type;
@@ -6508,7 +6578,7 @@ export function linkCss(relPath:string, head?:HTMLHeadElement) {
     
     head = head || theHead();
     const link = document.createElement('link');
-    link.href=relPath;
+    link.href = relHref(relPath);
     link.rel = "Stylesheet";
     link.type = "text/css";
     link.onload = function(){cssLoaded();};
@@ -7822,6 +7892,7 @@ const binaryOperators = {
   '-': (a,b) => {return String(parseFloat(a) - parseFloat(b))},
   '*': (a,b) => {return String(parseFloat(a) * parseFloat(b))},
   '/': (a,b) => {return String(parseFloat(a) / parseFloat(b))},
+  '\\': (a,b) => {const f=parseFloat(a) / parseFloat(b); return String(f >= 0 ? Math.floor(f) : Math.ceil(f)); },  // integer divide without Math.trunc
   '%': (a,b) => {return String(parseFloat(a) % parseInt(b))},
   '&': (a,b) => {return String(a) + String(b)},
 }
@@ -8335,9 +8406,10 @@ export function startInputArea(src:HTMLElement):Node[] {
   // Special-cased ones are harmless - no meaning in generic spans
   cloneAttributes(src, span);
 
+
   let cloneContents = false;
   let literal:string|null = null;
-  const extract = src.getAttributeNS('', 'extract');
+  const extract = cloneText(src.getAttributeNS('', 'extract'));
 
   var styles = getLetterStyles(src, 'underline', '', 'box');
 
@@ -8371,11 +8443,22 @@ export function startInputArea(src:HTMLElement):Node[] {
   }
   else if (isTag(src, 'word')) {  // 1 input cell for (usually) one character
     toggleClass(span, 'word-cell', true);
+    if (attr = src.getAttributeNS('', 'extract')) {
+      span.setAttributeNS('', 'data-extract-index', cloneText(attr));
+    }
+    if (attr = src.getAttributeNS('', 'extracted-id')) {
+      span.setAttributeNS('', 'data-extracted-id', cloneText(attr));
+    }
   }
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
     toggleClass(span, 'create-from-pattern', true);
     if (attr = src.getAttributeNS('', 'pattern')) {
-      span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+      if (src.getAttributeNS('', 'numbered') != null) {
+        span.setAttributeNS('', 'data-number-pattern', cloneText(attr));
+      }
+      else {
+        span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+      }
     }
     if (attr = src.getAttributeNS('', 'extract')) {
       span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));

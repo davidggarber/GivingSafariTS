@@ -27,9 +27,10 @@ export function startInputArea(src:HTMLElement):Node[] {
   // Special-cased ones are harmless - no meaning in generic spans
   cloneAttributes(src, span);
 
+
   let cloneContents = false;
   let literal:string|null = null;
-  const extract = src.getAttributeNS('', 'extract');
+  const extract = cloneText(src.getAttributeNS('', 'extract'));
 
   var styles = getLetterStyles(src, 'underline', '', 'box');
 
@@ -63,11 +64,22 @@ export function startInputArea(src:HTMLElement):Node[] {
   }
   else if (isTag(src, 'word')) {  // 1 input cell for (usually) one character
     toggleClass(span, 'word-cell', true);
+    if (attr = src.getAttributeNS('', 'extract')) {
+      span.setAttributeNS('', 'data-extract-index', cloneText(attr));
+    }
+    if (attr = src.getAttributeNS('', 'extracted-id')) {
+      span.setAttributeNS('', 'data-extracted-id', cloneText(attr));
+    }
   }
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
     toggleClass(span, 'create-from-pattern', true);
     if (attr = src.getAttributeNS('', 'pattern')) {
-      span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+      if (src.getAttributeNS('', 'numbered') != null) {
+        span.setAttributeNS('', 'data-number-pattern', cloneText(attr));
+      }
+      else {
+        span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+      }
     }
     if (attr = src.getAttributeNS('', 'extract')) {
       span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));

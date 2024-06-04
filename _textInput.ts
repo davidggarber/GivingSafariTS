@@ -214,11 +214,23 @@ function matchInputRules(input:HTMLInputElement, evt:KeyboardEvent) {
  * Callback when a user releases a keyboard key from any letter-input or word-input text field
  * @param event - A keyboard event
  */
-export function onLetterKey(event:KeyboardEvent) {
+export function onLetterKeyUp(event:KeyboardEvent) {
     if (event.isComposing) {
         return;  // Don't interfere with IMEs
     }
+    var post = onLetterKey(event);
+    if (post) {
+        var input:HTMLInputElement = event.currentTarget as HTMLInputElement;
+        inputChangeCallback(input, event.key);
+    }
+}
 
+/**
+ * Process the end of a keystroke
+ * @param event - A keyboard event
+ * @return true if some post-processing is still needed
+ */
+export function onLetterKey(event:KeyboardEvent): boolean {
     if (isDebug()) {
         alert('code:' + event.code + ', key:' + event.key);
     }
@@ -227,7 +239,7 @@ export function onLetterKey(event:KeyboardEvent) {
     if (input != keyDownTarget) {
         keyDownTarget = null;
         // key-down likely caused a navigation
-        return;
+        return true;
     }
     keyDownTarget = null;
 
@@ -241,24 +253,24 @@ export function onLetterKey(event:KeyboardEvent) {
     if (code == 'Tab') { // includes shift-Tab
         // Do nothing. User is just passing through
         // TODO: Add special-case exception to wrap around from end back to start
-        return;
+        return true;
     }
     else if (code == 'Home') {
         moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 1) as HTMLInputElement);
-        return;
+        return true;
     }
     else if (code == 'End') {
         moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', -1) as HTMLInputElement);
-        return;
+        return true;
     }
     else if (code == 'Backquote') {
-        return;  // Highlight already handled in key down
+        return true;  // Highlight already handled in key down
     }
     if (input.value.length == 0 || ignoreKeys.indexOf(code) >= 0) {
         var multiLetter = hasClass(input.parentNode, 'multiple-letter');
         // Don't move focus if nothing was typed
         if (!multiLetter) {
-            return;
+            return true;
         }
     }
     else if (input.value.length === 1 && !input.value.match(/[a-z0-9]/i)) {
@@ -268,11 +280,12 @@ export function onLetterKey(event:KeyboardEvent) {
         if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
             if (prior.getAttribute('data-literal') == input.value) {
                 input.value = '';  // abort this space
-                return;
+                return true;
             }
         }
     }
     afterInputUpdate(input, event.key);
+    return false;
 }
 
 /**
@@ -539,11 +552,16 @@ function ApplyExtraction(   text:string,
         destText.innerHTML = '';
         destText.appendChild(document.createTextNode(text));
     }
-    else {
+    else if (!hasClass(dest, 'create-from-pattern')) {
         dest.innerText = text;
     }
 
     updateExtractionData(dest, text, ready);
+
+    if (isTag(dest, 'input')) {
+        // It's possible that the destination is itself an extract source
+        ExtractFromInput(dest as HTMLInputElement);
+    }
 }
 
 /**
@@ -672,6 +690,8 @@ export function onWordKey(event:KeyboardEvent) {
         moveFocus(findNextOfClass(input, 'word-input') as HTMLInputElement);
         return;
     }
+
+    saveWordLocally(input);
 }
 
 /**

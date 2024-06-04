@@ -74,7 +74,7 @@ const safari21Details:PuzzleEventDetails = {
   'icon': './Images/Plate_icon.png',
   'puzzleList': './menuu.html',
   'cssRoot': '../Css/',
-  'fontCss': './Css/Fonts21.css',
+  'fontCss': '../24/Css/Fonts21.css',
   'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',  // no whitespace
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
