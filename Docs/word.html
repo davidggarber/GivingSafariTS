@@ -46,6 +46,12 @@
       #Word.lit-font .word-input.word-literal {
         color: black;
       }
+      #Word.narrow-word .word-input {
+        width: 1in;
+      }
+      #Word.narrow-lit .word-input.word-literal {
+        width: 0.75in;
+      }
       #Word #extracted {
         font-family: 'Caveat';
         text-transform: uppercase;
@@ -131,6 +137,13 @@
               <td id="extracted"></td>
             </tr>
           </table>
+
+          <h3>Arrow key navigation</h3>
+          <p>
+            Unlike &lt;letter&gt;s, arrow keys in &lt;word&gt; will not <i>always</i> move cells.<br>
+            <b>TAB</b> and <b><i>shift+</i>TAB</b> will work, as will <b>ENTER</b> and <b><i>shift+</i>ENTER</b>.
+          </p>
+          
         </build>
       </div>
 
@@ -175,13 +188,36 @@
             </td>
           </tr>
           <tr>
+            <td colspan="2"><h3>Word cell width</h3></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('narrow-word')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.word-input {</pre>
+                <pre>  width: 1in;';              <i>// default is 1.5in</i></pre>
+                <pre>}</pre>
+              </code> 
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('narrow-lit')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.word-input.word-literal {</pre>
+                <pre>  width: 0.75in;';           <i>// default is 1in</i></pre>
+                <pre>}</pre>
+              </code> 
+            </td>
+          </tr>
+          <tr>
             <td colspan="2"><h3>Extracted text font</h3></td>
           </tr>
           <tr>
             <td><input type="checkbox" onclick="toggleCss('big-extract')"></td>
             <td>
               <code onclick="selectCodeBlock(this, event)">
-                <pre>#extracted {                  <i>// for extractions into a &lt;div&gt;</i></pre>
+                <pre>#extracted {                 <i>// for extractions into a &lt;div&gt;</i></pre>
                 <pre>  font-size: 24pt;</pre>
                 <pre>  color: lime;</pre>
                 <pre>}</pre>      
@@ -196,8 +232,8 @@
             <td>
               <code onclick="selectCodeBlock(this, event)">
                 <pre>.word-cell .under-number {  </pre>
-                  <pre>  display: block;             <i>// hidden by default</i></pre>
-                  <pre>  font-size: 7pt;             <i>// default is full size</i></pre>
+                  <pre>  display: block;          <i>// hidden by default</i></pre>
+                  <pre>  font-size: 7pt;          <i>// default is full size</i></pre>
                 <pre>}</pre>
               </code> 
             </td>
