@@ -204,6 +204,7 @@ const binaryOperators = {
   '-': (a,b) => {return String(parseFloat(a) - parseFloat(b))},
   '*': (a,b) => {return String(parseFloat(a) * parseFloat(b))},
   '/': (a,b) => {return String(parseFloat(a) / parseFloat(b))},
+  '\\': (a,b) => {const f=parseFloat(a) / parseFloat(b); return String(f >= 0 ? Math.floor(f) : Math.ceil(f)); },  // integer divide without Math.trunc
   '%': (a,b) => {return String(parseFloat(a) % parseInt(b))},
   '&': (a,b) => {return String(a) + String(b)},
 }

@@ -516,6 +516,43 @@ function theHead(): HTMLHeadElement {
     return document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
 }
 
+function baseHref(): string {
+    const bases = document.getElementsByTagName('BASE');
+    for (let i = 0; i < bases.length; i++) {
+        var href = bases[i].getAttribute('href');
+        if (href) {
+            return relHref(href, document.location.href || '');
+        }
+    }
+    return document.location.href;
+}
+
+function relHref(path:string, fromBase?:string): string {
+    const paths = path.split('/');
+    if (paths[0].length == 0 || paths[0].indexOf(':') >= 0) {
+        // Absolute path
+        return path;
+    }
+    if (fromBase === undefined) {
+        fromBase = baseHref();
+    }
+    const bases = fromBase.split('/');
+    bases.pop();  // Remove filename at end of base path
+    let i = 0;
+    for (; i < paths.length; i++) {
+        if (paths[i] == '..') {
+            if (bases.length == 0 || (bases.length == 1 && bases[0].indexOf(':') > 0)) {
+                throw new Error('Relative path beyond base: ' + path);
+            }
+            bases.pop();
+        }
+        else if (paths[i] != '.') {
+            bases.push(paths[i]);
+        }
+    }
+    return bases.join('/');
+}
+
 /**
  * Count-down before we know all delay-linked CSS have been loaded
  */
@@ -529,7 +566,7 @@ let cssToLoad = 1;
 export function addLink(head:HTMLHeadElement, det:LinkDetails) {
     head = head || theHead();
     const link = document.createElement('link');
-    link.href = det.href;
+    link.href = relHref(det.href);
     link.rel = det.rel;
     if (det.type) {
         link.type = det.type;
@@ -559,7 +596,7 @@ export function linkCss(relPath:string, head?:HTMLHeadElement) {
     
     head = head || theHead();
     const link = document.createElement('link');
-    link.href=relPath;
+    link.href = relHref(relPath);
     link.rel = "Stylesheet";
     link.type = "text/css";
     link.onload = function(){cssLoaded();};

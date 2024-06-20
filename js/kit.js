@@ -4,8 +4,8 @@
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = void 0;
+exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = void 0;
+exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -1963,10 +1963,23 @@ function matchInputRules(input, evt) {
  * Callback when a user releases a keyboard key from any letter-input or word-input text field
  * @param event - A keyboard event
  */
-function onLetterKey(event) {
+function onLetterKeyUp(event) {
     if (event.isComposing) {
         return; // Don't interfere with IMEs
     }
+    var post = onLetterKey(event);
+    if (post) {
+        var input = event.currentTarget;
+        inputChangeCallback(input, event.key);
+    }
+}
+exports.onLetterKeyUp = onLetterKeyUp;
+/**
+ * Process the end of a keystroke
+ * @param event - A keyboard event
+ * @return true if some post-processing is still needed
+ */
+function onLetterKey(event) {
     if (isDebug()) {
         alert('code:' + event.code + ', key:' + event.key);
     }
@@ -1974,7 +1987,7 @@ function onLetterKey(event) {
     if (input != keyDownTarget) {
         keyDownTarget = null;
         // key-down likely caused a navigation
-        return;
+        return true;
     }
     keyDownTarget = null;
     var code = event.code;
@@ -1987,24 +2000,24 @@ function onLetterKey(event) {
     if (code == 'Tab') { // includes shift-Tab
         // Do nothing. User is just passing through
         // TODO: Add special-case exception to wrap around from end back to start
-        return;
+        return true;
     }
     else if (code == 'Home') {
         moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 1));
-        return;
+        return true;
     }
     else if (code == 'End') {
         moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', -1));
-        return;
+        return true;
     }
     else if (code == 'Backquote') {
-        return; // Highlight already handled in key down
+        return true; // Highlight already handled in key down
     }
     if (input.value.length == 0 || ignoreKeys.indexOf(code) >= 0) {
         var multiLetter = hasClass(input.parentNode, 'multiple-letter');
         // Don't move focus if nothing was typed
         if (!multiLetter) {
-            return;
+            return true;
         }
     }
     else if (input.value.length === 1 && !input.value.match(/[a-z0-9]/i)) {
@@ -2014,11 +2027,12 @@ function onLetterKey(event) {
         if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
             if (prior.getAttribute('data-literal') == input.value) {
                 input.value = ''; // abort this space
-                return;
+                return true;
             }
         }
     }
     afterInputUpdate(input, event.key);
+    return false;
 }
 exports.onLetterKey = onLetterKey;
 /**
@@ -2269,10 +2283,14 @@ function ApplyExtraction(text, dest, ready) {
         destText.innerHTML = '';
         destText.appendChild(document.createTextNode(text));
     }
-    else {
+    else if (!hasClass(dest, 'create-from-pattern')) {
         dest.innerText = text;
     }
     updateExtractionData(dest, text, ready);
+    if (isTag(dest, 'input')) {
+        // It's possible that the destination is itself an extract source
+        ExtractFromInput(dest);
+    }
 }
 /**
  * Update an extraction that uses numbered indicators
@@ -2390,6 +2408,7 @@ function onWordKey(event) {
         moveFocus(findNextOfClass(input, 'word-input'));
         return;
     }
+    saveWordLocally(input);
 }
 exports.onWordKey = onWordKey;
 /**
@@ -3172,6 +3191,11 @@ function setupLetterCells() {
         // Place a small text input field in each cell
         var inp = document.createElement('input');
         inp.type = 'text';
+        // Allow container to inject ID
+        var attr = void 0;
+        if (attr = cell.getAttributeNS('', 'input-id')) {
+            inp.id = attr;
+        }
         if (hasClass(cell, 'numeric')) {
             // We never submit, so this doesn't have to be exact. But it should trigger the mobile numeric keyboard
             inp.pattern = '[0-9]*'; // iOS
@@ -3233,7 +3257,7 @@ function setupLetterInputs() {
     for (var i = 0; i < inputs.length; i++) {
         var inp = inputs[i];
         inp.onkeydown = function (e) { onLetterKeyDown(e); };
-        inp.onkeyup = function (e) { onLetterKey(e); };
+        inp.onkeyup = function (e) { onLetterKeyUp(e); };
         inp.onchange = function (e) { onLetterChange(e); };
     }
 }
@@ -3251,6 +3275,11 @@ function setupWordCells() {
         var inp = document.createElement('input');
         inp.type = 'text';
         toggleClass(inp, 'word-input');
+        // Allow container to inject ID
+        var attr = void 0;
+        if (attr = cell.getAttributeNS('', 'input-id')) {
+            inp.id = attr;
+        }
         if (inpStyle != null) {
             toggleClass(inp, inpStyle);
         }
@@ -5347,7 +5376,7 @@ var safari21Details = {
     'icon': './Images/Plate_icon.png',
     'puzzleList': './menuu.html',
     'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts21.css',
+    'fontCss': '../24/Css/Fonts21.css',
     'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',
     'links': [],
     'qr_folders': { 'https://www.puzzyl.net/24/': './Qr/puzzyl/',
@@ -5838,6 +5867,41 @@ function debugPostSetup() {
 function theHead() {
     return document.getElementsByTagName('HEAD')[0];
 }
+function baseHref() {
+    var bases = document.getElementsByTagName('BASE');
+    for (var i = 0; i < bases.length; i++) {
+        var href = bases[i].getAttribute('href');
+        if (href) {
+            return relHref(href, document.location.href || '');
+        }
+    }
+    return document.location.href;
+}
+function relHref(path, fromBase) {
+    var paths = path.split('/');
+    if (paths[0].length == 0 || paths[0].indexOf(':') >= 0) {
+        // Absolute path
+        return path;
+    }
+    if (fromBase === undefined) {
+        fromBase = baseHref();
+    }
+    var bases = fromBase.split('/');
+    bases.pop(); // Remove filename at end of base path
+    var i = 0;
+    for (; i < paths.length; i++) {
+        if (paths[i] == '..') {
+            if (bases.length == 0 || (bases.length == 1 && bases[0].indexOf(':') > 0)) {
+                throw new Error('Relative path beyond base: ' + path);
+            }
+            bases.pop();
+        }
+        else if (paths[i] != '.') {
+            bases.push(paths[i]);
+        }
+    }
+    return bases.join('/');
+}
 /**
  * Count-down before we know all delay-linked CSS have been loaded
  */
@@ -5850,7 +5914,7 @@ var cssToLoad = 1;
 function addLink(head, det) {
     head = head || theHead();
     var link = document.createElement('link');
-    link.href = det.href;
+    link.href = relHref(det.href);
     link.rel = det.rel;
     if (det.type) {
         link.type = det.type;
@@ -5878,7 +5942,7 @@ function linkCss(relPath, head) {
     linkedCss[relPath] = true;
     head = head || theHead();
     var link = document.createElement('link');
-    link.href = relPath;
+    link.href = relHref(relPath);
     link.rel = "Stylesheet";
     link.type = "text/css";
     link.onload = function () { cssLoaded(); };
@@ -7111,6 +7175,7 @@ var binaryOperators = {
     '-': function (a, b) { return String(parseFloat(a) - parseFloat(b)); },
     '*': function (a, b) { return String(parseFloat(a) * parseFloat(b)); },
     '/': function (a, b) { return String(parseFloat(a) / parseFloat(b)); },
+    '\\': function (a, b) { var f = parseFloat(a) / parseFloat(b); return String(f >= 0 ? Math.floor(f) : Math.ceil(f)); },
     '%': function (a, b) { return String(parseFloat(a) % parseInt(b)); },
     '&': function (a, b) { return String(a) + String(b); },
 };
@@ -7588,7 +7653,7 @@ function startInputArea(src) {
     cloneAttributes(src, span);
     var cloneContents = false;
     var literal = null;
-    var extract = src.getAttributeNS('', 'extract');
+    var extract = cloneText(src.getAttributeNS('', 'extract'));
     var styles = getLetterStyles(src, 'underline', '', 'box');
     // Convert special attributes to data-* attributes for later text setup
     var attr;
@@ -7620,11 +7685,22 @@ function startInputArea(src) {
     }
     else if (isTag(src, 'word')) { // 1 input cell for (usually) one character
         toggleClass(span, 'word-cell', true);
+        if (attr = src.getAttributeNS('', 'extract')) {
+            span.setAttributeNS('', 'data-extract-index', cloneText(attr));
+        }
+        if (attr = src.getAttributeNS('', 'extracted-id')) {
+            span.setAttributeNS('', 'data-extracted-id', cloneText(attr));
+        }
     }
     else if (isTag(src, 'pattern')) { // multiple input cells for (usually) one character each
         toggleClass(span, 'create-from-pattern', true);
         if (attr = src.getAttributeNS('', 'pattern')) {
-            span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+            if (src.getAttributeNS('', 'numbered') != null) {
+                span.setAttributeNS('', 'data-number-pattern', cloneText(attr));
+            }
+            else {
+                span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+            }
         }
         if (attr = src.getAttributeNS('', 'extract')) {
             span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));

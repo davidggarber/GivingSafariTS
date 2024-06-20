@@ -319,6 +319,19 @@ input {
   z-index: 100;
 }
 
+.word-cell {
+  position: relative;
+}
+.word-cell .under-number {
+  display: none;
+}
+.word-cell .under-number::before {
+  content: '('
+}
+.word-cell .under-number::after {
+  content: ')'
+}
+
 .word-input {
   width: 1.5in;
   text-align: center;
