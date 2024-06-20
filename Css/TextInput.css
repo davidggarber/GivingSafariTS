@@ -356,6 +356,10 @@ input {
   border: solid 1px black;
 }
 
+.word-input.word-literal {
+  width: 1in;
+}
+
 .highlighted {
   background-color: yellow;
 }

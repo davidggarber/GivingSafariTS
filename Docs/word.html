@@ -24,7 +24,7 @@
           toggleClass(table, check.id, false);
         }
         else {
-          var discover = check.id == 'letter-grid-discover';
+          var discover = check.id == 'word-grid-discover';
           toggleClass(table, 'letter-grid-discover', discover);
           toggleClass(table, 'letter-grid-2d', !discover);
           // toggle the other checkbox off
@@ -35,16 +35,28 @@
     <script src="docs.js"></script>
     <link href="docs.css" rel="Stylesheet" type="text/css"></link>
     <style>
-      #Word.inp-font .letter-cell {
+      .example-rows td {
+        height: 0.4in;
+      }
+
+      #Word.inp-font .word-cell {
         font-family: 'Cambria';
         font-size: 16pt;
       }
-      #Word.big-extract #extracted {
+      #Word.lit-font .word-input.word-literal {
+        color: black;
+      }
+      #Word #extracted {
         font-family: 'Caveat';
+        text-transform: uppercase;
+        font-size: 20pt;
+      }
+      #Word.big-extract #extracted {
         font-size: 24pt;
         color: lime;
       }
-      #Word.small-under .under-number {
+      #Word.small-under .word-cell .under-number {
+        display: block;
         font-size: 7pt;
       }
     </style>
@@ -55,107 +67,67 @@
         <build>
           <h3 style="margin-top: 0px;">Word input styles</h3>
           <p>
-            Each &lt;letter&gt; is repeated 6 times, in 3 pairs.<br>
-            There are also 4 simple text characters: smart quotes, a space, and a dash.
+            Each row has 2 &lt;word&gt;s, separated by a space.
           </p>
-          <table>
+          <table class="example-rows">
             <tr>
-              <td><use template="tag" value="letter"></use> with default 
-                <use template="code" value="data-input-style='underline'"></use></td>
+              <td><use template="tag" value="word"></use> with default 
+                <use template="code" value="data-word-style='underline'"></use></td>
               <td><use template="simple"></use></td>
             </tr>
             <tr>
-              <td><use template="tag" value="letter data-input-style='box'"></use></td>
+              <td><use template="tag" value="word data-word-style='box'"></use></td>
               <td><use template="simple" dis="box"></use></td>
             </tr>
             <tr>
-              <td><use template="tag" value="letter data-input-style='grid'"></use></td>
-              <td><use template="simple" dis="grid"></use></td>
+              <td><use template="tag" value="word data-word-style='dotted'"></use></td>
+              <td><use template="simple" dis="dotted"></use></td>
             </tr>
           </table>
 
           <h3>Word literal styles</h3>
           <p>
-            Text literals can be incorporated into the input area as peers.<br>
-            Each row has an apostrophe and exclamation mark.
+            Word literals exist, if you need them: &lt;word literal='THE'&gt;
           </p>
-          <table>
+          <table class="example-rows">
             <tr>
               <td>By default, literals render like filled inputs.</td>
               <td><use template="lit"></use></td>
             </tr>
             <tr>
-              <td><use template="tag" value="letter data-literal-style='none'"></use></td>
-              <td><use template="lit" dls="none"></use></td>
-            </tr>
-            <tr>
-              <td><use template="tag" value="letter data-literal-style='box'"></use></td>
-              <td><use template="lit" dls="box"></use></td>
-            </tr>
-            <tr>
-              <td>With boxes.</td>
+              <td>&nbsp;</td>
               <td><use template="lit" dis="box"></use></td>
             </tr>
             <tr>
-              <td><use template="tag" value="letter data-literal-style='box'"></use></td>
-              <td><use template="lit" dis="box" dls="box"></use></td>
-            </tr>
-            <tr>
-              <td><use template="tag" value="letter data-literal-style='none'"></use></td>
-              <td><use template="lit" dis="box" dls="none"></use></td>
-            </tr>
-          </table>
-
-          <h3>2D Grids</h3>
-          <p>
-            2D grids aim for boxes that are squares<br>
-            It also supports black-ish blocks.<br>
-            Be sure to set <input id="letter-grid-2d" type="checkbox" checked onclick="toggleGrid2d(this)"><use template="code" value="class='letter-grid-2d'"></use> 
-            or <input id="letter-grid-discover" type="checkbox" onclick="toggleGrid2d(this)"><use template="code" value="class='letter-grid-discover'"></use> on a container,<br>
-            and <use template="code" value="class='letter-cell-block'"></use> on each row.
-          </p>
-          <table id="grid-sample" class='letter-grid-2d'>
-            <tr>
-              <td>
-                <use template="tag" value="letter data-input-style='grid'"></use>
+              <td>Or they can get separate rendering.<br>
+                <use template="tag" value="word data-literal-style='none'"></use>
               </td>
-              <td><use template="gridblocks" dis="grid"></use></td>
-            </tr>
-            <tr>
-              <td>... <use template="code" value="data-literal-style='gridgap'"></use></td>
-              <td><use template="gridblocks" dis="grid" dls="gridgap"></use></td>
-            </tr>
-            <tr>
-              <td>... <use template="code" value="data-literal-style='block'"></use></td>
-              <td><use template="gridblocks" dis="grid" dls="block"></use></td>
+              <td><use template="lit" dls="none"></use></td>
             </tr>
           </table>
 
           <h3>Word extract styles</h3>
           <p>
-            Each &lt;letter&gt; is repeated 6 times, in 3 pairs.<br>
-            There are also 4 simple text characters: smart quotes, a space, and a dash.
+            Words are either themselves the answer, or else they usually extract 1 letter.
           </p>
-          <table>
+          <table class="example-rows">
             <tr>
-              <td>Some letters are <use template="tag" value="letter extract"></use><br>
-                Default: normal inputs are underlines. Extracts are boxes.</td>
-              <td><use template="extr"></use></td>
+              <td>Extract 5th letter overall: <use template="tag" value="word extract='5'"></td>
+              <td><use template="extr" ext="5"></use></td>
             </tr>
             <tr>
-              <td>Alternately, <use template="tag" value="letter data-extract-style='highlight'"></use></td>
-              <td><use template="extr" des="highlight"></use></td>
+              <td>Extract 1st letter from 2nd word: <use template="tag" value="word extract='2.1'"></td>
+              <td><use template="extr" ext="2.1"></use></td>
             </tr>
             <tr>
-              <td>Ordered extractions look like <use template="tag" value="letter extract='5'"></use><br>
-                Customize the <use template="code" value=".under-number"></use> fonts with styles.
-              </td>
-              <td style="vertical-align: top;">
-                <letter></letter><letter extract="6"></letter><letter></letter> <letter></letter><letter extract="5"></letter><letter></letter>
+              <td>Extract into named target <use template="tag" value="word extract='3' extracted-id='tmp'"></td>
+              <td>
+                <use template="extr" ext="3" eid="tmp"></use>
+                <letter id="extracted-tmp"></letter>
               </td>
             </tr>
             <tr>
-              <td>Words tagged extract are mirrored to an element with <use template="code" value="id='extracted'"></use>:</td>
+              <td style="text-align: right;">Combined extractions:</td>
               <td id="extracted"></td>
             </tr>
           </table>
@@ -175,9 +147,19 @@
             <td><input type="checkbox" onclick="toggleCss('inp-font')"></td>
             <td>
               <code onclick="selectCodeBlock(this, event)">
-                <pre>.letter-cell {                <i>// for inputs generated by &lt;letter&gt; tags</i></pre>
+                <pre>.word-cell {                  <i>// for inputs generated by &lt;word&gt; tags</i></pre>
                 <pre>  font-family: 'Cambria';</pre>
                 <pre>  font-size: 16pt;            <i>// note that input boxes grow to match</i></pre>
+                <pre>}</pre>
+              </code> 
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('lit-font')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.word-input.word-literal {    <i>// for text in &lt;word literal&gt; tags</i></pre>
+                <pre>  color: black;</pre>
                 <pre>}</pre>
               </code> 
             </td>
@@ -186,7 +168,7 @@
             <td></td>
             <td>
               <code onclick="selectCodeBlock(this, event)">
-                <pre>.input-font {                 <i>// for other HTML meant to mimic &lt;letter&gt; tags</i></pre>
+                <pre>.input-font {                 <i>// for other HTML meant to mimic &lt;word&gt; tags</i></pre>
                 <pre>  font-family: 'Caveat';</pre>
                 <pre>}</pre>
               </code>
@@ -200,21 +182,8 @@
             <td>
               <code onclick="selectCodeBlock(this, event)">
                 <pre>#extracted {                  <i>// for extractions into a &lt;div&gt;</i></pre>
-                <pre>  font-family: 'Caveat';</pre>
                 <pre>  font-size: 24pt;</pre>
                 <pre>  color: lime;</pre>
-                <pre>}</pre>      
-              </code> 
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>
-              <code onclick="selectCodeBlock(this, event)">
-                <pre>#extracted .letter-cell {     <i>// for extracting into a &lt;pattern&gt;</i></pre>
-                <pre>  font-family: 'Caveat';</pre>
-                <pre>  font-size: 24pt;</pre>
-                <pre>  color: blue;</pre>
                 <pre>}</pre>      
               </code> 
             </td>
@@ -226,8 +195,9 @@
             <td><input type="checkbox" onclick="toggleCss('small-under')"></td>
             <td>
               <code onclick="selectCodeBlock(this, event)">
-                <pre>.under-number {  </pre>
-                <pre>  font-size: 7pt;             <i>// default is full size</i></pre>
+                <pre>.word-cell .under-number {  </pre>
+                  <pre>  display: block;             <i>// hidden by default</i></pre>
+                  <pre>  font-size: 7pt;             <i>// default is full size</i></pre>
                 <pre>}</pre>
               </code> 
             </td>
@@ -243,26 +213,20 @@
       </template>
 
       <template id="simple">
-        <span data-input-style="{dis?}">
-          &ldquo;<letter></letter><letter></letter> 
-          <letter></letter><letter></letter>-<letter></letter><letter></letter>&rdquo;
+        <span data-word-style="{dis?}">
+          <word></word> <word></word>
         </span>
       </template>
 
       <template id="lit">
-        <span data-input-style="{dis?}" data-literal-style="{dls?}">
-          <letter></letter><letter literal="-"></letter><letter></letter><letter literal="&rsquo;"></letter><letter></letter><letter literal="!"></letter>
+        <span data-word-style="{dis?}" data-literal-style="{dls?}">
+          <word></word> <word literal="the"></word> <word></word>
         </span>
-      </template>
-      <template id="gridblocks">
-        <div data-input-style="grid" data-literal-style="{dls?}">
-          <div class="letter-cell-block"><letter literal="¤"></letter><letter></letter><letter></letter><letter literal=" "></letter><letter></letter><letter literal="$"></letter></div>
-        </div>
       </template>
 
       <template id="extr">
-        <span data-input-style="{dis?}" data-extract-style="{des?}">
-          <letter></letter><letter extract></letter><letter></letter> <letter></letter><letter extract></letter><letter></letter>
+        <span>
+          <word extract="{ext}" extracted-id="{eid?}"></word>
         </span>
       </template>
     </div>

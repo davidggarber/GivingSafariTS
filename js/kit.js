@@ -3280,22 +3280,23 @@ function setupWordCells() {
         if (attr = cell.getAttributeNS('', 'input-id')) {
             inp.id = attr;
         }
-        if (inpStyle != null) {
-            toggleClass(inp, inpStyle);
-        }
         if (hasClass(cell, 'literal')) {
             inp.setAttribute('disabled', '');
-            toggleClass(inp, 'word-non-input');
-            var span = document.createElement('span');
-            toggleClass(span, 'word-literal');
-            span.innerText = cell.innerText;
+            toggleClass(inp, 'word-literal');
+            // var span:HTMLElement = document.createElement('span');
+            // toggleClass(span, 'word-literal');
+            inp.value = cell.innerText;
             cell.innerHTML = '';
-            cell.appendChild(span);
+            // cell.appendChild(span);
+            inpStyle = getOptionalStyle(cell, 'data-literal-style', undefined, 'word-') || inpStyle;
         }
         else {
             inp.onkeydown = function (e) { onLetterKeyDown(e); };
             inp.onkeyup = function (e) { onWordKey(e); };
             inp.onchange = function (e) { onWordChange(e); };
+        }
+        if (inpStyle != null) {
+            toggleClass(inp, inpStyle);
         }
         cell.appendChild(inp);
     }
@@ -7653,7 +7654,7 @@ function startInputArea(src) {
     cloneAttributes(src, span);
     var cloneContents = false;
     var literal = null;
-    var extract = cloneText(src.getAttributeNS('', 'extract'));
+    var extract = src.hasAttributeNS('', 'extract') ? cloneText(src.getAttributeNS('', 'extract')) : null;
     var styles = getLetterStyles(src, 'underline', '', 'box');
     // Convert special attributes to data-* attributes for later text setup
     var attr;
@@ -7690,6 +7691,10 @@ function startInputArea(src) {
         }
         if (attr = src.getAttributeNS('', 'extracted-id')) {
             span.setAttributeNS('', 'data-extracted-id', cloneText(attr));
+        }
+        if (attr = src.getAttributeNS('', 'literal')) {
+            toggleClass(span, 'literal', true);
+            span.innerText = cloneText(attr);
         }
     }
     else if (isTag(src, 'pattern')) { // multiple input cells for (usually) one character each
@@ -7729,7 +7734,9 @@ function startInputArea(src) {
         applyAllClasses(span, styles.literal);
     }
     else if (!isTag(src, 'pattern')) {
-        applyAllClasses(span, styles.letter);
+        if (!isTag(src, 'word')) {
+            applyAllClasses(span, styles.letter);
+        }
         if (extract != null) {
             toggleClass(span, 'extract', true);
             if (parseInt(extract) > 0) {

@@ -3559,7 +3559,7 @@ function setupWordCells() {
     var cells = document.getElementsByClassName('word-cell');
     for (var i = 0; i < cells.length; i++) {
         const cell:HTMLElement = cells[i] as HTMLElement;
-        var inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
+        let inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
 
         // Place a small text input field in each cell
         const inp:HTMLInputElement = document.createElement('input');
@@ -3572,24 +3572,26 @@ function setupWordCells() {
             inp.id = attr;
         }     
 
-        if (inpStyle != null) {
-            toggleClass(inp, inpStyle);
-        }
-
         if (hasClass(cell, 'literal')) {
             inp.setAttribute('disabled', '');
-            toggleClass(inp, 'word-non-input');
-            var span:HTMLElement = document.createElement('span');
-            toggleClass(span, 'word-literal');
-            span.innerText = cell.innerText;
+            toggleClass(inp, 'word-literal');
+            // var span:HTMLElement = document.createElement('span');
+            // toggleClass(span, 'word-literal');
+            inp.value = cell.innerText;
             cell.innerHTML = '';
-            cell.appendChild(span);
+            // cell.appendChild(span);
+            inpStyle = getOptionalStyle(cell, 'data-literal-style', undefined, 'word-') || inpStyle;
         }
         else {
             inp.onkeydown=function(e){onLetterKeyDown(e)};
             inp.onkeyup=function(e){onWordKey(e)};
             inp.onchange=function(e){onWordChange(e as KeyboardEvent)};
         }
+
+        if (inpStyle != null) {
+            toggleClass(inp, inpStyle);
+        }
+
         cell.appendChild(inp);
     }
 }
@@ -8444,9 +8446,9 @@ export function startInputArea(src:HTMLElement):Node[] {
 
   let cloneContents = false;
   let literal:string|null = null;
-  const extract = cloneText(src.getAttributeNS('', 'extract'));
+  const extract = src.hasAttributeNS('', 'extract') ? cloneText(src.getAttributeNS('', 'extract')) : null;
 
-  var styles = getLetterStyles(src, 'underline', '', 'box');
+  let styles = getLetterStyles(src, 'underline', '', 'box');
 
   // Convert special attributes to data-* attributes for later text setup
   let attr:string|null;
@@ -8483,6 +8485,10 @@ export function startInputArea(src:HTMLElement):Node[] {
     }
     if (attr = src.getAttributeNS('', 'extracted-id')) {
       span.setAttributeNS('', 'data-extracted-id', cloneText(attr));
+    }
+    if (attr = src.getAttributeNS('', 'literal')) {
+      toggleClass(span, 'literal', true);
+      span.innerText = cloneText(attr);
     }
   }
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
@@ -8525,7 +8531,9 @@ export function startInputArea(src:HTMLElement):Node[] {
     applyAllClasses(span, styles.literal);
   }      
   else if (!isTag(src, 'pattern')) {
-    applyAllClasses(span, styles.letter);
+    if (!isTag(src, 'word')) {
+      applyAllClasses(span, styles.letter);
+    }
     if (extract != null) {
       toggleClass(span, 'extract', true);
       if (parseInt(extract) > 0) {

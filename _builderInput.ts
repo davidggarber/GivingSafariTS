@@ -30,9 +30,9 @@ export function startInputArea(src:HTMLElement):Node[] {
 
   let cloneContents = false;
   let literal:string|null = null;
-  const extract = cloneText(src.getAttributeNS('', 'extract'));
+  const extract = src.hasAttributeNS('', 'extract') ? cloneText(src.getAttributeNS('', 'extract')) : null;
 
-  var styles = getLetterStyles(src, 'underline', '', 'box');
+  let styles = getLetterStyles(src, 'underline', '', 'box');
 
   // Convert special attributes to data-* attributes for later text setup
   let attr:string|null;
@@ -69,6 +69,10 @@ export function startInputArea(src:HTMLElement):Node[] {
     }
     if (attr = src.getAttributeNS('', 'extracted-id')) {
       span.setAttributeNS('', 'data-extracted-id', cloneText(attr));
+    }
+    if (attr = src.getAttributeNS('', 'literal')) {
+      toggleClass(span, 'literal', true);
+      span.innerText = cloneText(attr);
     }
   }
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
@@ -111,7 +115,9 @@ export function startInputArea(src:HTMLElement):Node[] {
     applyAllClasses(span, styles.literal);
   }      
   else if (!isTag(src, 'pattern')) {
-    applyAllClasses(span, styles.letter);
+    if (!isTag(src, 'word')) {
+      applyAllClasses(span, styles.letter);
+    }
     if (extract != null) {
       toggleClass(span, 'extract', true);
       if (parseInt(extract) > 0) {
