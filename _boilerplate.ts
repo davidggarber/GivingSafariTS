@@ -11,6 +11,7 @@ import { setupSubways } from "./_subway";
 import { setupValidation } from "./_confirmation";
 import { expandControlTags } from "./_builder";
 import { LinkDetails, getSafariDetails, initSafariDetails } from "./_events";
+import { diffSummarys, LayoutSummary, renderDiffs, summarizePageLayout } from "./_testUtils";
 
 
 /**
@@ -39,6 +40,9 @@ function debugSetup() {
     }
     if (urlArgs['body-debug'] != undefined && urlArgs['body-debug'] !== false) {
         toggleClass(document.getElementsByTagName('body')[0], 'debug', true);
+    }
+    if (urlArgs['compare-layout'] != undefined) {
+        linkCss('../Css/TestLayoutDiffs.css');  // TODO: path
     }
 }
 
@@ -475,6 +479,36 @@ function boilerplate(bp: BoilerPlateData) {
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);
     }
+}
+
+function debugPostSetup() {
+    if (urlArgs['scan-layout'] != undefined) {
+        const summary = summarizePageLayout();
+        const json = JSON.stringify(summary);
+        const comment = document.createComment(json);
+        document.getRootNode().appendChild(comment);
+    }
+    if (urlArgs['compare-layout'] != undefined) {
+        const after = summarizePageLayout();
+        const root = document.getRootNode();
+        for (let i = 0; i < root.childNodes.length; i++) {
+            if (root.childNodes[i].nodeType == Node.COMMENT_NODE) {
+                const comment = root.childNodes[i] as Comment;
+                let commentJson = comment.textContent;
+                if (commentJson) {
+                    commentJson = commentJson.trim();
+                    if (commentJson.substring(0, 7) == 'layout=') {
+                        const before = JSON.parse(commentJson.substring(7)) as LayoutSummary;
+                        const diffs = diffSummarys(before, after);
+                        if (diffs.length > 0) {
+                            renderDiffs(diffs);                            
+                        }        
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
 }
 
@@ -655,6 +689,8 @@ function setupAfterCss(bp: BoilerPlateData) {
     if (bp.postSetup) {
         bp.postSetup();
     }
+
+    debugPostSetup();
 }
 
 
