@@ -443,7 +443,7 @@ function setupWordCells() {
     var cells = document.getElementsByClassName('word-cell');
     for (var i = 0; i < cells.length; i++) {
         const cell:HTMLElement = cells[i] as HTMLElement;
-        var inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
+        let inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
 
         // Place a small text input field in each cell
         const inp:HTMLInputElement = document.createElement('input');
@@ -456,24 +456,26 @@ function setupWordCells() {
             inp.id = attr;
         }     
 
-        if (inpStyle != null) {
-            toggleClass(inp, inpStyle);
-        }
-
         if (hasClass(cell, 'literal')) {
             inp.setAttribute('disabled', '');
-            toggleClass(inp, 'word-non-input');
-            var span:HTMLElement = document.createElement('span');
-            toggleClass(span, 'word-literal');
-            span.innerText = cell.innerText;
+            toggleClass(inp, 'word-literal');
+            // var span:HTMLElement = document.createElement('span');
+            // toggleClass(span, 'word-literal');
+            inp.value = cell.innerText;
             cell.innerHTML = '';
-            cell.appendChild(span);
+            // cell.appendChild(span);
+            inpStyle = getOptionalStyle(cell, 'data-literal-style', undefined, 'word-') || inpStyle;
         }
         else {
             inp.onkeydown=function(e){onLetterKeyDown(e)};
             inp.onkeyup=function(e){onWordKey(e)};
             inp.onchange=function(e){onWordChange(e as KeyboardEvent)};
         }
+
+        if (inpStyle != null) {
+            toggleClass(inp, inpStyle);
+        }
+
         cell.appendChild(inp);
     }
 }

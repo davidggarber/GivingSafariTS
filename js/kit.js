@@ -5,7 +5,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = void 0;
-exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -3280,22 +3280,23 @@ function setupWordCells() {
         if (attr = cell.getAttributeNS('', 'input-id')) {
             inp.id = attr;
         }
-        if (inpStyle != null) {
-            toggleClass(inp, inpStyle);
-        }
         if (hasClass(cell, 'literal')) {
             inp.setAttribute('disabled', '');
-            toggleClass(inp, 'word-non-input');
-            var span = document.createElement('span');
-            toggleClass(span, 'word-literal');
-            span.innerText = cell.innerText;
+            toggleClass(inp, 'word-literal');
+            // var span:HTMLElement = document.createElement('span');
+            // toggleClass(span, 'word-literal');
+            inp.value = cell.innerText;
             cell.innerHTML = '';
-            cell.appendChild(span);
+            // cell.appendChild(span);
+            inpStyle = getOptionalStyle(cell, 'data-literal-style', undefined, 'word-') || inpStyle;
         }
         else {
             inp.onkeydown = function (e) { onLetterKeyDown(e); };
             inp.onkeyup = function (e) { onWordKey(e); };
             inp.onchange = function (e) { onWordChange(e); };
+        }
+        if (inpStyle != null) {
+            toggleClass(inp, inpStyle);
         }
         cell.appendChild(inp);
     }
@@ -5482,6 +5483,9 @@ function debugSetup() {
     if (urlArgs['body-debug'] != undefined && urlArgs['body-debug'] !== false) {
         toggleClass(document.getElementsByTagName('body')[0], 'debug', true);
     }
+    if (urlArgs['compare-layout'] != undefined) {
+        linkCss('../Css/TestLayoutDiffs.css'); // TODO: path
+    }
 }
 /**
  * Determines if the caller has specified <i>debug</i> in the URL
@@ -5832,6 +5836,35 @@ function boilerplate(bp) {
         setTimeout(checkLocalStorage, 100);
     }
 }
+function debugPostSetup() {
+    if (urlArgs['scan-layout'] != undefined) {
+        var summary = summarizePageLayout();
+        var json = JSON.stringify(summary);
+        var comment = document.createComment(json);
+        document.getRootNode().appendChild(comment);
+    }
+    if (urlArgs['compare-layout'] != undefined) {
+        var after = summarizePageLayout();
+        var root = document.getRootNode();
+        for (var i = 0; i < root.childNodes.length; i++) {
+            if (root.childNodes[i].nodeType == Node.COMMENT_NODE) {
+                var comment = root.childNodes[i];
+                var commentJson = comment.textContent;
+                if (commentJson) {
+                    commentJson = commentJson.trim();
+                    if (commentJson.substring(0, 7) == 'layout=') {
+                        var before = JSON.parse(commentJson.substring(7));
+                        var diffs = diffSummarys(before, after);
+                        if (diffs.length > 0) {
+                            renderDiffs(diffs);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
 function theHead() {
     return document.getElementsByTagName('HEAD')[0];
 }
@@ -6036,6 +6069,7 @@ function setupAfterCss(bp) {
     if (bp.postSetup) {
         bp.postSetup();
     }
+    debugPostSetup();
 }
 /**
  * Expose the boilerplate as an export
@@ -7620,7 +7654,7 @@ function startInputArea(src) {
     cloneAttributes(src, span);
     var cloneContents = false;
     var literal = null;
-    var extract = cloneText(src.getAttributeNS('', 'extract'));
+    var extract = src.hasAttributeNS('', 'extract') ? cloneText(src.getAttributeNS('', 'extract')) : null;
     var styles = getLetterStyles(src, 'underline', '', 'box');
     // Convert special attributes to data-* attributes for later text setup
     var attr;
@@ -7657,6 +7691,10 @@ function startInputArea(src) {
         }
         if (attr = src.getAttributeNS('', 'extracted-id')) {
             span.setAttributeNS('', 'data-extracted-id', cloneText(attr));
+        }
+        if (attr = src.getAttributeNS('', 'literal')) {
+            toggleClass(span, 'literal', true);
+            span.innerText = cloneText(attr);
         }
     }
     else if (isTag(src, 'pattern')) { // multiple input cells for (usually) one character each
@@ -7696,7 +7734,9 @@ function startInputArea(src) {
         applyAllClasses(span, styles.literal);
     }
     else if (!isTag(src, 'pattern')) {
-        applyAllClasses(span, styles.letter);
+        if (!isTag(src, 'word')) {
+            applyAllClasses(span, styles.letter);
+        }
         if (extract != null) {
             toggleClass(span, 'extract', true);
             if (parseInt(extract) > 0) {
@@ -8278,5 +8318,295 @@ function compareTaggedGroupsPBN(expect, have) {
     // return 0 for exact match
     // return -1 for incomplete match - groups thus far do not exceed expected
     return (exact && e == expect.length) ? 0 : -1;
+}
+function equalRect2D(a, b) {
+    return a.left == b.left
+        && a.right == b.right
+        && a.top == b.top
+        && a.bottom == b.bottom;
+}
+/**
+ * Simplify a DOMRect to 4 edge position values, each rounded to the nearest 0.1
+ * @param r a DOMRect
+ * @returns An equivalent Rect2D
+ */
+function createRect2D(r) {
+    var rect = {
+        left: Math.round(r.left * 10) / 10,
+        right: Math.round(r.right * 10) / 10,
+        top: Math.round(r.top * 10) / 10,
+        bottom: Math.round(r.bottom * 10) / 10,
+    };
+    return rect;
+}
+/**
+ * Create a size-0 rect at the top-left corner of another rect
+ * @param r a Rect2D
+ * @returns An new Rect2D
+ */
+function pointAtCorner(r) {
+    var _a, _b;
+    var x = (_a = r === null || r === void 0 ? void 0 : r.left) !== null && _a !== void 0 ? _a : 0;
+    var y = (_b = r === null || r === void 0 ? void 0 : r.right) !== null && _b !== void 0 ? _b : 0;
+    var rect = {
+        left: x,
+        right: x,
+        top: y,
+        bottom: y,
+    };
+    return rect;
+}
+/**
+ * Build a tree of LayoutSummary nodes
+ * @param root The root for this (sub-)tree
+ * @param index The index of the root within its parent
+ * @returns A LayoutSummary tree, which may be merged into a parent tree
+ */
+function summarizeLayout(root, index) {
+    if (index === undefined) {
+        index = 0;
+    }
+    var summary = {
+        index: index,
+        nodeType: root.nodeType,
+        descendents: root.childNodes.length
+    };
+    if (root.nodeType == Node.ELEMENT_NODE) {
+        var elmt = root;
+        var rect = elmt.getBoundingClientRect();
+        summary.bounds = createRect2D(rect);
+        if (elmt.id) {
+            summary.id = elmt.id;
+        }
+        // summary.text = elmt.innerText;
+        var children = [];
+        for (var i = 0; i < root.childNodes.length; i++) {
+            var child = root.childNodes[i];
+            var cl = summarizeLayout(child, i);
+            children.push(cl);
+            summary.descendents += cl.descendents;
+        }
+        summary.children = children;
+    }
+    else if (root.nodeType != Node.COMMENT_NODE && root.textContent) {
+        summary.text = root.textContent;
+        var range = document.createRange();
+        range.selectNode(root);
+        var rect = range.getBoundingClientRect();
+        range.detach(); // frees up memory in older browsers
+        summary.bounds = createRect2D(rect);
+    }
+    return summary;
+}
+function pageLayoutRootNode() {
+    var pageBody = document.getElementById('pageBody');
+    if (pageBody) {
+        return pageBody;
+    }
+    var bodies = document.getElementsByTagName('BODY');
+    if (bodies && bodies.length > 0) {
+        return bodies[0];
+    }
+    return document.getRootNode();
+}
+/**
+ * Summarize the full layout of a typical puzzle page.
+ * If a pageBody elememt exists, use that as the root.
+ * Otherwise, use the <body> tag, or as a last resort, the DOM root node.
+ * @returns A tree of LayoutSummary nodes
+ */
+function summarizePageLayout() {
+    var pageRoot = pageLayoutRootNode();
+    return summarizeLayout(pageRoot);
+}
+exports.summarizePageLayout = summarizePageLayout;
+/**
+ * Bit flags for how two layout summaries might differ
+ */
+var LayoutDiffType;
+(function (LayoutDiffType) {
+    LayoutDiffType[LayoutDiffType["None"] = 0] = "None";
+    LayoutDiffType[LayoutDiffType["Add"] = 1] = "Add";
+    LayoutDiffType[LayoutDiffType["Remove"] = 2] = "Remove";
+    LayoutDiffType[LayoutDiffType["Change"] = 3] = "Change";
+    LayoutDiffType[LayoutDiffType["AddChild"] = 4] = "AddChild";
+    LayoutDiffType[LayoutDiffType["RemoveChild"] = 8] = "RemoveChild";
+    LayoutDiffType[LayoutDiffType["ChangeText"] = 16] = "ChangeText";
+    LayoutDiffType[LayoutDiffType["ChangeRect"] = 32] = "ChangeRect";
+})(LayoutDiffType || (LayoutDiffType = {}));
+;
+/**
+ * Are these two elements sufficiently similar so as to be comparable?
+ * Same node type and element tag name. If they have IDs, they must match too.
+ * @param a A layout.
+ * @param b Another layout.
+ * @returns true if these two objects should be compared at greater depth
+ */
+function canCompareLayouts(a, b) {
+    return a.nodeType == b.nodeType
+        && a.tagName == b.tagName
+        && a.id == b.id;
+}
+/**
+ * Find the next element in the list which could plausibly be compared with a given element.
+ * @param s The element seeking a partner to compare
+ * @param list A list of potential partner elements
+ * @param first The first index in the list to consider
+ * @returns -1 if none found, else the index (>= first) of the match.
+ */
+function findComparableLayout(s, list, first) {
+    for (; first < list.length; first++) {
+        if (canCompareLayouts(s, list[first])) {
+            return first;
+        }
+    }
+    return -1;
+}
+/**
+ * Build a list of diffs for a before- and after- layout tree
+ * @param bef The before layout
+ * @param aft The after layout
+ * @returns A flat list of difference nodes, including differences among child nodes.
+ */
+function diffSummarys(bef, aft) {
+    var diffs = [];
+    var ldt = LayoutDiffType.None;
+    if (bef.text != aft.text) {
+        ldt |= LayoutDiffType.ChangeText;
+    }
+    if (bef.bounds || aft.bounds) {
+        if (!bef.bounds || !aft.bounds || !equalRect2D(bef.bounds, aft.bounds)) {
+            ldt |= LayoutDiffType.ChangeRect;
+        }
+    }
+    if (bef.children && aft.children) {
+        var b = 0;
+        var a = 0;
+        while (b < bef.children.length || a < aft.children.length) {
+            var bb = a >= aft.children.length ? bef.children.length :
+                findComparableLayout(aft.children[a], bef.children, b);
+            if (bb < 0) {
+                ldt |= LayoutDiffType.AddChild;
+                var added = {
+                    diffType: LayoutDiffType.Add,
+                    after: aft.children[a]
+                };
+                diffs.push(added);
+                a++;
+            }
+            else {
+                for (; b < bb; b++) {
+                    ldt |= LayoutDiffType.RemoveChild;
+                    var removed = {
+                        diffType: LayoutDiffType.Remove,
+                        before: bef.children[b]
+                    };
+                    diffs.push(removed);
+                }
+                if (a < aft.children.length) {
+                    var ds = diffSummarys(bef.children[b], aft.children[a]);
+                    for (var i = 0; i < ds.length; i++) {
+                        diffs.push(ds[i]);
+                    }
+                    b++;
+                    a++;
+                }
+            }
+        }
+    }
+    else if (bef.children) {
+        ldt |= LayoutDiffType.RemoveChild;
+    }
+    else if (aft.children) {
+        ldt |= LayoutDiffType.AddChild;
+        // for (let i = 0; i < aft.children.length; i++) {
+        // }
+    }
+    if (ldt != LayoutDiffType.None) {
+        var change = {
+            diffType: ldt,
+            before: bef,
+            after: aft
+        };
+        diffs.push(change); // TODO: insert at 0
+    }
+    return diffs;
+}
+exports.diffSummarys = diffSummarys;
+function renderDiffs(diffs) {
+    var diffRoot = document.getElementById('render-diffs');
+    if (!diffRoot) {
+        diffRoot = document.createElement('div');
+        diffRoot.id = 'render-diffs';
+        var body = document.getElementsByTagName('BODY')[0];
+        body.appendChild(diffRoot);
+    }
+    // toggleClass(diffRoot, 'diff-div', true);
+    for (var i = 0; i < diffs.length; i++) {
+        var diff = diffs[i];
+        renderDiff(diffRoot, diff);
+    }
+}
+exports.renderDiffs = renderDiffs;
+function renderDiff(diffRoot, diff) {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    if (!((_a = diff === null || diff === void 0 ? void 0 : diff.after) === null || _a === void 0 ? void 0 : _a.bounds) && !((_b = diff === null || diff === void 0 ? void 0 : diff.before) === null || _b === void 0 ? void 0 : _b.bounds)) {
+        return; // Nowhere to show
+    }
+    var div = document.createElement('div');
+    toggleClass(div, 'diff-div', true);
+    toggleClass(div, 'diff-add', (diff.diffType & LayoutDiffType.Add) != 0);
+    toggleClass(div, 'diff-rem', (diff.diffType & LayoutDiffType.Remove) != 0);
+    toggleClass(div, 'diff-text', (diff.diffType & LayoutDiffType.ChangeText) != 0);
+    toggleClass(div, 'diff-rect', (diff.diffType & LayoutDiffType.ChangeRect) != 0);
+    var before = (_d = (_c = diff.before) === null || _c === void 0 ? void 0 : _c.bounds) !== null && _d !== void 0 ? _d : pointAtCorner((_e = diff.after) === null || _e === void 0 ? void 0 : _e.bounds);
+    var after = (_g = (_f = diff.after) === null || _f === void 0 ? void 0 : _f.bounds) !== null && _g !== void 0 ? _g : pointAtCorner((_h = diff.before) === null || _h === void 0 ? void 0 : _h.bounds);
+    div.style.left = after.left + 'px';
+    div.style.top = after.top + 'px';
+    div.style.width = (after.right - after.left) + 'px';
+    div.style.height = (after.bottom - after.top) + 'px';
+    if (before.left != after.left) {
+        div.appendChild(createDiffDeltaRect(before.left - after.left, 'left'));
+    }
+    if (before.top != after.top) {
+        div.appendChild(createDiffDeltaRect(before.top - after.top, 'top'));
+    }
+    if (before.right != after.right) {
+        div.appendChild(createDiffDeltaRect(before.right - after.right, 'right'));
+    }
+    if (before.bottom != after.bottom) {
+        div.appendChild(createDiffDeltaRect(before.bottom - after.bottom, 'bottom'));
+    }
+    diffRoot.appendChild(div);
+}
+function createDiffDeltaRect(size, edge) {
+    var d = document.createElement('div');
+    toggleClass(d, 'diff-shrink', size < 0);
+    toggleClass(d, 'diff-grow', size > 0);
+    if (edge == 'left') {
+        d.style.left = ((size < 0) ? size : 0) + 'px';
+        d.style.width = Math.abs(size) + 'px';
+        d.style.top = '0px';
+        d.style.height = '100%';
+    }
+    else if (edge == 'top') {
+        d.style.top = ((size < 0) ? size : 0) + 'px';
+        d.style.height = Math.abs(size) + 'px';
+        d.style.left = '0px';
+        d.style.width = '100%';
+    }
+    else if (edge == 'right') {
+        d.style.right = ((size > 0) ? size : 0) + 'px';
+        d.style.width = Math.abs(size) + 'px';
+        d.style.top = '0px';
+        d.style.height = '100%';
+    }
+    else if (edge == 'bottom') {
+        d.style.bottom = ((size > 0) ? size : 0) + 'px';
+        d.style.height = Math.abs(size) + 'px';
+        d.style.left = '0px';
+        d.style.width = '100%';
+    }
+    return d;
 }
 //# sourceMappingURL=kit.js.map

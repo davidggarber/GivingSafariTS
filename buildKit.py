@@ -24,6 +24,7 @@ kitFiles = [
     '_builderUse.ts',
     '_templates.ts',
     '_validatePBN.ts',
+    '_testUtils.ts',
 ]
 
 merged = []
