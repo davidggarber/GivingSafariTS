@@ -58,7 +58,7 @@ export function startIfBlock(src:HTMLElement):Node[] {
     pass = cloneText(value).indexOf(test) >= 0;
   }
   else if (value = src.getAttributeNS('', 'ni')) {  // string doesn't contain
-    pass = cloneText(value).indexOf(test) >= 0;
+    pass = cloneText(value).indexOf(test) < 0;
   }
   else {  // simple boolean
     pass = test === 'true';
