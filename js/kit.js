@@ -2573,6 +2573,9 @@ function findNextInput(start, dx, dy, cls, clsSkip) {
     }
     var back = dx == -plusX || dy < 0;
     var next = findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1);
+    while (next != null && next.disabled) {
+        next = findNextOfClassGroup(next, cls, clsSkip, 'text-input-group', back ? -1 : 1);
+    }
     if (loop != null && findParentOfClass(next, 'loop-navigation') != loop) {
         find = findFirstChildOfClass(loop, cls, clsSkip, back ? -1 : 1);
         if (find) {
@@ -7616,7 +7619,7 @@ function startIfBlock(src) {
         pass = cloneText(value).indexOf(test) >= 0;
     }
     else if (value = src.getAttributeNS('', 'ni')) { // string doesn't contain
-        pass = cloneText(value).indexOf(test) >= 0;
+        pass = cloneText(value).indexOf(test) < 0;
     }
     else { // simple boolean
         pass = test === 'true';

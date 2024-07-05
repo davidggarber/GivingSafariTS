@@ -866,7 +866,10 @@ function findNextInput( start: Element,
         }
     }
     const back = dx == -plusX || dy < 0;
-    const next = findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1) as HTMLInputElement;
+    let next = findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1) as HTMLInputElement;
+    while (next != null && next.disabled) {
+        next = findNextOfClassGroup(next, cls, clsSkip, 'text-input-group', back ? -1 : 1) as HTMLInputElement;
+    }
     if (loop != null && findParentOfClass(next, 'loop-navigation') != loop) {
         find = findFirstChildOfClass(loop, cls, clsSkip, back ? -1 : 1) as HTMLInputElement;
         if (find) {

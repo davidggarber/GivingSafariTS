@@ -93,11 +93,11 @@
 
           <h3>Word literal styles</h3>
           <p>
-            Word literals exist, if you need them: &lt;word literal='THE'&gt;
+            Word literals exist, if you need them: <use template="tag" value="word literal='THE'"></use>. These are then read-only.
           </p>
           <table class="example-rows">
             <tr>
-              <td>By default, literals render like filled inputs.</td>
+              <td>By default, literals render like user inputs.</td>
               <td><use template="lit"></use></td>
             </tr>
             <tr>
@@ -140,8 +140,14 @@
 
           <h3>Arrow key navigation</h3>
           <p>
-            Unlike &lt;letter&gt;s, arrow keys in &lt;word&gt; will not <i>always</i> move cells.<br>
-            <b>TAB</b> and <b><i>shift+</i>TAB</b> will work, as will <b>ENTER</b> and <b><i>shift+</i>ENTER</b>.
+            To move between &lt;word&gt; fields, a user can use <b>TAB</b> and <b><i>shift+</i>TAB</b>, as will <b>ENTER</b> and <b><i>shift+</i>ENTER</b>.<br>
+            Arrow keys will also work, after first moving through the characters within the field.<br>
+            There is <i>currently</i> no 2D vertical navigation. <b>DOWN</b> and <b>UP</b> really go next and previous.
+          </p>
+          <p>
+            Filling out a puzzle, <b>ENTER</b> and <b>TAB</b> may not be the intuitive keys to move to the next field.<br>
+            If each &lt;word&gt; is truly intended to hold a single word, then <b>SPACE</b> is also desirable.<br>
+            To enable that, 
           </p>
           
         </build>
