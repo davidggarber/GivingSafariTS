@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit.js"></script>
+    <script>
+      const apple='Images/Foodoku/apple.svg';
+      const beer='Images/Foodoku/beer.svg';
+      const fish='Images/Foodoku/fish.svg';
+      const icecream='Images/Foodoku/icecream.svg';
+      const orange='Images/Foodoku/orange.svg';
+      const peanut='Images/Foodoku/peanut.svg';
+      const x='';
+
+      const boiler = {
+        'safari': 'gs24',
+        'title': 'FOODoku',
+        'author': 'Wendy Stidmon & Jeffrey Lin',
+        'copyright': '2021',
+        'type': 'logic',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+          images: [apple, beer, fish, icecream, orange, peanut],
+          grid: [
+            [apple, fish, x, x, beer, orange],
+            [x, x, x, x, x, x],
+            [x, x, orange, beer, x, x],
+            [beer, x, x, x, x, icecream],
+            [x, peanut, x, x, icecream, x],
+            [icecream, orange, x, x, peanut, fish],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #symbols {
+        text-align: center;
+      }
+      #grid-container {
+        display: grid;
+        grid-template-rows: repeat(6, 1in);
+        user-select: none;
+      }
+      .grid-row {
+        display: grid;
+        grid-template-columns: repeat(6, 1in);
+      }
+      .grid-cell {
+        width: 1in;
+        height: 1in;
+        margin: 5px;
+        border-left:solid 1px black;
+        border-top:solid 1px black;
+      }
+      .grid-cell img {
+        width: 0.8in;
+        padding: 0.1in;
+      }
+      .grid-cell:nth-child(3n+1) {
+        margin-left: 0px;
+        border-left: solid 6px black;
+      }
+      .grid-cell:nth-child(6n) {
+        margin-right: 0px;
+        border-right: solid 6px black;
+      }
+      .grid-row:nth-child(2n+1) .grid-cell {
+        margin-top: 0px;
+        border-top: solid 6px black;
+      }
+      .grid-row:nth-child(6n) .grid-cell {
+        margin-bottom: 0px;
+        border-bottom: solid 6px black;
+      }
+      .flavor {
+        margin-top: 0.5in;
+        text-align: center;
+      }
+      #Foodoku #extracted .letter-underline {
+        border-bottom: solid 2px black;
+        margin-right: 10px;
+      }
+
+
+    </style>
+  </head>
+  <body id="Foodoku">
+    <div id="pageBody">
+      <p id="symbols">
+        <for each="img" in="{images}">
+          <img_ src="{img}">
+        </for>
+      </p>
+      <build>
+        <div style="margin-left: 0.75in;">
+          <div id="grid-container">
+            <for each="row" in="{grid}">
+              <div class="grid-row">
+                <for each="cell" in="{row}">
+                  <div class="grid-cell">
+                    <if exists="{cell}">
+                      <img_ src="{cell}">
+                    </if>
+                  </div>
+                </for>
+              </div>
+            </for>
+          </div>  
+        </div>
+
+        <div class="flavor">
+          <p>
+            Now that you’ve solved the Foodoku, perhaps it’s time to go for seconds?
+          </p>
+          <p id="extracted">
+            <pattern pattern="6"></pattern>
+          </p>
+        </div>
+
+      </build>
+    </div>
+  </body>
+</html>

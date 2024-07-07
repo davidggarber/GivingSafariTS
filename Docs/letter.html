@@ -47,6 +47,12 @@
       #Letter.small-under .under-number {
         font-size: 7pt;
       }
+      #Letter.thick-underline .letter-underline {
+        border-bottom: solid 2px black;
+      }
+      #Letter.more-space .letter-underline {
+        margin-right: 10px;
+      }
     </style>
   </head>
   <body id="Letter">
@@ -215,6 +221,29 @@
                 <pre>  font-family: 'Caveat';</pre>
                 <pre>  font-size: 24pt;</pre>
                 <pre>  color: blue;</pre>
+                <pre>}</pre>      
+              </code> 
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"><h3>Fine-tuning underlines</h3></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('thick-underline')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.letter-underline {                  <i>// for thicker underlines</i></pre>
+                <pre>  border-bottom: solid 2px black</pre>
+                <pre>}</pre>      
+              </code> 
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('more-space')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.letter-underline {                  <i>// for more space between underlines</i></pre>
+                <pre>  margin-right: 10px;</pre>
                 <pre>}</pre>      
               </code> 
             </td>

@@ -35,6 +35,7 @@ var puzzles = [
     { title: 'Grandma’s Secret Recipe',file:'GrandmasSecretRecipe', thumb: '', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Leftovers', thumb: '', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', thumb: '', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: 'Foodoku', thumb: '', author: 'Wendy Stidmon & Jeffrey Lin', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
 ];
 
 function puzzleFile(puz) {
