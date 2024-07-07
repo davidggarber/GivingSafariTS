@@ -23,10 +23,17 @@
 
     </script>
     <style>
+      #big-logo {
+        position: absolute;
+        top: 1in;
+        left: 3.5in;
+        width: 4in;
+      }
     </style>
   </head>
   <body id="Index">
     <div id="pageBody">
+      <img id="big-logo" src="Images/logo.jpg">
       <for each="group" in="{groups}">
         <use template="group" title="{group.heading}" pages="{group.pages}"></use>
       </for>

@@ -5331,7 +5331,7 @@ function onDeleteEdge(evt) {
 var safariDocsDetails = {
     'title': 'Puzzyl Utility Library',
     'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
+    'icon': 'Images/monster-book-icon.png',
     'puzzleList': './index.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
