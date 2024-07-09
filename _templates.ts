@@ -165,7 +165,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
 }
 
 /**
- * Create a standard pant-by-numbers template element.
+ * Create a standard paint-by-numbers template element.
  * Also load the accompanying CSS file.
  * @returns The template.
  * @remarks This template takes the following arguments:

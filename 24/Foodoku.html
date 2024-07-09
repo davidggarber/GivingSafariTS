@@ -21,9 +21,18 @@
         'type': 'logic',
         'textInput': true,
         'abilities': {
+          'stamping': true,
         },
         'reactiveBuilder': true,
         'builderLookup': {
+          tools: {
+            'apple': { img: apple },
+            'beer': { img: beer },
+            'fish': { img: fish },
+            'icecream': { img: icecream },
+            'orange': { img: orange },
+            'peanut': { img: peanut },
+          },
           images: [apple, beer, fish, icecream, orange, peanut],
           grid: [
             [apple, fish, x, x, beer, orange],
@@ -37,9 +46,6 @@
       };
     </script>
     <style>
-      #symbols {
-        text-align: center;
-      }
       #grid-container {
         display: grid;
         grid-template-rows: repeat(6, 1in);
@@ -85,15 +91,40 @@
         margin-right: 10px;
       }
 
+      .stampTool img {
+        width: 0.8in;
+      }
+      .stampTool.selected img {
+        background-color: #bff;
+      }
+
+      @media screen {
+        #print-symbols {
+          display: none;
+        }
+      }
+
 
     </style>
   </head>
   <body id="Foodoku">
     <div id="pageBody">
-      <p id="symbols">
-        <for each="img" in="{images}">
-          <img_ src="{img}">
+
+      <p id="print-symbols" style="text-align: center;">
+        <for key="tool" in="{tools}">
+          <img_ src="{tool!.img}">
         </for>
+      </p>
+
+      <p id="stampPalette" data-tool-count="7" data-tool-erase="erase-tool" style="text-align: center;">
+        <for key="tool" in="{tools}">
+          <span id="{tool}-tool" class="stampTool" data-use-template-id="food-stamp" img="{tool!.img}">
+            <img_ src="{tool!.img}">
+          </span>  
+        </for>
+        <span id="erase-tool" class="stampTool" data-erase="true" img="{tool!.img}">
+          <img src="Images/Foodoku/eraser.png">
+        </span>  
       </p>
       <build>
         <div style="margin-left: 0.75in;">
@@ -101,11 +132,15 @@
             <for each="row" in="{grid}">
               <div class="grid-row">
                 <for each="cell" in="{row}">
-                  <div class="grid-cell">
-                    <if exists="{cell}">
+                  <if exists="{cell}">
+                    <div class="grid-cell">
                       <img_ src="{cell}">
-                    </if>
-                  </div>
+                    </div>
+                  </if>
+                  <if not="{cell}">
+                    <div class="grid-cell stampable">
+                    </div>
+                  </if>
                 </for>
               </div>
             </for>
@@ -123,5 +158,10 @@
 
       </build>
     </div>
+
+    <template id="food-stamp">
+      <img src_="{img}" class="stampedObject">
+    </template>
+
   </body>
 </html>

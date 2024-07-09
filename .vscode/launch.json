@@ -70,6 +70,19 @@
       ]
     },
     {
+      "type": "msedge",
+      "request": "launch",
+      "name": "Launch Today's puzzle",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "url": "${workspaceFolder}\\24\\Foodoku.html",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/js/**/*.js"
+      ]
+    },
+    {
       "name": "Python: buildKit.py",
       "type": "python",
       "request": "launch",

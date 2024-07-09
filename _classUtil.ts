@@ -320,6 +320,44 @@ export function findFirstChildOfClass(  elmt: Element,
 }
 
 /**
+ * Find the first child/descendent of the current element which matches a desired class
+ * @param parent - A parent element
+ * @param childClass - A class name of the desired child
+ * @param index - Which child to find. If negative, count from the end
+ * @returns A child element, if a match is found, else null
+ */
+export function findNthChildOfClass(  parent: Element, 
+    childClass: string, 
+    index: number)
+    : Element|null {
+    var children = parent.getElementsByClassName(childClass);
+    if (index >= 0) {
+        return (index < children.length) ? children[index] : null;
+    }
+    else {
+        index = children.length + index;
+        return (index >= 0) ? children[index] : null;
+    }
+}
+
+/**
+ * Get the index of an element among its siblings.
+ * @param parent A parent/ancestor of the child
+ * @param child Any element of type childClass
+ * @param childClass A class that defines the group of siblings
+ * @returns The index, or -1 if there's an error (the child is not in fact inside the specified parent)
+ */
+export function siblingIndexOfClass(parent: Element, child: Element, childClass: string): number {
+    var children = parent.getElementsByClassName(childClass);
+    for (var i = 0; i < children.length; i++) {
+        if (children[i] == child) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/**
  * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
  * @param elmt - A page element
  * @param attrName - An attribute name
