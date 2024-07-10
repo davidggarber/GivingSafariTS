@@ -27,7 +27,11 @@ kitFiles = [
     '_testUtils.ts',
 ]
 
-merged = []
+merged = [
+  '/************************************************************\n',
+  ' * Puzzyl.net puzzle-building web kit                       *\n'
+  ' ************************************************************/\n',
+]
 cwd = os.getcwd()
 print('Running in ' + cwd)
 
@@ -53,8 +57,12 @@ for srcFile in kitFiles:
   merged += [' *-----------------------------------------------------------*/\n', '\n']
   merged += lines[afterImport:]
 
-os.chmod('kit.ts', S_IWRITE|S_IREAD|S_IRGRP|S_IROTH)  # Temporarily writable by owner
-out = open('kit.ts', mode="w", encoding="utf-8")
+# Each year, start a new kit, to maintain backward compatibility~
+kitYear = 'kit24.ts'
+
+if os.path.isfile(kitYear):
+  os.chmod(kitYear, S_IWRITE|S_IREAD|S_IRGRP|S_IROTH)  # Temporarily writable by owner
+out = open(kitYear, mode="w", encoding="utf-8")
 out.writelines(merged)
 out.close()
-os.chmod('kit.ts', S_IREAD|S_IRGRP|S_IROTH)  # Readable by anyone (owner/group/others)
+os.chmod(kitYear, S_IREAD|S_IRGRP|S_IROTH)  # Readable by anyone (owner/group/others)
