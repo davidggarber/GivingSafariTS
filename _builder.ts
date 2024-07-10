@@ -358,6 +358,11 @@ export function expandContents(src:HTMLElement):Node[] {
       else if (isTag(child_elmt, inputAreaTagNames)) {
         pushRange(dest, startInputArea(child_elmt));
       }
+      else if (isTag(child_elmt, 'template')) {
+        // <template> tags do not clone the same as others
+        throw new Error('Templates get corrupted when inside a build region. Define all templates at the end of the BODY: ' 
+          + "<template id='" + child_elmt.id + "'>");
+      }
       else {
         dest.push(cloneWithContext(child_elmt));
       }

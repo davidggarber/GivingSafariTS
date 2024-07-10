@@ -346,6 +346,7 @@ function eraseStamp(target:HTMLElement):HTMLElement|null {
         curId = getOptionalStyle(cur, 'data-stamp-id');
         toggleClass(target, curId, false);
         parent.removeChild(cur);
+        parent.removeAttributeNS('', 'data-stamp-id');
         updateStampExtraction();
     }
     else if (hasClass(target, 'stampedObject')) {
@@ -353,7 +354,7 @@ function eraseStamp(target:HTMLElement):HTMLElement|null {
         curId = target.getAttributeNS('', 'data-stamp-id');
         toggleClass(target, 'stampedObject', false);
         toggleClass(target, curId, false);
-        target.removeAttributeNS('', 'data-template-id');
+        target.removeAttributeNS('', 'data-stamp-id');
         updateStampExtraction();
     }
     else {
@@ -375,22 +376,6 @@ function eraseStamp(target:HTMLElement):HTMLElement|null {
 
     // No guidance on what to replace this cell with
     return null;
-}
-
-/**
- * Given a stamp ID from a stamped element, find the tool that applied it.
- * @param templateId A string that must match a stampTool in this document.
- * @returns The stampTool element.
- */
-function findStampTool(templateId:string):HTMLElement {
-    const tools = document.getElementsByClassName('stampTool');
-    for (let i = 0; i < tools.length; i++) {
-        const tool = tools[i];
-        if (tool.getAttributeNS('', 'data-template-id') == templateId) {
-            return tool as HTMLElement;
-        }
-    }
-    throw new Error('Unrecognized stamp tool: ' + templateId);
 }
 
 /**
@@ -514,7 +499,7 @@ function preMoveStamp(event:PointerEvent, target:HTMLElement) {
     if (target != null) {
         const cur = findFirstChildOfClass(target, 'stampedObject');
         if (cur != null) {
-            const stampId = cur.getAttributeNS('', 'data-template-id');
+            const stampId = getOptionalStyle(cur, 'data-stamp-id');
             _dragDrawTool = stampId ? document.getElementById(stampId) : null;
         }
         else {
@@ -538,7 +523,7 @@ function updateStampExtraction() {
         const drawnObjects = document.getElementsByClassName('stampedObject');
         let extraction = '';
         for (let i = 0; i < drawnObjects.length; i++) {
-            const tool = drawnObjects[i].getAttributeNS('', 'data-template-id');
+            const tool = getOptionalStyle(drawnObjects[i], 'data-stamp-id');
             if (tool == _extractorTool.id) {
                 const drawn = drawnObjects[i] as HTMLElement;
                 const extract = findFirstChildOfClass(drawn, 'extract') as HTMLElement;
