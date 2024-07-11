@@ -8012,7 +8012,7 @@ function classStampPaletteTemplate() {
     var temp = document.createElement('template');
     temp.id = 'classStampPalette';
     temp.innerHTML =
-        "<div id=\"stampPalette\" data-tool-count=\"3\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool {size?}\" data-template-id=\"{tool.id}\" data-click-modifier=\"{tool.modifier?}\" title=\"{tool.modifier?} + draw\" data-next-template-id=\"{tool.next}\">\n        <div class=\"roundTool {tool.id}-button\">\n          <span id=\"{tool.id}-icon\" class=\"stampIcon\"><img src_=\"{tool.img}\"></span>\n          <span id=\"{tool.id}-label\" class=\"stampLabel\">{tool.label?}</span>\n          <span id=\"{tool.id}-mod\" class=\"stampMod\">{tool.modifier?}+click</span>\n        </div>\n      </div>\n    </for>\n  </div>";
+        "<div id=\"stampPalette\" data-tool-count=\"3\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div id={tool.id} class=\"stampTool {size?}\" data-stamp-id=\"{tool.id}\" data-style=\"{tool.id}\" data-click-modifier=\"{tool.modifier?}\" title=\"{tool.modifier?} + draw\" data-next-stamp-id=\"{tool.next}\">\n        <div class=\"roundTool {tool.id}-button\">\n          <span id=\"{tool.id}-icon\" class=\"stampIcon\"><img src_=\"{tool.img}\"></span>\n          <span id=\"{tool.id}-label\" class=\"stampLabel\">{tool.label?}</span>\n          <span id=\"{tool.id}-mod\" class=\"stampMod\">{tool.modifier?}+click</span>\n        </div>\n      </div>\n    </for>\n  </div>";
     return temp;
 }
 function classStampNoToolsTemplate() {
@@ -8020,7 +8020,7 @@ function classStampNoToolsTemplate() {
     var temp = document.createElement('template');
     temp.id = 'classStampPalette';
     temp.innerHTML =
-        "<div id=\"stampPalette\" class=\"hidden\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool\" data-template-id=\"{tool.id}\" data-next-template-id=\"{tool.next}\">\n      </div>\n    </for>\n  </div>";
+        "<div id=\"stampPalette\" class=\"hidden\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool\" data-stamp-id=\"{tool.id}\" data-next-stamp-id=\"{tool.next}\">\n      </div>\n    </for>\n  </div>";
     return temp;
 }
 function stampPaletteTemplate() {

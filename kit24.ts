@@ -8929,7 +8929,7 @@ function classStampPaletteTemplate() :HTMLTemplateElement {
   temp.innerHTML = 
   `<div id="stampPalette" data-tool-count="3" data-tool-erase="{erase}">
     <for each="tool" in="tools">
-      <div class="stampTool {size?}" data-template-id="{tool.id}" data-click-modifier="{tool.modifier?}" title="{tool.modifier?} + draw" data-next-template-id="{tool.next}">
+      <div id={tool.id} class="stampTool {size?}" data-stamp-id="{tool.id}" data-style="{tool.id}" data-click-modifier="{tool.modifier?}" title="{tool.modifier?} + draw" data-next-stamp-id="{tool.next}">
         <div class="roundTool {tool.id}-button">
           <span id="{tool.id}-icon" class="stampIcon"><img src_="{tool.img}"></span>
           <span id="{tool.id}-label" class="stampLabel">{tool.label?}</span>
@@ -8949,7 +8949,7 @@ function classStampNoToolsTemplate() :HTMLTemplateElement {
   temp.innerHTML = 
   `<div id="stampPalette" class="hidden" data-tool-erase="{erase}">
     <for each="tool" in="tools">
-      <div class="stampTool" data-template-id="{tool.id}" data-next-template-id="{tool.next}">
+      <div class="stampTool" data-stamp-id="{tool.id}" data-next-stamp-id="{tool.next}">
       </div>
     </for>
   </div>`;

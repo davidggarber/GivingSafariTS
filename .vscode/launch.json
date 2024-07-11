@@ -76,7 +76,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\24\\Foodoku.html",
+      "url": "${workspaceFolder}\\DGG\\battleship.html",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"
@@ -84,7 +84,7 @@
     },
     {
       "name": "Python: buildKit.py",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "console": "integratedTerminal",
       "program": "${workspaceFolder}/buildKit.py",
