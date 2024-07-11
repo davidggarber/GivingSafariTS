@@ -319,12 +319,9 @@ export function saveStampingLocally(element:HTMLElement) {
         var index = getGlobalIndex(element);
         if (index >= 0) {
             const parent = getStampParent(element);
-            var drawn = findFirstChildOfClass(parent, 'stampedObject');
-            if (drawn) {
-                localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
-            }
-            else if (hasClass(parent, 'stampedObject')) {
-                localCache.stamps[index] = parent.getAttributeNS('', 'data-template-id');
+            const stampId = parent.getAttributeNS('', 'data-stamp-id');
+            if (stampId) {
+                localCache.stamps[index] = stampId;
             }
             else {
                 delete localCache.stamps[index];
@@ -679,7 +676,10 @@ function restoreStamps(drawings:object) {
     for (var i = 0; i < targets.length; i++) {
         var tool = drawings[i] as string;
         if (tool != undefined) {
-            doStamp(targets[i] as HTMLElement, tool);
+            const stamp = document.getElementById(tool);
+            if (stamp) {
+                doStamp(targets[i] as HTMLElement, stamp);
+            }
         }
     }
 }

@@ -324,6 +324,44 @@ export function findFirstChildOfClass(  elmt: Element,
 }
 
 /**
+ * Find the first child/descendent of the current element which matches a desired class
+ * @param parent - A parent element
+ * @param childClass - A class name of the desired child
+ * @param index - Which child to find. If negative, count from the end
+ * @returns A child element, if a match is found, else null
+ */
+export function findNthChildOfClass(  parent: Element, 
+    childClass: string, 
+    index: number)
+    : Element|null {
+    var children = parent.getElementsByClassName(childClass);
+    if (index >= 0) {
+        return (index < children.length) ? children[index] : null;
+    }
+    else {
+        index = children.length + index;
+        return (index >= 0) ? children[index] : null;
+    }
+}
+
+/**
+ * Get the index of an element among its siblings.
+ * @param parent A parent/ancestor of the child
+ * @param child Any element of type childClass
+ * @param childClass A class that defines the group of siblings
+ * @returns The index, or -1 if there's an error (the child is not in fact inside the specified parent)
+ */
+export function siblingIndexOfClass(parent: Element, child: Element, childClass: string): number {
+    var children = parent.getElementsByClassName(childClass);
+    for (var i = 0; i < children.length; i++) {
+        if (children[i] == child) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/**
  * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
  * @param elmt - A page element
  * @param attrName - An attribute name
@@ -1298,12 +1336,9 @@ export function saveStampingLocally(element:HTMLElement) {
         var index = getGlobalIndex(element);
         if (index >= 0) {
             const parent = getStampParent(element);
-            var drawn = findFirstChildOfClass(parent, 'stampedObject');
-            if (drawn) {
-                localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
-            }
-            else if (hasClass(parent, 'stampedObject')) {
-                localCache.stamps[index] = parent.getAttributeNS('', 'data-template-id');
+            const stampId = parent.getAttributeNS('', 'data-stamp-id');
+            if (stampId) {
+                localCache.stamps[index] = stampId;
             }
             else {
                 delete localCache.stamps[index];
@@ -1658,7 +1693,10 @@ function restoreStamps(drawings:object) {
     for (var i = 0; i < targets.length; i++) {
         var tool = drawings[i] as string;
         if (tool != undefined) {
-            doStamp(targets[i] as HTMLElement, tool);
+            const stamp = document.getElementById(tool);
+            if (stamp) {
+                doStamp(targets[i] as HTMLElement, stamp);
+            }
         }
     }
 }
@@ -4447,15 +4485,15 @@ let _selectedTool:HTMLElement|null = null;
 /**
  * The tool name to cycle to first.
  */
-let _firstTool:string|null = null;
+let _firstTool:HTMLElement|null = null;
 /**
  * A tool name which, as a side effect, extract an answer from the content under it.
  */
-let _extractorTool:string|null = null;
+let _extractorTool:HTMLElement|null = null;
 /**
  * The tool name that would erase things.
  */
-let _eraseTool:string|null = null;
+let _eraseTool:HTMLElement|null = null;
 
 /**
  * Type structure of a stamp tool, as provided to a classStampPalette template
@@ -4470,6 +4508,14 @@ export type StampToolDetails = {
 };
 
 let stamps_can_drag = false;
+
+/**
+ * A document can only support a single stamp palette.
+ * @returns The palette container, if one exists, else null
+ */
+function findStampPalette():HTMLElement|null {
+    return document.getElementById('stampPalette');
+}
 
 /**
  * Scan the page for anything marked stampable or a draw tool
@@ -4535,15 +4581,18 @@ export function preprocessStampObjects() {
         elmt.onclick=function(e){onSelectStampTool(e)};
     }
 
-    const palette = document.getElementById('stampPalette');
+    const palette = findStampPalette();
     if (palette != null) {
-        _extractorTool = palette.getAttributeNS('', 'data-tool-extractor');
-        _eraseTool = palette.getAttributeNS('', 'data-tool-erase');
-        _firstTool = palette.getAttributeNS('', 'data-tool-first');
+        let id = palette.getAttributeNS('', 'data-tool-extractor');
+        _extractorTool = id != null ? document.getElementById(id) : null;
+        id = palette.getAttributeNS('', 'data-tool-erase');
+        _eraseTool = id != null ? document.getElementById(id) : null;
+        id = palette.getAttributeNS('', 'data-tool-first');
+        _firstTool = id != null ? document.getElementById(id) : null;
     }
 
     if (!_firstTool) {
-        _firstTool = _stampTools[0].getAttributeNS('', 'data-template-id');
+        _firstTool = _stampTools[0];
     }
 }
 
@@ -4651,7 +4700,7 @@ function onSelectStampTool(event:MouseEvent) {
  * @param toolFromErase An override because we're erasing/rotating
  * @returns the name of a draw tool
  */
-function getStampTool(event:PointerEvent, toolFromErase:string|null):string|null {
+function getStampTool(event:PointerEvent, toolFromErase:HTMLElement|null):HTMLElement|null {
     // Shift keys always win
     if (event.shiftKey || event.altKey || event.ctrlKey) {
         for (let i = 0; i < _stampTools.length; i++) {
@@ -4660,7 +4709,7 @@ function getStampTool(event:PointerEvent, toolFromErase:string|null):string|null
                     && event.shiftKey == (mods.indexOf('shift') >= 0)
                     && event.ctrlKey == (mods.indexOf('ctrl') >= 0)
                     && event.altKey == (mods.indexOf('alt') >= 0)) {
-                return _stampTools[i].getAttributeNS('', 'data-template-id');
+                return _stampTools[i];
             }
         }
     }
@@ -4674,12 +4723,42 @@ function getStampTool(event:PointerEvent, toolFromErase:string|null):string|null
 
     // Lacking other inputs, use the selected tool.
     if (_selectedTool != null) {
-        return _selectedTool.getAttributeNS('', 'data-template-id');
+        return _selectedTool;
     }
 
     // If no selection, the first tool is the default
     return _firstTool;
 }
+
+/**
+ * A stamp is referenced by the object it was stamped upon.
+ * Look up the original stampTool element.
+ * @param id The stamp ID
+ * @returns An HTMLElement, unless the stamping is malformed.
+ */
+function getStampToolById(id:string|null):HTMLElement|null {
+    return id ? document.getElementById(id) : null;
+}
+
+/**
+ * Given one tool, currently applied to a target, what is the next stamp in rotation?
+ * @param tool The current tool's HTMLElement, or null if none.
+ * @returns The next tool's HTMLElement, or else the _firstTool
+ */
+function getNextStampTool(tool:HTMLElement|null):HTMLElement|null {
+    if (tool) {
+        const nextId = tool.getAttributeNS('', 'data-next-stamp-id');
+        if (nextId) {
+            return document.getElementById(nextId);
+        }
+        const palette = findStampPalette();
+        if (palette) {
+            const curIndex = siblingIndexOfClass(palette, tool, 'stampTool');
+            return findNthChildOfClass(palette, 'stampTool', curIndex + 1) as HTMLElement|null;
+        }
+    }
+    return _firstTool;
+} 
 
 /**
  * Expose current stamp tool, in case other features want to react
@@ -4688,7 +4767,7 @@ export function getCurrentStampToolId() {
     if (_selectedTool == null) {
         return '';
     }
-    var id = _selectedTool.getAttributeNS('', 'data-template-id');
+    var id = _selectedTool.id;
     return id || '';
 }
 
@@ -4716,7 +4795,7 @@ export function getStampParent(target:HTMLElement) {
  * @param target a click event on a stampable object
  * @returns The name of a draw tool (overriding the default), or null
  */
-function eraseStamp(target:HTMLElement):string|null {
+function eraseStamp(target:HTMLElement):HTMLElement|null {
     if (target == null) {
         return null;
     }
@@ -4724,44 +4803,38 @@ function eraseStamp(target:HTMLElement):string|null {
 
     const cur = findFirstChildOfClass(parent, 'stampedObject');
     let curId:string|null;
-    let nextId:string|null = '';
     if (cur != null) {
-        curId = cur.getAttributeNS('', 'data-template-id');
+        // The target contains a stampedObject, which was injected by a template
+        // The tool itself is likely stamped on the parent, but check everywhere
+        curId = getOptionalStyle(cur, 'data-stamp-id');
         toggleClass(target, curId, false);
         parent.removeChild(cur);
-        if (_extractorTool != null) {
-            updateStampExtraction();
-        }
-        nextId = cur.getAttributeNS('', 'data-next-template-id');   
+        parent.removeAttributeNS('', 'data-stamp-id');
+        updateStampExtraction();
     }
     else if (hasClass(target, 'stampedObject')) {
         // Template is a class on the container itself
-        curId = target.getAttributeNS('', 'data-template-id');
+        curId = target.getAttributeNS('', 'data-stamp-id');
         toggleClass(target, 'stampedObject', false);
         toggleClass(target, curId, false);
-        target.removeAttributeNS('', 'data-template-id');
-        if (_extractorTool != null) {
-            updateStampExtraction();
-        }
+        target.removeAttributeNS('', 'data-stamp-id');
+        updateStampExtraction();
     }
     else {
         return null;  // This cell is currently blank
     }
 
-    if (_selectedTool == null) {
-        // rotate through the tools
-        if (!nextId && curId) {
-            const stampTool = findStampTool(curId);
-            nextId = stampTool.getAttributeNS('', 'data-next-template-id');
-        }
-        if (nextId) {
-            return nextId;
-        }
-        
-    }
-    if (_selectedTool && _selectedTool.getAttributeNS('', 'data-template-id') == curId) {
+    if (_selectedTool && _selectedTool.id == curId) {
         // When a tool is explicitly selected, clicking on that type toggles it back off
         return _eraseTool;
+    }
+    if (_selectedTool == null) {
+        // If no tool is selected, clicking on anything rotates it to the next tool in the cycle
+        if (curId) {
+            const curTool = getStampToolById(curId);
+            const nextTool = getNextStampTool(curTool);
+            return nextTool;
+        }
     }
 
     // No guidance on what to replace this cell with
@@ -4769,45 +4842,74 @@ function eraseStamp(target:HTMLElement):string|null {
 }
 
 /**
- * Given a stamp ID from a stamped element, find the tool that applied it.
- * @param templateId A string that must match a stampTool in this document.
- * @returns The stampTool element.
- */
-function findStampTool(templateId:string):HTMLElement {
-    const tools = document.getElementsByClassName('stampTool');
-    for (let i = 0; i < tools.length; i++) {
-        const tool = tools[i];
-        if (tool.getAttributeNS('', 'data-template-id') == templateId) {
-            return tool as HTMLElement;
-        }
-    }
-    throw new Error('Unrecognized stamp tool: ' + templateId);
-}
-
-/**
  * Draw on the target surface, using the named tool.
  * @param target The surface on which to draw
- * @param tool The name of a tool template
+ * @param tool The stampTool object that defines a tool
+ * A stampTool can then define behavior in several ways...
+ *  - data-template-id       id of a template to instantiate
+ *  - data-use-template-id   id of a builder template to use, passing arguments
+ *  - data-style             apply the named style(s) to the destination
+ *  - data-unstyle           remove the named style(s) from the destination
+ *  - data-erase             simply delete the existing contents
+ * A stampTool can also define the next element in a rotation
+ *  - data-next-id           id of another stampTool
+ *                           otherwise it will rotate through stampTools in visual order
  */
-export function doStamp(target:HTMLElement, tool:string) {
+export function doStamp(target:HTMLElement, tool:HTMLElement) {
     const parent = getStampParent(target);
     
     // Template can be null if tool removes drawn objects
-    let template = document.getElementById(tool) as HTMLTemplateElement;
-    if (template != null) {
-        // Inject the template into the stampable container
-        const clone = template.content.cloneNode(true);
-        parent.appendChild(clone);
+    const tmpltId = tool.getAttributeNS('', 'data-template-id');
+    const useId = tool.getAttributeNS('', 'data-use-template-id');
+    const styles = tool.getAttributeNS('', 'data-style');
+    const unstyles = tool.getAttributeNS('', 'data-unstyle');
+    const erase = tool.getAttributeNS('', 'data-erase');
+    if (tmpltId) {
+        let template = document.getElementById(tmpltId) as HTMLTemplateElement;
+        if (template != null) {
+            // Inject the template into the stampable container
+            const clone = template.content.cloneNode(true);
+            parent.appendChild(clone);
+        }
+        parent.setAttributeNS('', 'data-stamp-id', tool.id);
     }
-    else if (tool) {
-        // Apply the template ID as a style. The container is itself the stamped object
+    else if (useId) {
+        const nodes = useTemplate(tool, useId);
+        for (let i = 0; i < nodes.length; i++) {
+            parent.appendChild(nodes[i]);
+        }
+        parent.setAttributeNS('', 'data-stamp-id', tool.id);
+    }
+    else if (erase != null) {
+        // Do nothing. The caller should already have removed any existing contents
+    }
+
+    // Styles can coexist with templates
+    if (styles || unstyles) {
         toggleClass(target, 'stampedObject', true);
-        target.setAttributeNS('', 'data-template-id', tool);
+        target.setAttributeNS('', 'data-stamp-id', tool.id);
+        
+        if (styles) {
+            // Apply one or more styles (delimited by spaces)
+            // to the target itself. NOT to some parent stampable object.
+            // No parent needed if we're not injecting anything.
+            const split = styles.split(' ');
+            for (let i = 0; i < split.length; i++) {
+                toggleClass(target, split[i], true);
+            }
+        }
+        if (unstyles) {
+            // Apply one or more styles (delimited by spaces)
+            // to the target itself. NOT to some parent stampable object.
+            // No parent needed if we're not injecting anything.
+            const split = unstyles.split(' ');
+            for (let i = 0; i < split.length; i++) {
+                toggleClass(target, split[i], false);
+            }
+        }    
     }
-    toggleClass(target, tool, true);
-    if (_extractorTool != null) {
-        updateStampExtraction();
-    }
+
+    updateStampExtraction();
     saveStampingLocally(target);
 
     const fn = theBoiler().onStamp;
@@ -4816,8 +4918,8 @@ export function doStamp(target:HTMLElement, tool:string) {
     }
 }
 
-let _dragDrawTool:string|null = null;
-let _lastDrawTool:string|null = null;
+let _dragDrawTool:HTMLElement|null = null;
+let _lastDrawTool:HTMLElement|null = null;
 
 /**
  * Draw where a click happened.
@@ -4860,7 +4962,8 @@ function preMoveStamp(event:PointerEvent, target:HTMLElement) {
     if (target != null) {
         const cur = findFirstChildOfClass(target, 'stampedObject');
         if (cur != null) {
-            _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
+            const stampId = getOptionalStyle(cur, 'data-stamp-id');
+            _dragDrawTool = stampId ? document.getElementById(stampId) : null;
         }
         else {
             _dragDrawTool = _lastDrawTool;
@@ -4875,13 +4978,16 @@ function preMoveStamp(event:PointerEvent, target:HTMLElement) {
  * Drawing tools can be flagged to do extraction.
  */
 function updateStampExtraction() {
+    if (!_extractorTool) {
+        return;
+    }
     const extracted = document.getElementById('extracted');
     if (extracted != null) {
         const drawnObjects = document.getElementsByClassName('stampedObject');
         let extraction = '';
         for (let i = 0; i < drawnObjects.length; i++) {
-            const tool = drawnObjects[i].getAttributeNS('', 'data-template-id');
-            if (tool == _extractorTool) {
+            const tool = getOptionalStyle(drawnObjects[i], 'data-stamp-id');
+            if (tool == _extractorTool.id) {
                 const drawn = drawnObjects[i] as HTMLElement;
                 const extract = findFirstChildOfClass(drawn, 'extract') as HTMLElement;
                 if (extract) {
@@ -5891,7 +5997,7 @@ export type PuzzleEventDetails = {
 const safariDocsDetails:PuzzleEventDetails = {
   'title': 'Puzzyl Utility Library',
   'logo': './Images/Sample_Logo.png',
-  'icon': './Images/Sample_Icon.png',
+  'icon': 'Images/monster-book-icon.png',
   'puzzleList': './index.html',
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts.css',
@@ -7622,6 +7728,11 @@ export function expandContents(src:HTMLElement):Node[] {
       else if (isTag(child_elmt, inputAreaTagNames)) {
         pushRange(dest, startInputArea(child_elmt));
       }
+      else if (isTag(child_elmt, 'template')) {
+        // <template> tags do not clone the same as others
+        throw new Error('Templates get corrupted when inside a build region. Define all templates at the end of the BODY: ' 
+          + "<template id='" + child_elmt.id + "'>");
+      }
       else {
         dest.push(cloneWithContext(child_elmt));
       }
@@ -8572,18 +8683,18 @@ export function startInputArea(src:HTMLElement):Node[] {
  * Also push the context paths (as strings) as separate attributes.
  * Afterwards, pop them all back off.
  * Optionally, a <use> tag without a template="" attribute is a way to modify the context for the use's children.
- * @param node a <use> tag
- * @param context The current context
+ * @param node a <use> tag, whose attributes are cloned as arguments
+ * @param tempId The ID of a template to invoke. If not set, the ID should be in node.template
  * @returns An array of nodes to insert into the document in place of the <use> tag
  */
-export function useTemplate(node:HTMLElement):Node[] {
+export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   let dest:Node[] = [];
   
   const inner_context = pushBuilderContext();
   for (var i = 0; i < node.attributes.length; i++) {
     const attr = node.attributes[i].name;
     const val = node.attributes[i].value;
-    const attri = node.attributes[i].name.toLowerCase();
+    const attri = attr.toLowerCase();
     if (attri != 'template' && attri != 'class') {
       if (val[0] == '{') {
         inner_context[attr] = anyFromContext(val);
@@ -8595,7 +8706,9 @@ export function useTemplate(node:HTMLElement):Node[] {
     }
   }
 
-  const tempId = node.getAttribute('template');
+  if (!tempId) {
+    tempId = node.getAttribute('template');
+  }
   if (tempId) {
     const template = getTemplate(tempId);
     if (!template) {
@@ -8785,7 +8898,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
 }
 
 /**
- * Create a standard pant-by-numbers template element.
+ * Create a standard paint-by-numbers template element.
  * Also load the accompanying CSS file.
  * @returns The template.
  * @remarks This template takes the following arguments:

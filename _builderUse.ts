@@ -8,18 +8,18 @@ import { getTemplate } from "./_templates";
  * Also push the context paths (as strings) as separate attributes.
  * Afterwards, pop them all back off.
  * Optionally, a <use> tag without a template="" attribute is a way to modify the context for the use's children.
- * @param node a <use> tag
- * @param context The current context
+ * @param node a <use> tag, whose attributes are cloned as arguments
+ * @param tempId The ID of a template to invoke. If not set, the ID should be in node.template
  * @returns An array of nodes to insert into the document in place of the <use> tag
  */
-export function useTemplate(node:HTMLElement):Node[] {
+export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   let dest:Node[] = [];
   
   const inner_context = pushBuilderContext();
   for (var i = 0; i < node.attributes.length; i++) {
     const attr = node.attributes[i].name;
     const val = node.attributes[i].value;
-    const attri = node.attributes[i].name.toLowerCase();
+    const attri = attr.toLowerCase();
     if (attri != 'template' && attri != 'class') {
       if (val[0] == '{') {
         inner_context[attr] = anyFromContext(val);
@@ -31,7 +31,9 @@ export function useTemplate(node:HTMLElement):Node[] {
     }
   }
 
-  const tempId = node.getAttribute('template');
+  if (!tempId) {
+    tempId = node.getAttribute('template');
+  }
   if (tempId) {
     const template = getTemplate(tempId);
     if (!template) {

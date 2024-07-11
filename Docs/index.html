@@ -2,7 +2,7 @@
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="../js/kit.js"></script>
+    <script src="../js/kit24.js"></script>
     <script>
       const boiler = {
         'safari': 'Docs',
@@ -23,10 +23,17 @@
 
     </script>
     <style>
+      #big-logo {
+        position: absolute;
+        top: 1in;
+        left: 3.5in;
+        width: 4in;
+      }
     </style>
   </head>
   <body id="Index">
     <div id="pageBody">
+      <img id="big-logo" src="Images/logo.jpg">
       <for each="group" in="{groups}">
         <use template="group" title="{group.heading}" pages="{group.pages}"></use>
       </for>

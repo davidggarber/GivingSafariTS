@@ -3,9 +3,9 @@
  * _classUtil.ts
  *-----------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = void 0;
+exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = void 0;
 /**
  * Add or remove a class from a classlist, based on a boolean test.
  * @param obj - A page element, or id of an element
@@ -300,6 +300,41 @@ function findFirstChildOfClass(elmt, childClass, skipClass, dir) {
     return null;
 }
 exports.findFirstChildOfClass = findFirstChildOfClass;
+/**
+ * Find the first child/descendent of the current element which matches a desired class
+ * @param parent - A parent element
+ * @param childClass - A class name of the desired child
+ * @param index - Which child to find. If negative, count from the end
+ * @returns A child element, if a match is found, else null
+ */
+function findNthChildOfClass(parent, childClass, index) {
+    var children = parent.getElementsByClassName(childClass);
+    if (index >= 0) {
+        return (index < children.length) ? children[index] : null;
+    }
+    else {
+        index = children.length + index;
+        return (index >= 0) ? children[index] : null;
+    }
+}
+exports.findNthChildOfClass = findNthChildOfClass;
+/**
+ * Get the index of an element among its siblings.
+ * @param parent A parent/ancestor of the child
+ * @param child Any element of type childClass
+ * @param childClass A class that defines the group of siblings
+ * @returns The index, or -1 if there's an error (the child is not in fact inside the specified parent)
+ */
+function siblingIndexOfClass(parent, child, childClass) {
+    var children = parent.getElementsByClassName(childClass);
+    for (var i = 0; i < children.length; i++) {
+        if (children[i] == child) {
+            return i;
+        }
+    }
+    return -1;
+}
+exports.siblingIndexOfClass = siblingIndexOfClass;
 /**
  * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
  * @param elmt - A page element
@@ -1174,12 +1209,9 @@ function saveStampingLocally(element) {
         var index = getGlobalIndex(element);
         if (index >= 0) {
             var parent_1 = getStampParent(element);
-            var drawn = findFirstChildOfClass(parent_1, 'stampedObject');
-            if (drawn) {
-                localCache.stamps[index] = drawn.getAttributeNS('', 'data-template-id');
-            }
-            else if (hasClass(parent_1, 'stampedObject')) {
-                localCache.stamps[index] = parent_1.getAttributeNS('', 'data-template-id');
+            var stampId = parent_1.getAttributeNS('', 'data-stamp-id');
+            if (stampId) {
+                localCache.stamps[index] = stampId;
             }
             else {
                 delete localCache.stamps[index];
@@ -1521,7 +1553,10 @@ function restoreStamps(drawings) {
     for (var i = 0; i < targets.length; i++) {
         var tool = drawings[i];
         if (tool != undefined) {
-            doStamp(targets[i], tool);
+            var stamp = document.getElementById(tool);
+            if (stamp) {
+                doStamp(targets[i], stamp);
+            }
         }
     }
 }
@@ -4084,6 +4119,13 @@ var _extractorTool = null;
 var _eraseTool = null;
 var stamps_can_drag = false;
 /**
+ * A document can only support a single stamp palette.
+ * @returns The palette container, if one exists, else null
+ */
+function findStampPalette() {
+    return document.getElementById('stampPalette');
+}
+/**
  * Scan the page for anything marked stampable or a draw tool
  */
 function preprocessStampObjects() {
@@ -4144,14 +4186,17 @@ function preprocessStampObjects() {
         _stampTools.push(elmt);
         elmt.onclick = function (e) { onSelectStampTool(e); };
     }
-    var palette = document.getElementById('stampPalette');
+    var palette = findStampPalette();
     if (palette != null) {
-        _extractorTool = palette.getAttributeNS('', 'data-tool-extractor');
-        _eraseTool = palette.getAttributeNS('', 'data-tool-erase');
-        _firstTool = palette.getAttributeNS('', 'data-tool-first');
+        var id = palette.getAttributeNS('', 'data-tool-extractor');
+        _extractorTool = id != null ? document.getElementById(id) : null;
+        id = palette.getAttributeNS('', 'data-tool-erase');
+        _eraseTool = id != null ? document.getElementById(id) : null;
+        id = palette.getAttributeNS('', 'data-tool-first');
+        _firstTool = id != null ? document.getElementById(id) : null;
     }
     if (!_firstTool) {
-        _firstTool = _stampTools[0].getAttributeNS('', 'data-template-id');
+        _firstTool = _stampTools[0];
     }
 }
 exports.preprocessStampObjects = preprocessStampObjects;
@@ -4261,7 +4306,7 @@ function getStampTool(event, toolFromErase) {
                 && event.shiftKey == (mods.indexOf('shift') >= 0)
                 && event.ctrlKey == (mods.indexOf('ctrl') >= 0)
                 && event.altKey == (mods.indexOf('alt') >= 0)) {
-                return _stampTools[i].getAttributeNS('', 'data-template-id');
+                return _stampTools[i];
             }
         }
     }
@@ -4273,9 +4318,37 @@ function getStampTool(event, toolFromErase) {
     }
     // Lacking other inputs, use the selected tool.
     if (_selectedTool != null) {
-        return _selectedTool.getAttributeNS('', 'data-template-id');
+        return _selectedTool;
     }
     // If no selection, the first tool is the default
+    return _firstTool;
+}
+/**
+ * A stamp is referenced by the object it was stamped upon.
+ * Look up the original stampTool element.
+ * @param id The stamp ID
+ * @returns An HTMLElement, unless the stamping is malformed.
+ */
+function getStampToolById(id) {
+    return id ? document.getElementById(id) : null;
+}
+/**
+ * Given one tool, currently applied to a target, what is the next stamp in rotation?
+ * @param tool The current tool's HTMLElement, or null if none.
+ * @returns The next tool's HTMLElement, or else the _firstTool
+ */
+function getNextStampTool(tool) {
+    if (tool) {
+        var nextId = tool.getAttributeNS('', 'data-next-stamp-id');
+        if (nextId) {
+            return document.getElementById(nextId);
+        }
+        var palette = findStampPalette();
+        if (palette) {
+            var curIndex = siblingIndexOfClass(palette, tool, 'stampTool');
+            return findNthChildOfClass(palette, 'stampTool', curIndex + 1);
+        }
+    }
     return _firstTool;
 }
 /**
@@ -4285,7 +4358,7 @@ function getCurrentStampToolId() {
     if (_selectedTool == null) {
         return '';
     }
-    var id = _selectedTool.getAttributeNS('', 'data-template-id');
+    var id = _selectedTool.id;
     return id || '';
 }
 exports.getCurrentStampToolId = getCurrentStampToolId;
@@ -4320,84 +4393,106 @@ function eraseStamp(target) {
     var parent = getStampParent(target);
     var cur = findFirstChildOfClass(parent, 'stampedObject');
     var curId;
-    var nextId = '';
     if (cur != null) {
-        curId = cur.getAttributeNS('', 'data-template-id');
+        // The target contains a stampedObject, which was injected by a template
+        // The tool itself is likely stamped on the parent, but check everywhere
+        curId = getOptionalStyle(cur, 'data-stamp-id');
         toggleClass(target, curId, false);
         parent.removeChild(cur);
-        if (_extractorTool != null) {
-            updateStampExtraction();
-        }
-        nextId = cur.getAttributeNS('', 'data-next-template-id');
+        parent.removeAttributeNS('', 'data-stamp-id');
+        updateStampExtraction();
     }
     else if (hasClass(target, 'stampedObject')) {
         // Template is a class on the container itself
-        curId = target.getAttributeNS('', 'data-template-id');
+        curId = target.getAttributeNS('', 'data-stamp-id');
         toggleClass(target, 'stampedObject', false);
         toggleClass(target, curId, false);
-        target.removeAttributeNS('', 'data-template-id');
-        if (_extractorTool != null) {
-            updateStampExtraction();
-        }
+        target.removeAttributeNS('', 'data-stamp-id');
+        updateStampExtraction();
     }
     else {
         return null; // This cell is currently blank
     }
-    if (_selectedTool == null) {
-        // rotate through the tools
-        if (!nextId && curId) {
-            var stampTool = findStampTool(curId);
-            nextId = stampTool.getAttributeNS('', 'data-next-template-id');
-        }
-        if (nextId) {
-            return nextId;
-        }
-    }
-    if (_selectedTool && _selectedTool.getAttributeNS('', 'data-template-id') == curId) {
+    if (_selectedTool && _selectedTool.id == curId) {
         // When a tool is explicitly selected, clicking on that type toggles it back off
         return _eraseTool;
+    }
+    if (_selectedTool == null) {
+        // If no tool is selected, clicking on anything rotates it to the next tool in the cycle
+        if (curId) {
+            var curTool = getStampToolById(curId);
+            var nextTool = getNextStampTool(curTool);
+            return nextTool;
+        }
     }
     // No guidance on what to replace this cell with
     return null;
 }
 /**
- * Given a stamp ID from a stamped element, find the tool that applied it.
- * @param templateId A string that must match a stampTool in this document.
- * @returns The stampTool element.
- */
-function findStampTool(templateId) {
-    var tools = document.getElementsByClassName('stampTool');
-    for (var i = 0; i < tools.length; i++) {
-        var tool = tools[i];
-        if (tool.getAttributeNS('', 'data-template-id') == templateId) {
-            return tool;
-        }
-    }
-    throw new Error('Unrecognized stamp tool: ' + templateId);
-}
-/**
  * Draw on the target surface, using the named tool.
  * @param target The surface on which to draw
- * @param tool The name of a tool template
+ * @param tool The stampTool object that defines a tool
+ * A stampTool can then define behavior in several ways...
+ *  - data-template-id       id of a template to instantiate
+ *  - data-use-template-id   id of a builder template to use, passing arguments
+ *  - data-style             apply the named style(s) to the destination
+ *  - data-unstyle           remove the named style(s) from the destination
+ *  - data-erase             simply delete the existing contents
+ * A stampTool can also define the next element in a rotation
+ *  - data-next-id           id of another stampTool
+ *                           otherwise it will rotate through stampTools in visual order
  */
 function doStamp(target, tool) {
     var parent = getStampParent(target);
     // Template can be null if tool removes drawn objects
-    var template = document.getElementById(tool);
-    if (template != null) {
-        // Inject the template into the stampable container
-        var clone = template.content.cloneNode(true);
-        parent.appendChild(clone);
+    var tmpltId = tool.getAttributeNS('', 'data-template-id');
+    var useId = tool.getAttributeNS('', 'data-use-template-id');
+    var styles = tool.getAttributeNS('', 'data-style');
+    var unstyles = tool.getAttributeNS('', 'data-unstyle');
+    var erase = tool.getAttributeNS('', 'data-erase');
+    if (tmpltId) {
+        var template = document.getElementById(tmpltId);
+        if (template != null) {
+            // Inject the template into the stampable container
+            var clone = template.content.cloneNode(true);
+            parent.appendChild(clone);
+        }
+        parent.setAttributeNS('', 'data-stamp-id', tool.id);
     }
-    else if (tool) {
-        // Apply the template ID as a style. The container is itself the stamped object
+    else if (useId) {
+        var nodes = useTemplate(tool, useId);
+        for (var i = 0; i < nodes.length; i++) {
+            parent.appendChild(nodes[i]);
+        }
+        parent.setAttributeNS('', 'data-stamp-id', tool.id);
+    }
+    else if (erase != null) {
+        // Do nothing. The caller should already have removed any existing contents
+    }
+    // Styles can coexist with templates
+    if (styles || unstyles) {
         toggleClass(target, 'stampedObject', true);
-        target.setAttributeNS('', 'data-template-id', tool);
+        target.setAttributeNS('', 'data-stamp-id', tool.id);
+        if (styles) {
+            // Apply one or more styles (delimited by spaces)
+            // to the target itself. NOT to some parent stampable object.
+            // No parent needed if we're not injecting anything.
+            var split = styles.split(' ');
+            for (var i = 0; i < split.length; i++) {
+                toggleClass(target, split[i], true);
+            }
+        }
+        if (unstyles) {
+            // Apply one or more styles (delimited by spaces)
+            // to the target itself. NOT to some parent stampable object.
+            // No parent needed if we're not injecting anything.
+            var split = unstyles.split(' ');
+            for (var i = 0; i < split.length; i++) {
+                toggleClass(target, split[i], false);
+            }
+        }
     }
-    toggleClass(target, tool, true);
-    if (_extractorTool != null) {
-        updateStampExtraction();
-    }
+    updateStampExtraction();
     saveStampingLocally(target);
     var fn = theBoiler().onStamp;
     if (fn) {
@@ -4445,7 +4540,8 @@ function preMoveStamp(event, target) {
     if (target != null) {
         var cur = findFirstChildOfClass(target, 'stampedObject');
         if (cur != null) {
-            _dragDrawTool = cur.getAttributeNS('', 'data-template-id');
+            var stampId = getOptionalStyle(cur, 'data-stamp-id');
+            _dragDrawTool = stampId ? document.getElementById(stampId) : null;
         }
         else {
             _dragDrawTool = _lastDrawTool;
@@ -4459,13 +4555,16 @@ function preMoveStamp(event, target) {
  * Drawing tools can be flagged to do extraction.
  */
 function updateStampExtraction() {
+    if (!_extractorTool) {
+        return;
+    }
     var extracted = document.getElementById('extracted');
     if (extracted != null) {
         var drawnObjects = document.getElementsByClassName('stampedObject');
         var extraction = '';
         for (var i = 0; i < drawnObjects.length; i++) {
-            var tool = drawnObjects[i].getAttributeNS('', 'data-template-id');
-            if (tool == _extractorTool) {
+            var tool = getOptionalStyle(drawnObjects[i], 'data-stamp-id');
+            if (tool == _extractorTool.id) {
                 var drawn = drawnObjects[i];
                 var extract = findFirstChildOfClass(drawn, 'extract');
                 if (extract) {
@@ -5331,7 +5430,7 @@ function onDeleteEdge(evt) {
 var safariDocsDetails = {
     'title': 'Puzzyl Utility Library',
     'logo': './Images/Sample_Logo.png',
-    'icon': './Images/Sample_Icon.png',
+    'icon': 'Images/monster-book-icon.png',
     'puzzleList': './index.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
@@ -6881,6 +6980,11 @@ function expandContents(src) {
             else if (isTag(child_elmt, exports.inputAreaTagNames)) {
                 pushRange(dest, startInputArea(child_elmt));
             }
+            else if (isTag(child_elmt, 'template')) {
+                // <template> tags do not clone the same as others
+                throw new Error('Templates get corrupted when inside a build region. Define all templates at the end of the BODY: '
+                    + "<template id='" + child_elmt.id + "'>");
+            }
             else {
                 dest.push(cloneWithContext(child_elmt));
             }
@@ -7769,17 +7873,17 @@ exports.startInputArea = startInputArea;
  * Also push the context paths (as strings) as separate attributes.
  * Afterwards, pop them all back off.
  * Optionally, a <use> tag without a template="" attribute is a way to modify the context for the use's children.
- * @param node a <use> tag
- * @param context The current context
+ * @param node a <use> tag, whose attributes are cloned as arguments
+ * @param tempId The ID of a template to invoke. If not set, the ID should be in node.template
  * @returns An array of nodes to insert into the document in place of the <use> tag
  */
-function useTemplate(node) {
+function useTemplate(node, tempId) {
     var dest = [];
     var inner_context = pushBuilderContext();
     for (var i = 0; i < node.attributes.length; i++) {
         var attr = node.attributes[i].name;
         var val = node.attributes[i].value;
-        var attri = node.attributes[i].name.toLowerCase();
+        var attri = attr.toLowerCase();
         if (attri != 'template' && attri != 'class') {
             if (val[0] == '{') {
                 inner_context[attr] = anyFromContext(val);
@@ -7790,7 +7894,9 @@ function useTemplate(node) {
             inner_context[attr + '$'] = val; // Store the context path, so it can also be referenced
         }
     }
-    var tempId = node.getAttribute('template');
+    if (!tempId) {
+        tempId = node.getAttribute('template');
+    }
     if (tempId) {
         var template = getTemplate(tempId);
         if (!template) {
@@ -7878,7 +7984,7 @@ function paintByColorNumbersTemplate() {
     return temp;
 }
 /**
- * Create a standard pant-by-numbers template element.
+ * Create a standard paint-by-numbers template element.
  * Also load the accompanying CSS file.
  * @returns The template.
  * @remarks This template takes the following arguments:
