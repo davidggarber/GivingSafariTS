@@ -1,5 +1,5 @@
 import { expandContents, pushRange } from "./_builder";
-import { anyFromContext, cloneText, getBuilderContext, popBuilderContext, pushBuilderContext } from "./_builderContext";
+import { anyFromContext, cloneText, getBuilderContext, popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
 
 /**
  * Potentially several kinds of for loops:
@@ -42,7 +42,8 @@ export function startForLoop(src:HTMLElement):Node[] {
           list = list[0];
         }
         else {
-          iter = src.getAttributeNS('', 'range');
+          // range and int are synonyms
+          iter = src.getAttributeNS('', 'range') || src.getAttributeNS('', 'int');
           if (iter) {
             list = parseForRange(src);
           }
@@ -93,8 +94,7 @@ function parseForText(src:HTMLElement, delim:string) {
     throw new Error('for char requires "in" attribute');
   }
   // The list_name can just be a literal string
-  const context = getBuilderContext();
-  const list = (list_name in context) ? context[list_name] : list_name;
+  const list = textFromContext(list_name);
   if (!list) {
     throw new Error('unresolved context: ' + list_name);
   }
@@ -102,7 +102,7 @@ function parseForText(src:HTMLElement, delim:string) {
 }
 
 function parseForRange(src:HTMLElement):any {
-  const from = src.getAttributeNS('', 'in');
+  const from = src.getAttributeNS('', 'from');
   let until = src.getAttributeNS('', 'until');
   const last = src.getAttributeNS('', 'to');
   const length = src.getAttributeNS('', 'len');
@@ -114,6 +114,9 @@ function parseForRange(src:HTMLElement):any {
     : length ? (anyFromContext(length).length)
     : start;
   const inc = step ? parseInt(cloneText(step)) : 1;
+  if (inc == 0) {
+    throw new Error("Invalid loop step. Must be non-zero.");
+  }
   if (!until && inc < 0) {
     end -= 2;  // from 5 to 1 step -1 means i >= 0
   }

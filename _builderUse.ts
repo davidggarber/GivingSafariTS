@@ -1,5 +1,5 @@
 import { expandContents } from "./_builder";
-import { anyFromContext, cloneText, popBuilderContext, pushBuilderContext } from "./_builderContext";
+import { popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
 import { getTemplate } from "./_templates";
 
 /**
@@ -21,12 +21,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
     const val = node.attributes[i].value;
     const attri = attr.toLowerCase();
     if (attri != 'template' && attri != 'class') {
-      if (val[0] == '{') {
-        inner_context[attr] = anyFromContext(val);
-      }
-      else {
-        inner_context[attr] = cloneText(val);
-      }
+      inner_context[attr] = textFromContext(val);
       inner_context[attr + '$'] = val;  // Store the context path, so it can also be referenced
     }
   }

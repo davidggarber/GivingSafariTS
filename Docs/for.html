@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
 "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
@@ -14,19 +14,380 @@
         'textInput': true,
         'abilities': {
         },
-        'reactiveBuilder': true
+        'reactiveBuilder': true,
+        'builderLookup': {
+          types: [
+            { type: 'each', var: 'item', in: 'in', src: '{list}' }, 
+            { type: 'key', var: 'k', in: 'in', src: '{obj}' }, 
+            { type: 'char', var: 'ch', in: 'in', src: '{string}' }, 
+            { type: 'word', var: 'w', in: 'in', src: '{string}' }, 
+          ],
+          ranges: [
+            { start: 'from', first: '0', end: 'to', last: '3' },
+          ],
+          example: [
+            { start: "<for each='font' in='{fonts}'>", inner: "{font#}{font}", end:"</for>" }
+          ],
+
+          sentence: "Help docs",
+          line: { 
+            start: {x:1, y:2}, 
+            end: {x:3, y:4} 
+          },
+          fonts: [ 
+            'bold', 
+            'italic' 
+          ],
+          grid: [
+            [1, 2, 3],
+            [4, 5, 6]
+          ],
+        } 
       };
 
     </script>
     <script src="docs.js"></script>
     <link href="docs.css" rel="Stylesheet" type="text/css"></link>
     <style>
+      #right-side code.inline {
+        width: initial;
+      }
+      .group {
+        width: 100%;
+        margin-bottom: 6pt;
+      }
+      .indent {
+        margin-left: 0.1in;
+      }
+      th {
+        text-align: left;
+        padding-top: 10px;
+      }
+      #grid-example td {
+        background-color: initial;
+      }
     </style>
   </head>
   <body id="For">
     <div id="pageBody">
+      <div id="left-side">
+
+        <p>Use the new <strong>&lt;for&gt;</strong> tag to loop over a set of values,
+          cloning and re-evaluating the contents of the loop each time.</p>
+        <p>The targets of loops are implicitly lookups, so the {curly} syntax is not needed.
+          As they expand, new nested values are dynamically added to the lookup table, to reflect the loop state.  </p>
+        <p>There are several variant syntaxes of &lt;for&gt; loop, differentiated by the first attribute, which names the iterator.
+          Within the body of the &lt;for&gt; tags, new temporary lookup values are available, based on the iterator names.</p>
+
+        <h3 style="margin-top: 0px;">Variants</h3>
+        <p>There are several variants of the &lt;for&gt; loop, which iterate over the raw data in different ways.<br/>
+        They are distinguished by the attribute which defines the looping variable.</p> 
+        <table style="width:100%">
+          <tr>
+            <th>Syntax</th>
+            <th>Uses</th>
+          </tr>
+          <tr>
+            <td><use template="foreach" type="{types.0.type}" var="{types.0.var}" in="{types.0.in}" src="{types.0.src}"></use>
+            <td>Repeat for each element in a list</td>
+          </tr>
+          <tr>
+            <td><use template="foreach" type="{types.1.type}" var="{types.1.var}" in="{types.1.in}" src="{types.1.src}"></use>
+              <td>Repeat for each key in a dictionary object</td>
+          </tr>
+          <tr>
+            <td><use template="foreach" type="{types.2.type}" var="{types.2.var}" in="{types.2.in}" src="{types.2.src}"></use>
+              <td>Repeat for each character in a string</td>
+          </tr>
+          <tr>
+            <td><use template="foreach" type="{types.3.type}" var="{types.3.var}" in="{types.3.in}" src="{types.3.src}"></use>
+              <td>Repeat for each word in a string</td>
+          </tr>
+          <tr>
+            <td><use template="forrange" from="{ranges.0.start}" v1="{ranges.0.first}" to="{ranges.0.end}" v2="{ranges.0.last}"></use></td>
+            <td>Repeat for each step in an integer range</td>
+          </tr>
+        </table>
+
+        <p>In each case, the variable named in the variant keyword attribute (<i>item</i>, <i>k</i>, <i>ch</i>, <i>w</i>, <i>i</i> above)
+          becomes a context value or object within the loop. Depending on the loop type, secondary keys are also available.</p>
 
 
+        <h3 style="margin-top: 0px;">Builder Lookup Data</h3>
+        <p>The examples at right are based on these sample entries in the boiler javascript object.</p>
+        <code><pre>
+const boiler = {
+  'builderLookup': {
+    sentence: 'Help docs',
+    line: { 
+      start: {x:1, y:2}, 
+      end: {x:3, y:4} 
+    },
+    fonts: [ 
+      'bold', 
+      'italic' 
+    ],
+    grid: [
+      [1, 2, 3],
+      [4, 5, 6]
+    ]
+  }
+}</pre></code>
+  
+
+      </div>
+
+      <div id="right-side">
+
+        <table style="width:100%" class="alternating-rows">
+          <tr>
+            <th>Examples</th>
+            <th>Output</th>
+            <th>New context variables</th>
+          </tr>
+
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)">
+                <pre>
+&lt;for each='font' in='{fonts}'&gt;
+  {font#}:{font}
+&lt;/for&gt;</pre>
+              </code>
+            </td>
+            <td>
+              <for each="font" in="{fonts}">
+                {font#}:{font}
+              </for>
+            </td>
+            <td>
+              Within the for loop,
+              <div class="indent">
+                <code class="inline">{font}</code> is the list item
+              </div>
+              <div class="indent">
+                <code class="inline">{font#}</code> is the index in the list
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)">
+                <pre>
+&lt;for key='pt' in='{line}'&gt;
+  {pt}:
+  &lt;for key="axis" in="{pt!}"&gt;
+    {axis}={axis!}
+  &lt;/for&gt;
+  &lt;br&gt;
+&lt;/for&gt;</pre>
+              </code>
+            </td>
+            <td>
+              <for key="pt" in="{line}">
+                {pt}: 
+                <for key="axis" in="{pt!}">
+                  {axis}={axis!}
+                </for><br>
+              </for>
+            </td>
+            <td>
+              <div class="group">In the outer loop:
+                <div class="indent">
+                  <code class="inline">{pt}</code> is the name of each key in the <i>line</i> object
+                </div>
+                <div class="indent">
+                  <code class="inline">{pt!}</code> is the corresponding value.
+                </div>
+                <div class="indent">
+                  <code class="inline">{pt#}</code> is the index of the {pt} key
+                </div>
+              </div>
+              <div class="group">In the inner loop, {pt} and its variants still work, but also:
+                <div class="indent">
+                  <code class="inline">{axis}</code> is each key in the current point.
+                </div>
+                <div class="indent">
+                  <code class="inline">{axis!}</code> is the corresponding value. 
+                </div>
+                <div class="indent">
+                  <code class="inline">{axis#}</code> is the index of the {axis} key
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)">
+                &lt;for char="ch" in="{fonts.0}"&gt;{ch} &lt;/for&gt;
+              </code>
+            </td>
+            <td>
+              <for char="ch" in="{fonts.0}">{ch} </for>
+            </td>
+            <td>
+              <code class="inline">{ch}</code> is the character<br>
+              <code class="inline">{ch#}</code> is the index
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)">
+                &lt;for char="ch" in="plaintext"&gt;{ch} &lt;/for&gt;
+              </code>
+            </td>
+            <td>
+              <for char="ch" in="plaintext">{ch} </for>
+            </td>
+            <td>
+              Note that the source string can be a lookup, or a literal.
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)"><pre>
+&lt;for word="w" in="Hello, goodbye!"&gt;
+  {w}-{w}&lt;br&gt;
+&lt;/for&gt;</pre></code>
+            </td>
+            <td>
+              <for word="w" in="Hello, goodbye!">{w}-{w}<br></for>
+            </td>
+            <td>
+              <code class="inline">{w}</code> is the word<br>
+              <code class="inline">{w#}</code> is the word index<br>
+              Note that a word is anything delimited by spaces.
+            </td>
+          </tr>
+
+          <tr>
+            <th colspan="3">Range loops have more optional parameters...</th>
+          </tr>
+
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)">
+                &lt;for int="i" from="1" to="3"&gt;{i}&lt;/for&gt;
+              </code>
+            </td>
+            <td>
+              <for int="i" from="1" to="3">{i}</for>
+            </td>
+            <td>
+              Note that <b>from</b> and <b>to</b> are both <i>inclusive</i>.
+              <div class="indent">
+                <code class="inline">{i}</code> is the current numbered
+              </div>
+              <div class="indent">
+                <code class="inline">{i#}</code> is the index within the range
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)">
+                &lt;for int="i" from="1" until="3"&gt;{i}&lt;/for&gt;  
+              </code>
+            </td>
+            <td>
+              <for int="i" from="1" until="3">{i}</for>    
+            </td>
+            <td>
+              Note that <b>until</b> is <i>exclusive</i>.
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)"><pre>
+&lt;for int="i" from="5" to="0" step="-2"&gt;
+  &lt;if test="{i#}" gt="0"&gt;, &lt;/if&gt;{i}
+&lt;/for&gt;</pre>
+              </code>
+            </td>
+            <td>
+              <for int="i" from="5" to="0" step="-2">
+                <if test="{i#}" gt="0">, </if>{i}
+              </for>
+            </td>
+            <td>
+              <b>step</b> can be any non-zero integer.<br>
+              <code class="inline">{i#}</code> is still the index within the sequence
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)">
+                &lt;for int="i" len="{sentence}"&gt;{sentence.[i]} &lt;/for&gt;
+              </code>
+            </td>
+            <td>
+              <for int="i" len="{sentence}">{sentence.[i]} </for>
+            </td>
+            <td>
+              <b>from</b> is omitted, so is implicitly 0.<br>
+              <b>len</b> calculates the length of a string or list as the exclusive <b>until</b>.<br>
+              <code class="inline">{i}</code> is still an integer, not a character, so<br>
+              <code class="inline">{sentence.[i]}</code> gets the i<sup>th</sup> character.
+            </td>
+          </tr>
+          
+          <tr>
+            <th colspan="3">Beware interactions with &lt;table&gt; tags.</th>
+          </tr>
+
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)">
+                <pre>
+&lt;ttable border="1"&gt;
+  &lt;for each="row" in="{grid}"&gt;
+    &lt;ttr&gt;
+      &lt;for each="val" in="{row}"&gt;
+        &lt;ttd&gt;{val}&lt;/ttd&gt;
+      &lt;/for&gt;
+    &lt;/ttr&gt;
+  &lt;/for&gt;
+&lt;/ttable&gt;</pre>
+              </code>
+            </td>
+            <td>
+              <build>
+                <ttable border="1" id="grid-example">
+                  <for each="row" in="{grid}">
+                    <ttr>
+                      <for each="val" in="{row}">
+                        <ttd>{val}</ttd>
+                      </for>
+                    </ttr>
+                  </for>
+                </ttable>
+              </build>
+            </td>
+            <td>
+              Note that the table tags at all levels need to be encoded:
+                <code class="inline">&lt;ttable&gt;</code>,
+                <code class="inline">&lt;ttr&gt;</code>,
+                <code class="inline">&lt;ttd&gt;</code>
+              <div class="group">The {grid} object is a 2D array - a list of lists.</div>
+              <div class="indent">
+                <code class="inline">{row}</code> is an inner list.
+              </div>
+              <div class="indent">
+                <code class="inline">{val}</code> is each value in the inner list.
+              </div>
+            </td>
+          </tr>
+
+        </table>      
+
+      </div>
     </div>
 
     <template id="code">
@@ -34,6 +395,21 @@
     </template>
     <template id="tag">
       <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+    <template id="foreach">
+      <code ondblclick="selectCode(this, event)">&lt;for <b style="font-size: large;">{type}</b>="{var}"
+        {in}="{src}"&gt;<br/>
+        &nbsp; <i>&lt;!-- contents --&gt;</i>
+        &lt;/for&gt;
+      </code>
+    </template>
+    <template id="forrange">
+      <code ondblclick="selectCode(this, event)">&lt;for <b style="font-size: large;">int</b>="i"
+        <if exists="from">{from}="{v1}"</if>
+        <if exists="to">{to}="{v2}"</if>&gt;<br/>
+        &nbsp; <i>&lt;!-- contents --&gt;</i>
+        &lt;/for&gt;
+      </code>
     </template>
 
     <template id="simple">

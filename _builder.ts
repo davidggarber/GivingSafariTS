@@ -381,9 +381,12 @@ export function expandContents(src:HTMLElement):Node[] {
 /**
  * Some HTML elements and attributes are immediately acted upon by the DOM.
  * To delay that until after builds (especially <for> and <if>), 
- * use _prefx or suffix_, and the tag or attribute will be renamed when cloned.
+ * use any of three alternate naming schemes:
+ *   _prefix or suffix_  Underscores will be removed.
+ *   ddupe-letter        If the initial letter is duplicated, drop it.
+ * The tag or attribute will be renamed when cloned, and the browser will treat it as a no-op until then.
  * @param name Any tag or attribute name
- * @returns The name, or the the name without the _
+ * @returns The name, or the the name without the _ underscore or doubled initial letter
  */
 export function normalizeName(name:string):string {
   if (name.substring(0, 1) == '_') {
@@ -391,6 +394,9 @@ export function normalizeName(name:string):string {
   }
   if (name.substring(name.length - 1) == '_') {
     return name.substring(0, name.length - 1);
+  }
+  if (name.length > 2 && name[0] == name[1]) {
+    return name.substring(1);
   }
   // Any other interior underscores are kept
   return name;

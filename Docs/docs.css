@@ -23,6 +23,23 @@ td {
   width: 100%;
 }
 
+#left-side {
+  width:7.5in;
+}
+#left-side tr:nth-child(odd) td {
+  background-color: #ffffdd;
+}
+
+#right-side {
+  position: absolute;
+  top: 0px;
+  left: 8in;
+  width: 8in;
+}
+#right-side code {
+  width: 100%;
+}
+
 code {
   display: inline-block;
   font-family: monospace;
@@ -31,4 +48,8 @@ code {
 }
 code pre {
   margin: 4px;
+}
+
+.alternating-rows tr:nth-child(even) td {
+  background-color: #ffffdd;
 }

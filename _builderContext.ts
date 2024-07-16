@@ -95,7 +95,8 @@ export function cloneTextNode(text:Text):Node[] {
       dest.push(document.createTextNode(str.substring(0, i)));
     }
     const key = str.substring(i + 1, j);
-    dest.push(document.createTextNode(textFromContext(key)));
+    const txt = textFromContext(key);
+    dest.push(document.createTextNode(txt));
     str = str.substring(j + 1);
     i = str.indexOf('{');
   }
@@ -129,7 +130,7 @@ enum TokenType {
  * Divide up a string into sibling tokens.
  * Each token may be divisible into sub-tokens, but those are skipped here.
  * If we're not inside a {=formula}, the only tokens are { and }.
- * If we are inside a {=formula}, then operators and others brackets are tokens too.
+ * If we are inside a {=formula}, then operators and other brackets are tokens too.
  * @param str The parent string
  * @param inFormula True if str should be treated as already inside {}
  * @returns A list of token strings. Uninterpretted.
@@ -162,7 +163,7 @@ function tokenizeFormula(str:string, inFormula:boolean): string[] {
       }
       continue;
     }
-    else if (inFormula && ch in binaryOperators) {
+    else if (inFormula && (ch in binaryOperators || ch in unaryOperators)) {
       tokType = TokenType.operator;
     }
     else {
@@ -190,6 +191,26 @@ function tokenizeFormula(str:string, inFormula:boolean): string[] {
   return tokens;
 }
 
+/* Context formula syntax has several components that need to play nicely with each other.
+   Brackets:
+     {} to start lookups
+     [] to start secondary, nested lookups
+     () to do operator precedence, within formulas
+   Fields:
+     a-z0-9_   normal javascript field name rules
+     .         separator
+     ?         indicates optional (sub-)fields
+   Generated field suffixes:
+     #  index in a loop
+     !  value of a key
+     $  ???
+   Operators:
+     +-*\%/   numeric operators
+     &@       string operators
+
+ */
+
+
 const bracketPairs = {
   '(': ')',
   // '[': ']',
@@ -211,6 +232,51 @@ const binaryOperators = {
 
 const unaryOperators = {
   '-': (a) => {return String(-parseFloat(a))},
+  '@': (a) => {return deentify(a)},
+}
+
+/**
+ * A few common named entities
+ */
+const namedEntities = {
+  'quot': '"',
+  'apos': '\'',
+  'lt': '<',
+  'gt': '>',
+  'lb': '{',  // not the real name. It should be &lbrace;
+  'rb': '}',  // not the real name. It should be &rbrace;
+  'lbrace': '{',
+  'rbrace': '}',
+  'amp': '&',
+  'nbsp': '\xa0',
+}
+
+/**
+ * Convert an entity term into simple text.
+ * Note that the entity prefix is # rather than &, because & injects an actual entity, which becomes text before we see it.
+ * Supports decimal @34; and hex @x22; and a few named like @quot;
+ * @param str the contents of the entity, after the @
+ * @returns a single character, if known, else throws an exception
+ */
+function deentify(str:string):string {
+  if (!str || str == ';') { return ''; }
+  if (str[str.length - 1] == ';') { str = str.substring(0, str.length - 1); }  // trim trailing semicolon
+  if (str[0] == 'x' || (str[0] >= '0' && str[9] <= '9')) {
+    let code = 0;
+    if (str[0] == 'x') {
+      str = str.substring(1);
+      code = parseInt(str, 16);
+      // REVIEW: will fromCharCode work for codes > 0x10000?
+    }
+    else {
+      code = parseInt(str, 10);
+    }
+    return String.fromCharCode(code);
+  }
+  if (str in namedEntities) {
+    return namedEntities[str];
+  }
+  throw new Error('Unknown named entity: &' + str + ';');
 }
 
 /**
@@ -230,13 +296,11 @@ function contextFormula(str:string, inFormula:boolean):string {
     if (!tok) {
       continue;
     }
-    if (inFormula && tok in binaryOperators) {
+    if (inFormula && (tok in binaryOperators || tok in unaryOperators)) {
       if ((binaryOp || dest == '') && tok in unaryOperators) {
         unaryOp = unaryOperators[tok];
-
       }
-      else if (binaryOp) {
-        // TODO: consider unary operators
+      else if (binaryOp || !(tok in binaryOperators)) {
         throw new Error("Consecutive binary operators: " + tok);
       }
       else {
@@ -325,9 +389,11 @@ export function anyFromContext(key:string):any {
     return '';
   }
   const context = getBuilderContext();
+  let rootCurly = false;
   if (key[0] == '{' && key[key.length - 1] == '}') {
     // Remove redundant {curly}, since some fields don't require them
     key = simpleTrim(key.substring(1, key.length - 1));
+    rootCurly = false;
   }
   const path = key.split('.');
   const nested = [context];
@@ -362,7 +428,7 @@ export function anyFromContext(key:string):any {
         }
         return '';  // All missing optionals return ''
       }
-      if ((i == 0 && path.length == 1) || (newNest && unnest > 0)) {
+      if ((rootCurly && i == 0 && path.length == 1) || (newNest && unnest > 0)) {
         nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
       }
       else {

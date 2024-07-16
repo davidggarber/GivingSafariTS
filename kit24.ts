@@ -7754,9 +7754,12 @@ export function expandContents(src:HTMLElement):Node[] {
 /**
  * Some HTML elements and attributes are immediately acted upon by the DOM.
  * To delay that until after builds (especially <for> and <if>), 
- * use _prefx or suffix_, and the tag or attribute will be renamed when cloned.
+ * use any of three alternate naming schemes:
+ *   _prefix or suffix_  Underscores will be removed.
+ *   ddupe-letter        If the initial letter is duplicated, drop it.
+ * The tag or attribute will be renamed when cloned, and the browser will treat it as a no-op until then.
  * @param name Any tag or attribute name
- * @returns The name, or the the name without the _
+ * @returns The name, or the the name without the _ underscore or doubled initial letter
  */
 export function normalizeName(name:string):string {
   if (name.substring(0, 1) == '_') {
@@ -7764,6 +7767,9 @@ export function normalizeName(name:string):string {
   }
   if (name.substring(name.length - 1) == '_') {
     return name.substring(0, name.length - 1);
+  }
+  if (name.length > 2 && name[0] == name[1]) {
+    return name.substring(1);
   }
   // Any other interior underscores are kept
   return name;
@@ -7937,7 +7943,8 @@ export function cloneTextNode(text:Text):Node[] {
       dest.push(document.createTextNode(str.substring(0, i)));
     }
     const key = str.substring(i + 1, j);
-    dest.push(document.createTextNode(textFromContext(key)));
+    const txt = textFromContext(key);
+    dest.push(document.createTextNode(txt));
     str = str.substring(j + 1);
     i = str.indexOf('{');
   }
@@ -7971,7 +7978,7 @@ enum TokenType {
  * Divide up a string into sibling tokens.
  * Each token may be divisible into sub-tokens, but those are skipped here.
  * If we're not inside a {=formula}, the only tokens are { and }.
- * If we are inside a {=formula}, then operators and others brackets are tokens too.
+ * If we are inside a {=formula}, then operators and other brackets are tokens too.
  * @param str The parent string
  * @param inFormula True if str should be treated as already inside {}
  * @returns A list of token strings. Uninterpretted.
@@ -8004,7 +8011,7 @@ function tokenizeFormula(str:string, inFormula:boolean): string[] {
       }
       continue;
     }
-    else if (inFormula && ch in binaryOperators) {
+    else if (inFormula && (ch in binaryOperators || ch in unaryOperators)) {
       tokType = TokenType.operator;
     }
     else {
@@ -8032,6 +8039,26 @@ function tokenizeFormula(str:string, inFormula:boolean): string[] {
   return tokens;
 }
 
+/* Context formula syntax has several components that need to play nicely with each other.
+   Brackets:
+     {} to start lookups
+     [] to start secondary, nested lookups
+     () to do operator precedence, within formulas
+   Fields:
+     a-z0-9_   normal javascript field name rules
+     .         separator
+     ?         indicates optional (sub-)fields
+   Generated field suffixes:
+     #  index in a loop
+     !  value of a key
+     $  ???
+   Operators:
+     +-*\%/   numeric operators
+     &@       string operators
+
+ */
+
+
 const bracketPairs = {
   '(': ')',
   // '[': ']',
@@ -8053,6 +8080,51 @@ const binaryOperators = {
 
 const unaryOperators = {
   '-': (a) => {return String(-parseFloat(a))},
+  '@': (a) => {return deentify(a)},
+}
+
+/**
+ * A few common named entities
+ */
+const namedEntities = {
+  'quot': '"',
+  'apos': '\'',
+  'lt': '<',
+  'gt': '>',
+  'lb': '{',  // not the real name. It should be &lbrace;
+  'rb': '}',  // not the real name. It should be &rbrace;
+  'lbrace': '{',
+  'rbrace': '}',
+  'amp': '&',
+  'nbsp': '\xa0',
+}
+
+/**
+ * Convert an entity term into simple text.
+ * Note that the entity prefix is # rather than &, because & injects an actual entity, which becomes text before we see it.
+ * Supports decimal @34; and hex @x22; and a few named like @quot;
+ * @param str the contents of the entity, after the @
+ * @returns a single character, if known, else throws an exception
+ */
+function deentify(str:string):string {
+  if (!str || str == ';') { return ''; }
+  if (str[str.length - 1] == ';') { str = str.substring(0, str.length - 1); }  // trim trailing semicolon
+  if (str[0] == 'x' || (str[0] >= '0' && str[9] <= '9')) {
+    let code = 0;
+    if (str[0] == 'x') {
+      str = str.substring(1);
+      code = parseInt(str, 16);
+      // REVIEW: will fromCharCode work for codes > 0x10000?
+    }
+    else {
+      code = parseInt(str, 10);
+    }
+    return String.fromCharCode(code);
+  }
+  if (str in namedEntities) {
+    return namedEntities[str];
+  }
+  throw new Error('Unknown named entity: &' + str + ';');
 }
 
 /**
@@ -8072,13 +8144,11 @@ function contextFormula(str:string, inFormula:boolean):string {
     if (!tok) {
       continue;
     }
-    if (inFormula && tok in binaryOperators) {
+    if (inFormula && (tok in binaryOperators || tok in unaryOperators)) {
       if ((binaryOp || dest == '') && tok in unaryOperators) {
         unaryOp = unaryOperators[tok];
-
       }
-      else if (binaryOp) {
-        // TODO: consider unary operators
+      else if (binaryOp || !(tok in binaryOperators)) {
         throw new Error("Consecutive binary operators: " + tok);
       }
       else {
@@ -8167,9 +8237,11 @@ export function anyFromContext(key:string):any {
     return '';
   }
   const context = getBuilderContext();
+  let rootCurly = false;
   if (key[0] == '{' && key[key.length - 1] == '}') {
     // Remove redundant {curly}, since some fields don't require them
     key = simpleTrim(key.substring(1, key.length - 1));
+    rootCurly = false;
   }
   const path = key.split('.');
   const nested = [context];
@@ -8204,7 +8276,7 @@ export function anyFromContext(key:string):any {
         }
         return '';  // All missing optionals return ''
       }
-      if ((i == 0 && path.length == 1) || (newNest && unnest > 0)) {
+      if ((rootCurly && i == 0 && path.length == 1) || (newNest && unnest > 0)) {
         nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
       }
       else {
@@ -8354,7 +8426,8 @@ export function startForLoop(src:HTMLElement):Node[] {
           list = list[0];
         }
         else {
-          iter = src.getAttributeNS('', 'range');
+          // range and int are synonyms
+          iter = src.getAttributeNS('', 'range') || src.getAttributeNS('', 'int');
           if (iter) {
             list = parseForRange(src);
           }
@@ -8405,8 +8478,7 @@ function parseForText(src:HTMLElement, delim:string) {
     throw new Error('for char requires "in" attribute');
   }
   // The list_name can just be a literal string
-  const context = getBuilderContext();
-  const list = (list_name in context) ? context[list_name] : list_name;
+  const list = textFromContext(list_name);
   if (!list) {
     throw new Error('unresolved context: ' + list_name);
   }
@@ -8414,7 +8486,7 @@ function parseForText(src:HTMLElement, delim:string) {
 }
 
 function parseForRange(src:HTMLElement):any {
-  const from = src.getAttributeNS('', 'in');
+  const from = src.getAttributeNS('', 'from');
   let until = src.getAttributeNS('', 'until');
   const last = src.getAttributeNS('', 'to');
   const length = src.getAttributeNS('', 'len');
@@ -8426,6 +8498,9 @@ function parseForRange(src:HTMLElement):any {
     : length ? (anyFromContext(length).length)
     : start;
   const inc = step ? parseInt(cloneText(step)) : 1;
+  if (inc == 0) {
+    throw new Error("Invalid loop step. Must be non-zero.");
+  }
   if (!until && inc < 0) {
     end -= 2;  // from 5 to 1 step -1 means i >= 0
   }
@@ -8699,12 +8774,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
     const val = node.attributes[i].value;
     const attri = attr.toLowerCase();
     if (attri != 'template' && attri != 'class') {
-      if (val[0] == '{') {
-        inner_context[attr] = anyFromContext(val);
-      }
-      else {
-        inner_context[attr] = cloneText(val);
-      }
+      inner_context[attr] = textFromContext(val);
       inner_context[attr + '$'] = val;  // Store the context path, so it can also be referenced
     }
   }
@@ -8731,6 +8801,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
 
   return dest;
 }
+
 
 /*-----------------------------------------------------------
  * _templates.ts
