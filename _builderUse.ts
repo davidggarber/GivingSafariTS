@@ -1,6 +1,13 @@
 import { expandContents } from "./_builder";
-import { popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
+import { anyFromContext, popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
 import { getTemplate } from "./_templates";
+
+type TemplateArg = {
+  attr: string,
+  raw: string,
+  text: string,
+  any: any,
+}
 
 /**
  * Replace a <use> tag with the contents of a <template>.
@@ -15,15 +22,35 @@ import { getTemplate } from "./_templates";
 export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   let dest:Node[] = [];
   
-  const inner_context = pushBuilderContext();
+  // We need to build the values to push onto the context, without changing the current context.
+  // Do all the evaluations first, and cache them.
+  const passed_args:TemplateArg[] = [];
   for (var i = 0; i < node.attributes.length; i++) {
     const attr = node.attributes[i].name;
     const val = node.attributes[i].value;
     const attri = attr.toLowerCase();
     if (attri != 'template' && attri != 'class') {
-      inner_context[attr] = textFromContext(val);
-      inner_context[attr + '$'] = val;  // Store the context path, so it can also be referenced
+      const arg:TemplateArg = {
+        attr: attr,
+        raw: val,  // Store the context path, so it can also be referenced
+        text: textFromContext(val),
+        any: anyFromContext(val),
+      }
+      passed_args.push(arg);
     }
+  }
+
+  // Push a new context for inside the <use>.
+  // Each passed arg generates 3 usable context entries:
+  //  arg = 'text'          the attribute, evaluated as text
+  //  arg! = *any*          the attribute, evaluated as any
+  //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
+  const inner_context = pushBuilderContext();
+  for (let i = 0; i < passed_args.length; i++) {
+    const arg = passed_args[i];
+    inner_context[arg.attr] = arg.text;
+    inner_context[arg.attr + '!'] = arg.any;
+    inner_context[arg.attr + '$'] = arg.raw;
   }
 
   if (!tempId) {

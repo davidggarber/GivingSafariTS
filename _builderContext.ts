@@ -1,5 +1,6 @@
 import { theBoiler } from "./_boilerplate";
 import { normalizeName } from "./_builder";
+import { BuildError, BuildEvalError, BuildTagError } from "./_builderError";
 
 /**
  * The root context for all builder functions
@@ -52,27 +53,32 @@ export function popBuilderContext():object {
  * @param context A dictionary of all accessible values
  */
 export function cloneAttributes(src:Element, dest:Element) {
-  for (let i = 0; i < src.attributes.length; i++) {
-    const name = normalizeName(src.attributes[i].name);
-    let value = src.attributes[i].value;
-    value = cloneText(value);
-    if (name == 'id') {
-      dest.id = value;
-    }
-    else if (name == 'class') {
-      if (value) {
-        const classes = value.split(' ');
-        for (let i = 0; i < classes.length; i++) {
-          if (classes[i].length > 0) {
-            dest.classList.add(classes[i]);
+  try {
+    for (let i = 0; i < src.attributes.length; i++) {
+      const name = normalizeName(src.attributes[i].name);
+      let value = src.attributes[i].value;
+      value = cloneText(value);
+      if (name == 'id') {
+        dest.id = value;
+      }
+      else if (name == 'class') {
+        if (value) {
+          const classes = value.split(' ');
+          for (let i = 0; i < classes.length; i++) {
+            if (classes[i].length > 0) {
+              dest.classList.add(classes[i]);
+            }
           }
-        }
-      }    
+        }    
+      }
+      // REVIEW: special case 'style'?
+      else {
+        dest.setAttributeNS('', name, value);
+      }
     }
-    // REVIEW: special case 'style'?
-    else {
-      dest.setAttributeNS('', name, value);
-    }
+  }
+  catch (ex) {
+    throw new BuildTagError("cloneAttributes", src, ex);
   }
 }
 
@@ -276,7 +282,7 @@ function deentify(str:string):string {
   if (str in namedEntities) {
     return namedEntities[str];
   }
-  throw new Error('Unknown named entity: &' + str + ';');
+  throw new BuildEvalError('deentify', str);
 }
 
 /**
@@ -288,68 +294,74 @@ function deentify(str:string):string {
  */
 function contextFormula(str:string, inFormula:boolean):string {
   let dest = '';
-  const tokens = tokenizeFormula(str, inFormula);
   let binaryOp:undefined|((a:string,b:string) => string);
   let unaryOp:undefined|((a:string) => string);
-  for (let t = 0; t < tokens.length; t++) {
-    let tok = tokens[t];
-    if (!tok) {
-      continue;
-    }
-    if (inFormula && (tok in binaryOperators || tok in unaryOperators)) {
-      if ((binaryOp || dest == '') && tok in unaryOperators) {
-        unaryOp = unaryOperators[tok];
+  try {
+    const tokens = tokenizeFormula(str, inFormula);
+    for (let t = 0; t < tokens.length; t++) {
+      let tok = tokens[t];
+      if (!tok) {
+        continue;
       }
-      else if (binaryOp || !(tok in binaryOperators)) {
-        throw new Error("Consecutive binary operators: " + tok);
-      }
-      else {
-        binaryOp = binaryOperators[tok];
-      }
-      continue;  
-    }
-    let fromContext = false;
-    if (tok[0] in bracketPairs) {
-      const inner = tok.substring(1, tok.length - 1);
-      if (tok[0] == '(') {
-        // (...) is a precedence operator
-        tok = contextFormula(inner, true);
-        fromContext = true;
-      }
-      else if (tok[0] == '{') {
-        if (tok[1] == '=') {
-          // {=...} is a nested formula
-          tok = contextFormula(inner.substring(1), true);
+      if (inFormula && (tok in binaryOperators || tok in unaryOperators)) {
+        if ((binaryOp || dest == '') && tok in unaryOperators) {
+          unaryOp = unaryOperators[tok];
+        }
+        else if (binaryOp || !(tok in binaryOperators)) {
+          throw new BuildEvalError("Consecutive binary operators: " + tok, str);
         }
         else {
-          // {...} is a context look-up
-          tok = '' + anyFromContext(inner);
+          binaryOp = binaryOperators[tok];
         }
-        fromContext = true;
+        continue;  
+      }
+      let fromContext = false;
+      if (tok[0] in bracketPairs) {
+        const inner = tok.substring(1, tok.length - 1);
+        if (tok[0] == '(') {
+          // (...) is a precedence operator
+          tok = contextFormula(inner, true);
+          fromContext = true;
+        }
+        else if (tok[0] == '{') {
+          if (tok[1] == '=') {
+            // {=...} is a nested formula
+            tok = contextFormula(inner.substring(1), true);
+          }
+          else {
+            // {...} is a context look-up
+            tok = '' + anyFromContext(inner);
+          }
+          fromContext = true;
+        }
+      }
+      if (unaryOp) {
+        tok = unaryOp(tok);
+        unaryOp = undefined;
+      }
+      if (binaryOp) {
+        // All operators read left-to-right
+        // TODO: if dest=='', consider unary operators
+        dest = binaryOp(dest, tok);
+        binaryOp = undefined;  // used up
+      }
+      else if (inFormula && !fromContext) {
+        dest += anyFromContext(tok);
+      }
+      else {
+        dest += tok;
       }
     }
+
     if (unaryOp) {
-      tok = unaryOp(tok);
-      unaryOp = undefined;
+      throw new BuildError("Incomplete unary operation: " + unaryOp);
     }
     if (binaryOp) {
-      // All operators read left-to-right
-      // TODO: if dest=='', consider unary operators
-      dest = binaryOp(dest, tok);
-      binaryOp = undefined;  // used up
-    }
-    else if (inFormula && !fromContext) {
-      dest += anyFromContext(tok);
-    }
-    else {
-      dest += tok;
-    }
+      throw new BuildError("Incomplete binary operation: " + binaryOp);
+    }  
   }
-  if (unaryOp) {
-    throw new Error("Incomplete unary operation: " + str);
-  }
-  if (binaryOp) {
-    throw new Error("Incomplete binary operation: " + str);
+  catch (ex) {
+    throw new BuildEvalError("contextFormula", str, ex);
   }
   return dest;
 }
@@ -384,70 +396,75 @@ function simpleTrim(str:string):string {
  * @returns Resolved text
  */
 export function anyFromContext(key:string):any {
-  key = simpleTrim(key);
-  if (key === '') {
-    return '';
-  }
-  const context = getBuilderContext();
-  let rootCurly = false;
-  if (key[0] == '{' && key[key.length - 1] == '}') {
-    // Remove redundant {curly}, since some fields don't require them
-    key = simpleTrim(key.substring(1, key.length - 1));
-    rootCurly = false;
-  }
-  const path = key.split('.');
-  const nested = [context];
-  for (let i = 0; i < path.length; i++) {
-    let step = path[i];
-    if (!step) {
-      continue;  // Ignore blank steps for now
+  try {
+    key = simpleTrim(key);
+    if (key === '') {
+      return '';
     }
-    const maybe = step.indexOf('?') == step.length - 1;
-    if (maybe) {
-      step = step.substring(0, step.length - 1);
+    const context = getBuilderContext();
+    let rootCurly = false;
+    if (key[0] == '{' && key[key.length - 1] == '}') {
+      // Remove redundant {curly}, since some fields don't require them
+      key = simpleTrim(key.substring(1, key.length - 1));
+      rootCurly = false;
     }
-    const newNest = step[0] == '[';
-    if (newNest) {
-      step = step.substring(1);
-      nested.push(context);
-    }
-    // steps can end in one more more ']', which can't occur anywhere else
-    let unnest = step.indexOf(']');
-    if (unnest >= 0) {
-      unnest = step.length - unnest;
-      if (nested.length <= unnest) {
-        throw new Error('Malformed path has unmatched ] : ' + key);
+    const path = key.split('.');
+    const nested = [context];
+    for (let i = 0; i < path.length; i++) {
+      let step = path[i];
+      if (!step) {
+        continue;  // Ignore blank steps for now
       }
-      step = step.substring(0, step.length - unnest);
-    }
-
-    if (!(step in nested[nested.length - 1])) {
+      const maybe = step.indexOf('?') == step.length - 1;
       if (maybe) {
-        if (i != path.length - 1) {
-          console.log('Optional key ' + step + '?' + ' before the end of ' + key);
-        }
-        return '';  // All missing optionals return ''
+        step = step.substring(0, step.length - 1);
       }
-      if ((rootCurly && i == 0 && path.length == 1) || (newNest && unnest > 0)) {
-        nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
+      const newNest = step[0] == '[';
+      if (newNest) {
+        step = step.substring(1);
+        nested.push(context);
+      }
+      // steps can end in one more more ']', which can't occur anywhere else
+      let unnest = step.indexOf(']');
+      if (unnest >= 0) {
+        unnest = step.length - unnest;
+        if (nested.length <= unnest) {
+          throw new BuildError('Malformed path has unmatched ]');
+        }
+        step = step.substring(0, step.length - unnest);
+      }
+
+      if ((typeof nested[nested.length - 1] !== 'object') || !(step in nested[nested.length - 1])) {
+        if (maybe) {
+          if (i != path.length - 1) {
+            console.log('Optional key ' + step + '?' + ' before the end of ' + key);
+          }
+          return '';  // All missing optionals return ''
+        }
+        if ((rootCurly && i == 0 && path.length == 1) || (newNest && unnest > 0)) {
+          nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
+        }
+        else {
+          throw new BuildError('Unrecognized key step: ' + step);
+        }
       }
       else {
-        throw new Error('Unrecognized key: ' + step + ' in ' + key);
+        nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
+      }
+
+      for (; unnest > 0; unnest--) {
+        const pop:string = '' + nested.pop();
+        nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
       }
     }
-    else {
-      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
+    if (nested.length > 1) {
+      throw new BuildError('Malformed path has unmatched [');
     }
-
-    for (; unnest > 0; unnest--) {
-      const pop:string = '' + nested.pop();
-      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
-    }
+    return nested.pop();
   }
-  if (nested.length > 1) {
-    throw new Error('Malformed path has unmatched [ : ' + key);
+  catch (ex) {
+    throw new BuildEvalError("anyFromContext", key, ex);
   }
-  return nested.pop();
 }
 
 /**
@@ -473,6 +490,7 @@ export function keyExistsInContext(key:string) {
     const a = anyFromContext(key);
     // null, undefined, or '' count as not existing
     return a !== null && a !== undefined && a !== '';
+    // Note: empty {} and [] do count as existing.
   }
   catch {
     return false;
@@ -501,7 +519,7 @@ export function textFromContext(key:string|null):string {
     if (key.indexOf('.') < 0) {
       return key;  // key can be a literal value
     }
-    throw ex;
+    throw new BuildEvalError("textFromContext", key, ex);
   }
 }
 
@@ -526,7 +544,7 @@ function getKeyedChild(parent:any, key:string, maybe?:boolean) {
     if (maybe) {
       return '';
     }
-    throw new Error('Unrecognized key: ' + key);
+    throw new BuildEvalError('getKeyedChild', key);
   }
   return parent[key];
 }

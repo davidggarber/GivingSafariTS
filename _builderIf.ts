@@ -1,5 +1,6 @@
 import { expandContents } from "./_builder";
 import { anyFromContext, cloneText, keyExistsInContext, textFromContext } from "./_builderContext";
+import { BuildTagError } from "./_builderError";
 
 /**
  * Potentially several kinds of if expressions:
@@ -19,7 +20,7 @@ import { anyFromContext, cloneText, keyExistsInContext, textFromContext } from "
  */
 export function startIfBlock(src:HTMLElement):Node[] {
   let exists = src.getAttributeNS('', 'exists');
-  let notex = src.getAttributeNS('', 'not');
+  let notex = src.getAttributeNS('', 'notex');
   if (exists || notex) {
     // Does this attribute exist at all?
     if ((exists && keyExistsInContext(exists)) || (notex && !keyExistsInContext(notex))) {
@@ -28,9 +29,18 @@ export function startIfBlock(src:HTMLElement):Node[] {
     return [];
   }
 
+  let not = src.getAttributeNS('', 'not');
+  if (not) {
+    let test = textFromContext(not); 
+    if (test !== 'true') {
+      return expandContents(src);
+    }
+    return [];
+  }
+
   let test = src.getAttributeNS('', 'test');
   if (!test) {
-    throw new Error('<if> tags must have a test attribute');
+    throw new BuildTagError('<if> tags must have a test or exists attribute', src);
   }
   test = textFromContext(test); 
 

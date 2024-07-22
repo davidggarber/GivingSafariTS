@@ -1,5 +1,6 @@
 import { theBoiler } from "./_boilerplate";
 import { cloneAttributes, cloneTextNode } from "./_builderContext";
+import { BuildError, BuildTagError } from "./_builderError";
 import { startForLoop } from "./_builderFor";
 import { startIfBlock } from "./_builderIf";
 import { inputAreaTagNames, startInputArea } from "./_builderInput";
@@ -277,26 +278,34 @@ export function expandControlTags() {
   let controls = document.getElementsByClassName('builder_control');
   while (controls.length > 0) {
     const src = controls[0] as HTMLElement;
-    initElementStack(src);
-    let dest:Node[] = [];
-    if (isTag(src, 'build') || isTag(src, 'xml')) {
-      dest = expandContents(src);
+    try {
+      initElementStack(src);
+      let dest:Node[] = [];
+      if (isTag(src, 'build') || isTag(src, 'xml')) {
+        dest = expandContents(src);
+      }
+      else if (isTag(src, 'for')) {
+        dest = startForLoop(src);
+      }
+      else if (isTag(src, 'if')) {
+        dest = startIfBlock(src);
+      }
+      // else if (isTag(src, 'switch')) {
+      //   dest = startIfBlock(src);
+      // }
+      else if (isTag(src, 'use')) {
+        dest = useTemplate(src);
+      }
+      const parent = src.parentNode;
+      for (let d = 0; d < dest.length; d++) {
+        const node = dest[d];
+        parent?.insertBefore(node, src);
+      }
+      parent?.removeChild(src);
     }
-    else if (isTag(src, 'for')) {
-      dest = startForLoop(src);
+    catch (ex) {
+      throw new BuildTagError("expandControlTags", src, ex);
     }
-    else if (isTag(src, 'if')) {
-      dest = startIfBlock(src);
-    }
-    else if (isTag(src, 'use')) {
-      dest = useTemplate(src);
-    }
-    const parent = src.parentNode;
-    for (let d = 0; d < dest.length; d++) {
-      const node = dest[d];
-      parent?.insertBefore(node, src);
-    }
-    parent?.removeChild(src);
 
     // See if there are more
     controls = document.getElementsByClassName('builder_control');
@@ -346,25 +355,29 @@ export function expandContents(src:HTMLElement):Node[] {
     const child = src.childNodes[i];
     if (child.nodeType == Node.ELEMENT_NODE) {
       const child_elmt = child as HTMLElement;
-      if (isTag(child_elmt, 'for')) {
-        pushRange(dest, startForLoop(child_elmt));
+      try {
+        if (isTag(child_elmt, 'for')) {
+          pushRange(dest, startForLoop(child_elmt));
+        }
+        else if (isTag(child_elmt, 'if')) {
+          pushRange(dest, startIfBlock(child_elmt));
+        }
+        else if (isTag(child_elmt, 'use')) {
+          pushRange(dest, useTemplate(child_elmt));
+        }
+        else if (isTag(child_elmt, inputAreaTagNames)) {
+          pushRange(dest, startInputArea(child_elmt));
+        }
+        else if (isTag(child_elmt, 'template')) {
+          // <template> tags do not clone the same as others
+          throw new BuildError('Templates get corrupted when inside a build region. Define all templates at the end of the BODY');
+        }
+        else {
+          dest.push(cloneWithContext(child_elmt));
+        }
       }
-      else if (isTag(child_elmt, 'if')) {
-        pushRange(dest, startIfBlock(child_elmt));
-      }
-      else if (isTag(child_elmt, 'use')) {
-        pushRange(dest, useTemplate(child_elmt));
-      }
-      else if (isTag(child_elmt, inputAreaTagNames)) {
-        pushRange(dest, startInputArea(child_elmt));
-      }
-      else if (isTag(child_elmt, 'template')) {
-        // <template> tags do not clone the same as others
-        throw new Error('Templates get corrupted when inside a build region. Define all templates at the end of the BODY: ' 
-          + "<template id='" + child_elmt.id + "'>");
-      }
-      else {
-        dest.push(cloneWithContext(child_elmt));
+      catch (ex) {
+        throw new BuildTagError("expandContents", child_elmt, ex);
       }
     }
     else if (child.nodeType == Node.TEXT_NODE) {
@@ -418,47 +431,52 @@ const nameSpaces = {
  * @returns A cloned element
  */
 function cloneWithContext(elmt:HTMLElement):Element {
-  const tagName = normalizeName(elmt.localName);
-  let clone:Element;
-  if (inSvgNamespace() || tagName == 'svg') {
-    // TODO: contents of embedded objects aren't SVG
-    clone = document.createElementNS(svg_xmlns, tagName);
-  }
-  else {
-    clone = document.createElement(tagName);
-  }
-  pushDestElement(clone);
-  cloneAttributes(elmt, clone);
-
-  for (let i = 0; i < elmt.childNodes.length; i++) {
-    const child = elmt.childNodes[i];
-    if (child.nodeType == Node.ELEMENT_NODE) {
-      const child_elmt = child as HTMLElement;
-      if (isTag(child_elmt, 'for')) {
-        appendRange(clone, startForLoop(child_elmt));
-      }
-      else if (isTag(child_elmt, 'if')) {
-        appendRange(clone, startIfBlock(child_elmt));
-      }
-      else if (isTag(child_elmt, 'use')) {
-        appendRange(clone, useTemplate(child_elmt));
-      }
-      else if (isTag(child_elmt, inputAreaTagNames)) {
-        appendRange(clone, startInputArea(child_elmt));
-      }
-      else {
-        clone.appendChild(cloneWithContext(child_elmt));
-      }
-    }
-    else if (child.nodeType == Node.TEXT_NODE) {
-      appendRange(clone, cloneTextNode(child as Text));
+  try {
+    const tagName = normalizeName(elmt.localName);
+    let clone:Element;
+    if (inSvgNamespace() || tagName == 'svg') {
+      // TODO: contents of embedded objects aren't SVG
+      clone = document.createElementNS(svg_xmlns, tagName);
     }
     else {
-      clone.insertBefore(cloneNode(child), null);
+      clone = document.createElement(tagName);
     }
+    pushDestElement(clone);
+    cloneAttributes(elmt, clone);
+
+    for (let i = 0; i < elmt.childNodes.length; i++) {
+      const child = elmt.childNodes[i];
+      if (child.nodeType == Node.ELEMENT_NODE) {
+        const child_elmt = child as HTMLElement;
+        if (isTag(child_elmt, 'for')) {
+          appendRange(clone, startForLoop(child_elmt));
+        }
+        else if (isTag(child_elmt, 'if')) {
+          appendRange(clone, startIfBlock(child_elmt));
+        }
+        else if (isTag(child_elmt, 'use')) {
+          appendRange(clone, useTemplate(child_elmt));
+        }
+        else if (isTag(child_elmt, inputAreaTagNames)) {
+          appendRange(clone, startInputArea(child_elmt));
+        }
+        else {
+          clone.appendChild(cloneWithContext(child_elmt));
+        }
+      }
+      else if (child.nodeType == Node.TEXT_NODE) {
+        appendRange(clone, cloneTextNode(child as Text));
+      }
+      else {
+        clone.insertBefore(cloneNode(child), null);
+      }
+    }
+    popDestElement();
+    return clone;
   }
-  popDestElement();
-  return clone;
+  catch (ex) {
+    throw new BuildTagError("cloneWithContext", elmt, ex);
+  }
 }
 
 /**

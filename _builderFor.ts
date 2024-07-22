@@ -1,5 +1,6 @@
 import { expandContents, pushRange } from "./_builder";
 import { anyFromContext, cloneText, getBuilderContext, popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
+import { BuildError, BuildEvalError, BuildTagError } from "./_builderError";
 
 /**
  * Potentially several kinds of for loops:
@@ -48,7 +49,7 @@ export function startForLoop(src:HTMLElement):Node[] {
             list = parseForRange(src);
           }
           else {
-            throw new Error('Unrecognized <for> tag type: ' + src);
+            throw new BuildTagError('Unrecognized <for> tag type', src);
           }
         }
       }
@@ -56,7 +57,7 @@ export function startForLoop(src:HTMLElement):Node[] {
   }
 
   if (!list) {
-    throw new Error('Unable to resolve from context: ' + src.outerHTML);
+    throw new BuildTagError('Unable to determine loop: ', src);
   }
 
   const inner_context = pushBuilderContext();
@@ -83,7 +84,7 @@ export function startForLoop(src:HTMLElement):Node[] {
 function parseForEach(src:HTMLElement):any[] {
   const list_name = src.getAttributeNS('', 'in');
   if (!list_name) {
-    throw new Error('for each requires "in" attribute');
+    throw new BuildTagError('for each requires "in" attribute', src);
   }
   return anyFromContext(list_name);
 }
@@ -91,12 +92,12 @@ function parseForEach(src:HTMLElement):any[] {
 function parseForText(src:HTMLElement, delim:string) {
   const list_name = src.getAttributeNS('', 'in');
   if (!list_name) {
-    throw new Error('for char requires "in" attribute');
+    throw new BuildError('for char requires "in" attribute');
   }
   // The list_name can just be a literal string
   const list = textFromContext(list_name);
   if (!list) {
-    throw new Error('unresolved context: ' + list_name);
+    throw new BuildError('unresolved context: ' + list_name);
   }
   return list.split(delim);
 }
@@ -115,7 +116,7 @@ function parseForRange(src:HTMLElement):any {
     : start;
   const inc = step ? parseInt(cloneText(step)) : 1;
   if (inc == 0) {
-    throw new Error("Invalid loop step. Must be non-zero.");
+    throw new BuildTagError("Invalid loop step. Must be non-zero.", src);
   }
   if (!until && inc < 0) {
     end -= 2;  // from 5 to 1 step -1 means i >= 0
@@ -131,11 +132,11 @@ function parseForRange(src:HTMLElement):any {
 function parseForKey(src:HTMLElement):any {
   const obj_name = src.getAttributeNS('', 'in');
   if (!obj_name) {
-    throw new Error('for each requires "in" attribute');
+    throw new BuildTagError('for each requires "in" attribute', src);
   }
   const obj = anyFromContext(obj_name)
   if (!obj) {
-    throw new Error('unresolved list context: ' + obj_name);
+    throw new BuildEvalError('unresolved list context', obj_name);
   }
   const keys = Object.keys(obj);
   const vals = keys.map(k => obj[k]);

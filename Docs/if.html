@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Docs',
+        'title': '<if>',
+        'paperSize': 'ledger',
+        'orientation': 'landscape',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+          enabledVar: "{enabled}",
+          optVar: ["{optional.0}","{optional.1}","{optional.2}","{optional.3}","{optional.4}","{optional.5}"],
+          numbers: [
+            { var:"{magic}", oper: 'eq', val: '123', trueWhen: 'equals 123' }, 
+            { var:"{magic}", oper: 'ne', val: '321', trueWhen: 'doesn\'t equal 321' }, 
+            { var:"{magic}", oper: 'gt', val: '120', trueWhen: 'is greater than 120' }, 
+            { var:"{magic}", oper: 'ge', val: '123', trueWhen: 'is greater than, or equal to 123' }, 
+            { var:"{magic}", oper: 'lt', val: '125', trueWhen: 'is less than 125' }, 
+            { var:"{magic}", oper: 'le', val: '123', trueWhen: 'is less than, or equal to 123' }, 
+          ],
+          strings: [
+            { var:"doc", oper: 'in', val: '{sentence}', trueWhen: 'is a substring of {sentence}' }, 
+            { var:"cod", oper: 'ni', val: '{sentence}', trueWhen: 'is not a substring of {sentence}"' }, 
+          ],
+          lists: [
+            { var:"bold", oper: 'in', val: '{fonts}', trueWhen: 'occurs in the {fonts} list' }, 
+            { var:"bald", oper: 'ni', val: '{fonts}', trueWhen: 'does not occur in the {fonts} list' }, 
+          ],
+
+          magic: "123",
+          sentence: "Help docs",
+          fonts: [ 
+            'bold', 
+            'italic' 
+          ],
+          enabled: true,
+          optional: ['x', {}, [], null, undefined, ''],
+        } 
+      };
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      #right-side code.inline {
+        width: initial;
+      }
+      .group {
+        width: 100%;
+        margin-bottom: 6pt;
+      }
+      .indent {
+        margin-left: 0.1in;
+      }
+      th {
+        text-align: left;
+        padding-top: 10px;
+      }
+      #grid-example td {
+        background-color: initial;
+      }
+    </style>
+  </head>
+  <body id="If">
+    <div id="pageBody">
+      <div id="left-side">
+
+        <p>Use the new <strong>&lt;if&gt;</strong> tag to conditionally include blocks of HTML.</p>
+        <p>There are no complimentary <strong>&lt;else&gt;</strong> or <strong>&lt;else-if&gt;</strong> tags. If you want to create mutually-exclusive blocks, use the <a href="switch.html">&lt;switch&gt;</a> syntax.</p>
+
+        <p>The tested value of conditionals are implicitly lookups, so the {curly} syntax is not needed.
+          However, all examples here use them.</p>
+
+        <p>There are numerous ways to evaluate the tested value. They are distinguished by different attribute syntaxes.</p> 
+        <build>
+          <ttable style="width:100%">
+            <ttr>
+              <tth>Boolean conditions</tth>
+              <tth>Apply contents if &hellip;</tth>
+            </ttr>
+            <ttr>
+              <ttd>
+                <code ondblclick="selectCode(this, event)">&lt;if <b style="font-size: large;">test</b>="{enabledVar}"&gt;<br/>
+                  &nbsp; <i>&lt;!-- contents --&gt;</i>
+                  &lt;/if&gt;
+                </code>
+              </ttd>
+              <ttd>{enabledVar} is true</ttd>
+            </ttr>  
+            <ttr>
+              <ttd>
+                <code ondblclick="selectCode(this, event)">&lt;if <b style="font-size: large;">not</b>="{enabledVar}"&gt;<br/>
+                  &nbsp; <i>&lt;!-- contents --&gt;</i>
+                  &lt;/if&gt;
+                </code>
+              </ttd>
+              <ttd>{enabledVar} is false</ttd>
+            </ttr>  
+
+            <ttr>
+              <tth>Numeric conditions</tth>
+              <tth>&nbsp;</tth>
+            </ttr>
+            <for each="eval" in="{numbers}">
+              <ttr>
+                <ttd><use template="iftest" row="{eval}"></use></ttd>
+                <ttd>{eval.var} {eval.trueWhen}</ttd>
+              </ttr>  
+            </for>
+
+            <ttr>
+              <tth>String conditions</tth>
+              <tth>&nbsp;</tth>
+            </ttr>
+            <for each="eval" in="{strings}">
+              <ttr>
+                <ttd><use template="iftest" row="{eval}"></use></ttd>
+                <ttd>{eval.var} {eval.trueWhen}</ttd>
+              </ttr>  
+            </for>
+
+            <ttr>
+              <tth>List conditions</tth>
+              <tth>&nbsp;</tth>
+            </ttr>
+            <for each="eval" in="{lists}">
+              <ttr>
+                <ttd><use template="iftest" row="{eval}"></use></ttd>
+                <ttd>{eval.var} {eval.trueWhen}</ttd>
+              </ttr>  
+            </for>
+
+            <ttr>
+              <tth>Existence/validity conditions</tth>
+              <tth>&nbsp;</tth>
+            </ttr>
+            <ttr>
+              <ttd>
+                <code ondblclick="selectCode(this, event)">&lt;if <b style="font-size: large;">exists</b>="{optVar.0}"&gt;<br/>
+                  &nbsp; <i>&lt;!-- contents --&gt;</i>
+                  &lt;/if&gt;
+                </code>
+              </ttd>
+              <ttd>{optVar.0} is neither null, undefined, or ''.<br>Empty objects and lists are ok.</ttd>
+            </ttr>  
+            <ttr>
+              <ttd>
+                <code ondblclick="selectCode(this, event)">&lt;if <b style="font-size: large;">not</b>="{optVar.2}"&gt;<br/>
+                  &nbsp; <i>&lt;!-- contents --&gt;</i>
+                  &lt;/if&gt;
+                </code>
+              </ttd>
+              <ttd>{optVar.2} <i>is</i> one of null, undefined, or ''.</ttd>
+            </ttr>  
+
+          </ttable>
+        </build>
+
+
+      </div>
+
+      <div id="right-side">
+        <h3 style="margin-top: 0px;">Builder Lookup Data</h3>
+        <p>All examples are based on these sample entries in the boiler javascript object.</p>
+        <code><pre>
+const boiler = {
+  'builderLookup': {
+    magic: 123,
+    sentence: 'Help docs',
+    fonts: [ 
+      'bold', 
+      'italic' 
+    ],
+    enabled: true
+  }
+}</pre></code>
+
+        <h3>if/else constructs</h3>
+        <p>There are no <b>&lt;else&gt;</b> or <b>&lt;else-if&gt;</b> tags.</p>
+        <p>For complex cases, use <a href="switch.html">&lt;switch&gt;</a> syntax.<br>
+          But for many simple cases, just create adjacent, converse conditions.</p>
+        <code><pre>
+&lt;ttable&gt;
+  &lt;for int="x" from="0" to="4"&gt;
+    &lt;ttr&gt;
+      &lt;if test="x" <b>eq="0"</b>&gt;
+        &lt;tth&gt;header&lt;/tth&gt;
+      &lt;/if&gt;
+      &lt;if test="x" <b>gt="0"</b>&gt;
+        &lt;ttd&gt;cell data&lt;/ttd&gt;
+      &lt;/if&gt;
+    &lt;/ttr&gt;
+  &lt;/for&gt;
+&lt;/table&gt;</pre></code>
+
+        <p>Note that the table tags don't play well with
+          <code class="inline">&lt;if&gt;</code> or
+          <code class="inline">&lt;for&gt;</code> tags.<br>
+          As such, encode table (and some other) tags:
+          <code class="inline">&lt;ttable&gt;</code>,
+          <code class="inline">&lt;ttr&gt;</code>,
+          <code class="inline">&lt;tth&gt;</code>,
+          <code class="inline">&lt;ttd&gt;</code> &hellip;
+        </p>
+
+      </div>
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)">{value}</code>
+    </template>
+    <template id="tag">
+      <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+    <template id="iftest">
+      <code ondblclick="selectCode(this, event)">&lt;if test="{row!.var}" <b style="font-size: large;">{row!.oper}</b>="{row!.val}"&gt;<br/>
+        &nbsp; <i>&lt;!-- contents --&gt;</i>
+        &lt;/if&gt;
+      </code>
+    </template>
+
+    <template id="simple">
+      <span data-input-style="{dis?}">
+        &ldquo;<letter></letter><letter></letter> 
+        <letter></letter><letter></letter>-<letter></letter><letter></letter>&rdquo;
+      </span>
+    </template>
+
+    <template id="lit">
+      <span data-input-style="{dis?}" data-literal-style="{dls?}">
+        <letter></letter><letter literal="-"></letter><letter></letter><letter literal="&rsquo;"></letter><letter></letter><letter literal="!"></letter>
+      </span>
+    </template>
+    <template id="gridblocks">
+      <div data-input-style="grid" data-literal-style="{dls?}">
+        <div class="letter-cell-block"><letter literal="¤"></letter><letter></letter><letter></letter><letter literal=" "></letter><letter></letter><letter literal="$"></letter></div>
+      </div>
+    </template>
+
+    <template id="extr">
+      <span data-input-style="{dis?}" data-extract-style="{des?}">
+        <letter></letter><letter extract></letter><letter></letter> <letter></letter><letter extract></letter><letter></letter>
+      </span>
+    </template>
+
+  </body>
+</html>

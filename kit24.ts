@@ -7650,26 +7650,34 @@ export function expandControlTags() {
   let controls = document.getElementsByClassName('builder_control');
   while (controls.length > 0) {
     const src = controls[0] as HTMLElement;
-    initElementStack(src);
-    let dest:Node[] = [];
-    if (isTag(src, 'build') || isTag(src, 'xml')) {
-      dest = expandContents(src);
+    try {
+      initElementStack(src);
+      let dest:Node[] = [];
+      if (isTag(src, 'build') || isTag(src, 'xml')) {
+        dest = expandContents(src);
+      }
+      else if (isTag(src, 'for')) {
+        dest = startForLoop(src);
+      }
+      else if (isTag(src, 'if')) {
+        dest = startIfBlock(src);
+      }
+      // else if (isTag(src, 'switch')) {
+      //   dest = startIfBlock(src);
+      // }
+      else if (isTag(src, 'use')) {
+        dest = useTemplate(src);
+      }
+      const parent = src.parentNode;
+      for (let d = 0; d < dest.length; d++) {
+        const node = dest[d];
+        parent?.insertBefore(node, src);
+      }
+      parent?.removeChild(src);
     }
-    else if (isTag(src, 'for')) {
-      dest = startForLoop(src);
+    catch (ex) {
+      throw new BuildTagError("expandControlTags", src, ex);
     }
-    else if (isTag(src, 'if')) {
-      dest = startIfBlock(src);
-    }
-    else if (isTag(src, 'use')) {
-      dest = useTemplate(src);
-    }
-    const parent = src.parentNode;
-    for (let d = 0; d < dest.length; d++) {
-      const node = dest[d];
-      parent?.insertBefore(node, src);
-    }
-    parent?.removeChild(src);
 
     // See if there are more
     controls = document.getElementsByClassName('builder_control');
@@ -7719,25 +7727,29 @@ export function expandContents(src:HTMLElement):Node[] {
     const child = src.childNodes[i];
     if (child.nodeType == Node.ELEMENT_NODE) {
       const child_elmt = child as HTMLElement;
-      if (isTag(child_elmt, 'for')) {
-        pushRange(dest, startForLoop(child_elmt));
+      try {
+        if (isTag(child_elmt, 'for')) {
+          pushRange(dest, startForLoop(child_elmt));
+        }
+        else if (isTag(child_elmt, 'if')) {
+          pushRange(dest, startIfBlock(child_elmt));
+        }
+        else if (isTag(child_elmt, 'use')) {
+          pushRange(dest, useTemplate(child_elmt));
+        }
+        else if (isTag(child_elmt, inputAreaTagNames)) {
+          pushRange(dest, startInputArea(child_elmt));
+        }
+        else if (isTag(child_elmt, 'template')) {
+          // <template> tags do not clone the same as others
+          throw new BuildError('Templates get corrupted when inside a build region. Define all templates at the end of the BODY');
+        }
+        else {
+          dest.push(cloneWithContext(child_elmt));
+        }
       }
-      else if (isTag(child_elmt, 'if')) {
-        pushRange(dest, startIfBlock(child_elmt));
-      }
-      else if (isTag(child_elmt, 'use')) {
-        pushRange(dest, useTemplate(child_elmt));
-      }
-      else if (isTag(child_elmt, inputAreaTagNames)) {
-        pushRange(dest, startInputArea(child_elmt));
-      }
-      else if (isTag(child_elmt, 'template')) {
-        // <template> tags do not clone the same as others
-        throw new Error('Templates get corrupted when inside a build region. Define all templates at the end of the BODY: ' 
-          + "<template id='" + child_elmt.id + "'>");
-      }
-      else {
-        dest.push(cloneWithContext(child_elmt));
+      catch (ex) {
+        throw new BuildTagError("expandContents", child_elmt, ex);
       }
     }
     else if (child.nodeType == Node.TEXT_NODE) {
@@ -7791,47 +7803,52 @@ const nameSpaces = {
  * @returns A cloned element
  */
 function cloneWithContext(elmt:HTMLElement):Element {
-  const tagName = normalizeName(elmt.localName);
-  let clone:Element;
-  if (inSvgNamespace() || tagName == 'svg') {
-    // TODO: contents of embedded objects aren't SVG
-    clone = document.createElementNS(svg_xmlns, tagName);
-  }
-  else {
-    clone = document.createElement(tagName);
-  }
-  pushDestElement(clone);
-  cloneAttributes(elmt, clone);
-
-  for (let i = 0; i < elmt.childNodes.length; i++) {
-    const child = elmt.childNodes[i];
-    if (child.nodeType == Node.ELEMENT_NODE) {
-      const child_elmt = child as HTMLElement;
-      if (isTag(child_elmt, 'for')) {
-        appendRange(clone, startForLoop(child_elmt));
-      }
-      else if (isTag(child_elmt, 'if')) {
-        appendRange(clone, startIfBlock(child_elmt));
-      }
-      else if (isTag(child_elmt, 'use')) {
-        appendRange(clone, useTemplate(child_elmt));
-      }
-      else if (isTag(child_elmt, inputAreaTagNames)) {
-        appendRange(clone, startInputArea(child_elmt));
-      }
-      else {
-        clone.appendChild(cloneWithContext(child_elmt));
-      }
-    }
-    else if (child.nodeType == Node.TEXT_NODE) {
-      appendRange(clone, cloneTextNode(child as Text));
+  try {
+    const tagName = normalizeName(elmt.localName);
+    let clone:Element;
+    if (inSvgNamespace() || tagName == 'svg') {
+      // TODO: contents of embedded objects aren't SVG
+      clone = document.createElementNS(svg_xmlns, tagName);
     }
     else {
-      clone.insertBefore(cloneNode(child), null);
+      clone = document.createElement(tagName);
     }
+    pushDestElement(clone);
+    cloneAttributes(elmt, clone);
+
+    for (let i = 0; i < elmt.childNodes.length; i++) {
+      const child = elmt.childNodes[i];
+      if (child.nodeType == Node.ELEMENT_NODE) {
+        const child_elmt = child as HTMLElement;
+        if (isTag(child_elmt, 'for')) {
+          appendRange(clone, startForLoop(child_elmt));
+        }
+        else if (isTag(child_elmt, 'if')) {
+          appendRange(clone, startIfBlock(child_elmt));
+        }
+        else if (isTag(child_elmt, 'use')) {
+          appendRange(clone, useTemplate(child_elmt));
+        }
+        else if (isTag(child_elmt, inputAreaTagNames)) {
+          appendRange(clone, startInputArea(child_elmt));
+        }
+        else {
+          clone.appendChild(cloneWithContext(child_elmt));
+        }
+      }
+      else if (child.nodeType == Node.TEXT_NODE) {
+        appendRange(clone, cloneTextNode(child as Text));
+      }
+      else {
+        clone.insertBefore(cloneNode(child), null);
+      }
+    }
+    popDestElement();
+    return clone;
   }
-  popDestElement();
-  return clone;
+  catch (ex) {
+    throw new BuildTagError("cloneWithContext", elmt, ex);
+  }
 }
 
 /**
@@ -7842,6 +7859,196 @@ function cloneWithContext(elmt:HTMLElement):Element {
 function cloneNode(node:Node):Node {
   return node;  // STUB: keep original node
 }
+
+
+/*-----------------------------------------------------------
+ * _builderError.ts
+ *-----------------------------------------------------------*/
+
+
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+function debugTagAttrs(elmt:Element): string {
+  let str = '<' + elmt.tagName;
+  for (let i = 0; i < elmt.attributes.length; i++) {
+    str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
+  }
+  if (elmt.childNodes.length == 0) {
+    str += ' /';  // show as empty tag
+  }
+  str += '>';  // close tag
+  return str;
+}
+
+/**
+ * Convert an error's stack trace (run-on text stream) into a list.
+ * @param ex An error. Better yet, a BuildError-derived error.
+ * @returns The stack as a list, where item 0 is the message.
+ * If ex is a BuildError, re-use the cached stack read.
+ */
+function stackAsList(ex:Error):string[] {
+  if ((<BuildError>ex).relativeStack) {  // instanceof BuildError
+    return (<BuildError>ex).relativeStack;
+  }
+
+  if (!ex.stack) {
+    return [];
+  }
+  return ex.stack.split('\n');
+}
+
+/**
+ * Make a stack at the current callstack, by faking an exception.
+ * @param remove A list of functions to remove - the debug infrastructure to capture these callstacks.
+ * @param summary The correct first line of the stack, to replace a generic one generated by the fake exception.
+ * @returns A callstack as a list
+ */
+function debugMakeStack(remove:string[], summary?:string):string[] {
+  const ex = new Error();
+  const stack = stackAsList(ex);
+  cleanStack(stack, ['stackAsList', 'debugMakeStack']);
+  cleanStack(stack, remove, summary);
+  return stack;
+}
+
+/**
+ * Compare an outer and inner/causal callstack.
+ * @param err The inner exception.
+ * @param caller The callstack (as a list) of the outer/calling exception.
+ * @returns The portion of inner's callstack that adds to the callstack of the caller.
+ */
+function simplifyRelativeStack(err:Error, caller:string[]):string[] {
+  let inner:string[] = stackAsList(err);
+  let firstAt = 0;
+  while (firstAt < inner.length && inner[firstAt].indexOf(' at ') < 0) {
+    firstAt++;
+  }
+
+  for (let i = firstAt; i < inner.length; i++) {
+    for (var c = 0; c < caller.length; c++) {
+        if (inner[i] == caller[c]) {
+            // Found first match. Remove everything in inner from here on.
+            inner.splice(i, inner.length - i);
+            return inner;
+        }
+    }
+  }
+  return inner;
+}
+
+/**
+ * Clean a callstack by removing the infrastructure for getting callstacks.
+ * @param stack The callstack to modify.
+ * @param remove The function entries to remove.
+ * @param summary An optional new summary message (line 0)
+ */
+function cleanStack(stack:string[], remove:string[], summary?:string) {
+  let firstAt = 0;
+  while (firstAt < stack.length && stack[firstAt].indexOf(' at ') < 0) {
+    firstAt++;
+  }
+  let cleaned = true;
+  while (stack.length > firstAt && cleaned) {
+    for (var i = 0; i < remove.length; i++) {
+      cleaned = false;
+      if (stack[firstAt].indexOf(remove[i]) >= 0) {
+        stack.splice(firstAt, 1);
+        cleaned = true;
+        break;
+      }
+    }
+  }
+
+  if (summary) {
+    if (firstAt > 0) {
+      stack[0] = summary;
+    }
+  }
+}
+
+/**
+ * Create an error message, which also mentions causal messages (if any)
+ * @param msg The current error message
+ * @param cause An inner exception (which could have nested inners)
+ * @returns Either the original message, or the message combined with nested messages.
+ */
+function concatErrorMessage(msg:string, cause?:Error) {
+  if (!cause) {
+    return msg;
+  }
+  return msg + "\n caused by " + cause.message;
+}
+
+/**
+ * Custom error which can track nested exceptions
+ */
+export class BuildError extends Error {
+  cause: Error|undefined;
+  relativeStack: string[];
+
+  /**
+   * Create a new BuildError (or derived error)
+   * @param msg The message of the Error
+   * @param inner The inner/causal error, if any
+   * @param cls The name of the derived class, if any
+   */
+  constructor(msg: string, inner?:Error, cls?:string) {
+    super(concatErrorMessage(cls + ": " + msg, inner));
+    this.name = 'BuildError';
+    this.cause = inner;
+    this.relativeStack = debugMakeStack(['.BuildError', 'new Build'], (cls || "BuildError") + ": " + msg);
+
+    if (inner) {
+      const innermost = simplifyRelativeStack(inner, this.relativeStack);
+      if ((<BuildError>inner).relativeStack) {  // instanceof BuildError
+        (<BuildError>inner).relativeStack = innermost;
+        inner.stack = innermost.join('\n');
+      }
+    }
+  }
+}
+
+/**
+ * Track build errors that occur while evaluating context expressions.
+ * Intended use is 1-per-function, in a function-wide try/catch
+ */
+export class BuildEvalError extends BuildError {
+  raw: string;
+
+  /**
+   * @param func The name of the function.
+   * @param inner The inner/causal error, if any
+   * @param cls The name of the derived class, if any
+   */
+  constructor(func: string, raw:string, inner?:Error, cls?:string) {
+    super(func + '(' + raw + ')', inner, cls || "BuildEvalError");
+    this.name = 'BuildEvalError';
+    this.raw = raw;
+  }
+}
+
+/**
+ * Track build errors that occur while evaluating build tags.
+ * Intended use is 1-per-function, in a function-wide try/catch
+ */
+export class BuildTagError extends BuildError {
+  tag: string;
+
+  /**
+   * @param func The name of the function.
+   * @param inner The inner/causal error, if any
+   * @param cls The name of the derived class, if any
+   */
+  constructor(func: string, elmt:Element, inner?:Error, cls?:string) {
+    super(func + '(' + debugTagAttrs(elmt) + ')', inner, cls || "BuildTagError");
+    this.name = 'BuildTagError';
+    this.tag = debugTagAttrs(elmt);
+  }
+}
+
 
 
 /*-----------------------------------------------------------
@@ -7900,27 +8107,32 @@ export function popBuilderContext():object {
  * @param context A dictionary of all accessible values
  */
 export function cloneAttributes(src:Element, dest:Element) {
-  for (let i = 0; i < src.attributes.length; i++) {
-    const name = normalizeName(src.attributes[i].name);
-    let value = src.attributes[i].value;
-    value = cloneText(value);
-    if (name == 'id') {
-      dest.id = value;
-    }
-    else if (name == 'class') {
-      if (value) {
-        const classes = value.split(' ');
-        for (let i = 0; i < classes.length; i++) {
-          if (classes[i].length > 0) {
-            dest.classList.add(classes[i]);
+  try {
+    for (let i = 0; i < src.attributes.length; i++) {
+      const name = normalizeName(src.attributes[i].name);
+      let value = src.attributes[i].value;
+      value = cloneText(value);
+      if (name == 'id') {
+        dest.id = value;
+      }
+      else if (name == 'class') {
+        if (value) {
+          const classes = value.split(' ');
+          for (let i = 0; i < classes.length; i++) {
+            if (classes[i].length > 0) {
+              dest.classList.add(classes[i]);
+            }
           }
-        }
-      }    
+        }    
+      }
+      // REVIEW: special case 'style'?
+      else {
+        dest.setAttributeNS('', name, value);
+      }
     }
-    // REVIEW: special case 'style'?
-    else {
-      dest.setAttributeNS('', name, value);
-    }
+  }
+  catch (ex) {
+    throw new BuildTagError("cloneAttributes", src, ex);
   }
 }
 
@@ -8124,7 +8336,7 @@ function deentify(str:string):string {
   if (str in namedEntities) {
     return namedEntities[str];
   }
-  throw new Error('Unknown named entity: &' + str + ';');
+  throw new BuildEvalError('deentify', str);
 }
 
 /**
@@ -8136,68 +8348,74 @@ function deentify(str:string):string {
  */
 function contextFormula(str:string, inFormula:boolean):string {
   let dest = '';
-  const tokens = tokenizeFormula(str, inFormula);
   let binaryOp:undefined|((a:string,b:string) => string);
   let unaryOp:undefined|((a:string) => string);
-  for (let t = 0; t < tokens.length; t++) {
-    let tok = tokens[t];
-    if (!tok) {
-      continue;
-    }
-    if (inFormula && (tok in binaryOperators || tok in unaryOperators)) {
-      if ((binaryOp || dest == '') && tok in unaryOperators) {
-        unaryOp = unaryOperators[tok];
+  try {
+    const tokens = tokenizeFormula(str, inFormula);
+    for (let t = 0; t < tokens.length; t++) {
+      let tok = tokens[t];
+      if (!tok) {
+        continue;
       }
-      else if (binaryOp || !(tok in binaryOperators)) {
-        throw new Error("Consecutive binary operators: " + tok);
-      }
-      else {
-        binaryOp = binaryOperators[tok];
-      }
-      continue;  
-    }
-    let fromContext = false;
-    if (tok[0] in bracketPairs) {
-      const inner = tok.substring(1, tok.length - 1);
-      if (tok[0] == '(') {
-        // (...) is a precedence operator
-        tok = contextFormula(inner, true);
-        fromContext = true;
-      }
-      else if (tok[0] == '{') {
-        if (tok[1] == '=') {
-          // {=...} is a nested formula
-          tok = contextFormula(inner.substring(1), true);
+      if (inFormula && (tok in binaryOperators || tok in unaryOperators)) {
+        if ((binaryOp || dest == '') && tok in unaryOperators) {
+          unaryOp = unaryOperators[tok];
+        }
+        else if (binaryOp || !(tok in binaryOperators)) {
+          throw new BuildEvalError("Consecutive binary operators: " + tok, str);
         }
         else {
-          // {...} is a context look-up
-          tok = '' + anyFromContext(inner);
+          binaryOp = binaryOperators[tok];
         }
-        fromContext = true;
+        continue;  
+      }
+      let fromContext = false;
+      if (tok[0] in bracketPairs) {
+        const inner = tok.substring(1, tok.length - 1);
+        if (tok[0] == '(') {
+          // (...) is a precedence operator
+          tok = contextFormula(inner, true);
+          fromContext = true;
+        }
+        else if (tok[0] == '{') {
+          if (tok[1] == '=') {
+            // {=...} is a nested formula
+            tok = contextFormula(inner.substring(1), true);
+          }
+          else {
+            // {...} is a context look-up
+            tok = '' + anyFromContext(inner);
+          }
+          fromContext = true;
+        }
+      }
+      if (unaryOp) {
+        tok = unaryOp(tok);
+        unaryOp = undefined;
+      }
+      if (binaryOp) {
+        // All operators read left-to-right
+        // TODO: if dest=='', consider unary operators
+        dest = binaryOp(dest, tok);
+        binaryOp = undefined;  // used up
+      }
+      else if (inFormula && !fromContext) {
+        dest += anyFromContext(tok);
+      }
+      else {
+        dest += tok;
       }
     }
+
     if (unaryOp) {
-      tok = unaryOp(tok);
-      unaryOp = undefined;
+      throw new BuildError("Incomplete unary operation: " + unaryOp);
     }
     if (binaryOp) {
-      // All operators read left-to-right
-      // TODO: if dest=='', consider unary operators
-      dest = binaryOp(dest, tok);
-      binaryOp = undefined;  // used up
-    }
-    else if (inFormula && !fromContext) {
-      dest += anyFromContext(tok);
-    }
-    else {
-      dest += tok;
-    }
+      throw new BuildError("Incomplete binary operation: " + binaryOp);
+    }  
   }
-  if (unaryOp) {
-    throw new Error("Incomplete unary operation: " + str);
-  }
-  if (binaryOp) {
-    throw new Error("Incomplete binary operation: " + str);
+  catch (ex) {
+    throw new BuildEvalError("contextFormula", str, ex);
   }
   return dest;
 }
@@ -8232,70 +8450,75 @@ function simpleTrim(str:string):string {
  * @returns Resolved text
  */
 export function anyFromContext(key:string):any {
-  key = simpleTrim(key);
-  if (key === '') {
-    return '';
-  }
-  const context = getBuilderContext();
-  let rootCurly = false;
-  if (key[0] == '{' && key[key.length - 1] == '}') {
-    // Remove redundant {curly}, since some fields don't require them
-    key = simpleTrim(key.substring(1, key.length - 1));
-    rootCurly = false;
-  }
-  const path = key.split('.');
-  const nested = [context];
-  for (let i = 0; i < path.length; i++) {
-    let step = path[i];
-    if (!step) {
-      continue;  // Ignore blank steps for now
+  try {
+    key = simpleTrim(key);
+    if (key === '') {
+      return '';
     }
-    const maybe = step.indexOf('?') == step.length - 1;
-    if (maybe) {
-      step = step.substring(0, step.length - 1);
+    const context = getBuilderContext();
+    let rootCurly = false;
+    if (key[0] == '{' && key[key.length - 1] == '}') {
+      // Remove redundant {curly}, since some fields don't require them
+      key = simpleTrim(key.substring(1, key.length - 1));
+      rootCurly = false;
     }
-    const newNest = step[0] == '[';
-    if (newNest) {
-      step = step.substring(1);
-      nested.push(context);
-    }
-    // steps can end in one more more ']', which can't occur anywhere else
-    let unnest = step.indexOf(']');
-    if (unnest >= 0) {
-      unnest = step.length - unnest;
-      if (nested.length <= unnest) {
-        throw new Error('Malformed path has unmatched ] : ' + key);
+    const path = key.split('.');
+    const nested = [context];
+    for (let i = 0; i < path.length; i++) {
+      let step = path[i];
+      if (!step) {
+        continue;  // Ignore blank steps for now
       }
-      step = step.substring(0, step.length - unnest);
-    }
-
-    if (!(step in nested[nested.length - 1])) {
+      const maybe = step.indexOf('?') == step.length - 1;
       if (maybe) {
-        if (i != path.length - 1) {
-          console.log('Optional key ' + step + '?' + ' before the end of ' + key);
-        }
-        return '';  // All missing optionals return ''
+        step = step.substring(0, step.length - 1);
       }
-      if ((rootCurly && i == 0 && path.length == 1) || (newNest && unnest > 0)) {
-        nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
+      const newNest = step[0] == '[';
+      if (newNest) {
+        step = step.substring(1);
+        nested.push(context);
+      }
+      // steps can end in one more more ']', which can't occur anywhere else
+      let unnest = step.indexOf(']');
+      if (unnest >= 0) {
+        unnest = step.length - unnest;
+        if (nested.length <= unnest) {
+          throw new BuildError('Malformed path has unmatched ]');
+        }
+        step = step.substring(0, step.length - unnest);
+      }
+
+      if ((typeof nested[nested.length - 1] !== 'object') || !(step in nested[nested.length - 1])) {
+        if (maybe) {
+          if (i != path.length - 1) {
+            console.log('Optional key ' + step + '?' + ' before the end of ' + key);
+          }
+          return '';  // All missing optionals return ''
+        }
+        if ((rootCurly && i == 0 && path.length == 1) || (newNest && unnest > 0)) {
+          nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
+        }
+        else {
+          throw new BuildError('Unrecognized key step: ' + step);
+        }
       }
       else {
-        throw new Error('Unrecognized key: ' + step + ' in ' + key);
+        nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
+      }
+
+      for (; unnest > 0; unnest--) {
+        const pop:string = '' + nested.pop();
+        nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
       }
     }
-    else {
-      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
+    if (nested.length > 1) {
+      throw new BuildError('Malformed path has unmatched [');
     }
-
-    for (; unnest > 0; unnest--) {
-      const pop:string = '' + nested.pop();
-      nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
-    }
+    return nested.pop();
   }
-  if (nested.length > 1) {
-    throw new Error('Malformed path has unmatched [ : ' + key);
+  catch (ex) {
+    throw new BuildEvalError("anyFromContext", key, ex);
   }
-  return nested.pop();
 }
 
 /**
@@ -8349,7 +8572,7 @@ export function textFromContext(key:string|null):string {
     if (key.indexOf('.') < 0) {
       return key;  // key can be a literal value
     }
-    throw ex;
+    throw new BuildEvalError("textFromContext", key, ex);
   }
 }
 
@@ -8374,7 +8597,7 @@ function getKeyedChild(parent:any, key:string, maybe?:boolean) {
     if (maybe) {
       return '';
     }
-    throw new Error('Unrecognized key: ' + key);
+    throw new BuildEvalError('getKeyedChild', key);
   }
   return parent[key];
 }
@@ -8432,7 +8655,7 @@ export function startForLoop(src:HTMLElement):Node[] {
             list = parseForRange(src);
           }
           else {
-            throw new Error('Unrecognized <for> tag type: ' + src);
+            throw new BuildTagError('Unrecognized <for> tag type', src);
           }
         }
       }
@@ -8440,7 +8663,7 @@ export function startForLoop(src:HTMLElement):Node[] {
   }
 
   if (!list) {
-    throw new Error('Unable to resolve from context: ' + src.outerHTML);
+    throw new BuildTagError('Unable to determine loop: ', src);
   }
 
   const inner_context = pushBuilderContext();
@@ -8467,7 +8690,7 @@ export function startForLoop(src:HTMLElement):Node[] {
 function parseForEach(src:HTMLElement):any[] {
   const list_name = src.getAttributeNS('', 'in');
   if (!list_name) {
-    throw new Error('for each requires "in" attribute');
+    throw new BuildTagError('for each requires "in" attribute', src);
   }
   return anyFromContext(list_name);
 }
@@ -8475,12 +8698,12 @@ function parseForEach(src:HTMLElement):any[] {
 function parseForText(src:HTMLElement, delim:string) {
   const list_name = src.getAttributeNS('', 'in');
   if (!list_name) {
-    throw new Error('for char requires "in" attribute');
+    throw new BuildError('for char requires "in" attribute');
   }
   // The list_name can just be a literal string
   const list = textFromContext(list_name);
   if (!list) {
-    throw new Error('unresolved context: ' + list_name);
+    throw new BuildError('unresolved context: ' + list_name);
   }
   return list.split(delim);
 }
@@ -8499,7 +8722,7 @@ function parseForRange(src:HTMLElement):any {
     : start;
   const inc = step ? parseInt(cloneText(step)) : 1;
   if (inc == 0) {
-    throw new Error("Invalid loop step. Must be non-zero.");
+    throw new BuildTagError("Invalid loop step. Must be non-zero.", src);
   }
   if (!until && inc < 0) {
     end -= 2;  // from 5 to 1 step -1 means i >= 0
@@ -8515,11 +8738,11 @@ function parseForRange(src:HTMLElement):any {
 function parseForKey(src:HTMLElement):any {
   const obj_name = src.getAttributeNS('', 'in');
   if (!obj_name) {
-    throw new Error('for each requires "in" attribute');
+    throw new BuildTagError('for each requires "in" attribute', src);
   }
   const obj = anyFromContext(obj_name)
   if (!obj) {
-    throw new Error('unresolved list context: ' + obj_name);
+    throw new BuildEvalError('unresolved list context', obj_name);
   }
   const keys = Object.keys(obj);
   const vals = keys.map(k => obj[k]);
@@ -8551,7 +8774,7 @@ function parseForKey(src:HTMLElement):any {
  */
 export function startIfBlock(src:HTMLElement):Node[] {
   let exists = src.getAttributeNS('', 'exists');
-  let notex = src.getAttributeNS('', 'not');
+  let notex = src.getAttributeNS('', 'notex');
   if (exists || notex) {
     // Does this attribute exist at all?
     if ((exists && keyExistsInContext(exists)) || (notex && !keyExistsInContext(notex))) {
@@ -8560,9 +8783,18 @@ export function startIfBlock(src:HTMLElement):Node[] {
     return [];
   }
 
+  let not = src.getAttributeNS('', 'not');
+  if (not) {
+    let test = textFromContext(not); 
+    if (test !== 'true') {
+      return expandContents(src);
+    }
+    return [];
+  }
+
   let test = src.getAttributeNS('', 'test');
   if (!test) {
-    throw new Error('<if> tags must have a test attribute');
+    throw new BuildTagError('<if> tags must have a test or exists attribute', src);
   }
   test = textFromContext(test); 
 
@@ -8755,6 +8987,13 @@ export function startInputArea(src:HTMLElement):Node[] {
  *-----------------------------------------------------------*/
 
 
+type TemplateArg = {
+  attr: string,
+  raw: string,
+  text: string,
+  any: any,
+}
+
 /**
  * Replace a <use> tag with the contents of a <template>.
  * Along the way, push any attributes of the <use> tag onto the context.
@@ -8768,15 +9007,35 @@ export function startInputArea(src:HTMLElement):Node[] {
 export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   let dest:Node[] = [];
   
-  const inner_context = pushBuilderContext();
+  // We need to build the values to push onto the context, without changing the current context.
+  // Do all the evaluations first, and cache them.
+  const passed_args:TemplateArg[] = [];
   for (var i = 0; i < node.attributes.length; i++) {
     const attr = node.attributes[i].name;
     const val = node.attributes[i].value;
     const attri = attr.toLowerCase();
     if (attri != 'template' && attri != 'class') {
-      inner_context[attr] = textFromContext(val);
-      inner_context[attr + '$'] = val;  // Store the context path, so it can also be referenced
+      const arg:TemplateArg = {
+        attr: attr,
+        raw: val,  // Store the context path, so it can also be referenced
+        text: textFromContext(val),
+        any: anyFromContext(val),
+      }
+      passed_args.push(arg);
     }
+  }
+
+  // Push a new context for inside the <use>.
+  // Each passed arg generates 3 usable context entries:
+  //  arg = 'text'          the attribute, evaluated as text
+  //  arg! = *any*          the attribute, evaluated as any
+  //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
+  const inner_context = pushBuilderContext();
+  for (let i = 0; i < passed_args.length; i++) {
+    const arg = passed_args[i];
+    inner_context[arg.attr] = arg.text;
+    inner_context[arg.attr + '!'] = arg.any;
+    inner_context[arg.attr + '$'] = arg.raw;
   }
 
   if (!tempId) {

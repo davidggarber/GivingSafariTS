@@ -76,7 +76,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\Docs\\for.html",
+      "url": "${workspaceFolder}\\Docs\\if.html",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"

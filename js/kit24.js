@@ -2,10 +2,25 @@
 /************************************************************
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.BuildTagError = exports.BuildEvalError = exports.BuildError = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -6904,26 +6919,34 @@ function expandControlTags() {
     var controls = document.getElementsByClassName('builder_control');
     while (controls.length > 0) {
         var src = controls[0];
-        initElementStack(src);
-        var dest = [];
-        if (isTag(src, 'build') || isTag(src, 'xml')) {
-            dest = expandContents(src);
+        try {
+            initElementStack(src);
+            var dest = [];
+            if (isTag(src, 'build') || isTag(src, 'xml')) {
+                dest = expandContents(src);
+            }
+            else if (isTag(src, 'for')) {
+                dest = startForLoop(src);
+            }
+            else if (isTag(src, 'if')) {
+                dest = startIfBlock(src);
+            }
+            // else if (isTag(src, 'switch')) {
+            //   dest = startIfBlock(src);
+            // }
+            else if (isTag(src, 'use')) {
+                dest = useTemplate(src);
+            }
+            var parent_2 = src.parentNode;
+            for (var d = 0; d < dest.length; d++) {
+                var node = dest[d];
+                parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.insertBefore(node, src);
+            }
+            parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.removeChild(src);
         }
-        else if (isTag(src, 'for')) {
-            dest = startForLoop(src);
+        catch (ex) {
+            throw new BuildTagError("expandControlTags", src, ex);
         }
-        else if (isTag(src, 'if')) {
-            dest = startIfBlock(src);
-        }
-        else if (isTag(src, 'use')) {
-            dest = useTemplate(src);
-        }
-        var parent_2 = src.parentNode;
-        for (var d = 0; d < dest.length; d++) {
-            var node = dest[d];
-            parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.insertBefore(node, src);
-        }
-        parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.removeChild(src);
         // See if there are more
         controls = document.getElementsByClassName('builder_control');
     }
@@ -6971,25 +6994,29 @@ function expandContents(src) {
         var child = src.childNodes[i];
         if (child.nodeType == Node.ELEMENT_NODE) {
             var child_elmt = child;
-            if (isTag(child_elmt, 'for')) {
-                pushRange(dest, startForLoop(child_elmt));
+            try {
+                if (isTag(child_elmt, 'for')) {
+                    pushRange(dest, startForLoop(child_elmt));
+                }
+                else if (isTag(child_elmt, 'if')) {
+                    pushRange(dest, startIfBlock(child_elmt));
+                }
+                else if (isTag(child_elmt, 'use')) {
+                    pushRange(dest, useTemplate(child_elmt));
+                }
+                else if (isTag(child_elmt, exports.inputAreaTagNames)) {
+                    pushRange(dest, startInputArea(child_elmt));
+                }
+                else if (isTag(child_elmt, 'template')) {
+                    // <template> tags do not clone the same as others
+                    throw new BuildError('Templates get corrupted when inside a build region. Define all templates at the end of the BODY');
+                }
+                else {
+                    dest.push(cloneWithContext(child_elmt));
+                }
             }
-            else if (isTag(child_elmt, 'if')) {
-                pushRange(dest, startIfBlock(child_elmt));
-            }
-            else if (isTag(child_elmt, 'use')) {
-                pushRange(dest, useTemplate(child_elmt));
-            }
-            else if (isTag(child_elmt, exports.inputAreaTagNames)) {
-                pushRange(dest, startInputArea(child_elmt));
-            }
-            else if (isTag(child_elmt, 'template')) {
-                // <template> tags do not clone the same as others
-                throw new Error('Templates get corrupted when inside a build region. Define all templates at the end of the BODY: '
-                    + "<template id='" + child_elmt.id + "'>");
-            }
-            else {
-                dest.push(cloneWithContext(child_elmt));
+            catch (ex) {
+                throw new BuildTagError("expandContents", child_elmt, ex);
             }
         }
         else if (child.nodeType == Node.TEXT_NODE) {
@@ -7041,46 +7068,51 @@ var nameSpaces = {
  * @returns A cloned element
  */
 function cloneWithContext(elmt) {
-    var tagName = normalizeName(elmt.localName);
-    var clone;
-    if (inSvgNamespace() || tagName == 'svg') {
-        // TODO: contents of embedded objects aren't SVG
-        clone = document.createElementNS(exports.svg_xmlns, tagName);
-    }
-    else {
-        clone = document.createElement(tagName);
-    }
-    pushDestElement(clone);
-    cloneAttributes(elmt, clone);
-    for (var i = 0; i < elmt.childNodes.length; i++) {
-        var child = elmt.childNodes[i];
-        if (child.nodeType == Node.ELEMENT_NODE) {
-            var child_elmt = child;
-            if (isTag(child_elmt, 'for')) {
-                appendRange(clone, startForLoop(child_elmt));
-            }
-            else if (isTag(child_elmt, 'if')) {
-                appendRange(clone, startIfBlock(child_elmt));
-            }
-            else if (isTag(child_elmt, 'use')) {
-                appendRange(clone, useTemplate(child_elmt));
-            }
-            else if (isTag(child_elmt, exports.inputAreaTagNames)) {
-                appendRange(clone, startInputArea(child_elmt));
-            }
-            else {
-                clone.appendChild(cloneWithContext(child_elmt));
-            }
-        }
-        else if (child.nodeType == Node.TEXT_NODE) {
-            appendRange(clone, cloneTextNode(child));
+    try {
+        var tagName = normalizeName(elmt.localName);
+        var clone = void 0;
+        if (inSvgNamespace() || tagName == 'svg') {
+            // TODO: contents of embedded objects aren't SVG
+            clone = document.createElementNS(exports.svg_xmlns, tagName);
         }
         else {
-            clone.insertBefore(cloneNode(child), null);
+            clone = document.createElement(tagName);
         }
+        pushDestElement(clone);
+        cloneAttributes(elmt, clone);
+        for (var i = 0; i < elmt.childNodes.length; i++) {
+            var child = elmt.childNodes[i];
+            if (child.nodeType == Node.ELEMENT_NODE) {
+                var child_elmt = child;
+                if (isTag(child_elmt, 'for')) {
+                    appendRange(clone, startForLoop(child_elmt));
+                }
+                else if (isTag(child_elmt, 'if')) {
+                    appendRange(clone, startIfBlock(child_elmt));
+                }
+                else if (isTag(child_elmt, 'use')) {
+                    appendRange(clone, useTemplate(child_elmt));
+                }
+                else if (isTag(child_elmt, exports.inputAreaTagNames)) {
+                    appendRange(clone, startInputArea(child_elmt));
+                }
+                else {
+                    clone.appendChild(cloneWithContext(child_elmt));
+                }
+            }
+            else if (child.nodeType == Node.TEXT_NODE) {
+                appendRange(clone, cloneTextNode(child));
+            }
+            else {
+                clone.insertBefore(cloneNode(child), null);
+            }
+        }
+        popDestElement();
+        return clone;
     }
-    popDestElement();
-    return clone;
+    catch (ex) {
+        throw new BuildTagError("cloneWithContext", elmt, ex);
+    }
 }
 /**
  * Clone other node types, besides HTML elements and Text
@@ -7090,6 +7122,184 @@ function cloneWithContext(elmt) {
 function cloneNode(node) {
     return node; // STUB: keep original node
 }
+/*-----------------------------------------------------------
+ * _builderError.ts
+ *-----------------------------------------------------------*/
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+function debugTagAttrs(elmt) {
+    var str = '<' + elmt.tagName;
+    for (var i = 0; i < elmt.attributes.length; i++) {
+        str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
+    }
+    if (elmt.childNodes.length == 0) {
+        str += ' /'; // show as empty tag
+    }
+    str += '>'; // close tag
+    return str;
+}
+/**
+ * Convert an error's stack trace (run-on text stream) into a list.
+ * @param ex An error. Better yet, a BuildError-derived error.
+ * @returns The stack as a list, where item 0 is the message.
+ * If ex is a BuildError, re-use the cached stack read.
+ */
+function stackAsList(ex) {
+    if (ex.relativeStack) { // instanceof BuildError
+        return ex.relativeStack;
+    }
+    if (!ex.stack) {
+        return [];
+    }
+    return ex.stack.split('\n');
+}
+/**
+ * Make a stack at the current callstack, by faking an exception.
+ * @param remove A list of functions to remove - the debug infrastructure to capture these callstacks.
+ * @param summary The correct first line of the stack, to replace a generic one generated by the fake exception.
+ * @returns A callstack as a list
+ */
+function debugMakeStack(remove, summary) {
+    var ex = new Error();
+    var stack = stackAsList(ex);
+    cleanStack(stack, ['stackAsList', 'debugMakeStack']);
+    cleanStack(stack, remove, summary);
+    return stack;
+}
+/**
+ * Compare an outer and inner/causal callstack.
+ * @param err The inner exception.
+ * @param caller The callstack (as a list) of the outer/calling exception.
+ * @returns The portion of inner's callstack that adds to the callstack of the caller.
+ */
+function simplifyRelativeStack(err, caller) {
+    var inner = stackAsList(err);
+    var firstAt = 0;
+    while (firstAt < inner.length && inner[firstAt].indexOf(' at ') < 0) {
+        firstAt++;
+    }
+    for (var i = firstAt; i < inner.length; i++) {
+        for (var c = 0; c < caller.length; c++) {
+            if (inner[i] == caller[c]) {
+                // Found first match. Remove everything in inner from here on.
+                inner.splice(i, inner.length - i);
+                return inner;
+            }
+        }
+    }
+    return inner;
+}
+/**
+ * Clean a callstack by removing the infrastructure for getting callstacks.
+ * @param stack The callstack to modify.
+ * @param remove The function entries to remove.
+ * @param summary An optional new summary message (line 0)
+ */
+function cleanStack(stack, remove, summary) {
+    var firstAt = 0;
+    while (firstAt < stack.length && stack[firstAt].indexOf(' at ') < 0) {
+        firstAt++;
+    }
+    var cleaned = true;
+    while (stack.length > firstAt && cleaned) {
+        for (var i = 0; i < remove.length; i++) {
+            cleaned = false;
+            if (stack[firstAt].indexOf(remove[i]) >= 0) {
+                stack.splice(firstAt, 1);
+                cleaned = true;
+                break;
+            }
+        }
+    }
+    if (summary) {
+        if (firstAt > 0) {
+            stack[0] = summary;
+        }
+    }
+}
+/**
+ * Create an error message, which also mentions causal messages (if any)
+ * @param msg The current error message
+ * @param cause An inner exception (which could have nested inners)
+ * @returns Either the original message, or the message combined with nested messages.
+ */
+function concatErrorMessage(msg, cause) {
+    if (!cause) {
+        return msg;
+    }
+    return msg + "\n caused by " + cause.message;
+}
+/**
+ * Custom error which can track nested exceptions
+ */
+var BuildError = /** @class */ (function (_super) {
+    __extends(BuildError, _super);
+    /**
+     * Create a new BuildError (or derived error)
+     * @param msg The message of the Error
+     * @param inner The inner/causal error, if any
+     * @param cls The name of the derived class, if any
+     */
+    function BuildError(msg, inner, cls) {
+        var _this = _super.call(this, concatErrorMessage(cls + ": " + msg, inner)) || this;
+        _this.name = 'BuildError';
+        _this.cause = inner;
+        _this.relativeStack = debugMakeStack(['.BuildError', 'new Build'], (cls || "BuildError") + ": " + msg);
+        if (inner) {
+            var innermost = simplifyRelativeStack(inner, _this.relativeStack);
+            if (inner.relativeStack) { // instanceof BuildError
+                inner.relativeStack = innermost;
+                inner.stack = innermost.join('\n');
+            }
+        }
+        return _this;
+    }
+    return BuildError;
+}(Error));
+exports.BuildError = BuildError;
+/**
+ * Track build errors that occur while evaluating context expressions.
+ * Intended use is 1-per-function, in a function-wide try/catch
+ */
+var BuildEvalError = /** @class */ (function (_super) {
+    __extends(BuildEvalError, _super);
+    /**
+     * @param func The name of the function.
+     * @param inner The inner/causal error, if any
+     * @param cls The name of the derived class, if any
+     */
+    function BuildEvalError(func, raw, inner, cls) {
+        var _this = _super.call(this, func + '(' + raw + ')', inner, cls || "BuildEvalError") || this;
+        _this.name = 'BuildEvalError';
+        _this.raw = raw;
+        return _this;
+    }
+    return BuildEvalError;
+}(BuildError));
+exports.BuildEvalError = BuildEvalError;
+/**
+ * Track build errors that occur while evaluating build tags.
+ * Intended use is 1-per-function, in a function-wide try/catch
+ */
+var BuildTagError = /** @class */ (function (_super) {
+    __extends(BuildTagError, _super);
+    /**
+     * @param func The name of the function.
+     * @param inner The inner/causal error, if any
+     * @param cls The name of the derived class, if any
+     */
+    function BuildTagError(func, elmt, inner, cls) {
+        var _this = _super.call(this, func + '(' + debugTagAttrs(elmt) + ')', inner, cls || "BuildTagError") || this;
+        _this.name = 'BuildTagError';
+        _this.tag = debugTagAttrs(elmt);
+        return _this;
+    }
+    return BuildTagError;
+}(BuildError));
+exports.BuildTagError = BuildTagError;
 /*-----------------------------------------------------------
  * _builderContext.ts
  *-----------------------------------------------------------*/
@@ -7143,27 +7353,32 @@ exports.popBuilderContext = popBuilderContext;
  * @param context A dictionary of all accessible values
  */
 function cloneAttributes(src, dest) {
-    for (var i = 0; i < src.attributes.length; i++) {
-        var name_5 = normalizeName(src.attributes[i].name);
-        var value = src.attributes[i].value;
-        value = cloneText(value);
-        if (name_5 == 'id') {
-            dest.id = value;
-        }
-        else if (name_5 == 'class') {
-            if (value) {
-                var classes = value.split(' ');
-                for (var i_5 = 0; i_5 < classes.length; i_5++) {
-                    if (classes[i_5].length > 0) {
-                        dest.classList.add(classes[i_5]);
+    try {
+        for (var i = 0; i < src.attributes.length; i++) {
+            var name_5 = normalizeName(src.attributes[i].name);
+            var value = src.attributes[i].value;
+            value = cloneText(value);
+            if (name_5 == 'id') {
+                dest.id = value;
+            }
+            else if (name_5 == 'class') {
+                if (value) {
+                    var classes = value.split(' ');
+                    for (var i_5 = 0; i_5 < classes.length; i_5++) {
+                        if (classes[i_5].length > 0) {
+                            dest.classList.add(classes[i_5]);
+                        }
                     }
                 }
             }
+            // REVIEW: special case 'style'?
+            else {
+                dest.setAttributeNS('', name_5, value);
+            }
         }
-        // REVIEW: special case 'style'?
-        else {
-            dest.setAttributeNS('', name_5, value);
-        }
+    }
+    catch (ex) {
+        throw new BuildTagError("cloneAttributes", src, ex);
     }
 }
 exports.cloneAttributes = cloneAttributes;
@@ -7363,7 +7578,7 @@ function deentify(str) {
     if (str in namedEntities) {
         return namedEntities[str];
     }
-    throw new Error('Unknown named entity: &' + str + ';');
+    throw new BuildEvalError('deentify', str);
 }
 /**
  * Handle a mix of context tokens and operators
@@ -7374,68 +7589,73 @@ function deentify(str) {
  */
 function contextFormula(str, inFormula) {
     var dest = '';
-    var tokens = tokenizeFormula(str, inFormula);
     var binaryOp;
     var unaryOp;
-    for (var t = 0; t < tokens.length; t++) {
-        var tok = tokens[t];
-        if (!tok) {
-            continue;
-        }
-        if (inFormula && (tok in binaryOperators || tok in unaryOperators)) {
-            if ((binaryOp || dest == '') && tok in unaryOperators) {
-                unaryOp = unaryOperators[tok];
+    try {
+        var tokens = tokenizeFormula(str, inFormula);
+        for (var t = 0; t < tokens.length; t++) {
+            var tok = tokens[t];
+            if (!tok) {
+                continue;
             }
-            else if (binaryOp || !(tok in binaryOperators)) {
-                throw new Error("Consecutive binary operators: " + tok);
-            }
-            else {
-                binaryOp = binaryOperators[tok];
-            }
-            continue;
-        }
-        var fromContext = false;
-        if (tok[0] in bracketPairs) {
-            var inner = tok.substring(1, tok.length - 1);
-            if (tok[0] == '(') {
-                // (...) is a precedence operator
-                tok = contextFormula(inner, true);
-                fromContext = true;
-            }
-            else if (tok[0] == '{') {
-                if (tok[1] == '=') {
-                    // {=...} is a nested formula
-                    tok = contextFormula(inner.substring(1), true);
+            if (inFormula && (tok in binaryOperators || tok in unaryOperators)) {
+                if ((binaryOp || dest == '') && tok in unaryOperators) {
+                    unaryOp = unaryOperators[tok];
+                }
+                else if (binaryOp || !(tok in binaryOperators)) {
+                    throw new BuildEvalError("Consecutive binary operators: " + tok, str);
                 }
                 else {
-                    // {...} is a context look-up
-                    tok = '' + anyFromContext(inner);
+                    binaryOp = binaryOperators[tok];
                 }
-                fromContext = true;
+                continue;
+            }
+            var fromContext = false;
+            if (tok[0] in bracketPairs) {
+                var inner = tok.substring(1, tok.length - 1);
+                if (tok[0] == '(') {
+                    // (...) is a precedence operator
+                    tok = contextFormula(inner, true);
+                    fromContext = true;
+                }
+                else if (tok[0] == '{') {
+                    if (tok[1] == '=') {
+                        // {=...} is a nested formula
+                        tok = contextFormula(inner.substring(1), true);
+                    }
+                    else {
+                        // {...} is a context look-up
+                        tok = '' + anyFromContext(inner);
+                    }
+                    fromContext = true;
+                }
+            }
+            if (unaryOp) {
+                tok = unaryOp(tok);
+                unaryOp = undefined;
+            }
+            if (binaryOp) {
+                // All operators read left-to-right
+                // TODO: if dest=='', consider unary operators
+                dest = binaryOp(dest, tok);
+                binaryOp = undefined; // used up
+            }
+            else if (inFormula && !fromContext) {
+                dest += anyFromContext(tok);
+            }
+            else {
+                dest += tok;
             }
         }
         if (unaryOp) {
-            tok = unaryOp(tok);
-            unaryOp = undefined;
+            throw new BuildError("Incomplete unary operation: " + unaryOp);
         }
         if (binaryOp) {
-            // All operators read left-to-right
-            // TODO: if dest=='', consider unary operators
-            dest = binaryOp(dest, tok);
-            binaryOp = undefined; // used up
-        }
-        else if (inFormula && !fromContext) {
-            dest += anyFromContext(tok);
-        }
-        else {
-            dest += tok;
+            throw new BuildError("Incomplete binary operation: " + binaryOp);
         }
     }
-    if (unaryOp) {
-        throw new Error("Incomplete unary operation: " + str);
-    }
-    if (binaryOp) {
-        throw new Error("Incomplete binary operation: " + str);
+    catch (ex) {
+        throw new BuildEvalError("contextFormula", str, ex);
     }
     return dest;
 }
@@ -7468,68 +7688,73 @@ function simpleTrim(str) {
  * @returns Resolved text
  */
 function anyFromContext(key) {
-    key = simpleTrim(key);
-    if (key === '') {
-        return '';
-    }
-    var context = getBuilderContext();
-    var rootCurly = false;
-    if (key[0] == '{' && key[key.length - 1] == '}') {
-        // Remove redundant {curly}, since some fields don't require them
-        key = simpleTrim(key.substring(1, key.length - 1));
-        rootCurly = false;
-    }
-    var path = key.split('.');
-    var nested = [context];
-    for (var i = 0; i < path.length; i++) {
-        var step = path[i];
-        if (!step) {
-            continue; // Ignore blank steps for now
+    try {
+        key = simpleTrim(key);
+        if (key === '') {
+            return '';
         }
-        var maybe = step.indexOf('?') == step.length - 1;
-        if (maybe) {
-            step = step.substring(0, step.length - 1);
+        var context = getBuilderContext();
+        var rootCurly = false;
+        if (key[0] == '{' && key[key.length - 1] == '}') {
+            // Remove redundant {curly}, since some fields don't require them
+            key = simpleTrim(key.substring(1, key.length - 1));
+            rootCurly = false;
         }
-        var newNest = step[0] == '[';
-        if (newNest) {
-            step = step.substring(1);
-            nested.push(context);
-        }
-        // steps can end in one more more ']', which can't occur anywhere else
-        var unnest = step.indexOf(']');
-        if (unnest >= 0) {
-            unnest = step.length - unnest;
-            if (nested.length <= unnest) {
-                throw new Error('Malformed path has unmatched ] : ' + key);
+        var path = key.split('.');
+        var nested = [context];
+        for (var i = 0; i < path.length; i++) {
+            var step = path[i];
+            if (!step) {
+                continue; // Ignore blank steps for now
             }
-            step = step.substring(0, step.length - unnest);
-        }
-        if (!(step in nested[nested.length - 1])) {
+            var maybe = step.indexOf('?') == step.length - 1;
             if (maybe) {
-                if (i != path.length - 1) {
-                    console.log('Optional key ' + step + '?' + ' before the end of ' + key);
-                }
-                return ''; // All missing optionals return ''
+                step = step.substring(0, step.length - 1);
             }
-            if ((rootCurly && i == 0 && path.length == 1) || (newNest && unnest > 0)) {
-                nested[nested.length - 1] = new String(step); // A lone step (or nested step) can be a literal
+            var newNest = step[0] == '[';
+            if (newNest) {
+                step = step.substring(1);
+                nested.push(context);
+            }
+            // steps can end in one more more ']', which can't occur anywhere else
+            var unnest = step.indexOf(']');
+            if (unnest >= 0) {
+                unnest = step.length - unnest;
+                if (nested.length <= unnest) {
+                    throw new BuildError('Malformed path has unmatched ]');
+                }
+                step = step.substring(0, step.length - unnest);
+            }
+            if ((typeof nested[nested.length - 1] !== 'object') || !(step in nested[nested.length - 1])) {
+                if (maybe) {
+                    if (i != path.length - 1) {
+                        console.log('Optional key ' + step + '?' + ' before the end of ' + key);
+                    }
+                    return ''; // All missing optionals return ''
+                }
+                if ((rootCurly && i == 0 && path.length == 1) || (newNest && unnest > 0)) {
+                    nested[nested.length - 1] = new String(step); // A lone step (or nested step) can be a literal
+                }
+                else {
+                    throw new BuildError('Unrecognized key step: ' + step);
+                }
             }
             else {
-                throw new Error('Unrecognized key: ' + step + ' in ' + key);
+                nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
+            }
+            for (; unnest > 0; unnest--) {
+                var pop = '' + nested.pop();
+                nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
             }
         }
-        else {
-            nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
+        if (nested.length > 1) {
+            throw new BuildError('Malformed path has unmatched [');
         }
-        for (; unnest > 0; unnest--) {
-            var pop = '' + nested.pop();
-            nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
-        }
+        return nested.pop();
     }
-    if (nested.length > 1) {
-        throw new Error('Malformed path has unmatched [ : ' + key);
+    catch (ex) {
+        throw new BuildEvalError("anyFromContext", key, ex);
     }
-    return nested.pop();
 }
 exports.anyFromContext = anyFromContext;
 /**
@@ -7583,7 +7808,7 @@ function textFromContext(key) {
         if (key.indexOf('.') < 0) {
             return key; // key can be a literal value
         }
-        throw ex;
+        throw new BuildEvalError("textFromContext", key, ex);
     }
 }
 exports.textFromContext = textFromContext;
@@ -7607,7 +7832,7 @@ function getKeyedChild(parent, key, maybe) {
         if (maybe) {
             return '';
         }
-        throw new Error('Unrecognized key: ' + key);
+        throw new BuildEvalError('getKeyedChild', key);
     }
     return parent[key];
 }
@@ -7659,14 +7884,14 @@ function startForLoop(src) {
                         list = parseForRange(src);
                     }
                     else {
-                        throw new Error('Unrecognized <for> tag type: ' + src);
+                        throw new BuildTagError('Unrecognized <for> tag type', src);
                     }
                 }
             }
         }
     }
     if (!list) {
-        throw new Error('Unable to resolve from context: ' + src.outerHTML);
+        throw new BuildTagError('Unable to determine loop: ', src);
     }
     var inner_context = pushBuilderContext();
     var iter_index = iter + '#';
@@ -7691,19 +7916,19 @@ exports.startForLoop = startForLoop;
 function parseForEach(src) {
     var list_name = src.getAttributeNS('', 'in');
     if (!list_name) {
-        throw new Error('for each requires "in" attribute');
+        throw new BuildTagError('for each requires "in" attribute', src);
     }
     return anyFromContext(list_name);
 }
 function parseForText(src, delim) {
     var list_name = src.getAttributeNS('', 'in');
     if (!list_name) {
-        throw new Error('for char requires "in" attribute');
+        throw new BuildError('for char requires "in" attribute');
     }
     // The list_name can just be a literal string
     var list = textFromContext(list_name);
     if (!list) {
-        throw new Error('unresolved context: ' + list_name);
+        throw new BuildError('unresolved context: ' + list_name);
     }
     return list.split(delim);
 }
@@ -7720,7 +7945,7 @@ function parseForRange(src) {
                 : start;
     var inc = step ? parseInt(cloneText(step)) : 1;
     if (inc == 0) {
-        throw new Error("Invalid loop step. Must be non-zero.");
+        throw new BuildTagError("Invalid loop step. Must be non-zero.", src);
     }
     if (!until && inc < 0) {
         end -= 2; // from 5 to 1 step -1 means i >= 0
@@ -7734,11 +7959,11 @@ function parseForRange(src) {
 function parseForKey(src) {
     var obj_name = src.getAttributeNS('', 'in');
     if (!obj_name) {
-        throw new Error('for each requires "in" attribute');
+        throw new BuildTagError('for each requires "in" attribute', src);
     }
     var obj = anyFromContext(obj_name);
     if (!obj) {
-        throw new Error('unresolved list context: ' + obj_name);
+        throw new BuildEvalError('unresolved list context', obj_name);
     }
     var keys = Object.keys(obj);
     var vals = keys.map(function (k) { return obj[k]; });
@@ -7765,7 +7990,7 @@ function parseForKey(src) {
  */
 function startIfBlock(src) {
     var exists = src.getAttributeNS('', 'exists');
-    var notex = src.getAttributeNS('', 'not');
+    var notex = src.getAttributeNS('', 'notex');
     if (exists || notex) {
         // Does this attribute exist at all?
         if ((exists && keyExistsInContext(exists)) || (notex && !keyExistsInContext(notex))) {
@@ -7773,9 +7998,17 @@ function startIfBlock(src) {
         }
         return [];
     }
+    var not = src.getAttributeNS('', 'not');
+    if (not) {
+        var test_1 = textFromContext(not);
+        if (test_1 !== 'true') {
+            return expandContents(src);
+        }
+        return [];
+    }
     var test = src.getAttributeNS('', 'test');
     if (!test) {
-        throw new Error('<if> tags must have a test attribute');
+        throw new BuildTagError('<if> tags must have a test or exists attribute', src);
     }
     test = textFromContext(test);
     var pass = false;
@@ -7943,9 +8176,6 @@ function startInputArea(src) {
     return [span];
 }
 exports.startInputArea = startInputArea;
-/*-----------------------------------------------------------
- * _builderUse.ts
- *-----------------------------------------------------------*/
 /**
  * Replace a <use> tag with the contents of a <template>.
  * Along the way, push any attributes of the <use> tag onto the context.
@@ -7958,15 +8188,34 @@ exports.startInputArea = startInputArea;
  */
 function useTemplate(node, tempId) {
     var dest = [];
-    var inner_context = pushBuilderContext();
+    // We need to build the values to push onto the context, without changing the current context.
+    // Do all the evaluations first, and cache them.
+    var passed_args = [];
     for (var i = 0; i < node.attributes.length; i++) {
         var attr = node.attributes[i].name;
         var val = node.attributes[i].value;
         var attri = attr.toLowerCase();
         if (attri != 'template' && attri != 'class') {
-            inner_context[attr] = textFromContext(val);
-            inner_context[attr + '$'] = val; // Store the context path, so it can also be referenced
+            var arg = {
+                attr: attr,
+                raw: val,
+                text: textFromContext(val),
+                any: anyFromContext(val),
+            };
+            passed_args.push(arg);
         }
+    }
+    // Push a new context for inside the <use>.
+    // Each passed arg generates 3 usable context entries:
+    //  arg = 'text'          the attribute, evaluated as text
+    //  arg! = *any*          the attribute, evaluated as any
+    //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
+    var inner_context = pushBuilderContext();
+    for (var i_6 = 0; i_6 < passed_args.length; i_6++) {
+        var arg = passed_args[i_6];
+        inner_context[arg.attr] = arg.text;
+        inner_context[arg.attr + '!'] = arg.any;
+        inner_context[arg.attr + '$'] = arg.raw;
     }
     if (!tempId) {
         tempId = node.getAttribute('template');
