@@ -5,7 +5,7 @@ import { startForLoop } from "./_builderFor";
 import { ifResult, startIfBlock } from "./_builderIf";
 import { inputAreaTagNames, startInputArea } from "./_builderInput";
 import { useTemplate } from "./_builderUse";
-import { findParentOfTag, isTag, toggleClass } from "./_classUtil";
+import { findParentOfTag, hasClass, isTag, toggleClass } from "./_classUtil";
 import { svg_xmlns } from "./_tableBuilder";
 
 /****************************************************************************
@@ -206,6 +206,35 @@ function pushDestElement(elmt:Element) {
 
 function popDestElement() {
   dest_element_stack.pop();
+}
+
+export enum TrimMode {
+  off = 0,  // no trimming (default)
+  on,       // trim text regions that are only whitespace
+  all,      // trim all text regions
+}
+
+/**
+ * When in trim mode, cloning text between elements will omit any sections that are pure whitespace.
+ * Sections that include both text and whitespace will be kept in entirety.
+ * @returns 
+ */
+export function getTrimMode():TrimMode {
+  for (let i = src_element_stack.length - 1; i >= 0; i--) {
+    const elmt = src_element_stack[i];
+    if (hasClass(elmt, 'trim')) {
+      return TrimMode.on;
+    }
+    let trim = elmt.getAttributeNS('', 'trim');
+    trim = trim == null ? null : trim.toLowerCase();
+    if (trim === 'all') {
+      return TrimMode.all;
+    }
+    if (trim != null) {
+      return (trim !== 'false' && trim !== 'off') ? TrimMode.on : TrimMode.off;
+    }
+  }
+  return TrimMode.off;
 }
 
 /**

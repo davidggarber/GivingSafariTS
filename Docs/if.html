@@ -34,7 +34,7 @@
           ],
 
           magic: "123",
-          sentence: "Help docs!",
+          sentence: "Help docs",
           fonts: [ 
             'bold', 
             'italic' 
@@ -171,7 +171,7 @@
 const boiler = {
   'builderLookup': {
     magic: 123,
-    sentence: 'Help docs!',
+    sentence: 'Help docs',
     fonts: [ 
       'bold', 
       'italic' 
@@ -189,25 +189,19 @@ const boiler = {
           <tr>
             <td>
               <code><pre>
-&lt;ttable&gt;
-  &lt;for int="x" from="0" to="4"&gt;
-    &lt;ttr&gt;
-      &lt;if test="x" <b>eq="0"</b>&gt;
-        &lt;tth&gt;header&lt;/tth&gt;
-      &lt;/if&gt;
-      &lt;if test="x" <b>gt="0"</b>&gt;
-        &lt;ttd&gt;cell data&lt;/ttd&gt;
-      &lt;/if&gt;
-    &lt;/ttr&gt;
-  &lt;/for&gt;
-&lt;/table&gt;</pre></code>                
+&lt;for char="ch" in="{sentence}" trim&gt;
+  &lt;if test="ch" eq=" "&gt;&nbsp;&lt;/if&gt;
+  &lt;elseif test="ch" in="oO"&gt;😶&lt;/if&gt;
+  &lt;elseif test="ch" ni="ABCDEFGHIJKLMNOPQRSTUVWXYZ"&gt;
+    &lt;i&gt;{ch}&lt;/i&gt;
+  &lt;/elseif&gt;
+  &lt;else&gt;&lt;b style='color:red'&gt;{ch}&lt;/b&gt;&lt;/else&gt;
+&lt;/for&gt;</pre></code>
             </td>
             <td>
-              <for char="ch" in="{sentence}">
+              <for char="ch" in="{sentence}" trim>
                 <if test="ch" eq=" ">&nbsp;</if>
-                <if test="ch" in="oO">
-                  😶
-                </if>
+                <elseif test="ch" in="oO">😶</if>
                 <elseif test="ch" ni="ABCDEFGHIJKLMNOPQRSTUVWXYZ">
                   <i>{ch}</i>
                 </elseif>

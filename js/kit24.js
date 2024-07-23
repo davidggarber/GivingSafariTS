@@ -20,7 +20,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.BuildHtmlError = exports.BuildTagError = exports.BuildEvalError = exports.BuildError = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.BuildHtmlError = exports.BuildTagError = exports.BuildEvalError = exports.BuildError = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.getTrimMode = exports.TrimMode = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -6859,6 +6859,35 @@ function pushDestElement(elmt) {
 function popDestElement() {
     dest_element_stack.pop();
 }
+var TrimMode;
+(function (TrimMode) {
+    TrimMode[TrimMode["off"] = 0] = "off";
+    TrimMode[TrimMode["on"] = 1] = "on";
+    TrimMode[TrimMode["all"] = 2] = "all";
+})(TrimMode = exports.TrimMode || (exports.TrimMode = {}));
+/**
+ * When in trim mode, cloning text between elements will omit any sections that are pure whitespace.
+ * Sections that include both text and whitespace will be kept in entirety.
+ * @returns
+ */
+function getTrimMode() {
+    for (var i = src_element_stack.length - 1; i >= 0; i--) {
+        var elmt = src_element_stack[i];
+        if (hasClass(elmt, 'trim')) {
+            return TrimMode.on;
+        }
+        var trim = elmt.getAttributeNS('', 'trim');
+        trim = trim == null ? null : trim.toLowerCase();
+        if (trim === 'all') {
+            return TrimMode.all;
+        }
+        if (trim != null) {
+            return (trim !== 'false' && trim !== 'off') ? TrimMode.on : TrimMode.off;
+        }
+    }
+    return TrimMode.off;
+}
+exports.getTrimMode = getTrimMode;
 /**
  * See if any parent element in the builder stack matches a lambda
  * @param fn a Lambda which takes an element and returns true for the desired condition
@@ -7454,6 +7483,20 @@ exports.cloneAttributes = cloneAttributes;
 function cloneTextNode(text) {
     var dest = [];
     var str = text.textContent;
+    if (str) {
+        // When a trim mode is in effect, dial back on copied whitespace.
+        // Effectively, it becomes just formatting, like outside <p> tags.
+        var trimMode = getTrimMode();
+        if (trimMode == TrimMode.all) {
+            str = str.trim();
+            if (str === '') {
+                return dest;
+            }
+        }
+        else if (trimMode == TrimMode.on && str.trim() === '') {
+            return dest;
+        }
+    }
     var i = str ? str.indexOf('{') : -1;
     while (str && i >= 0) {
         var j = str.indexOf('}', i);

@@ -1,5 +1,5 @@
 import { theBoiler } from "./_boilerplate";
-import { normalizeName } from "./_builder";
+import { getTrimMode, normalizeName, TrimMode } from "./_builder";
 import { BuildError, BuildEvalError, BuildTagError } from "./_builderError";
 
 /**
@@ -91,6 +91,22 @@ export function cloneAttributes(src:Element, dest:Element) {
 export function cloneTextNode(text:Text):Node[] {
   const dest:Node[] = [];
   let str = text.textContent;
+  
+  if (str) {
+    // When a trim mode is in effect, dial back on copied whitespace.
+    // Effectively, it becomes just formatting, like outside <p> tags.
+    const trimMode = getTrimMode();
+    if (trimMode == TrimMode.all) {
+      str = str.trim();
+      if (str === '') {
+        return dest;
+      }
+    } 
+    else if (trimMode == TrimMode.on && str.trim() === '') {
+      return dest;
+    }
+  }
+
   let i = str ? str.indexOf('{') : -1;
   while (str && i >= 0) {
     const j = str.indexOf('}', i);

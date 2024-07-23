@@ -7589,6 +7589,35 @@ function popDestElement() {
   dest_element_stack.pop();
 }
 
+export enum TrimMode {
+  off = 0,  // no trimming (default)
+  on,       // trim text regions that are only whitespace
+  all,      // trim all text regions
+}
+
+/**
+ * When in trim mode, cloning text between elements will omit any sections that are pure whitespace.
+ * Sections that include both text and whitespace will be kept in entirety.
+ * @returns 
+ */
+export function getTrimMode():TrimMode {
+  for (let i = src_element_stack.length - 1; i >= 0; i--) {
+    const elmt = src_element_stack[i];
+    if (hasClass(elmt, 'trim')) {
+      return TrimMode.on;
+    }
+    let trim = elmt.getAttributeNS('', 'trim');
+    trim = trim == null ? null : trim.toLowerCase();
+    if (trim === 'all') {
+      return TrimMode.all;
+    }
+    if (trim != null) {
+      return (trim !== 'false' && trim !== 'off') ? TrimMode.on : TrimMode.off;
+    }
+  }
+  return TrimMode.off;
+}
+
 /**
  * See if any parent element in the builder stack matches a lambda
  * @param fn a Lambda which takes an element and returns true for the desired condition
@@ -8216,6 +8245,22 @@ export function cloneAttributes(src:Element, dest:Element) {
 export function cloneTextNode(text:Text):Node[] {
   const dest:Node[] = [];
   let str = text.textContent;
+  
+  if (str) {
+    // When a trim mode is in effect, dial back on copied whitespace.
+    // Effectively, it becomes just formatting, like outside <p> tags.
+    const trimMode = getTrimMode();
+    if (trimMode == TrimMode.all) {
+      str = str.trim();
+      if (str === '') {
+        return dest;
+      }
+    } 
+    else if (trimMode == TrimMode.on && str.trim() === '') {
+      return dest;
+    }
+  }
+
   let i = str ? str.indexOf('{') : -1;
   while (str && i >= 0) {
     const j = str.indexOf('}', i);
