@@ -36,6 +36,9 @@ export function toggleClass(obj: Node|string|null|undefined,
         }
         else {
             elmt.classList.remove(cls);
+            if (elmt.classList.length == 0) {
+                elmt.removeAttribute('class');
+            }
         }
     }
 }
@@ -105,7 +108,7 @@ export function findNextOfClass(current: Element,
                                 : Element|null {
     var inputs = document.getElementsByClassName(matchClass);
     var found = false;
-    for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
+    for (let i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
         if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
             continue;
         }
@@ -135,7 +138,7 @@ export function indexInContainer( current: Element,
         parent = parentObj as Element;
     }
     var sibs = parent.getElementsByClassName(sibClass);
-    for (var i = 0; i < sibs.length; i++) {
+    for (let i = 0; i < sibs.length; i++) {
         if (sibs[i] === current) {
             return i;
         }
@@ -317,7 +320,7 @@ export function findFirstChildOfClass(  elmt: Element,
                                         dir: number = 1)
                                         : Element|null {
     var children = elmt.getElementsByClassName(childClass);
-    for (var i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
+    for (let i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
         if (skipClass !== null && hasClass(children[i], skipClass)) {
             continue;
         }
@@ -356,7 +359,7 @@ export function findNthChildOfClass(  parent: Element,
  */
 export function siblingIndexOfClass(parent: Element, child: Element, childClass: string): number {
     var children = parent.getElementsByClassName(childClass);
-    for (var i = 0; i < children.length; i++) {
+    for (let i = 0; i < children.length; i++) {
         if (children[i] == child) {
             return i;
         }
@@ -680,7 +683,7 @@ export function setupNotes(margins:HTMLDivElement) {
  */
 function setupNotesCells(findClass:string, tagInput:string|undefined, index:number) {
     var cells = document.getElementsByClassName(findClass);
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell = cells[i];
 
         // Place a small text input field in each cell
@@ -832,7 +835,7 @@ export function toggleNotes() {
  */
 export function setupCrossOffs() {
     const cells = document.getElementsByClassName('cross-off');
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell = cells[i] as HTMLElement;
 
         // Place a small text input field in each cell
@@ -1410,7 +1413,7 @@ function applyGlobalIndeces(elements:HTMLCollectionOf<Element>, suffix?:string, 
     if (!offset) {
         offset = 0;
     }
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         elements[i].setAttributeNS('', attr, String(i));
     }
 }
@@ -1575,7 +1578,7 @@ let currently_restoring:HTMLElement|null = null;
 function restoreLetters(values:object) {
     localCache.letters = values;
     var inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
@@ -1594,7 +1597,7 @@ function restoreLetters(values:object) {
 function restoreWords(values:object) {
     localCache.words = values;
     var inputs = document.getElementsByClassName('word-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
@@ -1622,7 +1625,7 @@ function restoreWords(values:object) {
 function restoreNotes(values:object) {
     localCache.notes = values;
     var elements = document.getElementsByClassName('note-input');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         var element = elements[i] as HTMLInputElement;
         var globalIndex = getGlobalIndex(element);
         var value = values[globalIndex] as string;
@@ -1639,7 +1642,7 @@ function restoreNotes(values:object) {
 function restoreCrossOffs(values:object) {
     localCache.checks = values;
     let elements = document.getElementsByClassName('cross-off');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         const element = elements[i] as HTMLElement;
         const globalIndex = getGlobalIndex(element);
         const value = values[globalIndex] as boolean;
@@ -1678,7 +1681,7 @@ function restoreContainers(containers:object) {
 function restorePositions(positions:object) {
     localCache.positions = positions;
     var movers = document.getElementsByClassName('moveable');
-    for (var i = 0; i < movers.length; i++) {
+    for (let i = 0; i < movers.length; i++) {
         var pos = positions[i] as Position;
         if (pos != undefined) {
             quickFreeMove(movers[i] as HTMLElement, pos);
@@ -1693,7 +1696,7 @@ function restorePositions(positions:object) {
 function restoreStamps(drawings:object) {
     localCache.stamps = drawings;
     var targets = document.getElementsByClassName('stampable');
-    for (var i = 0; i < targets.length; i++) {
+    for (let i = 0; i < targets.length; i++) {
         var tool = drawings[i] as string;
         if (tool != undefined) {
             const stamp = document.getElementById(tool);
@@ -1711,7 +1714,7 @@ function restoreStamps(drawings:object) {
 function restoreHighlights(highlights) {
     localCache.highlights = highlights == undefined ? {} : highlights;
     var elements = document.getElementsByClassName('can-highlight');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         var element = elements[i] as HTMLElement;
         var globalIndex = getGlobalIndex(element, 'ch');
         var value = highlights[globalIndex] as boolean;
@@ -1730,7 +1733,7 @@ function restoreEdges(vertexLists:string[]) {
         vertexLists = [];
     }
     localCache.edges = vertexLists;
-    for (var i = 0; i < vertexLists.length; i++) {
+    for (let i = 0; i < vertexLists.length; i++) {
         createFromVertexList(vertexLists[i]);
     }
 }
@@ -1743,7 +1746,7 @@ function restoreGuesses(guesses:GuessLog[]) {
     if (!guesses) {
         guesses = [];
     }
-    for (var i = 0; i < guesses.length; i++) {
+    for (let i = 0; i < guesses.length; i++) {
         const src = guesses[i];
         // Rebuild the GuessLog, to convert the string back to a DateTime
         const gl:GuessLog = { field:src.field, guess:src.guess, time:new Date(String(src.time)) };
@@ -2352,7 +2355,7 @@ function UpdateExtraction(extractedId:string|null) {
     const sorted_inputs = SortElements(inputs);
     let extraction = '';
     let ready = true;
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -2396,7 +2399,7 @@ function UpdateExtraction(extractedId:string|null) {
             extraction += Array(1 + inps.length - extraction.length).join('_');
         }
         let ready = true;
-        for (var i = 0; i < inps.length; i++) {
+        for (let i = 0; i < inps.length; i++) {
             const inp = inps[i] as HTMLInputElement;
             if (extraction[i] != '_') {
                 inp.value = extraction.substring(i, i+1);
@@ -2444,7 +2447,7 @@ function DelayLiterals(extractedId:string|null) :boolean {
     let isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
     const sorted_inputs = SortElements(inputs);
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -2532,7 +2535,7 @@ function UpdateNumbered(extractedId:string|null) {
     var inputs = document.getElementsByClassName('extract-input');
     const sorted_inputs = SortElements(inputs);
     let concat = '';
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         const inp = input as HTMLInputElement
         const index = input.getAttribute('data-number');
@@ -2563,7 +2566,7 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     var extractors = document.getElementsByClassName('extractor-input');
     var index = getOptionalStyle(input.parentNode as Element, 'data-number');
     if (index === null) {
-        for (var i = 0; i < extractors.length; i++) {
+        for (let i = 0; i < extractors.length; i++) {
             if (extractors[i] == input) {
                 index = "" + (i + 1);  // start at 1
                 break;
@@ -2577,7 +2580,7 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     var sources = document.getElementsByClassName('extract-input');
     let extractId:any;
     const extraction:string[] = [];
-    for (var i = 0; i < sources.length; i++) {
+    for (let i = 0; i < sources.length; i++) {
         var src = sources[i] as HTMLInputElement;
         var dataNumber = getOptionalStyle(src, 'data-number');
         if (dataNumber != null) {
@@ -2667,7 +2670,7 @@ export function updateWordExtraction(extractedId:string|null) {
     var extraction = '';
     var hasWordExtraction = false;
     var partial = false;
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -2678,7 +2681,7 @@ export function updateWordExtraction(extractedId:string|null) {
         }
         hasWordExtraction = true;
         const indeces = index.split(' ');
-        for (var j = 0; j < indeces.length; j++) {
+        for (let j = 0; j < indeces.length; j++) {
             const inp = input as HTMLInputElement;  
             const letter = extractWordIndex(inp.value, indeces[j]);
             if (letter) {
@@ -2706,7 +2709,7 @@ export function extractWordIndex(input:string, index:string) {
         letter_index = parseInt(dot[1]) - 1;
         const words = input.split(' ');
         input = '';
-        for (var i = 0; i < words.length; i++) {
+        for (let i = 0; i < words.length; i++) {
             const word = words[i];
             if (words[i].length > 0) {
                 if (--word_index == 0) {
@@ -3140,7 +3143,7 @@ function findNextDiscover(root: Element,
 export function autoCompleteWord(input:HTMLInputElement|HTMLTextAreaElement, list:string[]) {
     var value = input.value.toLowerCase();
     var match:string|null = null;
-    for (var i of list) {
+    for (let i of list) {
       if (i.toLowerCase().indexOf(value) == 0) {
         if (match) {
           return false;  // multiple matches
@@ -3270,10 +3273,10 @@ function setupLetterPatterns() {
 
         if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
             var prevCount = 0;
-            for (var pi = 0; pi < pattern.length; pi++) {
+            for (let pi = 0; pi < pattern.length; pi++) {
                 if (pattern[pi]['count']) {
                     var count:number = pattern[pi]['count'] as number;
-                    for (var ci = 1; ci <= count; ci++) {
+                    for (let ci = 1; ci <= count; ci++) {
                         var span = document.createElement('span');
                         toggleClass(span, 'letter-cell', true);
                         applyAllClasses(span, styles.letter);
@@ -3418,7 +3421,7 @@ function parseNumberPattern(elmt: Element,
     if (pattern == null) {
         return list;
     }
-    for (var pi = 0; pi < pattern.length; pi++) {
+    for (let pi = 0; pi < pattern.length; pi++) {
         var count = 0;
         while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
             count = count * 10 + (pattern.charCodeAt(pi) - 48);
@@ -3586,7 +3589,7 @@ function setupLetterCells() {
  */
 function setupLetterInputs() {
     var inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         inp.onkeydown=function(e){onLetterKeyDown(e)};
         inp.onkeyup=function(e){onLetterKeyUp(e)};
@@ -3601,7 +3604,7 @@ function setupLetterInputs() {
  */
 function setupWordCells() {
     var cells = document.getElementsByClassName('word-cell');
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell:HTMLElement = cells[i] as HTMLElement;
         let inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
 
@@ -3666,10 +3669,10 @@ function setupExtractPattern() {
     }
     if (numPattern != null) {
         var nextNumber = 1;
-        for (var pi = 0; pi < numPattern.length; pi++) {
+        for (let pi = 0; pi < numPattern.length; pi++) {
             if (numPattern[pi]['count']) {
                 var count = numPattern[pi]['count'] as number;
-                for (var ci = 1; ci <= count; ci++) {
+                for (let ci = 1; ci <= count; ci++) {
                     const span:HTMLSpanElement = document.createElement('span');
                     toggleClass(span, 'letter-cell', true);
                     toggleClass(span, 'extractor', true);
@@ -3701,14 +3704,14 @@ function setupExtractPattern() {
  */
 function hasProgress(event: Event): boolean {
     let inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         if (inp.value != '') {
             return true;
         }
     }
     inputs = document.getElementsByClassName('word-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         if (inp.value != '') {
             return true;
@@ -5892,7 +5895,7 @@ function findStraightEdgeVertices(edge:SVGPolylineElement):HTMLElement[] {
     const indeces = indexList?.split(',');
     if (indeces) {
         const map = mapGlobalIndeces('vertex', 'vx');
-        for (var i = 0; i < indeces.length; i++) {
+        for (let i = 0; i < indeces.length; i++) {
             if (indeces[i]) {
                 const vertex = map[indeces[i]];
                 vertices.push(vertex);
@@ -6150,6 +6153,11 @@ export function getSafariDetails(): PuzzleEventDetails {
 const urlArgs = {};
 
 /**
+ * Cache the original, pre-modified HTML, in case there is an error to point to
+ */
+export let _rawHtmlSource:string;
+
+/**
  * Scan the url for special arguments.
  */
 function debugSetup() {
@@ -6157,7 +6165,7 @@ function debugSetup() {
     if (search !== '') {
         search = search.substring(1);  // trim leading ?
         var args = search.split('&');
-        for (var i = 0; i < args.length; i++) {
+        for (let i = 0; i < args.length; i++) {
             var toks = args[i].split('=');
             if (toks.length > 1) {
                 urlArgs[toks[0].toLowerCase()] = toks[1];
@@ -6292,6 +6300,7 @@ const print_as_grayscale = { id:'printAs', text: "<div style='color:#666;'>Print
  * @param bp 
  */
 function preSetup(bp:BoilerPlateData) {
+    _rawHtmlSource = document.documentElement.outerHTML;
     const safariDetails = initSafariDetails(bp.safari);
     debugSetup();
     var bodies = document.getElementsByTagName('BODY');
@@ -6494,7 +6503,7 @@ function boilerplate(bp: BoilerPlateData) {
     html.lang = bp.lang || 'en-us';
 
     const safariDetails = getSafariDetails();
-    for (var i = 0; i < safariDetails.links.length; i++) {
+    for (let i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
 
@@ -7348,7 +7357,7 @@ function appendResponse(block:HTMLDivElement, response:string) {
  */
 function rot13(source:string) {
     let rot = '';
-    for (var i = 0; i < source.length; i++) {
+    for (let i = 0; i < source.length; i++) {
         const ch = source[i];
         let r = ch;
         if (ch >= 'A' && ch <= 'Z') {
@@ -7536,15 +7545,23 @@ function rot13(source:string) {
 
 
 const builder_tags = [
-  'build', 'use', 'for', 'if', 'xml'
+  'build', 'use', 'for', 'if', 'else', 'elseif', 'xml'
 ];
-function identifyBuilders() {
+function firstBuilderElement():HTMLElement|null {
   for (const t of builder_tags) {
     const tags = document.getElementsByTagName(t);
     for (let i=0; i < tags.length; i++) {
-      toggleClass(tags[i], 'builder_control', true);
+      toggleClass(tags[i], '_builder_control_', true);
     }  
   }
+  const builds = document.getElementsByClassName('_builder_control_');
+  if (builds.length == 0)
+    return null;
+  const first = builds[0];
+  for (let i = builds.length-1; i >= 0; i--) {
+    toggleClass(builds[i], '_builder_control_', false);
+  }
+  return first as HTMLElement;
 }
 
 let src_element_stack:Element[] = [];
@@ -7646,27 +7663,26 @@ function getSvgDepth(elmt:Element) {
  * Look for control tags like for loops and if branches.
  */
 export function expandControlTags() {
-  identifyBuilders();
-  let controls = document.getElementsByClassName('builder_control');
-  while (controls.length > 0) {
-    const src = controls[0] as HTMLElement;
+  const ifResult:ifResult = {passed:false, index:0};
+  for (let src = firstBuilderElement(); src != null; src = firstBuilderElement()) {
     try {
       initElementStack(src);
       let dest:Node[] = [];
-      if (isTag(src, 'build') || isTag(src, 'xml')) {
-        dest = expandContents(src);
+      if (isTag(src, ['if', 'elseif', 'else'])) {
+        dest = startIfBlock(src, ifResult);        
       }
-      else if (isTag(src, 'for')) {
-        dest = startForLoop(src);
-      }
-      else if (isTag(src, 'if')) {
-        dest = startIfBlock(src);
-      }
-      // else if (isTag(src, 'switch')) {
-      //   dest = startIfBlock(src);
-      // }
-      else if (isTag(src, 'use')) {
-        dest = useTemplate(src);
+      else {
+        ifResult.index = 0;  // Reset
+
+        if (isTag(src, 'build') || isTag(src, 'xml')) {
+          dest = expandContents(src);
+        }
+        else if (isTag(src, 'for')) {
+          dest = startForLoop(src);
+        }
+        else if (isTag(src, 'use')) {
+          dest = useTemplate(src);
+        }
       }
       const parent = src.parentNode;
       for (let d = 0; d < dest.length; d++) {
@@ -7678,9 +7694,6 @@ export function expandControlTags() {
     catch (ex) {
       throw new BuildTagError("expandControlTags", src, ex);
     }
-
-    // See if there are more
-    controls = document.getElementsByClassName('builder_control');
   }
   initElementStack(null);
 
@@ -7723,16 +7736,20 @@ export function appendRange(parent:Node, add:Node[]) {
  */
 export function expandContents(src:HTMLElement):Node[] {
   const dest:Node[] = [];
+  const ifResult:ifResult = {passed:false, index:0};
   for (let i = 0; i < src.childNodes.length; i++) {
     const child = src.childNodes[i];
     if (child.nodeType == Node.ELEMENT_NODE) {
       const child_elmt = child as HTMLElement;
       try {
+        if (isTag(child_elmt, ['if', 'elseif', 'else'])) {
+          pushRange(dest, startIfBlock(child_elmt, ifResult));
+          continue;
+        }
+        ifResult.index = 0;  // Reset
+
         if (isTag(child_elmt, 'for')) {
           pushRange(dest, startForLoop(child_elmt));
-        }
-        else if (isTag(child_elmt, 'if')) {
-          pushRange(dest, startIfBlock(child_elmt));
         }
         else if (isTag(child_elmt, 'use')) {
           pushRange(dest, useTemplate(child_elmt));
@@ -7816,15 +7833,19 @@ function cloneWithContext(elmt:HTMLElement):Element {
     pushDestElement(clone);
     cloneAttributes(elmt, clone);
 
+    const ifResult:ifResult = {passed:false, index:0};
     for (let i = 0; i < elmt.childNodes.length; i++) {
       const child = elmt.childNodes[i];
       if (child.nodeType == Node.ELEMENT_NODE) {
         const child_elmt = child as HTMLElement;
+        if (isTag(child_elmt, ['if', 'elseif', 'else'])) {
+          appendRange(clone, startIfBlock(child_elmt, ifResult));
+          continue;
+        }
+        ifResult.index = 0;  // Reset
+
         if (isTag(child_elmt, 'for')) {
           appendRange(clone, startForLoop(child_elmt));
-        }
-        else if (isTag(child_elmt, 'if')) {
-          appendRange(clone, startIfBlock(child_elmt));
         }
         else if (isTag(child_elmt, 'use')) {
           appendRange(clone, useTemplate(child_elmt));
@@ -7865,23 +7886,6 @@ function cloneNode(node:Node):Node {
  * _builderError.ts
  *-----------------------------------------------------------*/
 
-
-/**
- * For debug traces, summarize a tag without including its children/contents
- * @param elmt Any HTML element
- * @returns A recreation of its start tag
- */
-function debugTagAttrs(elmt:Element): string {
-  let str = '<' + elmt.tagName;
-  for (let i = 0; i < elmt.attributes.length; i++) {
-    str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
-  }
-  if (elmt.childNodes.length == 0) {
-    str += ' /';  // show as empty tag
-  }
-  str += '>';  // close tag
-  return str;
-}
 
 /**
  * Convert an error's stack trace (run-on text stream) into a list.
@@ -7928,7 +7932,7 @@ function simplifyRelativeStack(err:Error, caller:string[]):string[] {
   }
 
   for (let i = firstAt; i < inner.length; i++) {
-    for (var c = 0; c < caller.length; c++) {
+    for (let c = 0; c < caller.length; c++) {
         if (inner[i] == caller[c]) {
             // Found first match. Remove everything in inner from here on.
             inner.splice(i, inner.length - i);
@@ -7952,7 +7956,7 @@ function cleanStack(stack:string[], remove:string[], summary?:string) {
   }
   let cleaned = true;
   while (stack.length > firstAt && cleaned) {
-    for (var i = 0; i < remove.length; i++) {
+    for (let i = 0; i < remove.length; i++) {
       cleaned = false;
       if (stack[firstAt].indexOf(remove[i]) >= 0) {
         stack.splice(firstAt, 1);
@@ -7986,8 +7990,8 @@ function concatErrorMessage(msg:string, cause?:Error) {
  * Custom error which can track nested exceptions
  */
 export class BuildError extends Error {
-  cause: Error|undefined;
-  relativeStack: string[];
+  public cause: Error|undefined;
+  public relativeStack: string[];
 
   /**
    * Create a new BuildError (or derived error)
@@ -7996,16 +8000,22 @@ export class BuildError extends Error {
    * @param cls The name of the derived class, if any
    */
   constructor(msg: string, inner?:Error, cls?:string) {
-    super(concatErrorMessage(cls + ": " + msg, inner));
+    super(concatErrorMessage((cls || "BuildError") + ": " + msg, inner));
     this.name = 'BuildError';
     this.cause = inner;
-    this.relativeStack = debugMakeStack(['.BuildError', 'new Build'], (cls || "BuildError") + ": " + msg);
+    this.relativeStack = debugMakeStack(['.Build', 'new Build'], (cls || "BuildError") + ": " + msg);
 
     if (inner) {
-      const innermost = simplifyRelativeStack(inner, this.relativeStack);
-      if ((<BuildError>inner).relativeStack) {  // instanceof BuildError
-        (<BuildError>inner).relativeStack = innermost;
-        inner.stack = innermost.join('\n');
+      if ((<BuildHtmlError>inner).location) {  // instanceof BuildHtmlError
+        inner.stack = (<BuildHtmlError>inner).tag + ' (' + (<BuildHtmlError>inner).location + ')';
+        (<BuildError>inner).relativeStack = [inner.stack];
+      }
+      else {
+        const innermost = simplifyRelativeStack(inner, this.relativeStack);
+        if ((<BuildError>inner).relativeStack) {  // instanceof BuildError
+          (<BuildError>inner).relativeStack = innermost;
+          inner.stack = innermost.join('\n');
+        }  
       }
     }
   }
@@ -8016,7 +8026,7 @@ export class BuildError extends Error {
  * Intended use is 1-per-function, in a function-wide try/catch
  */
 export class BuildEvalError extends BuildError {
-  raw: string;
+  public raw: string;
 
   /**
    * @param func The name of the function.
@@ -8035,7 +8045,7 @@ export class BuildEvalError extends BuildError {
  * Intended use is 1-per-function, in a function-wide try/catch
  */
 export class BuildTagError extends BuildError {
-  tag: string;
+  public tag: string;
 
   /**
    * @param func The name of the function.
@@ -8049,6 +8059,67 @@ export class BuildTagError extends BuildError {
   }
 }
 
+/**
+ * Track build errors back to their location in the HTML
+ */
+export class BuildHtmlError extends BuildError {
+  public tag: string;
+  public location: string;
+
+  /**
+   * @param msg The description of the problem
+   * @param elmt The HTML element that is mal-formed
+   * @param inner The inner/causal error, if any
+   * @param cls The name of the derived class, if any
+   */
+  constructor(msg: string, elmt:Element, inner?:Error, cls?:string) {
+    super(msg, inner, cls || "BuildHtmlError");
+    this.name = 'BuildHtmlError';
+    this.tag = debugTagAttrs(elmt);
+    this.location = debugLocateTag(elmt, true);
+  }
+}
+
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+function debugTagAttrs(elmt:Element): string {
+  let str = '<' + elmt.localName;
+  for (let i = 0; i < elmt.attributes.length; i++) {
+    str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
+  }
+  if (elmt.childNodes.length == 0) {
+    str += ' /';  // show as empty tag
+  }
+  str += '>';  // close tag
+  return str;
+}
+
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+function debugLocateTag(elmt:Element, fullPath:boolean): string {
+  let elementStr = elmt.outerHTML;
+  let pageStr = _rawHtmlSource;
+  let elementIndex = pageStr.indexOf(elementStr);
+  if (elementIndex < 0) {
+    elementStr = '<' + elmt.localName;
+    elementIndex = Math.max(0, pageStr.indexOf(elementStr));
+  }
+  let contentAbove = pageStr.substring(0, elementIndex);
+  let linesAbove = contentAbove.split('\n');
+  let lineNumber = linesAbove.length;  // start at line 1
+  let column = linesAbove[lineNumber - 1].length;
+
+  let fileName = fullPath 
+    ? (window.location.protocol + '//' + window.location.pathname)
+    : ('./' + window.location.pathname.split("/").pop());
+  return `${fileName}:${lineNumber}:${column}`;
+}
 
 
 /*-----------------------------------------------------------
@@ -8544,6 +8615,7 @@ export function keyExistsInContext(key:string) {
     const a = anyFromContext(key);
     // null, undefined, or '' count as not existing
     return a !== null && a !== undefined && a !== '';
+    // Note: empty {} and [] do count as existing.
   }
   catch {
     return false;
@@ -8756,6 +8828,11 @@ function parseForKey(src:HTMLElement):any {
  *-----------------------------------------------------------*/
 
 
+export type ifResult = {
+  passed:boolean;
+  index:number;
+}
+
 /**
  * Potentially several kinds of if expressions:
  *   equality: <if test="var" eq="value">  
@@ -8767,69 +8844,91 @@ function parseForKey(src:HTMLElement):any {
  *   contains: <if test="var" in="value">  
  *   not-contains: <if test="var" ni="value">  
  *   boolean: <if test="var">
- * Note there is no else or else-if block, because there are no scoping blocks
- * @param src the <if> element
- * @param context the set of values that might get used by or inside the if block
+ * @param src the <if>, <elseif>, or <else> element
+ * @param result in/out parameter that determines whether any sibling in a sequence of if/else-if/else tags has passed yet
  * @returns a list of nodes, which will replace this <if> element
  */
-export function startIfBlock(src:HTMLElement):Node[] {
-  let exists = src.getAttributeNS('', 'exists');
-  let notex = src.getAttributeNS('', 'notex');
-  if (exists || notex) {
-    // Does this attribute exist at all?
-    if ((exists && keyExistsInContext(exists)) || (notex && !keyExistsInContext(notex))) {
-      return expandContents(src);
+export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
+  try {
+    
+    if (isTag(src, 'if')) {
+      result.index = 1;
+      // Each <if> tag resets the group's passed state
+      result.passed = false;
     }
-    return [];
-  }
-
-  let not = src.getAttributeNS('', 'not');
-  if (not) {
-    let test = textFromContext(not); 
-    if (test !== 'true') {
-      return expandContents(src);
+    else {
+      if (result.index < 1) {
+        throw new BuildError(src.tagName + ' without preceding <if>');
+      }
+      if (isTag(src, 'else')) {
+        result.index = -result.index;
+      }
+      else {
+        result.index++;
+      }
+      if (result.passed) {
+        // A prior sibling already passed, so all subsequent elseif and else blocks should abort.
+        return [];
+      }
     }
-    return [];
+
+    let exists = src.getAttributeNS('', 'exists');
+    let notex = src.getAttributeNS('', 'notex');
+    let not = src.getAttributeNS('', 'not');
+    let test = src.getAttributeNS('', 'test');
+
+    if (isTag(src, 'else')) {
+      result.passed = true;
+    }
+    else if (exists || notex) {
+      // Does this attribute exist at all?
+      result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
+    }
+    else if (not) {
+      test = textFromContext(not); 
+      result.passed = test !== 'true';
+    }
+    else if (test) {
+      test = textFromContext(test); 
+
+      let value:string|null;
+      if (value = src.getAttributeNS('', 'eq')) {  // equality
+        result.passed = test == cloneText(value);
+      }
+      else if (value = src.getAttributeNS('', 'ne')) {  // not-equals
+        result.passed = test != cloneText(value);
+      }
+      else if (value = src.getAttributeNS('', 'lt')) {  // less-than
+        result.passed = parseFloat(test) < parseFloat(cloneText(value));
+      }
+      else if (value = src.getAttributeNS('', 'le')) {  // less-than or equals
+        result.passed = parseFloat(test) <= parseFloat(cloneText(value));
+      }
+      else if (value = src.getAttributeNS('', 'gt')) {  // greater-than
+        result.passed = parseFloat(test) > parseFloat(cloneText(value));
+      }
+      else if (value = src.getAttributeNS('', 'ge')) {  // greater-than or equals
+        result.passed = parseFloat(test) >= parseFloat(cloneText(value));
+      }
+      else if (value = src.getAttributeNS('', 'in')) {  // string contains
+        result.passed = cloneText(value).indexOf(test) >= 0;
+      }
+      else if (value = src.getAttributeNS('', 'ni')) {  // string doesn't contain
+        result.passed = cloneText(value).indexOf(test) < 0;
+      }
+      else {  // simple boolean
+        result.passed = test === 'true';
+      }
+    }
+    else {
+      throw new BuildHtmlError('<' + src.localName + '> elements must have an evaluating attribute: test, not, exists, or notex', src);
+    }
+  }
+  catch (ex) {
+    throw new BuildTagError('startIfBlock', src, ex);
   }
 
-  let test = src.getAttributeNS('', 'test');
-  if (!test) {
-    throw new BuildTagError('<if> tags must have a test or exists attribute', src);
-  }
-  test = textFromContext(test); 
-
-  let pass:boolean = false;
-  let value:string|null;
-  if (value = src.getAttributeNS('', 'eq')) {  // equality
-    pass = test == cloneText(value);
-  }
-  else if (value = src.getAttributeNS('', 'ne')) {  // not-equals
-    pass = test != cloneText(value);
-  }
-  else if (value = src.getAttributeNS('', 'lt')) {  // less-than
-    pass = parseFloat(test) < parseFloat(cloneText(value));
-  }
-  else if (value = src.getAttributeNS('', 'le')) {  // less-than or equals
-    pass = parseFloat(test) <= parseFloat(cloneText(value));
-  }
-  else if (value = src.getAttributeNS('', 'gt')) {  // greater-than
-    pass = parseFloat(test) > parseFloat(cloneText(value));
-  }
-  else if (value = src.getAttributeNS('', 'ge')) {  // greater-than or equals
-    pass = parseFloat(test) >= parseFloat(cloneText(value));
-  }
-  else if (value = src.getAttributeNS('', 'in')) {  // string contains
-    pass = cloneText(value).indexOf(test) >= 0;
-  }
-  else if (value = src.getAttributeNS('', 'ni')) {  // string doesn't contain
-    pass = cloneText(value).indexOf(test) < 0;
-  }
-  else {  // simple boolean
-    pass = test === 'true';
-  }
-
-  if (pass) {
-    // No change in context from the if
+  if (result.passed) {
     return expandContents(src);
   }
   
@@ -9010,7 +9109,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   // We need to build the values to push onto the context, without changing the current context.
   // Do all the evaluations first, and cache them.
   const passed_args:TemplateArg[] = [];
-  for (var i = 0; i < node.attributes.length; i++) {
+  for (let i = 0; i < node.attributes.length; i++) {
     const attr = node.attributes[i].name;
     const val = node.attributes[i].value;
     const attri = attr.toLowerCase();
@@ -9636,7 +9735,7 @@ function invertColorTags(header:object[]): linearTag[] {
     const tagged = header[i];  // {tag:[1,2]}
     const tag = Object.keys(tagged)[0];
     const groups = tagged[tag] as number[];
-    for (var g = 0; g < groups.length; g++) {
+    for (let g = 0; g < groups.length; g++) {
       const lt:linearTag = {len:groups[g], tag:tag};
       linear.push(lt);
     }

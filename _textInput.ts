@@ -395,7 +395,7 @@ function UpdateExtraction(extractedId:string|null) {
     const sorted_inputs = SortElements(inputs);
     let extraction = '';
     let ready = true;
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -439,7 +439,7 @@ function UpdateExtraction(extractedId:string|null) {
             extraction += Array(1 + inps.length - extraction.length).join('_');
         }
         let ready = true;
-        for (var i = 0; i < inps.length; i++) {
+        for (let i = 0; i < inps.length; i++) {
             const inp = inps[i] as HTMLInputElement;
             if (extraction[i] != '_') {
                 inp.value = extraction.substring(i, i+1);
@@ -487,7 +487,7 @@ function DelayLiterals(extractedId:string|null) :boolean {
     let isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
     const sorted_inputs = SortElements(inputs);
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -575,7 +575,7 @@ function UpdateNumbered(extractedId:string|null) {
     var inputs = document.getElementsByClassName('extract-input');
     const sorted_inputs = SortElements(inputs);
     let concat = '';
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         const inp = input as HTMLInputElement
         const index = input.getAttribute('data-number');
@@ -606,7 +606,7 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     var extractors = document.getElementsByClassName('extractor-input');
     var index = getOptionalStyle(input.parentNode as Element, 'data-number');
     if (index === null) {
-        for (var i = 0; i < extractors.length; i++) {
+        for (let i = 0; i < extractors.length; i++) {
             if (extractors[i] == input) {
                 index = "" + (i + 1);  // start at 1
                 break;
@@ -620,7 +620,7 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     var sources = document.getElementsByClassName('extract-input');
     let extractId:any;
     const extraction:string[] = [];
-    for (var i = 0; i < sources.length; i++) {
+    for (let i = 0; i < sources.length; i++) {
         var src = sources[i] as HTMLInputElement;
         var dataNumber = getOptionalStyle(src, 'data-number');
         if (dataNumber != null) {
@@ -710,7 +710,7 @@ export function updateWordExtraction(extractedId:string|null) {
     var extraction = '';
     var hasWordExtraction = false;
     var partial = false;
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -721,7 +721,7 @@ export function updateWordExtraction(extractedId:string|null) {
         }
         hasWordExtraction = true;
         const indeces = index.split(' ');
-        for (var j = 0; j < indeces.length; j++) {
+        for (let j = 0; j < indeces.length; j++) {
             const inp = input as HTMLInputElement;  
             const letter = extractWordIndex(inp.value, indeces[j]);
             if (letter) {
@@ -749,7 +749,7 @@ export function extractWordIndex(input:string, index:string) {
         letter_index = parseInt(dot[1]) - 1;
         const words = input.split(' ');
         input = '';
-        for (var i = 0; i < words.length; i++) {
+        for (let i = 0; i < words.length; i++) {
             const word = words[i];
             if (words[i].length > 0) {
                 if (--word_index == 0) {
@@ -1183,7 +1183,7 @@ function findNextDiscover(root: Element,
 export function autoCompleteWord(input:HTMLInputElement|HTMLTextAreaElement, list:string[]) {
     var value = input.value.toLowerCase();
     var match:string|null = null;
-    for (var i of list) {
+    for (let i of list) {
       if (i.toLowerCase().indexOf(value) == 0) {
         if (match) {
           return false;  // multiple matches

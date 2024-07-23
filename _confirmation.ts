@@ -472,7 +472,7 @@ function appendResponse(block:HTMLDivElement, response:string) {
  */
 function rot13(source:string) {
     let rot = '';
-    for (var i = 0; i < source.length; i++) {
+    for (let i = 0; i < source.length; i++) {
         const ch = source[i];
         let r = ch;
         if (ch >= 'A' && ch <= 'Z') {

@@ -881,7 +881,7 @@ function findStraightEdgeVertices(edge:SVGPolylineElement):HTMLElement[] {
     const indeces = indexList?.split(',');
     if (indeces) {
         const map = mapGlobalIndeces('vertex', 'vx');
-        for (var i = 0; i < indeces.length; i++) {
+        for (let i = 0; i < indeces.length; i++) {
             if (indeces[i]) {
                 const vertex = map[indeces[i]];
                 vertices.push(vertex);

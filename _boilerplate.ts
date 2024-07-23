@@ -21,6 +21,11 @@ import { diffSummarys, LayoutSummary, renderDiffs, summarizePageLayout } from ".
 const urlArgs = {};
 
 /**
+ * Cache the original, pre-modified HTML, in case there is an error to point to
+ */
+export let _rawHtmlSource:string;
+
+/**
  * Scan the url for special arguments.
  */
 function debugSetup() {
@@ -28,7 +33,7 @@ function debugSetup() {
     if (search !== '') {
         search = search.substring(1);  // trim leading ?
         var args = search.split('&');
-        for (var i = 0; i < args.length; i++) {
+        for (let i = 0; i < args.length; i++) {
             var toks = args[i].split('=');
             if (toks.length > 1) {
                 urlArgs[toks[0].toLowerCase()] = toks[1];
@@ -163,6 +168,7 @@ const print_as_grayscale = { id:'printAs', text: "<div style='color:#666;'>Print
  * @param bp 
  */
 function preSetup(bp:BoilerPlateData) {
+    _rawHtmlSource = document.documentElement.outerHTML;
     const safariDetails = initSafariDetails(bp.safari);
     debugSetup();
     var bodies = document.getElementsByTagName('BODY');
@@ -365,7 +371,7 @@ function boilerplate(bp: BoilerPlateData) {
     html.lang = bp.lang || 'en-us';
 
     const safariDetails = getSafariDetails();
-    for (var i = 0; i < safariDetails.links.length; i++) {
+    for (let i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
 

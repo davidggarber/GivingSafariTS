@@ -110,10 +110,10 @@ function setupLetterPatterns() {
 
         if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
             var prevCount = 0;
-            for (var pi = 0; pi < pattern.length; pi++) {
+            for (let pi = 0; pi < pattern.length; pi++) {
                 if (pattern[pi]['count']) {
                     var count:number = pattern[pi]['count'] as number;
-                    for (var ci = 1; ci <= count; ci++) {
+                    for (let ci = 1; ci <= count; ci++) {
                         var span = document.createElement('span');
                         toggleClass(span, 'letter-cell', true);
                         applyAllClasses(span, styles.letter);
@@ -258,7 +258,7 @@ function parseNumberPattern(elmt: Element,
     if (pattern == null) {
         return list;
     }
-    for (var pi = 0; pi < pattern.length; pi++) {
+    for (let pi = 0; pi < pattern.length; pi++) {
         var count = 0;
         while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
             count = count * 10 + (pattern.charCodeAt(pi) - 48);
@@ -426,7 +426,7 @@ function setupLetterCells() {
  */
 function setupLetterInputs() {
     var inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         inp.onkeydown=function(e){onLetterKeyDown(e)};
         inp.onkeyup=function(e){onLetterKeyUp(e)};
@@ -441,7 +441,7 @@ function setupLetterInputs() {
  */
 function setupWordCells() {
     var cells = document.getElementsByClassName('word-cell');
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell:HTMLElement = cells[i] as HTMLElement;
         let inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
 
@@ -506,10 +506,10 @@ function setupExtractPattern() {
     }
     if (numPattern != null) {
         var nextNumber = 1;
-        for (var pi = 0; pi < numPattern.length; pi++) {
+        for (let pi = 0; pi < numPattern.length; pi++) {
             if (numPattern[pi]['count']) {
                 var count = numPattern[pi]['count'] as number;
-                for (var ci = 1; ci <= count; ci++) {
+                for (let ci = 1; ci <= count; ci++) {
                     const span:HTMLSpanElement = document.createElement('span');
                     toggleClass(span, 'letter-cell', true);
                     toggleClass(span, 'extractor', true);
@@ -541,14 +541,14 @@ function setupExtractPattern() {
  */
 function hasProgress(event: Event): boolean {
     let inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         if (inp.value != '') {
             return true;
         }
     }
     inputs = document.getElementsByClassName('word-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         if (inp.value != '') {
             return true;

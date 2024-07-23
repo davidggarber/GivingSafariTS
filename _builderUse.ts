@@ -25,7 +25,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   // We need to build the values to push onto the context, without changing the current context.
   // Do all the evaluations first, and cache them.
   const passed_args:TemplateArg[] = [];
-  for (var i = 0; i < node.attributes.length; i++) {
+  for (let i = 0; i < node.attributes.length; i++) {
     const attr = node.attributes[i].name;
     const val = node.attributes[i].value;
     const attri = attr.toLowerCase();

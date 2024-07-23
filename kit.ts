@@ -102,7 +102,7 @@ export function findNextOfClass(current: Element,
                                 : Element|null {
     var inputs = document.getElementsByClassName(matchClass);
     var found = false;
-    for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
+    for (let i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
         if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
             continue;
         }
@@ -132,7 +132,7 @@ export function indexInContainer( current: Element,
         parent = parentObj as Element;
     }
     var sibs = parent.getElementsByClassName(sibClass);
-    for (var i = 0; i < sibs.length; i++) {
+    for (let i = 0; i < sibs.length; i++) {
         if (sibs[i] === current) {
             return i;
         }
@@ -314,7 +314,7 @@ export function findFirstChildOfClass(  elmt: Element,
                                         dir: number = 1)
                                         : Element|null {
     var children = elmt.getElementsByClassName(childClass);
-    for (var i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
+    for (let i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
         if (skipClass !== null && hasClass(children[i], skipClass)) {
             continue;
         }
@@ -353,7 +353,7 @@ export function findNthChildOfClass(  parent: Element,
  */
 export function siblingIndexOfClass(parent: Element, child: Element, childClass: string): number {
     var children = parent.getElementsByClassName(childClass);
-    for (var i = 0; i < children.length; i++) {
+    for (let i = 0; i < children.length; i++) {
         if (children[i] == child) {
             return i;
         }
@@ -677,7 +677,7 @@ export function setupNotes(margins:HTMLDivElement) {
  */
 function setupNotesCells(findClass:string, tagInput:string|undefined, index:number) {
     var cells = document.getElementsByClassName(findClass);
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell = cells[i];
 
         // Place a small text input field in each cell
@@ -829,7 +829,7 @@ export function toggleNotes() {
  */
 export function setupCrossOffs() {
     const cells = document.getElementsByClassName('cross-off');
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell = cells[i] as HTMLElement;
 
         // Place a small text input field in each cell
@@ -1407,7 +1407,7 @@ function applyGlobalIndeces(elements:HTMLCollectionOf<Element>, suffix?:string, 
     if (!offset) {
         offset = 0;
     }
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         elements[i].setAttributeNS('', attr, String(i));
     }
 }
@@ -1572,7 +1572,7 @@ let currently_restoring:HTMLElement|null = null;
 function restoreLetters(values:object) {
     localCache.letters = values;
     var inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
@@ -1591,7 +1591,7 @@ function restoreLetters(values:object) {
 function restoreWords(values:object) {
     localCache.words = values;
     var inputs = document.getElementsByClassName('word-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
@@ -1619,7 +1619,7 @@ function restoreWords(values:object) {
 function restoreNotes(values:object) {
     localCache.notes = values;
     var elements = document.getElementsByClassName('note-input');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         var element = elements[i] as HTMLInputElement;
         var globalIndex = getGlobalIndex(element);
         var value = values[globalIndex] as string;
@@ -1636,7 +1636,7 @@ function restoreNotes(values:object) {
 function restoreCrossOffs(values:object) {
     localCache.checks = values;
     let elements = document.getElementsByClassName('cross-off');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         const element = elements[i] as HTMLElement;
         const globalIndex = getGlobalIndex(element);
         const value = values[globalIndex] as boolean;
@@ -1675,7 +1675,7 @@ function restoreContainers(containers:object) {
 function restorePositions(positions:object) {
     localCache.positions = positions;
     var movers = document.getElementsByClassName('moveable');
-    for (var i = 0; i < movers.length; i++) {
+    for (let i = 0; i < movers.length; i++) {
         var pos = positions[i] as Position;
         if (pos != undefined) {
             quickFreeMove(movers[i] as HTMLElement, pos);
@@ -1690,7 +1690,7 @@ function restorePositions(positions:object) {
 function restoreStamps(drawings:object) {
     localCache.stamps = drawings;
     var targets = document.getElementsByClassName('stampable');
-    for (var i = 0; i < targets.length; i++) {
+    for (let i = 0; i < targets.length; i++) {
         var tool = drawings[i] as string;
         if (tool != undefined) {
             const stamp = document.getElementById(tool);
@@ -1708,7 +1708,7 @@ function restoreStamps(drawings:object) {
 function restoreHighlights(highlights) {
     localCache.highlights = highlights == undefined ? {} : highlights;
     var elements = document.getElementsByClassName('can-highlight');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         var element = elements[i] as HTMLElement;
         var globalIndex = getGlobalIndex(element, 'ch');
         var value = highlights[globalIndex] as boolean;
@@ -1727,7 +1727,7 @@ function restoreEdges(vertexLists:string[]) {
         vertexLists = [];
     }
     localCache.edges = vertexLists;
-    for (var i = 0; i < vertexLists.length; i++) {
+    for (let i = 0; i < vertexLists.length; i++) {
         createFromVertexList(vertexLists[i]);
     }
 }
@@ -1740,7 +1740,7 @@ function restoreGuesses(guesses:GuessLog[]) {
     if (!guesses) {
         guesses = [];
     }
-    for (var i = 0; i < guesses.length; i++) {
+    for (let i = 0; i < guesses.length; i++) {
         const src = guesses[i];
         // Rebuild the GuessLog, to convert the string back to a DateTime
         const gl:GuessLog = { field:src.field, guess:src.guess, time:new Date(String(src.time)) };
@@ -2349,7 +2349,7 @@ function UpdateExtraction(extractedId:string|null) {
     const sorted_inputs = SortElements(inputs);
     let extraction = '';
     let ready = true;
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -2393,7 +2393,7 @@ function UpdateExtraction(extractedId:string|null) {
             extraction += Array(1 + inps.length - extraction.length).join('_');
         }
         let ready = true;
-        for (var i = 0; i < inps.length; i++) {
+        for (let i = 0; i < inps.length; i++) {
             const inp = inps[i] as HTMLInputElement;
             if (extraction[i] != '_') {
                 inp.value = extraction.substring(i, i+1);
@@ -2441,7 +2441,7 @@ function DelayLiterals(extractedId:string|null) :boolean {
     let isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
     const sorted_inputs = SortElements(inputs);
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -2529,7 +2529,7 @@ function UpdateNumbered(extractedId:string|null) {
     var inputs = document.getElementsByClassName('extract-input');
     const sorted_inputs = SortElements(inputs);
     let concat = '';
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         const inp = input as HTMLInputElement
         const index = input.getAttribute('data-number');
@@ -2560,7 +2560,7 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     var extractors = document.getElementsByClassName('extractor-input');
     var index = getOptionalStyle(input.parentNode as Element, 'data-number');
     if (index === null) {
-        for (var i = 0; i < extractors.length; i++) {
+        for (let i = 0; i < extractors.length; i++) {
             if (extractors[i] == input) {
                 index = "" + (i + 1);  // start at 1
                 break;
@@ -2574,7 +2574,7 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     var sources = document.getElementsByClassName('extract-input');
     let extractId:any;
     const extraction:string[] = [];
-    for (var i = 0; i < sources.length; i++) {
+    for (let i = 0; i < sources.length; i++) {
         var src = sources[i] as HTMLInputElement;
         var dataNumber = getOptionalStyle(src, 'data-number');
         if (dataNumber != null) {
@@ -2664,7 +2664,7 @@ export function updateWordExtraction(extractedId:string|null) {
     var extraction = '';
     var hasWordExtraction = false;
     var partial = false;
-    for (var i = 0; i < sorted_inputs.length; i++) {
+    for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
@@ -2675,7 +2675,7 @@ export function updateWordExtraction(extractedId:string|null) {
         }
         hasWordExtraction = true;
         const indeces = index.split(' ');
-        for (var j = 0; j < indeces.length; j++) {
+        for (let j = 0; j < indeces.length; j++) {
             const inp = input as HTMLInputElement;  
             const letter = extractWordIndex(inp.value, indeces[j]);
             if (letter) {
@@ -2703,7 +2703,7 @@ export function extractWordIndex(input:string, index:string) {
         letter_index = parseInt(dot[1]) - 1;
         const words = input.split(' ');
         input = '';
-        for (var i = 0; i < words.length; i++) {
+        for (let i = 0; i < words.length; i++) {
             const word = words[i];
             if (words[i].length > 0) {
                 if (--word_index == 0) {
@@ -3137,7 +3137,7 @@ function findNextDiscover(root: Element,
 export function autoCompleteWord(input:HTMLInputElement|HTMLTextAreaElement, list:string[]) {
     var value = input.value.toLowerCase();
     var match:string|null = null;
-    for (var i of list) {
+    for (let i of list) {
       if (i.toLowerCase().indexOf(value) == 0) {
         if (match) {
           return false;  // multiple matches
@@ -3267,10 +3267,10 @@ function setupLetterPatterns() {
 
         if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
             var prevCount = 0;
-            for (var pi = 0; pi < pattern.length; pi++) {
+            for (let pi = 0; pi < pattern.length; pi++) {
                 if (pattern[pi]['count']) {
                     var count:number = pattern[pi]['count'] as number;
-                    for (var ci = 1; ci <= count; ci++) {
+                    for (let ci = 1; ci <= count; ci++) {
                         var span = document.createElement('span');
                         toggleClass(span, 'letter-cell', true);
                         applyAllClasses(span, styles.letter);
@@ -3415,7 +3415,7 @@ function parseNumberPattern(elmt: Element,
     if (pattern == null) {
         return list;
     }
-    for (var pi = 0; pi < pattern.length; pi++) {
+    for (let pi = 0; pi < pattern.length; pi++) {
         var count = 0;
         while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
             count = count * 10 + (pattern.charCodeAt(pi) - 48);
@@ -3583,7 +3583,7 @@ function setupLetterCells() {
  */
 function setupLetterInputs() {
     var inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         inp.onkeydown=function(e){onLetterKeyDown(e)};
         inp.onkeyup=function(e){onLetterKeyUp(e)};
@@ -3598,7 +3598,7 @@ function setupLetterInputs() {
  */
 function setupWordCells() {
     var cells = document.getElementsByClassName('word-cell');
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell:HTMLElement = cells[i] as HTMLElement;
         let inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
 
@@ -3663,10 +3663,10 @@ function setupExtractPattern() {
     }
     if (numPattern != null) {
         var nextNumber = 1;
-        for (var pi = 0; pi < numPattern.length; pi++) {
+        for (let pi = 0; pi < numPattern.length; pi++) {
             if (numPattern[pi]['count']) {
                 var count = numPattern[pi]['count'] as number;
-                for (var ci = 1; ci <= count; ci++) {
+                for (let ci = 1; ci <= count; ci++) {
                     const span:HTMLSpanElement = document.createElement('span');
                     toggleClass(span, 'letter-cell', true);
                     toggleClass(span, 'extractor', true);
@@ -3698,14 +3698,14 @@ function setupExtractPattern() {
  */
 function hasProgress(event: Event): boolean {
     let inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         if (inp.value != '') {
             return true;
         }
     }
     inputs = document.getElementsByClassName('word-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         const inp:HTMLInputElement = inputs[i] as HTMLInputElement;
         if (inp.value != '') {
             return true;
@@ -5889,7 +5889,7 @@ function findStraightEdgeVertices(edge:SVGPolylineElement):HTMLElement[] {
     const indeces = indexList?.split(',');
     if (indeces) {
         const map = mapGlobalIndeces('vertex', 'vx');
-        for (var i = 0; i < indeces.length; i++) {
+        for (let i = 0; i < indeces.length; i++) {
             if (indeces[i]) {
                 const vertex = map[indeces[i]];
                 vertices.push(vertex);
@@ -6154,7 +6154,7 @@ function debugSetup() {
     if (search !== '') {
         search = search.substring(1);  // trim leading ?
         var args = search.split('&');
-        for (var i = 0; i < args.length; i++) {
+        for (let i = 0; i < args.length; i++) {
             var toks = args[i].split('=');
             if (toks.length > 1) {
                 urlArgs[toks[0].toLowerCase()] = toks[1];
@@ -6491,7 +6491,7 @@ function boilerplate(bp: BoilerPlateData) {
     html.lang = bp.lang || 'en-us';
 
     const safariDetails = getSafariDetails();
-    for (var i = 0; i < safariDetails.links.length; i++) {
+    for (let i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
 
@@ -7345,7 +7345,7 @@ function appendResponse(block:HTMLDivElement, response:string) {
  */
 function rot13(source:string) {
     let rot = '';
-    for (var i = 0; i < source.length; i++) {
+    for (let i = 0; i < source.length; i++) {
         const ch = source[i];
         let r = ch;
         if (ch >= 'A' && ch <= 'Z') {
@@ -8691,7 +8691,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   let dest:Node[] = [];
   
   const inner_context = pushBuilderContext();
-  for (var i = 0; i < node.attributes.length; i++) {
+  for (let i = 0; i < node.attributes.length; i++) {
     const attr = node.attributes[i].name;
     const val = node.attributes[i].value;
     const attri = attr.toLowerCase();
@@ -9303,7 +9303,7 @@ function invertColorTags(header:object[]): linearTag[] {
     const tagged = header[i];  // {tag:[1,2]}
     const tag = Object.keys(tagged)[0];
     const groups = tagged[tag] as number[];
-    for (var g = 0; g < groups.length; g++) {
+    for (let g = 0; g < groups.length; g++) {
       const lt:linearTag = {len:groups[g], tag:tag};
       linear.push(lt);
     }

@@ -60,7 +60,7 @@ export function setupNotes(margins:HTMLDivElement) {
  */
 function setupNotesCells(findClass:string, tagInput:string|undefined, index:number) {
     var cells = document.getElementsByClassName(findClass);
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell = cells[i];
 
         // Place a small text input field in each cell
@@ -212,7 +212,7 @@ export function toggleNotes() {
  */
 export function setupCrossOffs() {
     const cells = document.getElementsByClassName('cross-off');
-    for (var i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell = cells[i] as HTMLElement;
 
         // Place a small text input field in each cell

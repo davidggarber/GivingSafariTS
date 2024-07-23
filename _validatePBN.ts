@@ -330,7 +330,7 @@ function invertColorTags(header:object[]): linearTag[] {
     const tagged = header[i];  // {tag:[1,2]}
     const tag = Object.keys(tagged)[0];
     const groups = tagged[tag] as number[];
-    for (var g = 0; g < groups.length; g++) {
+    for (let g = 0; g < groups.length; g++) {
       const lt:linearTag = {len:groups[g], tag:tag};
       linear.push(lt);
     }

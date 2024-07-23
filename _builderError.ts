@@ -1,20 +1,4 @@
-
-/**
- * For debug traces, summarize a tag without including its children/contents
- * @param elmt Any HTML element
- * @returns A recreation of its start tag
- */
-function debugTagAttrs(elmt:Element): string {
-  let str = '<' + elmt.tagName;
-  for (let i = 0; i < elmt.attributes.length; i++) {
-    str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
-  }
-  if (elmt.childNodes.length == 0) {
-    str += ' /';  // show as empty tag
-  }
-  str += '>';  // close tag
-  return str;
-}
+import { _rawHtmlSource } from "./_boilerplate";
 
 /**
  * Convert an error's stack trace (run-on text stream) into a list.
@@ -61,7 +45,7 @@ function simplifyRelativeStack(err:Error, caller:string[]):string[] {
   }
 
   for (let i = firstAt; i < inner.length; i++) {
-    for (var c = 0; c < caller.length; c++) {
+    for (let c = 0; c < caller.length; c++) {
         if (inner[i] == caller[c]) {
             // Found first match. Remove everything in inner from here on.
             inner.splice(i, inner.length - i);
@@ -85,7 +69,7 @@ function cleanStack(stack:string[], remove:string[], summary?:string) {
   }
   let cleaned = true;
   while (stack.length > firstAt && cleaned) {
-    for (var i = 0; i < remove.length; i++) {
+    for (let i = 0; i < remove.length; i++) {
       cleaned = false;
       if (stack[firstAt].indexOf(remove[i]) >= 0) {
         stack.splice(firstAt, 1);
@@ -119,8 +103,8 @@ function concatErrorMessage(msg:string, cause?:Error) {
  * Custom error which can track nested exceptions
  */
 export class BuildError extends Error {
-  cause: Error|undefined;
-  relativeStack: string[];
+  public cause: Error|undefined;
+  public relativeStack: string[];
 
   /**
    * Create a new BuildError (or derived error)
@@ -129,16 +113,22 @@ export class BuildError extends Error {
    * @param cls The name of the derived class, if any
    */
   constructor(msg: string, inner?:Error, cls?:string) {
-    super(concatErrorMessage(cls + ": " + msg, inner));
+    super(concatErrorMessage((cls || "BuildError") + ": " + msg, inner));
     this.name = 'BuildError';
     this.cause = inner;
-    this.relativeStack = debugMakeStack(['.BuildError', 'new Build'], (cls || "BuildError") + ": " + msg);
+    this.relativeStack = debugMakeStack(['.Build', 'new Build'], (cls || "BuildError") + ": " + msg);
 
     if (inner) {
-      const innermost = simplifyRelativeStack(inner, this.relativeStack);
-      if ((<BuildError>inner).relativeStack) {  // instanceof BuildError
-        (<BuildError>inner).relativeStack = innermost;
-        inner.stack = innermost.join('\n');
+      if ((<BuildHtmlError>inner).location) {  // instanceof BuildHtmlError
+        inner.stack = (<BuildHtmlError>inner).tag + ' (' + (<BuildHtmlError>inner).location + ')';
+        (<BuildError>inner).relativeStack = [inner.stack];
+      }
+      else {
+        const innermost = simplifyRelativeStack(inner, this.relativeStack);
+        if ((<BuildError>inner).relativeStack) {  // instanceof BuildError
+          (<BuildError>inner).relativeStack = innermost;
+          inner.stack = innermost.join('\n');
+        }  
       }
     }
   }
@@ -149,7 +139,7 @@ export class BuildError extends Error {
  * Intended use is 1-per-function, in a function-wide try/catch
  */
 export class BuildEvalError extends BuildError {
-  raw: string;
+  public raw: string;
 
   /**
    * @param func The name of the function.
@@ -168,7 +158,7 @@ export class BuildEvalError extends BuildError {
  * Intended use is 1-per-function, in a function-wide try/catch
  */
 export class BuildTagError extends BuildError {
-  tag: string;
+  public tag: string;
 
   /**
    * @param func The name of the function.
@@ -182,3 +172,64 @@ export class BuildTagError extends BuildError {
   }
 }
 
+/**
+ * Track build errors back to their location in the HTML
+ */
+export class BuildHtmlError extends BuildError {
+  public tag: string;
+  public location: string;
+
+  /**
+   * @param msg The description of the problem
+   * @param elmt The HTML element that is mal-formed
+   * @param inner The inner/causal error, if any
+   * @param cls The name of the derived class, if any
+   */
+  constructor(msg: string, elmt:Element, inner?:Error, cls?:string) {
+    super(msg, inner, cls || "BuildHtmlError");
+    this.name = 'BuildHtmlError';
+    this.tag = debugTagAttrs(elmt);
+    this.location = debugLocateTag(elmt, true);
+  }
+}
+
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+function debugTagAttrs(elmt:Element): string {
+  let str = '<' + elmt.localName;
+  for (let i = 0; i < elmt.attributes.length; i++) {
+    str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
+  }
+  if (elmt.childNodes.length == 0) {
+    str += ' /';  // show as empty tag
+  }
+  str += '>';  // close tag
+  return str;
+}
+
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+function debugLocateTag(elmt:Element, fullPath:boolean): string {
+  let elementStr = elmt.outerHTML;
+  let pageStr = _rawHtmlSource;
+  let elementIndex = pageStr.indexOf(elementStr);
+  if (elementIndex < 0) {
+    elementStr = '<' + elmt.localName;
+    elementIndex = Math.max(0, pageStr.indexOf(elementStr));
+  }
+  let contentAbove = pageStr.substring(0, elementIndex);
+  let linesAbove = contentAbove.split('\n');
+  let lineNumber = linesAbove.length;  // start at line 1
+  let column = linesAbove[lineNumber - 1].length;
+
+  let fileName = fullPath 
+    ? (window.location.protocol + '//' + window.location.pathname)
+    : ('./' + window.location.pathname.split("/").pop());
+  return `${fileName}:${lineNumber}:${column}`;
+}

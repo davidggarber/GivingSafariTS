@@ -29,6 +29,9 @@ export function toggleClass(obj: Node|string|null|undefined,
         }
         else {
             elmt.classList.remove(cls);
+            if (elmt.classList.length == 0) {
+                elmt.removeAttribute('class');
+            }
         }
     }
 }
@@ -98,7 +101,7 @@ export function findNextOfClass(current: Element,
                                 : Element|null {
     var inputs = document.getElementsByClassName(matchClass);
     var found = false;
-    for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
+    for (let i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
         if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
             continue;
         }
@@ -128,7 +131,7 @@ export function indexInContainer( current: Element,
         parent = parentObj as Element;
     }
     var sibs = parent.getElementsByClassName(sibClass);
-    for (var i = 0; i < sibs.length; i++) {
+    for (let i = 0; i < sibs.length; i++) {
         if (sibs[i] === current) {
             return i;
         }
@@ -310,7 +313,7 @@ export function findFirstChildOfClass(  elmt: Element,
                                         dir: number = 1)
                                         : Element|null {
     var children = elmt.getElementsByClassName(childClass);
-    for (var i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
+    for (let i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
         if (skipClass !== null && hasClass(children[i], skipClass)) {
             continue;
         }
@@ -349,7 +352,7 @@ export function findNthChildOfClass(  parent: Element,
  */
 export function siblingIndexOfClass(parent: Element, child: Element, childClass: string): number {
     var children = parent.getElementsByClassName(childClass);
-    for (var i = 0; i < children.length; i++) {
+    for (let i = 0; i < children.length; i++) {
         if (children[i] == child) {
             return i;
         }

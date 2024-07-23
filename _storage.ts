@@ -390,7 +390,7 @@ function applyGlobalIndeces(elements:HTMLCollectionOf<Element>, suffix?:string, 
     if (!offset) {
         offset = 0;
     }
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         elements[i].setAttributeNS('', attr, String(i));
     }
 }
@@ -555,7 +555,7 @@ let currently_restoring:HTMLElement|null = null;
 function restoreLetters(values:object) {
     localCache.letters = values;
     var inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
@@ -574,7 +574,7 @@ function restoreLetters(values:object) {
 function restoreWords(values:object) {
     localCache.words = values;
     var inputs = document.getElementsByClassName('word-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         currently_restoring = inputs[i] as HTMLElement;
         var input = inputs[i] as HTMLInputElement;
         var value = values[i] as string;
@@ -602,7 +602,7 @@ function restoreWords(values:object) {
 function restoreNotes(values:object) {
     localCache.notes = values;
     var elements = document.getElementsByClassName('note-input');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         var element = elements[i] as HTMLInputElement;
         var globalIndex = getGlobalIndex(element);
         var value = values[globalIndex] as string;
@@ -619,7 +619,7 @@ function restoreNotes(values:object) {
 function restoreCrossOffs(values:object) {
     localCache.checks = values;
     let elements = document.getElementsByClassName('cross-off');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         const element = elements[i] as HTMLElement;
         const globalIndex = getGlobalIndex(element);
         const value = values[globalIndex] as boolean;
@@ -658,7 +658,7 @@ function restoreContainers(containers:object) {
 function restorePositions(positions:object) {
     localCache.positions = positions;
     var movers = document.getElementsByClassName('moveable');
-    for (var i = 0; i < movers.length; i++) {
+    for (let i = 0; i < movers.length; i++) {
         var pos = positions[i] as Position;
         if (pos != undefined) {
             quickFreeMove(movers[i] as HTMLElement, pos);
@@ -673,7 +673,7 @@ function restorePositions(positions:object) {
 function restoreStamps(drawings:object) {
     localCache.stamps = drawings;
     var targets = document.getElementsByClassName('stampable');
-    for (var i = 0; i < targets.length; i++) {
+    for (let i = 0; i < targets.length; i++) {
         var tool = drawings[i] as string;
         if (tool != undefined) {
             const stamp = document.getElementById(tool);
@@ -691,7 +691,7 @@ function restoreStamps(drawings:object) {
 function restoreHighlights(highlights) {
     localCache.highlights = highlights == undefined ? {} : highlights;
     var elements = document.getElementsByClassName('can-highlight');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         var element = elements[i] as HTMLElement;
         var globalIndex = getGlobalIndex(element, 'ch');
         var value = highlights[globalIndex] as boolean;
@@ -710,7 +710,7 @@ function restoreEdges(vertexLists:string[]) {
         vertexLists = [];
     }
     localCache.edges = vertexLists;
-    for (var i = 0; i < vertexLists.length; i++) {
+    for (let i = 0; i < vertexLists.length; i++) {
         createFromVertexList(vertexLists[i]);
     }
 }
@@ -723,7 +723,7 @@ function restoreGuesses(guesses:GuessLog[]) {
     if (!guesses) {
         guesses = [];
     }
-    for (var i = 0; i < guesses.length; i++) {
+    for (let i = 0; i < guesses.length; i++) {
         const src = guesses[i];
         // Rebuild the GuessLog, to convert the string back to a DateTime
         const gl:GuessLog = { field:src.field, guess:src.guess, time:new Date(String(src.time)) };

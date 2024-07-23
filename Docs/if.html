@@ -1,6 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
@@ -36,7 +34,7 @@
           ],
 
           magic: "123",
-          sentence: "Help docs",
+          sentence: "Help docs!",
           fonts: [ 
             'bold', 
             'italic' 
@@ -74,7 +72,6 @@
       <div id="left-side">
 
         <p>Use the new <strong>&lt;if&gt;</strong> tag to conditionally include blocks of HTML.</p>
-        <p>There are no complimentary <strong>&lt;else&gt;</strong> or <strong>&lt;else-if&gt;</strong> tags. If you want to create mutually-exclusive blocks, use the <a href="switch.html">&lt;switch&gt;</a> syntax.</p>
 
         <p>The tested value of conditionals are implicitly lookups, so the {curly} syntax is not needed.
           However, all examples here use them.</p>
@@ -174,7 +171,7 @@
 const boiler = {
   'builderLookup': {
     magic: 123,
-    sentence: 'Help docs',
+    sentence: 'Help docs!',
     fonts: [ 
       'bold', 
       'italic' 
@@ -183,11 +180,15 @@ const boiler = {
   }
 }</pre></code>
 
-        <h3>if/else constructs</h3>
-        <p>There are no <b>&lt;else&gt;</b> or <b>&lt;else-if&gt;</b> tags.</p>
-        <p>For complex cases, use <a href="switch.html">&lt;switch&gt;</a> syntax.<br>
-          But for many simple cases, just create adjacent, converse conditions.</p>
-        <code><pre>
+        <h3>&lt;elseif&gt; and &lt;else&gt; sequences</h3>
+
+        <p>Like most programming languages, the first &lt;if&gt; or &lt;elseif&gt; whose condition passes will expand,
+          and any subsequent siblings will be no-ops.</p>
+
+        <table>
+          <tr>
+            <td>
+              <code><pre>
 &lt;ttable&gt;
   &lt;for int="x" from="0" to="4"&gt;
     &lt;ttr&gt;
@@ -199,7 +200,23 @@ const boiler = {
       &lt;/if&gt;
     &lt;/ttr&gt;
   &lt;/for&gt;
-&lt;/table&gt;</pre></code>
+&lt;/table&gt;</pre></code>                
+            </td>
+            <td>
+              <for char="ch" in="{sentence}">
+                <if test="ch" eq=" ">&nbsp;</if>
+                <if test="ch" in="oO">
+                  😶
+                </if>
+                <elseif test="ch" ni="ABCDEFGHIJKLMNOPQRSTUVWXYZ">
+                  <i>{ch}</i>
+                </elseif>
+                <else><b style='color:red'>{ch}</b></else>
+              </for>
+            </td>
+          </tr>
+        </table>
+
 
         <p>Note that the table tags don't play well with
           <code class="inline">&lt;if&gt;</code> or

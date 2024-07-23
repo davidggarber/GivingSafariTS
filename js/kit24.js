@@ -19,8 +19,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.BuildTagError = exports.BuildEvalError = exports.BuildError = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = void 0;
+exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.BuildHtmlError = exports.BuildTagError = exports.BuildEvalError = exports.BuildError = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -50,6 +50,9 @@ function toggleClass(obj, cls, bool) {
         }
         else {
             elmt.classList.remove(cls);
+            if (elmt.classList.length == 0) {
+                elmt.removeAttribute('class');
+            }
         }
     }
 }
@@ -5677,6 +5680,7 @@ var print_as_grayscale = { id: 'printAs', text: "<div style='color:#666;'>Print 
  * @param bp
  */
 function preSetup(bp) {
+    exports._rawHtmlSource = document.documentElement.outerHTML;
     var safariDetails = initSafariDetails(bp.safari);
     debugSetup();
     var bodies = document.getElementsByTagName('BODY');
@@ -6815,16 +6819,24 @@ function rot13(source) {
  *      </div>
  */
 var builder_tags = [
-    'build', 'use', 'for', 'if', 'xml'
+    'build', 'use', 'for', 'if', 'else', 'elseif', 'xml'
 ];
-function identifyBuilders() {
+function firstBuilderElement() {
     for (var _i = 0, builder_tags_1 = builder_tags; _i < builder_tags_1.length; _i++) {
         var t = builder_tags_1[_i];
         var tags = document.getElementsByTagName(t);
         for (var i = 0; i < tags.length; i++) {
-            toggleClass(tags[i], 'builder_control', true);
+            toggleClass(tags[i], '_builder_control_', true);
         }
     }
+    var builds = document.getElementsByClassName('_builder_control_');
+    if (builds.length == 0)
+        return null;
+    var first = builds[0];
+    for (var i = builds.length - 1; i >= 0; i--) {
+        toggleClass(builds[i], '_builder_control_', false);
+    }
+    return first;
 }
 var src_element_stack = [];
 var dest_element_stack = [];
@@ -6915,27 +6927,25 @@ function getSvgDepth(elmt) {
  * Look for control tags like for loops and if branches.
  */
 function expandControlTags() {
-    identifyBuilders();
-    var controls = document.getElementsByClassName('builder_control');
-    while (controls.length > 0) {
-        var src = controls[0];
+    var ifResult = { passed: false, index: 0 };
+    for (var src = firstBuilderElement(); src != null; src = firstBuilderElement()) {
         try {
             initElementStack(src);
             var dest = [];
-            if (isTag(src, 'build') || isTag(src, 'xml')) {
-                dest = expandContents(src);
+            if (isTag(src, ['if', 'elseif', 'else'])) {
+                dest = startIfBlock(src, ifResult);
             }
-            else if (isTag(src, 'for')) {
-                dest = startForLoop(src);
-            }
-            else if (isTag(src, 'if')) {
-                dest = startIfBlock(src);
-            }
-            // else if (isTag(src, 'switch')) {
-            //   dest = startIfBlock(src);
-            // }
-            else if (isTag(src, 'use')) {
-                dest = useTemplate(src);
+            else {
+                ifResult.index = 0; // Reset
+                if (isTag(src, 'build') || isTag(src, 'xml')) {
+                    dest = expandContents(src);
+                }
+                else if (isTag(src, 'for')) {
+                    dest = startForLoop(src);
+                }
+                else if (isTag(src, 'use')) {
+                    dest = useTemplate(src);
+                }
             }
             var parent_2 = src.parentNode;
             for (var d = 0; d < dest.length; d++) {
@@ -6947,8 +6957,6 @@ function expandControlTags() {
         catch (ex) {
             throw new BuildTagError("expandControlTags", src, ex);
         }
-        // See if there are more
-        controls = document.getElementsByClassName('builder_control');
     }
     initElementStack(null);
     // Call any post-builder method
@@ -6990,16 +6998,19 @@ exports.appendRange = appendRange;
  */
 function expandContents(src) {
     var dest = [];
+    var ifResult = { passed: false, index: 0 };
     for (var i = 0; i < src.childNodes.length; i++) {
         var child = src.childNodes[i];
         if (child.nodeType == Node.ELEMENT_NODE) {
             var child_elmt = child;
             try {
+                if (isTag(child_elmt, ['if', 'elseif', 'else'])) {
+                    pushRange(dest, startIfBlock(child_elmt, ifResult));
+                    continue;
+                }
+                ifResult.index = 0; // Reset
                 if (isTag(child_elmt, 'for')) {
                     pushRange(dest, startForLoop(child_elmt));
-                }
-                else if (isTag(child_elmt, 'if')) {
-                    pushRange(dest, startIfBlock(child_elmt));
                 }
                 else if (isTag(child_elmt, 'use')) {
                     pushRange(dest, useTemplate(child_elmt));
@@ -7080,15 +7091,18 @@ function cloneWithContext(elmt) {
         }
         pushDestElement(clone);
         cloneAttributes(elmt, clone);
+        var ifResult = { passed: false, index: 0 };
         for (var i = 0; i < elmt.childNodes.length; i++) {
             var child = elmt.childNodes[i];
             if (child.nodeType == Node.ELEMENT_NODE) {
                 var child_elmt = child;
+                if (isTag(child_elmt, ['if', 'elseif', 'else'])) {
+                    appendRange(clone, startIfBlock(child_elmt, ifResult));
+                    continue;
+                }
+                ifResult.index = 0; // Reset
                 if (isTag(child_elmt, 'for')) {
                     appendRange(clone, startForLoop(child_elmt));
-                }
-                else if (isTag(child_elmt, 'if')) {
-                    appendRange(clone, startIfBlock(child_elmt));
                 }
                 else if (isTag(child_elmt, 'use')) {
                     appendRange(clone, useTemplate(child_elmt));
@@ -7125,22 +7139,6 @@ function cloneNode(node) {
 /*-----------------------------------------------------------
  * _builderError.ts
  *-----------------------------------------------------------*/
-/**
- * For debug traces, summarize a tag without including its children/contents
- * @param elmt Any HTML element
- * @returns A recreation of its start tag
- */
-function debugTagAttrs(elmt) {
-    var str = '<' + elmt.tagName;
-    for (var i = 0; i < elmt.attributes.length; i++) {
-        str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
-    }
-    if (elmt.childNodes.length == 0) {
-        str += ' /'; // show as empty tag
-    }
-    str += '>'; // close tag
-    return str;
-}
 /**
  * Convert an error's stack trace (run-on text stream) into a list.
  * @param ex An error. Better yet, a BuildError-derived error.
@@ -7244,15 +7242,21 @@ var BuildError = /** @class */ (function (_super) {
      * @param cls The name of the derived class, if any
      */
     function BuildError(msg, inner, cls) {
-        var _this = _super.call(this, concatErrorMessage(cls + ": " + msg, inner)) || this;
+        var _this = _super.call(this, concatErrorMessage((cls || "BuildError") + ": " + msg, inner)) || this;
         _this.name = 'BuildError';
         _this.cause = inner;
-        _this.relativeStack = debugMakeStack(['.BuildError', 'new Build'], (cls || "BuildError") + ": " + msg);
+        _this.relativeStack = debugMakeStack(['.Build', 'new Build'], (cls || "BuildError") + ": " + msg);
         if (inner) {
-            var innermost = simplifyRelativeStack(inner, _this.relativeStack);
-            if (inner.relativeStack) { // instanceof BuildError
-                inner.relativeStack = innermost;
-                inner.stack = innermost.join('\n');
+            if (inner.location) { // instanceof BuildHtmlError
+                inner.stack = inner.tag + ' (' + inner.location + ')';
+                inner.relativeStack = [inner.stack];
+            }
+            else {
+                var innermost = simplifyRelativeStack(inner, _this.relativeStack);
+                if (inner.relativeStack) { // instanceof BuildError
+                    inner.relativeStack = innermost;
+                    inner.stack = innermost.join('\n');
+                }
             }
         }
         return _this;
@@ -7300,6 +7304,65 @@ var BuildTagError = /** @class */ (function (_super) {
     return BuildTagError;
 }(BuildError));
 exports.BuildTagError = BuildTagError;
+/**
+ * Track build errors back to their location in the HTML
+ */
+var BuildHtmlError = /** @class */ (function (_super) {
+    __extends(BuildHtmlError, _super);
+    /**
+     * @param msg The description of the problem
+     * @param elmt The HTML element that is mal-formed
+     * @param inner The inner/causal error, if any
+     * @param cls The name of the derived class, if any
+     */
+    function BuildHtmlError(msg, elmt, inner, cls) {
+        var _this = _super.call(this, msg, inner, cls || "BuildHtmlError") || this;
+        _this.name = 'BuildHtmlError';
+        _this.tag = debugTagAttrs(elmt);
+        _this.location = debugLocateTag(elmt, true);
+        return _this;
+    }
+    return BuildHtmlError;
+}(BuildError));
+exports.BuildHtmlError = BuildHtmlError;
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+function debugTagAttrs(elmt) {
+    var str = '<' + elmt.localName;
+    for (var i = 0; i < elmt.attributes.length; i++) {
+        str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
+    }
+    if (elmt.childNodes.length == 0) {
+        str += ' /'; // show as empty tag
+    }
+    str += '>'; // close tag
+    return str;
+}
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+function debugLocateTag(elmt, fullPath) {
+    var elementStr = elmt.outerHTML;
+    var pageStr = exports._rawHtmlSource;
+    var elementIndex = pageStr.indexOf(elementStr);
+    if (elementIndex < 0) {
+        elementStr = '<' + elmt.localName;
+        elementIndex = Math.max(0, pageStr.indexOf(elementStr));
+    }
+    var contentAbove = pageStr.substring(0, elementIndex);
+    var linesAbove = contentAbove.split('\n');
+    var lineNumber = linesAbove.length; // start at line 1
+    var column = linesAbove[lineNumber - 1].length;
+    var fileName = fullPath
+        ? (window.location.protocol + '//' + window.location.pathname)
+        : ('./' + window.location.pathname.split("/").pop());
+    return "".concat(fileName, ":").concat(lineNumber, ":").concat(column);
+}
 /*-----------------------------------------------------------
  * _builderContext.ts
  *-----------------------------------------------------------*/
@@ -7780,6 +7843,7 @@ function keyExistsInContext(key) {
         var a = anyFromContext(key);
         // null, undefined, or '' count as not existing
         return a !== null && a !== undefined && a !== '';
+        // Note: empty {} and [] do count as existing.
     }
     catch (_a) {
         return false;
@@ -7969,9 +8033,6 @@ function parseForKey(src) {
     var vals = keys.map(function (k) { return obj[k]; });
     return [keys, vals];
 }
-/*-----------------------------------------------------------
- * _builderIf.ts
- *-----------------------------------------------------------*/
 /**
  * Potentially several kinds of if expressions:
  *   equality: <if test="var" eq="value">
@@ -7983,65 +8044,86 @@ function parseForKey(src) {
  *   contains: <if test="var" in="value">
  *   not-contains: <if test="var" ni="value">
  *   boolean: <if test="var">
- * Note there is no else or else-if block, because there are no scoping blocks
- * @param src the <if> element
- * @param context the set of values that might get used by or inside the if block
+ * @param src the <if>, <elseif>, or <else> element
+ * @param result in/out parameter that determines whether any sibling in a sequence of if/else-if/else tags has passed yet
  * @returns a list of nodes, which will replace this <if> element
  */
-function startIfBlock(src) {
-    var exists = src.getAttributeNS('', 'exists');
-    var notex = src.getAttributeNS('', 'notex');
-    if (exists || notex) {
-        // Does this attribute exist at all?
-        if ((exists && keyExistsInContext(exists)) || (notex && !keyExistsInContext(notex))) {
-            return expandContents(src);
+function startIfBlock(src, result) {
+    try {
+        if (isTag(src, 'if')) {
+            result.index = 1;
+            // Each <if> tag resets the group's passed state
+            result.passed = false;
         }
-        return [];
-    }
-    var not = src.getAttributeNS('', 'not');
-    if (not) {
-        var test_1 = textFromContext(not);
-        if (test_1 !== 'true') {
-            return expandContents(src);
+        else {
+            if (result.index < 1) {
+                throw new BuildError(src.tagName + ' without preceding <if>');
+            }
+            if (isTag(src, 'else')) {
+                result.index = -result.index;
+            }
+            else {
+                result.index++;
+            }
+            if (result.passed) {
+                // A prior sibling already passed, so all subsequent elseif and else blocks should abort.
+                return [];
+            }
         }
-        return [];
+        var exists = src.getAttributeNS('', 'exists');
+        var notex = src.getAttributeNS('', 'notex');
+        var not = src.getAttributeNS('', 'not');
+        var test = src.getAttributeNS('', 'test');
+        if (isTag(src, 'else')) {
+            result.passed = true;
+        }
+        else if (exists || notex) {
+            // Does this attribute exist at all?
+            result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
+        }
+        else if (not) {
+            test = textFromContext(not);
+            result.passed = test !== 'true';
+        }
+        else if (test) {
+            test = textFromContext(test);
+            var value = void 0;
+            if (value = src.getAttributeNS('', 'eq')) { // equality
+                result.passed = test == cloneText(value);
+            }
+            else if (value = src.getAttributeNS('', 'ne')) { // not-equals
+                result.passed = test != cloneText(value);
+            }
+            else if (value = src.getAttributeNS('', 'lt')) { // less-than
+                result.passed = parseFloat(test) < parseFloat(cloneText(value));
+            }
+            else if (value = src.getAttributeNS('', 'le')) { // less-than or equals
+                result.passed = parseFloat(test) <= parseFloat(cloneText(value));
+            }
+            else if (value = src.getAttributeNS('', 'gt')) { // greater-than
+                result.passed = parseFloat(test) > parseFloat(cloneText(value));
+            }
+            else if (value = src.getAttributeNS('', 'ge')) { // greater-than or equals
+                result.passed = parseFloat(test) >= parseFloat(cloneText(value));
+            }
+            else if (value = src.getAttributeNS('', 'in')) { // string contains
+                result.passed = cloneText(value).indexOf(test) >= 0;
+            }
+            else if (value = src.getAttributeNS('', 'ni')) { // string doesn't contain
+                result.passed = cloneText(value).indexOf(test) < 0;
+            }
+            else { // simple boolean
+                result.passed = test === 'true';
+            }
+        }
+        else {
+            throw new BuildHtmlError('<' + src.localName + '> elements must have an evaluating attribute: test, not, exists, or notex', src);
+        }
     }
-    var test = src.getAttributeNS('', 'test');
-    if (!test) {
-        throw new BuildTagError('<if> tags must have a test or exists attribute', src);
+    catch (ex) {
+        throw new BuildTagError('startIfBlock', src, ex);
     }
-    test = textFromContext(test);
-    var pass = false;
-    var value;
-    if (value = src.getAttributeNS('', 'eq')) { // equality
-        pass = test == cloneText(value);
-    }
-    else if (value = src.getAttributeNS('', 'ne')) { // not-equals
-        pass = test != cloneText(value);
-    }
-    else if (value = src.getAttributeNS('', 'lt')) { // less-than
-        pass = parseFloat(test) < parseFloat(cloneText(value));
-    }
-    else if (value = src.getAttributeNS('', 'le')) { // less-than or equals
-        pass = parseFloat(test) <= parseFloat(cloneText(value));
-    }
-    else if (value = src.getAttributeNS('', 'gt')) { // greater-than
-        pass = parseFloat(test) > parseFloat(cloneText(value));
-    }
-    else if (value = src.getAttributeNS('', 'ge')) { // greater-than or equals
-        pass = parseFloat(test) >= parseFloat(cloneText(value));
-    }
-    else if (value = src.getAttributeNS('', 'in')) { // string contains
-        pass = cloneText(value).indexOf(test) >= 0;
-    }
-    else if (value = src.getAttributeNS('', 'ni')) { // string doesn't contain
-        pass = cloneText(value).indexOf(test) < 0;
-    }
-    else { // simple boolean
-        pass = test === 'true';
-    }
-    if (pass) {
-        // No change in context from the if
+    if (result.passed) {
         return expandContents(src);
     }
     return [];
@@ -8211,8 +8293,8 @@ function useTemplate(node, tempId) {
     //  arg! = *any*          the attribute, evaluated as any
     //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
     var inner_context = pushBuilderContext();
-    for (var i_6 = 0; i_6 < passed_args.length; i_6++) {
-        var arg = passed_args[i_6];
+    for (var i = 0; i < passed_args.length; i++) {
+        var arg = passed_args[i];
         inner_context[arg.attr] = arg.text;
         inner_context[arg.attr + '!'] = arg.any;
         inner_context[arg.attr + '$'] = arg.raw;

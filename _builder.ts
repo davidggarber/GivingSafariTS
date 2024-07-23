@@ -2,7 +2,7 @@ import { theBoiler } from "./_boilerplate";
 import { cloneAttributes, cloneTextNode } from "./_builderContext";
 import { BuildError, BuildTagError } from "./_builderError";
 import { startForLoop } from "./_builderFor";
-import { startIfBlock } from "./_builderIf";
+import { ifResult, startIfBlock } from "./_builderIf";
 import { inputAreaTagNames, startInputArea } from "./_builderInput";
 import { useTemplate } from "./_builderUse";
 import { findParentOfTag, isTag, toggleClass } from "./_classUtil";
@@ -164,15 +164,23 @@ import { svg_xmlns } from "./_tableBuilder";
 
 
 const builder_tags = [
-  'build', 'use', 'for', 'if', 'xml'
+  'build', 'use', 'for', 'if', 'else', 'elseif', 'xml'
 ];
-function identifyBuilders() {
+function firstBuilderElement():HTMLElement|null {
   for (const t of builder_tags) {
     const tags = document.getElementsByTagName(t);
     for (let i=0; i < tags.length; i++) {
-      toggleClass(tags[i], 'builder_control', true);
+      toggleClass(tags[i], '_builder_control_', true);
     }  
   }
+  const builds = document.getElementsByClassName('_builder_control_');
+  if (builds.length == 0)
+    return null;
+  const first = builds[0];
+  for (let i = builds.length-1; i >= 0; i--) {
+    toggleClass(builds[i], '_builder_control_', false);
+  }
+  return first as HTMLElement;
 }
 
 let src_element_stack:Element[] = [];
@@ -274,27 +282,26 @@ function getSvgDepth(elmt:Element) {
  * Look for control tags like for loops and if branches.
  */
 export function expandControlTags() {
-  identifyBuilders();
-  let controls = document.getElementsByClassName('builder_control');
-  while (controls.length > 0) {
-    const src = controls[0] as HTMLElement;
+  const ifResult:ifResult = {passed:false, index:0};
+  for (let src = firstBuilderElement(); src != null; src = firstBuilderElement()) {
     try {
       initElementStack(src);
       let dest:Node[] = [];
-      if (isTag(src, 'build') || isTag(src, 'xml')) {
-        dest = expandContents(src);
+      if (isTag(src, ['if', 'elseif', 'else'])) {
+        dest = startIfBlock(src, ifResult);        
       }
-      else if (isTag(src, 'for')) {
-        dest = startForLoop(src);
-      }
-      else if (isTag(src, 'if')) {
-        dest = startIfBlock(src);
-      }
-      // else if (isTag(src, 'switch')) {
-      //   dest = startIfBlock(src);
-      // }
-      else if (isTag(src, 'use')) {
-        dest = useTemplate(src);
+      else {
+        ifResult.index = 0;  // Reset
+
+        if (isTag(src, 'build') || isTag(src, 'xml')) {
+          dest = expandContents(src);
+        }
+        else if (isTag(src, 'for')) {
+          dest = startForLoop(src);
+        }
+        else if (isTag(src, 'use')) {
+          dest = useTemplate(src);
+        }
       }
       const parent = src.parentNode;
       for (let d = 0; d < dest.length; d++) {
@@ -306,9 +313,6 @@ export function expandControlTags() {
     catch (ex) {
       throw new BuildTagError("expandControlTags", src, ex);
     }
-
-    // See if there are more
-    controls = document.getElementsByClassName('builder_control');
   }
   initElementStack(null);
 
@@ -351,16 +355,20 @@ export function appendRange(parent:Node, add:Node[]) {
  */
 export function expandContents(src:HTMLElement):Node[] {
   const dest:Node[] = [];
+  const ifResult:ifResult = {passed:false, index:0};
   for (let i = 0; i < src.childNodes.length; i++) {
     const child = src.childNodes[i];
     if (child.nodeType == Node.ELEMENT_NODE) {
       const child_elmt = child as HTMLElement;
       try {
+        if (isTag(child_elmt, ['if', 'elseif', 'else'])) {
+          pushRange(dest, startIfBlock(child_elmt, ifResult));
+          continue;
+        }
+        ifResult.index = 0;  // Reset
+
         if (isTag(child_elmt, 'for')) {
           pushRange(dest, startForLoop(child_elmt));
-        }
-        else if (isTag(child_elmt, 'if')) {
-          pushRange(dest, startIfBlock(child_elmt));
         }
         else if (isTag(child_elmt, 'use')) {
           pushRange(dest, useTemplate(child_elmt));
@@ -444,15 +452,19 @@ function cloneWithContext(elmt:HTMLElement):Element {
     pushDestElement(clone);
     cloneAttributes(elmt, clone);
 
+    const ifResult:ifResult = {passed:false, index:0};
     for (let i = 0; i < elmt.childNodes.length; i++) {
       const child = elmt.childNodes[i];
       if (child.nodeType == Node.ELEMENT_NODE) {
         const child_elmt = child as HTMLElement;
+        if (isTag(child_elmt, ['if', 'elseif', 'else'])) {
+          appendRange(clone, startIfBlock(child_elmt, ifResult));
+          continue;
+        }
+        ifResult.index = 0;  // Reset
+
         if (isTag(child_elmt, 'for')) {
           appendRange(clone, startForLoop(child_elmt));
-        }
-        else if (isTag(child_elmt, 'if')) {
-          appendRange(clone, startIfBlock(child_elmt));
         }
         else if (isTag(child_elmt, 'use')) {
           appendRange(clone, useTemplate(child_elmt));
