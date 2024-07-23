@@ -14,6 +14,7 @@
         },
         'reactiveBuilder': true,
         'builderLookup': {
+          sentenceVar: "{sentence}",
           enabledVar: "{enabled}",
           optVar: ["{optional.0}","{optional.1}","{optional.2}","{optional.3}","{optional.4}","{optional.5}"],
           numbers: [
@@ -165,20 +166,39 @@
       </div>
 
       <div id="right-side">
-        <h3 style="margin-top: 0px;">Builder Lookup Data</h3>
-        <p>All examples are based on these sample entries in the boiler javascript object.</p>
-        <code><pre>
-const boiler = {
-  'builderLookup': {
-    magic: 123,
-    sentence: 'Help docs',
-    fonts: [ 
-      'bold', 
-      'italic' 
-    ],
-    enabled: true
-  }
-}</pre></code>
+        <h3>Regular expressions</h3>
+
+        <p>One addition condition attribute: <b>regex</b></p>
+
+        <table>
+          <tr>
+            <td>
+              <build>
+                <code ondblclick="selectCode(this, event)">&lt;if test="{sentenceVar}" <b style="font-size: large;">regex</b>="^H.*s$"&gt;<br/>
+                  &nbsp; <i>&lt;!-- contents --&gt;</i>
+                  &lt;/if&gt;
+                </code>
+  
+              </build>
+            
+            </td>
+            <td>
+              {sentence} starts with 'H' and ends with 's'
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code ondblclick="selectCode(this, event)"><pre>&lt;for word="w" in="{sentence}"&gt;
+  &lt;if test="w" <b style="font-size: large;">regex</b>="^[a-z]+$"&gt;{w}&lt;/if&gt;
+&lt;/for&gt;</pre></code>
+            </td>
+            <td>
+              Each word in {sentence} that is all lower-case
+            </td>
+          </tr>
+        </table>
+
+
 
         <h3>&lt;elseif&gt; and &lt;else&gt; sequences</h3>
 
@@ -201,7 +221,7 @@ const boiler = {
             <td>
               <for char="ch" in="{sentence}" trim>
                 <if test="ch" eq=" ">&nbsp;</if>
-                <elseif test="ch" in="oO">😶</if>
+                <elseif test="ch" in="oO">😶</elseif>
                 <elseif test="ch" ni="ABCDEFGHIJKLMNOPQRSTUVWXYZ">
                   <i>{ch}</i>
                 </elseif>
@@ -221,6 +241,22 @@ const boiler = {
           <code class="inline">&lt;tth&gt;</code>,
           <code class="inline">&lt;ttd&gt;</code> &hellip;
         </p>
+
+        <h3 style="margin-top: 48px;">Builder Lookup Data</h3>
+        <p>All examples are based on these sample entries in the boiler javascript object.</p>
+        <code><pre>
+const boiler = {
+  'builderLookup': {
+    magic: 123,
+    sentence: 'Help docs',
+    fonts: [ 
+      'bold', 
+      'italic' 
+    ],
+    enabled: true
+  }
+}</pre></code>
+
 
       </div>
     </div>

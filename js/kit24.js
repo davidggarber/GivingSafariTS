@@ -8155,6 +8155,10 @@ function startIfBlock(src, result) {
             else if (value = src.getAttributeNS('', 'ni')) { // string doesn't contain
                 result.passed = cloneText(value).indexOf(test) < 0;
             }
+            else if (value = src.getAttributeNS('', 'regex')) { // regular expression
+                var re = new RegExp(value);
+                result.passed = re.test(test);
+            }
             else { // simple boolean
                 result.passed = test === 'true';
             }
