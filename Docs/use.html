@@ -6,7 +6,7 @@
     <script>
       const boiler = {
         'safari': 'Docs',
-        'title': '<if>',
+        'title': '<use>',
         'paperSize': 'ledger',
         'orientation': 'landscape',
         'textInput': true,
@@ -72,95 +72,77 @@
     <div id="pageBody">
       <div id="left-side">
 
-        <p>Use the new <strong>&lt;if&gt;</strong> tag to conditionally include blocks of HTML.</p>
+        <p>Templates are an existing concept within HTML. Anything inside &lt;template&gt; tags is kept in a side cache, and can be cloned into the document whenever needed.</p>
+        <p>The &lt;use&gt; tag injects the contents of templates, with the added functionality that it can pass parameters.</p>
 
-        <p>The tested value of conditionals are implicitly lookups, so the {curly} syntax is not needed.
-          However, all examples here use them.</p>
+        <h3>Example</h3>
 
-        <p>There are numerous ways to evaluate the tested value. They are distinguished by different attribute syntaxes.</p> 
-        <build>
-          <ttable style="width:100%">
-            <ttr>
-              <tth>Boolean conditions</tth>
-              <tth>Apply contents if &hellip;</tth>
-            </ttr>
-            <ttr>
-              <ttd>
-                <code onclick="selectCodeBlock(this, event)">&lt;if <b style="font-size: large;">test</b>="{enabledVar}"&gt;<br/>
-                  &nbsp; <i>&lt;!-- contents --&gt;</i>
-                  &lt;/if&gt;
-                </code>
-              </ttd>
-              <ttd>{enabledVar} is true</ttd>
-            </ttr>  
-            <ttr>
-              <ttd>
-                <code onclick="selectCodeBlock(this, event)">&lt;if <b style="font-size: large;">not</b>="{enabledVar}"&gt;<br/>
-                  &nbsp; <i>&lt;!-- contents --&gt;</i>
-                  &lt;/if&gt;
-                </code>
-              </ttd>
-              <ttd>{enabledVar} is false</ttd>
-            </ttr>  
+        <p>Define a template "img-grid".</p>
 
-            <ttr>
-              <tth>Numeric conditions</tth>
-              <tth>&nbsp;</tth>
-            </ttr>
-            <for each="eval" in="{numbers}">
-              <ttr>
-                <ttd><use template="iftest" row="{eval}"></use></ttd>
-                <ttd>{eval.var} {eval.trueWhen}</ttd>
-              </ttr>  
-            </for>
+<code onclick="selectCodeBlock(this, event)"><pre>&lt;template id="img-grid"&gt;
+  &lt;for int="row" from="1" to="{rows}"&gt;
+    &lt;for int="col" from="1" to="{cols}"&gt;
+      &lt;img src="img_{row}_{col}.jpg"&gt;
+    &lt;/for&gt;&lt;br&gt;
+  &lt;/for&gt;
+&lt;/template&gt;</pre></code>
+        
+        <p>Invoke the template, passing arguments.</p>
 
-            <ttr>
-              <tth>String conditions</tth>
-              <tth>&nbsp;</tth>
-            </ttr>
-            <for each="eval" in="{strings}">
-              <ttr>
-                <ttd><use template="iftest" row="{eval}"></use></ttd>
-                <ttd>{eval.var} {eval.trueWhen}</ttd>
-              </ttr>  
-            </for>
+<code onclick="selectCodeBlock(this, event)"><pre>&lt;div id="some-page-element"&gt;
+  &lt;use template="img-grid" rows="2" cols="3"&gt;
+&lt;/div&gt;</pre></code>
 
-            <ttr>
-              <tth>List conditions</tth>
-              <tth>&nbsp;</tth>
-            </ttr>
-            <for each="eval" in="{lists}">
-              <ttr>
-                <ttd><use template="iftest" row="{eval}"></use></ttd>
-                <ttd>{eval.var} {eval.trueWhen}</ttd>
-              </ttr>  
-            </for>
+        <p style="margin-bottom:0px;">Within the &lt;template&gt; element&hellip;</p>
+        <ul style="margin-top:0px;">
+          <li><code class="inline">id="img-grid"</code>
+            names the template, so it can be called later.</li>
+          <li><code class="inline">{rows}</code> and <code class="inline">{cols}</code>
+            are used within the template, but are undefined. They need to be passed in.</li>
+          <li><code class="inline">{row}</code> and <code class="inline">{col}</code>
+            are defined by the &lt;for&gt; elements within the template.</li>
+        </ul>
 
-            <ttr>
-              <tth>Existence/validity conditions</tth>
-              <tth>&nbsp;</tth>
-            </ttr>
-            <ttr>
-              <ttd>
-                <code onclick="selectCodeBlock(this, event)">&lt;if <b style="font-size: large;">exists</b>="{optVar.0}"&gt;<br/>
-                  &nbsp; <i>&lt;!-- contents --&gt;</i>
-                  &lt;/if&gt;
-                </code>
-              </ttd>
-              <ttd>{optVar.0} is neither null, undefined, or ''.<br>Empty objects and lists are ok.</ttd>
-            </ttr>  
-            <ttr>
-              <ttd>
-                <code onclick="selectCodeBlock(this, event)">&lt;if <b style="font-size: large;">not</b>="{optVar.2}"&gt;<br/>
-                  &nbsp; <i>&lt;!-- contents --&gt;</i>
-                  &lt;/if&gt;
-                </code>
-              </ttd>
-              <ttd>{optVar.2} <i>is</i> one of null, undefined, or ''.</ttd>
-            </ttr>  
+        <p style="margin-bottom:0px;">Within the &lt;use&gt; element&hellip;</p>
+        <ul style="margin-top:0px;">
+          <li><code class="inline">template="img-grid"</code>
+            identifies which template to inject.</li>
+          <li><code class="inline">rows="2"</code> and <code class="inline">cols="3"</code>
+            are parameters, passed into the template.<br>
+            In this case, they will cause 6 images to be created, in two rows of 3.</li>
+        </ul>
 
-          </ttable>
-        </build>
+
+        <h3>Nested templates</h3>
+
+        <p>Templates can call other templates. They may also pass parameters from the outer caller through to the inner.</p>
+
+<code onclick="selectCodeBlock(this, event)"><pre>&lt;template id="sudoku"&gt;
+  &lt;div class="sudoku-grid"&gt;
+    &lt;for int="row" from="1" to="9"&gt;
+      &lt;for int="col" from="1" to="9"&gt;
+        &lt;use template="sudoku-cell" row={row} col={col} data={data.[{row}].[{col}]}&gt;
+      &lt;/for&gt;&lt;br&gt;
+    &lt;/for&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+&lt;template id="sudoku-cell"&gt;
+  &lt;div class="sudoku-cell"&gt;
+    &lt;if test={data}&gt;&lt;number {data}
+  &lt;numberfor int="row" from="1" to="9"&gt;
+      &lt;for int="col" from="1" to="9"&gt;
+        &lt;use template="sudoku-cell" row={row} col={col} init={data.[{row}].[{col}]}&gt;
+      &lt;/for&gt;&lt;br&gt;
+    &lt;/for&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</pre></code>
+        
+
+
+        <h3>Page organization</h3>
+
+        <p>Do not define a &lt;template&gt; within a build area.<br>
+          As a rule, define them at the end of the document, after the &lt;div id="pageBody"&gt;&lt;/div&gt;.</p>
 
 
       </div>
@@ -174,7 +156,7 @@
           <tr>
             <td>
               <build>
-                <code onclick="selectCodeBlock(this, event)">&lt;if test="{sentenceVar}" <b style="font-size: large;">regex</b>="^H.*s$"&gt;<br/>
+                <code onclick="selectCodeBlock(this, event)">&lt;use test="{sentenceVar}" <b style="font-size: large;">regex</b>="^H.*s$"&gt;<br/>
                   &nbsp; <i>&lt;!-- contents --&gt;</i>
                   &lt;/if&gt;
                 </code>
@@ -189,7 +171,7 @@
           <tr>
             <td>
               <code onclick="selectCodeBlock(this, event)"><pre>&lt;for word="w" in="{sentence}"&gt;
-  &lt;if test="w" <b style="font-size: large;">regex</b>="^[a-z]+$"&gt;{w}&lt;/if&gt;
+  &lt;use test="w" <b style="font-size: large;">regex</b>="^[a-z]+$"&gt;{w}&lt;/if&gt;
 &lt;/for&gt;</pre></code>
             </td>
             <td>
@@ -202,7 +184,7 @@
 
         <h3>&lt;elseif&gt; and &lt;else&gt; sequences</h3>
 
-        <p>Like most programming languages, the first &lt;if&gt; or &lt;elseif&gt; whose condition passes will expand,
+        <p>Like most programming languages, the first &lt;use&gt; or &lt;elseif&gt; whose condition passes will expand,
           and any subsequent siblings will be no-ops.</p>
 
         <table>
@@ -210,7 +192,7 @@
             <td>
               <code onclick="selectCodeBlock(this, event)"><pre>
 &lt;for char="ch" in="{sentence}" trim&gt;
-  &lt;if test="ch" eq=" "&gt;&nbsp;&lt;/if&gt;
+  &lt;use test="ch" eq=" "&gt;&nbsp;&lt;/if&gt;
   &lt;elseif test="ch" in="oO"&gt;😶&lt;/if&gt;
   &lt;elseif test="ch" ni="ABCDEFGHIJKLMNOPQRSTUVWXYZ"&gt;
     &lt;i&gt;{ch}&lt;/i&gt;
@@ -233,7 +215,7 @@
 
 
         <p>Note that the table tags don't play well with
-          <code class="inline">&lt;if&gt;</code> or
+          <code class="inline">&lt;use&gt;</code> or
           <code class="inline">&lt;for&gt;</code> tags.<br>
           As such, encode table (and some other) tags:
           <code class="inline">&lt;ttable&gt;</code>,
@@ -268,7 +250,7 @@ const boiler = {
       <use template="code" value="&lt;{value}&gt;"></use>
     </template>
     <template id="iftest">
-      <code onclick="selectCodeBlock(this, event)">&lt;if test="{row!.var}" <b style="font-size: large;">{row!.oper}</b>="{row!.val}"&gt;<br/>
+      <code onclick="selectCodeBlock(this, event)">&lt;use test="{row!.var}" <b style="font-size: large;">{row!.oper}</b>="{row!.val}"&gt;<br/>
         &nbsp; <i>&lt;!-- contents --&gt;</i>
         &lt;/if&gt;
       </code>

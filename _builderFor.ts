@@ -1,5 +1,5 @@
 import { expandContents, pushRange } from "./_builder";
-import { anyFromContext, cloneText, getBuilderContext, popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
+import { cloneText, complexAttribute, evaluateFormula, popBuilderContext, pushBuilderContext } from "./_builderContext";
 import { BuildError, BuildEvalError, BuildTagError } from "./_builderError";
 
 /**
@@ -86,7 +86,7 @@ function parseForEach(src:HTMLElement):any[] {
   if (!list_name) {
     throw new BuildTagError('for each requires "in" attribute', src);
   }
-  return anyFromContext(list_name);
+  return evaluateFormula(list_name);
 }
 
 function parseForText(src:HTMLElement, delim:string) {
@@ -95,7 +95,7 @@ function parseForText(src:HTMLElement, delim:string) {
     throw new BuildError('for char requires "in" attribute');
   }
   // The list_name can just be a literal string
-  const list = textFromContext(list_name);
+  const list = complexAttribute(list_name);
   if (!list) {
     throw new BuildError('unresolved context: ' + list_name);
   }
@@ -112,7 +112,7 @@ function parseForRange(src:HTMLElement):any {
   const start = from ? parseInt(cloneText(from)) : 0;
   let end = until ? parseInt(cloneText(until))
     : last ? (parseInt(cloneText(last)) + 1)
-    : length ? (anyFromContext(length).length)
+    : length ? (evaluateFormula(length).length)
     : start;
   const inc = step ? parseInt(cloneText(step)) : 1;
   if (inc == 0) {
@@ -134,7 +134,7 @@ function parseForKey(src:HTMLElement):any {
   if (!obj_name) {
     throw new BuildTagError('for each requires "in" attribute', src);
   }
-  const obj = anyFromContext(obj_name)
+  const obj = evaluateFormula(obj_name)
   if (!obj) {
     throw new BuildEvalError('unresolved list context', obj_name);
   }

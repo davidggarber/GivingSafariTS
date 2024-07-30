@@ -1,5 +1,5 @@
 import { expandContents } from "./_builder";
-import { anyFromContext, cloneText, keyExistsInContext, textFromContext } from "./_builderContext";
+import { cloneText, evaluateFormula, keyExistsInContext, textFromContext } from "./_builderContext";
 import { BuildError, BuildHtmlError, BuildTagError } from "./_builderError";
 import { isTag } from "./_classUtil";
 
@@ -60,8 +60,8 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
     }
     else if (not) {
-      test = textFromContext(not); 
-      result.passed = test !== 'true';
+      test = evaluateFormula(not); 
+      result.passed = (test === 'false') || (test === '') || (test === null);
     }
     else if (test) {
       test = textFromContext(test); 

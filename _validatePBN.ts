@@ -1,4 +1,4 @@
-import { anyFromContext, globalContextData, theBoilerContext } from "./_builder";
+import { evaluateFormula, globalContextData, theBoilerContext } from "./_builderContext";
 import { findParentOfClass, getOptionalStyle, hasClass, toggleClass } from "./_classUtil";
 import { StampToolDetails } from "./_stampTools";
 
@@ -113,7 +113,7 @@ function dataFromTool(cell:HTMLElement, stampTools: StampToolDetails[]): string|
 function contextDataFromRef(elmt:Element, attr:string):any {
   const path = getOptionalStyle(elmt, attr);
   if (path) {
-    return anyFromContext(path);
+    return evaluateFormula(path);
   }
   return undefined;
 }

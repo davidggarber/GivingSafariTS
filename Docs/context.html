@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Docs',
+        'title': 'Builder Context',
+        'paperSize': 'ledger',
+        'orientation': 'landscape',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+          code: 31415,
+          third: 2,  // lists are 0-indexed
+          name: 'Fred',
+          sentence: 'For those about to rock, we salute you!',
+          team: ['Velma', 'Daphne', 'Shaggy', 'Scooby'],
+          obj: {inner: {value:'nested', Fred:'Flintstone'}}
+        }
+      };
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      .test-case-table {
+        border-collapse: 0px;
+      }
+      .test-case-table td {
+        border: solid 1px gray;
+        padding: 6px;
+      }
+      .test-case-table th {
+        border: solid 1px gray;
+        padding: 6px;
+      }
+      .error {
+        background-color: #c00;
+        color: white;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body id="Letter">
+    <div id="pageBody">
+      <div id="left-side">
+        <h2>Test cases</h2>
+        <p>Each context argument has been passed to a template, which echoes the text back</p>
+        <build>
+          <ttable class="test-case-table">
+            <ttr>
+              <tth>Context argument</tth>
+              <tth>Evaluated</tth>
+              <tth>Comments</tth>
+            </ttr>
+            <use template="echo" eval="plaintext" expected="plaintext" comment="plain text can be passed as an argument"></use>
+            <use template="echo" eval="sentence" expected="sentence" comment="arguments that happen to look like variable names can still be plain text"></use>
+            <use template="echo" eval="{sentence}" expected="For those about to rock, we salute you!" comment="use \{curly braces\} to lookup values in the 'builderLookup' data"></use>
+            <use template="echo" eval="{code}" expected="31415" comment=""></use>
+            <use template="echo" eval="{code + 2}" expected="31417" comment=""></use>
+            <use template="echo" eval="{name}" expected="Fred" comment="Simple string variable"></use>
+            <use template="echo" eval="{team.0}" expected="Velma" comment="Dot notation to index into a list. In this case, the 0th item"></use>
+            <use template="echo" eval="{2+3}" expected="5" comment="Simple addition"></use>
+            <use template="echo" eval="{team.[third]}" expected="Shaggy" comment="Square brackets needed, because third is not a named member of team, but rather a variable for 2."></use>
+            <use template="echo" eval="{team.[2]}" expected="Shaggy" comment="[third] is converted to '2'. Then team.[2] is converted to team.2"></use>
+            <use template="echo" eval="{obj.inner.value}" expected="nested" comment="Dot notation to step into objects"></use>
+            <use template="echo" eval="{obj.inner}" expected="[object Object]" comment="Passing objects is legal, but in this case the callee is expecting text"></use>
+            <use template="echo" eval="{obj.inner.[value]}" expected="nested" comment="Because 'value' is not a variable, it is interpreted as plaintext. As plaintext, it is a valid child member name."></use>
+            <use template="echo" eval="{obj.inner.[name]}" expected="Flintstone" comment="'name' is a variable, so this becomes obj.inner.Fred"></use>
+          </ttable>
+        </build>
+
+        <h2>TODO...</h2>
+        <ol>
+          <li>Binary and unary operators, including parens, in as many contexts as possible</li>
+          <li>={} syntax</li>
+          <li>Escaping braces</li>
+          <li>Various scenarios where {} are implicit</li>
+        </ol>
+      </div>
+
+
+      <div id="right-side">
+        <h3>builderLookup used by test cases</h3>
+
+<code onclick="selectCodeBlock(this, event)"><pre>
+  'builderLookup': {
+    code: 31415,
+    third: 2,   // lists are 0-indexed
+    name: 'Fred',
+    sentence: 'For those about to rock, we salute you!',
+    team: ['Velma', 'Daphne', 'Shaggy', 'Scooby'],
+    obj: {inner: {value:'nested'}}
+  }</pre></code>
+
+
+      </div>
+    </div>
+
+    <template id="echo">
+      <ttr>
+        <ttd>
+          <code onclick="selectCodeBlock(this, event)"><pre>{eval$}</pre></code>
+        </ttd>
+        <if test="{eval}" eq="{expected}">
+          <ttd>
+            {eval}
+          </ttd>  
+        </if>
+        <else>
+          <ttd class="error">
+            {eval}
+          </ttd>  
+        </else>
+        <ttd>
+          {comment?}
+        </ttd>  
+    </ttr>
+    </template>
+
+  </body>
+</html>

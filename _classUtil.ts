@@ -1,5 +1,5 @@
 import { getParentIf } from "./_builder";
-import { anyFromContext, cloneText, textFromContext } from "./_builderContext";
+import { cloneText, evaluateFormula, textFromContext } from "./_builderContext";
 
 /**
  * Add or remove a class from a classlist, based on a boolean test.
@@ -396,7 +396,7 @@ export function getOptionalContext( elmt: Element|null,
     }
     const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
     const val = e ? e.getAttribute(attrName) : null;
-    return val !== null ? anyFromContext(val) : null;
+    return val !== null ? evaluateFormula(val) : null;
 }
 
 /**

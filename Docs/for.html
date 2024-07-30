@@ -115,7 +115,7 @@
 
         <h3 style="margin-top: 0px;">Builder Lookup Data</h3>
         <p>The examples at right are based on these sample entries in the boiler javascript object.</p>
-        <code><pre>
+        <code onclick="selectCodeBlock(this, event)"><pre>
 const boiler = {
   'builderLookup': {
     sentence: 'Help docs',
@@ -148,7 +148,7 @@ const boiler = {
 
           <tr>
             <td>
-              <code ondblclick="selectCode(this, event)">
+              <code onclick="selectCodeBlock(this, event)">
                 <pre>
 &lt;for each='font' in='{fonts}'&gt;
   {font#}:{font}
@@ -173,7 +173,7 @@ const boiler = {
 
           <tr>
             <td>
-              <code ondblclick="selectCode(this, event)">
+              <code onclick="selectCodeBlock(this, event)">
                 <pre>
 &lt;for key='pt' in='{line}'&gt;
   {pt}:
@@ -220,7 +220,7 @@ const boiler = {
 
           <tr>
             <td>
-              <code ondblclick="selectCode(this, event)">
+              <code onclick="selectCodeBlock(this, event)">
                 &lt;for char="ch" in="{fonts.0}"&gt;{ch} &lt;/for&gt;
               </code>
             </td>
@@ -235,7 +235,7 @@ const boiler = {
 
           <tr>
             <td>
-              <code ondblclick="selectCode(this, event)">
+              <code onclick="selectCodeBlock(this, event)">
                 &lt;for char="ch" in="plaintext"&gt;{ch} &lt;/for&gt;
               </code>
             </td>
@@ -249,7 +249,7 @@ const boiler = {
 
           <tr>
             <td>
-              <code ondblclick="selectCode(this, event)"><pre>
+              <code onclick="selectCodeBlock(this, event)"><pre>
 &lt;for word="w" in="Hello, goodbye!"&gt;
   {w}-{w}&lt;br&gt;
 &lt;/for&gt;</pre></code>
@@ -270,7 +270,7 @@ const boiler = {
 
           <tr>
             <td>
-              <code ondblclick="selectCode(this, event)">
+              <code onclick="selectCodeBlock(this, event)">
                 &lt;for int="i" from="1" to="3"&gt;{i}&lt;/for&gt;
               </code>
             </td>
@@ -290,7 +290,7 @@ const boiler = {
 
           <tr>
             <td>
-              <code ondblclick="selectCode(this, event)">
+              <code onclick="selectCodeBlock(this, event)">
                 &lt;for int="i" from="1" until="3"&gt;{i}&lt;/for&gt;  
               </code>
             </td>
@@ -304,7 +304,7 @@ const boiler = {
 
           <tr>
             <td>
-              <code ondblclick="selectCode(this, event)"><pre>
+              <code onclick="selectCodeBlock(this, event)"><pre>
 &lt;for int="i" from="5" to="0" step="-2"&gt;
   &lt;if test="{i#}" gt="0"&gt;, &lt;/if&gt;{i}
 &lt;/for&gt;</pre>
@@ -323,7 +323,7 @@ const boiler = {
 
           <tr>
             <td>
-              <code ondblclick="selectCode(this, event)">
+              <code onclick="selectCodeBlock(this, event)">
                 &lt;for int="i" len="{sentence}"&gt;{sentence.[i]} &lt;/for&gt;
               </code>
             </td>
@@ -344,7 +344,7 @@ const boiler = {
 
           <tr>
             <td>
-              <code ondblclick="selectCode(this, event)">
+              <code onclick="selectCodeBlock(this, event)">
                 <pre>
 &lt;ttable border="1"&gt;
   &lt;for each="row" in="{grid}"&gt;
@@ -391,20 +391,20 @@ const boiler = {
     </div>
 
     <template id="code">
-      <code ondblclick="selectCode(this, event)">{value}</code>
+      <code onclick="selectCodeBlock(this, event)">{value}</code>
     </template>
     <template id="tag">
       <use template="code" value="&lt;{value}&gt;"></use>
     </template>
     <template id="foreach">
-      <code ondblclick="selectCode(this, event)">&lt;for <b style="font-size: large;">{type}</b>="{var}"
+      <code onclick="selectCodeBlock(this, event)">&lt;for <b style="font-size: large;">{type}</b>="{var}"
         {in}="{src}"&gt;<br/>
         &nbsp; <i>&lt;!-- contents --&gt;</i>
         &lt;/for&gt;
       </code>
     </template>
     <template id="forrange">
-      <code ondblclick="selectCode(this, event)">&lt;for <b style="font-size: large;">int</b>="i"
+      <code onclick="selectCodeBlock(this, event)">&lt;for <b style="font-size: large;">int</b>="i"
         <if exists="from">{from}="{v1}"</if>
         <if exists="to">{to}="{v2}"</if>&gt;<br/>
         &nbsp; <i>&lt;!-- contents --&gt;</i>

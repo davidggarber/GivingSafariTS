@@ -47,6 +47,19 @@ export function popBuilderContext():object {
 }
 
 /**
+ * Try to look up a key in the current context level.
+ * @param key A key name
+ * @returns The value from that key, or null if not present
+ */
+export function valueFromContext(key:string):any {
+  const context = getBuilderContext();
+  if (this.value in context) {
+    return context[this.value];
+  }
+  return null;
+}
+
+/**
  * Finish cloning an HTML element
  * @param src The element being cloned
  * @param dest The new element, still in need of attributes
@@ -85,67 +98,105 @@ export function cloneAttributes(src:Element, dest:Element) {
 /**
  * Process a text node which may contain {curly} formatting.
  * @param text A text node
- * @param context A dictionary of all accessible values
- * @returns A list of text nodes
+ * @returns A list with 1 or 0 text nodes
  */
 export function cloneTextNode(text:Text):Node[] {
-  const dest:Node[] = [];
-  let str = text.textContent;
+  const str = text.textContent || '';
+  const cloned = complexAttribute(str, getTrimMode());
+  if (cloned === '') {
+    return [];
+  }
   
-  if (str) {
-    // When a trim mode is in effect, dial back on copied whitespace.
-    // Effectively, it becomes just formatting, like outside <p> tags.
-    const trimMode = getTrimMode();
-    if (trimMode == TrimMode.all) {
-      str = str.trim();
-      if (str === '') {
-        return dest;
-      }
-    } 
-    else if (trimMode == TrimMode.on && str.trim() === '') {
-      return dest;
-    }
-  }
-
-  let i = str ? str.indexOf('{') : -1;
-  while (str && i >= 0) {
-    const j = str.indexOf('}', i);
-    if (j < 0) {
-      break;
-    }
-    if (i > 0) {
-      dest.push(document.createTextNode(str.substring(0, i)));
-    }
-    const key = str.substring(i + 1, j);
-    const txt = textFromContext(key);
-    dest.push(document.createTextNode(txt));
-    str = str.substring(j + 1);
-    i = str.indexOf('{');
-  }
-  if (str) {
-    dest.push(document.createTextNode(str));
-  }
-  return dest;
+  const node = document.createTextNode(cloned);
+  return [node];
 }
 
 /**
  * Process text which may contain {curly} formatting.
- * @param text Any text
- * @param context A dictionary of all accessible values
+ * @param text Any text, including text inside attributes
  * @returns Expanded text
  */
 export function cloneText(str:string|null):string {
   if (str === null) {
     return '';
   }
-  return contextFormula(str, false);
+  const trimMode = getTrimMode();
+  const cloned = complexAttribute(str, Math.max(trimMode, TrimMode.on));
+  return '' + cloned;
+}
+
+/**
+ * Resolve an attribute, in situations where it can resolve to an object, 
+ * and not just text. If any portion is text, then the entire will concatenate
+ * as text.
+ * @param str the raw attribute
+ * @param trim whether any whitespace should be trimmed while processing. By default, off.
+ * @returns an object, if the entire raw attribute string is a {formula}.
+ * Otherwise a string, which may simply be a clone of the original.
+ */
+export function complexAttribute(str:string, trim:TrimMode = TrimMode.off):any {
+  if (str === null) {
+    return '';
+  }
+  
+  if (trim != TrimMode.off) {
+    str = simpleTrim(str);
+  }
+
+  const list = tokenizeText(str);
+
+  let buffer = '';
+  for (let i = 0; i < list.length; i++) {
+    if (!list[i].formula) {
+      if (trim == TrimMode.all) {
+        buffer += simpleTrim(list[i].text);
+      }
+      else {
+        buffer += list[i].text;
+      }
+    }
+    else {
+      const complex = evaluateFormula(list[i].text);
+      if (i == 0 && list.length == 1) {
+        return complex;
+      }
+      buffer += complex;
+    }
+  }
+}
+
+/**
+ * Trim a string without taking non-breaking-spaces
+ * @param str Any string
+ * @returns A substring
+ */
+function simpleTrim(str:string):string {
+  let s = 0;
+  let e = str.length;
+  while (s < e && (str.charCodeAt(s) || 33) <= 32) {
+    s++;
+  }
+  while (e > s && (str.charCodeAt(e) || 33) <= 32) {
+    e--;
+  }
+  return str.substring(s, e);
 }
 
 enum TokenType {
-  start = 0,
-  bracket,
-  operator,
-  text
+  unset = 0,
+  unaryOp = 0x1,  // sub-types of operator, when we get to that
+  binaryOp = 0x2,
+  objectOp = 0x4,
+  anyOperator = 0x7,
+  openBracket = 0x10,
+  closeBracket = 0x20,
+  anyBracket = 0x30,
+  text = 0x100,
+}
+
+type FormulaToken = {
+  text: string;
+  type: TokenType;
 }
 
 /**
@@ -157,60 +208,322 @@ enum TokenType {
  * @param inFormula True if str should be treated as already inside {}
  * @returns A list of token strings. Uninterpretted.
  */
-function tokenizeFormula(str:string, inFormula:boolean): string[] {
-  const tokens:string[] = [];
-  const stack:string[] = [];
-  let tok = '';
-  let tokType = TokenType.start;
-  for (let i = 0; i < str.length; i++) {
-    const prevTT = tokType;
-    const ch = str[i];
-    if (!inFormula && ch == '{') {
-      stack.push(bracketPairs[ch]);  // push the expected close
-      tokType = TokenType.bracket;
-    }
-    else if (inFormula && ch in bracketPairs) {
-      stack.push(bracketPairs[ch]);  // push the expected close
-      tokType = TokenType.bracket;
-    }
-    else if (stack.length > 0) {
-      tok += ch;
-      if (ch == stack[stack.length - 1]) {
-        stack.pop();
-        if (stack.length == 0) {
-          tokens.push(tok);
-          tok = '';
-          tokType = TokenType.start;
-        }
-      }
+function tokenizeFormula(str:string): FormulaToken[] {
+  const tokens:FormulaToken[] = [];
+  const stack:string[] = [];  // currently open brackets
+
+  let tok:FormulaToken = { text: '', type: TokenType.unset };
+  let escape = '';
+  for (let i = 0; i <= str.length; i++) {
+    const ch = i < str.length ? str[i] : '';
+    if (ch == '`') {
+      escape += ch;
       continue;
     }
-    else if (inFormula && (ch in binaryOperators || ch in unaryOperators)) {
-      tokType = TokenType.operator;
+    if ((escape.length % 2) == 0 && ch in bracketPairs) {
+      if (tok.type != TokenType.unset) { tokens.push(tok); }       // push any token in progress
+      tokens.push(tok = { text:ch, type:TokenType.openBracket });  // push open bracket
+      tok = { text: '', type: TokenType.unset };                   // reset next token
+    }
+    else if (stack.length > 0 && (escape.length % 2) == 0 && ch == stack[stack.length - 1]) {
+      stack.pop();
+      if (tok.type != TokenType.unset) { tokens.push(tok); }        // push any token in progress
+      tokens.push(tok = { text:ch, type:TokenType.closeBracket });  // push close bracket
+      tok = { text: '', type: TokenType.unset };                    // reset next token
+    }
+    else if ((escape.length % 2) == 0 && (ch in binaryOperators || ch in unaryOperators || ch in objectOperators)) {
+      let tt:TokenType = TokenType.unset;
+      if (ch in binaryOperators) { tt |= TokenType.binaryOp; }
+      if (ch in unaryOperators) { tt |= TokenType.unaryOp; }
+      if (ch in objectOperators) { tt |= TokenType.objectOp; }
+      if (tok.type != TokenType.unset) { tokens.push(tok); }   // push any token in progress
+      tokens.push(tok = { text:ch, type:tt });                 // push operator (exact type TBD)
+      tok = { text: '', type: TokenType.unset };               // reset next token
     }
     else {
-      tokType = TokenType.text;
+      if (isBracketChar(ch) && (escape.length % 0) == 1) {
+        // Any escaped brackets should drop the escape ` prefix
+        tok.text += escape.substring(0, escape.length - 1) + ch;
+      }
+      else {
+        tok.text += escape + ch;
+      }
+      tok.type = TokenType.text;
+    }
+    escape = '';
+  }
+  if (tok.type != TokenType.unset) { 
+    tokens.push(tok);  // push any token in progress
+  }
+
+  // Re-scan tokens, to clarify operator sub-types
+  for (let i = 0; i < tokens.length; i++) {
+    const tok = tokens[i];
+    if (tok.type & TokenType.anyOperator) {
+      if (i == 0 || (tokens[i - 1].type & (TokenType.text | TokenType.closeBracket)) == 0) {
+        // If no object (text or a closeBracket) precedes us, we're a unary operator
+        // For example, consecutive operators mean all but the first are unary (since we have no post-fix unary operators)
+        tok.type = TokenType.unaryOp;  
+      }
+      else if (tok.type == (TokenType.unaryOp | TokenType.binaryOp)) {
+        // When an object does precede us, then ambiguous operators are binary
+        tok.type = TokenType.binaryOp;
+      }
+    }
+  }
+
+  return tokens;
+}
+
+function findCloseBracket(tokens:FormulaToken[], open:number):number {
+  const closes:string[] = [bracketPairs[tokens[open].text]];
+  for (let i = open + 1; i < tokens.length; i++) {
+    const tok = tokens[i];
+    if (tok.type == TokenType.closeBracket) {
+      if (tok.text == closes[closes.length - 1]) {
+        closes.pop();
+        if (closes.length == 0) {
+          return i;
+        }
+      }
+      throw new BuildError('Unmatched close bracket: ' + tok.text);
+    }
+    else if (tok.type == TokenType.openBracket) {
+      closes.push(bracketPairs[tok.text]);
+    }
+  }
+  throw new BuildError('Missing close brackets: ' + closes.join(' '));
+}
+
+class FormulaNode {
+  value: string;  // Doubles as the operator and the simple string value
+  left?: FormulaNode;
+  right?: FormulaNode;
+  complete: boolean;
+  public bracket: string;  // If this node is the root of a bracketed sub-formula, name the bracket char, else ''
+  public parent?: FormulaNode;
+
+  constructor(complete:boolean, value:string, right?:FormulaNode, left?:FormulaNode) {
+    this.left = left;
+    this.right = right;
+    this.value = value;
+    this.complete = complete;
+
+    if (right) {
+      right.parent = this;
+    }
+    if (left) {
+      left.parent = this;
+    }
+  }
+
+  /**
+   * Recreate the expression, as text
+   * @returns A string equivalent (including any brackets or quotes it was found inside)
+   */
+  toString(): string {
+    const rbrace = this.bracket === '' ? '' : bracketPairs[this.bracket];
+    if (this.left) {
+      return this.bracket + this.left.toString() + ' ' + this.value + ' ' + this.right?.toString() + rbrace;
+    }
+    else if (this.right) {
+      return this.bracket + this.value + ' ' + this.right?.toString() + rbrace;
+    }
+    else {
+      return this.bracket + this.value + rbrace;
+    }
+  }
+
+  /**
+   * Is this node waiting for the object of an operator?
+   * @returns true if the object is complete. false if awaiting an object.
+   */
+  isComplete():boolean {
+    return this.complete;
+  }
+
+  /**
+   * Is this node plain-text?
+   * @returns false if there is an operation and operands, else false
+   */
+  isSimple():boolean {
+    return this.complete && !this.left && !this.right;
+  }
+
+  /**
+   * A node that doesn't yet have all of its operands can be appended.
+   * If complete, reject the new node (it should be retried on a parent).
+   * Otherwise, assign to the right. Never the left.
+   * @param node The trailing operand in either a unary or binary operation.
+   * @returns true if this node has absorbed this as a new argument, 
+   * else false if we're already complete.
+   */
+  append(node:FormulaNode):boolean {
+    if (this.complete) {
+      return false;
+    }
+    this.right = node;
+    node.parent = this;
+    this.complete = true;
+    return true;
+  }
+
+  /**
+   * Evaluate this node.
+   * @returns If it's a simple value, return it (any type).
+   * If there's an operator and operands, return a type appropriate for that operator.
+   */
+  evaluate(): any {
+    if (this.left) {
+      try {
+        const bop:undefined|((a:any,b:any) => any) = binaryOperators[this.value || ''];
+        const oop:undefined|((a:any,b:any) => any) = objectOperators[this.value || ''];
+
+        const lValue = this.left.evaluate();
+        const rValue = this.left.evaluate();
+
+        if (bop) {
+          return bop(lValue, rValue);
+        }
+        else if (oop) {
+          return oop(lValue, rValue);
+        }
+      }
+      catch (ex) {
+        throw new BuildEvalError('FormulaNode.evaluateBinary', toString(), ex);
+      }
+      throw new Error('ERROR: Unrecognize binary operator: ' + this.value);
+    }
+    else if (this.right) {
+      try {
+        const uop:undefined|((a:any) => any) = unaryOperators[this.value || ''];
+        const rValue = this.right.evaluate();
+        if (uop) {
+          return uop(rValue);
+        }
+      }
+      catch (ex) {
+        throw new BuildEvalError('FormulaNode.evaluateUnary', toString(), ex);
+      }
+      throw new Error('ERROR: Unrecognize unary operator: ' + this.value);
+    }
+    else if (this.bracket === '\"' || this.bracket === '\'') {
+      // Reliably plain text
+      return this.value;
+    }
+    else {
+      // Could be plain text (or a number) or a name in context
+      const context = getBuilderContext();
+      if (this.value in context) {
+        return context[this.value];
+      }
+      return this.value;
+    }
+  }
+}
+
+function buildFormulaNodeTree(tokens:FormulaToken[]):FormulaNode
+{
+  const stack:FormulaNode[] = [];
+  let lastValue:FormulaNode|null = null;
+
+  for (let i = 0; i < tokens.length; i++) {
+    const tok = tokens[i];
+    let newNode:FormulaNode|null = null;
+
+    if (tok.type == TokenType.openBracket) {
+      const close = findCloseBracket(tokens, i);
+      const nested = tokens.slice(i + 1, close - 1);
+      newNode = buildFormulaNodeTree(nested);
+      newNode.bracket = tok.text;
+      lastValue = newNode;
+      i = close;
+    }
+    else if (tok.type == TokenType.text) {
+      newNode = new FormulaNode(true, tok.text);
+      lastValue = newNode;
     }
 
-    if (tokType != prevTT) {
-      if (tok) {
-        tokens.push(tok);
-      }
-      tok = ch;
-      if (tokType == TokenType.operator) {
-        tokens.push(ch);
-        tok = '';
-        tokType = TokenType.start;
-      }
+    if (tok.type == TokenType.unaryOp) {
+      newNode = new FormulaNode(false, tok.text);
     }
-    else {
-      tok += ch;
+    else if (tok.type == TokenType.binaryOp) {
+      if (stack.length == 0) {
+        throw new Error('Binary operator \'' + tok.text + '\' lacks l-value');
+      }
+      else if (stack.length > 0 || !stack[0].isComplete()) {
+        throw new Error('Binary operator \'' + tok.text + '\' with incomplete l-value {' + stack[0].toString() + '}');
+      }
+      const left = stack.pop();
+      newNode = new FormulaNode(false, tok.text, undefined, left);
+    }
+    else if (tok.type == TokenType.objectOp) {
+      // Object operators act on the most recent value-type node
+      if (!lastValue) {
+        throw new Error('Object operator \'' + tok.text + '\' lacks l-value');
+      }
+      const parent = lastValue.parent;
+      const objNode = new FormulaNode(false, tok.text, undefined, lastValue);
+      if (parent) {
+        parent.right = objNode;
+      }
+      else if (lastValue == stack[0]) {
+        stack[0] = objNode;
+      }
+      else {
+        throw new Error('Cannot place new object operator node in parent context: ' + objNode.toString());
+      }
+      lastValue = objNode;
+    }
+
+    // Almost all tokens create new nodes, which append to the end of the building tree.
+    // The exception is object operators, which effectively have operator precedence to the most recent value.
+
+    if (newNode) {
+      // If there are open nodes, a new value node should complete them
+      while (stack.length > 0) {
+        const node = stack.pop();
+        if (node) {
+          if (!node.append(newNode)) {
+            throw new Error('Value node {' + newNode.toString() + '} could not be appended to the existing state: ' + node.toString());
+          }
+          newNode = node;
+        }
+      }
+      // We now have an internally complete sequence. Make it the root node.
+      stack.push(newNode);
+      continue;
     }
   }
-  if (tok) {
-    tokens.push(tok);
+
+  if (stack.length == 0) {
+    return new FormulaNode(true, '');
   }
-  return tokens;
+
+  if (stack.length > 1 || !stack[0].isComplete()) {
+    throw new Error('Incomplete formula: ' + stack.toString());
+  }
+
+  return stack.pop() as FormulaNode;
+}
+
+/**
+ * Evaluate a formula
+ * @param str A single formula. The bracketing {} are assumed.
+ * @returns A single object, list, or string
+ */
+export function evaluateFormula(str:string|null):any {
+  if (str === null) {
+    return '';
+  }
+  try {
+    const tokens = tokenizeFormula(str);
+    const node = buildFormulaNodeTree(tokens);
+    return node.evaluate();  
+  }
+  catch (ex) {
+    throw new BuildEvalError('evaluateFormula', str, ex);
+  }
 }
 
 /* Context formula syntax has several components that need to play nicely with each other.
@@ -229,17 +542,28 @@ function tokenizeFormula(str:string, inFormula:boolean): string[] {
    Operators:
      +-*\%/   numeric operators
      &@       string operators
+     .?^      object and context operators
 
  */
 
 
 const bracketPairs = {
   '(': ')',
-  // '[': ']',
+  '[': ']',
   '{': '}',
   // '<': '>',  // should never be used for comparison operators in this context
   '"': '"',
   "'": "'",
+}
+
+/**
+ * Is this character normally a bracket, and therefore in need of escaping?
+ * @param ch 
+ * @returns 
+ */
+function isBracketChar(ch:string):boolean {
+  return ch in bracketPairs
+    || ch == ')' || ch == ']' || ch == '}';
 }
 
 const binaryOperators = {
@@ -254,7 +578,13 @@ const binaryOperators = {
 
 const unaryOperators = {
   '-': (a) => {return String(-parseFloat(a))},
-  '@': (a) => {return deentify(a)},
+//  '@': (a) => {return deentify(a)},
+'^': (a) => {return globalContextData(a)},
+}
+
+const objectOperators = {
+  '.': (a,b) => {return getKeyedChild(a, b, false)},
+  // '?': (a,b) => {return getKeyedChild(a, b, true)},
 }
 
 /**
@@ -302,185 +632,118 @@ function deentify(str:string):string {
 }
 
 /**
- * Handle a mix of context tokens and operators
- * @param str Raw text of a token/operator string
- * @param context A dictionary of all accessible values
- * @param inFormula True if str should be treated as already inside {}
- * @returns Expanded text
+ * Each token in a text string is either plain text or a formula that should be processed.
  */
-function contextFormula(str:string, inFormula:boolean):string {
-  let dest = '';
-  let binaryOp:undefined|((a:string,b:string) => string);
-  let unaryOp:undefined|((a:string) => string);
-  try {
-    const tokens = tokenizeFormula(str, inFormula);
-    for (let t = 0; t < tokens.length; t++) {
-      let tok = tokens[t];
-      if (!tok) {
+type TextToken = {
+  text: string;
+  formula: boolean;
+}
+
+/**
+ * Find the next instance of a character, making sure the character isn't escaped.
+ * In our custom library, the escape character is a prefixed `
+ * The only thing that can be escaped is brackets () [] {} "" '', and the ` itself.
+ * Anywhere else, ` is simply that character.
+ * @param raw The raw HTML content
+ * @param find The character the search for
+ * @param start The first position in the raw HTML
+ * @returns the index of the character, if found, or else -1 if not found
+ */
+function findNonEscaped(raw:string, find:string, start:number) {
+  while (start < raw.length) {
+    let curly = raw.indexOf(find, start);
+    if (curly > 0) {
+      let esc = 0;
+      while (curly - esc > 0 && raw[curly - esc - 1] == '`') {
+        esc++;
+      }
+      if ((esc % 2) == 1) {
+        // An odd number of back-slashes means the curly itself is escaped.
+        // An even number means the back-slash is itself escaped, but not the curly
+        start = curly + 1;
         continue;
       }
-      if (inFormula && (tok in binaryOperators || tok in unaryOperators)) {
-        if ((binaryOp || dest == '') && tok in unaryOperators) {
-          unaryOp = unaryOperators[tok];
-        }
-        else if (binaryOp || !(tok in binaryOperators)) {
-          throw new BuildEvalError("Consecutive binary operators: " + tok, str);
-        }
-        else {
-          binaryOp = binaryOperators[tok];
-        }
-        continue;  
-      }
-      let fromContext = false;
-      if (tok[0] in bracketPairs) {
-        const inner = tok.substring(1, tok.length - 1);
-        if (tok[0] == '(') {
-          // (...) is a precedence operator
-          tok = contextFormula(inner, true);
-          fromContext = true;
-        }
-        else if (tok[0] == '{') {
-          if (tok[1] == '=') {
-            // {=...} is a nested formula
-            tok = contextFormula(inner.substring(1), true);
-          }
-          else {
-            // {...} is a context look-up
-            tok = '' + anyFromContext(inner);
-          }
-          fromContext = true;
-        }
-      }
-      if (unaryOp) {
-        tok = unaryOp(tok);
-        unaryOp = undefined;
-      }
-      if (binaryOp) {
-        // All operators read left-to-right
-        // TODO: if dest=='', consider unary operators
-        dest = binaryOp(dest, tok);
-        binaryOp = undefined;  // used up
-      }
-      else if (inFormula && !fromContext) {
-        dest += anyFromContext(tok);
-      }
-      else {
-        dest += tok;
-      }
     }
-
-    if (unaryOp) {
-      throw new BuildError("Incomplete unary operation: " + unaryOp);
-    }
-    if (binaryOp) {
-      throw new BuildError("Incomplete binary operation: " + binaryOp);
-    }  
+    return curly;
   }
-  catch (ex) {
-    throw new BuildEvalError("contextFormula", str, ex);
-  }
-  return dest;
+  return -1;
 }
 
 /**
- * Trim a string without taking non-breaking-spaces
- * @param str Any string
- * @returns A substring
+ * Remove any escape characters preceding curly braces.
+ * Since those braces have other meanings when not escaped, 
+ * then their sheer presence means they were escaped.
+ * @param raw A string which may contain `{ or even ```{
+ * @returns A somg;e
  */
-function simpleTrim(str:string):string {
-  let s = 0;
-  let e = str.length;
-  while (s < e && (str.charCodeAt(s) || 33) <= 32) {
-    s++;
-  }
-  while (e > s && (str.charCodeAt(e) || 33) <= 32) {
-    e--;
-  }
-  return str.substring(s, e);
+function unescapeBraces(raw:string):string {
+  let str = raw.replace('`{', '{');  // Simple escapes
+  str = str.replace('`}', '}');  // Simple escapes
+  // REVIEW: If the original was ```{, then it is now ``{, and should be `{
+  // str = str.replace('``{', '`{');  // Simple escapes
+  // str = str.replace('``}', '`}');  // Simple escapes
+  return str;
 }
 
 /**
- * Enable lookups into the context by key name.
- * Keys can be paths, separated by dots (.)
- * Paths can have other paths as nested arguments, using [ ]
- * Note, the dot separator is still required.
- *   example: foo.[bar].fuz       equivalent to foo[{bar}].fuz
- *   example: foo.[bar.baz].fuz   equivalent to foo[{bar.baz}].fuz
- * Even arrays use dot notation: foo.0 is the 0th item in foo
- * @param key A key, initially from {curly} notation
- * @param context A dictionary of all accessible values
- * @returns Resolved text
+ * Parse text that occurs inside a built control element into tokens.
+ * @param raw the raw document text
+ * @param implicitFormula if true, the full text can be a formula without being inside {}.
  */
-export function anyFromContext(key:string):any {
-  try {
-    key = simpleTrim(key);
-    if (key === '') {
-      return '';
-    }
-    const context = getBuilderContext();
-    let rootCurly = false;
-    if (key[0] == '{' && key[key.length - 1] == '}') {
-      // Remove redundant {curly}, since some fields don't require them
-      key = simpleTrim(key.substring(1, key.length - 1));
-      rootCurly = false;
-    }
-    const path = key.split('.');
-    const nested = [context];
-    for (let i = 0; i < path.length; i++) {
-      let step = path[i];
-      if (!step) {
-        continue;  // Ignore blank steps for now
-      }
-      const maybe = step.indexOf('?') == step.length - 1;
-      if (maybe) {
-        step = step.substring(0, step.length - 1);
-      }
-      const newNest = step[0] == '[';
-      if (newNest) {
-        step = step.substring(1);
-        nested.push(context);
-      }
-      // steps can end in one more more ']', which can't occur anywhere else
-      let unnest = step.indexOf(']');
-      if (unnest >= 0) {
-        unnest = step.length - unnest;
-        if (nested.length <= unnest) {
-          throw new BuildError('Malformed path has unmatched ]');
-        }
-        step = step.substring(0, step.length - unnest);
-      }
+function tokenizeText(raw:string, implicitFormula?:boolean):TextToken[] {
+  implicitFormula = implicitFormula || false;
+  const list:TextToken[] = [];
 
-      if ((typeof nested[nested.length - 1] !== 'object') || !(step in nested[nested.length - 1])) {
-        if (maybe) {
-          if (i != path.length - 1) {
-            console.log('Optional key ' + step + '?' + ' before the end of ' + key);
-          }
-          return '';  // All missing optionals return ''
-        }
-        if ((rootCurly && i == 0 && path.length == 1) || (newNest && unnest > 0)) {
-          nested[nested.length - 1] = new String(step);  // A lone step (or nested step) can be a literal
-        }
-        else {
-          throw new BuildError('Unrecognized key step: ' + step);
-        }
+  let start = 0;
+  while (start < raw.length) {
+    let curly = findNonEscaped(raw, '{', start);
+    if (curly < 0) {
+      break;
+    }
+
+    if (curly > start) {
+      // Plain text prior to a formula
+      const ttoken:TextToken = {
+        text: unescapeBraces(raw.substring(start, curly)),
+        formula: false
+      };
+      list.push(ttoken);  
+    }
+
+    let count = 1;
+    let inner = curly + 1;
+    while (count > 0) {
+      let lb = findNonEscaped(raw, '{', inner);
+      let rb = findNonEscaped(raw, '}', inner);
+      if (rb < 0) {
+        throw new BuildError('Mismatched curly braces. No close } for open at position ' + curly + '. Raw: ' + raw);
+      }
+      if (lb >= 0 && lb < rb) {
+        count++;
+        inner = lb + 1;
       }
       else {
-        nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], step, maybe);
-      }
-
-      for (; unnest > 0; unnest--) {
-        const pop:string = '' + nested.pop();
-        nested[nested.length - 1] = getKeyedChild(nested[nested.length - 1], pop, maybe);
+        count--;
+        inner = rb + 1;
       }
     }
-    if (nested.length > 1) {
-      throw new BuildError('Malformed path has unmatched [');
-    }
-    return nested.pop();
+    // The contents of the formula (without the {} braces)
+    const ftoken:TextToken = {
+      text: raw.substring(curly + 1, inner - 1),
+      formula: true
+    };
+    list.push(ftoken);
+    start = inner;
   }
-  catch (ex) {
-    throw new BuildEvalError("anyFromContext", key, ex);
+  if (start < raw.length) {
+    // Any remaining plain text
+    const ttoken:TextToken = {
+      text: unescapeBraces(raw.substring(start)),
+      formula: false
+    };
+    list.push(ttoken);  
   }
+  return list;
 }
 
 /**
@@ -491,7 +754,7 @@ export function anyFromContext(key:string):any {
 export function globalContextData(path:string):any {
   const context = theBoilerContext();
   if (path && context) {
-    return anyFromContext(path);
+    return evaluateFormula(path);
   }
   return undefined;
 }
@@ -503,7 +766,7 @@ export function globalContextData(path:string):any {
  */
 export function keyExistsInContext(key:string) {
   try {
-    const a = anyFromContext(key);
+    const a = evaluateFormula(key);
     // null, undefined, or '' count as not existing
     return a !== null && a !== undefined && a !== '';
     // Note: empty {} and [] do count as existing.
@@ -525,18 +788,7 @@ export function keyExistsInContext(key:string) {
  * @returns Resolved text
  */
 export function textFromContext(key:string|null):string {
-  if (!key) {
-    return '';
-  }
-  try {
-    return contextFormula(key, true);
-  }
-  catch(ex) {
-    if (key.indexOf('.') < 0) {
-      return key;  // key can be a literal value
-    }
-    throw new BuildEvalError("textFromContext", key, ex);
-  }
+  return evaluateFormula(key) as string;
 }
 
 
