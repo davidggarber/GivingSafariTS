@@ -25,6 +25,15 @@ export function getBuilderContext():object {
 }
 
 /**
+ * Inject a builder context for testing purposes.
+ * @param lookup Any object, or undefined to remove.
+ */
+export function testBuilderContext(lookup?:object) {
+  theBoiler().builderLookup = lookup;
+  contextStack.splice(0, contextStack.length);  // clear
+}
+
+/**
  * Start a new top level builder context.
  * @param newContext If specified, this is the new context. If not, start from a clone of the current top context.
  * @returns The new context, which the caller may want to modify.

@@ -2,3 +2,7 @@ js/_*.js
 js/_*.js.map
 node_modules/*
 .batch/*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

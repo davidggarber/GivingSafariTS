@@ -129,14 +129,14 @@ type AbilityData = {
     subway?: boolean;
 }
 
-type BoilerPlateData = {
-    safari: string;  // key for Safari details
-    title: string;
-    qr_base64: string;
-    print_qr: boolean;
-    author: string;
-    copyright: string;
-    type: string;  // todo: enum
+export type BoilerPlateData = {
+    safari?: string;  // key for Safari details
+    title?: string;
+    qr_base64?: string;
+    print_qr?: boolean;
+    author?: string;
+    copyright?: string;
+    type?: string;  // todo: enum
     feeder?: string;
     lang?: string;  // en-us by default
     paperSize?: string;  // letter by default
@@ -366,7 +366,9 @@ function boilerplate(bp: BoilerPlateData) {
     const body:HTMLBodyElement = document.getElementsByTagName('BODY')[0] as HTMLBodyElement;
     const pageBody:HTMLDivElement = document.getElementById('pageBody') as HTMLDivElement;
 
-    document.title = bp.title;
+    if (bp.title) {
+        document.title = bp.title;
+    }
     
     html.lang = bp.lang || 'en-us';
 
@@ -441,13 +443,14 @@ function boilerplate(bp: BoilerPlateData) {
         margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));
     }
 
-    // Set tab icon for safari event
-    const tabIcon = document.createElement('link');
-    tabIcon.rel = 'shortcut icon';
-    tabIcon.type = 'image/png';
-    tabIcon.href = safariDetails.icon;
-    head.appendChild(tabIcon);
-
+    if (safariDetails.icon) {
+        // Set tab icon for safari event
+        const tabIcon = document.createElement('link');
+        tabIcon.rel = 'shortcut icon';
+        tabIcon.type = 'image/png';
+        tabIcon.href = safariDetails.icon;
+        head.appendChild(tabIcon);
+    }
 
     if (bp.qr_base64) {
         margins.appendChild(createPrintQrBase64(bp.qr_base64, ));
@@ -617,7 +620,7 @@ export function linkCss(relPath:string, head?:HTMLHeadElement) {
  */
 function cssLoaded() {
     if (--cssToLoad == 0) {
-        setupAfterCss(boiler as BoilerPlateData);
+        setupAfterCss(theBoiler());
     }
 }
 
@@ -658,7 +661,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.highlights) {
         let instructions = "Ctrl+click to highlight cells";
-        if (boiler?.textInput) {
+        if (theBoiler()?.textInput) {
             instructions = "Type ` or ctrl+click to highlight cells";
         }
         fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">💡</span>';
@@ -740,11 +743,30 @@ function setupAfterCss(bp: BoilerPlateData) {
 declare let boiler: BoilerPlateData | undefined;
 
 /**
+ * We forward-declare boiler, which we expect calling pages to define.
+ * @returns The page's boiler, if any. Else undefined.
+ */
+function pageBoiler():BoilerPlateData | undefined {
+    if (typeof boiler !== 'undefined') {
+        return boiler as BoilerPlateData;
+    }
+    return undefined;
+}
+
+let _boiler: BoilerPlateData = {};
+
+/**
  * Expose the boilerplate as an export
  * Only called by code which is triggered by a boilerplate, so safely not null
  */
 export function theBoiler():BoilerPlateData {
-    return boiler!;
+    return _boiler;
 }
 
-window.onload = function(){boilerplate(boiler as BoilerPlateData)};  // error if boiler still undefined
+export function testBoilerplate(bp:BoilerPlateData) {
+    boilerplate(bp);
+}
+
+if (typeof window !== 'undefined') {
+    window.onload = function(){boilerplate(pageBoiler()!)};  // error if boiler still undefined
+}

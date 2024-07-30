@@ -107,9 +107,12 @@ let restartButton:HTMLButtonElement;
 function createReloadUI(time:string) {
     reloadDialog = document.createElement('div');
     reloadDialog.id = 'reloadLocalStorage';
-    const img = document.createElement('img');
-    img.classList.add('icon');
-    img.src = getSafariDetails().icon;
+    let img:HTMLImageElement|null = null;
+    if (getSafariDetails().icon) {
+        img = document.createElement('img');
+        img.classList.add('icon');
+        img.src = getSafariDetails().icon!;
+    }
     const title = document.createElement('span');
     title.classList.add('title-font');
     title.innerText = document.title;
@@ -150,7 +153,7 @@ function createReloadUI(time:string) {
     var p3 = document.createElement('p');
     p3.appendChild(reloadButton);
     p3.appendChild(restartButton);
-    reloadDialog.appendChild(img);
+    if (img) { reloadDialog.appendChild(img); }
     reloadDialog.appendChild(p1);
     reloadDialog.appendChild(p2);
     reloadDialog.appendChild(p3);
