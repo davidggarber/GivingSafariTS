@@ -1,4 +1,4 @@
-import { anyFromContext, globalContextData, theBoilerContext } from "./_builder";
+import { anyFromContext, globalContextData, theBoilerContext } from "./_builderContext";
 import { findParentOfClass, getOptionalStyle, hasClass, toggleClass } from "./_classUtil";
 import { StampToolDetails } from "./_stampTools";
 

@@ -6,17 +6,22 @@ export type LinkDetails = {
 }
 
 export type PuzzleEventDetails = {
-  title: string;
+  title?: string;
   logo?: string;  // path from root
-  icon: string;  // path from root
+  icon?: string;  // path from root
   puzzleList?: string;
   cssRoot: string;  // path from root
-  fontCss: string;  // path from root
+  fontCss?: string;  // path from root
   googleFonts?: string;  // comma-delimeted list
   links: LinkDetails[];
   qr_folders?: {};  // folder lookup
   solverSite?: string;  // URL to another website
 }
+
+const noEventDetails:PuzzleEventDetails = {
+  'cssRoot': '../Css/',
+  'links': []
+};
 
 const safariDocsDetails:PuzzleEventDetails = {
   'title': 'Puzzyl Utility Library',
@@ -142,7 +147,10 @@ let safariDetails:PuzzleEventDetails;
 /**
 * Initialize a global reference to Safari event details
 */
-export function initSafariDetails(safariId:string): PuzzleEventDetails {
+export function initSafariDetails(safariId?:string): PuzzleEventDetails {
+  if (!safariId) {
+    return safariDetails = noEventDetails;
+  }
   if (!(safariId in pastSafaris)) {
     throw new Error('Unrecognized Safari Event ID: ' + safariId);
   }

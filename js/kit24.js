@@ -20,7 +20,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.BuildHtmlError = exports.BuildTagError = exports.BuildEvalError = exports.BuildError = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.getTrimMode = exports.TrimMode = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.BuildHtmlError = exports.BuildTagError = exports.BuildEvalError = exports.BuildError = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.getTrimMode = exports.TrimMode = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -1024,9 +1024,12 @@ var restartButton;
 function createReloadUI(time) {
     reloadDialog = document.createElement('div');
     reloadDialog.id = 'reloadLocalStorage';
-    var img = document.createElement('img');
-    img.classList.add('icon');
-    img.src = getSafariDetails().icon;
+    var img = null;
+    if (getSafariDetails().icon) {
+        img = document.createElement('img');
+        img.classList.add('icon');
+        img.src = getSafariDetails().icon;
+    }
     var title = document.createElement('span');
     title.classList.add('title-font');
     title.innerText = document.title;
@@ -1067,7 +1070,9 @@ function createReloadUI(time) {
     var p3 = document.createElement('p');
     p3.appendChild(reloadButton);
     p3.appendChild(restartButton);
-    reloadDialog.appendChild(img);
+    if (img) {
+        reloadDialog.appendChild(img);
+    }
     reloadDialog.appendChild(p1);
     reloadDialog.appendChild(p2);
     reloadDialog.appendChild(p3);
@@ -5448,6 +5453,10 @@ function onDeleteEdge(evt) {
     var edge = evt.target;
     deleteStraightEdge(edge);
 }
+var noEventDetails = {
+    'cssRoot': '../Css/',
+    'links': []
+};
 var safariDocsDetails = {
     'title': 'Puzzyl Utility Library',
     'logo': './Images/Sample_Logo.png',
@@ -5563,6 +5572,9 @@ var safariDetails;
 * Initialize a global reference to Safari event details
 */
 function initSafariDetails(safariId) {
+    if (!safariId) {
+        return safariDetails = noEventDetails;
+    }
     if (!(safariId in pastSafaris)) {
         throw new Error('Unrecognized Safari Event ID: ' + safariId);
     }
@@ -5855,7 +5867,9 @@ function boilerplate(bp) {
     var head = document.getElementsByTagName('HEAD')[0];
     var body = document.getElementsByTagName('BODY')[0];
     var pageBody = document.getElementById('pageBody');
-    document.title = bp.title;
+    if (bp.title) {
+        document.title = bp.title;
+    }
     html.lang = bp.lang || 'en-us';
     var safariDetails = getSafariDetails();
     for (var i = 0; i < safariDetails.links.length; i++) {
@@ -5923,12 +5937,14 @@ function boilerplate(bp) {
     if (bp.printAsColor !== undefined) {
         margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));
     }
-    // Set tab icon for safari event
-    var tabIcon = document.createElement('link');
-    tabIcon.rel = 'shortcut icon';
-    tabIcon.type = 'image/png';
-    tabIcon.href = safariDetails.icon;
-    head.appendChild(tabIcon);
+    if (safariDetails.icon) {
+        // Set tab icon for safari event
+        var tabIcon = document.createElement('link');
+        tabIcon.rel = 'shortcut icon';
+        tabIcon.type = 'image/png';
+        tabIcon.href = safariDetails.icon;
+        head.appendChild(tabIcon);
+    }
     if (bp.qr_base64) {
         margins.appendChild(createPrintQrBase64(bp.qr_base64));
     }
@@ -6082,7 +6098,7 @@ exports.linkCss = linkCss;
  */
 function cssLoaded() {
     if (--cssToLoad == 0) {
-        setupAfterCss(boiler);
+        setupAfterCss(theBoiler());
     }
 }
 /**
@@ -6091,6 +6107,7 @@ function cssLoaded() {
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
 function setupAbilities(head, margins, data) {
+    var _a;
     var safariDetails = getSafariDetails();
     var ability = document.getElementById('ability');
     if (ability != null) {
@@ -6122,7 +6139,7 @@ function setupAbilities(head, margins, data) {
     }
     if (data.highlights) {
         var instructions = "Ctrl+click to highlight cells";
-        if (boiler === null || boiler === void 0 ? void 0 : boiler.textInput) {
+        if ((_a = theBoiler()) === null || _a === void 0 ? void 0 : _a.textInput) {
             instructions = "Type ` or ctrl+click to highlight cells";
         }
         fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">💡</span>';
@@ -6196,14 +6213,31 @@ function setupAfterCss(bp) {
     debugPostSetup();
 }
 /**
+ * We forward-declare boiler, which we expect calling pages to define.
+ * @returns The page's boiler, if any. Else undefined.
+ */
+function pageBoiler() {
+    if (typeof boiler !== 'undefined') {
+        return boiler;
+    }
+    return undefined;
+}
+var _boiler = {};
+/**
  * Expose the boilerplate as an export
  * Only called by code which is triggered by a boilerplate, so safely not null
  */
 function theBoiler() {
-    return boiler;
+    return _boiler;
 }
 exports.theBoiler = theBoiler;
-window.onload = function () { boilerplate(boiler); }; // error if boiler still undefined
+function testBoilerplate(bp) {
+    boilerplate(bp);
+}
+exports.testBoilerplate = testBoilerplate;
+if (typeof window !== 'undefined') {
+    window.onload = function () { boilerplate(pageBoiler()); }; // error if boiler still undefined
+}
 /*-----------------------------------------------------------
  * _confirmation.ts
  *-----------------------------------------------------------*/
@@ -6864,7 +6898,7 @@ var TrimMode;
     TrimMode[TrimMode["off"] = 0] = "off";
     TrimMode[TrimMode["on"] = 1] = "on";
     TrimMode[TrimMode["all"] = 2] = "all";
-})(TrimMode = exports.TrimMode || (exports.TrimMode = {}));
+})(TrimMode || (exports.TrimMode = TrimMode = {}));
 /**
  * When in trim mode, cloning text between elements will omit any sections that are pure whitespace.
  * Sections that include both text and whitespace will be kept in entirety.
@@ -7416,6 +7450,15 @@ function getBuilderContext() {
     return contextStack[contextStack.length - 1];
 }
 exports.getBuilderContext = getBuilderContext;
+/**
+ * Inject a builder context for testing purposes.
+ * @param lookup Any object, or undefined to remove.
+ */
+function testBuilderContext(lookup) {
+    theBoiler().builderLookup = lookup;
+    contextStack.splice(0, contextStack.length); // clear
+}
+exports.testBuilderContext = testBuilderContext;
 /**
  * Start a new top level builder context.
  * @param newContext If specified, this is the new context. If not, start from a clone of the current top context.
