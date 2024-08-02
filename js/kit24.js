@@ -20,7 +20,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.evaluateFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.BuildHtmlError = exports.BuildTagError = exports.BuildEvalError = exports.BuildError = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.getTrimMode = exports.TrimMode = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
+exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.tokenizeText = exports.evaluateFormula = exports.buildFormulaNodeTree = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.BuildHtmlError = exports.BuildTagError = exports.BuildEvalError = exports.BuildError = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.getTrimMode = exports.TrimMode = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
+exports.renderDiffs = exports.diffSummarys = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -7488,8 +7489,8 @@ exports.popBuilderContext = popBuilderContext;
  */
 function valueFromContext(key) {
     var context = getBuilderContext();
-    if (this.value in context) {
-        return context[this.value];
+    if (key in context) {
+        return context[key];
     }
     return null;
 }
@@ -7633,6 +7634,7 @@ var TokenType;
  * @param str The parent string
  * @param inFormula True if str should be treated as already inside {}
  * @returns A list of token strings. Uninterpretted.
+ * (Only exported for unit tests)
  */
 function tokenizeFormula(str) {
     var tokens = [];
@@ -7645,14 +7647,7 @@ function tokenizeFormula(str) {
             escape += ch;
             continue;
         }
-        if ((escape.length % 2) == 0 && ch in bracketPairs) {
-            if (tok.type != TokenType.unset) {
-                tokens.push(tok);
-            } // push any token in progress
-            tokens.push(tok = { text: ch, type: TokenType.openBracket }); // push open bracket
-            tok = { text: '', type: TokenType.unset }; // reset next token
-        }
-        else if (stack.length > 0 && (escape.length % 2) == 0 && ch == stack[stack.length - 1]) {
+        if (stack.length > 0 && (escape.length % 2) == 0 && ch == stack[stack.length - 1]) {
             stack.pop();
             if (tok.type != TokenType.unset) {
                 tokens.push(tok);
@@ -7660,7 +7655,15 @@ function tokenizeFormula(str) {
             tokens.push(tok = { text: ch, type: TokenType.closeBracket }); // push close bracket
             tok = { text: '', type: TokenType.unset }; // reset next token
         }
-        else if ((escape.length % 2) == 0 && (ch in binaryOperators || ch in unaryOperators || ch in objectOperators)) {
+        else if (!isInQuotes(stack) && (escape.length % 2) == 0 && ch in bracketPairs) {
+            if (tok.type != TokenType.unset) {
+                tokens.push(tok);
+            } // push any token in progress
+            tokens.push(tok = { text: ch, type: TokenType.openBracket }); // push open bracket
+            stack.push(bracketPairs[ch]); // cache the matching close bracket
+            tok = { text: '', type: TokenType.unset }; // reset next token
+        }
+        else if (!isInQuotes(stack) && (escape.length % 2) == 0 && (ch in binaryOperators || ch in unaryOperators || ch in objectOperators)) {
             var tt = TokenType.unset;
             if (ch in binaryOperators) {
                 tt |= TokenType.binaryOp;
@@ -7678,14 +7681,19 @@ function tokenizeFormula(str) {
             tok = { text: '', type: TokenType.unset }; // reset next token
         }
         else {
-            if (isBracketChar(ch) && (escape.length % 0) == 1) {
-                // Any escaped brackets should drop the escape ` prefix
-                tok.text += escape.substring(0, escape.length - 1) + ch;
+            var evenEscape = escape.substring(0, Math.floor(escape.length / 2));
+            var oddEscape = escape.substring(0, escape.length % 2);
+            tok.text += evenEscape; // for every pair ``, append one `
+            if (isBracketChar(ch) && oddEscape == '`') {
+                tok.text += ch; // Any escaped brackets should drop the escape ` prefix
             }
             else {
-                tok.text += escape + ch;
+                // Keep any odd escape, since we didn't escape anything
+                tok.text += oddEscape + ch;
             }
-            tok.type = TokenType.text;
+            if (tok.text !== '') {
+                tok.type = TokenType.text;
+            }
         }
         escape = '';
     }
@@ -7709,6 +7717,7 @@ function tokenizeFormula(str) {
     }
     return tokens;
 }
+exports.tokenizeFormula = tokenizeFormula;
 function findCloseBracket(tokens, open) {
     var closes = [bracketPairs[tokens[open].text]];
     for (var i = open + 1; i < tokens.length; i++) {
@@ -7728,8 +7737,20 @@ function findCloseBracket(tokens, open) {
     }
     throw new BuildError('Missing close brackets: ' + closes.join(' '));
 }
+/**
+ * A node of a formula's expression, which can be combined into a binary tree.
+ * Each node also has a parent pointer, to support tree restructuring.
+ * A single node is one of:
+ *   plain text (could be a number)
+ *   a unary operation, with an operator and its operand
+ *   a binary operation, with an operator and two operands
+ * If an operation, the operand(s) are also FormulaNodes.
+ * Nodes are decorated with any immediate bracket, which affects text parsing.
+ * (Only exported for unit tests)
+ */
 var FormulaNode = /** @class */ (function () {
     function FormulaNode(complete, value, right, left) {
+        this.bracket = ''; // If this node is the root of a bracketed sub-formula, name the bracket char, else ''
         this.left = left;
         this.right = right;
         this.value = value;
@@ -7841,6 +7862,25 @@ var FormulaNode = /** @class */ (function () {
     };
     return FormulaNode;
 }());
+exports.FormulaNode = FormulaNode;
+/**
+ * Convert a string to an integer, if it is one
+ * @param str
+ * @returns its integer equivalent, if it is an integer, otherwise the original string
+ */
+function tryParseInt(str) {
+    if (/^-?\d+$/.test(str.trim())) {
+        return parseInt(str);
+    }
+    return str;
+}
+/**
+ * 2nd pass of formula parser.
+ * After first tokenizing, build the tokens into a tree of nodes.
+ * Each node
+ * @param tokens
+ * @returns
+ */
 function buildFormulaNodeTree(tokens) {
     var stack = [];
     var lastValue = null;
@@ -7859,14 +7899,14 @@ function buildFormulaNodeTree(tokens) {
             newNode = new FormulaNode(true, tok.text);
             lastValue = newNode;
         }
-        if (tok.type == TokenType.unaryOp) {
+        else if (tok.type == TokenType.unaryOp) {
             newNode = new FormulaNode(false, tok.text);
         }
         else if (tok.type == TokenType.binaryOp) {
             if (stack.length == 0) {
                 throw new Error('Binary operator \'' + tok.text + '\' lacks l-value');
             }
-            else if (stack.length > 0 || !stack[0].isComplete()) {
+            else if (stack.length == 0 || !stack[0].isComplete()) {
                 throw new Error('Binary operator \'' + tok.text + '\' with incomplete l-value {' + stack[0].toString() + '}');
             }
             var left = stack.pop();
@@ -7892,13 +7932,20 @@ function buildFormulaNodeTree(tokens) {
         }
         // Almost all tokens create new nodes, which append to the end of the building tree.
         // The exception is object operators, which effectively have operator precedence to the most recent value.
-        if (newNode) {
+        if (newNode != null) {
             // If there are open nodes, a new value node should complete them
             while (stack.length > 0) {
                 var node = stack.pop();
                 if (node) {
-                    if (!node.append(newNode)) {
+                    // If we have a 1-item stack, new items should append to it.
+                    // If we have a complex stack, likely most appending is already done.
+                    if (newNode.parent != node && !node.append(newNode)) {
                         throw new Error('Value node {' + newNode.toString() + '} could not be appended to the existing state: ' + node.toString());
+                    }
+                    if (!newNode.isComplete()) {
+                        // When the new node isn't complete, keep both the parent and the new node on the stack
+                        stack.push(node);
+                        break;
                     }
                     newNode = node;
                 }
@@ -7916,6 +7963,7 @@ function buildFormulaNodeTree(tokens) {
     }
     return stack.pop();
 }
+exports.buildFormulaNodeTree = buildFormulaNodeTree;
 /**
  * Evaluate a formula
  * @param str A single formula. The bracketing {} are assumed.
@@ -7962,6 +8010,15 @@ var bracketPairs = {
     '"': '"',
     "'": "'",
 };
+/**
+ * Most brackets can stack inside each other, but once we have quotes, we're done
+ * @param stack a stack of pending close brackets, i.e. what we're inside of
+ * @returns true if the innermost bracket is " or '
+ */
+function isInQuotes(stack) {
+    return stack.length > 0
+        && (stack[stack.length - 1] == '"' || stack[stack.length - 1] == '\'');
+}
 /**
  * Is this character normally a bracket, and therefore in need of escaping?
  * @param ch
@@ -8072,17 +8129,33 @@ function findNonEscaped(raw, find, start) {
  * @returns A somg;e
  */
 function unescapeBraces(raw) {
-    var str = raw.replace('`{', '{'); // Simple escapes
-    str = str.replace('`}', '}'); // Simple escapes
-    // REVIEW: If the original was ```{, then it is now ``{, and should be `{
-    // str = str.replace('``{', '`{');  // Simple escapes
-    // str = str.replace('``}', '`}');  // Simple escapes
+    var str = '';
+    var start = 0;
+    while (start <= raw.length) {
+        var i = raw.indexOf('`', start);
+        if (i < 0) {
+            str += raw.substring(start);
+            break;
+        }
+        str += raw.substring(start, i);
+        var ch = i + 1 < raw.length ? raw[i + 1] : '';
+        if (ch == '`' || ch == '{' || ch == '}') {
+            // drop the ` escape, and keep the next char
+            str += ch;
+            start = i + 2;
+        }
+        else {
+            str += str += '`'; // not a real escape
+            start = i + 1;
+        }
+    }
     return str;
 }
 /**
  * Parse text that occurs inside a built control element into tokens.
  * @param raw the raw document text
  * @param implicitFormula if true, the full text can be a formula without being inside {}.
+ * (Only exported for unit tests)
  */
 function tokenizeText(raw, implicitFormula) {
     implicitFormula = implicitFormula || false;
@@ -8136,6 +8209,7 @@ function tokenizeText(raw, implicitFormula) {
     }
     return list;
 }
+exports.tokenizeText = tokenizeText;
 /**
  * Look up a value, according to the context path cached in an attribute
  * @param path A context path

@@ -8249,8 +8249,8 @@ export function popBuilderContext():object {
  */
 export function valueFromContext(key:string):any {
   const context = getBuilderContext();
-  if (this.value in context) {
-    return context[this.value];
+  if (key in context) {
+    return context[key];
   }
   return null;
 }
@@ -8403,8 +8403,9 @@ type FormulaToken = {
  * @param str The parent string
  * @param inFormula True if str should be treated as already inside {}
  * @returns A list of token strings. Uninterpretted.
+ * (Only exported for unit tests)
  */
-function tokenizeFormula(str:string): FormulaToken[] {
+export function tokenizeFormula(str:string): FormulaToken[] {
   const tokens:FormulaToken[] = [];
   const stack:string[] = [];  // currently open brackets
 
@@ -8416,18 +8417,20 @@ function tokenizeFormula(str:string): FormulaToken[] {
       escape += ch;
       continue;
     }
-    if ((escape.length % 2) == 0 && ch in bracketPairs) {
-      if (tok.type != TokenType.unset) { tokens.push(tok); }       // push any token in progress
-      tokens.push(tok = { text:ch, type:TokenType.openBracket });  // push open bracket
-      tok = { text: '', type: TokenType.unset };                   // reset next token
-    }
-    else if (stack.length > 0 && (escape.length % 2) == 0 && ch == stack[stack.length - 1]) {
+    
+    if (stack.length > 0 && (escape.length % 2) == 0 && ch == stack[stack.length - 1]) {
       stack.pop();
       if (tok.type != TokenType.unset) { tokens.push(tok); }        // push any token in progress
       tokens.push(tok = { text:ch, type:TokenType.closeBracket });  // push close bracket
       tok = { text: '', type: TokenType.unset };                    // reset next token
     }
-    else if ((escape.length % 2) == 0 && (ch in binaryOperators || ch in unaryOperators || ch in objectOperators)) {
+    else if (!isInQuotes(stack) && (escape.length % 2) == 0 && ch in bracketPairs) {
+      if (tok.type != TokenType.unset) { tokens.push(tok); }       // push any token in progress
+      tokens.push(tok = { text:ch, type:TokenType.openBracket });  // push open bracket
+      stack.push(bracketPairs[ch]);                                // cache the matching close bracket
+      tok = { text: '', type: TokenType.unset };                   // reset next token
+    }
+    else if (!isInQuotes(stack) && (escape.length % 2) == 0 && (ch in binaryOperators || ch in unaryOperators || ch in objectOperators)) {
       let tt:TokenType = TokenType.unset;
       if (ch in binaryOperators) { tt |= TokenType.binaryOp; }
       if (ch in unaryOperators) { tt |= TokenType.unaryOp; }
@@ -8437,14 +8440,19 @@ function tokenizeFormula(str:string): FormulaToken[] {
       tok = { text: '', type: TokenType.unset };               // reset next token
     }
     else {
-      if (isBracketChar(ch) && (escape.length % 0) == 1) {
-        // Any escaped brackets should drop the escape ` prefix
-        tok.text += escape.substring(0, escape.length - 1) + ch;
+      const evenEscape = escape.substring(0, Math.floor(escape.length / 2));
+      const oddEscape = escape.substring(0, escape.length % 2);
+      tok.text += evenEscape;  // for every pair ``, append one `
+      if (isBracketChar(ch) && oddEscape == '`') {
+        tok.text += ch;  // Any escaped brackets should drop the escape ` prefix
       }
       else {
-        tok.text += escape + ch;
+        // Keep any odd escape, since we didn't escape anything
+        tok.text += oddEscape + ch;
       }
-      tok.type = TokenType.text;
+      if (tok.text !== '') {
+        tok.type = TokenType.text;
+      }
     }
     escape = '';
   }
@@ -8491,13 +8499,24 @@ function findCloseBracket(tokens:FormulaToken[], open:number):number {
   throw new BuildError('Missing close brackets: ' + closes.join(' '));
 }
 
-class FormulaNode {
+/**
+ * A node of a formula's expression, which can be combined into a binary tree.
+ * Each node also has a parent pointer, to support tree restructuring.
+ * A single node is one of:
+ *   plain text (could be a number)
+ *   a unary operation, with an operator and its operand
+ *   a binary operation, with an operator and two operands
+ * If an operation, the operand(s) are also FormulaNodes.
+ * Nodes are decorated with any immediate bracket, which affects text parsing.
+ * (Only exported for unit tests)
+ */
+export class FormulaNode {
   value: string;  // Doubles as the operator and the simple string value
   left?: FormulaNode;
   right?: FormulaNode;
   complete: boolean;
-  public bracket: string;  // If this node is the root of a bracketed sub-formula, name the bracket char, else ''
-  public parent?: FormulaNode;
+  bracket: string = '';  // If this node is the root of a bracketed sub-formula, name the bracket char, else ''
+  parent?: FormulaNode;
 
   constructor(complete:boolean, value:string, right?:FormulaNode, left?:FormulaNode) {
     this.left = left;
@@ -8618,7 +8637,26 @@ class FormulaNode {
   }
 }
 
-function buildFormulaNodeTree(tokens:FormulaToken[]):FormulaNode
+/**
+ * Convert a string to an integer, if it is one
+ * @param str 
+ * @returns its integer equivalent, if it is an integer, otherwise the original string
+ */
+function tryParseInt(str:string):number|string {
+  if (/^-?\d+$/.test(str.trim())) {
+    return parseInt(str);
+  }
+  return str;
+}
+
+/**
+ * 2nd pass of formula parser.
+ * After first tokenizing, build the tokens into a tree of nodes.
+ * Each node
+ * @param tokens 
+ * @returns 
+ */
+export function buildFormulaNodeTree(tokens:FormulaToken[]):FormulaNode
 {
   const stack:FormulaNode[] = [];
   let lastValue:FormulaNode|null = null;
@@ -8640,14 +8678,14 @@ function buildFormulaNodeTree(tokens:FormulaToken[]):FormulaNode
       lastValue = newNode;
     }
 
-    if (tok.type == TokenType.unaryOp) {
+    else if (tok.type == TokenType.unaryOp) {
       newNode = new FormulaNode(false, tok.text);
     }
     else if (tok.type == TokenType.binaryOp) {
       if (stack.length == 0) {
         throw new Error('Binary operator \'' + tok.text + '\' lacks l-value');
       }
-      else if (stack.length > 0 || !stack[0].isComplete()) {
+      else if (stack.length == 0 || !stack[0].isComplete()) {
         throw new Error('Binary operator \'' + tok.text + '\' with incomplete l-value {' + stack[0].toString() + '}');
       }
       const left = stack.pop();
@@ -8675,13 +8713,20 @@ function buildFormulaNodeTree(tokens:FormulaToken[]):FormulaNode
     // Almost all tokens create new nodes, which append to the end of the building tree.
     // The exception is object operators, which effectively have operator precedence to the most recent value.
 
-    if (newNode) {
+    if (newNode != null) {
       // If there are open nodes, a new value node should complete them
       while (stack.length > 0) {
         const node = stack.pop();
         if (node) {
-          if (!node.append(newNode)) {
+          // If we have a 1-item stack, new items should append to it.
+          // If we have a complex stack, likely most appending is already done.
+          if (newNode.parent != node && !node.append(newNode)) {
             throw new Error('Value node {' + newNode.toString() + '} could not be appended to the existing state: ' + node.toString());
+          }
+          if (!newNode.isComplete()) {
+            // When the new node isn't complete, keep both the parent and the new node on the stack
+            stack.push(node);
+            break;
           }
           newNode = node;
         }
@@ -8750,6 +8795,16 @@ const bracketPairs = {
   // '<': '>',  // should never be used for comparison operators in this context
   '"': '"',
   "'": "'",
+}
+
+/**
+ * Most brackets can stack inside each other, but once we have quotes, we're done
+ * @param stack a stack of pending close brackets, i.e. what we're inside of
+ * @returns true if the innermost bracket is " or '
+ */
+function isInQuotes(stack:string[]) {
+  return stack.length > 0 
+    && (stack[stack.length - 1] == '"' || stack[stack.length - 1] == '\'');
 }
 
 /**
@@ -8873,11 +8928,26 @@ function findNonEscaped(raw:string, find:string, start:number) {
  * @returns A somg;e
  */
 function unescapeBraces(raw:string):string {
-  let str = raw.replace('`{', '{');  // Simple escapes
-  str = str.replace('`}', '}');  // Simple escapes
-  // REVIEW: If the original was ```{, then it is now ``{, and should be `{
-  // str = str.replace('``{', '`{');  // Simple escapes
-  // str = str.replace('``}', '`}');  // Simple escapes
+  let str = '';
+  let start = 0;
+  while (start <= raw.length) {
+    let i = raw.indexOf('`', start);
+    if (i < 0) {
+      str += raw.substring(start);
+      break;
+    }
+    str += raw.substring(start, i);
+    const ch = i + 1 < raw.length ? raw[i + 1] : '';
+    if (ch == '`' || ch == '{' || ch == '}') {
+      // drop the ` escape, and keep the next char
+      str += ch;
+      start = i + 2;
+    }
+    else {
+      str += str += '`';  // not a real escape
+      start = i + 1;
+    }
+  }
   return str;
 }
 
@@ -8885,8 +8955,9 @@ function unescapeBraces(raw:string):string {
  * Parse text that occurs inside a built control element into tokens.
  * @param raw the raw document text
  * @param implicitFormula if true, the full text can be a formula without being inside {}.
+ * (Only exported for unit tests)
  */
-function tokenizeText(raw:string, implicitFormula?:boolean):TextToken[] {
+export function tokenizeText(raw:string, implicitFormula?:boolean):TextToken[] {
   implicitFormula = implicitFormula || false;
   const list:TextToken[] = [];
 
