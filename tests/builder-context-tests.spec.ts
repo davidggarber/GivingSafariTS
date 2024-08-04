@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { tokenizeText, testBuilderContext, valueFromContext, tokenizeFormula, FormulaNode, treeifyFormula } from '../_builderContext';
+import { tokenizeText, testBuilderContext, valueFromContext, tokenizeFormula, FormulaNode, treeifyFormula, evaluateFormula } from '../_builderContext';
 
 global.structuredClone = (val) => JSON.parse(JSON.stringify(val))
 
@@ -184,7 +184,7 @@ test('treeifyFormula', () => {
 function testEvaluateFormulaTree(raw:string, result:string) {
   const tokens = tokenizeFormula(raw);
   const tree = treeifyFormula(tokens);
-  expect('' + tree.evaluate()).toEqual(result);
+  expect('' + tree.evaluate(true)).toEqual(result);
 }
 
 test('evaluateFormulaTree', () => {
@@ -203,6 +203,9 @@ test('evaluateFormulaTree', () => {
   // Object by name
   testEvaluateFormulaTree("pt.x", '3');
 
+  // List by name
+  testEvaluateFormulaTree("fonts", "bold,italic");
+
   // Object values with math and spaces
   testEvaluateFormulaTree("pt.x + pt.y", '8');
   
@@ -218,7 +221,54 @@ test('evaluateFormulaTree', () => {
   // Parentheses
   testEvaluateFormulaTree("sentence.[2*(3+5)]", 'h');
 
+  // List index
+  testEvaluateFormulaTree("fonts.0", 'bold');
+
   // Quotes
   testEvaluateFormulaTree("'My '&sentence&\"!!\"", 'My Unit tests are the best!!!');
+
+});
+
+function testEvaluateFormulaAny(raw:string, obj:any) {
+  const result = evaluateFormula(raw);
+  console.log(typeof(result));
+  expect(typeof(result)).toEqual(typeof(obj));
+  expect(result).toEqual(obj);
+}
+
+test('evaluateFormulaAny', () => {
+  // Simple string
+  testEvaluateFormulaAny("hello", 'hello');
+
+  // Simple number
+  testEvaluateFormulaAny("321", 321);
+
+  // Binary operation
+  testEvaluateFormulaAny("-num*10", -12340);
+
+  // Object value by name
+  testEvaluateFormulaAny("pt.x", 3);
+
+  // Object by name
+  testEvaluateFormulaAny("pt", {x:3,y:5});
+
+  // List by name
+  testEvaluateFormulaAny("fonts", ['bold','italic']);
+
+  // Object values with math
+  testEvaluateFormulaAny("pt.x+pt.y", 8);
+  
+  // Object operations
+  testEvaluateFormulaAny(":sentence.(:num%10-1)", 't');
+
+  // Quotes
+  testEvaluateFormulaAny("'My '&sentence&\"!!\"", 'My Unit tests are the best!!!');
+
+  // Concatenate text with numbers
+  testEvaluateFormulaAny("'three' & pt.x", 'three3');
+  testEvaluateFormulaAny("pt.y&'five'", '5five');
+
+  // Concatenate text with objects
+  testEvaluateFormulaAny("'fonts:'&fonts", "fonts:bold,italic");
 
 });

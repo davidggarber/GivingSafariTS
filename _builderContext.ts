@@ -499,24 +499,12 @@ function isIntegerRegex(str:string):boolean {
 }
 
 /**
- * Convert a string to an integer, if it is one
- * @param str 
- * @returns its integer equivalent, if it is an integer, otherwise the original string
- */
-function tryParseInt(str:string):number|string {
-  if (isIntegerRegex(str)) {
-    return parseInt(str);
-  }
-  return str;
-}
-
-/**
  * Of all the operators, find the one with the highest precedence.
  * @param tokens A list of tokens, which are a mix of operators and values
  * @returns The index of the first operator with the highest precedence,
  * or -1 if no remaining operators
  */
-function FindHighestPrecedence(tokens:FormulaToken[]): number {
+function findHighestPrecedence(tokens:FormulaToken[]): number {
   let precedence = 0;
   let first = -1;
   for (let i = 0; i < tokens.length; i++) {
@@ -554,7 +542,7 @@ export function treeifyFormula(tokens:FormulaToken[], bracket?:string):FormulaNo
   }
 
   while (tokens.length > 0) {
-    const opIndex = FindHighestPrecedence(tokens);
+    const opIndex = findHighestPrecedence(tokens);
     if (opIndex < 0) {
       // If well informed, there should only be a single non-space token left
       let node:FormulaNode|undefined = undefined;
@@ -655,7 +643,7 @@ export function evaluateFormula(str:string|null):any {
     const tokens = tokenizeFormula(str);
     // const node = buildFormulaNodeTree(tokens);
     const node = treeifyFormula(tokens);
-    return node.evaluate();  
+    return node.evaluate(true);  
   }
   catch (ex) {
     throw new BuildEvalError('evaluateFormula', str, ex);
@@ -728,17 +716,17 @@ type OperatorInfo = {
 }
 
 const minus:OperatorInfo = { raw:'-', unaryChar:'⁻', binaryChar:'−'};  // ambiguously unary or binary
-const concat:OperatorInfo = { raw:'&', precedence:1, binaryOp:(a,b) => {return String(a) + String(b)},evalLeft:true,evalRight:true};
-const entity:OperatorInfo = { raw:'@', precedence:1, unaryOp:(a) => {return deentify(a)},evalRight:false};
-const plus:OperatorInfo = { raw:'+', precedence:3, binaryOp:(a,b) => {return String(parseFloat(a) + parseFloat(b))},evalLeft:true,evalRight:true};
-const subtract:OperatorInfo = { raw:'−', precedence:3, binaryOp:(a,b) => {return String(parseFloat(a) - parseFloat(b))},evalLeft:true,evalRight:true};
-const times:OperatorInfo = { raw:'*', precedence:4, binaryOp:(a,b) => {return String(parseFloat(a) * parseFloat(b))},evalLeft:true,evalRight:true};
-const divide:OperatorInfo = { raw:'/', precedence:4, binaryOp:(a,b) => {return String(parseFloat(a) / parseFloat(b))},evalLeft:true,evalRight:true};
-const intDivide:OperatorInfo = { raw:'\\', precedence:4, binaryOp:(a,b) => {const f=parseFloat(a) / parseFloat(b); return String(f >= 0 ? Math.floor(f) : Math.ceil(f))},evalLeft:true,evalRight:true};  // integer divide without Math.trunc
-const modulo:OperatorInfo = { raw:'%', precedence:4, binaryOp:(a,b) => {return String(parseFloat(a) % parseFloat(b))},evalLeft:true,evalRight:true};
-const negative:OperatorInfo = { raw:'⁻', precedence:5, unaryOp:(a) => {return String(-parseFloat(a))},evalRight:true};
-const childObj:OperatorInfo = { raw:'.', precedence:6, binaryOp:(a,b) => {return getKeyedChild(a, b, false)},evalLeft:true,evalRight:false};
-const rootObj:OperatorInfo = { raw:':', precedence:7, unaryOp:(a) => {return globalContextData(a)},evalRight:false};
+const concat:OperatorInfo = { raw:'&', precedence:1, binaryOp:(a,b) => {return String(a) + String(b)}, evalLeft:true, evalRight:true};
+const entity:OperatorInfo = { raw:'@', precedence:1, unaryOp:(a) => {return deentify(a)}, evalRight:false};
+const plus:OperatorInfo = { raw:'+', precedence:3, binaryOp:(a,b) => {return parseFloat(a) + parseFloat(b)}, evalLeft:true, evalRight:true};
+const subtract:OperatorInfo = { raw:'−', precedence:3, binaryOp:(a,b) => {return parseFloat(a) - parseFloat(b)}, evalLeft:true, evalRight:true};
+const times:OperatorInfo = { raw:'*', precedence:4, binaryOp:(a,b) => {return parseFloat(a) * parseFloat(b)}, evalLeft:true, evalRight:true};
+const divide:OperatorInfo = { raw:'/', precedence:4, binaryOp:(a,b) => {return parseFloat(a) / parseFloat(b)}, evalLeft:true, evalRight:true};
+const intDivide:OperatorInfo = { raw:'\\', precedence:4, binaryOp:(a,b) => {const f=parseFloat(a) / parseFloat(b); return f >= 0 ? Math.floor(f) : Math.ceil(f)}, evalLeft:true, evalRight:true};  // integer divide without Math.trunc
+const modulo:OperatorInfo = { raw:'%', precedence:4, binaryOp:(a,b) => {return parseFloat(a) % parseFloat(b)}, evalLeft:true, evalRight:true};
+const negative:OperatorInfo = { raw:'⁻', precedence:5, unaryOp:(a) => {return -parseFloat(a)}, evalRight:true};
+const childObj:OperatorInfo = { raw:'.', precedence:6, binaryOp:(a,b) => {return getKeyedChild(a, b, false)}, evalLeft:true, evalRight:false};
+const rootObj:OperatorInfo = { raw:':', precedence:7, unaryOp:(a) => {return globalContextData(a)}, evalRight:false};
 const roundBrackets:OperatorInfo = { raw:'(', precedence:8, closeChar:')'};
 const squareBrackets:OperatorInfo = { raw:'[', precedence:8, closeChar:']'};
 const curlyBrackets:OperatorInfo = { raw:'{', precedence:8, closeChar:'}'};
@@ -1059,15 +1047,21 @@ function getKeyedChild(parent:any, key:string, maybe?:boolean):any {
   // }
 
   if (typeof(parent) == 'string') {
-    if (isIntegerRegex(key)) {
-      const i = parseInt(key);
-      if (i < 0 || i >= (parent as string).length) {
+    let index:number|undefined = undefined;
+    if (typeof(key) == 'number') {
+      index = key;
+    }
+    else if (isIntegerRegex('' + key)) {
+      index = parseInt('' + key);
+    }
+    if (index !== undefined) {
+      if (index < 0 || index >= (parent as string).length) {
         if (maybe) {
           return '';
         }
-        throw new BuildError('Index out of range: ' + i + ' in ' + parent);
+        throw new BuildError('Index out of range: ' + index + ' in ' + parent);
       }
-      return (parent as string)[i];  
+      return (parent as string)[index];
     }
   }
 
