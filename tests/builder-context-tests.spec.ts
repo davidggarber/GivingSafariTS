@@ -15,6 +15,8 @@ test.beforeEach(() => {
 
 test('value', () => {
   expect(valueFromContext('num')).toEqual(1234);
+
+  expect(valueFromContext('mum',true)).toEqual('');
 });
 
 function testTokenizeText(input:string, texts:string[], formulas:boolean[]) {

@@ -59,14 +59,26 @@ export function popBuilderContext():object {
 /**
  * Try to look up a key in the current context level.
  * @param key A key name
- * @returns The value from that key, or null if not present
+ * @param maybe If true, and key does not work, return ''. If false/omitted, throw on bad keys.
+ * @returns The value from that key, or undefined if not present
  */
-export function valueFromContext(key:string):any {
+export function valueFromContext(key:string, maybe?:boolean):any {
   const context = getBuilderContext();
-  if (key in context) {
-    return context[key];
+  return getKeyedChild(context, key, maybe);
+}
+
+/**
+ * Look up a value, according to the context path cached in an attribute
+ * @param path A context path
+ * @param maybe If true, and key does not work, return ''. If false/omitted, throw on bad keys.
+ * @returns Any JSON object
+ */
+export function valueFromGlobalContext(path:string, maybe?:boolean):any {
+  const context = theBoilerContext();
+  if (path) {
+    return getKeyedChild(context, path, maybe);
   }
-  return null;
+  return undefined;
 }
 
 /**
@@ -479,9 +491,9 @@ export class FormulaNode {
     }
     else {
       // Could be plain text (or a number) or a name in context
-      const context = getBuilderContext();
       const trimmed = simpleTrim(this.value);
       if (evalText === true) {
+        const context = getBuilderContext();
         if (trimmed in context) {
           return context[trimmed];
         }
@@ -731,7 +743,7 @@ const intDivide:OperatorInfo = { raw:'\\', precedence:4, binaryOp:(a,b) => {cons
 const modulo:OperatorInfo = { raw:'%', precedence:4, binaryOp:(a,b) => {return parseFloat(a) % parseFloat(b)}, evalLeft:true, evalRight:true};
 const negative:OperatorInfo = { raw:'⁻', precedence:5, unaryOp:(a) => {return -parseFloat(a)}, evalRight:true};
 const childObj:OperatorInfo = { raw:'.', precedence:6, binaryOp:(a,b) => {return getKeyedChild(a, b, false)}, evalLeft:true, evalRight:false};
-const rootObj:OperatorInfo = { raw:':', precedence:7, unaryOp:(a) => {return globalContextData(a)}, evalRight:false};
+const rootObj:OperatorInfo = { raw:':', precedence:7, unaryOp:(a) => {return valueFromGlobalContext(a)}, evalRight:false};
 const roundBrackets:OperatorInfo = { raw:'(', precedence:8, closeChar:')'};
 const squareBrackets:OperatorInfo = { raw:'[', precedence:8, closeChar:']'};
 const curlyBrackets:OperatorInfo = { raw:'{', precedence:8, closeChar:'}'};
@@ -792,27 +804,6 @@ function isStringBracket(ch:string|OperatorInfo|null) {
   const op = getOperator(ch);
   return op !== null && (op.raw == '"' || op.raw == '\'');
 }
-
-// const binaryOperators = {
-//   '+': (a,b) => {return String(parseFloat(a) + parseFloat(b))},
-//   '-': (a,b) => {return String(parseFloat(a) - parseFloat(b))},
-//   '*': (a,b) => {return String(parseFloat(a) * parseFloat(b))},
-//   '/': (a,b) => {return String(parseFloat(a) / parseFloat(b))},
-//   '\\': (a,b) => {const f=parseFloat(a) / parseFloat(b); return String(f >= 0 ? Math.floor(f) : Math.ceil(f)); },  // integer divide without Math.trunc
-//   '%': (a,b) => {return String(parseFloat(a) % parseInt(b))},
-//   '&': (a,b) => {return String(a) + String(b)},
-// }
-
-// const unaryOperators = {
-//   '-': (a) => {return String(-parseFloat(a))},
-// //  '@': (a) => {return deentify(a)},
-//   ':': (a) => {return globalContextData(a)},
-// }
-
-// const objectOperators = {
-//   '.': (a,b) => {return getKeyedChild(a, b, false)},
-//   // '?': (a,b) => {return getKeyedChild(a, b, true)},
-// }
 
 /**
  * A few common named entities
@@ -990,19 +981,6 @@ export function tokenizeText(raw:string, implicitFormula?:boolean):TextToken[] {
 }
 
 /**
- * Look up a value, according to the context path cached in an attribute
- * @param path A context path
- * @returns Any JSON object
- */
-export function globalContextData(path:string):any {
-  const context = theBoilerContext();
-  if (path && context) {
-    return getKeyedChild(context, path);
-  }
-  return undefined;
-}
-
-/**
  * Test a key in the current context
  * @param key A key, initially from {curly} notation
  * @returns true if key is a valid path within the context
@@ -1040,7 +1018,7 @@ export function textFromContext(key:string|null):string {
  * or a list index or a string offset.
  * @param parent The parent object: a list, object, or string, which could in turn be the name of a list or object
  * @param key The identifier of the child: a dictionary key, a list index, or a string offset
- * @param maybe If true, and key does not work, return ''
+ * @param maybe If true, and key does not work, return ''. If false/omitted, throw on bad keys.
  * @returns A child object, or a substring
  */
 function getKeyedChild(parent:any, key:string, maybe?:boolean):any {
