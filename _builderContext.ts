@@ -170,9 +170,14 @@ export function complexAttribute(str:string, trim:TrimMode = TrimMode.off):any {
       if (i == 0 && list.length == 1) {
         return complex;
       }
+      if (typeof(complex) == 'object') {
+        throw new Error('ERROR: Object cast to string: ' + JSON.stringify(complex));
+      }
       buffer += complex;
     }
   }
+
+  return buffer;
 }
 
 /**

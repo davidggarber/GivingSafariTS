@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { tokenizeText, testBuilderContext, valueFromContext, tokenizeFormula, FormulaNode, treeifyFormula, evaluateFormula } from '../_builderContext';
+import { tokenizeText, testBuilderContext, valueFromContext, tokenizeFormula, FormulaNode, treeifyFormula, evaluateFormula, complexAttribute } from '../_builderContext';
 
 global.structuredClone = (val) => JSON.parse(JSON.stringify(val))
 
@@ -271,4 +271,34 @@ test('evaluateFormulaAny', () => {
   // Concatenate text with objects
   testEvaluateFormulaAny("'fonts:'&fonts", "fonts:bold,italic");
 
+});
+
+function testComplexAttribute(raw:string, obj:any) {
+  const result = complexAttribute(raw);
+  console.log(typeof(result));
+  expect(typeof(result)).toEqual(typeof(obj));
+  expect(result).toEqual(obj);
+}
+
+test('complexAttribute', () => {
+  // No formula
+  testComplexAttribute("hello", 'hello');
+
+  // No formula, but same name
+  testComplexAttribute("num", 'num');
+
+  // Simple number
+  testComplexAttribute("321", "321");  // Text, not number
+
+  // Context value
+  testComplexAttribute("{num}", 1234);
+
+  // Context value, concatenated with text
+  testComplexAttribute("{num}-num", "1234-num");
+
+  // Object value by name
+  testComplexAttribute("{pt.x}", 3);
+
+  // Object by name. But don't cast object to string
+  testComplexAttribute("pt: (x={pt.x},y={pt.y})", "pt: (x=3,y=5)");
 });
