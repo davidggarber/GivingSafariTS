@@ -16,6 +16,7 @@ kitFiles = [
     '_events.ts',
     '_boilerplate.ts',
     '_confirmation.ts',
+    '_contextError.ts',
     '_builder.ts',
     '_builderError.ts',
     '_builderContext.ts',

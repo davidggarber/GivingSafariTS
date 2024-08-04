@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { tokenizeText, testBuilderContext, valueFromContext, tokenizeFormula, FormulaNode, treeifyFormula, evaluateFormula, complexAttribute } from '../_builderContext';
+import { isContextError } from '../_contextError';
 
 global.structuredClone = (val) => JSON.parse(JSON.stringify(val))
 
@@ -126,7 +127,7 @@ test('tokenizeFormula', () => {
  * @returns A list, starting with this node's value, then any left branch (recursive), then any right branch (recursive)
  */
 function depthFirstValues(node:FormulaNode):string[] {
-  const list:string[] = [node.value];
+  const list:string[] = [node.value.text || ''];
   if (node.left) {
     list.push(...depthFirstValues(node.left));
   }
@@ -141,45 +142,57 @@ function depthFirstValues(node:FormulaNode):string[] {
  * @param raw The original formula
  * @param prefix A prefix notation (aka depth first) expression of the tree, with terms separated by commas
  */
-function testTreeifyFormula(raw:string, prefix:string) {
-  const tokens = tokenizeFormula(raw);
-  const tree = treeifyFormula(tokens);
-  // expect(tree.value).toEqual(prefix.split(',')[0]);
-  const dfv = depthFirstValues(tree).join(',');
-  expect(dfv).toEqual(prefix);
-
+function testTreeifyFormula(raw:string, prefix:string):boolean {
+  try {
+    const tokens = tokenizeFormula(raw);
+    const tree = treeifyFormula(tokens);
+    // expect(tree.value).toEqual(prefix.split(',')[0]);
+    const dfv = depthFirstValues(tree).join(',');
+    expect(dfv).toEqual(prefix);
+    return true;
+  }
+  catch (ex) {
+    console.log('Unexpected exception treeifying ' + raw)
+    if (isContextError(ex)) {
+      console.log(ex.toString());
+    }
+    console.log(ex);
+    return false;
+  }
 }
 
 test('treeifyFormula', () => {
   // Simple string
-  testTreeifyFormula("hello", 'hello');
+  expect(testTreeifyFormula("hello", 'hello')).toBeTruthy();
 
   // Simple number
-  testTreeifyFormula("321", '321');
+  expect(testTreeifyFormula("321", '321')).toBeTruthy();
 
   // Binary operation
-  testTreeifyFormula("num*10", '*,num,10');
+  expect(testTreeifyFormula("num*10", '*,num,10')).toBeTruthy();
 
   // Unary operation
-  testTreeifyFormula("-10", '⁻,10');
+  expect(testTreeifyFormula("-10", '⁻,10')).toBeTruthy();
 
   // Object operations
-  testTreeifyFormula(":sentence.(:magic%10)", '.,:,sentence,%,:,magic,10');
+  expect(testTreeifyFormula(":sentence.(:magic%10)", '.,:,sentence,%,:,magic,10')).toBeTruthy();
 
   // Object operator precedence
-  testTreeifyFormula("pt.x+pt.y", '+,.,pt,x,.,pt,y');
+  expect(testTreeifyFormula("pt.x+pt.y", '+,.,pt,x,.,pt,y')).toBeTruthy();
 
   // Multiple operations
-  testTreeifyFormula("num*-10", '*,num,⁻,10');
+  expect(testTreeifyFormula("num*-10", '*,num,⁻,10')).toBeTruthy();
 
   // Multiple operations with whitespace
-  testTreeifyFormula("num * -10", '*,num ,⁻,10');  // whitespace with text persists until evaluate()
+  // Note: whitespace with text persists until evaluate()
+  expect(testTreeifyFormula("num * -10", '*,num ,⁻,10')).toBeTruthy();
 
   // Parentheses
-  testTreeifyFormula("sentence.[2*(3+4)]", '.,sentence,*,2,+,3,4');
+  expect(testTreeifyFormula("sentence.[2*(3+4)]", '.,sentence,*,2,+,3,4')).toBeTruthy();
 
   // Quotes
-  testTreeifyFormula("'My '&sentence&\"!!\"", '&,&,My ,sentence,!!');  // 1st & in prefix is 2nd in infix
+  // Note: 1st & in prefix is 2nd in infix
+  expect(testTreeifyFormula("'My '&sentence&\"!!\"", '&,&,My ,sentence,!!')).toBeTruthy();
 
 });
 
