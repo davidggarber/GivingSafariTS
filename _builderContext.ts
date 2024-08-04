@@ -1,3 +1,4 @@
+import { isNumberObject } from "util/types";
 import { theBoiler } from "./_boilerplate";
 import { getTrimMode, normalizeName, TrimMode } from "./_builder";
 import { BuildError, BuildEvalError, BuildTagError } from "./_builderError";
@@ -185,27 +186,32 @@ function simpleTrim(str:string):string {
   while (s < e && (str.charCodeAt(s) || 33) <= 32) {
     s++;
   }
-  while (e > s && (str.charCodeAt(e) || 33) <= 32) {
-    e--;
+  while (--e > s && (str.charCodeAt(e) || 33) <= 32) {
+    ;
   }
-  return str.substring(s, e);
+  return str.substring(s, e + 1);
 }
 
 enum TokenType {
   unset = 0,
   unaryOp = 0x1,  // sub-types of operator, when we get to that
   binaryOp = 0x2,
-  objectOp = 0x4,
-  anyOperator = 0x7,
+  anyOperator = 0x3,
   openBracket = 0x10,
   closeBracket = 0x20,
   anyBracket = 0x30,
-  text = 0x100,
+  anyOperatorOrBracket = 0xff,
+  word = 0x100,
+  number = 0x200,
+  spaces = 0x400,
+  anyText = 0xf00,
+  node = 0x1000,
 }
 
 type FormulaToken = {
-  text: string;
+  text?: string;
   type: TokenType;
+  node?: FormulaNode;
 }
 
 /**
@@ -231,23 +237,24 @@ export function tokenizeFormula(str:string): FormulaToken[] {
       continue;
     }
     
+    const op = getOperator(ch);
+
     if (stack.length > 0 && (escape.length % 2) == 0 && ch == stack[stack.length - 1]) {
       stack.pop();
       if (tok.type != TokenType.unset) { tokens.push(tok); }        // push any token in progress
       tokens.push(tok = { text:ch, type:TokenType.closeBracket });  // push close bracket
       tok = { text: '', type: TokenType.unset };                    // reset next token
     }
-    else if (!isInQuotes(stack) && (escape.length % 2) == 0 && ch in bracketPairs) {
+    else if (!isInQuotes(stack) && (escape.length % 2) == 0 && isBracketOperator(op)) {
       if (tok.type != TokenType.unset) { tokens.push(tok); }       // push any token in progress
       tokens.push(tok = { text:ch, type:TokenType.openBracket });  // push open bracket
-      stack.push(bracketPairs[ch]);                                // cache the matching close bracket
+      stack.push(op!.closeChar!);                                // cache the matching close bracket
       tok = { text: '', type: TokenType.unset };                   // reset next token
     }
-    else if (!isInQuotes(stack) && (escape.length % 2) == 0 && (ch in binaryOperators || ch in unaryOperators || ch in objectOperators)) {
+    else if (!isInQuotes(stack) && (escape.length % 2) == 0 && op !== null) {
       let tt:TokenType = TokenType.unset;
-      if (ch in binaryOperators) { tt |= TokenType.binaryOp; }
-      if (ch in unaryOperators) { tt |= TokenType.unaryOp; }
-      if (ch in objectOperators) { tt |= TokenType.objectOp; }
+      if (isBinaryOperator(op)) { tt |= TokenType.binaryOp; }
+      if (isUnaryOperator(op)) { tt |= TokenType.unaryOp; }
       if (tok.type != TokenType.unset) { tokens.push(tok); }   // push any token in progress
       tokens.push(tok = { text:ch, type:tt });                 // push operator (exact type TBD)
       tok = { text: '', type: TokenType.unset };               // reset next token
@@ -264,7 +271,7 @@ export function tokenizeFormula(str:string): FormulaToken[] {
         tok.text += oddEscape + ch;
       }
       if (tok.text !== '') {
-        tok.type = TokenType.text;
+        tok.type = TokenType.anyText;
       }
     }
     escape = '';
@@ -273,19 +280,39 @@ export function tokenizeFormula(str:string): FormulaToken[] {
     tokens.push(tok);  // push any token in progress
   }
 
-  // Re-scan tokens, to clarify operator sub-types
+  // Re-scan tokens, to clarify operator and text sub-types
+  let prev = TokenType.unset;
   for (let i = 0; i < tokens.length; i++) {
     const tok = tokens[i];
     if (tok.type & TokenType.anyOperator) {
-      if (i == 0 || (tokens[i - 1].type & (TokenType.text | TokenType.closeBracket)) == 0) {
+      if ((prev & (TokenType.word | TokenType.number | TokenType.closeBracket)) == 0) {
         // If no object (text or a closeBracket) precedes us, we're a unary operator
         // For example, consecutive operators mean all but the first are unary (since we have no post-fix unary operators)
-        tok.type = TokenType.unaryOp;  
+        tok.type = TokenType.unaryOp;
+        const op = getOperator(tok.text!);
+        tok.text = op!.unaryChar ?? tok.text;  // possibly substitute operator char
       }
-      else if (tok.type == (TokenType.unaryOp | TokenType.binaryOp)) {
+      else if (tok.type & TokenType.anyOperator) {
         // When an object does precede us, then ambiguous operators are binary
         tok.type = TokenType.binaryOp;
+        const op = getOperator(tok.text!);
+        tok.text = op!.binaryChar ?? tok.text;  // possibly substitute operator char
       }
+    }
+    else if (tok.type & TokenType.anyText) {
+      if (simpleTrim(tok.text!).length == 0) {
+        tok.type = TokenType.spaces;
+      }
+      else if (isIntegerRegex(tok.text!)) {
+        tok.type = TokenType.number;
+      }
+      else {
+        tok.type = TokenType.word;
+      }
+    }
+    
+    if (tok.type != TokenType.spaces) {
+      prev = tok.type;
     }
   }
 
@@ -293,7 +320,7 @@ export function tokenizeFormula(str:string): FormulaToken[] {
 }
 
 function findCloseBracket(tokens:FormulaToken[], open:number):number {
-  const closes:string[] = [bracketPairs[tokens[open].text]];
+  const closes:string[] = [bracketPairs[tokens[open].text!]];
   for (let i = open + 1; i < tokens.length; i++) {
     const tok = tokens[i];
     if (tok.type == TokenType.closeBracket) {
@@ -303,10 +330,12 @@ function findCloseBracket(tokens:FormulaToken[], open:number):number {
           return i;
         }
       }
-      throw new BuildError('Unmatched close bracket: ' + tok.text);
+      else {
+        throw new BuildError('Unmatched close bracket: ' + tok.text);
+      }
     }
     else if (tok.type == TokenType.openBracket) {
-      closes.push(bracketPairs[tok.text]);
+      closes.push(bracketPairs[tok.text!]);
     }
   }
   throw new BuildError('Missing close brackets: ' + closes.join(' '));
@@ -398,23 +427,26 @@ export class FormulaNode {
 
   /**
    * Evaluate this node.
+   * @param evalText if true, any simple text nodes are assumed to be named objects or numbers
+   * else any simple text is just that. No effect for non-simple text.
    * @returns If it's a simple value, return it (any type).
    * If there's an operator and operands, return a type appropriate for that operator.
    */
-  evaluate(): any {
+  evaluate(evalText?:boolean): any {
+    if (!this.complete) {
+      throw new Error('ERROR: Cannot evaluate incomplete node: ' + this.toString());
+    }
     if (this.left) {
       try {
-        const bop:undefined|((a:any,b:any) => any) = binaryOperators[this.value || ''];
-        const oop:undefined|((a:any,b:any) => any) = objectOperators[this.value || ''];
+        const op = getOperator(this.value!);
+        const bop:undefined|BinaryOperator = op!.binaryOp;
 
-        const lValue = this.left.evaluate();
-        const rValue = this.left.evaluate();
+        // right must also exist, because we're complete
+        const lValue = this.left.evaluate(op!.evalLeft);
+        const rValue = this.right!.evaluate(op!.evalRight);
 
         if (bop) {
           return bop(lValue, rValue);
-        }
-        else if (oop) {
-          return oop(lValue, rValue);
         }
       }
       catch (ex) {
@@ -424,8 +456,9 @@ export class FormulaNode {
     }
     else if (this.right) {
       try {
-        const uop:undefined|((a:any) => any) = unaryOperators[this.value || ''];
-        const rValue = this.right.evaluate();
+        const op = getOperator(this.value!);
+        const uop:undefined|UnaryOperator = op!.unaryOp;
+        const rValue = this.right.evaluate(op!.evalRight);
         if (uop) {
           return uop(rValue);
         }
@@ -442,12 +475,27 @@ export class FormulaNode {
     else {
       // Could be plain text (or a number) or a name in context
       const context = getBuilderContext();
-      if (this.value in context) {
-        return context[this.value];
+      const trimmed = simpleTrim(this.value);
+      if (evalText === true) {
+        if (trimmed in context) {
+          return context[trimmed];
+        }
+        if (isIntegerRegex(trimmed)) {
+          return parseInt(trimmed);
+        }
       }
       return this.value;
     }
   }
+}
+
+/**
+ * Does this string look like an integer?
+ * @param str any text
+ * @returns true if, once trimmed, it's a well-formed integer
+ */
+function isIntegerRegex(str:string):boolean {
+  return /^-?\d+$/.test(str.trim());
 }
 
 /**
@@ -456,109 +504,142 @@ export class FormulaNode {
  * @returns its integer equivalent, if it is an integer, otherwise the original string
  */
 function tryParseInt(str:string):number|string {
-  if (/^-?\d+$/.test(str.trim())) {
+  if (isIntegerRegex(str)) {
     return parseInt(str);
   }
   return str;
 }
 
 /**
- * 2nd pass of formula parser.
- * After first tokenizing, build the tokens into a tree of nodes.
- * Each node
- * @param tokens 
- * @returns 
+ * Of all the operators, find the one with the highest precedence.
+ * @param tokens A list of tokens, which are a mix of operators and values
+ * @returns The index of the first operator with the highest precedence,
+ * or -1 if no remaining operators
  */
-export function buildFormulaNodeTree(tokens:FormulaToken[]):FormulaNode
-{
-  const stack:FormulaNode[] = [];
-  let lastValue:FormulaNode|null = null;
-
+function FindHighestPrecedence(tokens:FormulaToken[]): number {
+  let precedence = 0;
+  let first = -1;
   for (let i = 0; i < tokens.length; i++) {
     const tok = tokens[i];
-    let newNode:FormulaNode|null = null;
-
-    if (tok.type == TokenType.openBracket) {
-      const close = findCloseBracket(tokens, i);
-      const nested = tokens.slice(i + 1, close - 1);
-      newNode = buildFormulaNodeTree(nested);
-      newNode.bracket = tok.text;
-      lastValue = newNode;
-      i = close;
-    }
-    else if (tok.type == TokenType.text) {
-      newNode = new FormulaNode(true, tok.text);
-      lastValue = newNode;
-    }
-
-    else if (tok.type == TokenType.unaryOp) {
-      newNode = new FormulaNode(false, tok.text);
-    }
-    else if (tok.type == TokenType.binaryOp) {
-      if (stack.length == 0) {
-        throw new Error('Binary operator \'' + tok.text + '\' lacks l-value');
-      }
-      else if (stack.length == 0 || !stack[0].isComplete()) {
-        throw new Error('Binary operator \'' + tok.text + '\' with incomplete l-value {' + stack[0].toString() + '}');
-      }
-      const left = stack.pop();
-      newNode = new FormulaNode(false, tok.text, undefined, left);
-    }
-    else if (tok.type == TokenType.objectOp) {
-      // Object operators act on the most recent value-type node
-      if (!lastValue) {
-        throw new Error('Object operator \'' + tok.text + '\' lacks l-value');
-      }
-      const parent = lastValue.parent;
-      const objNode = new FormulaNode(false, tok.text, undefined, lastValue);
-      if (parent) {
-        parent.right = objNode;
-      }
-      else if (lastValue == stack[0]) {
-        stack[0] = objNode;
-      }
-      else {
-        throw new Error('Cannot place new object operator node in parent context: ' + objNode.toString());
-      }
-      lastValue = objNode;
-    }
-
-    // Almost all tokens create new nodes, which append to the end of the building tree.
-    // The exception is object operators, which effectively have operator precedence to the most recent value.
-
-    if (newNode != null) {
-      // If there are open nodes, a new value node should complete them
-      while (stack.length > 0) {
-        const node = stack.pop();
-        if (node) {
-          // If we have a 1-item stack, new items should append to it.
-          // If we have a complex stack, likely most appending is already done.
-          if (newNode.parent != node && !node.append(newNode)) {
-            throw new Error('Value node {' + newNode.toString() + '} could not be appended to the existing state: ' + node.toString());
-          }
-          if (!newNode.isComplete()) {
-            // When the new node isn't complete, keep both the parent and the new node on the stack
-            stack.push(node);
-            break;
-          }
-          newNode = node;
+    if (tok.type & TokenType.anyOperatorOrBracket) {
+      const op = getOperator(tok.text ?? '');
+      if (op) {
+        if ((op.precedence || 0) > precedence) {
+          precedence = op.precedence!;
+          first = i;
         }
       }
-      // We now have an internally complete sequence. Make it the root node.
-      stack.push(newNode);
-      continue;
+    }
+  }
+  return first;
+}
+
+/**
+ * 2nd pass of formula parser.
+ * Uses operator precedence. 
+ * Finds the left-most of the highest-precedence operators.
+ * Builds a node that binds that operator to its operand(s).
+ * Replace that subset with the node, and repeat
+ * @param tokens A sequence of tokens
+ * @param bracket An encapsulating bracket, if any
+ * @returns A single node
+ * @throws an error if the formula is malformed: mismatched brackets or incomplete operators
+ */
+export function treeifyFormula(tokens:FormulaToken[], bracket?:string):FormulaNode
+{
+  if (isStringBracket(bracket || '')) {
+    // concatenate all tokens into one string
+    const str = tokens.map(t => t.text || '').join('');
+    return new FormulaNode(true, str);
+  }
+
+  while (tokens.length > 0) {
+    const opIndex = FindHighestPrecedence(tokens);
+    if (opIndex < 0) {
+      // If well informed, there should only be a single non-space token left
+      let node:FormulaNode|undefined = undefined;
+      for (let i = 0; i < tokens.length; i++) {
+        const tok = tokens[i];
+        if (tok.type != TokenType.spaces) {
+          if (node) {
+            // This is a 2nd token
+            // REVIEW: Alternatively invent a concatenation node
+            throw new Error('ERROR: consecutive tokens with no operator: ' 
+              + node?.toString() + ' ' + (tok.text || tok.node?.toString()));
+          }
+          if (tok.type == TokenType.node) {
+            node = tok.node!;
+          }
+          else {
+            node = new FormulaNode(true, tok.text || '');
+          }
+        }
+      }
+      if (!node) {
+        throw new Error('ERROR: no value tokens in span');
+      }
+      return node;
+    }
+
+    // const tok = tokens[opIndex];
+    const ch = tokens[opIndex].text!
+    const op = getOperator(ch);
+    
+    if (isUnaryOperator(op)) {
+      let r = opIndex + 1;
+      while (r < tokens.length && tokens[r].type == TokenType.spaces) { 
+        r++; 
+      }
+      if (r >= tokens.length) {
+        throw new Error('ERROR: Unary operator with no following operand: ' + ch);
+      }
+      const rightSplit = tokens.splice(opIndex + 1, r - opIndex);
+      const right = treeifyFormula(rightSplit);
+      const node = new FormulaNode(true, op!.raw, right);
+      const tok:FormulaToken = { type:TokenType.node, node:node };
+      tokens[opIndex] = tok;
+    }
+
+    else if (isBinaryOperator(op)) {
+      let r = opIndex + 1;
+      while (r < tokens.length && tokens[r].type == TokenType.spaces) { 
+        r++; 
+      }
+      if (r >= tokens.length) {
+        throw new Error('ERROR: Unary operator with no right operand: ' + ch);
+      }
+      const rightSplit = tokens.splice(opIndex + 1, r - opIndex);
+      const right = treeifyFormula(rightSplit);
+
+      let l = opIndex - 1;
+      while (l >= 0 && tokens[l].type == TokenType.spaces) { 
+        l--; 
+      }
+      if (l < 0) {
+        throw new Error('ERROR: Binary operator with left operand: ' + ch);
+      }
+      const leftSplit = tokens.splice(l, opIndex - l);
+      const left = treeifyFormula(leftSplit);
+
+      const node = new FormulaNode(true, op!.raw, right, left);
+      const tok:FormulaToken = { type:TokenType.node, node:node };
+      tokens[l] = tok;
+    }
+
+    else if (isBracketOperator(op)) {
+      const close = findCloseBracket(tokens, opIndex);
+      tokens.splice(close, 1);  // Delete close bracket
+      const nested = tokens.splice(opIndex + 1, close - opIndex - 1);
+      const node = treeifyFormula(nested, op?.raw);
+      const tok:FormulaToken = { type:TokenType.node, node:node };
+      tokens[opIndex] = tok;
+    }
+    else {
+      throw new Error('ERROR: Unknown operator from ' + ch + ': ' + op);
     }
   }
 
-  if (stack.length == 0) {
-    return new FormulaNode(true, '');
-  }
-
-  if (stack.length > 1 || !stack[0].isComplete()) {
-    throw new Error('Incomplete formula: ' + stack.toString());
-  }
-
-  return stack.pop() as FormulaNode;
+  throw new Error('ERROR: Treeify reduced to an empty span');
 }
 
 /**
@@ -572,7 +653,8 @@ export function evaluateFormula(str:string|null):any {
   }
   try {
     const tokens = tokenizeFormula(str);
-    const node = buildFormulaNodeTree(tokens);
+    // const node = buildFormulaNodeTree(tokens);
+    const node = treeifyFormula(tokens);
     return node.evaluate();  
   }
   catch (ex) {
@@ -596,7 +678,7 @@ export function evaluateFormula(str:string|null):any {
    Operators:
      +-*\%/   numeric operators
      &@       string operators
-     .?^      object and context operators
+     .?:      object and context operators
 
  */
 
@@ -630,26 +712,114 @@ function isBracketChar(ch:string):boolean {
     || ch == ')' || ch == ']' || ch == '}';
 }
 
-const binaryOperators = {
-  '+': (a,b) => {return String(parseFloat(a) + parseFloat(b))},
-  '-': (a,b) => {return String(parseFloat(a) - parseFloat(b))},
-  '*': (a,b) => {return String(parseFloat(a) * parseFloat(b))},
-  '/': (a,b) => {return String(parseFloat(a) / parseFloat(b))},
-  '\\': (a,b) => {const f=parseFloat(a) / parseFloat(b); return String(f >= 0 ? Math.floor(f) : Math.ceil(f)); },  // integer divide without Math.trunc
-  '%': (a,b) => {return String(parseFloat(a) % parseInt(b))},
-  '&': (a,b) => {return String(a) + String(b)},
+type UnaryOperator = (a:any) => any;
+type BinaryOperator = (a:any,b:any) => any;
+
+type OperatorInfo = {
+  raw: string;
+  precedence?: number;  // higher numbers should evaluate before lower
+  unaryChar?: string;  // if a unaryOp, replace text for a unique operator
+  binaryChar?: string;  // if a binaryOp, replace text for a unique operator
+  closeChar?: string;  // only for brackets
+  unaryOp?: UnaryOperator;  // only supports prefixed unary operators: -4, but not 4!
+  binaryOp?: BinaryOperator;
+  evalLeft?: boolean;
+  evalRight?: boolean;
 }
 
-const unaryOperators = {
-  '-': (a) => {return String(-parseFloat(a))},
-//  '@': (a) => {return deentify(a)},
-'^': (a) => {return globalContextData(a)},
+const minus:OperatorInfo = { raw:'-', unaryChar:'⁻', binaryChar:'−'};  // ambiguously unary or binary
+const concat:OperatorInfo = { raw:'&', precedence:1, binaryOp:(a,b) => {return String(a) + String(b)},evalLeft:true,evalRight:true};
+const entity:OperatorInfo = { raw:'@', precedence:1, unaryOp:(a) => {return deentify(a)},evalRight:false};
+const plus:OperatorInfo = { raw:'+', precedence:3, binaryOp:(a,b) => {return String(parseFloat(a) + parseFloat(b))},evalLeft:true,evalRight:true};
+const subtract:OperatorInfo = { raw:'−', precedence:3, binaryOp:(a,b) => {return String(parseFloat(a) - parseFloat(b))},evalLeft:true,evalRight:true};
+const times:OperatorInfo = { raw:'*', precedence:4, binaryOp:(a,b) => {return String(parseFloat(a) * parseFloat(b))},evalLeft:true,evalRight:true};
+const divide:OperatorInfo = { raw:'/', precedence:4, binaryOp:(a,b) => {return String(parseFloat(a) / parseFloat(b))},evalLeft:true,evalRight:true};
+const intDivide:OperatorInfo = { raw:'\\', precedence:4, binaryOp:(a,b) => {const f=parseFloat(a) / parseFloat(b); return String(f >= 0 ? Math.floor(f) : Math.ceil(f))},evalLeft:true,evalRight:true};  // integer divide without Math.trunc
+const modulo:OperatorInfo = { raw:'%', precedence:4, binaryOp:(a,b) => {return String(parseFloat(a) % parseFloat(b))},evalLeft:true,evalRight:true};
+const negative:OperatorInfo = { raw:'⁻', precedence:5, unaryOp:(a) => {return String(-parseFloat(a))},evalRight:true};
+const childObj:OperatorInfo = { raw:'.', precedence:6, binaryOp:(a,b) => {return getKeyedChild(a, b, false)},evalLeft:true,evalRight:false};
+const rootObj:OperatorInfo = { raw:':', precedence:7, unaryOp:(a) => {return globalContextData(a)},evalRight:false};
+const roundBrackets:OperatorInfo = { raw:'(', precedence:8, closeChar:')'};
+const squareBrackets:OperatorInfo = { raw:'[', precedence:8, closeChar:']'};
+const curlyBrackets:OperatorInfo = { raw:'{', precedence:8, closeChar:'}'};
+const closeRoundBrackets:OperatorInfo = { raw:')'};
+const closeSquareBrackets:OperatorInfo = { raw:']'};
+const closeCurlyBrackets:OperatorInfo = { raw:'}'};
+const singleQuotes:OperatorInfo = { raw:'\'', precedence:10, closeChar:'\''};
+const doubleQuotes:OperatorInfo = { raw:'"', precedence:10, closeChar:'"'};
+
+const allOperators:OperatorInfo[] = [
+  minus, concat, entity, plus, subtract,
+  times, divide, intDivide, modulo, negative,
+  childObj, rootObj,
+  roundBrackets, squareBrackets, curlyBrackets,
+  closeRoundBrackets, closeSquareBrackets, closeCurlyBrackets,
+  singleQuotes, doubleQuotes
+];
+
+// Convert the list to a dictionary, keyed on the raw string
+// (accumulate each item in the list into a field in acc, which starts out as {})
+const operatorLookup = allOperators.reduce((acc, obj) => { acc[obj.raw] = obj; return acc; }, {});
+
+function isOperator(ch:string) {
+  return ch in isOperator;
 }
 
-const objectOperators = {
-  '.': (a,b) => {return getKeyedChild(a, b, false)},
-  // '?': (a,b) => {return getKeyedChild(a, b, true)},
+function getOperator(ch:string|OperatorInfo|null):OperatorInfo|null {
+  if (ch === null) {
+    return null;
+  }
+  if (typeof ch === 'string') {
+    if (ch in operatorLookup) {
+      return operatorLookup[ch];
+    }
+    return null;
+  }
+  return ch as OperatorInfo;
 }
+
+function isUnaryOperator(ch:string|OperatorInfo|null) {
+  const op = getOperator(ch);
+  return op !== null
+    && (op.unaryChar !== undefined || op.unaryOp !== undefined);
+}
+
+function isBinaryOperator(ch:string|OperatorInfo|null) {
+  const op = getOperator(ch);
+  return op !== null
+    && (op.binaryChar !== undefined || op.binaryOp !== undefined);
+}
+
+function isBracketOperator(ch:string|OperatorInfo|null) {
+  const op = getOperator(ch);
+  return op !== null && op.closeChar !== undefined;
+}
+
+function isStringBracket(ch:string|OperatorInfo|null) {
+  const op = getOperator(ch);
+  return op !== null && (op.raw == '"' || op.raw == '\'');
+}
+
+// const binaryOperators = {
+//   '+': (a,b) => {return String(parseFloat(a) + parseFloat(b))},
+//   '-': (a,b) => {return String(parseFloat(a) - parseFloat(b))},
+//   '*': (a,b) => {return String(parseFloat(a) * parseFloat(b))},
+//   '/': (a,b) => {return String(parseFloat(a) / parseFloat(b))},
+//   '\\': (a,b) => {const f=parseFloat(a) / parseFloat(b); return String(f >= 0 ? Math.floor(f) : Math.ceil(f)); },  // integer divide without Math.trunc
+//   '%': (a,b) => {return String(parseFloat(a) % parseInt(b))},
+//   '&': (a,b) => {return String(a) + String(b)},
+// }
+
+// const unaryOperators = {
+//   '-': (a) => {return String(-parseFloat(a))},
+// //  '@': (a) => {return deentify(a)},
+//   ':': (a) => {return globalContextData(a)},
+// }
+
+// const objectOperators = {
+//   '.': (a,b) => {return getKeyedChild(a, b, false)},
+//   // '?': (a,b) => {return getKeyedChild(a, b, true)},
+// }
 
 /**
  * A few common named entities
@@ -834,7 +1004,7 @@ export function tokenizeText(raw:string, implicitFormula?:boolean):TextToken[] {
 export function globalContextData(path:string):any {
   const context = theBoilerContext();
   if (path && context) {
-    return evaluateFormula(path);
+    return getKeyedChild(context, path);
   }
   return undefined;
 }
@@ -875,24 +1045,38 @@ export function textFromContext(key:string|null):string {
 /**
  * Get a keyed child of a parent, where the key is either a dictionary key 
  * or a list index or a string offset.
- * @param parent The parent object: a list, object, or string
+ * @param parent The parent object: a list, object, or string, which could in turn be the name of a list or object
  * @param key The identifier of the child: a dictionary key, a list index, or a string offset
  * @param maybe If true, and key does not work, return ''
  * @returns A child object, or a substring
  */
-function getKeyedChild(parent:any, key:string, maybe?:boolean) {
+function getKeyedChild(parent:any, key:string, maybe?:boolean):any {
+  // if (typeof(parent) == 'string') {
+  //   const obj = valueFromContext(simpleTrim(parent));
+  //   if (obj != null) {
+  //     parent = obj;
+  //   }
+  // }
+
   if (typeof(parent) == 'string') {
-    const i = parseInt(key);
-    if (maybe && (i < 0 || i >= (parent as string).length)) {
-      return '';
+    if (isIntegerRegex(key)) {
+      const i = parseInt(key);
+      if (i < 0 || i >= (parent as string).length) {
+        if (maybe) {
+          return '';
+        }
+        throw new BuildError('Index out of range: ' + i + ' in ' + parent);
+      }
+      return (parent as string)[i];  
     }
-    return (parent as string)[i];
   }
-  if (!(key in parent)) {
+
+  const trimmed = simpleTrim(key);
+  if (!(trimmed in parent)) {
     if (maybe) {
       return '';
     }
-    throw new BuildEvalError('getKeyedChild', key);
+    throw new BuildEvalError('getKeyedChild', trimmed);
   }
-  return parent[key];
+  return parent[trimmed];
 }

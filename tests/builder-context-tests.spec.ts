@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { tokenizeText, complexAttribute, testBuilderContext, valueFromContext, tokenizeFormula, buildFormulaNodeTree, FormulaNode } from '../_builderContext';
+import { tokenizeText, testBuilderContext, valueFromContext, tokenizeFormula, FormulaNode, treeifyFormula } from '../_builderContext';
 
 global.structuredClone = (val) => JSON.parse(JSON.stringify(val))
 
@@ -50,14 +50,16 @@ test('tokenizeText', () => {
 });
 
 const tokenShorthand = {
-  '!':0x1,  // sub-types of operator, when we get to that
-  '+':0x2,
-  '.':0x4,
-  '?':0x7,
-  '[':0x10,
-  ']':0x20,
-  '|':0x30,
-  't':0x100,
+  0x1:'!',   // unary
+  0x2:'.',   // binary
+  0x3:'?',   // anyOperator
+  0x10:'[',  // open
+  0x20:']',  // close
+  0x30:'|',  // anyBracket
+  0x100:'t', // word
+  0x200:'#', // number
+  0x400:' ', // space
+  0x1000:'@',// node
 }
 
 /**
@@ -68,7 +70,7 @@ const tokenShorthand = {
  */
 function testTokenizeFormula(input:string, texts:string, tokens:string) {
   expect(tokenizeFormula(input).map(t=>t.text)).toEqual(texts.split(','));
-  expect(tokenizeFormula(input).map(t=>t.type)).toEqual(tokens.split('').map(ch => tokenShorthand[ch]));
+  expect(tokenizeFormula(input).map(t=>t.type).map(ch => tokenShorthand[ch]).join('')).toEqual(tokens);
 }
 
 test('tokenizeFormula', () => {
@@ -76,37 +78,43 @@ test('tokenizeFormula', () => {
   testTokenizeFormula('num', 'num', 't');
 
   // binary operator
-  testTokenizeFormula('num+3', 'num,+,3', 't+t');
+  testTokenizeFormula('num+3', 'num,+,3', 't.#');
+
+  // object operator
+  testTokenizeFormula('line.start.x', 'line,.,start,.,x', 't.t.t');
 
   // whitespace is preserved at this first level, attached to adjacent text
-  testTokenizeFormula(' num + 3 ', ' num ,+, 3 ', 't+t');
+  testTokenizeFormula(' num + 3 ', ' num ,+, 3 ', 't.#');
 
-  // unary operator
-  testTokenizeFormula('-num', '-,num', '!t');
+  // unary operator (with replacement char)
+  testTokenizeFormula('-num', '⁻,num', '!t');
 
   // unary operator after binary
-  testTokenizeFormula('2*-num', '2,*,-,num', 't+!t');
+  testTokenizeFormula('2*-num', '2,*,⁻,num', '#.!t');
 
-  // stacked unary operators
-  testTokenizeFormula('--2----num', '-,-,2,-,-,-,-,num', '!!t+!!!t');
+  // stacked unary operators (with both replacement chars)
+  testTokenizeFormula('--2----num', '⁻,⁻,2,−,⁻,⁻,⁻,num', '!!#.!!!t');
 
   // several binary operators
-  testTokenizeFormula('num+3*num\\5%10', 'num,+,3,*,num,\\,5,%,10', 't+t+t+t+t');
+  testTokenizeFormula('num+3*num\\5%10', 'num,+,3,*,num,\\,5,%,10', 't.#.t.#.#');
 
   // various brackets
-  testTokenizeFormula('(aa+[bb-3]*(cc/4))', '(,aa,+,[,bb,-,3,],*,(,cc,/,4,),)', '[t+[t+t]+[t+t]]');
+  testTokenizeFormula('(aa+[bb-3]*(cc/4))', '(,aa,+,[,bb,−,3,],*,(,cc,/,4,),)', '[t.[t.#].[t.#]]');
 
   // quotes
-  testTokenizeFormula('"abc"&\'def\'', '",abc,",&,\',def,\'', '[t]+[t]');
+  testTokenizeFormula('"abc"&\'def\'', '",abc,",&,\',def,\'', '[t].[t]');
 
   // escaped quotes
-  testTokenizeFormula('`"abc`"&`\'def`\'', '"abc",&,\'def\'', 't+t');
+  testTokenizeFormula('`"abc`"&`\'def`\'', '"abc",&,\'def\'', 't.t');
 
   // escaped brackets
-  testTokenizeFormula('"`(abc`)"&\'`[def`]\'', '",(abc),",&,\',[def],\'', '[t]+[t]');
+  testTokenizeFormula('"`(abc`)"&\'`[def`]\'', '",(abc),",&,\',[def],\'', '[t].[t]');
 
   // brackets and operators in quotes
-  testTokenizeFormula('"(abc)"&\'[d"e+f]\'', '",(abc),",&,\',[d"e+f],\'', '[t]+[t]');
+  testTokenizeFormula('"(abc)"&\'[d"e+f]\'', '",(abc),",&,\',[d"e+f],\'', '[t].[t]');
+
+  // whitespace, both in words and numbers, and alone
+  testTokenizeFormula('"word " &  (num + 2)', '",word ,", ,&,  ,(,num ,+, 2,)', '[t] . [t.#]');
 
 });
 
@@ -131,35 +139,86 @@ function depthFirstValues(node:FormulaNode):string[] {
  * @param raw The original formula
  * @param prefix A prefix notation (aka depth first) expression of the tree, with terms separated by commas
  */
-function testBuildFormulaNodeTree(raw:string, prefix:string) {
+function testTreeifyFormula(raw:string, prefix:string) {
   const tokens = tokenizeFormula(raw);
-  const tree = buildFormulaNodeTree(tokens);
-  expect(tree.value).toEqual(prefix.split(',')[0]);
+  const tree = treeifyFormula(tokens);
+  // expect(tree.value).toEqual(prefix.split(',')[0]);
   const dfv = depthFirstValues(tree).join(',');
   expect(dfv).toEqual(prefix);
 
 }
 
-test('buildFormulaNodeTree', () => {
+test('treeifyFormula', () => {
   // Simple string
-  testBuildFormulaNodeTree("hello", 'hello');
+  testTreeifyFormula("hello", 'hello');
 
   // Simple number
-  testBuildFormulaNodeTree("321", '321');
+  testTreeifyFormula("321", '321');
 
   // Binary operation
-  testBuildFormulaNodeTree("num*10", '*,num,10');
+  testTreeifyFormula("num*10", '*,num,10');
 
   // Unary operation
-  testBuildFormulaNodeTree("-10", '-,10');
+  testTreeifyFormula("-10", '⁻,10');
+
+  // Object operations
+  testTreeifyFormula(":sentence.(:magic%10)", '.,:,sentence,%,:,magic,10');
+
+  // Object operator precedence
+  testTreeifyFormula("pt.x+pt.y", '+,.,pt,x,.,pt,y');
 
   // Multiple operations
-  testBuildFormulaNodeTree("num*-10", '*,num,-,10');
+  testTreeifyFormula("num*-10", '*,num,⁻,10');
+
+  // Multiple operations with whitespace
+  testTreeifyFormula("num * -10", '*,num ,⁻,10');  // whitespace with text persists until evaluate()
+
+  // Parentheses
+  testTreeifyFormula("sentence.[2*(3+4)]", '.,sentence,*,2,+,3,4');
+
+  // Quotes
+  testTreeifyFormula("'My '&sentence&\"!!\"", '&,&,My ,sentence,!!');  // 1st & in prefix is 2nd in infix
 
 });
 
-// test('cloneAttributes', async ({ page }) => {
-//   expect(complexAttribute('num')).toEqual(1234);
-//   expect(complexAttribute('fonts')).toEqual(['bold','italic']);
-//   expect(complexAttribute('pt')).toEqual({ x: 3, y: 5 });
-// });
+function testEvaluateFormulaTree(raw:string, result:string) {
+  const tokens = tokenizeFormula(raw);
+  const tree = treeifyFormula(tokens);
+  expect('' + tree.evaluate()).toEqual(result);
+}
+
+test('evaluateFormulaTree', () => {
+  // Simple string
+  testEvaluateFormulaTree("hello", 'hello');
+
+  // Simple number
+  testEvaluateFormulaTree("321", '321');
+
+  // Binary operation
+  testEvaluateFormulaTree("num*10", '12340');
+
+  // Unary operation
+  testEvaluateFormulaTree("-10", '-10');
+
+  // Object by name
+  testEvaluateFormulaTree("pt.x", '3');
+
+  // Object values with math and spaces
+  testEvaluateFormulaTree("pt.x + pt.y", '8');
+  
+  // Object operations
+  testEvaluateFormulaTree(":sentence.(:num%10)", ' ');
+
+  // Multiple operations
+  testEvaluateFormulaTree("num*-10", '-12340');
+
+  // Multiple operations with whitespace
+  testEvaluateFormulaTree("num * -10", '-12340');
+
+  // Parentheses
+  testEvaluateFormulaTree("sentence.[2*(3+5)]", 'h');
+
+  // Quotes
+  testEvaluateFormulaTree("'My '&sentence&\"!!\"", 'My Unit tests are the best!!!');
+
+});
