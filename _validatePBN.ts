@@ -1,4 +1,4 @@
-import { anyFromContext, globalContextData, theBoilerContext } from "./_builderContext";
+import { evaluateFormula, valueFromGlobalContext, theBoilerContext } from "./_builderContext";
 import { findParentOfClass, getOptionalStyle, hasClass, toggleClass } from "./_classUtil";
 import { StampToolDetails } from "./_stampTools";
 
@@ -113,7 +113,7 @@ function dataFromTool(cell:HTMLElement, stampTools: StampToolDetails[]): string|
 function contextDataFromRef(elmt:Element, attr:string):any {
   const path = getOptionalStyle(elmt, attr);
   if (path) {
-    return anyFromContext(path);
+    return evaluateFormula(path);
   }
   return undefined;
 }
@@ -236,7 +236,7 @@ const outerGapTag:linearTag = {len: 1, tag: ''};
 * @param stampList
 */
 function validateColorPBN(target:HTMLElement, table:HTMLElement, stampList:string) {
-  const stampTools = globalContextData(stampList) as StampToolDetails[];
+  const stampTools = valueFromGlobalContext(stampList) as StampToolDetails[];
 
   let pos = target.id.split('_');
   const row = parseInt(pos[0]);

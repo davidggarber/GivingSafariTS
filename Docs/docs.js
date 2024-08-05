@@ -14,7 +14,7 @@ function selectCodeBlock(code, evt) {
     var sel = window.getSelection();
     var range = new Range();
     range.setStart(code.firstChild, 0);
-    range.setEnd(code.lastElementChild, code.lastElementChild.innerText.length);
+    range.setEnd(code, code.childNodes.length);
     sel.empty();
     sel.addRange(range);
   }

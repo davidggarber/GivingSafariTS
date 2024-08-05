@@ -1,6 +1,6 @@
 import { expandContents, pushRange } from "./_builder";
-import { anyFromContext, cloneText, getBuilderContext, popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
-import { BuildError, BuildEvalError, BuildTagError } from "./_builderError";
+import { cloneText, evaluateAttribute, makeInt, makeString, popBuilderContext, pushBuilderContext } from "./_builderContext";
+import { ContextError, elementSourceOffset, elementSourceOffseter } from "./_contextError";
 
 /**
  * Potentially several kinds of for loops:
@@ -21,22 +21,22 @@ export function startForLoop(src:HTMLElement):Node[] {
   let vals:any[] = [];  // not always used
 
   // <for each="variable_name" in="list">
-  iter = src.getAttributeNS('', 'each');
+  iter = getIterationVariable(src,'each');
   if (iter) {
     list = parseForEach(src);
   }
   else {
-    iter = src.getAttributeNS('', 'char');
+    iter = getIterationVariable(src,'char');
     if (iter) {
       list = parseForText(src, '');
     }
     else {
-      iter = src.getAttributeNS('', 'word');
+      iter = getIterationVariable(src,'word');
       if (iter) {
         list = parseForText(src, ' ');
       }
       else {
-        iter = src.getAttributeNS('', 'key');
+        iter = getIterationVariable(src,'key');
         if (iter) {
           list = parseForKey(src);
           vals = list[1];
@@ -44,12 +44,12 @@ export function startForLoop(src:HTMLElement):Node[] {
         }
         else {
           // range and int are synonyms
-          iter = src.getAttributeNS('', 'range') || src.getAttributeNS('', 'int');
+          iter = getIterationVariable(src,'range') || getIterationVariable(src,'int');
           if (iter) {
             list = parseForRange(src);
           }
           else {
-            throw new BuildTagError('Unrecognized <for> tag type', src);
+            throw new ContextError('Unrecognized <for> tag type', elementSourceOffset(src));
           }
         }
       }
@@ -57,7 +57,7 @@ export function startForLoop(src:HTMLElement):Node[] {
   }
 
   if (!list) {
-    throw new BuildTagError('Unable to determine loop: ', src);
+    throw new ContextError('Unable to determine loop', elementSourceOffset(src));
   }
 
   const inner_context = pushBuilderContext();
@@ -76,47 +76,60 @@ export function startForLoop(src:HTMLElement):Node[] {
 }
 
 /**
+ * Read an attribute of the <for> tag, looking for the iteration variable name.
+ * @param src The <for> element
+ * @param attr The attribute name
+ * @returns A string, if found, or null if that attribute was not used.
+ * @throws an error if the name is malformed - something other than a single word
+ */
+function getIterationVariable(src:Element, attr:string): string|null {
+  const iter = src.getAttributeNS('', attr);
+  if (!iter) {
+    return null;
+  }
+  // Iteration variables need to be a single word. No punctuation.
+  if (/^[a-zA-Z]+$/.test(iter)) {
+    return iter;
+  }
+  throw new ContextError('For loop iteration variable must be a single word: ' + iter, elementSourceOffset(src, attr));
+}
+
+/**
  * Syntax: <for each="var" in="list">
  * @param src 
  * @param context 
  * @returns a list of elements
  */
 function parseForEach(src:HTMLElement):any[] {
-  const list_name = src.getAttributeNS('', 'in');
-  if (!list_name) {
-    throw new BuildTagError('for each requires "in" attribute', src);
+  const obj = evaluateAttribute(src, 'in', true);
+  if (Array.isArray(obj)) {
+    return obj as any[];
   }
-  return anyFromContext(list_name);
+  throw new ContextError("For each's in attribute must indicate a list", elementSourceOffseter(src, 'in'));
 }
 
 function parseForText(src:HTMLElement, delim:string) {
-  const list_name = src.getAttributeNS('', 'in');
-  if (!list_name) {
-    throw new BuildError('for char requires "in" attribute');
-  }
-  // The list_name can just be a literal string
-  const list = textFromContext(list_name);
-  if (!list) {
-    throw new BuildError('unresolved context: ' + list_name);
-  }
-  return list.split(delim);
+  const tok = elementSourceOffset(src, 'in');
+  const obj = evaluateAttribute(src, 'in', true);
+  const str = makeString(obj, tok);
+  return str.split(delim);
 }
 
 function parseForRange(src:HTMLElement):any {
-  const from = src.getAttributeNS('', 'from');
-  let until = src.getAttributeNS('', 'until');
-  const last = src.getAttributeNS('', 'to');
-  const length = src.getAttributeNS('', 'len');
-  const step = src.getAttributeNS('', 'step');
+  const from = evaluateAttribute(src, 'from', true, false);
+  const until = evaluateAttribute(src, 'until', true, false);
+  const last = evaluateAttribute(src, 'to', true, false);
+  const length = evaluateAttribute(src, 'len', true, false);
+  const step = evaluateAttribute(src, 'step', true, false);
 
-  const start = from ? parseInt(cloneText(from)) : 0;
-  let end = until ? parseInt(cloneText(until))
-    : last ? (parseInt(cloneText(last)) + 1)
-    : length ? (anyFromContext(length).length)
+  const start = from ? makeInt(from, elementSourceOffseter(src, 'from')) : 0;
+  let end = until ? makeInt(until, elementSourceOffseter(src, 'until'))
+    : last ? (makeInt(last, elementSourceOffseter(src, 'last')) + 1)
+    : length ? (makeString(length, elementSourceOffseter(src, 'len'))).length
     : start;
   const inc = step ? parseInt(cloneText(step)) : 1;
   if (inc == 0) {
-    throw new BuildTagError("Invalid loop step. Must be non-zero.", src);
+    throw new ContextError("Invalid loop step. Must be non-zero.", elementSourceOffseter(src, 'step'));
   }
   if (!until && inc < 0) {
     end -= 2;  // from 5 to 1 step -1 means i >= 0
@@ -130,16 +143,14 @@ function parseForRange(src:HTMLElement):any {
 }
 
 function parseForKey(src:HTMLElement):any {
-  const obj_name = src.getAttributeNS('', 'in');
-  if (!obj_name) {
-    throw new BuildTagError('for each requires "in" attribute', src);
+  const obj = evaluateAttribute(src, 'in', true);
+  try {
+    const keys = Object.keys(obj);
+    const vals = keys.map(k => obj[k]);
+    return [keys, vals];  
   }
-  const obj = anyFromContext(obj_name)
-  if (!obj) {
-    throw new BuildEvalError('unresolved list context', obj_name);
+  catch (ex) {
+    throw new ContextError('Not an object with keys: ' + obj, elementSourceOffset(src, 'in'), ex);
   }
-  const keys = Object.keys(obj);
-  const vals = keys.map(k => obj[k]);
-  return [keys, vals];
 }
 

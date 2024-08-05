@@ -1,7 +1,7 @@
 import { expandContents } from "./_builder";
-import { anyFromContext, cloneText, keyExistsInContext, textFromContext } from "./_builderContext";
-import { BuildError, BuildHtmlError, BuildTagError } from "./_builderError";
+import { evaluateAttribute, keyExistsInContext, makeFloat } from "./_builderContext";
 import { isTag } from "./_classUtil";
+import { ContextError, elementSourceOffset, elementSourceOffseter, wrapContextError } from "./_contextError";
 
 export type ifResult = {
   passed:boolean;
@@ -33,7 +33,7 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
     }
     else {
       if (result.index < 1) {
-        throw new BuildError(src.tagName + ' without preceding <if>');
+        throw new ContextError(src.tagName + ' without preceding <if>', elementSourceOffset(src));
       }
       if (isTag(src, 'else')) {
         result.index = -result.index;
@@ -47,51 +47,72 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       }
     }
 
-    let exists = src.getAttributeNS('', 'exists');
-    let notex = src.getAttributeNS('', 'notex');
-    let not = src.getAttributeNS('', 'not');
-    let test = src.getAttributeNS('', 'test');
+    let exists = evaluateAttribute(src, 'exists', false, false);
+    let notex = evaluateAttribute(src, 'notex', false, false);
+    let not = evaluateAttribute(src, 'not', true, false);
+    let test = evaluateAttribute(src, 'test', true, false);
 
     if (isTag(src, 'else')) {
       result.passed = true;
     }
-    else if (exists || notex) {
+    else if (exists !== undefined || notex !== undefined) {
       // Does this attribute exist at all?
       result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
     }
-    else if (not) {
-      test = textFromContext(not); 
-      result.passed = test !== 'true';
+    else if (not !== undefined) {
+      result.passed = (not === 'false') || (not === '') || (not === null);
     }
-    else if (test) {
-      test = textFromContext(test); 
+    else if (test !== undefined) {
+      const testTok = elementSourceOffseter(src, 'test');
 
       let value:string|null;
-      if (value = src.getAttributeNS('', 'eq')) {  // equality
-        result.passed = test == cloneText(value);
+      if (value = evaluateAttribute(src, 'eq', false, false)) {
+        result.passed = test === value;  // REVIEW: no casting of either
       }
-      else if (value = src.getAttributeNS('', 'ne')) {  // not-equals
-        result.passed = test != cloneText(value);
+      else if (value = evaluateAttribute(src, 'ne', false, false)) {  // not-equals
+        result.passed = test !== value;  // REVIEW: no casting of either
       }
-      else if (value = src.getAttributeNS('', 'lt')) {  // less-than
-        result.passed = parseFloat(test) < parseFloat(cloneText(value));
+      else if (value = evaluateAttribute(src, 'lt', false, false)) {  // less-than
+        result.passed = makeFloat(test, testTok) < makeFloat(value, elementSourceOffseter(src, 'lt'));
       }
-      else if (value = src.getAttributeNS('', 'le')) {  // less-than or equals
-        result.passed = parseFloat(test) <= parseFloat(cloneText(value));
+      else if (value = evaluateAttribute(src, 'le', false, false)) {  // less-than or equals
+        result.passed = makeFloat(test, testTok) <= makeFloat(value, elementSourceOffseter(src, 'le'));
       }
-      else if (value = src.getAttributeNS('', 'gt')) {  // greater-than
-        result.passed = parseFloat(test) > parseFloat(cloneText(value));
+      else if (value = evaluateAttribute(src, 'gt', false, false)) {  // greater-than
+        result.passed = makeFloat(test, testTok) > makeFloat(value, elementSourceOffseter(src, 'gt'));
       }
-      else if (value = src.getAttributeNS('', 'ge')) {  // greater-than or equals
-        result.passed = parseFloat(test) >= parseFloat(cloneText(value));
+      else if (value = evaluateAttribute(src, 'ge', false, false)) {  // greater-than or equals
+        result.passed = makeFloat(test, testTok) >= makeFloat(value, elementSourceOffseter(src, 'ge'));
       }
-      else if (value = src.getAttributeNS('', 'in')) {  // string contains
-        result.passed = cloneText(value).indexOf(test) >= 0;
+      else if (value = evaluateAttribute(src, 'in', false, false)) {  // string contains
+        if (Array.isArray(value)) {
+          result.passed = value.indexOf(test) >= 0;
+        }
+        else if (typeof(value) === 'string') {
+          result.passed = value.indexOf(test) >= 0;
+        }
+        else if (typeof(value) === 'object') {
+          result.passed = test in value;
+        }
+        else {
+          throw new ContextError(typeof(value) + " value does not support 'in' queries", elementSourceOffset(src, 'in'));
+        }
       }
-      else if (value = src.getAttributeNS('', 'ni')) {  // string doesn't contain
-        result.passed = cloneText(value).indexOf(test) < 0;
+      else if (value = evaluateAttribute(src, 'ni', false, false)) {  // string doesn't contain
+        if (Array.isArray(value)) {
+          result.passed = value.indexOf(test) < 0;
+        }
+        else if (typeof(value) === 'string') {
+          result.passed = value.indexOf(test) < 0;
+        }
+        else if (typeof(value) === 'object') {
+          result.passed = !(test in value);
+        }
+        else {
+          throw new ContextError(typeof(value) + " value does not support 'not-in' queries", elementSourceOffset(src, 'in'));
+        }
       }
-      else if (value = src.getAttributeNS('', 'regex')) {  // regular expression
+      else if (value = evaluateAttribute(src, 'regex', false, false)) {  // regular expression
         const re = new RegExp(value);
         result.passed = re.test(test);
       }
@@ -100,11 +121,11 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       }
     }
     else {
-      throw new BuildHtmlError('<' + src.localName + '> elements must have an evaluating attribute: test, not, exists, or notex', src);
+      throw new ContextError('<' + src.localName + '> elements must have an evaluating attribute: test, not, exists, or notex');
     }
   }
   catch (ex) {
-    throw new BuildTagError('startIfBlock', src, ex);
+    throw wrapContextError(ex, 'startIfBlock', elementSourceOffset(src));
   }
 
   if (result.passed) {

@@ -1,5 +1,7 @@
 import { expandContents } from "./_builder";
-import { anyFromContext, popBuilderContext, pushBuilderContext, textFromContext } from "./_builderContext";
+import { cloneText, complexAttribute, popBuilderContext, pushBuilderContext } from "./_builderContext";
+import { BuildTagError } from "./_builderError";
+import { ContextError, elementSourceOffset, wrapContextError } from "./_contextError";
 import { getTemplate } from "./_templates";
 
 type TemplateArg = {
@@ -22,56 +24,61 @@ type TemplateArg = {
 export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   let dest:Node[] = [];
   
-  // We need to build the values to push onto the context, without changing the current context.
-  // Do all the evaluations first, and cache them.
-  const passed_args:TemplateArg[] = [];
-  for (let i = 0; i < node.attributes.length; i++) {
-    const attr = node.attributes[i].name;
-    const val = node.attributes[i].value;
-    const attri = attr.toLowerCase();
-    if (attri != 'template' && attri != 'class') {
-      const arg:TemplateArg = {
-        attr: attr,
-        raw: val,  // Store the context path, so it can also be referenced
-        text: textFromContext(val),
-        any: anyFromContext(val),
+  try {
+    // We need to build the values to push onto the context, without changing the current context.
+    // Do all the evaluations first, and cache them.
+    const passed_args:TemplateArg[] = [];
+    for (let i = 0; i < node.attributes.length; i++) {
+      const attr = node.attributes[i].name;
+      const val = node.attributes[i].value;
+      const attri = attr.toLowerCase();
+      if (attri != 'template' && attri != 'class') {
+        const arg:TemplateArg = {
+          attr: attr,
+          raw: val,  // Store the context path, so it can also be referenced
+          text: cloneText(val),
+          any: complexAttribute(val),
+        }
+        passed_args.push(arg);
       }
-      passed_args.push(arg);
     }
-  }
 
-  // Push a new context for inside the <use>.
-  // Each passed arg generates 3 usable context entries:
-  //  arg = 'text'          the attribute, evaluated as text
-  //  arg! = *any*          the attribute, evaluated as any
-  //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
-  const inner_context = pushBuilderContext();
-  for (let i = 0; i < passed_args.length; i++) {
-    const arg = passed_args[i];
-    inner_context[arg.attr] = arg.text;
-    inner_context[arg.attr + '!'] = arg.any;
-    inner_context[arg.attr + '$'] = arg.raw;
-  }
+    // Push a new context for inside the <use>.
+    // Each passed arg generates 3 usable context entries:
+    //  arg = 'text'          the attribute, evaluated as text
+    //  arg! = *any*          the attribute, evaluated as any
+    //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
+    const inner_context = pushBuilderContext();
+    for (let i = 0; i < passed_args.length; i++) {
+      const arg = passed_args[i];
+      inner_context[arg.attr] = arg.text;
+      inner_context[arg.attr + '!'] = arg.any;
+      inner_context[arg.attr + '$'] = arg.raw;
+    }
 
-  if (!tempId) {
-    tempId = node.getAttribute('template');
-  }
-  if (tempId) {
-    const template = getTemplate(tempId);
-    if (!template) {
-      throw new Error('Template not found: ' + tempId);
+    if (!tempId) {
+      tempId = node.getAttribute('template');
     }
-    if (!template.content) {
-      throw new Error('Invalid template: ' + tempId);
+    if (tempId) {
+      const template = getTemplate(tempId);
+      if (!template) {
+        throw new ContextError('Template not found: ' + tempId, elementSourceOffset(node, 'template'));
+      }
+      if (!template.content) {
+        throw new ContextError('Invalid template (no content): ' + tempId, elementSourceOffset(node, 'template'));
+      }
+      // The template doesn't have any child nodes. Its content must first be cloned.
+      const clone = template.content.cloneNode(true) as HTMLElement;
+      dest = expandContents(clone);
     }
-    // The template doesn't have any child nodes. Its content must first be cloned.
-    const clone = template.content.cloneNode(true) as HTMLElement;
-    dest = expandContents(clone);
+    else {
+      dest = expandContents(node);
+    }
+    popBuilderContext();
   }
-  else {
-    dest = expandContents(node);
+  catch (ex) {
+    throw wrapContextError(ex, 'useTemplate', elementSourceOffset(node));
   }
-  popBuilderContext();
 
   return dest;
 }

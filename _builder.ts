@@ -1,11 +1,11 @@
 import { theBoiler } from "./_boilerplate";
 import { cloneAttributes, cloneTextNode } from "./_builderContext";
-import { BuildError, BuildTagError } from "./_builderError";
 import { startForLoop } from "./_builderFor";
 import { ifResult, startIfBlock } from "./_builderIf";
 import { inputAreaTagNames, startInputArea } from "./_builderInput";
 import { useTemplate } from "./_builderUse";
 import { findParentOfTag, hasClass, isTag, toggleClass } from "./_classUtil";
+import { ContextError, elementSourceOffset, wrapContextError } from "./_contextError";
 import { svg_xmlns } from "./_tableBuilder";
 
 /****************************************************************************
@@ -340,7 +340,7 @@ export function expandControlTags() {
       parent?.removeChild(src);
     }
     catch (ex) {
-      throw new BuildTagError("expandControlTags", src, ex);
+      throw wrapContextError(ex, "expandControlTags", elementSourceOffset(src));
     }
   }
   initElementStack(null);
@@ -407,14 +407,14 @@ export function expandContents(src:HTMLElement):Node[] {
         }
         else if (isTag(child_elmt, 'template')) {
           // <template> tags do not clone the same as others
-          throw new BuildError('Templates get corrupted when inside a build region. Define all templates at the end of the BODY');
+          throw new ContextError('Templates get corrupted when inside a build region. Define all templates at the end of the BODY');
         }
         else {
           dest.push(cloneWithContext(child_elmt));
         }
       }
       catch (ex) {
-        throw new BuildTagError("expandContents", child_elmt, ex);
+        throw wrapContextError(ex, "expandContents", elementSourceOffset(child_elmt));
       }
     }
     else if (child.nodeType == Node.TEXT_NODE) {
@@ -468,22 +468,22 @@ const nameSpaces = {
  * @returns A cloned element
  */
 function cloneWithContext(elmt:HTMLElement):Element {
-  try {
-    const tagName = normalizeName(elmt.localName);
-    let clone:Element;
-    if (inSvgNamespace() || tagName == 'svg') {
-      // TODO: contents of embedded objects aren't SVG
-      clone = document.createElementNS(svg_xmlns, tagName);
-    }
-    else {
-      clone = document.createElement(tagName);
-    }
-    pushDestElement(clone);
-    cloneAttributes(elmt, clone);
+  const tagName = normalizeName(elmt.localName);
+  let clone:Element;
+  if (inSvgNamespace() || tagName == 'svg') {
+    // TODO: contents of embedded objects aren't SVG
+    clone = document.createElementNS(svg_xmlns, tagName);
+  }
+  else {
+    clone = document.createElement(tagName);
+  }
+  pushDestElement(clone);
+  cloneAttributes(elmt, clone);
 
-    const ifResult:ifResult = {passed:false, index:0};
-    for (let i = 0; i < elmt.childNodes.length; i++) {
-      const child = elmt.childNodes[i];
+  const ifResult:ifResult = {passed:false, index:0};
+  for (let i = 0; i < elmt.childNodes.length; i++) {
+    const child = elmt.childNodes[i];
+    try {
       if (child.nodeType == Node.ELEMENT_NODE) {
         const child_elmt = child as HTMLElement;
         if (isTag(child_elmt, ['if', 'elseif', 'else'])) {
@@ -512,12 +512,13 @@ function cloneWithContext(elmt:HTMLElement):Element {
         clone.insertBefore(cloneNode(child), null);
       }
     }
-    popDestElement();
-    return clone;
+    catch (ex) {
+      throw wrapContextError(ex, "cloneWithContext", elementSourceOffset(elmt));
+    }
+    
   }
-  catch (ex) {
-    throw new BuildTagError("cloneWithContext", elmt, ex);
-  }
+  popDestElement();
+  return clone;
 }
 
 /**
