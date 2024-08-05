@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { tokenizeText, testBuilderContext, valueFromContext, tokenizeFormula, FormulaNode, treeifyFormula, evaluateFormula, complexAttribute } from '../_builderContext';
+import { tokenizeText, testBuilderContext, valueFromContext, tokenizeFormula, FormulaNode, treeifyFormula, evaluateFormula, complexAttribute, FormulaToken } from '../_builderContext';
 import { isContextError } from '../_contextError';
 
 global.structuredClone = (val) => JSON.parse(JSON.stringify(val))
@@ -12,6 +12,10 @@ test.beforeEach(() => {
     pt: { x: 3, y: 5 },
     nest: { alpha: { bravo: 1, charlie: 'delta' }, echo: { foxtrot: { golf: 'hotel' } } }
   }));
+});
+
+test.afterAll(() => {
+  testBuilderContext()  // Reset builder
 });
 
 test('value', () => {
@@ -71,9 +75,22 @@ const tokenShorthand = {
  * @param texts A sequence of tokens' text, presented as a single string separated by commas
  * @param tokens A sequence of tokens' types, presented as shorthand (see above)
  */
-function testTokenizeFormula(input:string, texts:string, tokens:string) {
-  expect(tokenizeFormula(input).map(t=>t.text)).toEqual(texts.split(','));
-  expect(tokenizeFormula(input).map(t=>t.type).map(ch => tokenShorthand[ch]).join('')).toEqual(tokens);
+function testTokenizeFormula(input:string, texts:string, shorthand:string) {
+  let tokens:FormulaToken[];
+  try {
+    tokens = tokenizeFormula(input);
+  }
+  catch (ex) {
+    console.log('Unexpected exception tokenizing formula ' + input)
+    if (isContextError(ex)) {
+      console.log(ex.toString());
+    }
+    throw ex;
+  }
+  if (tokens) {
+    expect(tokens.map(t=>t.text)).toEqual(texts.split(','));
+    expect(tokens.map(t=>t.type).map(ch => tokenShorthand[ch]).join('')).toEqual(shorthand);
+  }
 }
 
 test('tokenizeFormula', () => {
@@ -282,9 +299,6 @@ test('evaluateFormulaAny', () => {
   // Concatenate text with numbers
   testEvaluateFormulaAny("'three' & pt.x", 'three3');
   testEvaluateFormulaAny("pt.y&'five'", '5five');
-
-  // Concatenate text with objects
-  testEvaluateFormulaAny("'fonts:'&fonts", "fonts:bold,italic");
 
 });
 

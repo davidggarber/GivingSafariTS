@@ -1,7 +1,6 @@
 import { isNumberObject } from "util/types";
 import { theBoiler } from "./_boilerplate";
 import { getTrimMode, normalizeName, TrimMode } from "./_builder";
-import { BuildError, BuildEvalError, BuildTagError } from "./_builderError";
 import { SourceOffset, ContextError, wrapContextError, CodeError } from "./_contextError";
 
 /**
@@ -65,7 +64,7 @@ export function popBuilderContext():object {
  */
 export function valueFromContext(key:string, maybe?:boolean):any {
   const context = getBuilderContext();
-  return getKeyedChild(context, key, maybe);
+  return getKeyedChild(context, key, undefined, maybe);
 }
 
 /**
@@ -77,7 +76,7 @@ export function valueFromContext(key:string, maybe?:boolean):any {
 export function valueFromGlobalContext(path:string, maybe?:boolean):any {
   const context = theBoilerContext();
   if (path) {
-    return getKeyedChild(context, path, maybe);
+    return getKeyedChild(context, path, undefined, maybe);
   }
   return undefined;
 }
@@ -179,14 +178,16 @@ export function complexAttribute(str:string, trim:TrimMode = TrimMode.off):any {
       }
     }
     else {
-      const complex = evaluateFormula(list[i].text);
-      if (i == 0 && list.length == 1) {
-        return complex;
+      try {
+        const complex = evaluateFormula(list[i].text);
+        if (i == 0 && list.length == 1) {
+          return complex;
+        }
+        buffer += makeString(complex, list[i]);          
       }
-      if (typeof(complex) == 'object') {
-        throw new ContextError('Object bad cast to string: ' + JSON.stringify(complex), list[i]);
+      catch (ex) {
+        throw wrapContextError(ex, 'complexAttribute', undefined, list[i]);
       }
-      buffer += complex;
     }
   }
 
@@ -226,7 +227,7 @@ enum TokenType {
   node = 0x1000,
 }
 
-type FormulaToken = SourceOffset & {
+export type FormulaToken = SourceOffset & {
   text?: string;
   type: TokenType;
   node?: FormulaNode;
@@ -248,17 +249,22 @@ export function tokenizeFormula(str:string): FormulaToken[] {
 
   let tok:FormulaToken = { text: '', type: TokenType.unset, 
     source: str, offset: 0, length: 0 };
-  let escape = '';
+  let escape = false;
+  const len = str.length;
   for (let i = 0; i <= str.length; i++) {
     const ch = i < str.length ? str[i] : '';
     if (ch == '`') {
-      escape += ch;
-      continue;
+      if (!escape) {
+        escape = true;
+        continue;  // First one. Do nothing.
+      }
+      escape = false;
+      // Fall through, and process second ` as normal text
     }
     
     const op = getOperator(ch);
 
-    if (stack.length > 0 && (escape.length % 2) == 0 && ch == stack[stack.length - 1]) {
+    if (stack.length > 0 && !escape && ch == stack[stack.length - 1]) {
       // Found a matching close bracket
       stack.pop();
       if (tok.type != TokenType.unset) { tokens.push(tok); }        // push any token in progress
@@ -267,16 +273,19 @@ export function tokenizeFormula(str:string): FormulaToken[] {
       tok = { text: '', type: TokenType.unset,                      // reset next token
         source: str, offset: i + 1, length: 0 }; 
     }
-    else if (!isInQuotes(stack) && (escape.length % 2) == 0 && isBracketOperator(op)) {
-      // New open bracket
+    else if (!isInQuotes(stack) && !escape && (isBracketOperator(op) || isCloseBracket(op))) {
+      // New open bracket, or unmatched close
+      const type = isBracketOperator(op) ? TokenType.openBracket : TokenType.closeBracket;
       if (tok.type != TokenType.unset) { tokens.push(tok); }       // push any token in progress
-      tokens.push(tok = { text:ch, type:TokenType.openBracket,     // push open bracket
+      tokens.push(tok = { text:ch, type:type,                      // push open bracket
         source: str, offset: i, length: 1 });  
-      stack.push(op!.closeChar!);                                  // cache the matching close bracket
+      if (type == TokenType.openBracket) {
+        stack.push(op!.closeChar!);                                // cache the pending close bracket
+      }
       tok = { text: '', type: TokenType.unset,                     // reset next token
         source: str, offset: i + 1, length: 0 };
     }
-    else if (!isInQuotes(stack) && (escape.length % 2) == 0 && op !== null) {
+    else if (!isInQuotes(stack) && !escape && op !== null) {
       // Found an operator
       let tt:TokenType = TokenType.unset;
       if (isBinaryOperator(op)) { tt |= TokenType.binaryOp; }
@@ -289,22 +298,16 @@ export function tokenizeFormula(str:string): FormulaToken[] {
     }
     else {
       // Anything else is text
-      const evenEscape = escape.substring(0, Math.floor(escape.length / 2));
-      const oddEscape = escape.substring(0, escape.length % 2);
-      tok.text += evenEscape;  // for every pair ``, append one `
-      if (isBracketChar(ch) && oddEscape == '`') {
-        tok.text += ch;  // Any escaped brackets should drop the escape ` prefix
+      if (escape && op == null) {
+        tok.text += '`';  // Standalone escape. Treat as regular `
       }
-      else {
-        // Keep any odd escape, since we didn't escape anything
-        tok.text += oddEscape + ch;
-      }
+      tok.text += ch;
       if (tok.text !== '') {
         tok.type = TokenType.anyText;
-        tok.length = i + 1 - tok.offset!;
+        tok.length = Math.min(i + 1,len) - tok.offset!;
       }
     }
-    escape = '';
+    escape = false;
   }
   if (tok.type != TokenType.unset) { 
     tokens.push(tok);  // push any token in progress
@@ -371,7 +374,8 @@ function findCloseBracket(tokens:FormulaToken[], open:number):number {
       closes.push(tok);
     }
   }
-  throw new ContextError('Missing close brackets', closes[closes.length - 1]);
+  throw new ContextError('Missing close ' + (isStringBracket(closes[closes.length - 1].text!) ? 'quotes' : 'brackets'), 
+    closes[closes.length - 1]);
 }
 
 /**
@@ -453,7 +457,11 @@ export class FormulaNode {
         if (!bop) {
           throw new ContextError('Unrecognize binary operator', this.value);
         }
-        return bop(lValue, rValue);
+        const result = bop(lValue, rValue, this.left?.span, this.right?.span);
+        if (result === undefined || Number.isNaN(result)) {
+          throw new ContextError('Operation ' + op?.raw + ' resulted in ' + result + ' : ' + lValue + op?.raw + rValue, this.value);
+        }
+        return result;
       }
       catch (ex) {
         throw wrapContextError(ex, 'evaluate:binary', undefined, this.span);
@@ -467,7 +475,11 @@ export class FormulaNode {
         if (!uop) {
           throw new ContextError('Unrecognize unary operator', this.value);
         }
-        return uop(rValue);
+        const result = uop(rValue, this.right?.span);
+        if (result === undefined || Number.isNaN(result)) {
+          throw new ContextError('Operation ' + op?.raw + ' resulted in ' + result + ' : ' + op?.raw + rValue, this.value);
+        }
+        return result;
       }
       catch (ex) {
         throw wrapContextError(ex, 'evaluate:unary', undefined, this.span);
@@ -510,7 +522,7 @@ function isIntegerRegex(str:string):boolean {
  * or -1 if no remaining operators
  */
 function findHighestPrecedence(tokens:FormulaToken[]): number {
-  let precedence = 0;
+  let precedence = -1;
   let first = -1;
   for (let i = 0; i < tokens.length; i++) {
     const tok = tokens[i];
@@ -678,6 +690,9 @@ export function treeifyFormula(tokens:FormulaToken[], bracket?:FormulaToken):For
     }
   }
 
+  if (fullSpanTok.length == 0) {
+    throw new ContextError('Empty brackets yield no value', bracket);
+  }
   throw new ContextError('Treeify reduced to an empty span', fullSpanTok);
 }
 
@@ -751,8 +766,35 @@ function isBracketChar(ch:string):boolean {
     || ch == ')' || ch == ']' || ch == '}';
 }
 
-type UnaryOperator = (a:any) => any;
-type BinaryOperator = (a:any,b:any) => any;
+/**
+ * Convert any type to a number, or throw in broken cases.
+ * @param a Any data, but hopefully an int or float
+ * @param tok The source offset, if caller knows it
+ * @returns The float equivalent
+ */
+function makeFloat(a:any, tok?:SourceOffset):number {
+  const f = parseFloat(a);
+  if (Number.isNaN(f)) {
+    throw new ContextError('Not a number: ' + JSON.stringify(a), tok);
+  }
+  return f;
+}
+
+/**
+ * Convert any type to string, or throw in broken cases.
+ * @param a Any data, but hopefully string-friendly
+ * @param tok The source offset, if caller knows it
+ * @returns The string equivalent
+ */
+function makeString(a:any, tok?:SourceOffset):string {
+  if (a === undefined || a === null || typeof(a) == 'object') {
+    throw new ContextError('Bad cast to string: ' + JSON.stringify(a), tok);
+  }
+  return String(a);
+}
+
+type UnaryOperator = (a:any,aa?:SourceOffset) => any;
+type BinaryOperator = (a:any,b:any,aa?:SourceOffset,bb?:SourceOffset) => any;
 
 type OperatorInfo = {
   raw: string;
@@ -767,23 +809,23 @@ type OperatorInfo = {
 }
 
 const minus:OperatorInfo = { raw:'-', unaryChar:'⁻', binaryChar:'−'};  // ambiguously unary or binary
-const concat:OperatorInfo = { raw:'&', precedence:1, binaryOp:(a,b) => {return String(a) + String(b)}, evalLeft:true, evalRight:true};
-const entity:OperatorInfo = { raw:'@', precedence:1, unaryOp:(a) => {return deentify(a)}, evalRight:false};
-const plus:OperatorInfo = { raw:'+', precedence:3, binaryOp:(a,b) => {return parseFloat(a) + parseFloat(b)}, evalLeft:true, evalRight:true};
-const subtract:OperatorInfo = { raw:'−', precedence:3, binaryOp:(a,b) => {return parseFloat(a) - parseFloat(b)}, evalLeft:true, evalRight:true};
-const times:OperatorInfo = { raw:'*', precedence:4, binaryOp:(a,b) => {return parseFloat(a) * parseFloat(b)}, evalLeft:true, evalRight:true};
-const divide:OperatorInfo = { raw:'/', precedence:4, binaryOp:(a,b) => {return parseFloat(a) / parseFloat(b)}, evalLeft:true, evalRight:true};
-const intDivide:OperatorInfo = { raw:'\\', precedence:4, binaryOp:(a,b) => {const f=parseFloat(a) / parseFloat(b); return f >= 0 ? Math.floor(f) : Math.ceil(f)}, evalLeft:true, evalRight:true};  // integer divide without Math.trunc
-const modulo:OperatorInfo = { raw:'%', precedence:4, binaryOp:(a,b) => {return parseFloat(a) % parseFloat(b)}, evalLeft:true, evalRight:true};
-const negative:OperatorInfo = { raw:'⁻', precedence:5, unaryOp:(a) => {return -parseFloat(a)}, evalRight:true};
-const childObj:OperatorInfo = { raw:'.', precedence:6, binaryOp:(a,b) => {return getKeyedChild(a, b, false)}, evalLeft:true, evalRight:false};
-const rootObj:OperatorInfo = { raw:':', precedence:7, unaryOp:(a) => {return valueFromGlobalContext(a)}, evalRight:false};
+const concat:OperatorInfo = { raw:'&', precedence:1, binaryOp:(a,b,aa,bb) => {return makeString(a,aa) + makeString(b,bb)}, evalLeft:true, evalRight:true};
+const entity:OperatorInfo = { raw:'@', precedence:1, unaryOp:(a,aa) => {return deentify(a)}, evalRight:false};
+const plus:OperatorInfo = { raw:'+', precedence:3, binaryOp:(a,b,aa,bb) => {return makeFloat(a,aa) + makeFloat(b,bb)}, evalLeft:true, evalRight:true};
+const subtract:OperatorInfo = { raw:'−', precedence:3, binaryOp:(a,b,aa,bb) => {return makeFloat(a,aa) - makeFloat(b,bb)}, evalLeft:true, evalRight:true};
+const times:OperatorInfo = { raw:'*', precedence:4, binaryOp:(a,b,aa,bb) => {return makeFloat(a,aa) * makeFloat(b,bb)}, evalLeft:true, evalRight:true};
+const divide:OperatorInfo = { raw:'/', precedence:4, binaryOp:(a,b,aa,bb) => {return makeFloat(a,aa) / makeFloat(b,bb)}, evalLeft:true, evalRight:true};
+const intDivide:OperatorInfo = { raw:'\\', precedence:4, binaryOp:(a,b,aa,bb) => {const f=makeFloat(a,aa) / makeFloat(b,bb); return f >= 0 ? Math.floor(f) : Math.ceil(f)}, evalLeft:true, evalRight:true};  // integer divide without Math.trunc
+const modulo:OperatorInfo = { raw:'%', precedence:4, binaryOp:(a,b,aa,bb) => {return makeFloat(a,aa) % makeFloat(b,bb)}, evalLeft:true, evalRight:true};
+const negative:OperatorInfo = { raw:'⁻', precedence:5, unaryOp:(a,aa) => {return -makeFloat(a,aa)}, evalRight:true};
+const childObj:OperatorInfo = { raw:'.', precedence:6, binaryOp:(a,b,aa,bb) => {return getKeyedChild(a, b, bb, false)}, evalLeft:true, evalRight:false};
+const rootObj:OperatorInfo = { raw:':', precedence:7, unaryOp:(a,aa) => {return getKeyedChild(null,a,aa)}, evalRight:false};
 const roundBrackets:OperatorInfo = { raw:'(', precedence:8, closeChar:')'};
 const squareBrackets:OperatorInfo = { raw:'[', precedence:8, closeChar:']'};
 const curlyBrackets:OperatorInfo = { raw:'{', precedence:8, closeChar:'}'};
-const closeRoundBrackets:OperatorInfo = { raw:')'};
-const closeSquareBrackets:OperatorInfo = { raw:']'};
-const closeCurlyBrackets:OperatorInfo = { raw:'}'};
+const closeRoundBrackets:OperatorInfo = { raw:')', precedence:0};
+const closeSquareBrackets:OperatorInfo = { raw:']', precedence:0};
+const closeCurlyBrackets:OperatorInfo = { raw:'}', precedence:0};
 const singleQuotes:OperatorInfo = { raw:'\'', precedence:10, closeChar:'\''};
 const doubleQuotes:OperatorInfo = { raw:'"', precedence:10, closeChar:'"'};
 
@@ -832,6 +874,11 @@ function isBinaryOperator(ch:string|OperatorInfo|null) {
 function isBracketOperator(ch:string|OperatorInfo|null) {
   const op = getOperator(ch);
   return op !== null && op.closeChar !== undefined;
+}
+
+function isCloseBracket(ch:string|OperatorInfo|null) {
+  const op = getOperator(ch);
+  return op == closeRoundBrackets || op == closeSquareBrackets || op == closeCurlyBrackets;
 }
 
 function isStringBracket(ch:string|OperatorInfo|null) {
@@ -998,7 +1045,7 @@ export function tokenizeText(raw:string, implicitFormula?:boolean):TextToken[] {
     let errorClose = findNonEscaped(raw, '}', start);
     if (errorClose >= start && (curly < 0 || errorClose < curly)) {
       const src:SourceOffset = {source:raw, offset:errorClose, length:1};
-      throw new ContextError('Close-curly braces without an open brace.', src);
+      throw new ContextError('Close-curly brace without an open brace.', src);
     }
 
     if (curly < 0) {
@@ -1037,7 +1084,7 @@ export function tokenizeText(raw:string, implicitFormula?:boolean):TextToken[] {
     }
     // The contents of the formula (without the {} braces)
     const ftoken:TextToken = {
-      text: raw.substring(curly + 1, inner - 1),
+      text: unescapeOperators(raw.substring(curly + 1, inner - 1)),
       formula: true,
       source: raw,
       offset: curly + 1,
@@ -1048,9 +1095,10 @@ export function tokenizeText(raw:string, implicitFormula?:boolean):TextToken[] {
   }
   if (start < raw.length) {
     // Any remaining plain text
+    const isFormula = implicitFormula && start == 0;
     const ttoken:TextToken = {
-      text: unescapeBraces(raw.substring(start)),
-      formula: false,
+      text: isFormula ? unescapeOperators(raw) : unescapeBraces(raw.substring(start)),
+      formula: isFormula,
       source: raw,
       offset: start,
       length: raw.length - start,
@@ -1089,25 +1137,25 @@ export function keyExistsInContext(key:string) {
  * @returns Resolved text
  */
 export function textFromContext(key:string|null):string {
-  return evaluateFormula(key) as string;
+  const obj = evaluateFormula(key);
+  return makeString(obj);
 }
 
 
 /**
  * Get a keyed child of a parent, where the key is either a dictionary key 
  * or a list index or a string offset.
- * @param parent The parent object: a list, object, or string, which could in turn be the name of a list or object
- * @param key The identifier of the child: a dictionary key, a list index, or a string offset
+ * @param parent The parent object: a list, object, or string, which could in turn be the name of a list or object.
+ * If null, the parent becomes the root boiler context.
+ * @param key The identifier of the child: a dictionary key, a list index, or a string offset.
+ * @param kTok The source offset of the token, if caller knows it.
  * @param maybe If true, and key does not work, return ''. If false/omitted, throw on bad keys.
  * @returns A child object, or a substring
  */
-function getKeyedChild(parent:any, key:string, maybe?:boolean):any {
-  // if (typeof(parent) == 'string') {
-  //   const obj = valueFromContext(simpleTrim(parent));
-  //   if (obj != null) {
-  //     parent = obj;
-  //   }
-  // }
+function getKeyedChild(parent:any, key:string, kTok?:SourceOffset, maybe?:boolean):any {
+  if (parent === null) {
+    parent = theBoilerContext();
+  }
 
   if (typeof(parent) == 'string') {
     let index:number|undefined = undefined;
@@ -1122,7 +1170,7 @@ function getKeyedChild(parent:any, key:string, maybe?:boolean):any {
         if (maybe) {
           return '';
         }
-        throw new ContextError('Index out of range: ' + index + ' in ' + parent);
+        throw new ContextError('Index out of range: ' + index + ' in ' + parent, kTok);
       }
       return (parent as string)[index];
     }
@@ -1133,7 +1181,7 @@ function getKeyedChild(parent:any, key:string, maybe?:boolean):any {
     if (maybe) {
       return '';
     }
-    throw new ContextError('Key not found in context: ' + trimmed);
+    throw new ContextError('Key not found in context: ' + trimmed, kTok);
   }
   return parent[trimmed];
 }

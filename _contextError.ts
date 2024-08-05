@@ -14,7 +14,7 @@ export class ContextError extends Error {
   public callStack: string|undefined;
   public elementStack: Element[];
   public functionStack: string[];
-  public contentStack: SourceOffset[];
+  public sourceStack: SourceOffset[];
 
   /**
    * Create a new BuildError (or derived error)
@@ -28,10 +28,10 @@ export class ContextError extends Error {
     this.cause = inner;
     this.elementStack = [];
     this.functionStack = [];
-    this.contentStack = [];
+    this.sourceStack = [];
 
     if (source) {
-      this.contentStack.push(source);
+      this.sourceStack.push(source);
     }
   }
 
@@ -39,9 +39,9 @@ export class ContextError extends Error {
     const msg = 'ContextError: ' + this.message;
     let str = msg;
 
-    if (this.contentStack.length > 0) {
-      for (let i = 0; i < this.contentStack.length; i++) {
-        const c = this.contentStack[i];
+    if (this.sourceStack.length > 0) {
+      for (let i = 0; i < this.sourceStack.length; i++) {
+        const c = this.sourceStack[i];
         str += '\n' + c.source;
         if (c.offset !== undefined) {
           str += '\n' + Array(c.offset + 1).join(' ') + '^';
@@ -113,10 +113,11 @@ function tagWithAttrs(elmt:Element): string {
  * @param inner Another exception, which has just been caught.
  * @param func The name of the current function (optional).
  * @param elmt The name of the current element in the source doc (optional)
+ * @param src The source offset that was being evaluated
  * @returns If inner is already a ContextError, returns inner, but now augmented.
  * Otherwise creates a new ContextError that wraps inner.
  */
-export function wrapContextError(inner:Error, func?:string, elmt?:Element, content?:SourceOffset) {
+export function wrapContextError(inner:Error, func?:string, elmt?:Element, src?:SourceOffset) {
   let ctxErr:ContextError;
   if (isContextError(inner)) {
     ctxErr = inner as ContextError;
@@ -134,8 +135,8 @@ export function wrapContextError(inner:Error, func?:string, elmt?:Element, conte
   if (func) {
     ctxErr.functionStack.push(func);
   }
-  if (content) {
-    ctxErr.contentStack.push(content);
+  if (src) {
+    ctxErr.sourceStack.push(src);
   }
   return ctxErr;
 }

@@ -1,6 +1,20 @@
 import { test, expect } from '@playwright/test';
-import { tokenizeText, testBuilderContext, valueFromContext, tokenizeFormula, FormulaNode, treeifyFormula, evaluateFormula, complexAttribute } from '../_builderContext';
-import { ContentOffset, ContextError, isContextError } from '../_contextError';
+import { tokenizeText, testBuilderContext, tokenizeFormula, treeifyFormula, evaluateFormula, cloneText } from '../_builderContext';
+import { SourceOffset, ContextError, isContextError } from '../_contextError';
+
+test.beforeEach(() => {
+  expect(testBuilderContext({
+    num: 1234,
+    fonts: [ 'bold', 'italic' ],
+    sentence: 'Unit tests are the best!',
+    pt: { x: 3, y: 5 },
+    nest: { alpha: { bravo: 1, charlie: 'delta' }, echo: { foxtrot: { golf: 'hotel' } } }
+  }));
+});
+
+test.afterAll(() => {
+  testBuilderContext()  // Reset builder
+});
 
 function nothrowTokenizeText(raw:string):boolean {
   try {
@@ -12,14 +26,14 @@ function nothrowTokenizeText(raw:string):boolean {
   }
 }
 
-function catchTokenizeText(raw:string):ContentOffset|null {
+function catchTokenizeText(raw:string):SourceOffset|null {
   try {
     tokenizeText(raw);
     return null;
   }
   catch (ex) {
     if (isContextError(ex)) {
-      return (ex as ContextError).contentStack[0];
+      return (ex as ContextError).sourceStack[0];
     }
     return null;
   }
@@ -35,3 +49,107 @@ test('mis-matched curlies', () => {
   expect(catchTokenizeText('ended}')?.offset).toEqual(5);
   expect(catchTokenizeText('{escaped`}')?.offset).toEqual(0);
 });
+
+function catchTreeify(raw:string):SourceOffset|null {
+  try {
+    const tokens = tokenizeFormula(raw);  // should not throw
+    const node = treeifyFormula(tokens);  // can throw and rethrow
+    return null;
+  }
+  catch (ex) {
+    if (isContextError(ex)) {
+      // console.log(raw);
+      // console.log(ex.toString());  // Uncomment to visually verify
+      return (ex as ContextError).sourceStack[0];
+    }
+    return null;
+  }
+}
+
+test('treeify', () => {
+  // Unfinished binary operator
+  expect(catchTreeify('2+')?.offset).toEqual(1);
+  expect(catchTreeify('+3')?.offset).toEqual(0);
+  // Lone binary operator
+  expect(catchTreeify('+')?.offset).toEqual(0);
+  // Unfinished unary operator
+  expect(catchTreeify(':')?.offset).toEqual(0);
+
+  // Unclosed bracket
+  expect(catchTreeify('(2+3')?.offset).toEqual(0);
+  // Unopened bracket
+  expect(catchTreeify('2+3)')?.offset).toEqual(3);
+
+  // Empty brackets
+  expect(catchTreeify('2+()')?.offset).toEqual(2);
+  // Whitespace brackets
+  expect(catchTreeify('2+( )')?.offset).toEqual(3);
+  // Empty quotes are ok
+  expect(catchTreeify('2+""')).toBeNull();
+
+  // Unclosed quotes
+  expect(catchTreeify('"hello`"')?.offset).toEqual(0);
+  // Quote at end
+  expect(catchTreeify("`'world'")?.offset).toEqual(7);
+
+  // Implicit concatenation
+  expect(catchTreeify("3'three'")?.offset).toEqual(1);
+  expect(catchTreeify("'two'2")?.offset).toEqual(5);
+
+  // Nested operators
+  expect(catchTreeify('4*(2+3-)')?.offset).toEqual(6);
+  expect(catchTreeify('4*(2+3/-)')?.offset).toEqual(7);
+});
+
+function catchEvaluate(raw:string):SourceOffset|null {
+  try {
+    const result = evaluateFormula(raw);
+    return null;
+  }
+  catch (ex) {
+    if (isContextError(ex)) {
+      // console.log(raw);
+      // console.log(ex.toString());  // Uncomment to visually verify
+      return (ex as ContextError).sourceStack[0];
+    }
+    return null;
+  }
+}
+
+test('evaluate', () => {
+  // Not a number
+  expect(catchEvaluate('1+3*pt')?.offset).toEqual(4);
+
+  // Not a string
+  expect(catchEvaluate("'fonts:'&fonts&'more'")?.offset).toEqual(9);
+
+  // Index out of range
+  expect(catchEvaluate('fonts.2')?.offset).toEqual(6);
+
+  // Not a child
+  expect(catchEvaluate('pt.z')?.offset).toEqual(3);
+
+})
+
+function catchCloneText(raw:string):SourceOffset|null {
+  try {
+    const result = cloneText(raw);
+    return null;
+  }
+  catch (ex) {
+    if (isContextError(ex)) {
+      // console.log(raw);
+      console.log(ex.toString());  // Uncomment to visually verify
+      return (ex as ContextError).sourceStack[0];
+    }
+    return null;
+  }
+}
+
+test('formulaInText', () => {
+
+  expect(cloneText('this is {fonts.0}')).toEqual('this is bold');
+
+  // innermost offset is relative to the formula, not the whole
+  expect(catchCloneText('this is {fonts.3}')?.offset).toEqual(6);
+})
