@@ -20,7 +20,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.globalContextData = exports.anyFromContext = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.BuildHtmlError = exports.BuildTagError = exports.BuildEvalError = exports.BuildError = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.getTrimMode = exports.TrimMode = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
+exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.getTrimMode = exports.TrimMode = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -5824,6 +5825,7 @@ function boilerplate(bp) {
     if (!bp) {
         return;
     }
+    _boiler = bp;
     preSetup(bp);
     /* A puzzle doc must have this shape:
      *   <html>
@@ -5858,7 +5860,13 @@ function boilerplate(bp) {
      *   </html>
      */
     if (bp.reactiveBuilder) {
-        expandControlTags();
+        try {
+            expandControlTags();
+        }
+        catch (ex) {
+            var ctx = wrapContextError(ex);
+            throw ctx;
+        }
     }
     if (bp.tableBuilder) {
         constructTable(bp.tableBuilder);
@@ -6686,16 +6694,183 @@ function rot13(source) {
     return rot;
 }
 /**
- * Calculate the 256-bit (32-byte) SHA hash of any input string
- * @param source An input string
- * @returns A 32-character string
+ * Custom error which identify which parts of the source document are malformed.
+ * It can leverage nested try/catch blocks to add additional context.
  */
-// async function sha256(source) {
-//     const sourceBytes = new TextEncoder().encode(source);
-//     const digest = await window.crypto.subtle.digest("SHA-256", sourceBytes);
-//     const resultBytes = [...new Uint8Array(digest)];
-//     return resultBytes.map(x => x.toString(16).padStart(2, '0')).join("");
-// }
+var ContextError = /** @class */ (function (_super) {
+    __extends(ContextError, _super);
+    /**
+     * Create a new ContextError (or derived error)
+     * @param msg The message of the Error
+     * @param source Indicates which source text specifically triggered this error
+     * @param inner The inner/causal error, if any
+     */
+    function ContextError(msg, source, inner) {
+        var _this = _super.call(this, msg) || this;
+        _this.name = 'ContextError';
+        _this.cause = inner;
+        _this.functionStack = [];
+        _this.sourceStack = [];
+        _this.callStack = '';
+        if (source) {
+            if (typeof (source) == 'function') {
+                _this.sourceStack.push(source());
+            }
+            else {
+                _this.sourceStack.push(source);
+            }
+        }
+        return _this;
+    }
+    ContextError.prototype._cacheCallstack = function () {
+        var _a;
+        if (this.callStack === '') {
+            this.callStack = this.cause ? this.cause.stack : this.stack;
+            if (((_a = this.callStack) === null || _a === void 0 ? void 0 : _a.substring(0, this.message.length)) == this.message) {
+                this.callStack = this.callStack.substring(this.message.length); // REVIEW: trim \n ?
+            }
+        }
+    };
+    return ContextError;
+}(Error));
+exports.ContextError = ContextError;
+/**
+ * Type predicate to separate ContextErrors from generic errors.
+ * @param err Any error
+ * @returns true if it is a ContextError
+ */
+function isContextError(err) {
+    //return err instanceof ContextError;
+    return err.name === 'ContextError';
+}
+exports.isContextError = isContextError;
+/**
+ * Add additional information to a context error.
+ * @param inner Another exception, which has just been caught.
+ * @param func The name of the current function (optional).
+ * @param elmt The name of the current element in the source doc (optional)
+ * @param src The source offset that was being evaluated
+ * @returns If inner is already a ContextError, returns inner, but now augmented.
+ * Otherwise creates a new ContextError that wraps inner.
+ */
+function wrapContextError(inner, func, src) {
+    var _a;
+    var ctxErr;
+    if (isContextError(inner)) {
+        ctxErr = inner;
+    }
+    else {
+        ctxErr = new ContextError(inner.name + ': ' + inner.message, undefined, inner);
+    }
+    // Cache callstack
+    if (ctxErr.callStack === '') {
+        ctxErr.callStack = ctxErr.cause ? ctxErr.cause.stack : ctxErr.stack;
+        if (((_a = ctxErr.callStack) === null || _a === void 0 ? void 0 : _a.substring(0, ctxErr.message.length)) == ctxErr.message) {
+            ctxErr.callStack = ctxErr.callStack.substring(ctxErr.message.length); // REVIEW: trim \n ?
+        }
+    }
+    if (func) {
+        ctxErr.functionStack.push(func);
+    }
+    if (src) {
+        if (typeof (src) == 'function') {
+            src = src();
+        }
+        ctxErr.sourceStack.push(src);
+    }
+    makeBetterStack(ctxErr);
+    return ctxErr;
+}
+exports.wrapContextError = wrapContextError;
+/**
+ * Once we've added context to the exception, update the stack to reflect it
+ */
+function makeBetterStack(err) {
+    var msg = 'ContextError: ' + err.message;
+    var str = msg;
+    if (err.sourceStack.length > 0) {
+        for (var i = 0; i < err.sourceStack.length; i++) {
+            var c = err.sourceStack[i];
+            str += '\n' + c.source;
+            if (c.offset !== undefined) {
+                str += '\n' + Array(c.offset + 1).join(' ') + '^';
+                if (c.length && c.length > 1) {
+                    str += Array(c.length).join('^');
+                }
+            }
+        }
+    }
+    if (err.callStack) {
+        str += '\n' + err.callStack;
+    }
+    if (err.cause) {
+        str += '\nCaused by: ' + err.cause;
+    }
+    // if (err.functionStack.length > 0) {
+    //   str += "\nBuild functions stack:";
+    //   for (let i = 0; i < err.functionStack.length; i++) {
+    //     str += '\n    ' + err.functionStack[i];
+    //   }
+    // }
+    err.stack = str;
+}
+/**
+ * Recreate the source for a tag. Then pinpoint the offset of a desired attribute.
+ * @param elmt An HTML tag
+ * @param attr A specific attribute, whose value is being evaluated.
+ * @returns A source offset, built on the recreation
+ */
+function elementSourceOffset(elmt, attr) {
+    var str = '<' + elmt.localName;
+    var offset = 0;
+    var length = 0;
+    for (var i = 0; i < elmt.attributes.length; i++) {
+        var name_5 = elmt.attributes[i].name;
+        var value = elmt.attributes[i].value;
+        if (name_5 === attr) {
+            offset = str.length + name_5.length + 3; // The start of the value
+            length = value.length;
+        }
+        str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
+    }
+    if (attr && offset == 0) {
+        // Never found the attribute we needed. Highlight the element name
+        offset = 1;
+        length = elmt.localName.length;
+    }
+    if (elmt.childNodes.length == 0) {
+        str += ' /'; // show as empty tag
+    }
+    str += '>'; // close tag
+    if (offset == 0) {
+        length = str.length; // Full tag
+    }
+    var tok = { source: str, offset: offset, length: length };
+    return tok;
+}
+exports.elementSourceOffset = elementSourceOffset;
+/**
+ * Instead of creating a source offset every time, anticipating an exception
+ * that rarely gets thrown, instead pass a lambda.
+ */
+function elementSourceOffseter(elmt, attr) {
+    return function () { return elementSourceOffset(elmt, attr); };
+}
+exports.elementSourceOffseter = elementSourceOffseter;
+/**
+ * A code error has no additional fields.
+ * It just acknowledges that the bug is probably the code's fault, and not the raw inputs's.
+ */
+var CodeError = /** @class */ (function (_super) {
+    __extends(CodeError, _super);
+    function CodeError(msg) {
+        var _this = _super.call(this, msg) || this;
+        _this.name = 'CodeError';
+        return _this;
+    }
+    return CodeError;
+}(Error));
+exports.CodeError = CodeError;
 /*-----------------------------------------------------------
  * _builder.ts
  *-----------------------------------------------------------*/
@@ -7018,7 +7193,7 @@ function expandControlTags() {
             parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.removeChild(src);
         }
         catch (ex) {
-            throw new BuildTagError("expandControlTags", src, ex);
+            throw wrapContextError(ex, "expandControlTags", elementSourceOffset(src));
         }
     }
     initElementStack(null);
@@ -7083,14 +7258,14 @@ function expandContents(src) {
                 }
                 else if (isTag(child_elmt, 'template')) {
                     // <template> tags do not clone the same as others
-                    throw new BuildError('Templates get corrupted when inside a build region. Define all templates at the end of the BODY');
+                    throw new ContextError('Templates get corrupted when inside a build region. Define all templates at the end of the BODY');
                 }
                 else {
                     dest.push(cloneWithContext(child_elmt));
                 }
             }
             catch (ex) {
-                throw new BuildTagError("expandContents", child_elmt, ex);
+                throw wrapContextError(ex, "expandContents", elementSourceOffset(child_elmt));
             }
         }
         else if (child.nodeType == Node.TEXT_NODE) {
@@ -7142,21 +7317,21 @@ var nameSpaces = {
  * @returns A cloned element
  */
 function cloneWithContext(elmt) {
-    try {
-        var tagName = normalizeName(elmt.localName);
-        var clone = void 0;
-        if (inSvgNamespace() || tagName == 'svg') {
-            // TODO: contents of embedded objects aren't SVG
-            clone = document.createElementNS(exports.svg_xmlns, tagName);
-        }
-        else {
-            clone = document.createElement(tagName);
-        }
-        pushDestElement(clone);
-        cloneAttributes(elmt, clone);
-        var ifResult = { passed: false, index: 0 };
-        for (var i = 0; i < elmt.childNodes.length; i++) {
-            var child = elmt.childNodes[i];
+    var tagName = normalizeName(elmt.localName);
+    var clone;
+    if (inSvgNamespace() || tagName == 'svg') {
+        // TODO: contents of embedded objects aren't SVG
+        clone = document.createElementNS(exports.svg_xmlns, tagName);
+    }
+    else {
+        clone = document.createElement(tagName);
+    }
+    pushDestElement(clone);
+    cloneAttributes(elmt, clone);
+    var ifResult = { passed: false, index: 0 };
+    for (var i = 0; i < elmt.childNodes.length; i++) {
+        var child = elmt.childNodes[i];
+        try {
             if (child.nodeType == Node.ELEMENT_NODE) {
                 var child_elmt = child;
                 if (isTag(child_elmt, ['if', 'elseif', 'else'])) {
@@ -7184,12 +7359,12 @@ function cloneWithContext(elmt) {
                 clone.insertBefore(cloneNode(child), null);
             }
         }
-        popDestElement();
-        return clone;
+        catch (ex) {
+            throw wrapContextError(ex, "cloneWithContext", elementSourceOffset(elmt));
+        }
     }
-    catch (ex) {
-        throw new BuildTagError("cloneWithContext", elmt, ex);
-    }
+    popDestElement();
+    return clone;
 }
 /**
  * Clone other node types, besides HTML elements and Text
@@ -7198,233 +7373,6 @@ function cloneWithContext(elmt) {
  */
 function cloneNode(node) {
     return node; // STUB: keep original node
-}
-/*-----------------------------------------------------------
- * _builderError.ts
- *-----------------------------------------------------------*/
-/**
- * Convert an error's stack trace (run-on text stream) into a list.
- * @param ex An error. Better yet, a BuildError-derived error.
- * @returns The stack as a list, where item 0 is the message.
- * If ex is a BuildError, re-use the cached stack read.
- */
-function stackAsList(ex) {
-    if (ex.relativeStack) { // instanceof BuildError
-        return ex.relativeStack;
-    }
-    if (!ex.stack) {
-        return [];
-    }
-    return ex.stack.split('\n');
-}
-/**
- * Make a stack at the current callstack, by faking an exception.
- * @param remove A list of functions to remove - the debug infrastructure to capture these callstacks.
- * @param summary The correct first line of the stack, to replace a generic one generated by the fake exception.
- * @returns A callstack as a list
- */
-function debugMakeStack(remove, summary) {
-    var ex = new Error();
-    var stack = stackAsList(ex);
-    cleanStack(stack, ['stackAsList', 'debugMakeStack']);
-    cleanStack(stack, remove, summary);
-    return stack;
-}
-/**
- * Compare an outer and inner/causal callstack.
- * @param err The inner exception.
- * @param caller The callstack (as a list) of the outer/calling exception.
- * @returns The portion of inner's callstack that adds to the callstack of the caller.
- */
-function simplifyRelativeStack(err, caller) {
-    var inner = stackAsList(err);
-    var firstAt = 0;
-    while (firstAt < inner.length && inner[firstAt].indexOf(' at ') < 0) {
-        firstAt++;
-    }
-    for (var i = firstAt; i < inner.length; i++) {
-        for (var c = 0; c < caller.length; c++) {
-            if (inner[i] == caller[c]) {
-                // Found first match. Remove everything in inner from here on.
-                inner.splice(i, inner.length - i);
-                return inner;
-            }
-        }
-    }
-    return inner;
-}
-/**
- * Clean a callstack by removing the infrastructure for getting callstacks.
- * @param stack The callstack to modify.
- * @param remove The function entries to remove.
- * @param summary An optional new summary message (line 0)
- */
-function cleanStack(stack, remove, summary) {
-    var firstAt = 0;
-    while (firstAt < stack.length && stack[firstAt].indexOf(' at ') < 0) {
-        firstAt++;
-    }
-    var cleaned = true;
-    while (stack.length > firstAt && cleaned) {
-        for (var i = 0; i < remove.length; i++) {
-            cleaned = false;
-            if (stack[firstAt].indexOf(remove[i]) >= 0) {
-                stack.splice(firstAt, 1);
-                cleaned = true;
-                break;
-            }
-        }
-    }
-    if (summary) {
-        if (firstAt > 0) {
-            stack[0] = summary;
-        }
-    }
-}
-/**
- * Create an error message, which also mentions causal messages (if any)
- * @param msg The current error message
- * @param cause An inner exception (which could have nested inners)
- * @returns Either the original message, or the message combined with nested messages.
- */
-function concatErrorMessage(msg, cause) {
-    if (!cause) {
-        return msg;
-    }
-    return msg + "\n caused by " + cause.message;
-}
-/**
- * Custom error which can track nested exceptions
- */
-var BuildError = /** @class */ (function (_super) {
-    __extends(BuildError, _super);
-    /**
-     * Create a new BuildError (or derived error)
-     * @param msg The message of the Error
-     * @param inner The inner/causal error, if any
-     * @param cls The name of the derived class, if any
-     */
-    function BuildError(msg, inner, cls) {
-        var _this = _super.call(this, concatErrorMessage((cls || "BuildError") + ": " + msg, inner)) || this;
-        _this.name = 'BuildError';
-        _this.cause = inner;
-        _this.relativeStack = debugMakeStack(['.Build', 'new Build'], (cls || "BuildError") + ": " + msg);
-        if (inner) {
-            if (inner.location) { // instanceof BuildHtmlError
-                inner.stack = inner.tag + ' (' + inner.location + ')';
-                inner.relativeStack = [inner.stack];
-            }
-            else {
-                var innermost = simplifyRelativeStack(inner, _this.relativeStack);
-                if (inner.relativeStack) { // instanceof BuildError
-                    inner.relativeStack = innermost;
-                    inner.stack = innermost.join('\n');
-                }
-            }
-        }
-        return _this;
-    }
-    return BuildError;
-}(Error));
-exports.BuildError = BuildError;
-/**
- * Track build errors that occur while evaluating context expressions.
- * Intended use is 1-per-function, in a function-wide try/catch
- */
-var BuildEvalError = /** @class */ (function (_super) {
-    __extends(BuildEvalError, _super);
-    /**
-     * @param func The name of the function.
-     * @param inner The inner/causal error, if any
-     * @param cls The name of the derived class, if any
-     */
-    function BuildEvalError(func, raw, inner, cls) {
-        var _this = _super.call(this, func + '(' + raw + ')', inner, cls || "BuildEvalError") || this;
-        _this.name = 'BuildEvalError';
-        _this.raw = raw;
-        return _this;
-    }
-    return BuildEvalError;
-}(BuildError));
-exports.BuildEvalError = BuildEvalError;
-/**
- * Track build errors that occur while evaluating build tags.
- * Intended use is 1-per-function, in a function-wide try/catch
- */
-var BuildTagError = /** @class */ (function (_super) {
-    __extends(BuildTagError, _super);
-    /**
-     * @param func The name of the function.
-     * @param inner The inner/causal error, if any
-     * @param cls The name of the derived class, if any
-     */
-    function BuildTagError(func, elmt, inner, cls) {
-        var _this = _super.call(this, func + '(' + debugTagAttrs(elmt) + ')', inner, cls || "BuildTagError") || this;
-        _this.name = 'BuildTagError';
-        _this.tag = debugTagAttrs(elmt);
-        return _this;
-    }
-    return BuildTagError;
-}(BuildError));
-exports.BuildTagError = BuildTagError;
-/**
- * Track build errors back to their location in the HTML
- */
-var BuildHtmlError = /** @class */ (function (_super) {
-    __extends(BuildHtmlError, _super);
-    /**
-     * @param msg The description of the problem
-     * @param elmt The HTML element that is mal-formed
-     * @param inner The inner/causal error, if any
-     * @param cls The name of the derived class, if any
-     */
-    function BuildHtmlError(msg, elmt, inner, cls) {
-        var _this = _super.call(this, msg, inner, cls || "BuildHtmlError") || this;
-        _this.name = 'BuildHtmlError';
-        _this.tag = debugTagAttrs(elmt);
-        _this.location = debugLocateTag(elmt, true);
-        return _this;
-    }
-    return BuildHtmlError;
-}(BuildError));
-exports.BuildHtmlError = BuildHtmlError;
-/**
- * For debug traces, summarize a tag without including its children/contents
- * @param elmt Any HTML element
- * @returns A recreation of its start tag
- */
-function debugTagAttrs(elmt) {
-    var str = '<' + elmt.localName;
-    for (var i = 0; i < elmt.attributes.length; i++) {
-        str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
-    }
-    if (elmt.childNodes.length == 0) {
-        str += ' /'; // show as empty tag
-    }
-    str += '>'; // close tag
-    return str;
-}
-/**
- * For debug traces, summarize a tag without including its children/contents
- * @param elmt Any HTML element
- * @returns A recreation of its start tag
- */
-function debugLocateTag(elmt, fullPath) {
-    var elementStr = elmt.outerHTML;
-    var pageStr = exports._rawHtmlSource;
-    var elementIndex = pageStr.indexOf(elementStr);
-    if (elementIndex < 0) {
-        elementStr = '<' + elmt.localName;
-        elementIndex = Math.max(0, pageStr.indexOf(elementStr));
-    }
-    var contentAbove = pageStr.substring(0, elementIndex);
-    var linesAbove = contentAbove.split('\n');
-    var lineNumber = linesAbove.length; // start at line 1
-    var column = linesAbove[lineNumber - 1].length;
-    var fileName = fullPath
-        ? (window.location.protocol + '//' + window.location.pathname)
-        : ('./' + window.location.pathname.split("/").pop());
-    return "".concat(fileName, ":").concat(lineNumber, ":").concat(column);
 }
 /*-----------------------------------------------------------
  * _builderContext.ts
@@ -7484,16 +7432,27 @@ exports.popBuilderContext = popBuilderContext;
 /**
  * Try to look up a key in the current context level.
  * @param key A key name
- * @returns The value from that key, or null if not present
+ * @param maybe If true, and key does not work, return ''. If false/omitted, throw on bad keys.
+ * @returns The value from that key, or undefined if not present
  */
-function valueFromContext(key) {
+function valueFromContext(key, maybe) {
     var context = getBuilderContext();
-    if (key in context) {
-        return context[key];
-    }
-    return null;
+    return getKeyedChild(context, key, undefined, maybe);
 }
 exports.valueFromContext = valueFromContext;
+/**
+ * Look up a value, according to the context path cached in an attribute
+ * @param path A context path
+ * @param maybe If true, and key does not work, return ''. If false/omitted, throw on bad keys.
+ * @returns Any JSON object
+ */
+function valueFromGlobalContext(path, maybe) {
+    if (path) {
+        return getKeyedChild(null, path, undefined, maybe);
+    }
+    return undefined;
+}
+exports.valueFromGlobalContext = valueFromGlobalContext;
 /**
  * Finish cloning an HTML element
  * @param src The element being cloned
@@ -7501,15 +7460,15 @@ exports.valueFromContext = valueFromContext;
  * @param context A dictionary of all accessible values
  */
 function cloneAttributes(src, dest) {
-    try {
-        for (var i = 0; i < src.attributes.length; i++) {
-            var name_5 = normalizeName(src.attributes[i].name);
-            var value = src.attributes[i].value;
+    for (var i = 0; i < src.attributes.length; i++) {
+        var name_6 = normalizeName(src.attributes[i].name);
+        var value = src.attributes[i].value;
+        try {
             value = cloneText(value);
-            if (name_5 == 'id') {
+            if (name_6 == 'id') {
                 dest.id = value;
             }
-            else if (name_5 == 'class') {
+            else if (name_6 == 'class') {
                 if (value) {
                     var classes = value.split(' ');
                     for (var i_5 = 0; i_5 < classes.length; i_5++) {
@@ -7521,12 +7480,12 @@ function cloneAttributes(src, dest) {
             }
             // REVIEW: special case 'style'?
             else {
-                dest.setAttributeNS('', name_5, value);
+                dest.setAttributeNS('', name_6, value);
             }
         }
-    }
-    catch (ex) {
-        throw new BuildTagError("cloneAttributes", src, ex);
+        catch (ex) {
+            throw wrapContextError(ex, 'cloneAttributes', elementSourceOffset(src, name_6));
+        }
     }
 }
 exports.cloneAttributes = cloneAttributes;
@@ -7588,13 +7547,19 @@ function complexAttribute(str, trim) {
             }
         }
         else {
-            var complex = evaluateFormula(list[i].text);
-            if (i == 0 && list.length == 1) {
-                return complex;
+            try {
+                var complex = evaluateFormula(list[i].text);
+                if (i == 0 && list.length == 1) {
+                    return complex;
+                }
+                buffer += makeString(complex, list[i]);
             }
-            buffer += complex;
+            catch (ex) {
+                throw wrapContextError(ex, 'complexAttribute', list[i]);
+            }
         }
     }
+    return buffer;
 }
 exports.complexAttribute = complexAttribute;
 /**
@@ -7608,22 +7573,26 @@ function simpleTrim(str) {
     while (s < e && (str.charCodeAt(s) || 33) <= 32) {
         s++;
     }
-    while (e > s && (str.charCodeAt(e) || 33) <= 32) {
-        e--;
+    while (--e > s && (str.charCodeAt(e) || 33) <= 32) {
+        ;
     }
-    return str.substring(s, e);
+    return str.substring(s, e + 1);
 }
 var TokenType;
 (function (TokenType) {
     TokenType[TokenType["unset"] = 0] = "unset";
     TokenType[TokenType["unaryOp"] = 1] = "unaryOp";
     TokenType[TokenType["binaryOp"] = 2] = "binaryOp";
-    TokenType[TokenType["objectOp"] = 4] = "objectOp";
-    TokenType[TokenType["anyOperator"] = 7] = "anyOperator";
+    TokenType[TokenType["anyOperator"] = 3] = "anyOperator";
     TokenType[TokenType["openBracket"] = 16] = "openBracket";
     TokenType[TokenType["closeBracket"] = 32] = "closeBracket";
     TokenType[TokenType["anyBracket"] = 48] = "anyBracket";
-    TokenType[TokenType["text"] = 256] = "text";
+    TokenType[TokenType["anyOperatorOrBracket"] = 255] = "anyOperatorOrBracket";
+    TokenType[TokenType["word"] = 256] = "word";
+    TokenType[TokenType["number"] = 512] = "number";
+    TokenType[TokenType["spaces"] = 1024] = "spaces";
+    TokenType[TokenType["anyText"] = 3840] = "anyText";
+    TokenType[TokenType["node"] = 4096] = "node";
 })(TokenType || (TokenType = {}));
 /**
  * Divide up a string into sibling tokens.
@@ -7636,105 +7605,142 @@ var TokenType;
  * (Only exported for unit tests)
  */
 function tokenizeFormula(str) {
+    var _a, _b;
     var tokens = [];
     var stack = []; // currently open brackets
-    var tok = { text: '', type: TokenType.unset };
-    var escape = '';
+    var tok = { text: '', type: TokenType.unset,
+        source: str, offset: 0, length: 0 };
+    var escape = false;
+    var len = str.length;
     for (var i = 0; i <= str.length; i++) {
         var ch = i < str.length ? str[i] : '';
         if (ch == '`') {
-            escape += ch;
-            continue;
+            if (!escape) {
+                escape = true;
+                continue; // First one. Do nothing.
+            }
+            escape = false;
+            // Fall through, and process second ` as normal text
         }
-        if (stack.length > 0 && (escape.length % 2) == 0 && ch == stack[stack.length - 1]) {
+        var op = getOperator(ch);
+        if (stack.length > 0 && !escape && ch == stack[stack.length - 1]) {
+            // Found a matching close bracket
             stack.pop();
             if (tok.type != TokenType.unset) {
                 tokens.push(tok);
             } // push any token in progress
-            tokens.push(tok = { text: ch, type: TokenType.closeBracket }); // push close bracket
-            tok = { text: '', type: TokenType.unset }; // reset next token
+            tokens.push(tok = { text: ch, type: TokenType.closeBracket,
+                source: str, offset: i, length: 1 });
+            tok = { text: '', type: TokenType.unset,
+                source: str, offset: i + 1, length: 0 };
         }
-        else if (!isInQuotes(stack) && (escape.length % 2) == 0 && ch in bracketPairs) {
+        else if (!isInQuotes(stack) && !escape && (isBracketOperator(op) || isCloseBracket(op))) {
+            // New open bracket, or unmatched close
+            var type = isBracketOperator(op) ? TokenType.openBracket : TokenType.closeBracket;
             if (tok.type != TokenType.unset) {
                 tokens.push(tok);
             } // push any token in progress
-            tokens.push(tok = { text: ch, type: TokenType.openBracket }); // push open bracket
-            stack.push(bracketPairs[ch]); // cache the matching close bracket
-            tok = { text: '', type: TokenType.unset }; // reset next token
+            tokens.push(tok = { text: ch, type: type,
+                source: str, offset: i, length: 1 });
+            if (type == TokenType.openBracket) {
+                stack.push(op.closeChar); // cache the pending close bracket
+            }
+            tok = { text: '', type: TokenType.unset,
+                source: str, offset: i + 1, length: 0 };
         }
-        else if (!isInQuotes(stack) && (escape.length % 2) == 0 && (ch in binaryOperators || ch in unaryOperators || ch in objectOperators)) {
+        else if (!isInQuotes(stack) && !escape && op !== null) {
+            // Found an operator
             var tt = TokenType.unset;
-            if (ch in binaryOperators) {
+            if (isBinaryOperator(op)) {
                 tt |= TokenType.binaryOp;
             }
-            if (ch in unaryOperators) {
+            if (isUnaryOperator(op)) {
                 tt |= TokenType.unaryOp;
-            }
-            if (ch in objectOperators) {
-                tt |= TokenType.objectOp;
             }
             if (tok.type != TokenType.unset) {
                 tokens.push(tok);
             } // push any token in progress
-            tokens.push(tok = { text: ch, type: tt }); // push operator (exact type TBD)
-            tok = { text: '', type: TokenType.unset }; // reset next token
+            tokens.push(tok = { text: ch, type: tt,
+                source: str, offset: i, length: 1 });
+            tok = { text: '', type: TokenType.unset,
+                source: str, offset: i + 1, length: 0 };
         }
         else {
-            var evenEscape = escape.substring(0, Math.floor(escape.length / 2));
-            var oddEscape = escape.substring(0, escape.length % 2);
-            tok.text += evenEscape; // for every pair ``, append one `
-            if (isBracketChar(ch) && oddEscape == '`') {
-                tok.text += ch; // Any escaped brackets should drop the escape ` prefix
+            // Anything else is text
+            if (escape && op == null) {
+                tok.text += '`'; // Standalone escape. Treat as regular `
             }
-            else {
-                // Keep any odd escape, since we didn't escape anything
-                tok.text += oddEscape + ch;
-            }
+            tok.text += ch;
             if (tok.text !== '') {
-                tok.type = TokenType.text;
+                tok.type = TokenType.anyText;
+                tok.length = Math.min(i + 1, len) - tok.offset;
             }
         }
-        escape = '';
+        escape = false;
     }
     if (tok.type != TokenType.unset) {
         tokens.push(tok); // push any token in progress
     }
-    // Re-scan tokens, to clarify operator sub-types
+    // Re-scan tokens, to clarify operator and text sub-types
+    var prev = TokenType.unset;
     for (var i = 0; i < tokens.length; i++) {
         var tok_1 = tokens[i];
+        if (tok_1.source == undefined || tok_1.offset == undefined || tok_1.length == undefined) {
+            throw new CodeError('All tokens should know their source offset: ' + tok_1);
+        }
         if (tok_1.type & TokenType.anyOperator) {
-            if (i == 0 || (tokens[i - 1].type & (TokenType.text | TokenType.closeBracket)) == 0) {
+            if ((prev & (TokenType.word | TokenType.number | TokenType.closeBracket)) == 0) {
                 // If no object (text or a closeBracket) precedes us, we're a unary operator
                 // For example, consecutive operators mean all but the first are unary (since we have no post-fix unary operators)
                 tok_1.type = TokenType.unaryOp;
+                var op = getOperator(tok_1.text);
+                tok_1.text = (_a = op.unaryChar) !== null && _a !== void 0 ? _a : tok_1.text; // possibly substitute operator char
             }
-            else if (tok_1.type == (TokenType.unaryOp | TokenType.binaryOp)) {
+            else if (tok_1.type & TokenType.anyOperator) {
                 // When an object does precede us, then ambiguous operators are binary
                 tok_1.type = TokenType.binaryOp;
+                var op = getOperator(tok_1.text);
+                tok_1.text = (_b = op.binaryChar) !== null && _b !== void 0 ? _b : tok_1.text; // possibly substitute operator char
             }
+        }
+        else if (tok_1.type & TokenType.anyText) {
+            if (simpleTrim(tok_1.text).length == 0) {
+                tok_1.type = TokenType.spaces;
+            }
+            else if (isIntegerRegex(tok_1.text)) {
+                tok_1.type = TokenType.number;
+            }
+            else {
+                tok_1.type = TokenType.word;
+            }
+        }
+        if (tok_1.type != TokenType.spaces) {
+            prev = tok_1.type;
         }
     }
     return tokens;
 }
 exports.tokenizeFormula = tokenizeFormula;
 function findCloseBracket(tokens, open) {
-    var closes = [bracketPairs[tokens[open].text]];
+    var closes = [tokens[open]];
     for (var i = open + 1; i < tokens.length; i++) {
         var tok = tokens[i];
         if (tok.type == TokenType.closeBracket) {
-            if (tok.text == closes[closes.length - 1]) {
+            if (tok.text == bracketPairs[closes[closes.length - 1].text]) {
                 closes.pop();
                 if (closes.length == 0) {
                     return i;
                 }
             }
-            throw new BuildError('Unmatched close bracket: ' + tok.text);
+            else {
+                throw new ContextError('Unmatched close bracket', tok);
+            }
         }
         else if (tok.type == TokenType.openBracket) {
-            closes.push(bracketPairs[tok.text]);
+            closes.push(tok);
         }
     }
-    throw new BuildError('Missing close brackets: ' + closes.join(' '));
+    throw new ContextError('Missing close ' + (isStringBracket(closes[closes.length - 1].text) ? 'quotes' : 'brackets'), closes[closes.length - 1]);
 }
 /**
  * A node of a formula's expression, which can be combined into a binary tree.
@@ -7748,12 +7754,12 @@ function findCloseBracket(tokens, open) {
  * (Only exported for unit tests)
  */
 var FormulaNode = /** @class */ (function () {
-    function FormulaNode(complete, value, right, left) {
+    function FormulaNode(value, right, left, span) {
         this.bracket = ''; // If this node is the root of a bracketed sub-formula, name the bracket char, else ''
         this.left = left;
         this.right = right;
         this.value = value;
-        this.complete = complete;
+        this.span = span ? span : value;
         if (right) {
             right.parent = this;
         }
@@ -7779,190 +7785,264 @@ var FormulaNode = /** @class */ (function () {
         }
     };
     /**
-     * Is this node waiting for the object of an operator?
-     * @returns true if the object is complete. false if awaiting an object.
-     */
-    FormulaNode.prototype.isComplete = function () {
-        return this.complete;
-    };
-    /**
      * Is this node plain-text?
      * @returns false if there is an operation and operands, else false
      */
     FormulaNode.prototype.isSimple = function () {
-        return this.complete && !this.left && !this.right;
+        return !this.left && !this.right;
     };
-    /**
-     * A node that doesn't yet have all of its operands can be appended.
-     * If complete, reject the new node (it should be retried on a parent).
-     * Otherwise, assign to the right. Never the left.
-     * @param node The trailing operand in either a unary or binary operation.
-     * @returns true if this node has absorbed this as a new argument,
-     * else false if we're already complete.
-     */
-    FormulaNode.prototype.append = function (node) {
-        if (this.complete) {
-            return false;
-        }
-        this.right = node;
-        node.parent = this;
-        this.complete = true;
-        return true;
+    FormulaNode.prototype.reRootContext = function () {
+        return this.bracket == '[' || this.bracket == '{';
     };
     /**
      * Evaluate this node.
+     * @param evalText if true, any simple text nodes are assumed to be named objects or numbers
+     * else any simple text is just that. No effect for non-simple text.
      * @returns If it's a simple value, return it (any type).
      * If there's an operator and operands, return a type appropriate for that operator.
      */
-    FormulaNode.prototype.evaluate = function () {
+    FormulaNode.prototype.evaluate = function (evalText) {
+        var _a, _b, _c;
+        var result = undefined;
         if (this.left) {
             try {
-                var bop = binaryOperators[this.value || ''];
-                var oop = objectOperators[this.value || ''];
-                var lValue = this.left.evaluate();
-                var rValue = this.left.evaluate();
-                if (bop) {
-                    return bop(lValue, rValue);
+                var op = getOperator(this.value.text);
+                var bop = op.binaryOp;
+                // right must also exist, because we're complete
+                var lValue = this.left.evaluate(op.evalLeft);
+                var rValue = this.right.evaluate(op.evalRight || this.right.reRootContext());
+                if (!bop) {
+                    throw new ContextError('Unrecognize binary operator', this.value);
                 }
-                else if (oop) {
-                    return oop(lValue, rValue);
+                result = bop(lValue, rValue, (_a = this.left) === null || _a === void 0 ? void 0 : _a.span, (_b = this.right) === null || _b === void 0 ? void 0 : _b.span);
+                if (result === undefined || Number.isNaN(result)) {
+                    throw new ContextError('Operation ' + (op === null || op === void 0 ? void 0 : op.raw) + ' resulted in ' + result + ' : ' + lValue + (op === null || op === void 0 ? void 0 : op.raw) + rValue, this.value);
                 }
             }
             catch (ex) {
-                throw new BuildEvalError('FormulaNode.evaluateBinary', toString(), ex);
+                throw wrapContextError(ex, 'evaluate:binary', this.span);
             }
-            throw new Error('ERROR: Unrecognize binary operator: ' + this.value);
         }
         else if (this.right) {
             try {
-                var uop = unaryOperators[this.value || ''];
-                var rValue = this.right.evaluate();
-                if (uop) {
-                    return uop(rValue);
+                var op = getOperator(this.value.text);
+                var uop = op.unaryOp;
+                var rValue = this.right.evaluate(op.evalRight);
+                if (!uop) {
+                    throw new ContextError('Unrecognize unary operator', this.value);
+                }
+                result = uop(rValue, (_c = this.right) === null || _c === void 0 ? void 0 : _c.span);
+                if (result === undefined || Number.isNaN(result)) {
+                    throw new ContextError('Operation ' + (op === null || op === void 0 ? void 0 : op.raw) + ' resulted in ' + result + ' : ' + (op === null || op === void 0 ? void 0 : op.raw) + rValue, this.value);
                 }
             }
             catch (ex) {
-                throw new BuildEvalError('FormulaNode.evaluateUnary', toString(), ex);
+                throw wrapContextError(ex, 'evaluate:unary', this.span);
             }
-            throw new Error('ERROR: Unrecognize unary operator: ' + this.value);
         }
         else if (this.bracket === '\"' || this.bracket === '\'') {
             // Reliably plain text
-            return this.value;
+            result = this.value.text;
         }
         else {
+            result = this.value.text; // unless overridden below
             // Could be plain text (or a number) or a name in context
-            var context = getBuilderContext();
-            if (this.value in context) {
-                return context[this.value];
+            if (evalText === true) {
+                var trimmed = simpleTrim(this.value.text);
+                var context = getBuilderContext();
+                if (trimmed in context) {
+                    result = context[trimmed];
+                }
+                else if (isIntegerRegex(trimmed)) {
+                    result = parseInt(trimmed);
+                }
             }
-            return this.value;
         }
+        return result;
     };
     return FormulaNode;
 }());
 exports.FormulaNode = FormulaNode;
 /**
- * Convert a string to an integer, if it is one
- * @param str
- * @returns its integer equivalent, if it is an integer, otherwise the original string
+ * Does this string look like an integer?
+ * @param str any text
+ * @returns true if, once trimmed, it's a well-formed integer
  */
-function tryParseInt(str) {
-    if (/^-?\d+$/.test(str.trim())) {
-        return parseInt(str);
+function isIntegerRegex(str) {
+    return /^\s*-?\d+\s*$/.test(str);
+}
+/**
+ * Of all the operators, find the one with the highest precedence.
+ * @param tokens A list of tokens, which are a mix of operators and values
+ * @returns The index of the first operator with the highest precedence,
+ * or -1 if no remaining operators
+ */
+function findHighestPrecedence(tokens) {
+    var _a;
+    var precedence = -1;
+    var first = -1;
+    for (var i = 0; i < tokens.length; i++) {
+        var tok = tokens[i];
+        if (tok.type & TokenType.anyOperatorOrBracket) {
+            var op = getOperator((_a = tok.text) !== null && _a !== void 0 ? _a : '');
+            if (op) {
+                if ((op.precedence || 0) > precedence) {
+                    precedence = op.precedence;
+                    first = i;
+                }
+            }
+        }
     }
-    return str;
+    return first;
+}
+/**
+ * Create a merged token, which spans the range between (inclusive) two existing tokens.
+ * @param first The first token in the span
+ * @param last The last token in the span
+ * @param node The node this token spans, if one. If omitted, the type is assumed to be text
+ * @returns A new token
+ */
+function makeSpanToken(first, last, node) {
+    var start = Math.min(first.offset, last.offset);
+    var end = Math.max(first.offset + first.length, last.offset + last.length);
+    var tok = {
+        type: node ? TokenType.node : TokenType.word,
+        node: node,
+        source: first.source,
+        text: unescapeOperators(first.source.substring(start, end)),
+        offset: start,
+        length: end - start,
+    };
+    return tok;
+}
+/**
+ * An edge case, to create a blank token between existing tokens.
+ * @param before The token prior to the empty token
+ * @returns An empty token, correctly positioned.
+ */
+function makeEmptyToken(before) {
+    var tok = {
+        type: TokenType.spaces,
+        source: before.source,
+        text: '',
+        offset: before.offset + before.length,
+        length: 0,
+    };
+    return tok;
 }
 /**
  * 2nd pass of formula parser.
- * After first tokenizing, build the tokens into a tree of nodes.
- * Each node
- * @param tokens
- * @returns
+ * Uses operator precedence.
+ * Finds the left-most of the highest-precedence operators.
+ * Builds a node that binds that operator to its operand(s).
+ * Replace that subset with the node, and repeat
+ * @param tokens A sequence of tokens
+ * @param bracket An encapsulating bracket, if any
+ * @returns A single node
+ * @throws an error if the formula is malformed: mismatched brackets or incomplete operators
  */
-function buildFormulaNodeTree(tokens) {
-    var stack = [];
-    var lastValue = null;
-    for (var i = 0; i < tokens.length; i++) {
-        var tok = tokens[i];
-        var newNode = null;
-        if (tok.type == TokenType.openBracket) {
-            var close_1 = findCloseBracket(tokens, i);
-            var nested = tokens.slice(i + 1, close_1 - 1);
-            newNode = buildFormulaNodeTree(nested);
-            newNode.bracket = tok.text;
-            lastValue = newNode;
-            i = close_1;
-        }
-        else if (tok.type == TokenType.text) {
-            newNode = new FormulaNode(true, tok.text);
-            lastValue = newNode;
-        }
-        else if (tok.type == TokenType.unaryOp) {
-            newNode = new FormulaNode(false, tok.text);
-        }
-        else if (tok.type == TokenType.binaryOp) {
-            if (stack.length == 0) {
-                throw new Error('Binary operator \'' + tok.text + '\' lacks l-value');
-            }
-            else if (stack.length == 0 || !stack[0].isComplete()) {
-                throw new Error('Binary operator \'' + tok.text + '\' with incomplete l-value {' + stack[0].toString() + '}');
-            }
-            var left = stack.pop();
-            newNode = new FormulaNode(false, tok.text, undefined, left);
-        }
-        else if (tok.type == TokenType.objectOp) {
-            // Object operators act on the most recent value-type node
-            if (!lastValue) {
-                throw new Error('Object operator \'' + tok.text + '\' lacks l-value');
-            }
-            var parent_3 = lastValue.parent;
-            var objNode = new FormulaNode(false, tok.text, undefined, lastValue);
-            if (parent_3) {
-                parent_3.right = objNode;
-            }
-            else if (lastValue == stack[0]) {
-                stack[0] = objNode;
-            }
-            else {
-                throw new Error('Cannot place new object operator node in parent context: ' + objNode.toString());
-            }
-            lastValue = objNode;
-        }
-        // Almost all tokens create new nodes, which append to the end of the building tree.
-        // The exception is object operators, which effectively have operator precedence to the most recent value.
-        if (newNode != null) {
-            // If there are open nodes, a new value node should complete them
-            while (stack.length > 0) {
-                var node = stack.pop();
-                if (node) {
-                    // If we have a 1-item stack, new items should append to it.
-                    // If we have a complex stack, likely most appending is already done.
-                    if (newNode.parent != node && !node.append(newNode)) {
-                        throw new Error('Value node {' + newNode.toString() + '} could not be appended to the existing state: ' + node.toString());
+function treeifyFormula(tokens, bracket) {
+    if (tokens.length == 0 && !bracket) {
+        throw new CodeError('Cannot treeify without content');
+    }
+    var fullSpanTok = tokens.length > 0
+        ? makeSpanToken(tokens[0], tokens[tokens.length - 1])
+        : makeEmptyToken(bracket);
+    if (bracket && isStringBracket(bracket.text)) {
+        return new FormulaNode(fullSpanTok);
+    }
+    while (tokens.length > 0) {
+        var opIndex = findHighestPrecedence(tokens);
+        if (opIndex < 0) {
+            // If well formed, there should only be a single non-space token left
+            var node = undefined;
+            for (var i = 0; i < tokens.length; i++) {
+                var tok = tokens[i];
+                if (tok.type != TokenType.spaces) {
+                    if (node) {
+                        // This is a 2nd token
+                        // REVIEW: Alternatively invent a concatenation node
+                        throw new ContextError('Consecutive tokens with no operator', tok);
                     }
-                    if (!newNode.isComplete()) {
-                        // When the new node isn't complete, keep both the parent and the new node on the stack
-                        stack.push(node);
-                        break;
+                    if (tok.type == TokenType.node) {
+                        node = tok.node;
                     }
-                    newNode = node;
+                    else {
+                        node = new FormulaNode(tok);
+                        if (bracket) {
+                            node.bracket = bracket.text;
+                        }
+                    }
                 }
             }
-            // We now have an internally complete sequence. Make it the root node.
-            stack.push(newNode);
-            continue;
+            if (!node) {
+                var tok = makeSpanToken(tokens[0], tokens[tokens.length - 1]);
+                throw new ContextError('No value tokens in span', tok);
+            }
+            return node;
+        }
+        var opTok = tokens[opIndex];
+        var ch = opTok.text;
+        var op = getOperator(ch);
+        if (isUnaryOperator(op)) {
+            var r = opIndex + 1;
+            while (r < tokens.length && tokens[r].type == TokenType.spaces) {
+                r++;
+            }
+            if (r >= tokens.length) {
+                throw new ContextError('Unary operator without following operand', opTok);
+            }
+            var rightSplit = tokens.splice(opIndex + 1, r - opIndex);
+            var right = treeifyFormula(rightSplit);
+            var node = new FormulaNode(opTok, right);
+            var tok = makeSpanToken(opTok, rightSplit[rightSplit.length - 1], node);
+            node.span = tok;
+            tokens[opIndex] = tok;
+        }
+        else if (isBinaryOperator(op)) {
+            var r = opIndex + 1;
+            while (r < tokens.length && tokens[r].type == TokenType.spaces) {
+                r++;
+            }
+            if (r >= tokens.length) {
+                throw new ContextError('Binary operator without right operand', opTok);
+            }
+            var rightSplit = tokens.splice(opIndex + 1, r - opIndex);
+            var right = treeifyFormula(rightSplit);
+            var l = opIndex - 1;
+            while (l >= 0 && tokens[l].type == TokenType.spaces) {
+                l--;
+            }
+            if (l < 0) {
+                throw new ContextError('Binary operator without left operand', opTok);
+            }
+            var leftSplit = tokens.splice(l, opIndex - l);
+            var left = treeifyFormula(leftSplit);
+            var node = new FormulaNode(opTok, right, left);
+            var tok = makeSpanToken(leftSplit[0], rightSplit[rightSplit.length - 1], node);
+            node.span = tok;
+            tokens[l] = tok;
+        }
+        else if (isBracketOperator(op)) {
+            var close_1 = findCloseBracket(tokens, opIndex);
+            var closeTok = tokens.splice(close_1, 1)[0];
+            var nested = tokens.splice(opIndex + 1, close_1 - opIndex - 1);
+            var node = treeifyFormula(nested, opTok);
+            node.bracket = op.raw;
+            var tok = makeSpanToken(opTok, closeTok, node);
+            node.span = tok;
+            tokens[opIndex] = tok;
+        }
+        else {
+            throw new ContextError('Unknown operator ' + ch, opTok);
         }
     }
-    if (stack.length == 0) {
-        return new FormulaNode(true, '');
+    if (fullSpanTok.length == 0) {
+        throw new ContextError('Empty brackets yield no value', bracket);
     }
-    if (stack.length > 1 || !stack[0].isComplete()) {
-        throw new Error('Incomplete formula: ' + stack.toString());
-    }
-    return stack.pop();
+    throw new ContextError('Treeify reduced to an empty span', fullSpanTok);
 }
-exports.buildFormulaNodeTree = buildFormulaNodeTree;
+exports.treeifyFormula = treeifyFormula;
 /**
  * Evaluate a formula
  * @param str A single formula. The bracketing {} are assumed.
@@ -7974,14 +8054,42 @@ function evaluateFormula(str) {
     }
     try {
         var tokens = tokenizeFormula(str);
-        var node = buildFormulaNodeTree(tokens);
-        return node.evaluate();
+        var node = treeifyFormula(tokens);
+        return node.evaluate(true);
     }
     catch (ex) {
-        throw new BuildEvalError('evaluateFormula', str, ex);
+        throw wrapContextError(ex, 'evaluateFormula');
     }
 }
 exports.evaluateFormula = evaluateFormula;
+/**
+ * Evaluate a single attribute of an HTML element
+ * @param elmt The HTML element
+ * @param attr The name of the attribute
+ * @param implicitFormula Whether the contents of the attribute require {} to indicate a formula
+ * @param required Whether the attribute is required, in which case it will throw if not present.
+ * Otherwise it would return undefined
+ * @returns Any data type
+ */
+function evaluateAttribute(elmt, attr, implicitFormula, required) {
+    var val = elmt.getAttributeNS('', attr);
+    if (!val) {
+        if (required === false) { // true by default
+            return undefined;
+        }
+        throw new ContextError('Missing required attribute: ' + attr, elementSourceOffset(elmt));
+    }
+    try {
+        if (implicitFormula) {
+            return evaluateFormula(val);
+        }
+        return complexAttribute(val);
+    }
+    catch (ex) {
+        throw wrapContextError(ex, undefined, elementSourceOffset(elmt, attr));
+    }
+}
+exports.evaluateAttribute = evaluateAttribute;
 /* Context formula syntax has several components that need to play nicely with each other.
    Brackets:
      {} to start lookups
@@ -7998,7 +8106,7 @@ exports.evaluateFormula = evaluateFormula;
    Operators:
      +-*\%/   numeric operators
      &@       string operators
-     .?^      object and context operators
+     .?:      object and context operators
 
  */
 var bracketPairs = {
@@ -8027,24 +8135,119 @@ function isBracketChar(ch) {
     return ch in bracketPairs
         || ch == ')' || ch == ']' || ch == '}';
 }
-var binaryOperators = {
-    '+': function (a, b) { return String(parseFloat(a) + parseFloat(b)); },
-    '-': function (a, b) { return String(parseFloat(a) - parseFloat(b)); },
-    '*': function (a, b) { return String(parseFloat(a) * parseFloat(b)); },
-    '/': function (a, b) { return String(parseFloat(a) / parseFloat(b)); },
-    '\\': function (a, b) { var f = parseFloat(a) / parseFloat(b); return String(f >= 0 ? Math.floor(f) : Math.ceil(f)); },
-    '%': function (a, b) { return String(parseFloat(a) % parseInt(b)); },
-    '&': function (a, b) { return String(a) + String(b); },
-};
-var unaryOperators = {
-    '-': function (a) { return String(-parseFloat(a)); },
-    //  '@': (a) => {return deentify(a)},
-    '^': function (a) { return globalContextData(a); },
-};
-var objectOperators = {
-    '.': function (a, b) { return getKeyedChild(a, b, false); },
-    // '?': (a,b) => {return getKeyedChild(a, b, true)},
-};
+/**
+ * Convert any type to a number, or throw in broken cases.
+ * @param a Any data, but hopefully an int or float
+ * @param tok The source offset, if caller knows it
+ * @returns The float equivalent
+ */
+function makeFloat(a, tok) {
+    var f = parseFloat(a);
+    if (Number.isNaN(f)) {
+        throw new ContextError('Not a number: ' + JSON.stringify(a), tok);
+    }
+    return f;
+}
+exports.makeFloat = makeFloat;
+/**
+ * Convert any type to an integer, or throw in broken cases.
+ * @param a Any data, but hopefully an int
+ * @param tok The source offset, if caller knows it
+ * @returns The int equivalent
+ */
+function makeInt(a, tok) {
+    if (typeof (a) == 'number') {
+        if (Math.trunc(a) == a) {
+            return a;
+        }
+    }
+    else if (isIntegerRegex('' + a)) {
+        return parseInt(a);
+    }
+    throw new ContextError('Not an integer: ' + a, tok);
+}
+exports.makeInt = makeInt;
+/**
+ * Convert any type to string, or throw in broken cases.
+ * @param a Any data, but hopefully string-friendly
+ * @param tok The source offset, if caller knows it
+ * @returns The string equivalent
+ */
+function makeString(a, tok) {
+    if (a === undefined || a === null || typeof (a) == 'object') {
+        throw new ContextError('Bad cast to string: ' + JSON.stringify(a), tok);
+    }
+    return String(a);
+}
+exports.makeString = makeString;
+var minus = { raw: '-', unaryChar: '⁻', binaryChar: '−' }; // ambiguously unary or binary
+var concat = { raw: '&', precedence: 1, binaryOp: function (a, b, aa, bb) { return makeString(a, aa) + makeString(b, bb); }, evalLeft: true, evalRight: true };
+var entity = { raw: '@', precedence: 1, unaryOp: function (a, aa) { return deentify(a); }, evalRight: false };
+var plus = { raw: '+', precedence: 3, binaryOp: function (a, b, aa, bb) { return makeFloat(a, aa) + makeFloat(b, bb); }, evalLeft: true, evalRight: true };
+var subtract = { raw: '−', precedence: 3, binaryOp: function (a, b, aa, bb) { return makeFloat(a, aa) - makeFloat(b, bb); }, evalLeft: true, evalRight: true };
+var times = { raw: '*', precedence: 4, binaryOp: function (a, b, aa, bb) { return makeFloat(a, aa) * makeFloat(b, bb); }, evalLeft: true, evalRight: true };
+var divide = { raw: '/', precedence: 4, binaryOp: function (a, b, aa, bb) { return makeFloat(a, aa) / makeFloat(b, bb); }, evalLeft: true, evalRight: true };
+var intDivide = { raw: '\\', precedence: 4, binaryOp: function (a, b, aa, bb) { var f = makeFloat(a, aa) / makeFloat(b, bb); return f >= 0 ? Math.floor(f) : Math.ceil(f); }, evalLeft: true, evalRight: true }; // integer divide without Math.trunc
+var modulo = { raw: '%', precedence: 4, binaryOp: function (a, b, aa, bb) { return makeFloat(a, aa) % makeFloat(b, bb); }, evalLeft: true, evalRight: true };
+var negative = { raw: '⁻', precedence: 5, unaryOp: function (a, aa) { return -makeFloat(a, aa); }, evalRight: true };
+var childObj = { raw: '.', precedence: 6, binaryOp: function (a, b, aa, bb) { return getKeyedChild(a, b, bb, false); }, evalLeft: true, evalRight: false };
+var rootObj = { raw: ':', precedence: 7, unaryOp: function (a, aa) { return getKeyedChild(null, a, aa); }, evalRight: false };
+var roundBrackets = { raw: '(', precedence: 8, closeChar: ')' };
+var squareBrackets = { raw: '[', precedence: 8, closeChar: ']' };
+var curlyBrackets = { raw: '{', precedence: 8, closeChar: '}' };
+var closeRoundBrackets = { raw: ')', precedence: 0 };
+var closeSquareBrackets = { raw: ']', precedence: 0 };
+var closeCurlyBrackets = { raw: '}', precedence: 0 };
+var singleQuotes = { raw: '\'', precedence: 10, closeChar: '\'' };
+var doubleQuotes = { raw: '"', precedence: 10, closeChar: '"' };
+var allOperators = [
+    minus, concat, entity, plus, subtract,
+    times, divide, intDivide, modulo, negative,
+    childObj, rootObj,
+    roundBrackets, squareBrackets, curlyBrackets,
+    closeRoundBrackets, closeSquareBrackets, closeCurlyBrackets,
+    singleQuotes, doubleQuotes
+];
+// Convert the list to a dictionary, keyed on the raw string
+// (accumulate each item in the list into a field in acc, which starts out as {})
+var operatorLookup = allOperators.reduce(function (acc, obj) { acc[obj.raw] = obj; return acc; }, {});
+function isOperator(ch) {
+    return ch in isOperator;
+}
+function getOperator(ch) {
+    if (ch === null) {
+        return null;
+    }
+    if (typeof ch === 'string') {
+        if (ch in operatorLookup) {
+            return operatorLookup[ch];
+        }
+        return null;
+    }
+    return ch;
+}
+function isUnaryOperator(ch) {
+    var op = getOperator(ch);
+    return op !== null
+        && (op.unaryChar !== undefined || op.unaryOp !== undefined);
+}
+function isBinaryOperator(ch) {
+    var op = getOperator(ch);
+    return op !== null
+        && (op.binaryChar !== undefined || op.binaryOp !== undefined);
+}
+function isBracketOperator(ch) {
+    var op = getOperator(ch);
+    return op !== null && op.closeChar !== undefined;
+}
+function isCloseBracket(ch) {
+    var op = getOperator(ch);
+    return op == closeRoundBrackets || op == closeSquareBrackets || op == closeCurlyBrackets;
+}
+function isStringBracket(ch) {
+    var op = getOperator(ch);
+    return op !== null && (op.raw == '"' || op.raw == '\'');
+}
 /**
  * A few common named entities
  */
@@ -8089,7 +8292,7 @@ function deentify(str) {
     if (str in namedEntities) {
         return namedEntities[str];
     }
-    throw new BuildEvalError('deentify', str);
+    throw new ContextError('Not a recognized entity: ' + str);
 }
 /**
  * Find the next instance of a character, making sure the character isn't escaped.
@@ -8151,6 +8354,34 @@ function unescapeBraces(raw) {
     return str;
 }
 /**
+ * Remove any escape characters before operators.
+ * Escape characters elsewhere are left.
+ * @param raw A string which may contain `
+ * @returns The unescapes, user-friendly string
+ */
+function unescapeOperators(raw) {
+    var str = '';
+    var start = 0;
+    while (start <= raw.length) {
+        var i = raw.indexOf('`', start);
+        if (i < 0) {
+            str += raw.substring(start);
+            break;
+        }
+        str += raw.substring(start, i);
+        var ch = i + 1 < raw.length ? raw[i + 1] : '';
+        var op = getOperator(ch);
+        if (op !== null || ch == '`') {
+            str += ch; // The character after the escape
+        }
+        else {
+            str += '`' + ch; // Not a real escape
+        }
+        start = i + 2;
+    }
+    return str;
+}
+/**
  * Parse text that occurs inside a built control element into tokens.
  * @param raw the raw document text
  * @param implicitFormula if true, the full text can be a formula without being inside {}.
@@ -8162,6 +8393,11 @@ function tokenizeText(raw, implicitFormula) {
     var start = 0;
     while (start < raw.length) {
         var curly = findNonEscaped(raw, '{', start);
+        var errorClose = findNonEscaped(raw, '}', start);
+        if (errorClose >= start && (curly < 0 || errorClose < curly)) {
+            var src = { source: raw, offset: errorClose, length: 1 };
+            throw new ContextError('Close-curly brace without an open brace.', src);
+        }
         if (curly < 0) {
             break;
         }
@@ -8169,7 +8405,10 @@ function tokenizeText(raw, implicitFormula) {
             // Plain text prior to a formula
             var ttoken = {
                 text: unescapeBraces(raw.substring(start, curly)),
-                formula: false
+                formula: false,
+                source: raw,
+                offset: start,
+                length: curly - start,
             };
             list.push(ttoken);
         }
@@ -8179,7 +8418,8 @@ function tokenizeText(raw, implicitFormula) {
             var lb = findNonEscaped(raw, '{', inner);
             var rb = findNonEscaped(raw, '}', inner);
             if (rb < 0) {
-                throw new BuildError('Mismatched curly braces. No close } for open at position ' + curly + '. Raw: ' + raw);
+                var src = { source: raw, offset: curly, length: 1 };
+                throw new ContextError('Unclosed curly braces.', src);
             }
             if (lb >= 0 && lb < rb) {
                 count++;
@@ -8192,36 +8432,30 @@ function tokenizeText(raw, implicitFormula) {
         }
         // The contents of the formula (without the {} braces)
         var ftoken = {
-            text: raw.substring(curly + 1, inner - 1),
-            formula: true
+            text: unescapeOperators(raw.substring(curly + 1, inner - 1)),
+            formula: true,
+            source: raw,
+            offset: curly + 1,
+            length: inner - 1 - curly - 1,
         };
         list.push(ftoken);
         start = inner;
     }
     if (start < raw.length) {
         // Any remaining plain text
+        var isFormula = implicitFormula && start == 0;
         var ttoken = {
-            text: unescapeBraces(raw.substring(start)),
-            formula: false
+            text: isFormula ? unescapeOperators(raw) : unescapeBraces(raw.substring(start)),
+            formula: isFormula,
+            source: raw,
+            offset: start,
+            length: raw.length - start,
         };
         list.push(ttoken);
     }
     return list;
 }
 exports.tokenizeText = tokenizeText;
-/**
- * Look up a value, according to the context path cached in an attribute
- * @param path A context path
- * @returns Any JSON object
- */
-function globalContextData(path) {
-    var context = theBoilerContext();
-    if (path && context) {
-        return evaluateFormula(path);
-    }
-    return undefined;
-}
-exports.globalContextData = globalContextData;
 /**
  * Test a key in the current context
  * @param key A key, initially from {curly} notation
@@ -8251,32 +8485,63 @@ exports.keyExistsInContext = keyExistsInContext;
  * @returns Resolved text
  */
 function textFromContext(key) {
-    return evaluateFormula(key);
+    var obj = evaluateFormula(key);
+    return makeString(obj);
 }
 exports.textFromContext = textFromContext;
 /**
  * Get a keyed child of a parent, where the key is either a dictionary key
  * or a list index or a string offset.
- * @param parent The parent object: a list, object, or string
- * @param key The identifier of the child: a dictionary key, a list index, or a string offset
- * @param maybe If true, and key does not work, return ''
+ * @param parent The parent object: a list, object, or string, which could in turn be the name of a list or object.
+ * If null, the parent becomes the root boiler context.
+ * @param key The identifier of the child: a dictionary key, a list index, or a string offset.
+ * @param kTok The source offset of the token, if caller knows it.
+ * @param maybe If true, and key does not work, return ''. If false/omitted, throw on bad keys.
  * @returns A child object, or a substring
  */
-function getKeyedChild(parent, key, maybe) {
-    if (typeof (parent) == 'string') {
-        var i = parseInt(key);
-        if (maybe && (i < 0 || i >= parent.length)) {
-            return '';
-        }
-        return parent[i];
+function getKeyedChild(parent, key, kTok, maybe) {
+    if (parent === null) {
+        parent = theBoilerContext();
     }
-    if (!(key in parent)) {
+    var index = undefined;
+    if (typeof (key) == 'number') {
+        index = key;
+    }
+    else if (isIntegerRegex('' + key)) {
+        index = parseInt('' + key);
+    }
+    if (typeof (parent) == 'string') {
+        // If the parent is a string, the only key we support is a character index
+        if (index !== undefined) {
+            if (index < 0 || index >= parent.length) {
+                if (maybe) {
+                    return '';
+                }
+                throw new ContextError('Index out of range: ' + index + ' in ' + parent, kTok);
+            }
+            return parent[index];
+        }
+        throw new ContextError('Named fields are only available on objects: ' + key + ' in ' + JSON.stringify(parent), kTok);
+    }
+    if (index !== undefined && Array.isArray(parent)) {
+        // Indexing into a list. Objects with keys that looks like numbers is handled below.
+        if (index < 0 || index >= parent.length) {
+            if (maybe) {
+                return '';
+            }
+            throw new ContextError('Index out of range: ' + index + ' in ' + parent, kTok);
+        }
+        return parent[index];
+    }
+    // Named members of objects
+    var trimmed = simpleTrim(key);
+    if (!(trimmed in parent)) {
         if (maybe) {
             return '';
         }
-        throw new BuildEvalError('getKeyedChild', key);
+        throw new ContextError('Key not found in context: ' + trimmed, kTok);
     }
-    return parent[key];
+    return parent[trimmed];
 }
 /*-----------------------------------------------------------
  * _builderFor.ts
@@ -8298,22 +8563,22 @@ function startForLoop(src) {
     var list = [];
     var vals = []; // not always used
     // <for each="variable_name" in="list">
-    iter = src.getAttributeNS('', 'each');
+    iter = getIterationVariable(src, 'each');
     if (iter) {
         list = parseForEach(src);
     }
     else {
-        iter = src.getAttributeNS('', 'char');
+        iter = getIterationVariable(src, 'char');
         if (iter) {
             list = parseForText(src, '');
         }
         else {
-            iter = src.getAttributeNS('', 'word');
+            iter = getIterationVariable(src, 'word');
             if (iter) {
                 list = parseForText(src, ' ');
             }
             else {
-                iter = src.getAttributeNS('', 'key');
+                iter = getIterationVariable(src, 'key');
                 if (iter) {
                     list = parseForKey(src);
                     vals = list[1];
@@ -8321,19 +8586,19 @@ function startForLoop(src) {
                 }
                 else {
                     // range and int are synonyms
-                    iter = src.getAttributeNS('', 'range') || src.getAttributeNS('', 'int');
+                    iter = getIterationVariable(src, 'range') || getIterationVariable(src, 'int');
                     if (iter) {
                         list = parseForRange(src);
                     }
                     else {
-                        throw new BuildTagError('Unrecognized <for> tag type', src);
+                        throw new ContextError('Unrecognized <for> tag type', elementSourceOffset(src));
                     }
                 }
             }
         }
     }
     if (!list) {
-        throw new BuildTagError('Unable to determine loop: ', src);
+        throw new ContextError('Unable to determine loop', elementSourceOffset(src));
     }
     var inner_context = pushBuilderContext();
     var iter_index = iter + '#';
@@ -8350,44 +8615,56 @@ function startForLoop(src) {
 }
 exports.startForLoop = startForLoop;
 /**
+ * Read an attribute of the <for> tag, looking for the iteration variable name.
+ * @param src The <for> element
+ * @param attr The attribute name
+ * @returns A string, if found, or null if that attribute was not used.
+ * @throws an error if the name is malformed - something other than a single word
+ */
+function getIterationVariable(src, attr) {
+    var iter = src.getAttributeNS('', attr);
+    if (!iter) {
+        return null;
+    }
+    // Iteration variables need to be a single word. No punctuation.
+    if (/^[a-zA-Z]+$/.test(iter)) {
+        return iter;
+    }
+    throw new ContextError('For loop iteration variable must be a single word: ' + iter, elementSourceOffset(src, attr));
+}
+/**
  * Syntax: <for each="var" in="list">
  * @param src
  * @param context
  * @returns a list of elements
  */
 function parseForEach(src) {
-    var list_name = src.getAttributeNS('', 'in');
-    if (!list_name) {
-        throw new BuildTagError('for each requires "in" attribute', src);
+    var obj = evaluateAttribute(src, 'in', true);
+    if (Array.isArray(obj)) {
+        return obj;
     }
-    return evaluateFormula(list_name);
+    throw new ContextError("For each's in attribute must indicate a list", elementSourceOffseter(src, 'in'));
 }
 function parseForText(src, delim) {
-    var list_name = src.getAttributeNS('', 'in');
-    if (!list_name) {
-        throw new BuildError('for char requires "in" attribute');
-    }
-    // The list_name can just be a literal string
-    var list = complexAttribute(list_name);
-    if (!list) {
-        throw new BuildError('unresolved context: ' + list_name);
-    }
-    return list.split(delim);
+    var tok = elementSourceOffset(src, 'in');
+    var obj = evaluateAttribute(src, 'in', true);
+    var str = makeString(obj, tok);
+    return str.split(delim);
 }
 function parseForRange(src) {
-    var from = src.getAttributeNS('', 'from');
-    var until = src.getAttributeNS('', 'until');
-    var last = src.getAttributeNS('', 'to');
-    var length = src.getAttributeNS('', 'len');
-    var step = src.getAttributeNS('', 'step');
-    var start = from ? parseInt(cloneText(from)) : 0;
-    var end = until ? parseInt(cloneText(until))
-        : last ? (parseInt(cloneText(last)) + 1)
-            : length ? (evaluateFormula(length).length)
+    var from = evaluateAttribute(src, 'from', true, false);
+    var until = evaluateAttribute(src, 'until', true, false);
+    var last = evaluateAttribute(src, 'to', true, false);
+    var length = evaluateAttribute(src, 'len', true, false);
+    var step = evaluateAttribute(src, 'step', true, false);
+    var start = from ? makeInt(from, elementSourceOffseter(src, 'from')) : 0;
+    var end = until ? makeInt(until, elementSourceOffseter(src, 'until'))
+        : last ? (makeInt(last, elementSourceOffseter(src, 'last')) + 1)
+            : length ? (makeString(length, elementSourceOffseter(src, 'len'))).length
                 : start;
     var inc = step ? parseInt(cloneText(step)) : 1;
     if (inc == 0) {
-        throw new BuildTagError("Invalid loop step. Must be non-zero.", src);
+        throw new ContextError("Invalid loop step. Must be non-zero.", elementSourceOffseter(src, 'step'));
     }
     if (!until && inc < 0) {
         end -= 2; // from 5 to 1 step -1 means i >= 0
@@ -8399,17 +8676,15 @@ function parseForRange(src) {
     return list;
 }
 function parseForKey(src) {
-    var obj_name = src.getAttributeNS('', 'in');
-    if (!obj_name) {
-        throw new BuildTagError('for each requires "in" attribute', src);
+    var obj = evaluateAttribute(src, 'in', true);
+    try {
+        var keys = Object.keys(obj);
+        var vals = keys.map(function (k) { return obj[k]; });
+        return [keys, vals];
     }
-    var obj = evaluateFormula(obj_name);
-    if (!obj) {
-        throw new BuildEvalError('unresolved list context', obj_name);
+    catch (ex) {
+        throw new ContextError('Not an object with keys: ' + obj, elementSourceOffset(src, 'in'), ex);
     }
-    var keys = Object.keys(obj);
-    var vals = keys.map(function (k) { return obj[k]; });
-    return [keys, vals];
 }
 /**
  * Potentially several kinds of if expressions:
@@ -8435,7 +8710,7 @@ function startIfBlock(src, result) {
         }
         else {
             if (result.index < 1) {
-                throw new BuildError(src.tagName + ' without preceding <if>');
+                throw new ContextError(src.tagName + ' without preceding <if>', elementSourceOffset(src));
             }
             if (isTag(src, 'else')) {
                 result.index = -result.index;
@@ -8448,49 +8723,70 @@ function startIfBlock(src, result) {
                 return [];
             }
         }
-        var exists = src.getAttributeNS('', 'exists');
-        var notex = src.getAttributeNS('', 'notex');
-        var not = src.getAttributeNS('', 'not');
-        var test = src.getAttributeNS('', 'test');
+        var exists = evaluateAttribute(src, 'exists', false, false);
+        var notex = evaluateAttribute(src, 'notex', false, false);
+        var not = evaluateAttribute(src, 'not', true, false);
+        var test = evaluateAttribute(src, 'test', true, false);
         if (isTag(src, 'else')) {
             result.passed = true;
         }
-        else if (exists || notex) {
+        else if (exists !== undefined || notex !== undefined) {
             // Does this attribute exist at all?
             result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
         }
-        else if (not) {
-            test = evaluateFormula(not);
-            result.passed = (test === 'false') || (test === '') || (test === null);
+        else if (not !== undefined) {
+            result.passed = (not === 'false') || (not === '') || (not === null);
         }
-        else if (test) {
-            test = textFromContext(test);
+        else if (test !== undefined) {
+            var testTok = elementSourceOffseter(src, 'test');
             var value = void 0;
-            if (value = src.getAttributeNS('', 'eq')) { // equality
-                result.passed = test == cloneText(value);
+            if (value = evaluateAttribute(src, 'eq', false, false)) {
+                result.passed = test === value; // REVIEW: no casting of either
             }
-            else if (value = src.getAttributeNS('', 'ne')) { // not-equals
-                result.passed = test != cloneText(value);
+            else if (value = evaluateAttribute(src, 'ne', false, false)) { // not-equals
+                result.passed = test !== value; // REVIEW: no casting of either
             }
-            else if (value = src.getAttributeNS('', 'lt')) { // less-than
-                result.passed = parseFloat(test) < parseFloat(cloneText(value));
+            else if (value = evaluateAttribute(src, 'lt', false, false)) { // less-than
+                result.passed = makeFloat(test, testTok) < makeFloat(value, elementSourceOffseter(src, 'lt'));
             }
-            else if (value = src.getAttributeNS('', 'le')) { // less-than or equals
-                result.passed = parseFloat(test) <= parseFloat(cloneText(value));
+            else if (value = evaluateAttribute(src, 'le', false, false)) { // less-than or equals
+                result.passed = makeFloat(test, testTok) <= makeFloat(value, elementSourceOffseter(src, 'le'));
             }
-            else if (value = src.getAttributeNS('', 'gt')) { // greater-than
-                result.passed = parseFloat(test) > parseFloat(cloneText(value));
+            else if (value = evaluateAttribute(src, 'gt', false, false)) { // greater-than
+                result.passed = makeFloat(test, testTok) > makeFloat(value, elementSourceOffseter(src, 'gt'));
             }
-            else if (value = src.getAttributeNS('', 'ge')) { // greater-than or equals
-                result.passed = parseFloat(test) >= parseFloat(cloneText(value));
+            else if (value = evaluateAttribute(src, 'ge', false, false)) { // greater-than or equals
+                result.passed = makeFloat(test, testTok) >= makeFloat(value, elementSourceOffseter(src, 'ge'));
             }
-            else if (value = src.getAttributeNS('', 'in')) { // string contains
-                result.passed = cloneText(value).indexOf(test) >= 0;
+            else if (value = evaluateAttribute(src, 'in', false, false)) { // string contains
+                if (Array.isArray(value)) {
+                    result.passed = value.indexOf(test) >= 0;
+                }
+                else if (typeof (value) === 'string') {
+                    result.passed = value.indexOf(test) >= 0;
+                }
+                else if (typeof (value) === 'object') {
+                    result.passed = test in value;
+                }
+                else {
+                    throw new ContextError(typeof (value) + " value does not support 'in' queries", elementSourceOffset(src, 'in'));
+                }
             }
-            else if (value = src.getAttributeNS('', 'ni')) { // string doesn't contain
-                result.passed = cloneText(value).indexOf(test) < 0;
+            else if (value = evaluateAttribute(src, 'ni', false, false)) { // string doesn't contain
+                if (Array.isArray(value)) {
+                    result.passed = value.indexOf(test) < 0;
+                }
+                else if (typeof (value) === 'string') {
+                    result.passed = value.indexOf(test) < 0;
+                }
+                else if (typeof (value) === 'object') {
+                    result.passed = !(test in value);
+                }
+                else {
+                    throw new ContextError(typeof (value) + " value does not support 'not-in' queries", elementSourceOffset(src, 'in'));
+                }
             }
-            else if (value = src.getAttributeNS('', 'regex')) { // regular expression
+            else if (value = evaluateAttribute(src, 'regex', false, false)) { // regular expression
                 var re = new RegExp(value);
                 result.passed = re.test(test);
             }
@@ -8499,11 +8795,11 @@ function startIfBlock(src, result) {
             }
         }
         else {
-            throw new BuildHtmlError('<' + src.localName + '> elements must have an evaluating attribute: test, not, exists, or notex', src);
+            throw new ContextError('<' + src.localName + '> elements must have an evaluating attribute: test, not, exists, or notex');
         }
     }
     catch (ex) {
-        throw new BuildTagError('startIfBlock', src, ex);
+        throw wrapContextError(ex, 'startIfBlock', elementSourceOffset(src));
     }
     if (result.passed) {
         return expandContents(src);
@@ -8688,10 +8984,10 @@ function useTemplate(node, tempId) {
         if (tempId) {
             var template = getTemplate(tempId);
             if (!template) {
-                throw new Error('Template not found: ' + tempId);
+                throw new ContextError('Template not found: ' + tempId, elementSourceOffset(node, 'template'));
             }
             if (!template.content) {
-                throw new Error('Invalid template: ' + tempId);
+                throw new ContextError('Invalid template (no content): ' + tempId, elementSourceOffset(node, 'template'));
             }
             // The template doesn't have any child nodes. Its content must first be cloned.
             var clone = template.content.cloneNode(true);
@@ -8703,7 +8999,7 @@ function useTemplate(node, tempId) {
         popBuilderContext();
     }
     catch (ex) {
-        throw new BuildTagError('useTemplage', node, ex);
+        throw wrapContextError(ex, 'useTemplate', elementSourceOffset(node));
     }
     return dest;
 }
@@ -9041,7 +9337,7 @@ var outerGapTag = { len: 1, tag: '' };
 * @param stampList
 */
 function validateColorPBN(target, table, stampList) {
-    var stampTools = globalContextData(stampList);
+    var stampTools = valueFromGlobalContext(stampList);
     var pos = target.id.split('_');
     var row = parseInt(pos[0]);
     var col = parseInt(pos[1]);
