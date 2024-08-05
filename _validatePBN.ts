@@ -1,4 +1,4 @@
-import { evaluateFormula, globalContextData, theBoilerContext } from "./_builderContext";
+import { evaluateFormula, valueFromGlobalContext, theBoilerContext } from "./_builderContext";
 import { findParentOfClass, getOptionalStyle, hasClass, toggleClass } from "./_classUtil";
 import { StampToolDetails } from "./_stampTools";
 
@@ -236,7 +236,7 @@ const outerGapTag:linearTag = {len: 1, tag: ''};
 * @param stampList
 */
 function validateColorPBN(target:HTMLElement, table:HTMLElement, stampList:string) {
-  const stampTools = globalContextData(stampList) as StampToolDetails[];
+  const stampTools = valueFromGlobalContext(stampList) as StampToolDetails[];
 
   let pos = target.id.split('_');
   const row = parseInt(pos[0]);

@@ -12,6 +12,7 @@ import { setupValidation } from "./_confirmation";
 import { expandControlTags } from "./_builder";
 import { LinkDetails, getSafariDetails, initSafariDetails } from "./_events";
 import { diffSummarys, LayoutSummary, renderDiffs, summarizePageLayout } from "./_testUtils";
+import { wrapContextError } from "./_contextError";
 
 
 /**
@@ -317,6 +318,7 @@ function boilerplate(bp: BoilerPlateData) {
     if (!bp) {
         return;
     }
+    _boiler = bp;
 
     preSetup(bp)
 
@@ -354,7 +356,13 @@ function boilerplate(bp: BoilerPlateData) {
      */
 
     if (bp.reactiveBuilder) {
-        expandControlTags();
+        try {
+            expandControlTags();
+        }
+        catch (ex) {
+            const ctx = wrapContextError(ex);
+            throw ctx;
+        }
     }
 
     if (bp.tableBuilder) {

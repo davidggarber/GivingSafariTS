@@ -325,6 +325,9 @@ test('complexAttribute', () => {
   // Context value, concatenated with text
   testComplexAttribute("{num}-num", "1234-num");
 
+  // Operator with whitespace
+  testComplexAttribute("{num + 2}", 1236);
+
   // Object value by name
   testComplexAttribute("{pt.x}", 3);
 

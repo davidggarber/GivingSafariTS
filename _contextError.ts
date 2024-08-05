@@ -1,3 +1,4 @@
+import { off } from "process";
 import { _rawHtmlSource } from "./_boilerplate";
 
 export type SourceOffset = {
@@ -22,62 +23,32 @@ export class ContextError extends Error {
    * @param source Indicates which source text specifically triggered this error
    * @param inner The inner/causal error, if any
    */
-  constructor(msg: string, source?:SourceOffset, inner?:Error) {
+  constructor(msg: string, source?:SourceOffsetable, inner?:Error) {
     super(msg);
     this.name = 'ContextError';
     this.cause = inner;
-    this.elementStack = [];
     this.functionStack = [];
     this.sourceStack = [];
+    this.callStack = '';
 
     if (source) {
-      this.sourceStack.push(source);
+      if (typeof(source) == 'function') {
+        this.sourceStack.push(source());
+      }
+      else {
+        this.sourceStack.push(source);
+      }
     }
   }
 
-  toString(): string {
-    const msg = 'ContextError: ' + this.message;
-    let str = msg;
+  _cacheCallstack():void {
+    if (this.callStack === '') {
+      this.callStack = this.cause ? this.cause.stack : this.stack;
 
-    if (this.sourceStack.length > 0) {
-      for (let i = 0; i < this.sourceStack.length; i++) {
-        const c = this.sourceStack[i];
-        str += '\n' + c.source;
-        if (c.offset !== undefined) {
-          str += '\n' + Array(c.offset + 1).join(' ') + '^';
-          if (c.length && c.length > 1) {
-            str += Array(c.length).join('^');
-          }
-        }
+      if (this.callStack?.substring(0, this.message.length) == this.message) {
+        this.callStack = this.callStack.substring(this.message.length);  // REVIEW: trim \n ?
       }
     }
-
-    if (this.callStack) {
-      if (this.callStack.substring(0, msg.length) == msg) {
-        this.callStack = this.callStack.substring(msg.length).trimStart();
-      }
-      str += '\n' + this.callStack;
-    }
-
-    if (this.cause) {
-      str += '\nCaused by: ' + this.cause;
-    }
-
-    if (this.elementStack.length > 0) {
-      str += "\nSource page's element stack:";
-      for (let i = 0; i < this.elementStack.length; i++) {
-        str += ' ' + tagWithAttrs(this.elementStack[i]);
-      }
-    }
-
-    // if (this.functionStack.length > 0) {
-    //   str += "\nBuild functions stack:";
-    //   for (let i = 0; i < this.functionStack.length; i++) {
-    //     str += '\n    ' + this.functionStack[i];
-    //   }
-    // }
-
-    return str;
   }
 }
 
@@ -87,26 +58,20 @@ export class ContextError extends Error {
  * @returns true if it is a ContextError
  */
 export function isContextError(err:Error|ContextError): err is ContextError {
-  return err instanceof ContextError;
+  //return err instanceof ContextError;
+  return err.name === 'ContextError';
 }
 
 /**
- * Recreate the start tag for this element, without including its children/contents
- * @param elmt Any HTML element
- * @returns A <tag with='attributes'>
+ * Instead of creating a source offset every time, anticipating an exception
+ * that rarely gets thrown, instead pass a lambda.
  */
-function tagWithAttrs(elmt:Element): string {
-  let str = '<' + elmt.localName;
-  for (let i = 0; i < elmt.attributes.length; i++) {
-    str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
-  }
-  if (elmt.childNodes.length == 0) {
-    str += ' /';  // show as empty tag
-  }
-  str += '>';  // close tag
-  return str;
-}
+type SourceOffseter = () => SourceOffset;
 
+/**
+ * Methods generally take either flavor: SourceOffset or SourceOffseter
+ */
+export type SourceOffsetable = SourceOffset|SourceOffseter;
 
 /**
  * Add additional information to a context error.
@@ -117,28 +82,123 @@ function tagWithAttrs(elmt:Element): string {
  * @returns If inner is already a ContextError, returns inner, but now augmented.
  * Otherwise creates a new ContextError that wraps inner.
  */
-export function wrapContextError(inner:Error, func?:string, elmt?:Element, src?:SourceOffset) {
+export function wrapContextError(inner:Error, func?:string, src?:SourceOffsetable) {
   let ctxErr:ContextError;
   if (isContextError(inner)) {
     ctxErr = inner as ContextError;
-    // Cache this callstack, in case re-throwing changes it
-    ctxErr.callStack = inner.stack
   }
   else {
     ctxErr = new ContextError(inner.name + ': ' + inner.message, undefined, inner);
   }
 
-  const cerr = inner as ContextError;
-  if (elmt) {
-    ctxErr.elementStack.push(elmt);
+  // Cache callstack
+  if (ctxErr.callStack === '') {
+    ctxErr.callStack = ctxErr.cause ? ctxErr.cause.stack : ctxErr.stack;
+
+    if (ctxErr.callStack?.substring(0, ctxErr.message.length) == ctxErr.message) {
+      ctxErr.callStack = ctxErr.callStack.substring(ctxErr.message.length);  // REVIEW: trim \n ?
+    }
   }
+
   if (func) {
     ctxErr.functionStack.push(func);
   }
   if (src) {
+    if (typeof(src) == 'function') {
+      src = src() as SourceOffset;
+    }
     ctxErr.sourceStack.push(src);
   }
+
+  makeBetterStack(ctxErr);
+
   return ctxErr;
+}
+
+/**
+ * Once we've added context to the exception, update the stack to reflect it
+ */
+function makeBetterStack(err:ContextError):void {
+  const msg = 'ContextError: ' + err.message;
+  let str = msg;
+
+  if (err.sourceStack.length > 0) {
+    for (let i = 0; i < err.sourceStack.length; i++) {
+      const c = err.sourceStack[i];
+      str += '\n' + c.source;
+      if (c.offset !== undefined) {
+        str += '\n' + Array(c.offset + 1).join(' ') + '^';
+        if (c.length && c.length > 1) {
+          str += Array(c.length).join('^');
+        }
+      }
+    }
+  }
+
+  if (err.callStack) {
+    str += '\n' + err.callStack;
+  }
+
+  if (err.cause) {
+    str += '\nCaused by: ' + err.cause;
+  }
+
+  // if (err.functionStack.length > 0) {
+  //   str += "\nBuild functions stack:";
+  //   for (let i = 0; i < err.functionStack.length; i++) {
+  //     str += '\n    ' + err.functionStack[i];
+  //   }
+  // }
+
+  err.stack = str;
+}
+
+/**
+ * Recreate the source for a tag. Then pinpoint the offset of a desired attribute.
+ * @param elmt An HTML tag
+ * @param attr A specific attribute, whose value is being evaluated.
+ * @returns A source offset, built on the recreation
+ */
+export function elementSourceOffset(elmt:Element, attr?:string):SourceOffset {
+  let str = '<' + elmt.localName;
+  let offset = 0;
+  let length = 0;
+
+  for (let i = 0; i < elmt.attributes.length; i++) {
+    const name = elmt.attributes[i].name;
+    const value = elmt.attributes[i].value;
+    if (name === attr) {
+      offset = str.length + name.length + 3; // The start of the value
+      length = value.length;
+    }
+    str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
+  }
+
+  if (attr && offset == 0) {
+    // Never found the attribute we needed. Highlight the element name
+    offset = 1;
+    length = elmt.localName.length;
+  }
+
+  if (elmt.childNodes.length == 0) {
+    str += ' /';  // show as empty tag
+  }
+  str += '>';  // close tag
+  
+  if (offset == 0) {
+    length = str.length;  // Full tag
+  }
+
+  const tok:SourceOffset = { source: str, offset: offset, length: length };
+  return tok;
+}
+
+/**
+ * Instead of creating a source offset every time, anticipating an exception
+ * that rarely gets thrown, instead pass a lambda.
+ */
+export function elementSourceOffseter(elmt:Element, attr?:string): SourceOffseter {
+  return () => { return elementSourceOffset(elmt, attr); };
 }
 
 /**

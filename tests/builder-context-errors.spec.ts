@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { tokenizeText, testBuilderContext, tokenizeFormula, treeifyFormula, evaluateFormula, cloneText } from '../_builderContext';
-import { SourceOffset, ContextError, isContextError } from '../_contextError';
+import { SourceOffset, ContextError, isContextError, wrapContextError } from '../_contextError';
 
 test.beforeEach(() => {
   expect(testBuilderContext({
@@ -32,10 +32,9 @@ function catchTokenizeText(raw:string):SourceOffset|null {
     return null;
   }
   catch (ex) {
-    if (isContextError(ex)) {
-      return (ex as ContextError).sourceStack[0];
-    }
-    return null;
+    const ctx = wrapContextError(ex);
+    // console.log(ctx);  // Uncomment to visually verify
+    return (ctx as ContextError).sourceStack[0];
   }
 }
 
@@ -57,12 +56,9 @@ function catchTreeify(raw:string):SourceOffset|null {
     return null;
   }
   catch (ex) {
-    if (isContextError(ex)) {
-      // console.log(raw);
-      // console.log(ex.toString());  // Uncomment to visually verify
-      return (ex as ContextError).sourceStack[0];
-    }
-    return null;
+    const ctx = wrapContextError(ex);
+    // console.log(ctx);  // Uncomment to visually verify
+    return (ctx as ContextError).sourceStack[0];
   }
 }
 
@@ -107,12 +103,9 @@ function catchEvaluate(raw:string):SourceOffset|null {
     return null;
   }
   catch (ex) {
-    if (isContextError(ex)) {
-      // console.log(raw);
-      // console.log(ex.toString());  // Uncomment to visually verify
-      return (ex as ContextError).sourceStack[0];
-    }
-    return null;
+    const ctx = wrapContextError(ex);
+    // console.log(ctx);  // Uncomment to visually verify
+    return (ctx as ContextError).sourceStack[0];
   }
 }
 
@@ -137,12 +130,9 @@ function catchCloneText(raw:string):SourceOffset|null {
     return null;
   }
   catch (ex) {
-    if (isContextError(ex)) {
-      // console.log(raw);
-      console.log(ex.toString());  // Uncomment to visually verify
-      return (ex as ContextError).sourceStack[0];
-    }
-    return null;
+    const ctx = wrapContextError(ex);
+    // console.log(ctx);  // Uncomment to visually verify
+    return (ctx as ContextError).sourceStack[0];
   }
 }
 

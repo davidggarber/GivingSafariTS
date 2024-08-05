@@ -61,18 +61,18 @@
             </ttr>
             <use template="echo" eval="plaintext" expected="plaintext" comment="plain text can be passed as an argument"></use>
             <use template="echo" eval="sentence" expected="sentence" comment="arguments that happen to look like variable names can still be plain text"></use>
-            <use template="echo" eval="{sentence}" expected="For those about to rock, we salute you!" comment="use \{curly braces\} to lookup values in the 'builderLookup' data"></use>
+            <use template="echo" eval="{sentence}" expected="For those about to rock, we salute you!" comment="use `{curly braces`} to lookup values in the 'builderLookup' data"></use>
             <use template="echo" eval="{code}" expected="31415" comment=""></use>
             <use template="echo" eval="{code + 2}" expected="31417" comment=""></use>
             <use template="echo" eval="{name}" expected="Fred" comment="Simple string variable"></use>
             <use template="echo" eval="{team.0}" expected="Velma" comment="Dot notation to index into a list. In this case, the 0th item"></use>
             <use template="echo" eval="{2+3}" expected="5" comment="Simple addition"></use>
-            <use template="echo" eval="{team.[third]}" expected="Shaggy" comment="Square brackets needed, because third is not a named member of team, but rather a variable for 2."></use>
+            <use template="echo" eval="{team.[:third]}" expected="Shaggy" comment="Square brackets needed, because third is not a named member of team, but rather a variable for 2."></use>
             <use template="echo" eval="{team.[2]}" expected="Shaggy" comment="[third] is converted to '2'. Then team.[2] is converted to team.2"></use>
             <use template="echo" eval="{obj.inner.value}" expected="nested" comment="Dot notation to step into objects"></use>
             <use template="echo" eval="{obj.inner}" expected="[object Object]" comment="Passing objects is legal, but in this case the callee is expecting text"></use>
-            <use template="echo" eval="{obj.inner.[value]}" expected="nested" comment="Because 'value' is not a variable, it is interpreted as plaintext. As plaintext, it is a valid child member name."></use>
-            <use template="echo" eval="{obj.inner.[name]}" expected="Flintstone" comment="'name' is a variable, so this becomes obj.inner.Fred"></use>
+            <use template="echo" eval="{obj.inner.value}" expected="nested" comment="Because 'value' is not a variable, it is interpreted as plaintext. As plaintext, it is a valid child member name."></use>
+            <use template="echo" eval="{obj.inner.:name}" expected="Flintstone" comment="'name' is a variable, so this becomes obj.inner.Fred"></use>
           </ttable>
         </build>
 

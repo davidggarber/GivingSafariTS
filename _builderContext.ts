@@ -1,7 +1,6 @@
-import { isNumberObject } from "util/types";
 import { theBoiler } from "./_boilerplate";
 import { getTrimMode, normalizeName, TrimMode } from "./_builder";
-import { SourceOffset, ContextError, wrapContextError, CodeError } from "./_contextError";
+import { SourceOffset, ContextError, wrapContextError, CodeError, elementSourceOffset, SourceOffsetable } from "./_contextError";
 
 /**
  * The root context for all builder functions
@@ -74,9 +73,8 @@ export function valueFromContext(key:string, maybe?:boolean):any {
  * @returns Any JSON object
  */
 export function valueFromGlobalContext(path:string, maybe?:boolean):any {
-  const context = theBoilerContext();
   if (path) {
-    return getKeyedChild(context, path, undefined, maybe);
+    return getKeyedChild(null, path, undefined, maybe);
   }
   return undefined;
 }
@@ -88,10 +86,10 @@ export function valueFromGlobalContext(path:string, maybe?:boolean):any {
  * @param context A dictionary of all accessible values
  */
 export function cloneAttributes(src:Element, dest:Element) {
-  try {
-    for (let i = 0; i < src.attributes.length; i++) {
-      const name = normalizeName(src.attributes[i].name);
-      let value = src.attributes[i].value;
+  for (let i = 0; i < src.attributes.length; i++) {
+    const name = normalizeName(src.attributes[i].name);
+    let value = src.attributes[i].value;
+    try {
       value = cloneText(value);
       if (name == 'id') {
         dest.id = value;
@@ -111,9 +109,9 @@ export function cloneAttributes(src:Element, dest:Element) {
         dest.setAttributeNS('', name, value);
       }
     }
-  }
-  catch (ex) {
-    throw wrapContextError(ex, 'cloneAttributes', src);
+    catch (ex) {
+      throw wrapContextError(ex, 'cloneAttributes', elementSourceOffset(src, name));
+    }
   }
 }
 
@@ -186,7 +184,7 @@ export function complexAttribute(str:string, trim:TrimMode = TrimMode.off):any {
         buffer += makeString(complex, list[i]);          
       }
       catch (ex) {
-        throw wrapContextError(ex, 'complexAttribute', undefined, list[i]);
+        throw wrapContextError(ex, 'complexAttribute', list[i]);
       }
     }
   }
@@ -464,7 +462,7 @@ export class FormulaNode {
         return result;
       }
       catch (ex) {
-        throw wrapContextError(ex, 'evaluate:binary', undefined, this.span);
+        throw wrapContextError(ex, 'evaluate:binary', this.span);
       }
     }
     else if (this.right) {
@@ -482,7 +480,7 @@ export class FormulaNode {
         return result;
       }
       catch (ex) {
-        throw wrapContextError(ex, 'evaluate:unary', undefined, this.span);
+        throw wrapContextError(ex, 'evaluate:unary', this.span);
       }
     }
     else if (this.bracket === '\"' || this.bracket === '\'') {
@@ -512,7 +510,7 @@ export class FormulaNode {
  * @returns true if, once trimmed, it's a well-formed integer
  */
 function isIntegerRegex(str:string):boolean {
-  return /^-?\d+$/.test(str.trim());
+  return /^\s*-?\d+\s*$/.test(str);
 }
 
 /**
@@ -707,13 +705,41 @@ export function evaluateFormula(str:string|null):any {
   }
   try {
     const tokens = tokenizeFormula(str);
-    // const node = buildFormulaNodeTree(tokens);
     const node = treeifyFormula(tokens);
     return node.evaluate(true);  
   }
   catch (ex) {
     throw wrapContextError(ex, 'evaluateFormula');
   }
+}
+
+/**
+ * Evaluate a single attribute of an HTML element
+ * @param elmt The HTML element
+ * @param attr The name of the attribute
+ * @param implicitFormula Whether the contents of the attribute require {} to indicate a formula
+ * @param required Whether the attribute is required, in which case it will throw if not present. 
+ * Otherwise it would return undefined
+ * @returns Any data type
+ */
+export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boolean, required?:boolean) {
+  const val = elmt.getAttributeNS('', attr);
+  if (!val) {
+    if (required === false) {  // true by default
+      return undefined;
+    }
+    throw new ContextError('Missing required attribute: ' + attr, elementSourceOffset(elmt));
+  }
+  try {
+    if (implicitFormula) {
+      return evaluateFormula(val);
+    }
+    return complexAttribute(val);
+  }
+  catch (ex) {
+    throw wrapContextError(ex, undefined, elementSourceOffset(elmt, attr));
+  }
+
 }
 
 /* Context formula syntax has several components that need to play nicely with each other.
@@ -772,7 +798,7 @@ function isBracketChar(ch:string):boolean {
  * @param tok The source offset, if caller knows it
  * @returns The float equivalent
  */
-function makeFloat(a:any, tok?:SourceOffset):number {
+export function makeFloat(a:any, tok?:SourceOffsetable):number {
   const f = parseFloat(a);
   if (Number.isNaN(f)) {
     throw new ContextError('Not a number: ' + JSON.stringify(a), tok);
@@ -781,20 +807,38 @@ function makeFloat(a:any, tok?:SourceOffset):number {
 }
 
 /**
+ * Convert any type to an integer, or throw in broken cases.
+ * @param a Any data, but hopefully an int
+ * @param tok The source offset, if caller knows it
+ * @returns The int equivalent
+ */
+export function makeInt(a:any, tok?:SourceOffsetable):number {
+  if (typeof(a) == 'number') {
+    if (Math.trunc(a) == a) {
+      return a;
+    }
+  }
+  else if (isIntegerRegex('' + a)) {
+    return parseInt(a);
+  }
+  throw new ContextError('Not an integer: ' + a, tok);
+}
+
+/**
  * Convert any type to string, or throw in broken cases.
  * @param a Any data, but hopefully string-friendly
  * @param tok The source offset, if caller knows it
  * @returns The string equivalent
  */
-function makeString(a:any, tok?:SourceOffset):string {
+export function makeString(a:any, tok?:SourceOffsetable):string {
   if (a === undefined || a === null || typeof(a) == 'object') {
     throw new ContextError('Bad cast to string: ' + JSON.stringify(a), tok);
   }
   return String(a);
 }
 
-type UnaryOperator = (a:any,aa?:SourceOffset) => any;
-type BinaryOperator = (a:any,b:any,aa?:SourceOffset,bb?:SourceOffset) => any;
+type UnaryOperator = (a:any,aa?:SourceOffsetable) => any;
+type BinaryOperator = (a:any,b:any,aa?:SourceOffsetable,bb?:SourceOffsetable) => any;
 
 type OperatorInfo = {
   raw: string;
@@ -1152,19 +1196,21 @@ export function textFromContext(key:string|null):string {
  * @param maybe If true, and key does not work, return ''. If false/omitted, throw on bad keys.
  * @returns A child object, or a substring
  */
-function getKeyedChild(parent:any, key:string, kTok?:SourceOffset, maybe?:boolean):any {
+function getKeyedChild(parent:any, key:any, kTok?:SourceOffsetable, maybe?:boolean):any {
   if (parent === null) {
     parent = theBoilerContext();
   }
 
+  let index:number|undefined = undefined;
+  if (typeof(key) == 'number') {
+    index = key;
+  }
+  else if (isIntegerRegex('' + key)) {
+    index = parseInt('' + key);
+  }
+
   if (typeof(parent) == 'string') {
-    let index:number|undefined = undefined;
-    if (typeof(key) == 'number') {
-      index = key;
-    }
-    else if (isIntegerRegex('' + key)) {
-      index = parseInt('' + key);
-    }
+    // If the parent is a string, the only key we support is a character index
     if (index !== undefined) {
       if (index < 0 || index >= (parent as string).length) {
         if (maybe) {
@@ -1174,8 +1220,21 @@ function getKeyedChild(parent:any, key:string, kTok?:SourceOffset, maybe?:boolea
       }
       return (parent as string)[index];
     }
+    throw new ContextError('Named fields are only available on objects: ' + key + ' in ' + JSON.stringify(parent), kTok);
   }
 
+  if (index !== undefined && Array.isArray(parent)) {
+    // Indexing into a list. Objects with keys that looks like numbers is handled below.
+    if (index < 0 || index >= parent.length) {
+      if (maybe) {
+        return '';
+      }
+      throw new ContextError('Index out of range: ' + index + ' in ' + parent, kTok);
+    }
+    return parent[index];
+  }
+
+  // Named members of objects
   const trimmed = simpleTrim(key);
   if (!(trimmed in parent)) {
     if (maybe) {

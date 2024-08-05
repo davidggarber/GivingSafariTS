@@ -1,6 +1,7 @@
 import { expandContents } from "./_builder";
 import { cloneText, complexAttribute, popBuilderContext, pushBuilderContext } from "./_builderContext";
 import { BuildTagError } from "./_builderError";
+import { ContextError, elementSourceOffset, wrapContextError } from "./_contextError";
 import { getTemplate } from "./_templates";
 
 type TemplateArg = {
@@ -61,10 +62,10 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
     if (tempId) {
       const template = getTemplate(tempId);
       if (!template) {
-        throw new Error('Template not found: ' + tempId);
+        throw new ContextError('Template not found: ' + tempId, elementSourceOffset(node, 'template'));
       }
       if (!template.content) {
-        throw new Error('Invalid template: ' + tempId);
+        throw new ContextError('Invalid template (no content): ' + tempId, elementSourceOffset(node, 'template'));
       }
       // The template doesn't have any child nodes. Its content must first be cloned.
       const clone = template.content.cloneNode(true) as HTMLElement;
@@ -76,7 +77,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
     popBuilderContext();
   }
   catch (ex) {
-    throw new BuildTagError('useTemplage', node, ex);
+    throw wrapContextError(ex, 'useTemplate', elementSourceOffset(node));
   }
 
   return dest;
