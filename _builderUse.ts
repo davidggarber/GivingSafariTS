@@ -24,14 +24,14 @@ type TemplateArg = {
 export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   let dest:Node[] = [];
   
-  try {
-    // We need to build the values to push onto the context, without changing the current context.
-    // Do all the evaluations first, and cache them.
-    const passed_args:TemplateArg[] = [];
-    for (let i = 0; i < node.attributes.length; i++) {
-      const attr = node.attributes[i].name;
-      const val = node.attributes[i].value;
-      const attri = attr.toLowerCase();
+  // We need to build the values to push onto the context, without changing the current context.
+  // Do all the evaluations first, and cache them.
+  const passed_args:TemplateArg[] = [];
+  for (let i = 0; i < node.attributes.length; i++) {
+    const attr = node.attributes[i].name;
+    const val = node.attributes[i].value;
+    const attri = attr.toLowerCase();
+    try {
       if (attri != 'template' && attri != 'class') {
         const arg:TemplateArg = {
           attr: attr,
@@ -42,7 +42,12 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
         passed_args.push(arg);
       }
     }
+    catch (ex) {
+      throw wrapContextError(ex, 'useTemplate', elementSourceOffset(node, attr));
+    }
+  }
 
+  try {
     // Push a new context for inside the <use>.
     // Each passed arg generates 3 usable context entries:
     //  arg = 'text'          the attribute, evaluated as text

@@ -361,7 +361,8 @@ function boilerplate(bp: BoilerPlateData) {
         }
         catch (ex) {
             const ctx = wrapContextError(ex);
-            throw ctx;
+            // Rethrow in 1 second, to let the rest of the boilerplate finish
+            setTimeout(() => { throw ctx; }, 1000);
         }
     }
 

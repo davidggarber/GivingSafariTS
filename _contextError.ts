@@ -154,6 +154,20 @@ function makeBetterStack(err:ContextError):void {
   err.stack = str;
 }
 
+export function nodeSourceOffset(node:Node):SourceOffset {
+  if (node.nodeType == Node.ELEMENT_NODE) {
+    return elementSourceOffset(node as Element)
+  }
+  else {
+    const tok:SourceOffset = {
+      source: node.nodeValue || '',  // for text elements, same as textContent
+      offset: 0,
+      length: 1,  // No need to span the whole
+    }
+    return tok;
+  }
+}
+
 /**
  * Recreate the source for a tag. Then pinpoint the offset of a desired attribute.
  * @param elmt An HTML tag

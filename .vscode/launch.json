@@ -7,6 +7,15 @@
     {
       "type": "msedge",
       "request": "launch",
+      "name": "Launch w/o compiling",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "url": "${workspaceFolder}\\Docs\\context.html",
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
       "name": "Launch Browser",
       "skipFiles": [
         "<node_internals>/**"

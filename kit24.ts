@@ -6503,7 +6503,8 @@ function boilerplate(bp: BoilerPlateData) {
         }
         catch (ex) {
             const ctx = wrapContextError(ex);
-            throw ctx;
+            // Rethrow in 1 second, to let the rest of the boilerplate finish
+            setTimeout(() => { throw ctx; }, 1000);
         }
     }
 
@@ -7582,6 +7583,20 @@ function makeBetterStack(err:ContextError):void {
   err.stack = str;
 }
 
+export function nodeSourceOffset(node:Node):SourceOffset {
+  if (node.nodeType == Node.ELEMENT_NODE) {
+    return elementSourceOffset(node as Element)
+  }
+  else {
+    const tok:SourceOffset = {
+      source: node.nodeValue || '',  // for text elements, same as textContent
+      offset: 0,
+      length: 1,  // No need to span the whole
+    }
+    return tok;
+  }
+}
+
 /**
  * Recreate the source for a tag. Then pinpoint the offset of a desired attribute.
  * @param elmt An HTML tag
@@ -8151,7 +8166,7 @@ function cloneWithContext(elmt:HTMLElement):Element {
       }
     }
     catch (ex) {
-      throw wrapContextError(ex, "cloneWithContext", elementSourceOffset(elmt));
+      throw wrapContextError(ex, "cloneWithContext", nodeSourceOffset(child));
     }
     
   }
@@ -9894,14 +9909,14 @@ type TemplateArg = {
 export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   let dest:Node[] = [];
   
-  try {
-    // We need to build the values to push onto the context, without changing the current context.
-    // Do all the evaluations first, and cache them.
-    const passed_args:TemplateArg[] = [];
-    for (let i = 0; i < node.attributes.length; i++) {
-      const attr = node.attributes[i].name;
-      const val = node.attributes[i].value;
-      const attri = attr.toLowerCase();
+  // We need to build the values to push onto the context, without changing the current context.
+  // Do all the evaluations first, and cache them.
+  const passed_args:TemplateArg[] = [];
+  for (let i = 0; i < node.attributes.length; i++) {
+    const attr = node.attributes[i].name;
+    const val = node.attributes[i].value;
+    const attri = attr.toLowerCase();
+    try {
       if (attri != 'template' && attri != 'class') {
         const arg:TemplateArg = {
           attr: attr,
@@ -9912,7 +9927,12 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
         passed_args.push(arg);
       }
     }
+    catch (ex) {
+      throw wrapContextError(ex, 'useTemplate', elementSourceOffset(node, attr));
+    }
+  }
 
+  try {
     // Push a new context for inside the <use>.
     // Each passed arg generates 3 usable context entries:
     //  arg = 'text'          the attribute, evaluated as text

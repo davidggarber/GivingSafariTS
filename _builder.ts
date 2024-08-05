@@ -5,7 +5,7 @@ import { ifResult, startIfBlock } from "./_builderIf";
 import { inputAreaTagNames, startInputArea } from "./_builderInput";
 import { useTemplate } from "./_builderUse";
 import { findParentOfTag, hasClass, isTag, toggleClass } from "./_classUtil";
-import { ContextError, elementSourceOffset, wrapContextError } from "./_contextError";
+import { ContextError, elementSourceOffset, nodeSourceOffset, wrapContextError } from "./_contextError";
 import { svg_xmlns } from "./_tableBuilder";
 
 /****************************************************************************
@@ -513,7 +513,7 @@ function cloneWithContext(elmt:HTMLElement):Element {
       }
     }
     catch (ex) {
-      throw wrapContextError(ex, "cloneWithContext", elementSourceOffset(elmt));
+      throw wrapContextError(ex, "cloneWithContext", nodeSourceOffset(child));
     }
     
   }

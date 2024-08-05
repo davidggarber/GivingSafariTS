@@ -2,26 +2,158 @@
 /************************************************************
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
-exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.getTrimMode = exports.TrimMode = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = void 0;
+exports.inputAreaTagNames = exports.FormulaNode = exports.TrimMode = exports.CodeError = exports.ContextError = exports._rawHtmlSource = exports.EdgeTypes = exports.PuzzleStatus = exports.svg_xmlns = void 0;
+exports.toggleClass = toggleClass;
+exports.hasClass = hasClass;
+exports.applyAllClasses = applyAllClasses;
+exports.clearAllClasses = clearAllClasses;
+exports.findNextOfClass = findNextOfClass;
+exports.indexInContainer = indexInContainer;
+exports.childAtIndex = childAtIndex;
+exports.findInNextContainer = findInNextContainer;
+exports.findEndInContainer = findEndInContainer;
+exports.isTag = isTag;
+exports.findParentOfClass = findParentOfClass;
+exports.isSelfOrParent = isSelfOrParent;
+exports.findParentOfTag = findParentOfTag;
+exports.findFirstChildOfClass = findFirstChildOfClass;
+exports.findNthChildOfClass = findNthChildOfClass;
+exports.siblingIndexOfClass = siblingIndexOfClass;
+exports.getOptionalStyle = getOptionalStyle;
+exports.getOptionalContext = getOptionalContext;
+exports.getAllElementsWithAttribute = getAllElementsWithAttribute;
+exports.moveFocus = moveFocus;
+exports.SortElements = SortElements;
+exports.newTR = newTR;
+exports.constructTable = constructTable;
+exports.constructSvgTextCell = constructSvgTextCell;
+exports.constructSvgImageCell = constructSvgImageCell;
+exports.constructSvgStampable = constructSvgStampable;
+exports.setupNotes = setupNotes;
+exports.toggleNotes = toggleNotes;
+exports.setupCrossOffs = setupCrossOffs;
+exports.setupHighlights = setupHighlights;
+exports.toggleHighlight = toggleHighlight;
+exports.setupDecoderToggle = setupDecoderToggle;
+exports.toggleDecoder = toggleDecoder;
+exports.storageKey = storageKey;
+exports.checkLocalStorage = checkLocalStorage;
+exports.saveLetterLocally = saveLetterLocally;
+exports.saveWordLocally = saveWordLocally;
+exports.saveNoteLocally = saveNoteLocally;
+exports.saveCheckLocally = saveCheckLocally;
+exports.saveContainerLocally = saveContainerLocally;
+exports.savePositionLocally = savePositionLocally;
+exports.saveStampingLocally = saveStampingLocally;
+exports.saveHighlightLocally = saveHighlightLocally;
+exports.saveStraightEdge = saveStraightEdge;
+exports.saveGuessHistory = saveGuessHistory;
+exports.getGlobalIndex = getGlobalIndex;
+exports.findGlobalIndex = findGlobalIndex;
+exports.mapGlobalIndeces = mapGlobalIndeces;
+exports.indexAllInputFields = indexAllInputFields;
+exports.indexAllNoteFields = indexAllNoteFields;
+exports.indexAllCheckFields = indexAllCheckFields;
+exports.indexAllDragDropFields = indexAllDragDropFields;
+exports.indexAllDrawableFields = indexAllDrawableFields;
+exports.indexAllHighlightableFields = indexAllHighlightableFields;
+exports.indexAllVertices = indexAllVertices;
+exports.updatePuzzleList = updatePuzzleList;
+exports.getPuzzleStatus = getPuzzleStatus;
+exports.listPuzzlesOfStatus = listPuzzlesOfStatus;
+exports.resetAllPuzzleStatus = resetAllPuzzleStatus;
+exports.resetPuzzleProgress = resetPuzzleProgress;
+exports.getCurFileName = getCurFileName;
+exports.onLetterKeyDown = onLetterKeyDown;
+exports.onLetterKeyUp = onLetterKeyUp;
+exports.onLetterKey = onLetterKey;
+exports.afterInputUpdate = afterInputUpdate;
+exports.onWordKey = onWordKey;
+exports.updateWordExtraction = updateWordExtraction;
+exports.extractWordIndex = extractWordIndex;
+exports.onLetterChange = onLetterChange;
+exports.onWordChange = onWordChange;
+exports.autoCompleteWord = autoCompleteWord;
+exports.textSetup = textSetup;
+exports.getLetterStyles = getLetterStyles;
+exports.setupSubways = setupSubways;
+exports.positionFromStyle = positionFromStyle;
+exports.preprocessDragFunctions = preprocessDragFunctions;
+exports.initFreeDropZorder = initFreeDropZorder;
+exports.quickMove = quickMove;
+exports.quickFreeMove = quickFreeMove;
+exports.preprocessStampObjects = preprocessStampObjects;
+exports.getCurrentStampToolId = getCurrentStampToolId;
+exports.getStampParent = getStampParent;
+exports.doStamp = doStamp;
+exports.positionFromCenter = positionFromCenter;
+exports.distance2Mouse = distance2Mouse;
+exports.distance2 = distance2;
+exports.preprocessRulerFunctions = preprocessRulerFunctions;
+exports.getStraightEdgeType = getStraightEdgeType;
+exports.createFromVertexList = createFromVertexList;
+exports.clearAllStraightEdges = clearAllStraightEdges;
+exports.initSafariDetails = initSafariDetails;
+exports.getSafariDetails = getSafariDetails;
+exports.isDebug = isDebug;
+exports.isBodyDebug = isBodyDebug;
+exports.isIFrame = isIFrame;
+exports.isPrint = isPrint;
+exports.isIcon = isIcon;
+exports.isRestart = isRestart;
+exports.forceReload = forceReload;
+exports.addLink = addLink;
+exports.linkCss = linkCss;
+exports.theBoiler = theBoiler;
+exports.testBoilerplate = testBoilerplate;
+exports.setupValidation = setupValidation;
+exports.validateInputReady = validateInputReady;
+exports.decodeAndValidate = decodeAndValidate;
+exports.isContextError = isContextError;
+exports.wrapContextError = wrapContextError;
+exports.nodeSourceOffset = nodeSourceOffset;
+exports.elementSourceOffset = elementSourceOffset;
+exports.elementSourceOffseter = elementSourceOffseter;
+exports.getTrimMode = getTrimMode;
+exports.getBuilderParentIf = getBuilderParentIf;
+exports.getParentIf = getParentIf;
+exports.inSvgNamespace = inSvgNamespace;
+exports.expandControlTags = expandControlTags;
+exports.pushRange = pushRange;
+exports.appendRange = appendRange;
+exports.expandContents = expandContents;
+exports.normalizeName = normalizeName;
+exports.theBoilerContext = theBoilerContext;
+exports.getBuilderContext = getBuilderContext;
+exports.testBuilderContext = testBuilderContext;
+exports.pushBuilderContext = pushBuilderContext;
+exports.popBuilderContext = popBuilderContext;
+exports.valueFromContext = valueFromContext;
+exports.valueFromGlobalContext = valueFromGlobalContext;
+exports.cloneAttributes = cloneAttributes;
+exports.cloneTextNode = cloneTextNode;
+exports.cloneText = cloneText;
+exports.complexAttribute = complexAttribute;
+exports.tokenizeFormula = tokenizeFormula;
+exports.treeifyFormula = treeifyFormula;
+exports.evaluateFormula = evaluateFormula;
+exports.evaluateAttribute = evaluateAttribute;
+exports.makeFloat = makeFloat;
+exports.makeInt = makeInt;
+exports.makeString = makeString;
+exports.tokenizeText = tokenizeText;
+exports.keyExistsInContext = keyExistsInContext;
+exports.textFromContext = textFromContext;
+exports.startForLoop = startForLoop;
+exports.startIfBlock = startIfBlock;
+exports.startInputArea = startInputArea;
+exports.useTemplate = useTemplate;
+exports.getTemplate = getTemplate;
+exports.builtInTemplate = builtInTemplate;
+exports.summarizePageLayout = summarizePageLayout;
+exports.diffSummarys = diffSummarys;
+exports.renderDiffs = renderDiffs;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -35,7 +167,7 @@ function toggleClass(obj, cls, bool) {
     if (obj === null || obj === undefined || cls === null || cls === undefined) {
         return;
     }
-    var elmt;
+    let elmt;
     if ('string' === typeof obj) {
         elmt = document.getElementById(obj);
     }
@@ -57,7 +189,6 @@ function toggleClass(obj, cls, bool) {
         }
     }
 }
-exports.toggleClass = toggleClass;
 /**
  * Check if an HTML element is tagged with a given CSS class
  * @param obj - A page element, or id of an element
@@ -68,7 +199,7 @@ function hasClass(obj, cls) {
     if (obj === null || obj === undefined || cls === undefined) {
         return false;
     }
-    var elmt;
+    let elmt;
     if ('string' === typeof obj) {
         elmt = document.getElementById(obj);
     }
@@ -79,7 +210,6 @@ function hasClass(obj, cls) {
         && elmt.classList !== null
         && elmt.classList.contains(cls);
 }
-exports.hasClass = hasClass;
 /**
  * Apply all classes in a list of classes.
  * @param obj - A page element, or id of an element
@@ -87,12 +217,10 @@ exports.hasClass = hasClass;
  */
 function applyAllClasses(obj, classes) {
     var list = classes.split(' ');
-    for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
-        var cls = list_1[_i];
+    for (let cls of list) {
         toggleClass(obj, cls, true);
     }
 }
-exports.applyAllClasses = applyAllClasses;
 /**
  * Apply all classes in a list of classes.
  * @param obj - A page element, or id of an element
@@ -100,12 +228,10 @@ exports.applyAllClasses = applyAllClasses;
  */
 function clearAllClasses(obj, classes) {
     var list = classes.split(' ');
-    for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
-        var cls = list_2[_i];
+    for (let cls of list) {
         toggleClass(obj, cls, false);
     }
 }
-exports.clearAllClasses = clearAllClasses;
 /**
  * Given one element, find the next one in the document that matches the desired class
  * @param current - An existing element
@@ -114,11 +240,10 @@ exports.clearAllClasses = clearAllClasses;
  * @param dir - 1 (default) finds the next sibling, else -1 finds the previous
  * @returns A sibling element, or null if none is found
  */
-function findNextOfClass(current, matchClass, skipClass, dir) {
-    if (dir === void 0) { dir = 1; }
+function findNextOfClass(current, matchClass, skipClass, dir = 1) {
     var inputs = document.getElementsByClassName(matchClass);
     var found = false;
-    for (var i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
+    for (let i = dir == 1 ? 0 : inputs.length - 1; i >= 0 && i < inputs.length; i += dir) {
         if (skipClass != undefined && hasClass(inputs[i], skipClass)) {
             continue;
         }
@@ -129,7 +254,6 @@ function findNextOfClass(current, matchClass, skipClass, dir) {
     }
     return null;
 }
-exports.findNextOfClass = findNextOfClass;
 /**
  * Find the index of the current element among the siblings under its parent
  * @param current - An existing element
@@ -138,7 +262,7 @@ exports.findNextOfClass = findNextOfClass;
  * @returns - The index, or -1 if current is not found in the specified parent
  */
 function indexInContainer(current, parentObj, sibClass) {
-    var parent;
+    let parent;
     if (typeof (parentObj) == 'string') {
         parent = findParentOfClass(current, parentObj);
     }
@@ -146,14 +270,13 @@ function indexInContainer(current, parentObj, sibClass) {
         parent = parentObj;
     }
     var sibs = parent.getElementsByClassName(sibClass);
-    for (var i = 0; i < sibs.length; i++) {
+    for (let i = 0; i < sibs.length; i++) {
         if (sibs[i] === current) {
             return i;
         }
     }
     return -1;
 }
-exports.indexInContainer = indexInContainer;
 /**
  * Get the index'ed child element within this parent
  * @param parent - An existing element
@@ -174,7 +297,6 @@ function childAtIndex(parent, childClass, index) {
     }
     return sibs[index];
 }
-exports.childAtIndex = childAtIndex;
 /**
  * Given an input in one container, find an input in the next container
 * @param current - the reference element
@@ -183,8 +305,7 @@ exports.childAtIndex = childAtIndex;
 * @param containerClass - the parent level to go up to, before coming back down
 * @param dir - 1 (default) to go forward, -1 to go back
 */
-function findInNextContainer(current, matchClass, skipClass, containerClass, dir) {
-    if (dir === void 0) { dir = 1; }
+function findInNextContainer(current, matchClass, skipClass, containerClass, dir = 1) {
     var container = findParentOfClass(current, containerClass);
     if (container == null) {
         return null;
@@ -200,7 +321,6 @@ function findInNextContainer(current, matchClass, skipClass, containerClass, dir
     }
     return null;
 }
-exports.findInNextContainer = findInNextContainer;
 /**
  * Find either the first or last sibling element under a parent
 * @param current - the reference element
@@ -210,34 +330,31 @@ exports.findInNextContainer = findInNextContainer;
 * @param dir - 1 (default) to go forward, -1 to go back
 * @returns The first or last sibling element, or null if no matches
  */
-function findEndInContainer(current, matchClass, skipClass, containerClass, dir) {
-    if (dir === void 0) { dir = 1; }
+function findEndInContainer(current, matchClass, skipClass, containerClass, dir = 1) {
     var container = findParentOfClass(current, containerClass);
     if (container == null) {
         return null;
     }
     return findFirstChildOfClass(container, matchClass, skipClass, dir);
 }
-exports.findEndInContainer = findEndInContainer;
 /**
  * Determine the tag type, based on the tag name (case-insenstive)
  * @param elmt An HTML element
  * @param tag a tag name, or array of names
  */
 function isTag(elmt, tag) {
-    var tagName = elmt.tagName.toUpperCase();
+    const tagName = elmt.tagName.toUpperCase();
     if (typeof (tag) == 'string') {
         return tagName == tag.toUpperCase();
     }
-    var tags = tag;
-    for (var i = 0; i < tags.length; i++) {
+    const tags = tag;
+    for (let i = 0; i < tags.length; i++) {
         if (tagName == tags[i].toUpperCase()) {
             return true;
         }
     }
     return false;
 }
-exports.isTag = isTag;
 /**
  * Find the nearest containing node that contains the desired class.
  * @param elmt - An existing element
@@ -249,8 +366,8 @@ function findParentOfClass(elmt, parentClass) {
         return null;
     }
     while (elmt !== null && elmt.tagName !== 'BODY') {
-        var name_1 = elmt.tagName;
-        if (name_1 == 'BODY') {
+        const name = elmt.tagName;
+        if (name == 'BODY') {
             break;
         }
         if (hasClass(elmt, parentClass)) {
@@ -260,7 +377,6 @@ function findParentOfClass(elmt, parentClass) {
     }
     return null;
 }
-exports.findParentOfClass = findParentOfClass;
 /**
  * Is the element anywhere underneath parent (including itself)
  * @param elmt An element
@@ -276,7 +392,6 @@ function isSelfOrParent(elmt, parent) {
     }
     return false;
 }
-exports.isSelfOrParent = isSelfOrParent;
 /**
  * Find the nearest containing node of the specified tag type.
  * @param elmt - An existing element
@@ -289,18 +404,17 @@ function findParentOfTag(elmt, parentTag) {
     }
     parentTag = parentTag.toUpperCase();
     while (elmt !== null) {
-        var name_2 = elmt.tagName.toUpperCase();
-        if (name_2 === parentTag) {
+        const name = elmt.tagName.toUpperCase();
+        if (name === parentTag) {
             return elmt;
         }
-        if (name_2 === 'BODY') {
+        if (name === 'BODY') {
             break;
         }
         elmt = elmt.parentNode;
     }
     return null;
 }
-exports.findParentOfTag = findParentOfTag;
 /**
  * Find the first child/descendent of the current element which matches a desired class
  * @param elmt - A parent element
@@ -309,11 +423,9 @@ exports.findParentOfTag = findParentOfTag;
  * @param dir - If positive (default), search forward; else search backward
  * @returns A child element, if a match is found, else null
  */
-function findFirstChildOfClass(elmt, childClass, skipClass, dir) {
-    if (skipClass === void 0) { skipClass = undefined; }
-    if (dir === void 0) { dir = 1; }
+function findFirstChildOfClass(elmt, childClass, skipClass = undefined, dir = 1) {
     var children = elmt.getElementsByClassName(childClass);
-    for (var i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
+    for (let i = dir == 1 ? 0 : children.length - 1; i >= 0 && i < children.length; i += dir) {
         if (skipClass !== null && hasClass(children[i], skipClass)) {
             continue;
         }
@@ -321,7 +433,6 @@ function findFirstChildOfClass(elmt, childClass, skipClass, dir) {
     }
     return null;
 }
-exports.findFirstChildOfClass = findFirstChildOfClass;
 /**
  * Find the first child/descendent of the current element which matches a desired class
  * @param parent - A parent element
@@ -339,7 +450,6 @@ function findNthChildOfClass(parent, childClass, index) {
         return (index >= 0) ? children[index] : null;
     }
 }
-exports.findNthChildOfClass = findNthChildOfClass;
 /**
  * Get the index of an element among its siblings.
  * @param parent A parent/ancestor of the child
@@ -349,14 +459,13 @@ exports.findNthChildOfClass = findNthChildOfClass;
  */
 function siblingIndexOfClass(parent, child, childClass) {
     var children = parent.getElementsByClassName(childClass);
-    for (var i = 0; i < children.length; i++) {
+    for (let i = 0; i < children.length; i++) {
         if (children[i] == child) {
             return i;
         }
     }
     return -1;
 }
-exports.siblingIndexOfClass = siblingIndexOfClass;
 /**
  * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
  * @param elmt - A page element
@@ -369,12 +478,11 @@ function getOptionalStyle(elmt, attrName, defaultStyle, prefix) {
     if (!elmt) {
         return null;
     }
-    var e = getParentIf(elmt, function (e) { return e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName)) !== ''; });
-    var val = e ? e.getAttribute(attrName) : null;
+    const e = getParentIf(elmt, (e) => e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName)) !== '');
+    let val = e ? e.getAttribute(attrName) : null;
     val = val !== null ? cloneText(val) : (defaultStyle || null);
     return (val === null || prefix === undefined) ? val : (prefix + val);
 }
-exports.getOptionalStyle = getOptionalStyle;
 /**
  * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
  * @param elmt - A page element
@@ -385,11 +493,10 @@ function getOptionalContext(elmt, attrName) {
     if (!elmt) {
         return null;
     }
-    var e = getParentIf(elmt, function (e) { return e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== ''; });
-    var val = e ? e.getAttribute(attrName) : null;
+    const e = getParentIf(elmt, (e) => e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
+    const val = e ? e.getAttribute(attrName) : null;
     return val !== null ? evaluateFormula(val) : null;
 }
-exports.getOptionalContext = getOptionalContext;
 /**
  * Loop through all elements in a DOM sub-tree, looking for any elements with an optional tag.
  * Recurse as needed. But once found, don't recurse within the find.
@@ -398,18 +505,18 @@ exports.getOptionalContext = getOptionalContext;
  * @returns A list of zero or more elements
  */
 function getAllElementsWithAttribute(root, attr) {
-    var list = [];
-    for (var i = 0; i < root.childNodes.length; i++) {
-        var child = root.childNodes[i];
+    const list = [];
+    for (let i = 0; i < root.childNodes.length; i++) {
+        const child = root.childNodes[i];
         if (child.nodeType == Node.ELEMENT_NODE) {
-            var elmt = child;
+            const elmt = child;
             if (elmt.getAttribute(attr)) {
                 list.push(elmt);
                 // once found, don't recurse
             }
             else {
-                var recurse = getAllElementsWithAttribute(elmt, attr);
-                for (var r = 0; r < recurse.length; r++) {
+                const recurse = getAllElementsWithAttribute(elmt, attr);
+                for (let r = 0; r < recurse.length; r++) {
                     list.push(recurse[r]);
                 }
             }
@@ -417,7 +524,6 @@ function getAllElementsWithAttribute(root, attr) {
     }
     return list;
 }
-exports.getAllElementsWithAttribute = getAllElementsWithAttribute;
 /**
  * Move focus to the given input (if not null), and select the entire contents.
  * If input is of type number, do nothing.
@@ -440,21 +546,19 @@ function moveFocus(input, caret) {
     }
     return false;
 }
-exports.moveFocus = moveFocus;
 /**
  * Sort a collection of elements into an array
  * @param src A collection of elements, as from document.getElementsByClassName
  * @param sort_attr The name of the optional attribute, by which we'll sort. Attribute values must be numbers.
  * @returns An array of the same elements, either sorted, or else in original document order
  */
-function SortElements(src, sort_attr) {
-    if (sort_attr === void 0) { sort_attr = 'data-extract-order'; }
-    var lookup = {};
-    var indeces = [];
-    var sorted = [];
-    for (var i = 0; i < src.length; i++) {
-        var elmt = src[i];
-        var order = getOptionalStyle(elmt, sort_attr);
+function SortElements(src, sort_attr = 'data-extract-order') {
+    const lookup = {};
+    const indeces = [];
+    const sorted = [];
+    for (let i = 0; i < src.length; i++) {
+        const elmt = src[i];
+        const order = getOptionalStyle(elmt, sort_attr);
         if (order) {
             // track order values we've seen
             if (!(order in lookup)) {
@@ -471,16 +575,15 @@ function SortElements(src, sort_attr) {
     }
     // Sort indeces, then build array from them
     indeces.sort();
-    for (var i = 0; i < indeces.length; i++) {
-        var order = '' + indeces[i];
-        var peers = lookup[order];
-        for (var p = 0; p < peers.length; p++) {
+    for (let i = 0; i < indeces.length; i++) {
+        const order = '' + indeces[i];
+        const peers = lookup[order];
+        for (let p = 0; p < peers.length; p++) {
             sorted.push(peers[p]);
         }
     }
     return sorted;
 }
-exports.SortElements = SortElements;
 /**
  * Create a generic TR tag for each row in a table.
  * Available for TableDetails.onRow where that is all that's needed
@@ -488,40 +591,38 @@ exports.SortElements = SortElements;
 function newTR(y) {
     return document.createElement('tr');
 }
-exports.newTR = newTR;
 /**
  * Create a table from details
  * @param details A TableDetails, which can exist in several permutations with optional fields
  */
 function constructTable(details) {
-    var root = document.getElementById(details.rootId);
+    const root = document.getElementById(details.rootId);
     if (details.onRoot) {
         details.onRoot(root);
     }
-    var height = (details.data) ? details.data.length : details.height;
-    for (var y = 0; y < height; y++) {
-        var row = root;
+    const height = (details.data) ? details.data.length : details.height;
+    for (let y = 0; y < height; y++) {
+        let row = root;
         if (details.onRow) {
-            var rr = details.onRow(y);
+            const rr = details.onRow(y);
             if (!rr) {
                 continue;
             }
-            root === null || root === void 0 ? void 0 : root.appendChild(rr);
+            root?.appendChild(rr);
             row = rr;
         }
-        var width = (details.data) ? details.data[y].length : details.width;
-        for (var x = 0; x < width; x++) {
-            var val = (details.data) ? details.data[y][x] : '';
-            var cc = details.onCell(val, x, y);
+        const width = (details.data) ? details.data[y].length : details.width;
+        for (let x = 0; x < width; x++) {
+            const val = (details.data) ? details.data[y][x] : '';
+            const cc = details.onCell(val, x, y);
             if (cc) {
-                row === null || row === void 0 ? void 0 : row.appendChild(cc);
+                row?.appendChild(cc);
             }
         }
     }
 }
-exports.constructTable = constructTable;
 exports.svg_xmlns = 'http://www.w3.org/2000/svg';
-var html_xmlns = 'http://www.w3.org/2000/xmlns';
+const html_xmlns = 'http://www.w3.org/2000/xmlns';
 function constructSvgTextCell(val, dx, dy, cls, stampable) {
     if (val == ' ') {
         return null;
@@ -551,7 +652,6 @@ function constructSvgTextCell(val, dx, dy, cls, stampable) {
     }
     return vg;
 }
-exports.constructSvgTextCell = constructSvgTextCell;
 function constructSvgImageCell(img, dx, dy, id, cls) {
     var vg = document.createElementNS(exports.svg_xmlns, 'g');
     if (id) {
@@ -570,7 +670,6 @@ function constructSvgImageCell(img, dx, dy, id, cls) {
     vg.appendChild(i);
     return vg;
 }
-exports.constructSvgImageCell = constructSvgImageCell;
 function constructSvgStampable() {
     var fo = document.createElementNS(exports.svg_xmlns, 'foreignObject');
     fo.classList.add('fo-stampable');
@@ -580,7 +679,6 @@ function constructSvgStampable() {
     fo.appendChild(fod);
     return fo;
 }
-exports.constructSvgStampable = constructSvgStampable;
 /*-----------------------------------------------------------
  * _notes.ts
  *-----------------------------------------------------------*/
@@ -597,7 +695,7 @@ exports.constructSvgStampable = constructSvgStampable;
  * Define an optional callback.
  * A puzzle document may define a function with this name, and will get called at the end of setup.
  */
-var initGuessFunctionality;
+let initGuessFunctionality;
 function simpleSetup(load) {
     if (typeof initGuessFunctionality === 'function') {
         initGuessFunctionality();
@@ -609,7 +707,7 @@ function simpleSetup(load) {
  * Note fields are for players to jot down their thoughts, before comitting to an answer.
  */
 function setupNotes(margins) {
-    var index = 0;
+    let index = 0;
     index = setupNotesCells('notes-above', 'note-above', index);
     index = setupNotesCells('notes-below', 'note-below', index);
     index = setupNotesCells('notes-right', 'note-right', index);
@@ -626,7 +724,6 @@ function setupNotes(margins) {
         setNoteState(NoteState.Visible);
     }
 }
-exports.setupNotes = setupNotes;
 /**
  * Find all objects tagged as needing notes, then create a note cell adjacent.
  * @param findClass The class of the puzzle element that wants notes
@@ -636,10 +733,10 @@ exports.setupNotes = setupNotes;
  */
 function setupNotesCells(findClass, tagInput, index) {
     var cells = document.getElementsByClassName(findClass);
-    for (var i = 0; i < cells.length; i++) {
-        var cell = cells[i];
+    for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
         // Place a small text input field in each cell
-        var inp = document.createElement('input');
+        let inp = document.createElement('input');
         inp.type = 'text';
         inp.classList.add('note-input');
         if (hasClass(cell, 'numeric')) {
@@ -664,8 +761,8 @@ function onNoteArrowKey(event) {
     if (event.isComposing || event.currentTarget == null) {
         return; // Don't interfere with IMEs
     }
-    var input = event.currentTarget;
-    var code = event.code;
+    const input = event.currentTarget;
+    let code = event.code;
     if (code == 'Enter') {
         code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
     }
@@ -687,8 +784,8 @@ function onNoteChange(event) {
     if (event.target == null || (event.type == 'KeyboardEvent' && event.isComposing)) {
         return; // Don't interfere with IMEs
     }
-    var input = event.currentTarget;
-    var note = findParentOfClass(input, 'note-input');
+    const input = event.currentTarget;
+    const note = findParentOfClass(input, 'note-input');
     saveNoteLocally(note);
     noteChangeCallback(note);
 }
@@ -697,7 +794,7 @@ function onNoteChange(event) {
  * @param inp The affected input
  */
 function noteChangeCallback(inp) {
-    var fn = theBoiler().onNoteChange;
+    const fn = theBoiler().onNoteChange;
     if (fn) {
         fn(inp);
     }
@@ -709,7 +806,7 @@ var NoteState = {
     Disabled: -1,
     Unmarked: 0,
     Visible: 1,
-    Subdued: 2,
+    Subdued: 2, // Enabled but not highlighted
     MOD: 3,
 };
 /**
@@ -742,13 +839,13 @@ function setNoteState(state) {
  * @param margins the parent of the toggle UI
  */
 function setupNotesToggle(margins) {
-    var toggle = document.getElementById('notes-toggle');
+    let toggle = document.getElementById('notes-toggle');
     if (toggle == null && margins != null) {
         toggle = document.createElement('a');
         toggle.id = 'notes-toggle';
         margins.appendChild(toggle);
     }
-    var state = getNoteState();
+    const state = getNoteState();
     if (state == NoteState.Disabled || state == NoteState.Unmarked) {
         toggle.innerText = 'Show Notes';
     }
@@ -765,19 +862,18 @@ function setupNotesToggle(margins) {
  * Rotate to the next note visibility state.
  */
 function toggleNotes() {
-    var state = getNoteState();
+    const state = getNoteState();
     setNoteState((state + 1) % NoteState.MOD);
     setupNotesToggle(null);
 }
-exports.toggleNotes = toggleNotes;
 /**
  * Elements tagged with class = 'cross-off' are for puzzles clues that don't indicate where to use it.
  * Any such elements are clickable. When clicked, a check mark is toggled on and off, allowed players to mark some clues as done.
  */
 function setupCrossOffs() {
-    var cells = document.getElementsByClassName('cross-off');
-    for (var i = 0; i < cells.length; i++) {
-        var cell = cells[i];
+    const cells = document.getElementsByClassName('cross-off');
+    for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
         // Place a small text input field in each cell
         cell.onclick = function (e) { onCrossOff(e); };
         var check = document.createElement('span');
@@ -787,64 +883,62 @@ function setupCrossOffs() {
     }
     indexAllCheckFields();
 }
-exports.setupCrossOffs = setupCrossOffs;
 /**
  * Handler for when an object that can be crossed off is clicked
  * @param event The mouse event
  */
 function onCrossOff(event) {
-    var obj = event.target;
+    let obj = event.target;
     if (obj.tagName == 'A' || hasClass(obj, 'note-input') || hasClass(obj, 'letter-input') || hasClass(obj, 'word-input')) {
         return; // Clicking on lines, notes, or inputs should not check anything
     }
-    var parent = findParentOfClass(obj, 'cross-off');
+    let parent = findParentOfClass(obj, 'cross-off');
     if (parent != null) {
-        var newVal = !hasClass(parent, 'crossed-off');
+        const newVal = !hasClass(parent, 'crossed-off');
         toggleClass(parent, 'crossed-off', newVal);
         saveCheckLocally(parent, newVal);
     }
 }
 function setupHighlights() {
-    var highlight = document.getElementById('highlight-ability');
+    const highlight = document.getElementById('highlight-ability');
     if (highlight != null) {
         highlight.onmousedown = function () { toggleHighlight(); };
     }
-    var containers = document.getElementsByClassName('highlight-container');
-    for (var i = 0; i < containers.length; i++) {
-        var container = containers[i];
-        var rules = getOptionalStyle(container, 'data-highlight-rules');
+    const containers = document.getElementsByClassName('highlight-container');
+    for (let i = 0; i < containers.length; i++) {
+        const container = containers[i];
+        const rules = getOptionalStyle(container, 'data-highlight-rules');
         if (rules) {
-            var list = rules.split(' ');
-            for (var r = 0; r < list.length; r++) {
-                var rule = list[r];
+            const list = rules.split(' ');
+            for (let r = 0; r < list.length; r++) {
+                const rule = list[r];
                 if (rule[0] == '.') {
-                    var children = container.getElementsByClassName(rule.substring(1));
-                    for (var i_1 = 0; i_1 < children.length; i_1++) {
-                        toggleClass(children[i_1], 'can-highlight', true);
+                    const children = container.getElementsByClassName(rule.substring(1));
+                    for (let i = 0; i < children.length; i++) {
+                        toggleClass(children[i], 'can-highlight', true);
                     }
                 }
                 else if (rule[0] == '#') {
-                    var child = document.getElementById(rule.substring(1));
+                    const child = document.getElementById(rule.substring(1));
                     toggleClass(child, 'can-highlight', true);
                 }
                 else {
-                    var children = container.getElementsByTagName(rule.toLowerCase());
-                    for (var i_2 = 0; i_2 < children.length; i_2++) {
-                        toggleClass(children[i_2], 'can-highlight', true);
+                    const children = container.getElementsByTagName(rule.toLowerCase());
+                    for (let i = 0; i < children.length; i++) {
+                        toggleClass(children[i], 'can-highlight', true);
                     }
                 }
             }
         }
     }
-    var cans = document.getElementsByClassName('can-highlight');
-    for (var i = 0; i < cans.length; i++) {
-        var can = cans[i];
+    const cans = document.getElementsByClassName('can-highlight');
+    for (let i = 0; i < cans.length; i++) {
+        const can = cans[i];
         can.onclick = function (e) { onClickHighlight(e); };
     }
     // Index will now include all children from above expansion rules
     indexAllHighlightableFields();
 }
-exports.setupHighlights = setupHighlights;
 /**
  * If an element can be highlighted, toggle that highlight on or off
  * @param elmt The element to highlight
@@ -853,13 +947,12 @@ function toggleHighlight(elmt) {
     if (elmt == undefined) {
         elmt = document.activeElement; // will be body if no inputs have focus
     }
-    var highlight = findParentOfClass(elmt, 'can-highlight');
+    const highlight = findParentOfClass(elmt, 'can-highlight');
     if (highlight) {
         toggleClass(highlight, 'highlighted');
         saveHighlightLocally(highlight);
     }
 }
-exports.toggleHighlight = toggleHighlight;
 /**
  * Clicking on highlightable elements can toggle their highlighting.
  * If they are not input elements, a simple click works.
@@ -867,7 +960,7 @@ exports.toggleHighlight = toggleHighlight;
  * @param evt The mouse event from the click
  */
 function onClickHighlight(evt) {
-    var elem = document.elementFromPoint(evt.clientX, evt.clientY);
+    const elem = document.elementFromPoint(evt.clientX, evt.clientY);
     if (elem) {
         if (elem.tagName != 'INPUT' || evt.ctrlKey) {
             toggleHighlight(elem);
@@ -882,9 +975,9 @@ function onClickHighlight(evt) {
  * @returns true, false, or null
  */
 function getDecoderState() {
-    var frame = document.getElementById('decoder-frame');
+    const frame = document.getElementById('decoder-frame');
     if (frame != null) {
-        var style = window.getComputedStyle(frame);
+        const style = window.getComputedStyle(frame);
         return style.display != 'none';
     }
     return null;
@@ -895,10 +988,10 @@ function getDecoderState() {
  * @param state true to show, false to hide
  */
 function setDecoderState(state) {
-    var frame = document.getElementById('decoder-frame');
+    const frame = document.getElementById('decoder-frame');
     if (frame != null) {
-        var src = 'https://www.decrypt.fun/index.html';
-        var mode = frame.getAttributeNS('', 'data-decoder-mode');
+        let src = 'https://www.decrypt.fun/index.html';
+        const mode = frame.getAttributeNS('', 'data-decoder-mode');
         if (mode != null) {
             src = 'https://www.decrypt.fun/' + mode + '.html';
         }
@@ -915,8 +1008,7 @@ function setDecoderState(state) {
  * @param mode the default decoder mode, if specified
  */
 function setupDecoderToggle(margins, mode) {
-    var _a;
-    var iframe = document.getElementById('decoder-frame');
+    let iframe = document.getElementById('decoder-frame');
     if (iframe == null) {
         iframe = document.createElement('iframe');
         iframe.id = 'decoder-frame';
@@ -924,15 +1016,15 @@ function setupDecoderToggle(margins, mode) {
         if (mode != undefined) {
             iframe.setAttributeNS(null, 'data-decoder-mode', mode);
         }
-        (_a = document.getElementsByTagName('body')[0]) === null || _a === void 0 ? void 0 : _a.appendChild(iframe);
+        document.getElementsByTagName('body')[0]?.appendChild(iframe);
     }
-    var toggle = document.getElementById('decoder-toggle');
+    let toggle = document.getElementById('decoder-toggle');
     if (toggle == null && margins != null) {
         toggle = document.createElement('a');
         toggle.id = 'decoder-toggle';
         margins.appendChild(toggle);
     }
-    var visible = getDecoderState();
+    const visible = getDecoderState();
     if (visible) {
         toggle.innerText = 'Hide Decoders';
     }
@@ -941,7 +1033,6 @@ function setupDecoderToggle(margins, mode) {
     }
     toggle.href = 'javascript:toggleDecoder()';
 }
-exports.setupDecoderToggle = setupDecoderToggle;
 /**
  * Rotate to the next note visibility state.
  */
@@ -950,12 +1041,11 @@ function toggleDecoder() {
     setDecoderState(!visible);
     setupDecoderToggle(null);
 }
-exports.toggleDecoder = toggleDecoder;
 var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], guesses: [], time: null };
 ////////////////////////////////////////////////////////////////////////
 // User interface
 //
-var checkStorage = null;
+let checkStorage = null;
 /**
  * Saved state uses local storage, keyed off this page's URL
  * minus any parameters
@@ -963,31 +1053,30 @@ var checkStorage = null;
 function storageKey() {
     return window.location.origin + window.location.pathname;
 }
-exports.storageKey = storageKey;
 /**
  * If storage exists from a previous visit to this puzzle, offer to reload.
  */
 function checkLocalStorage() {
     // Each puzzle is cached within localStorage by its URL
-    var key = storageKey();
+    const key = storageKey();
     if (!isIFrame() && !isRestart() && key in localStorage) {
-        var item = localStorage.getItem(key);
+        const item = localStorage.getItem(key);
         if (item != null) {
             try {
                 checkStorage = JSON.parse(item);
             }
-            catch (_a) {
+            catch {
                 checkStorage = {};
             }
-            var empty = true; // It's possible to cache all blanks, which are uninteresting
-            for (var key_1 in checkStorage) {
-                if (checkStorage[key_1] != null && checkStorage[key_1] != '') {
+            let empty = true; // It's possible to cache all blanks, which are uninteresting
+            for (let key in checkStorage) {
+                if (checkStorage[key] != null && checkStorage[key] != '') {
                     empty = false;
                     break;
                 }
             }
             if (!empty) {
-                var force = forceReload();
+                const force = forceReload();
                 if (force == undefined) {
                     createReloadUI(checkStorage.time);
                 }
@@ -1001,13 +1090,12 @@ function checkLocalStorage() {
         }
     }
 }
-exports.checkLocalStorage = checkLocalStorage;
 /**
  * Globals for reload UI elements
  */
-var reloadDialog;
-var reloadButton;
-var restartButton;
+let reloadDialog;
+let reloadButton;
+let restartButton;
 /**
  * Create a modal dialog, asking the user if they want to reload.
  * @param time The time the cached data was saved (as a string)
@@ -1025,27 +1113,27 @@ var restartButton;
 function createReloadUI(time) {
     reloadDialog = document.createElement('div');
     reloadDialog.id = 'reloadLocalStorage';
-    var img = null;
+    let img = null;
     if (getSafariDetails().icon) {
         img = document.createElement('img');
         img.classList.add('icon');
         img.src = getSafariDetails().icon;
     }
-    var title = document.createElement('span');
+    const title = document.createElement('span');
     title.classList.add('title-font');
     title.innerText = document.title;
-    var p1 = document.createElement('p');
+    const p1 = document.createElement('p');
     p1.appendChild(document.createTextNode('Would you like to reload your progress on '));
     p1.appendChild(title);
     p1.appendChild(document.createTextNode(' from earlier?'));
-    var now = new Date();
-    var dateTime = new Date(time);
-    var delta = now.getTime() - dateTime.getTime();
-    var seconds = Math.ceil(delta / 1000);
-    var minutes = Math.floor(seconds / 60);
-    var hours = Math.floor(minutes / 60);
-    var days = Math.floor(hours / 24);
-    var ago = 'The last change was ';
+    const now = new Date();
+    const dateTime = new Date(time);
+    const delta = now.getTime() - dateTime.getTime();
+    const seconds = Math.ceil(delta / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    let ago = 'The last change was ';
     if (days >= 2) {
         ago += days + ' days ago.';
     }
@@ -1154,7 +1242,6 @@ function saveLetterLocally(input) {
         }
     }
 }
-exports.saveLetterLocally = saveLetterLocally;
 /**
  * Update the saved words object
  * @param element an word-input element
@@ -1168,7 +1255,6 @@ function saveWordLocally(input) {
         }
     }
 }
-exports.saveWordLocally = saveWordLocally;
 /**
  * Update the saved notes object
  * @param element an note-input element
@@ -1182,7 +1268,6 @@ function saveNoteLocally(input) {
         }
     }
 }
-exports.saveNoteLocally = saveNoteLocally;
 /**
  * Update the saved checkmark object
  * @param element an element which might contain a checkmark
@@ -1196,7 +1281,6 @@ function saveCheckLocally(element, value) {
         }
     }
 }
-exports.saveCheckLocally = saveCheckLocally;
 /**
  * Update the saved containers objects
  * @param element an element which can move between containers
@@ -1211,7 +1295,6 @@ function saveContainerLocally(element, container) {
         }
     }
 }
-exports.saveContainerLocally = saveContainerLocally;
 /**
  * Update the saved positions object
  * @param element a moveable element which can free-move in its container
@@ -1226,7 +1309,6 @@ function savePositionLocally(element) {
         }
     }
 }
-exports.savePositionLocally = savePositionLocally;
 /**
  * Update the saved drawings object
  * @param element an element which might contain a drawn object
@@ -1235,8 +1317,8 @@ function saveStampingLocally(element) {
     if (element) {
         var index = getGlobalIndex(element);
         if (index >= 0) {
-            var parent_1 = getStampParent(element);
-            var stampId = parent_1.getAttributeNS('', 'data-stamp-id');
+            const parent = getStampParent(element);
+            const stampId = parent.getAttributeNS('', 'data-stamp-id');
             if (stampId) {
                 localCache.stamps[index] = stampId;
             }
@@ -1247,7 +1329,6 @@ function saveStampingLocally(element) {
         }
     }
 }
-exports.saveStampingLocally = saveStampingLocally;
 /**
  * Update the saved highlights object
  * @param element a highlightable object
@@ -1261,7 +1342,6 @@ function saveHighlightLocally(element) {
         }
     }
 }
-exports.saveHighlightLocally = saveHighlightLocally;
 /**
  * Update the local cache with this vertex list.
  * @param vertexList A list of vertex global indeces
@@ -1272,14 +1352,13 @@ function saveStraightEdge(vertexList, add) {
         localCache.edges.push(vertexList);
     }
     else {
-        var i = localCache.edges.indexOf(vertexList);
+        const i = localCache.edges.indexOf(vertexList);
         if (i >= 0) {
             localCache.edges.splice(i, 1);
         }
     }
     saveCache();
 }
-exports.saveStraightEdge = saveStraightEdge;
 /**
  * Update the local cache with the full set of guesses for this puzzle
  * @param guesses An array of guesses, in time order
@@ -1288,7 +1367,6 @@ function saveGuessHistory(guesses) {
     localCache.guesses = guesses;
     saveCache();
 }
-exports.saveGuessHistory = saveGuessHistory;
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -1299,14 +1377,14 @@ exports.saveGuessHistory = saveGuessHistory;
  * @param offset A number to shift all indeces (optional) - used when two collections share an index space
  */
 function applyGlobalIndeces(elements, suffix, offset) {
-    var attr = 'data-globalIndex';
+    let attr = 'data-globalIndex';
     if (suffix != undefined) {
         attr += '-' + suffix;
     }
     if (!offset) {
         offset = 0;
     }
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         elements[i].setAttributeNS('', attr, String(i));
     }
 }
@@ -1320,18 +1398,17 @@ function applyGlobalIndeces(elements, suffix, offset) {
  */
 function getGlobalIndex(elmt, suffix) {
     if (elmt) {
-        var attr = 'data-globalIndex';
+        let attr = 'data-globalIndex';
         if (suffix != undefined) {
             attr += '-' + suffix;
         }
-        var index = elmt.getAttributeNS('', attr);
+        const index = elmt.getAttributeNS('', attr);
         if (index) { // not null or empty
             return Number(index);
         }
     }
     return -1;
 }
-exports.getGlobalIndex = getGlobalIndex;
 /**
  * At page initialization, every element that can be cached gets an index attached to it.
  * Possibly more than one, if it can cache multiple traits.
@@ -1342,100 +1419,91 @@ exports.getGlobalIndex = getGlobalIndex;
  * @returns The element
  */
 function findGlobalIndex(cls, index, suffix) {
-    var elements = document.getElementsByClassName(cls);
-    for (var i = 0; i < elements.length; i++) {
-        var elmt = elements[i];
+    const elements = document.getElementsByClassName(cls);
+    for (let i = 0; i < elements.length; i++) {
+        const elmt = elements[i];
         if (index == getGlobalIndex(elmt, suffix)) {
             return elmt;
         }
     }
     return null;
 }
-exports.findGlobalIndex = findGlobalIndex;
 /**
  * Create a dictionary, mapping global indeces to the corresponding elements
  * @param cls the class tag on all applicable elements
  * @param suffix the optional suffix of the global indeces
  */
 function mapGlobalIndeces(cls, suffix) {
-    var map = {};
-    var elements = document.getElementsByClassName(cls);
-    for (var i = 0; i < elements.length; i++) {
-        var index = getGlobalIndex(elements[i], suffix);
+    const map = {};
+    const elements = document.getElementsByClassName(cls);
+    for (let i = 0; i < elements.length; i++) {
+        const index = getGlobalIndex(elements[i], suffix);
         if (index >= 0) {
             map[index] = elements[String(i)];
         }
     }
     return map;
 }
-exports.mapGlobalIndeces = mapGlobalIndeces;
 /**
  * Assign globalIndeces to every letter- or word- input field
  */
 function indexAllInputFields() {
-    var inputs = document.getElementsByClassName('letter-input');
+    let inputs = document.getElementsByClassName('letter-input');
     applyGlobalIndeces(inputs);
     inputs = document.getElementsByClassName('word-input');
     applyGlobalIndeces(inputs);
 }
-exports.indexAllInputFields = indexAllInputFields;
 /**
  * Assign globalIndeces to every note field
  */
 function indexAllNoteFields() {
-    var inputs = document.getElementsByClassName('note-input');
+    const inputs = document.getElementsByClassName('note-input');
     applyGlobalIndeces(inputs);
 }
-exports.indexAllNoteFields = indexAllNoteFields;
 /**
  * Assign globalIndeces to every check mark
  */
 function indexAllCheckFields() {
-    var checks = document.getElementsByClassName('cross-off');
+    const checks = document.getElementsByClassName('cross-off');
     applyGlobalIndeces(checks);
 }
-exports.indexAllCheckFields = indexAllCheckFields;
 /**
  * Assign globalIndeces to every moveable element and drop target
  */
 function indexAllDragDropFields() {
-    var inputs = document.getElementsByClassName('moveable');
+    let inputs = document.getElementsByClassName('moveable');
     applyGlobalIndeces(inputs);
     inputs = document.getElementsByClassName('drop-target');
     applyGlobalIndeces(inputs);
 }
-exports.indexAllDragDropFields = indexAllDragDropFields;
 /**
  * Assign globalIndeces to every stampable element
  */
 function indexAllDrawableFields() {
-    var inputs = document.getElementsByClassName('stampable');
+    const inputs = document.getElementsByClassName('stampable');
     applyGlobalIndeces(inputs);
 }
-exports.indexAllDrawableFields = indexAllDrawableFields;
 /**
  * Assign globalIndeces to every highlightable element
  */
 function indexAllHighlightableFields() {
-    var inputs = document.getElementsByClassName('can-highlight');
+    const inputs = document.getElementsByClassName('can-highlight');
     applyGlobalIndeces(inputs, 'ch');
 }
-exports.indexAllHighlightableFields = indexAllHighlightableFields;
 /**
  * Assign globalIndeces to every vertex
  */
 function indexAllVertices() {
-    var inputs = document.getElementsByClassName('vertex');
+    const inputs = document.getElementsByClassName('vertex');
     applyGlobalIndeces(inputs, 'vx');
 }
-exports.indexAllVertices = indexAllVertices;
 ////////////////////////////////////////////////////////////////////////
 // Load from local storage
 //
 /**
  * Avoid re-entrancy. Track if we're mid-reload
  */
-var reloading = false;
+let reloading = false;
 /**
  * Load all structure types from storage
  */
@@ -1452,12 +1520,12 @@ function loadLocalStorage(storage) {
     restoreEdges(storage.edges);
     restoreGuesses(storage.guesses);
     reloading = false;
-    var fn = theBoiler().onRestore;
+    const fn = theBoiler().onRestore;
     if (fn) {
         fn();
     }
 }
-var currently_restoring = null;
+let currently_restoring = null;
 /**
  * Restore any saved letter input values
  * @param values A dictionary of index=>string
@@ -1465,7 +1533,7 @@ var currently_restoring = null;
 function restoreLetters(values) {
     localCache.letters = values;
     var inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         currently_restoring = inputs[i];
         var input = inputs[i];
         var value = values[i];
@@ -1483,7 +1551,7 @@ function restoreLetters(values) {
 function restoreWords(values) {
     localCache.words = values;
     var inputs = document.getElementsByClassName('word-input');
-    for (var i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
         currently_restoring = inputs[i];
         var input = inputs[i];
         var value = values[i];
@@ -1510,7 +1578,7 @@ function restoreWords(values) {
 function restoreNotes(values) {
     localCache.notes = values;
     var elements = document.getElementsByClassName('note-input');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         var element = elements[i];
         var globalIndex = getGlobalIndex(element);
         var value = values[globalIndex];
@@ -1525,11 +1593,11 @@ function restoreNotes(values) {
  */
 function restoreCrossOffs(values) {
     localCache.checks = values;
-    var elements = document.getElementsByClassName('cross-off');
-    for (var i = 0; i < elements.length; i++) {
-        var element = elements[i];
-        var globalIndex = getGlobalIndex(element);
-        var value = values[globalIndex];
+    let elements = document.getElementsByClassName('cross-off');
+    for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        const globalIndex = getGlobalIndex(element);
+        const value = values[globalIndex];
         if (value != undefined) {
             toggleClass(element, 'crossed-off', value);
         }
@@ -1544,13 +1612,13 @@ function restoreContainers(containers) {
     var movers = document.getElementsByClassName('moveable');
     var targets = document.getElementsByClassName('drop-target');
     // Each time an element is moved, the containers structure changes out from under us. So pre-fetch.
-    var moving = [];
-    for (var key in containers) {
+    const moving = [];
+    for (let key in containers) {
         moving[parseInt(key)] = parseInt(containers[key]);
     }
-    for (var key in moving) {
-        var mover = findGlobalIndex('moveable', parseInt(key));
-        var target = findGlobalIndex('drop-target', moving[key]);
+    for (let key in moving) {
+        const mover = findGlobalIndex('moveable', parseInt(key));
+        const target = findGlobalIndex('drop-target', moving[key]);
         if (mover && target) {
             quickMove(mover, target);
         }
@@ -1563,7 +1631,7 @@ function restoreContainers(containers) {
 function restorePositions(positions) {
     localCache.positions = positions;
     var movers = document.getElementsByClassName('moveable');
-    for (var i = 0; i < movers.length; i++) {
+    for (let i = 0; i < movers.length; i++) {
         var pos = positions[i];
         if (pos != undefined) {
             quickFreeMove(movers[i], pos);
@@ -1577,10 +1645,10 @@ function restorePositions(positions) {
 function restoreStamps(drawings) {
     localCache.stamps = drawings;
     var targets = document.getElementsByClassName('stampable');
-    for (var i = 0; i < targets.length; i++) {
+    for (let i = 0; i < targets.length; i++) {
         var tool = drawings[i];
         if (tool != undefined) {
-            var stamp = document.getElementById(tool);
+            const stamp = document.getElementById(tool);
             if (stamp) {
                 doStamp(targets[i], stamp);
             }
@@ -1594,7 +1662,7 @@ function restoreStamps(drawings) {
 function restoreHighlights(highlights) {
     localCache.highlights = highlights == undefined ? {} : highlights;
     var elements = document.getElementsByClassName('can-highlight');
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         var element = elements[i];
         var globalIndex = getGlobalIndex(element, 'ch');
         var value = highlights[globalIndex];
@@ -1612,7 +1680,7 @@ function restoreEdges(vertexLists) {
         vertexLists = [];
     }
     localCache.edges = vertexLists;
-    for (var i = 0; i < vertexLists.length; i++) {
+    for (let i = 0; i < vertexLists.length; i++) {
         createFromVertexList(vertexLists[i]);
     }
 }
@@ -1624,10 +1692,10 @@ function restoreGuesses(guesses) {
     if (!guesses) {
         guesses = [];
     }
-    for (var i = 0; i < guesses.length; i++) {
-        var src = guesses[i];
+    for (let i = 0; i < guesses.length; i++) {
+        const src = guesses[i];
         // Rebuild the GuessLog, to convert the string back to a DateTime
-        var gl = { field: src.field, guess: src.guess, time: new Date(String(src.time)) };
+        const gl = { field: src.field, guess: src.guess, time: new Date(String(src.time)) };
         decodeAndValidate(gl);
         // Decoding will rebuild the localCache
     }
@@ -1639,10 +1707,10 @@ function restoreGuesses(guesses) {
  * A limited list of meaningful puzzle statuses
  */
 exports.PuzzleStatus = {
-    Hidden: 'hidden',
-    Locked: 'locked',
-    Unlocked: 'unlocked',
-    Loaded: 'loaded',
+    Hidden: 'hidden', // A puzzle the player should not even see
+    Locked: 'locked', // A puzzle the player should not have a link to
+    Unlocked: 'unlocked', // A puzzle that the player can now reach
+    Loaded: 'loaded', // A puzzle which has been loaded, possibly triggering secondary storage
     Solved: 'solved', // A puzzle which is fully solved
 };
 /**
@@ -1655,9 +1723,9 @@ function updatePuzzleList(puzzle, status) {
         puzzle = getCurFileName();
     }
     var key = getOtherFileHref('puzzle_list', 0);
-    var pList = {};
+    let pList = {};
     if (key in localStorage) {
-        var item = localStorage.getItem(key);
+        const item = localStorage.getItem(key);
         if (item) {
             pList = JSON.parse(item);
         }
@@ -1668,7 +1736,6 @@ function updatePuzzleList(puzzle, status) {
     pList[puzzle] = status;
     localStorage.setItem(key, JSON.stringify(pList));
 }
-exports.updatePuzzleList = updatePuzzleList;
 /**
  * Lookup the status of a puzzle
  * @param puzzle The name of a puzzle
@@ -1680,9 +1747,9 @@ function getPuzzleStatus(puzzle, defaultStatus) {
         puzzle = getCurFileName();
     }
     var key = getOtherFileHref('puzzle_list', 0);
-    var pList = {};
+    let pList = {};
     if (key in localStorage) {
-        var item = localStorage.getItem(key);
+        const item = localStorage.getItem(key);
         if (item) {
             pList = JSON.parse(item);
             if (pList && puzzle in pList) {
@@ -1692,24 +1759,23 @@ function getPuzzleStatus(puzzle, defaultStatus) {
     }
     return defaultStatus;
 }
-exports.getPuzzleStatus = getPuzzleStatus;
 /**
  * Return a list of puzzles we are tracking, which currently have the indicated status
  * @param status one of the valid status strings
  */
 function listPuzzlesOfStatus(status) {
-    var list = [];
+    const list = [];
     var key = getOtherFileHref('puzzle_list', 0);
     if (key in localStorage) {
-        var item = localStorage.getItem(key);
+        const item = localStorage.getItem(key);
         if (item) {
-            var pList = JSON.parse(item);
+            const pList = JSON.parse(item);
             if (pList) {
-                var names = Object.keys(pList);
-                for (var i = 0; i < names.length; i++) {
-                    var name_3 = names[i];
-                    if (pList[name_3] === status) {
-                        list.push(name_3);
+                const names = Object.keys(pList);
+                for (let i = 0; i < names.length; i++) {
+                    const name = names[i];
+                    if (pList[name] === status) {
+                        list.push(name);
                     }
                 }
             }
@@ -1717,7 +1783,6 @@ function listPuzzlesOfStatus(status) {
     }
     return list;
 }
-exports.listPuzzlesOfStatus = listPuzzlesOfStatus;
 /**
  * Clear the list of which puzzles have been saved, unlocked, etc.
  */
@@ -1725,7 +1790,6 @@ function resetAllPuzzleStatus() {
     var key = getOtherFileHref('puzzle_list', 0);
     localStorage.setItem(key, JSON.stringify(null));
 }
-exports.resetAllPuzzleStatus = resetAllPuzzleStatus;
 /**
  * Clear any saved progress on this puzzle
  * @param puzzleFile a puzzle filename
@@ -1734,7 +1798,6 @@ function resetPuzzleProgress(puzzleFile) {
     var key = getOtherFileHref(puzzleFile, 0);
     localStorage.setItem(key, JSON.stringify(null));
 }
-exports.resetPuzzleProgress = resetPuzzleProgress;
 ////////////////////////////////////////////////////////////////////////
 // Utils for sharing data between puzzles
 //
@@ -1759,7 +1822,7 @@ function saveMetaMaterials(puzzle, up, page, obj) {
 function loadMetaMaterials(puzzle, up, page) {
     var key = getOtherFileHref(puzzle, up) + "-" + page;
     if (key in localStorage) {
-        var item = localStorage.getItem(key);
+        const item = localStorage.getItem(key);
         if (item) {
             return JSON.parse(item);
         }
@@ -1769,33 +1832,31 @@ function loadMetaMaterials(puzzle, up, page) {
 /**
  * Get the last level of the URL's pathname
  */
-function getCurFileName(no_extension) {
-    if (no_extension === void 0) { no_extension = true; }
-    var key = window.location.pathname;
-    var bslash = key.lastIndexOf('\\');
-    var fslash = key.lastIndexOf('/');
-    var parts = key.split(fslash >= bslash ? '/' : '\\');
-    var name = parts[parts.length - 1];
+function getCurFileName(no_extension = true) {
+    const key = window.location.pathname;
+    const bslash = key.lastIndexOf('\\');
+    const fslash = key.lastIndexOf('/');
+    const parts = key.split(fslash >= bslash ? '/' : '\\');
+    let name = parts[parts.length - 1];
     if (no_extension) {
-        var dot = name.split('.');
+        const dot = name.split('.');
         if (dot.length > 1) {
             name = name.substring(0, name.length - 1 - dot[dot.length - 1].length);
         }
     }
     return name;
 }
-exports.getCurFileName = getCurFileName;
 // Convert the absolute href of the current window to a relative href
 // levels: 1=just this file, 2=parent folder + file, etc.
 function getRelFileHref(levels) {
-    var key = storageKey();
-    var bslash = key.lastIndexOf('\\');
-    var fslash = key.lastIndexOf('/');
-    var delim = '/';
+    const key = storageKey();
+    const bslash = key.lastIndexOf('\\');
+    const fslash = key.lastIndexOf('/');
+    let delim = '/';
     if (fslash < 0 || bslash > fslash) {
         delim = '\\';
     }
-    var parts = key.split(delim);
+    const parts = key.split(delim);
     parts.splice(0, parts.length - levels);
     return parts.join(delim);
 }
@@ -1807,10 +1868,10 @@ function getRelFileHref(levels) {
  * @returns a path to the other file
  */
 function getOtherFileHref(file, up, rel) {
-    var key = storageKey();
-    var bslash = key.lastIndexOf('\\');
-    var fslash = key.lastIndexOf('/');
-    var delim = '/';
+    const key = storageKey();
+    const bslash = key.lastIndexOf('\\');
+    const fslash = key.lastIndexOf('/');
+    let delim = '/';
     if (fslash < 0 || bslash > fslash) {
         delim = '\\';
     }
@@ -1834,7 +1895,7 @@ function getOtherFileHref(file, up, rel) {
 /**
  * Any event stemming from key in this list should be ignored
  */
-var ignoreKeys = [
+const ignoreKeys = [
     'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'OptionLeft', 'OptionRight', 'CapsLock', 'Backspace', 'Escape', 'Delete', 'Insert', 'NumLock', 'ScrollLock', 'Pause', 'PrintScreen',
     'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16',
 ];
@@ -1856,7 +1917,7 @@ var priorInputValue = '';
 /**
  * The input
  */
-var keyDownTarget = null;
+let keyDownTarget = null;
 /**
  * Callback when a user pressed a keyboard key from any letter-input or word-input text field
  * @param event - A keyboard event
@@ -1870,11 +1931,11 @@ function onLetterKeyDown(event) {
         code = event.key; // Mobile doesn't use code
     }
     var inpClass = hasClass(input, 'word-input') ? 'word-input' : 'letter-input';
-    var skipClass;
+    let skipClass;
     if (!findParentOfClass(input, 'navigate-literals')) {
         skipClass = hasClass(input, 'word-input') ? 'word-non-input' : 'letter-non-input';
     }
-    var prior = null;
+    let prior = null;
     if (hasClass(input.parentNode, 'multiple-letter') || hasClass(input, 'word-input')) {
         // Multi-character fields still want the ability to arrow between cells.
         // We need to look at the selection prior to the arrow's effect, 
@@ -1894,9 +1955,9 @@ function onLetterKeyDown(event) {
             var s = input.selectionStart;
             var e = input.selectionEnd;
             if (s == e && e == 0) {
-                var prior_1 = findNextInput(input, -plusX, 0, inpClass, skipClass);
-                if (prior_1 != null) {
-                    moveFocus(prior_1, prior_1.value.length);
+                const prior = findNextInput(input, -plusX, 0, inpClass, skipClass);
+                if (prior != null) {
+                    moveFocus(prior, prior.value.length);
                 }
                 event.preventDefault();
             }
@@ -1934,7 +1995,7 @@ function onLetterKeyDown(event) {
                 else {
                     prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel);
                     if (!prior) {
-                        var loop = findParentOfClass(input, 'loop-navigation');
+                        const loop = findParentOfClass(input, 'loop-navigation');
                         if (loop) {
                             prior = findFirstChildOfClass(loop, 'letter-input', 'letter-non-input', dxDel);
                         }
@@ -2004,7 +2065,6 @@ function onLetterKeyDown(event) {
         }
     }
 }
-exports.onLetterKeyDown = onLetterKeyDown;
 /**
  * Does a typed character match the input rules?
  * @param input
@@ -2035,7 +2095,6 @@ function onLetterKeyUp(event) {
         inputChangeCallback(input, event.key);
     }
 }
-exports.onLetterKeyUp = onLetterKeyUp;
 /**
  * Process the end of a keystroke
  * @param event - A keyboard event
@@ -2096,7 +2155,6 @@ function onLetterKey(event) {
     afterInputUpdate(input, event.key);
     return false;
 }
-exports.onLetterKey = onLetterKey;
 /**
  * Re-scan for extractions
  * @param input The input which just changed
@@ -2122,9 +2180,9 @@ function afterInputUpdate(input, key) {
     }
     input.value = text;
     ExtractFromInput(input);
-    var showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
+    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
     if (showReady) {
-        var btn = document.getElementById(showReady);
+        const btn = document.getElementById(showReady);
         if (btn) {
             validateInputReady(btn, key);
         }
@@ -2159,7 +2217,6 @@ function afterInputUpdate(input, key) {
     }
     inputChangeCallback(input, key);
 }
-exports.afterInputUpdate = afterInputUpdate;
 /**
  * Extract contents of an extract-flagged input
  * @param input an input field
@@ -2181,32 +2238,32 @@ function ExtractFromInput(input) {
  * @param extractedId The id of an element that collects extractions
  */
 function UpdateExtraction(extractedId) {
-    var extracted = document.getElementById(extractedId || 'extracted');
+    const extracted = document.getElementById(extractedId || 'extracted');
     if (extracted == null) {
         return;
     }
-    var join = getOptionalStyle(extracted, 'data-extract-join') || '';
+    const join = getOptionalStyle(extracted, 'data-extract-join') || '';
     if (extracted.getAttribute('data-extraction-source') != 'data'
         && (extracted.getAttribute('data-number-pattern') != null || extracted.getAttribute('data-letter-pattern') != null)) {
         UpdateNumbered(extractedId);
         return;
     }
-    var delayLiterals = DelayLiterals(extractedId);
-    var inputs = document.getElementsByClassName('extract-input');
-    var sorted_inputs = SortElements(inputs);
-    var extraction = '';
-    var ready = true;
-    for (var i = 0; i < sorted_inputs.length; i++) {
-        var input = sorted_inputs[i];
+    const delayLiterals = DelayLiterals(extractedId);
+    const inputs = document.getElementsByClassName('extract-input');
+    const sorted_inputs = SortElements(inputs);
+    let extraction = '';
+    let ready = true;
+    for (let i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
         if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        var letter = '';
+        let letter = '';
         if (hasClass(input, 'extract-literal')) {
             // Several ways to extract literals:
-            var de = getOptionalStyle(input, 'data-extract-delay'); // placeholder value to extract, until player has finished other work
-            var ev = getOptionalStyle(input, 'data-extract-value'); // always extract this value
-            var ec = getOptionalStyle(input, 'data-extract-copy'); // this extraction is a copy of another
+            const de = getOptionalStyle(input, 'data-extract-delay'); // placeholder value to extract, until player has finished other work
+            const ev = getOptionalStyle(input, 'data-extract-value'); // always extract this value
+            const ec = getOptionalStyle(input, 'data-extract-copy'); // this extraction is a copy of another
             if (delayLiterals && de) {
                 letter = de;
             }
@@ -2218,7 +2275,7 @@ function UpdateExtraction(extractedId) {
             }
         }
         else {
-            var inp = input;
+            const inp = input;
             letter = inp.value || '';
             letter = letter.trim();
         }
@@ -2234,22 +2291,22 @@ function UpdateExtraction(extractedId) {
         }
     }
     if (extracted.getAttribute('data-letter-pattern') != null) {
-        var inps = extracted.getElementsByClassName('extractor-input');
+        const inps = extracted.getElementsByClassName('extractor-input');
         if (inps.length > extraction.length) {
             extraction += Array(1 + inps.length - extraction.length).join('_');
         }
-        var ready_1 = true;
-        for (var i = 0; i < inps.length; i++) {
-            var inp = inps[i];
+        let ready = true;
+        for (let i = 0; i < inps.length; i++) {
+            const inp = inps[i];
             if (extraction[i] != '_') {
                 inp.value = extraction.substring(i, i + 1);
             }
             else {
                 inp.value = '';
-                ready_1 = false;
+                ready = false;
             }
         }
-        updateExtractionData(extracted, extraction, ready_1);
+        updateExtractionData(extracted, extraction, ready);
     }
     else {
         ApplyExtraction(extraction, extracted, ready);
@@ -2281,12 +2338,12 @@ function ExtractViaData(elmt, value, extractedId) {
  * @returns true if this puzzle uses this technique, and the non-literals are not yet done
  */
 function DelayLiterals(extractedId) {
-    var delayedLiterals = false;
-    var isComplete = true;
+    let delayedLiterals = false;
+    let isComplete = true;
     var inputs = document.getElementsByClassName('extract-input');
-    var sorted_inputs = SortElements(inputs);
-    for (var i = 0; i < sorted_inputs.length; i++) {
-        var input = sorted_inputs[i];
+    const sorted_inputs = SortElements(inputs);
+    for (let i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
         if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
@@ -2296,8 +2353,8 @@ function DelayLiterals(extractedId) {
             }
         }
         else {
-            var inp = input;
-            var letter = inp.value || '';
+            const inp = input;
+            let letter = inp.value || '';
             letter = letter.trim();
             if (letter.length == 0) {
                 isComplete = false;
@@ -2329,8 +2386,8 @@ function ApplyExtraction(text, dest, ready) {
     else if (hasClass(dest, 'all-caps')) {
         text = text.toLocaleUpperCase();
     }
-    var destInp = isTag(dest, 'INPUT') ? dest : null;
-    var destText = isTag(dest, 'TEXT') ? dest : null;
+    const destInp = isTag(dest, 'INPUT') ? dest : null;
+    const destText = isTag(dest, 'TEXT') ? dest : null;
     var current = (destInp !== null) ? destInp.value : (destText !== null) ? destText.innerHTML : dest.innerText;
     if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
         return;
@@ -2360,20 +2417,20 @@ function ApplyExtraction(text, dest, ready) {
  */
 function UpdateNumbered(extractedId) {
     extractedId = extractedId || 'extracted';
-    var div = document.getElementById(extractedId);
-    var outputs = div === null || div === void 0 ? void 0 : div.getElementsByTagName('input');
+    const div = document.getElementById(extractedId);
+    var outputs = div?.getElementsByTagName('input');
     var inputs = document.getElementsByClassName('extract-input');
-    var sorted_inputs = SortElements(inputs);
-    var concat = '';
-    for (var i = 0; i < sorted_inputs.length; i++) {
-        var input = sorted_inputs[i];
-        var inp = input;
-        var index = input.getAttribute('data-number');
-        var output = document.getElementById('extractor-' + index);
+    const sorted_inputs = SortElements(inputs);
+    let concat = '';
+    for (let i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
+        const inp = input;
+        const index = input.getAttribute('data-number');
+        let output = document.getElementById('extractor-' + index);
         if (!output && outputs) {
             output = outputs[i];
         }
-        var letter = inp.value || '';
+        let letter = inp.value || '';
         letter = letter.trim();
         if (letter.length > 0 || output.value.length > 0) {
             output.value = letter;
@@ -2394,7 +2451,7 @@ function UpdateExtractionSource(input) {
     var extractors = document.getElementsByClassName('extractor-input');
     var index = getOptionalStyle(input.parentNode, 'data-number');
     if (index === null) {
-        for (var i = 0; i < extractors.length; i++) {
+        for (let i = 0; i < extractors.length; i++) {
             if (extractors[i] == input) {
                 index = "" + (i + 1); // start at 1
                 break;
@@ -2405,9 +2462,9 @@ function UpdateExtractionSource(input) {
         return;
     }
     var sources = document.getElementsByClassName('extract-input');
-    var extractId;
-    var extraction = [];
-    for (var i = 0; i < sources.length; i++) {
+    let extractId;
+    const extraction = [];
+    for (let i = 0; i < sources.length; i++) {
         var src = sources[i];
         var dataNumber = getOptionalStyle(src, 'data-number');
         if (dataNumber != null) {
@@ -2419,26 +2476,26 @@ function UpdateExtractionSource(input) {
         }
     }
     // Update data-extraction when the user type directly into an extraction element
-    var extractionText = extraction.join('');
+    const extractionText = extraction.join('');
     updateExtractionData(extractId, extractionText, extractionText.length == sources.length);
 }
 function updateExtractionData(extracted, value, ready) {
-    var container = !extracted
+    const container = !extracted
         ? document.getElementById('extracted')
         : (typeof extracted === "string")
             ? document.getElementById(extracted)
             : extracted;
     if (container) {
         container.setAttribute('data-extraction', value);
-        var btnId = container.getAttribute('data-show-ready');
+        let btnId = container.getAttribute('data-show-ready');
         if (btnId) {
-            var btn = document.getElementById(btnId);
+            const btn = document.getElementById(btnId);
             toggleClass(btn, 'ready', ready);
         }
         else {
             btnId = getOptionalStyle(container, 'data-show-ready');
             if (btnId) {
-                var btn = document.getElementById(btnId);
+                const btn = document.getElementById(btnId);
                 validateInputReady(btn, value);
             }
         }
@@ -2452,7 +2509,7 @@ function onWordKey(event) {
     if (event.isComposing) {
         return; // Don't interfere with IMEs
     }
-    var input = event.currentTarget;
+    const input = event.currentTarget;
     inputChangeCallback(input, event.key);
     if (getOptionalStyle(input, 'data-extract-index') != null) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
@@ -2472,7 +2529,6 @@ function onWordKey(event) {
     }
     saveWordLocally(input);
 }
-exports.onWordKey = onWordKey;
 /**
  * Update extractions that come from word input
  * @param extractedId The ID of an extraction area
@@ -2483,12 +2539,12 @@ function updateWordExtraction(extractedId) {
         return;
     }
     var inputs = document.getElementsByClassName('word-input');
-    var sorted_inputs = SortElements(inputs);
+    const sorted_inputs = SortElements(inputs);
     var extraction = '';
     var hasWordExtraction = false;
     var partial = false;
-    for (var i = 0; i < sorted_inputs.length; i++) {
-        var input = sorted_inputs[i];
+    for (let i = 0; i < sorted_inputs.length; i++) {
+        const input = sorted_inputs[i];
         if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
@@ -2497,10 +2553,10 @@ function updateWordExtraction(extractedId) {
             continue;
         }
         hasWordExtraction = true;
-        var indeces = index.split(' ');
-        for (var j = 0; j < indeces.length; j++) {
-            var inp = input;
-            var letter = extractWordIndex(inp.value, indeces[j]);
+        const indeces = index.split(' ');
+        for (let j = 0; j < indeces.length; j++) {
+            const inp = input;
+            const letter = extractWordIndex(inp.value, indeces[j]);
             if (letter) {
                 extraction += letter;
                 partial = partial || (letter != '_');
@@ -2511,22 +2567,21 @@ function updateWordExtraction(extractedId) {
         ApplyExtraction(extraction, extracted, !partial);
     }
 }
-exports.updateWordExtraction = updateWordExtraction;
 /**
  * Extract a single letter from an input. Either using an absolute index, or else a word.letter index.
  * @param input User's input string
  * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
  */
 function extractWordIndex(input, index) {
-    var dot = index.split('.');
-    var letter_index;
+    const dot = index.split('.');
+    let letter_index;
     if (dot.length == 2) {
-        var word_index = parseInt(dot[0]);
+        let word_index = parseInt(dot[0]);
         letter_index = parseInt(dot[1]) - 1;
-        var words = input.split(' ');
+        const words = input.split(' ');
         input = '';
-        for (var i = 0; i < words.length; i++) {
-            var word = words[i];
+        for (let i = 0; i < words.length; i++) {
+            const word = words[i];
             if (words[i].length > 0) {
                 if (--word_index == 0) {
                     input = word;
@@ -2546,7 +2601,6 @@ function extractWordIndex(input, index) {
     }
     return '_';
 }
-exports.extractWordIndex = extractWordIndex;
 /**
  * Callback when user has changed the text in a letter-input
  * @param event A keyboard event
@@ -2555,11 +2609,10 @@ function onLetterChange(event) {
     if (event.isComposing) {
         return; // Don't interfere with IMEs
     }
-    var input = findParentOfClass(event.currentTarget, 'letter-input');
+    const input = findParentOfClass(event.currentTarget, 'letter-input');
     saveLetterLocally(input);
     inputChangeCallback(input, event.key);
 }
-exports.onLetterChange = onLetterChange;
 /**
  * Callback when user has changed the text in a word-input
  * @param event A keyboard event
@@ -2568,24 +2621,23 @@ function onWordChange(event) {
     if (event.isComposing) {
         return; // Don't interfere with IMEs
     }
-    var input = findParentOfClass(event.currentTarget, 'word-input');
+    const input = findParentOfClass(event.currentTarget, 'word-input');
     inputChangeCallback(input, event.key);
     saveWordLocally(input);
 }
-exports.onWordChange = onWordChange;
 /**
  * Anytime any note changes, inform any custom callback
  * @param inp The affected input
  * @param key The key from the event that led here
  */
 function inputChangeCallback(inp, key) {
-    var fn = theBoiler().onInputChange;
+    const fn = theBoiler().onInputChange;
     if (fn) {
         fn(inp);
     }
-    var doc = getOptionalStyle(inp, 'data-onchange');
+    const doc = getOptionalStyle(inp, 'data-onchange');
     if (doc) {
-        var func = window[doc];
+        const func = window[doc];
         if (func) {
             func(inp, key);
         }
@@ -2601,16 +2653,16 @@ function inputChangeCallback(inp, key) {
  * @returns
  */
 function findNextInput(start, dx, dy, cls, clsSkip) {
-    var root2d = findParentOfClass(start, 'letter-grid-2d');
-    var loop = findParentOfClass(start, 'loop-navigation');
-    var find = null;
+    const root2d = findParentOfClass(start, 'letter-grid-2d');
+    const loop = findParentOfClass(start, 'loop-navigation');
+    let find = null;
     if (root2d != null) {
         find = findNext2dInput(root2d, start, dx, dy, cls, clsSkip);
         if (find != null) {
             return find;
         }
     }
-    var discoverRoot = findParentOfClass(start, 'letter-grid-discover');
+    const discoverRoot = findParentOfClass(start, 'letter-grid-discover');
     if (discoverRoot != null) {
         find = findNextDiscover(discoverRoot, start, dx, dy, cls, clsSkip);
         if (find != null) {
@@ -2633,8 +2685,8 @@ function findNextInput(start, dx, dy, cls, clsSkip) {
             return find;
         }
     }
-    var back = dx == -plusX || dy < 0;
-    var next = findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1);
+    const back = dx == -plusX || dy < 0;
+    let next = findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1);
     while (next != null && next.disabled) {
         next = findNextOfClassGroup(next, cls, clsSkip, 'text-input-group', back ? -1 : 1);
     }
@@ -2655,8 +2707,7 @@ function findNextInput(start, dx, dy, cls, clsSkip) {
  * @param dir - 1 (default) to look forward, or -1 to look backward
  * @returns Another element, or null if none
  */
-function findNextOfClassGroup(start, cls, clsSkip, clsGroup, dir) {
-    if (dir === void 0) { dir = 1; }
+function findNextOfClassGroup(start, cls, clsSkip, clsGroup, dir = 1) {
     var group = findParentOfClass(start, clsGroup);
     var next = findNextOfClass(start, cls, clsSkip, dir);
     if (group != null && (next == null || findParentOfClass(next, clsGroup) != group)) {
@@ -2703,13 +2754,13 @@ function findNext2dInput(root, start, dx, dy, cls, clsSkip) {
  * @returns Another input within the grid
  */
 function findNextByPosition(root, start, dx, dy, cls, clsSkip) {
-    var rect = start.getBoundingClientRect();
-    var pos = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
-    var elements = document.getElementsByClassName(cls);
-    var distance = 0;
-    var nearest = null;
-    for (var i = 0; i < elements.length; i++) {
-        var elmt = elements[i];
+    let rect = start.getBoundingClientRect();
+    let pos = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+    const elements = document.getElementsByClassName(cls);
+    let distance = 0;
+    let nearest = null;
+    for (let i = 0; i < elements.length; i++) {
+        const elmt = elements[i];
         if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
             continue;
         }
@@ -2721,7 +2772,7 @@ function findNextByPosition(root, start, dx, dy, cls, clsSkip) {
             // Look for inputs in the same row
             if (pos.y >= rect.y && pos.y < rect.y + rect.height) {
                 // Measure distance in the dx direction
-                var d = (rect.x + rect.width / 2 - pos.x) / dx;
+                const d = (rect.x + rect.width / 2 - pos.x) / dx;
                 // Keep the nearest
                 if (d > 0 && (nearest == null || d < distance)) {
                     distance = d;
@@ -2733,7 +2784,7 @@ function findNextByPosition(root, start, dx, dy, cls, clsSkip) {
             // Look for inputs in the same column
             if (pos.x >= rect.x && pos.x < rect.x + rect.width) {
                 // Measure distance in the dy direction
-                var d = (rect.y + rect.height / 2 - pos.y) / dy;
+                const d = (rect.y + rect.height / 2 - pos.y) / dy;
                 if (d > 0 && (nearest == null || d < distance)) {
                     // Keep the nearest
                     distance = d;
@@ -2749,10 +2800,10 @@ function findNextByPosition(root, start, dx, dy, cls, clsSkip) {
     rect = start.getBoundingClientRect();
     pos = plusX > 0 ? { x: rect.x + (dy > 0 ? rect.width - 1 : 1), y: rect.y + (dx > 0 ? rect.height - 1 : 1) }
         : { x: rect.x + (dy < 0 ? rect.width - 1 : 1), y: rect.y + (dx < 0 ? rect.height - 1 : 1) };
-    var distance2 = 0;
-    var wrap = null;
-    for (var i = 0; i < elements.length; i++) {
-        var elmt = elements[i];
+    let distance2 = 0;
+    let wrap = null;
+    for (let i = 0; i < elements.length; i++) {
+        const elmt = elements[i];
         if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
             continue;
         }
@@ -2766,7 +2817,7 @@ function findNextByPosition(root, start, dx, dy, cls, clsSkip) {
         rect = elmt.getBoundingClientRect();
         // d measures direction in continuing perpendicular direction
         // d2 measures relative position within original direction
-        var d = 0, d2 = 0;
+        let d = 0, d2 = 0;
         if (dx != 0) {
             // Look for inputs in the next row, using dx as a dy
             d = (rect.y + rect.height / 2 - pos.y) / (dx * plusX);
@@ -2790,10 +2841,10 @@ function findNextByPosition(root, start, dx, dy, cls, clsSkip) {
  * Smallest rectangle that bounds both inputs
  */
 function union(rect1, rect2) {
-    var left = Math.min(rect1.left, rect2.left);
-    var right = Math.max(rect1.right, rect2.right);
-    var top = Math.min(rect1.top, rect2.top);
-    var bottom = Math.max(rect1.bottom, rect2.bottom);
+    const left = Math.min(rect1.left, rect2.left);
+    const right = Math.max(rect1.right, rect2.right);
+    const top = Math.min(rect1.top, rect2.top);
+    const bottom = Math.max(rect1.bottom, rect2.bottom);
     return new DOMRect(left, top, right - left, bottom - top);
 }
 /**
@@ -2823,8 +2874,8 @@ function bias(delta, bias) {
  * A negative distance indicates an object in the wrong direction.
  */
 function biasedDistance(from, toward, bx, by) {
-    var dx = bias(toward.x - from.x, bx);
-    var dy = bias(toward.y - from.y, by);
+    let dx = bias(toward.x - from.x, bx);
+    let dy = bias(toward.y - from.y, by);
     if (dx < 0 || dy < 0) {
         return -1; // Invalid target
     }
@@ -2864,14 +2915,14 @@ function wrapAround(world, pos, dx, dy) {
  * @returns Another input within the grid
  */
 function findNextDiscover(root, start, dx, dy, cls, clsSkip) {
-    var rect = start.getBoundingClientRect();
-    var bounds = rect;
-    var pos = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
-    var elements = document.getElementsByClassName(cls);
-    var distance = -1;
-    var nearest = null;
-    for (var i = 0; i < elements.length; i++) {
-        var elmt = elements[i];
+    let rect = start.getBoundingClientRect();
+    let bounds = rect;
+    let pos = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    const elements = document.getElementsByClassName(cls);
+    let distance = -1;
+    let nearest = null;
+    for (let i = 0; i < elements.length; i++) {
+        const elmt = elements[i];
         if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
             continue;
         }
@@ -2880,8 +2931,8 @@ function findNextDiscover(root, start, dx, dy, cls, clsSkip) {
         }
         rect = elmt.getBoundingClientRect();
         bounds = union(bounds, rect);
-        var center = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
-        var d2 = biasedDistance(pos, center, dx, dy);
+        let center = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        let d2 = biasedDistance(pos, center, dx, dy);
         if (d2 > 0 && (nearest == null || d2 < distance)) {
             nearest = elmt;
             distance = d2;
@@ -2890,8 +2941,8 @@ function findNextDiscover(root, start, dx, dy, cls, clsSkip) {
     if (nearest == null) {
         // Wrap around
         pos = wrapAround(bounds, pos, dx, dy);
-        for (var i = 0; i < elements.length; i++) {
-            var elmt = elements[i];
+        for (let i = 0; i < elements.length; i++) {
+            const elmt = elements[i];
             if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
                 continue;
             }
@@ -2899,8 +2950,8 @@ function findNextDiscover(root, start, dx, dy, cls, clsSkip) {
                 continue;
             }
             rect = elmt.getBoundingClientRect();
-            var center = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
-            var d2 = biasedDistance(pos, center, dx, dy);
+            let center = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+            let d2 = biasedDistance(pos, center, dx, dy);
             if (d2 > 0 && (nearest == null || d2 < distance)) {
                 nearest = elmt;
                 distance = d2;
@@ -2919,8 +2970,7 @@ function findNextDiscover(root, start, dx, dy, cls, clsSkip) {
 function autoCompleteWord(input, list) {
     var value = input.value.toLowerCase();
     var match = null;
-    for (var _i = 0, list_3 = list; _i < list_3.length; _i++) {
-        var i = list_3[_i];
+    for (let i of list) {
         if (i.toLowerCase().indexOf(value) == 0) {
             if (match) {
                 return false; // multiple matches
@@ -2936,7 +2986,6 @@ function autoCompleteWord(input, list) {
     }
     return false; // no matches
 }
-exports.autoCompleteWord = autoCompleteWord;
 /*-----------------------------------------------------------
  * _textSetup.ts
  *-----------------------------------------------------------*/
@@ -2952,7 +3001,6 @@ function textSetup() {
     setupWordCells();
     indexAllInputFields();
 }
-exports.textSetup = textSetup;
 /**
  * Look for elements of class 'create-from-pattern'.
  * When found, use the pattern, as well as other inputs, to build out a sequence of text inputs inside that element.
@@ -2992,13 +3040,13 @@ exports.textSetup = textSetup;
  *   navigate-literals:    A table with this class will allow the cursor to land on literals, but not over-type them.
  */
 function setupLetterPatterns() {
-    var tables = document.getElementsByClassName('letter-cell-table');
-    for (var i = 0; i < tables.length; i++) {
-        var table = tables[i];
-        var navLiterals = findParentOfClass(table, 'navigate-literals') != null;
-        var cells = table.getElementsByTagName('td');
-        for (var j = 0; j < cells.length; j++) {
-            var td = cells[j];
+    const tables = document.getElementsByClassName('letter-cell-table');
+    for (let i = 0; i < tables.length; i++) {
+        const table = tables[i];
+        const navLiterals = findParentOfClass(table, 'navigate-literals') != null;
+        const cells = table.getElementsByTagName('td');
+        for (let j = 0; j < cells.length; j++) {
+            const td = cells[j];
             // Skip cells with existing contents
             if (hasClass(td, 'no-cell')) {
                 continue;
@@ -3009,7 +3057,7 @@ function setupLetterPatterns() {
                     td.setAttributeNS(null, 'data-letter-pattern', '1');
                 }
                 // Make sure every row that contains any cells with inputs is tagged as a block
-                var tr = td.parentNode;
+                const tr = td.parentNode;
                 toggleClass(tr, 'letter-cell-block', true);
                 // Any cells tagged extract need to clarify what to extract
                 if (hasClass(td, 'extract')) {
@@ -3036,7 +3084,7 @@ function setupLetterPatterns() {
         }
     }
     var patterns = document.getElementsByClassName('create-from-pattern');
-    for (var i = 0; i < patterns.length; i++) {
+    for (let i = 0; i < patterns.length; i++) {
         var parent = patterns[i];
         var pattern = parseNumberPattern(parent, 'data-letter-pattern');
         var extractPattern = parsePattern(parent, 'data-extract-indeces');
@@ -3046,10 +3094,10 @@ function setupLetterPatterns() {
         var styles = getLetterStyles(parent, 'underline', '', numberedPattern == null ? 'box' : 'numbered');
         if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
             var prevCount = 0;
-            for (var pi = 0; pi < pattern.length; pi++) {
+            for (let pi = 0; pi < pattern.length; pi++) {
                 if (pattern[pi]['count']) {
                     var count = pattern[pi]['count'];
-                    for (var ci = 1; ci <= count; ci++) {
+                    for (let ci = 1; ci <= count; ci++) {
                         var span = document.createElement('span');
                         toggleClass(span, 'letter-cell', true);
                         applyAllClasses(span, styles.letter);
@@ -3078,7 +3126,7 @@ function setupLetterPatterns() {
                     prevCount += count;
                 }
                 else if (pattern[pi]['char'] !== null) {
-                    var lit = pattern[pi]['char'];
+                    const lit = pattern[pi]['char'];
                     var span = createLetterLiteral(lit);
                     toggleClass(span, styles.literal, true);
                     parent.appendChild(span);
@@ -3109,7 +3157,6 @@ function getLetterStyles(elmt, defLetter, defLiteral, defExtract) {
         'literal': literal
     };
 }
-exports.getLetterStyles = getLetterStyles;
 /**
  * Create a span block for a literal character, which can be a sibling of text input fields.
  * It should occupy the same space, although may not have the same decorations such as underline.
@@ -3167,7 +3214,7 @@ function parseNumberPattern(elmt, patternAttr) {
     if (pattern == null) {
         return list;
     }
-    for (var pi = 0; pi < pattern.length; pi++) {
+    for (let pi = 0; pi < pattern.length; pi++) {
         var count = 0;
         while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
             count = count * 10 + (pattern.charCodeAt(pi) - 48);
@@ -3192,14 +3239,13 @@ function parseNumberPattern(elmt, patternAttr) {
  * @param offset - (optional) An offset to apply to each number
  * @returns An array of numbers
  */
-function parsePattern(elmt, patternAttr, offset) {
-    if (offset === void 0) { offset = 0; }
+function parsePattern(elmt, patternAttr, offset = 0) {
     var pattern = elmt.getAttributeNS('', patternAttr);
     offset = offset || 0;
-    var set = [];
+    const set = [];
     if (pattern != null) {
         var array = pattern.split(' ');
-        for (var i = 0; i < array.length; i++) {
+        for (let i = 0; i < array.length; i++) {
             set.push(parseInt(array[i]) + offset);
         }
     }
@@ -3216,14 +3262,13 @@ function parsePattern(elmt, patternAttr, offset) {
  * @param offset - (optional) An offset to apply to each number
  * @returns A generic object of names and values
  */
-function parsePattern2(elmt, patternAttr, offset) {
-    if (offset === void 0) { offset = 0; }
+function parsePattern2(elmt, patternAttr, offset = 0) {
     var pattern = elmt.getAttributeNS('', patternAttr);
     offset = offset || 0;
     var set = {};
     if (pattern != null) {
         var array = pattern.split(' ');
-        for (var i = 0; i < array.length; i++) {
+        for (let i = 0; i < array.length; i++) {
             var equals = array[i].split('=');
             set[parseInt(equals[0]) + offset] = equals[1];
         }
@@ -3247,17 +3292,17 @@ function parsePattern2(elmt, patternAttr, offset) {
  *   "literal" - format that cell as read-only, and overlay the literal text or whitespace
  */
 function setupLetterCells() {
-    var cells = document.getElementsByClassName('letter-cell');
-    var extracteeIndex = 1;
-    var extractorIndex = 1;
-    for (var i = 0; i < cells.length; i++) {
-        var cell = cells[i];
-        var navLiterals = findParentOfClass(cell, 'navigate-literals') != null;
+    const cells = document.getElementsByClassName('letter-cell');
+    let extracteeIndex = 1;
+    let extractorIndex = 1;
+    for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
+        const navLiterals = findParentOfClass(cell, 'navigate-literals') != null;
         // Place a small text input field in each cell
-        var inp = document.createElement('input');
+        const inp = document.createElement('input');
         inp.type = 'text';
         // Allow container to inject ID
-        var attr = void 0;
+        let attr;
         if (attr = cell.getAttributeNS('', 'input-id')) {
             inp.id = attr;
         }
@@ -3278,7 +3323,7 @@ function setupLetterCells() {
             }
             if (hasClass(cell, 'numbered')) {
                 toggleClass(inp, 'numbered-input');
-                var dataNumber = cell.getAttribute('data-number');
+                const dataNumber = cell.getAttribute('data-number');
                 if (dataNumber != null) {
                     inp.setAttribute('data-number', dataNumber);
                 }
@@ -3294,7 +3339,7 @@ function setupLetterCells() {
         }
         if (hasClass(cell, 'literal')) {
             toggleClass(inp, 'letter-non-input');
-            var val = cell.innerText || cell.innerHTML;
+            const val = cell.innerText || cell.innerHTML;
             cell.innerHTML = '';
             inp.setAttribute('data-literal', val == '\xa0' ? ' ' : val);
             if (navLiterals) {
@@ -3319,8 +3364,8 @@ function setupLetterCells() {
  */
 function setupLetterInputs() {
     var inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
-        var inp = inputs[i];
+    for (let i = 0; i < inputs.length; i++) {
+        const inp = inputs[i];
         inp.onkeydown = function (e) { onLetterKeyDown(e); };
         inp.onkeyup = function (e) { onLetterKeyUp(e); };
         inp.onchange = function (e) { onLetterChange(e); };
@@ -3333,15 +3378,15 @@ function setupLetterInputs() {
  */
 function setupWordCells() {
     var cells = document.getElementsByClassName('word-cell');
-    for (var i = 0; i < cells.length; i++) {
-        var cell = cells[i];
-        var inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
+    for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
+        let inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
         // Place a small text input field in each cell
-        var inp = document.createElement('input');
+        const inp = document.createElement('input');
         inp.type = 'text';
         toggleClass(inp, 'word-input');
         // Allow container to inject ID
-        var attr = void 0;
+        let attr;
         if (attr = cell.getAttributeNS('', 'input-id')) {
             inp.id = attr;
         }
@@ -3374,39 +3419,39 @@ function setupWordCells() {
  * @todo: clarify the difference between "extracted" and "extractor"
  */
 function setupExtractPattern() {
-    var extracted = document.getElementById('extracted');
+    const extracted = document.getElementById('extracted');
     if (extracted === null) {
         return;
     }
-    var numbered = true;
+    let numbered = true;
     // Special case: if extracted root is tagged data-indexed-by-letter, 
     // then the indeces that lead here are letters rather than the usual numbers.
-    var lettered = extracted.getAttributeNS('', 'data-indexed-by-letter') != null;
+    const lettered = extracted.getAttributeNS('', 'data-indexed-by-letter') != null;
     // Get the style to use for each extracted value. Default: "letter-underline"
     var extractorStyle = getOptionalStyle(extracted, 'data-extractor-style', 'underline', 'letter-');
-    var numPattern = parseNumberPattern(extracted, 'data-number-pattern');
+    let numPattern = parseNumberPattern(extracted, 'data-number-pattern');
     if (numPattern === null || numPattern.length === 0) {
         numbered = false;
         numPattern = parseNumberPattern(extracted, 'data-letter-pattern');
     }
     if (numPattern != null) {
         var nextNumber = 1;
-        for (var pi = 0; pi < numPattern.length; pi++) {
+        for (let pi = 0; pi < numPattern.length; pi++) {
             if (numPattern[pi]['count']) {
                 var count = numPattern[pi]['count'];
-                for (var ci = 1; ci <= count; ci++) {
-                    var span_1 = document.createElement('span');
-                    toggleClass(span_1, 'letter-cell', true);
-                    toggleClass(span_1, 'extractor', true);
-                    toggleClass(span_1, extractorStyle, true);
-                    extracted.appendChild(span_1);
+                for (let ci = 1; ci <= count; ci++) {
+                    const span = document.createElement('span');
+                    toggleClass(span, 'letter-cell', true);
+                    toggleClass(span, 'extractor', true);
+                    toggleClass(span, extractorStyle, true);
+                    extracted.appendChild(span);
                     if (numbered) {
-                        toggleClass(span_1, 'numbered');
-                        var number = document.createElement('span');
+                        toggleClass(span, 'numbered');
+                        const number = document.createElement('span');
                         toggleClass(number, 'under-number');
                         number.innerText = lettered ? String.fromCharCode(64 + nextNumber) : ("" + nextNumber);
-                        span_1.setAttribute('data-number', "" + nextNumber);
-                        span_1.appendChild(number);
+                        span.setAttribute('data-number', "" + nextNumber);
+                        span.appendChild(number);
                         nextNumber++;
                     }
                 }
@@ -3424,16 +3469,16 @@ function setupExtractPattern() {
  * @returns true if any letter-input or word-input fields have user values
  */
 function hasProgress(event) {
-    var inputs = document.getElementsByClassName('letter-input');
-    for (var i = 0; i < inputs.length; i++) {
-        var inp = inputs[i];
+    let inputs = document.getElementsByClassName('letter-input');
+    for (let i = 0; i < inputs.length; i++) {
+        const inp = inputs[i];
         if (inp.value != '') {
             return true;
         }
     }
     inputs = document.getElementsByClassName('word-input');
-    for (var i = 0; i < inputs.length; i++) {
-        var inp = inputs[i];
+    for (let i = 0; i < inputs.length; i++) {
+        const inp = inputs[i];
         if (inp.value != '') {
             return true;
         }
@@ -3448,12 +3493,11 @@ function hasProgress(event) {
  * When found, expand those elements appropriately.
  */
 function setupSubways() {
-    var subways = document.getElementsByClassName('subway');
-    for (var i = 0; i < subways.length; i++) {
+    const subways = document.getElementsByClassName('subway');
+    for (let i = 0; i < subways.length; i++) {
         createSubway(subways[i]);
     }
 }
-exports.setupSubways = setupSubways;
 /**
  * Maximum of two numbers, or the second, if current is null
  * @param val A new value
@@ -3476,10 +3520,10 @@ function bounding(pt, rect) {
     if (!rect) {
         return new DOMRect(pt.x, pt.y, 0, 0);
     }
-    var left = minn(rect.left, pt.x);
-    var right = maxx(rect.right, pt.x);
-    var top = minn(rect.top, pt.y);
-    var bottom = maxx(rect.bottom, pt.y);
+    const left = minn(rect.left, pt.x);
+    const right = maxx(rect.right, pt.x);
+    const top = minn(rect.top, pt.y);
+    const bottom = maxx(rect.bottom, pt.y);
     return new DOMRect(left, top, right - left, bottom - top);
 }
 /**
@@ -3495,14 +3539,14 @@ function dec(n) {
  * @param subway
  */
 function createSubway(subway) {
-    var details = verticalSubway(subway);
+    let details = verticalSubway(subway);
     if (!details) {
         details = horizontalSubway(subway);
     }
     if (details) {
-        var xmlns = 'http://www.w3.org/2000/svg';
-        var svg = document.createElementNS(xmlns, 'svg');
-        var path = document.createElementNS(xmlns, 'path');
+        const xmlns = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(xmlns, 'svg');
+        const path = document.createElementNS(xmlns, 'path');
         path.setAttributeNS(null, 'd', details.path_d);
         svg.appendChild(path);
         svg.setAttributeNS(null, 'width', dec(details.bounds.right - details.origin.x - details.shift.x + 2) + 'px');
@@ -3522,30 +3566,30 @@ function createSubway(subway) {
  * @returns Details for the SVG and PATH to be created, or undefined if the div does not indicate vertical
  */
 function verticalSubway(subway) {
-    var origin = subway.getBoundingClientRect();
-    var sLefts = subway.getAttributeNS('', 'data-left-end') || '';
-    var sRights = subway.getAttributeNS('', 'data-right-end') || '';
+    const origin = subway.getBoundingClientRect();
+    let sLefts = subway.getAttributeNS('', 'data-left-end') || '';
+    let sRights = subway.getAttributeNS('', 'data-right-end') || '';
     if (sLefts.length == 0 && sRights.length == 0) {
         return undefined;
     }
-    var leftId = subway.getAttributeNS('', 'data-left-id');
-    var rightId = subway.getAttributeNS('', 'data-right-id');
+    const leftId = subway.getAttributeNS('', 'data-left-id');
+    const rightId = subway.getAttributeNS('', 'data-right-id');
     sLefts = joinIds(leftId, sLefts);
     sRights = joinIds(rightId, sRights);
-    var bounds;
-    var yLefts = [];
-    var yRights = [];
+    let bounds;
+    const yLefts = [];
+    const yRights = [];
     // right-side spurs
-    var rights = sRights.split(' ');
-    for (var i = 0; i < rights.length; i++) {
-        var pt = getAnchor(rights[i], 'left');
+    const rights = sRights.split(' ');
+    for (let i = 0; i < rights.length; i++) {
+        const pt = getAnchor(rights[i], 'left');
         bounds = bounding(pt, bounds);
         yRights.push(dec(pt.y - origin.top));
     }
     // left-side spurs
-    var lefts = sLefts.split(' ');
-    for (var i = 0; i < lefts.length; i++) {
-        var pt = getAnchor(lefts[i], 'right');
+    const lefts = sLefts.split(' ');
+    for (let i = 0; i < lefts.length; i++) {
+        const pt = getAnchor(lefts[i], 'right');
         bounds = bounding(pt, bounds);
         yLefts.push(dec(pt.y - origin.top));
     }
@@ -3553,12 +3597,12 @@ function verticalSubway(subway) {
         return; // ERROR
     }
     // rationalize the boundaries
-    var shift_left = minn(0, bounds.left - origin.left);
-    var left = maxx(0, dec(bounds.left - origin.left - shift_left));
-    var right = dec(bounds.left + bounds.width - origin.left - shift_left);
+    const shift_left = minn(0, bounds.left - origin.left);
+    const left = maxx(0, dec(bounds.left - origin.left - shift_left));
+    const right = dec(bounds.left + bounds.width - origin.left - shift_left);
     // belatedly calculate the middle
-    var sMiddle = subway.getAttributeNS('', 'data-center-line');
-    var middle;
+    const sMiddle = subway.getAttributeNS('', 'data-center-line');
+    let middle;
     if (!sMiddle) {
         middle = bounds.width / 2;
     }
@@ -3568,32 +3612,32 @@ function verticalSubway(subway) {
     else {
         middle = parseInt(sMiddle);
     }
-    var d = '';
+    let d = '';
     if (bounds.height <= 2.5 && yLefts.length == 1 && yRights.length == 1) {
         d = 'M' + left + ',' + yLefts[0]
             + ' L' + right + yRights[0];
     }
     else {
         // Draw the first left to the last right
-        var d_1 = 'M' + left + ',' + yLefts[0]
+        let d = 'M' + left + ',' + yLefts[0]
             + ' L' + middle + ',' + yLefts[0]
             + ' L' + middle + ',' + yRights[yRights.length - 1]
             + ' L' + right + ',' + yRights[yRights.length - 1];
         if (yLefts.length > 0 || yRights.length > 0) {
             // Draw the last left to the first right
-            d_1 += 'M' + left + ',' + yLefts[yLefts.length - 1]
+            d += 'M' + left + ',' + yLefts[yLefts.length - 1]
                 + ' L' + middle + ',' + yLefts[yLefts.length - 1]
                 + ' L' + middle + ',' + yRights[0]
                 + ' L' + right + ',' + yRights[0];
         }
         // Add any middle spurs
-        for (var i = 1; i < yLefts.length - 1; i++) {
-            d_1 += 'M' + left + ',' + yLefts[i]
+        for (let i = 1; i < yLefts.length - 1; i++) {
+            d += 'M' + left + ',' + yLefts[i]
                 + ' L' + middle + ',' + yLefts[i]
                 + ' L' + middle + ',' + yRights[0];
         }
-        for (var i = 1; i < yRights.length - 1; i++) {
-            d_1 += 'M' + right + ',' + yRights[i]
+        for (let i = 1; i < yRights.length - 1; i++) {
+            d += 'M' + right + ',' + yRights[i]
                 + ' L' + middle + ',' + yRights[i]
                 + ' L' + middle + ',' + yLefts[0];
         }
@@ -3609,7 +3653,7 @@ function joinIds(id, indeces) {
     if (!id || !indeces) {
         return indeces;
     }
-    var list = indeces.split(' ').map(function (i) { return id + '.' + i; });
+    const list = indeces.split(' ').map(i => id + '.' + i);
     return list.join(' ');
 }
 /**
@@ -3618,33 +3662,33 @@ function joinIds(id, indeces) {
  * @returns Details for the SVG and PATH to be created, or undefined if the div does not indicate horizontal
  */
 function horizontalSubway(subway) {
-    var origin = subway.getBoundingClientRect();
-    var sTops = subway.getAttributeNS('', 'data-top-end') || '';
-    var sBottoms = subway.getAttributeNS('', 'data-bottom-end') || '';
+    const origin = subway.getBoundingClientRect();
+    let sTops = subway.getAttributeNS('', 'data-top-end') || '';
+    let sBottoms = subway.getAttributeNS('', 'data-bottom-end') || '';
     if (sTops.length == 0 && sBottoms.length == 0) {
         return undefined;
     }
-    var topId = subway.getAttributeNS('', 'data-top-id');
-    var bottomId = subway.getAttributeNS('', 'data-bottom-id');
+    const topId = subway.getAttributeNS('', 'data-top-id');
+    const bottomId = subway.getAttributeNS('', 'data-bottom-id');
     sTops = joinIds(topId, sTops);
     sBottoms = joinIds(bottomId, sBottoms);
-    var bounds;
-    var xTops = [];
-    var xBottoms = [];
+    let bounds;
+    const xTops = [];
+    const xBottoms = [];
     // top-side spurs
     if (sBottoms.length > 0) {
-        var bottoms = sBottoms.split(' ');
-        for (var i = 0; i < bottoms.length; i++) {
-            var pt = getAnchor(bottoms[i], 'top');
+        const bottoms = sBottoms.split(' ');
+        for (let i = 0; i < bottoms.length; i++) {
+            const pt = getAnchor(bottoms[i], 'top');
             bounds = bounding(pt, bounds);
             xBottoms.push(dec(pt.x - origin.left));
         }
     }
     // bottom-side spurs
     if (sTops.length > 0) {
-        var tops = sTops.split(' ');
-        for (var i = 0; i < tops.length; i++) {
-            var pt = getAnchor(tops[i], 'bottom');
+        const tops = sTops.split(' ');
+        for (let i = 0; i < tops.length; i++) {
+            const pt = getAnchor(tops[i], 'bottom');
             bounds = bounding(pt, bounds);
             xTops.push(dec(pt.x - origin.left));
         }
@@ -3653,8 +3697,8 @@ function horizontalSubway(subway) {
         return; // ERROR
     }
     // belatedly calculate the middle
-    var sMiddle = subway.getAttributeNS('', 'data-center-line');
-    var middle;
+    const sMiddle = subway.getAttributeNS('', 'data-center-line');
+    let middle;
     if (!sMiddle) {
         middle = bounds.height / 2;
     }
@@ -3671,10 +3715,10 @@ function horizontalSubway(subway) {
         }
     }
     // align the boundaries
-    var shift_top = minn(0, bounds.top - origin.top); // zero or negative
-    var top = maxx(0, dec(bounds.top - origin.top - shift_top));
-    var bottom = dec(bounds.top + bounds.height - origin.top - shift_top);
-    var d = '';
+    const shift_top = minn(0, bounds.top - origin.top); // zero or negative
+    const top = maxx(0, dec(bounds.top - origin.top - shift_top));
+    const bottom = dec(bounds.top + bounds.height - origin.top - shift_top);
+    let d = '';
     if (bounds.width <= 2.5 && xTops.length == 1 && xBottoms.length == 1) {
         // Special case (nearly) vertical connectors
         d = 'M' + xTops[0] + ',' + top
@@ -3685,12 +3729,12 @@ function horizontalSubway(subway) {
         d = 'M' + dec(bounds.left - origin.left) + ',' + middle
             + ' h' + dec(bounds.width);
         // Draw all up-facing spurs
-        for (var i = 0; i < xTops.length; i++) {
+        for (let i = 0; i < xTops.length; i++) {
             d += ' M' + xTops[i] + ',' + middle
                 + ' v' + -middle;
         }
         // Draw all down-facing spurs
-        for (var i = 0; i < xBottoms.length; i++) {
+        for (let i = 0; i < xBottoms.length; i++) {
             d += ' M' + xBottoms[i] + ',' + middle
                 + ' v' + dec(bounds.height - middle);
         }
@@ -3709,13 +3753,13 @@ function horizontalSubway(subway) {
  * @returns A point on the page in client coordinates
  */
 function getAnchor(id_index, edge) {
-    var idx = id_index.split('.');
-    var elmt = document.getElementById(idx[0]);
+    const idx = id_index.split('.');
+    let elmt = document.getElementById(idx[0]);
     if (idx.length > 1) {
-        var children = elmt.getElementsByClassName('letter-cell');
+        const children = elmt.getElementsByClassName('letter-cell');
         elmt = children[parseInt(idx[1]) - 1]; // indexes start at 1
     }
-    var rect = elmt.getBoundingClientRect();
+    const rect = elmt.getBoundingClientRect();
     if (edge == 'left') {
         return new DOMPoint(rect.left, rect.top + 1 + rect.height / 2);
     }
@@ -3739,7 +3783,6 @@ function getAnchor(id_index, edge) {
 function positionFromStyle(elmt) {
     return { x: parseInt(elmt.style.left), y: parseInt(elmt.style.top) };
 }
-exports.positionFromStyle = positionFromStyle;
 // VOCABULARY
 // moveable: any object which can be clicked on to begin a move
 // drop-target: a container that can receive a (single) moveable element
@@ -3749,17 +3792,17 @@ exports.positionFromStyle = positionFromStyle;
  * Those items get click handlers
  */
 function preprocessDragFunctions() {
-    var elems = document.getElementsByClassName('moveable');
-    for (var i = 0; i < elems.length; i++) {
+    let elems = document.getElementsByClassName('moveable');
+    for (let i = 0; i < elems.length; i++) {
         preprocessMoveable(elems[i]);
     }
     elems = document.getElementsByClassName('drop-target');
-    for (var i = 0; i < elems.length; i++) {
+    for (let i = 0; i < elems.length; i++) {
         preprocessDropTarget(elems[i]);
     }
     elems = document.getElementsByClassName('free-drop');
-    for (var i = 0; i < elems.length; i++) {
-        var elem = elems[i];
+    for (let i = 0; i < elems.length; i++) {
+        const elem = elems[i];
         preprocessFreeDrop(elem);
         // backward-compatible
         if (hasClass(elem, 'z-grow-up')) {
@@ -3771,7 +3814,6 @@ function preprocessDragFunctions() {
         initFreeDropZorder(elem);
     }
 }
-exports.preprocessDragFunctions = preprocessDragFunctions;
 /**
  * Hook up the necessary mouse events to each moveable item
  * @param elem a moveable element
@@ -3807,38 +3849,36 @@ function preprocessFreeDrop(elem) {
  * @param container The free-drop container, which can contain a data-z-grow attribute
  */
 function initFreeDropZorder(container) {
-    var _a;
-    var zGrow = (_a = container.getAttributeNS('', 'data-z-grow')) === null || _a === void 0 ? void 0 : _a.toLowerCase();
+    const zGrow = container.getAttributeNS('', 'data-z-grow')?.toLowerCase();
     if (!zGrow || (zGrow != 'up' && zGrow != 'down')) {
         return;
     }
-    var zUp = zGrow == 'up';
-    var height = container.getBoundingClientRect().height;
-    var children = container.getElementsByClassName('moveable');
-    for (var i = 0; i < children.length; i++) {
-        var child = children[i];
-        var z = parseInt(child.style.top); // will always be in pixels, relative to the container
+    const zUp = zGrow == 'up';
+    const height = container.getBoundingClientRect().height;
+    const children = container.getElementsByClassName('moveable');
+    for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        let z = parseInt(child.style.top); // will always be in pixels, relative to the container
         z = 1000 + (zUp ? (height - z) : z);
         child.style.zIndex = String(z);
     }
 }
-exports.initFreeDropZorder = initFreeDropZorder;
 /**
  * The most recent object to be moved
  */
-var _priorDrag = null;
+let _priorDrag = null;
 /**
  * The object that is selected, if any
  */
-var _dragSelected = null;
+let _dragSelected = null;
 /**
  * The drop-target over which we are dragging
  */
-var _dropHover = null;
+let _dropHover = null;
 /**
  * The position within its container that a dragged object was in before dragging started
  */
-var _dragPoint = null;
+let _dragPoint = null;
 /**
  * Pick up an object
  * @param obj A moveable object
@@ -3866,7 +3906,7 @@ function doDrop(dest) {
     if (!_dragSelected) {
         return;
     }
-    var src = getDragSource();
+    let src = getDragSource();
     if (dest === src) {
         if (_priorDrag !== _dragSelected) {
             // Don't treat the first click of a 2-click drag
@@ -3876,13 +3916,13 @@ function doDrop(dest) {
         // 2nd click on src is equivalent to dropping no-op
         dest = null;
     }
-    var other = null;
+    let other = null;
     if (dest != null) {
         other = findFirstChildOfClass(dest, 'moveable', undefined, 0);
         if (other != null) {
             dest.removeChild(other);
         }
-        src === null || src === void 0 ? void 0 : src.removeChild(_dragSelected);
+        src?.removeChild(_dragSelected);
         dest.appendChild(_dragSelected);
         saveContainerLocally(_dragSelected, dest);
     }
@@ -3900,12 +3940,12 @@ function doDrop(dest) {
         toggleClass(other, 'displaced', true);
         if (!hasClass(src, 'drag-source')) {
             // Don't displace to a destination if an empty source is available
-            var src2 = findEmptySource();
+            const src2 = findEmptySource();
             if (src2 != null) {
                 src = src2;
             }
         }
-        src === null || src === void 0 ? void 0 : src.appendChild(other);
+        src?.appendChild(other);
         saveContainerLocally(other, src);
     }
 }
@@ -3920,10 +3960,10 @@ function doFreeDrop(event) {
         return;
     }
     if (_dragSelected != null) {
-        var dx = event.clientX - _dragPoint.x;
-        var dy = event.clientY - _dragPoint.y;
-        var oldLeft = parseInt(_dragSelected.style.left);
-        var oldTop = parseInt(_dragSelected.style.top);
+        const dx = event.clientX - _dragPoint.x;
+        const dy = event.clientY - _dragPoint.y;
+        const oldLeft = parseInt(_dragSelected.style.left);
+        const oldTop = parseInt(_dragSelected.style.top);
         _dragSelected.style.left = (oldLeft + dx) + 'px';
         _dragSelected.style.top = (oldTop + dy) + 'px';
         updateZ(_dragSelected, oldTop + dy);
@@ -3938,14 +3978,13 @@ function doFreeDrop(event) {
  * @param y The y-offset of that element, within its free-drop container
  */
 function updateZ(elem, y) {
-    var _a;
-    var dest = findParentOfClass(elem, 'free-drop');
-    var zGrow = (_a = dest === null || dest === void 0 ? void 0 : dest.getAttributeNS('', 'data-z-grow')) === null || _a === void 0 ? void 0 : _a.toLowerCase();
+    let dest = findParentOfClass(elem, 'free-drop');
+    const zGrow = dest?.getAttributeNS('', 'data-z-grow')?.toLowerCase();
     if (zGrow == 'down') {
         elem.style.zIndex = String(1000 + y);
     }
     else if (zGrow == 'up') {
-        var rect = dest.getBoundingClientRect();
+        const rect = dest.getBoundingClientRect();
         elem.style.zIndex = String(1000 + rect.height - y);
     }
 }
@@ -3955,7 +3994,7 @@ function updateZ(elem, y) {
  */
 function getDragSource() {
     if (_dragSelected != null) {
-        var src = findParentOfClass(_dragSelected, 'drop-target');
+        let src = findParentOfClass(_dragSelected, 'drop-target');
         if (src == null) {
             src = findParentOfClass(_dragSelected, 'drag-source');
         }
@@ -3972,11 +4011,11 @@ function getDragSource() {
  * @param event The mouse down event
  */
 function onClickDrag(event) {
-    var target = event.target;
+    const target = event.target;
     if (!target || target.tagName == 'INPUT') {
         return;
     }
-    var obj = findParentOfClass(target, 'moveable');
+    const obj = findParentOfClass(target, 'moveable');
     if (obj != null) {
         if (_dragSelected == null) {
             pickUp(obj);
@@ -3993,15 +4032,15 @@ function onClickDrag(event) {
  * @param event A mouse up event
  */
 function onClickDrop(event) {
-    var target = event.target;
+    const target = event.target;
     if (!target || target.tagName == 'INPUT') {
         return;
     }
     if (_dragSelected != null) {
-        var dest = findParentOfClass(target, 'drop-target');
+        let dest = findParentOfClass(target, 'drop-target');
         if (event.pointerType == 'touch') {
             // Touch events' target is really the source. Need to find target
-            var pos = document.elementFromPoint(event.clientX, event.clientY);
+            let pos = document.elementFromPoint(event.clientX, event.clientY);
             if (pos) {
                 pos = findParentOfClass(pos, 'drop-target');
                 if (pos) {
@@ -4018,8 +4057,8 @@ function onClickDrop(event) {
  * @param event The mouse drag end event
  */
 function onDragDrop(event) {
-    var elem = document.elementFromPoint(event.clientX, event.clientY);
-    var dest = findParentOfClass(elem, 'drop-target');
+    const elem = document.elementFromPoint(event.clientX, event.clientY);
+    let dest = findParentOfClass(elem, 'drop-target');
     if (dest) {
         doDrop(dest);
     }
@@ -4038,11 +4077,11 @@ function onDrag(event) {
     if (event.screenX == 0 && event.screenY == 0) {
         return; // not a real event; some extra fire on drop
     }
-    var elem = document.elementFromPoint(event.clientX, event.clientY);
-    var dest = findParentOfClass(elem, 'drop-target');
+    const elem = document.elementFromPoint(event.clientX, event.clientY);
+    const dest = findParentOfClass(elem, 'drop-target');
     if (dest != _dropHover) {
         toggleClass(_dropHover, 'drop-hover', false);
-        var src = getDragSource();
+        const src = getDragSource();
         if (dest != src) {
             toggleClass(dest, 'drop-hover', true);
             _dropHover = dest;
@@ -4064,8 +4103,8 @@ function onTouchDrag(event) {
  * @param event A mouse hover event
  */
 function onDropAllowed(event) {
-    var elem = document.elementFromPoint(event.clientX, event.clientY);
-    var dest = findParentOfClass(elem, 'drop-target');
+    const elem = document.elementFromPoint(event.clientX, event.clientY);
+    let dest = findParentOfClass(elem, 'drop-target');
     if (dest == null) {
         dest = findParentOfClass(elem, 'free-drop');
     }
@@ -4079,8 +4118,8 @@ function onDropAllowed(event) {
  * @returns An un-occuped drag-source, if one can be found
  */
 function findEmptySource() {
-    var elems = document.getElementsByClassName('drag-source');
-    for (var i = 0; i < elems.length; i++) {
+    const elems = document.getElementsByClassName('drag-source');
+    for (let i = 0; i < elems.length; i++) {
         if (findFirstChildOfClass(elems[i], 'moveable', undefined, 0) == null) {
             return elems[i];
         }
@@ -4099,7 +4138,6 @@ function quickMove(moveable, destination) {
         doDrop(destination);
     }
 }
-exports.quickMove = quickMove;
 /**
  * Move an object within a free-move container
  * @param moveable The object to move
@@ -4113,7 +4151,6 @@ function quickFreeMove(moveable, position) {
         toggleClass(moveable, 'placed', true);
     }
 }
-exports.quickFreeMove = quickFreeMove;
 /*-----------------------------------------------------------
  * _stampTools.ts
  *-----------------------------------------------------------*/
@@ -4127,24 +4164,24 @@ exports.quickFreeMove = quickFreeMove;
 /**
  * The tools in the palette.
  */
-var _stampTools = [];
+const _stampTools = [];
 /**
  * The currently selected tool from the palette.
  */
-var _selectedTool = null;
+let _selectedTool = null;
 /**
  * The tool name to cycle to first.
  */
-var _firstTool = null;
+let _firstTool = null;
 /**
  * A tool name which, as a side effect, extract an answer from the content under it.
  */
-var _extractorTool = null;
+let _extractorTool = null;
 /**
  * The tool name that would erase things.
  */
-var _eraseTool = null;
-var stamps_can_drag = false;
+let _eraseTool = null;
+let stamps_can_drag = false;
 /**
  * A document can only support a single stamp palette.
  * @returns The palette container, if one exists, else null
@@ -4156,28 +4193,28 @@ function findStampPalette() {
  * Scan the page for anything marked stampable or a draw tool
  */
 function preprocessStampObjects() {
-    var containers = document.getElementsByClassName('stampable-container');
-    for (var i = 0; i < containers.length; i++) {
-        var container = containers[i];
-        var rules = getOptionalStyle(container, 'data-stampable-rules');
+    const containers = document.getElementsByClassName('stampable-container');
+    for (let i = 0; i < containers.length; i++) {
+        const container = containers[i];
+        const rules = getOptionalStyle(container, 'data-stampable-rules');
         if (rules) {
-            var list = rules.split(' ');
-            for (var r = 0; r < list.length; r++) {
-                var rule = list[r];
+            const list = rules.split(' ');
+            for (let r = 0; r < list.length; r++) {
+                const rule = list[r];
                 if (rule[0] == '.') {
-                    var children = container.getElementsByClassName(rule.substring(1));
-                    for (var i_3 = 0; i_3 < children.length; i_3++) {
-                        toggleClass(children[i_3], 'stampable', true);
+                    const children = container.getElementsByClassName(rule.substring(1));
+                    for (let i = 0; i < children.length; i++) {
+                        toggleClass(children[i], 'stampable', true);
                     }
                 }
                 else if (rule[0] == '#') {
-                    var child = document.getElementById(rule.substring(1));
+                    const child = document.getElementById(rule.substring(1));
                     toggleClass(child, 'stampable', true);
                 }
                 else {
-                    var children = container.getElementsByTagName(rule.toLowerCase());
-                    for (var i_4 = 0; i_4 < children.length; i_4++) {
-                        toggleClass(children[i_4], 'stampable', true);
+                    const children = container.getElementsByTagName(rule.toLowerCase());
+                    for (let i = 0; i < children.length; i++) {
+                        toggleClass(children[i], 'stampable', true);
                     }
                 }
             }
@@ -4190,9 +4227,9 @@ function preprocessStampObjects() {
             container.addEventListener('pointerleave', pointerLeaveContainer);
         }
     }
-    var elems = document.getElementsByClassName('stampable');
+    let elems = document.getElementsByClassName('stampable');
     if (containers.length == 0 && elems.length > 0) {
-        var container = document.getElementById('pageBody');
+        const container = document.getElementById('pageBody');
         if (container) {
             container.addEventListener('pointerdown', pointerDownInContainer);
             // container.addEventListener('pointerup', pointerUpInContainer);
@@ -4208,14 +4245,14 @@ function preprocessStampObjects() {
         // }
     }
     elems = document.getElementsByClassName('stampTool');
-    for (var i = 0; i < elems.length; i++) {
-        var elmt = elems[i];
+    for (let i = 0; i < elems.length; i++) {
+        const elmt = elems[i];
         _stampTools.push(elmt);
         elmt.onclick = function (e) { onSelectStampTool(e); };
     }
-    var palette = findStampPalette();
+    const palette = findStampPalette();
     if (palette != null) {
-        var id = palette.getAttributeNS('', 'data-tool-extractor');
+        let id = palette.getAttributeNS('', 'data-tool-extractor');
         _extractorTool = id != null ? document.getElementById(id) : null;
         id = palette.getAttributeNS('', 'data-tool-erase');
         _eraseTool = id != null ? document.getElementById(id) : null;
@@ -4226,8 +4263,7 @@ function preprocessStampObjects() {
         _firstTool = _stampTools[0];
     }
 }
-exports.preprocessStampObjects = preprocessStampObjects;
-var prevStampablePointer = null;
+let prevStampablePointer = null;
 function pointerDownInContainer(event) {
     if (!isPrimaryButton(event)) {
         return;
@@ -4235,7 +4271,7 @@ function pointerDownInContainer(event) {
     if (event.pointerType != 'mouse' && stamps_can_drag) {
         event.preventDefault();
     }
-    var elmt = findStampableAtPointer(event);
+    const elmt = findStampableAtPointer(event);
     if (elmt) {
         prevStampablePointer = elmt;
         onClickStamp(event, elmt);
@@ -4257,7 +4293,7 @@ function pointerMoveInContainer(event) {
     if (event.pointerType != 'mouse' && stamps_can_drag) {
         event.preventDefault();
     }
-    var elmt = findStampableAtPointer(event);
+    const elmt = findStampableAtPointer(event);
     if (elmt !== prevStampablePointer) {
         if (prevStampablePointer) {
             preMoveStamp(event, prevStampablePointer);
@@ -4281,9 +4317,9 @@ function pointerLeaveContainer(event) {
     prevStampablePointer = null;
 }
 function findStampableAtPointer(event) {
-    var stampable = document.getElementsByClassName('stampable');
-    for (var i = 0; i < stampable.length; i++) {
-        var rect = stampable[i].getBoundingClientRect();
+    const stampable = document.getElementsByClassName('stampable');
+    for (let i = 0; i < stampable.length; i++) {
+        const rect = stampable[i].getBoundingClientRect();
         if (rect.left <= event.clientX && rect.right > event.clientX
             && rect.top <= event.clientY && rect.bottom > event.clientY) {
             return stampable[i];
@@ -4296,10 +4332,10 @@ function findStampableAtPointer(event) {
  * @param event The click event
  */
 function onSelectStampTool(event) {
-    var tool = findParentOfClass(event.target, 'stampTool');
-    var prevToolId = getCurrentStampToolId();
+    const tool = findParentOfClass(event.target, 'stampTool');
+    const prevToolId = getCurrentStampToolId();
     if (tool != null) {
-        for (var i = 0; i < _stampTools.length; i++) {
+        for (let i = 0; i < _stampTools.length; i++) {
             toggleClass(_stampTools[i], 'selected', false);
         }
         if (tool != _selectedTool) {
@@ -4310,7 +4346,7 @@ function onSelectStampTool(event) {
             _selectedTool = null;
         }
     }
-    var fn = theBoiler().onStampChange;
+    const fn = theBoiler().onStampChange;
     if (fn) {
         fn(getCurrentStampToolId(), prevToolId);
     }
@@ -4327,8 +4363,8 @@ function onSelectStampTool(event) {
 function getStampTool(event, toolFromErase) {
     // Shift keys always win
     if (event.shiftKey || event.altKey || event.ctrlKey) {
-        for (var i = 0; i < _stampTools.length; i++) {
-            var mods = _stampTools[i].getAttributeNS('', 'data-click-modifier');
+        for (let i = 0; i < _stampTools.length; i++) {
+            const mods = _stampTools[i].getAttributeNS('', 'data-click-modifier');
             if (mods != null
                 && event.shiftKey == (mods.indexOf('shift') >= 0)
                 && event.ctrlKey == (mods.indexOf('ctrl') >= 0)
@@ -4366,13 +4402,13 @@ function getStampToolById(id) {
  */
 function getNextStampTool(tool) {
     if (tool) {
-        var nextId = tool.getAttributeNS('', 'data-next-stamp-id');
+        const nextId = tool.getAttributeNS('', 'data-next-stamp-id');
         if (nextId) {
             return document.getElementById(nextId);
         }
-        var palette = findStampPalette();
+        const palette = findStampPalette();
         if (palette) {
-            var curIndex = siblingIndexOfClass(palette, tool, 'stampTool');
+            const curIndex = siblingIndexOfClass(palette, tool, 'stampTool');
             return findNthChildOfClass(palette, 'stampTool', curIndex + 1);
         }
     }
@@ -4388,7 +4424,6 @@ function getCurrentStampToolId() {
     var id = _selectedTool.id;
     return id || '';
 }
-exports.getCurrentStampToolId = getCurrentStampToolId;
 /**
  * A stampable element can be the eventual container of the stamp. (example: TD)
  * Or it can assign another element to be the stamp container, with the data-stamp-parent attribute.
@@ -4397,13 +4432,12 @@ exports.getCurrentStampToolId = getCurrentStampToolId;
  * @returns
  */
 function getStampParent(target) {
-    var parentId = getOptionalStyle(target, 'data-stamp-parent');
+    const parentId = getOptionalStyle(target, 'data-stamp-parent');
     if (parentId) {
         return document.getElementById(parentId);
     }
     return target;
 }
-exports.getStampParent = getStampParent;
 /**
  * When drawing on a surface where something is already drawn. The first click
  * always erases the existing drawing.
@@ -4417,9 +4451,9 @@ function eraseStamp(target) {
     if (target == null) {
         return null;
     }
-    var parent = getStampParent(target);
-    var cur = findFirstChildOfClass(parent, 'stampedObject');
-    var curId;
+    const parent = getStampParent(target);
+    const cur = findFirstChildOfClass(parent, 'stampedObject');
+    let curId;
     if (cur != null) {
         // The target contains a stampedObject, which was injected by a template
         // The tool itself is likely stamped on the parent, but check everywhere
@@ -4447,8 +4481,8 @@ function eraseStamp(target) {
     if (_selectedTool == null) {
         // If no tool is selected, clicking on anything rotates it to the next tool in the cycle
         if (curId) {
-            var curTool = getStampToolById(curId);
-            var nextTool = getNextStampTool(curTool);
+            const curTool = getStampToolById(curId);
+            const nextTool = getNextStampTool(curTool);
             return nextTool;
         }
     }
@@ -4470,25 +4504,25 @@ function eraseStamp(target) {
  *                           otherwise it will rotate through stampTools in visual order
  */
 function doStamp(target, tool) {
-    var parent = getStampParent(target);
+    const parent = getStampParent(target);
     // Template can be null if tool removes drawn objects
-    var tmpltId = tool.getAttributeNS('', 'data-template-id');
-    var useId = tool.getAttributeNS('', 'data-use-template-id');
-    var styles = tool.getAttributeNS('', 'data-style');
-    var unstyles = tool.getAttributeNS('', 'data-unstyle');
-    var erase = tool.getAttributeNS('', 'data-erase');
+    const tmpltId = tool.getAttributeNS('', 'data-template-id');
+    const useId = tool.getAttributeNS('', 'data-use-template-id');
+    const styles = tool.getAttributeNS('', 'data-style');
+    const unstyles = tool.getAttributeNS('', 'data-unstyle');
+    const erase = tool.getAttributeNS('', 'data-erase');
     if (tmpltId) {
-        var template = document.getElementById(tmpltId);
+        let template = document.getElementById(tmpltId);
         if (template != null) {
             // Inject the template into the stampable container
-            var clone = template.content.cloneNode(true);
+            const clone = template.content.cloneNode(true);
             parent.appendChild(clone);
         }
         parent.setAttributeNS('', 'data-stamp-id', tool.id);
     }
     else if (useId) {
-        var nodes = useTemplate(tool, useId);
-        for (var i = 0; i < nodes.length; i++) {
+        const nodes = useTemplate(tool, useId);
+        for (let i = 0; i < nodes.length; i++) {
             parent.appendChild(nodes[i]);
         }
         parent.setAttributeNS('', 'data-stamp-id', tool.id);
@@ -4504,8 +4538,8 @@ function doStamp(target, tool) {
             // Apply one or more styles (delimited by spaces)
             // to the target itself. NOT to some parent stampable object.
             // No parent needed if we're not injecting anything.
-            var split = styles.split(' ');
-            for (var i = 0; i < split.length; i++) {
+            const split = styles.split(' ');
+            for (let i = 0; i < split.length; i++) {
                 toggleClass(target, split[i], true);
             }
         }
@@ -4513,29 +4547,28 @@ function doStamp(target, tool) {
             // Apply one or more styles (delimited by spaces)
             // to the target itself. NOT to some parent stampable object.
             // No parent needed if we're not injecting anything.
-            var split = unstyles.split(' ');
-            for (var i = 0; i < split.length; i++) {
+            const split = unstyles.split(' ');
+            for (let i = 0; i < split.length; i++) {
                 toggleClass(target, split[i], false);
             }
         }
     }
     updateStampExtraction();
     saveStampingLocally(target);
-    var fn = theBoiler().onStamp;
+    const fn = theBoiler().onStamp;
     if (fn) {
         fn(target);
     }
 }
-exports.doStamp = doStamp;
-var _dragDrawTool = null;
-var _lastDrawTool = null;
+let _dragDrawTool = null;
+let _lastDrawTool = null;
 /**
  * Draw where a click happened.
  * Which tool is taken from selected state, click modifiers, and current target state.
  * @param event The mouse click
  */
 function onClickStamp(event, target) {
-    var nextTool = eraseStamp(target);
+    let nextTool = eraseStamp(target);
     nextTool = getStampTool(event, nextTool);
     if (nextTool) {
         doStamp(target, nextTool);
@@ -4565,9 +4598,9 @@ function onMoveStamp(event, target) {
  */
 function preMoveStamp(event, target) {
     if (target != null) {
-        var cur = findFirstChildOfClass(target, 'stampedObject');
+        const cur = findFirstChildOfClass(target, 'stampedObject');
         if (cur != null) {
-            var stampId = getOptionalStyle(cur, 'data-stamp-id');
+            const stampId = getOptionalStyle(cur, 'data-stamp-id');
             _dragDrawTool = stampId ? document.getElementById(stampId) : null;
         }
         else {
@@ -4585,15 +4618,15 @@ function updateStampExtraction() {
     if (!_extractorTool) {
         return;
     }
-    var extracted = document.getElementById('extracted');
+    const extracted = document.getElementById('extracted');
     if (extracted != null) {
-        var drawnObjects = document.getElementsByClassName('stampedObject');
-        var extraction = '';
-        for (var i = 0; i < drawnObjects.length; i++) {
-            var tool = getOptionalStyle(drawnObjects[i], 'data-stamp-id');
+        const drawnObjects = document.getElementsByClassName('stampedObject');
+        let extraction = '';
+        for (let i = 0; i < drawnObjects.length; i++) {
+            const tool = getOptionalStyle(drawnObjects[i], 'data-stamp-id');
             if (tool == _extractorTool.id) {
-                var drawn = drawnObjects[i];
-                var extract = findFirstChildOfClass(drawn, 'extract');
+                const drawn = drawnObjects[i];
+                const extract = findFirstChildOfClass(drawn, 'extract');
                 if (extract) {
                     extraction += extract.innerText;
                 }
@@ -4603,7 +4636,7 @@ function updateStampExtraction() {
             extracted.innerText = extraction;
         }
         else {
-            var inp = extracted;
+            let inp = extracted;
             inp.value = extraction;
         }
     }
@@ -4617,10 +4650,9 @@ function updateStampExtraction() {
  * @returns A position
  */
 function positionFromCenter(elmt) {
-    var rect = elmt.getBoundingClientRect();
+    const rect = elmt.getBoundingClientRect();
     return new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
 }
-exports.positionFromCenter = positionFromCenter;
 /**
  * Find the square of the distance between a point and the mouse
  * @param elmt A position, in screen coordinates
@@ -4628,17 +4660,15 @@ exports.positionFromCenter = positionFromCenter;
  * @returns The distance, squared
  */
 function distance2Mouse(pos, evt) {
-    var dx = pos.x - evt.x;
-    var dy = pos.y - evt.y;
+    const dx = pos.x - evt.x;
+    const dy = pos.y - evt.y;
     return dx * dx + dy * dy;
 }
-exports.distance2Mouse = distance2Mouse;
 function distance2(pos, pos2) {
-    var dx = pos.x - pos2.x;
-    var dy = pos.y - pos2.y;
+    const dx = pos.x - pos2.x;
+    const dy = pos.y - pos2.y;
     return dx * dx + dy * dy;
 }
-exports.distance2 = distance2;
 // VOCABULARY
 // vertex: any point that can anchor a straight edge
 // straight-edge-area: the potential drag range
@@ -4656,14 +4686,13 @@ function preprocessRulerFunctions(mode, fill) {
     selector_class = mode;
     area_class = mode + '-area';
     selector_fill_class = fill ? (selector_class + '-fill') : null;
-    var elems = document.getElementsByClassName(area_class);
-    for (var i = 0; i < elems.length; i++) {
+    let elems = document.getElementsByClassName(area_class);
+    for (let i = 0; i < elems.length; i++) {
         preprocessRulerRange(elems[i]);
     }
     indexAllVertices();
     // TODO: make lines editable
 }
-exports.preprocessRulerFunctions = preprocessRulerFunctions;
 /**
  * Identified which type of selector is enabled for this page
  * @returns either 'straight-edge' or 'word-select'
@@ -4671,7 +4700,6 @@ exports.preprocessRulerFunctions = preprocessRulerFunctions;
 function getStraightEdgeType() {
     return selector_class;
 }
-exports.getStraightEdgeType = getStraightEdgeType;
 /**
  * Hook up the necessary mouse events to each moveable item
  * @param elem a moveable element
@@ -4698,30 +4726,30 @@ exports.EdgeTypes = {
 /**
  * Which class are we looking for: should be one of the EdgeTypes
  */
-var selector_class;
+let selector_class;
 /**
  * A second class, which can overlay the first as a fill
  */
-var selector_fill_class;
+let selector_fill_class;
 /**
  * What is the class of the container: straight-edge-area or word-select-area
  */
-var area_class;
+let area_class;
 function createPartialRulerData(range) {
-    var svg = findParentOfTag(range, 'SVG');
-    var containers = svg.getElementsByClassName(selector_class + '-container');
-    var bounds = svg.getBoundingClientRect();
-    var max_points = range.getAttributeNS('', 'data-max-points');
-    var maxPoints = max_points ? parseInt(max_points) : 2;
-    var canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
-    var canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
-    var maxBridges = range.getAttributeNS('', 'data-max-bridges');
-    var bridgeOffset = range.getAttributeNS('', 'data-bridge-offset');
-    var hoverRange = range.getAttributeNS('', 'data-hover-range');
-    var angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
-    var showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
-    var angleConstraints2 = angleConstraints ? (angleConstraints + '+0').split('+').map(function (c) { return parseInt(c); }) : undefined;
-    var data = {
+    const svg = findParentOfTag(range, 'SVG');
+    const containers = svg.getElementsByClassName(selector_class + '-container');
+    const bounds = svg.getBoundingClientRect();
+    const max_points = range.getAttributeNS('', 'data-max-points');
+    const maxPoints = max_points ? parseInt(max_points) : 2;
+    const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices');
+    const canCrossSelf = range.getAttributeNS('', 'data-can-cross-self');
+    const maxBridges = range.getAttributeNS('', 'data-max-bridges');
+    const bridgeOffset = range.getAttributeNS('', 'data-bridge-offset');
+    const hoverRange = range.getAttributeNS('', 'data-hover-range');
+    const angleConstraints = range.getAttributeNS('', 'data-angle-constraints');
+    const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
+    const angleConstraints2 = angleConstraints ? (angleConstraints + '+0').split('+').map(c => parseInt(c)) : undefined;
+    const data = {
         svg: svg,
         container: (containers && containers.length > 0) ? containers[0] : svg,
         bounds: bounds,
@@ -4734,7 +4762,7 @@ function createPartialRulerData(range) {
         angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
         angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
-        evtPos: new DOMPoint(NaN, NaN),
+        evtPos: new DOMPoint(NaN, NaN), // stub
         evtPoint: svg.createSVGPoint(), // stub 
     };
     return data;
@@ -4745,13 +4773,13 @@ function createPartialRulerData(range) {
  * @returns A RulerEventData
  */
 function getRulerData(evt) {
-    var range = findParentOfClass(evt.target, area_class);
-    var data = createPartialRulerData(range);
+    const range = findParentOfClass(evt.target, area_class);
+    const data = createPartialRulerData(range);
     data.evtPos = new DOMPoint(evt.x, evt.y);
     data.evtPoint = data.svg.createSVGPoint();
     data.evtPoint.x = data.evtPos.x - data.bounds.left;
     data.evtPoint.y = data.evtPos.y - data.bounds.top;
-    var near = findNearestVertex(data);
+    let near = findNearestVertex(data);
     if (near) {
         data.nearest = getVertexData(data, near);
     }
@@ -4763,14 +4791,14 @@ function getRulerData(evt) {
  * @returns a RulerEventData
  */
 function getRulerDataFromVertex(vertex) {
-    var range = findParentOfClass(vertex, area_class);
-    var data = createPartialRulerData(range);
-    var vBounds = vertex.getBoundingClientRect();
+    const range = findParentOfClass(vertex, area_class);
+    const data = createPartialRulerData(range);
+    const vBounds = vertex.getBoundingClientRect();
     data.evtPos = new DOMPoint(vBounds.x + vBounds.width / 2, vBounds.y + vBounds.height / 2);
     data.evtPoint = data.svg.createSVGPoint();
     data.evtPoint.x = data.evtPos.x - data.bounds.left;
     data.evtPoint.y = data.evtPos.y - data.bounds.top;
-    var near = findNearestVertex(data);
+    let near = findNearestVertex(data);
     if (near) {
         data.nearest = getVertexData(data, near);
     }
@@ -4783,7 +4811,7 @@ function getRulerDataFromVertex(vertex) {
  * @returns a VertexData
  */
 function getVertexData(ruler, vert) {
-    var data = {
+    const data = {
         vertex: vert,
         index: getGlobalIndex(vert, 'vx'),
         group: findParentOfClass(vert, 'vertex-g') || vert,
@@ -4797,30 +4825,29 @@ function getVertexData(ruler, vert) {
 /**
  * All straight edges on the page, except for the one under construction
  */
-var _straightEdges = [];
+let _straightEdges = [];
 /**
  * The nearest vertex, if being affected by hover
  */
-var _hoverEndpoint = null;
+let _hoverEndpoint = null;
 /**
  * A straight edge under construction
  */
-var _straightEdgeBuilder = null;
+let _straightEdgeBuilder = null;
 /**
  * The vertices that are part of the straight edge under construction
  */
-var _straightEdgeVertices = [];
+let _straightEdgeVertices = [];
 /**
  * Handler for both mouse moves and mouse drag
  * @param evt The mouse move event
  */
 function onRulerHover(evt) {
-    var _a, _b, _c;
-    var ruler = getRulerData(evt);
+    const ruler = getRulerData(evt);
     if (!ruler) {
         return;
     }
-    var inLineIndex = ruler.nearest ? indexInLine(ruler.nearest.vertex) : -1;
+    const inLineIndex = ruler.nearest ? indexInLine(ruler.nearest.vertex) : -1;
     if (_straightEdgeBuilder && inLineIndex >= 0) {
         if (inLineIndex == _straightEdgeVertices.length - 2) {
             // Dragging back to the start contracts the line
@@ -4834,8 +4861,8 @@ function onRulerHover(evt) {
     if (_straightEdgeBuilder) {
         // Extending a straight-edge that we've already started
         if (ruler.nearest || ruler.showOpenDrag) {
-            var extendLast = extendsLastSegment(ruler.nearest);
-            var updateOpen = _straightEdgeBuilder.points.length > _straightEdgeVertices.length;
+            const extendLast = extendsLastSegment(ruler.nearest);
+            const updateOpen = _straightEdgeBuilder.points.length > _straightEdgeVertices.length;
             if (extendLast || _straightEdgeBuilder.points.length >= ruler.maxPoints) {
                 if (updateOpen) {
                     _straightEdgeBuilder.points.removeItem(_straightEdgeVertices.length);
@@ -4863,10 +4890,10 @@ function onRulerHover(evt) {
     }
     else {
         // Hovering near a point
-        if (((_a = ruler.nearest) === null || _a === void 0 ? void 0 : _a.group) != _hoverEndpoint) {
+        if (ruler.nearest?.group != _hoverEndpoint) {
             toggleClass(_hoverEndpoint, 'hover', false);
-            toggleClass((_b = ruler.nearest) === null || _b === void 0 ? void 0 : _b.group, 'hover', true);
-            _hoverEndpoint = ((_c = ruler.nearest) === null || _c === void 0 ? void 0 : _c.group) || null;
+            toggleClass(ruler.nearest?.group, 'hover', true);
+            _hoverEndpoint = ruler.nearest?.group || null;
         }
     }
 }
@@ -4875,16 +4902,16 @@ function onRulerHover(evt) {
  * @param evt Mouse down event
  */
 function onLineStart(evt) {
-    var ruler = getRulerData(evt);
+    const ruler = getRulerData(evt);
     if (!ruler || !ruler.nearest) {
         return;
     }
     if (!ruler.canShareVertices && hasClass(ruler.nearest.vertex, 'has-line')) {
         // User has clicked a point that already has a line
         // Either re-select it or delete it
-        var edge = findStraightEdgeFromVertex(ruler.nearest.index);
+        const edge = findStraightEdgeFromVertex(ruler.nearest.index);
         if (edge) {
-            var vertices = findStraightEdgeVertices(edge);
+            const vertices = findStraightEdgeVertices(edge);
             // Always delete the existing edge
             deleteStraightEdge(edge);
             if (vertices.length == 2) {
@@ -4907,18 +4934,18 @@ function onLineStart(evt) {
  * @param evt Mouse up event
  */
 function onLineUp(evt) {
-    var ruler = getRulerData(evt);
+    const ruler = getRulerData(evt);
     if (!ruler || !_straightEdgeBuilder) {
         return;
     }
     // Clean up classes that track active construction
-    var indeces = [];
-    for (var i = 0; i < _straightEdgeVertices.length; i++) {
+    const indeces = [];
+    for (let i = 0; i < _straightEdgeVertices.length; i++) {
         toggleClass(_straightEdgeVertices[i], 'building', false);
         toggleClass(_straightEdgeVertices[i], 'has-line', _straightEdgeBuilder != null);
         indeces.push(getGlobalIndex(_straightEdgeVertices[i], 'vx'));
     }
-    var vertexList = ',' + indeces.join(',') + ',';
+    const vertexList = ',' + indeces.join(',') + ',';
     completeStraightLine(ruler, vertexList);
 }
 /**
@@ -4945,7 +4972,7 @@ function createStraightLineFrom(ruler, start) {
  */
 function snapStraightLineTo(ruler, next) {
     _straightEdgeVertices.push(next.vertex);
-    _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.points.appendItem(next.centerPoint);
+    _straightEdgeBuilder?.points.appendItem(next.centerPoint);
     toggleClass(_straightEdgeBuilder, 'open-ended', false);
     toggleClass(next.vertex, 'building', true);
 }
@@ -4955,7 +4982,7 @@ function snapStraightLineTo(ruler, next) {
  */
 function openStraightLineTo(ruler) {
     toggleClass(_straightEdgeBuilder, 'open-ended', true);
-    _straightEdgeBuilder === null || _straightEdgeBuilder === void 0 ? void 0 : _straightEdgeBuilder.points.appendItem(ruler.evtPoint);
+    _straightEdgeBuilder?.points.appendItem(ruler.evtPoint);
 }
 /**
  * Vertex lists are identifiers, so normalize them to be low-to-high
@@ -4964,21 +4991,21 @@ function openStraightLineTo(ruler) {
  * @returns An equivalent list, where the first is always < last
  */
 function normalizeVertexList(vertexList, edge) {
-    var list = vertexList.split(',').map(function (v) { return parseInt(v); });
+    let list = vertexList.split(',').map(v => parseInt(v));
     if (list.length > 2 && list[1] > list[list.length - 2]) {
         // Reverse the point list too
         if (edge) {
-            var pts = [];
-            for (var i = edge.points.length - 1; i >= 0; i--) {
+            const pts = [];
+            for (let i = edge.points.length - 1; i >= 0; i--) {
                 pts.push(edge.points[i]);
             }
             edge.points.clear();
-            for (var i = 0; i < pts.length; i++) {
+            for (let i = 0; i < pts.length; i++) {
                 edge.points.appendItem(pts[i]);
             }
         }
         // Reverse the vertex list
-        var rev = list.map(function (n) { return isNaN(n) ? '' : String(n); }).reverse();
+        const rev = list.map(n => isNaN(n) ? '' : String(n)).reverse();
         return rev.join(',');
     }
     return vertexList; // unchanged
@@ -4989,8 +5016,7 @@ function normalizeVertexList(vertexList, edge) {
  * @param vertexList A string join of all the vertex indeces
  * @param save Determines whether this edge is saved. It should be false when loading from a save.
  */
-function completeStraightLine(ruler, vertexList, save) {
-    if (save === void 0) { save = true; }
+function completeStraightLine(ruler, vertexList, save = true) {
     if (!_straightEdgeBuilder) {
         return;
     }
@@ -5005,7 +5031,7 @@ function completeStraightLine(ruler, vertexList, save) {
         toggleClass(_straightEdgeBuilder, 'open-ended', false);
     }
     vertexList = normalizeVertexList(vertexList, _straightEdgeBuilder);
-    var dupes = findDuplicateEdges('data-vertices', vertexList, selector_class, []);
+    const dupes = findDuplicateEdges('data-vertices', vertexList, selector_class, []);
     if (dupes.length >= ruler.maxBridges && _straightEdgeBuilder) {
         // Disallow any more duplicates
         ruler.container.removeChild(_straightEdgeBuilder);
@@ -5016,9 +5042,9 @@ function completeStraightLine(ruler, vertexList, save) {
         _straightEdgeBuilder.setAttributeNS('', 'data-vertices', vertexList);
         _straightEdges.push(_straightEdgeBuilder);
         if (selector_fill_class) {
-            var fill = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            const fill = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
             toggleClass(fill, selector_fill_class, true);
-            for (var i = 0; i < _straightEdgeBuilder.points.length; i++) {
+            for (let i = 0; i < _straightEdgeBuilder.points.length; i++) {
                 fill.points.appendItem(_straightEdgeBuilder.points[i]);
             }
             ruler.container.appendChild(fill); // will always be after the original
@@ -5034,8 +5060,8 @@ function completeStraightLine(ruler, vertexList, save) {
         dupes.push(_straightEdgeBuilder);
         if (dupes.length > 1) {
             // We have duplicates, so spread them apart
-            for (var d = 0; d < dupes.length; d++) {
-                var offset = dupes.length == 1 ? 0
+            for (let d = 0; d < dupes.length; d++) {
+                const offset = dupes.length == 1 ? 0
                     : dupes.length == 2 ? ruler.bridgeOffset * (d * 2 - 1)
                         : ruler.bridgeOffset * (d - Math.floor(dupes.length / 2));
                 offsetBridge(ruler, dupes[d], offset);
@@ -5058,18 +5084,18 @@ function offsetBridge(ruler, edge, offset) {
     if (edge.points.length < 2) {
         return;
     }
-    var oldPoints = edge.getAttributeNS('', 'points') || '';
-    var start = edge.points[0];
-    var end = edge.points[edge.points.length - 1];
-    var normal = { x: start.y - end.y, y: end.x - start.x };
-    var lenNormal = Math.sqrt(normal.x * normal.x + normal.y * normal.y);
+    const oldPoints = edge.getAttributeNS('', 'points') || '';
+    const start = edge.points[0];
+    const end = edge.points[edge.points.length - 1];
+    const normal = { x: start.y - end.y, y: end.x - start.x };
+    const lenNormal = Math.sqrt(normal.x * normal.x + normal.y * normal.y);
     normal.x /= lenNormal;
     normal.y /= lenNormal;
     edge.points.clear();
     edge.points.appendItem(start);
     if (offset != 0) {
-        var p1 = ruler.svg.createSVGPoint();
-        var p2 = ruler.svg.createSVGPoint();
+        const p1 = ruler.svg.createSVGPoint();
+        const p2 = ruler.svg.createSVGPoint();
         p1.x = start.x + normal.x * offset;
         p1.y = start.y + normal.y * offset;
         p2.x = end.x + normal.x * offset;
@@ -5079,7 +5105,7 @@ function offsetBridge(ruler, edge, offset) {
     }
     edge.points.appendItem(end);
     if (selector_fill_class) {
-        var fills = findDuplicateEdges('points', oldPoints, selector_fill_class, []);
+        const fills = findDuplicateEdges('points', oldPoints, selector_fill_class, []);
         if (fills.length > 0) {
             // Change just 1 to match
             fills[0].setAttributeNS('', 'points', edge.getAttributeNS('', 'points') || '');
@@ -5095,7 +5121,7 @@ function indexInLine(end) {
     if (!_straightEdgeVertices || !end) {
         return -1;
     }
-    for (var i = 0; i < _straightEdgeVertices.length; i++) {
+    for (let i = 0; i < _straightEdgeVertices.length; i++) {
         if (_straightEdgeVertices[i] == end) {
             return i;
         }
@@ -5111,10 +5137,10 @@ function extendsLastSegment(vert) {
     if (!vert || !_straightEdgeBuilder || _straightEdgeVertices.length < 2) {
         return false;
     }
-    var last = _straightEdgeBuilder.points[_straightEdgeVertices.length - 1];
-    var prev = _straightEdgeBuilder.points[_straightEdgeVertices.length - 2];
-    var angle = Math.atan2(last.y - prev.y, last.x - prev.x);
-    var err = Math.atan2(vert.centerPoint.y - prev.y, vert.centerPoint.x - prev.x) - angle;
+    const last = _straightEdgeBuilder.points[_straightEdgeVertices.length - 1];
+    const prev = _straightEdgeBuilder.points[_straightEdgeVertices.length - 2];
+    const angle = Math.atan2(last.y - prev.y, last.x - prev.x);
+    const err = Math.atan2(vert.centerPoint.y - prev.y, vert.centerPoint.x - prev.x) - angle;
     return Math.abs(err * 180 / Math.PI) < 1;
 }
 /**
@@ -5145,12 +5171,12 @@ function pointOnSegment(pt, a, b) {
     if (a.y == b.y) {
         return pt.y == a.y && pt.x >= Math.min(a.x, b.x) && pt.x <= Math.max(a.x, b.x);
     }
-    var dxS = b.x - a.x;
-    var dyS = b.y - a.y;
-    var dxP = pt.x - a.x;
-    var dyP = pt.y - a.y;
-    var pctX = dxP / dxS;
-    var pctY = dyP / dyS;
+    const dxS = b.x - a.x;
+    const dyS = b.y - a.y;
+    const dxP = pt.x - a.x;
+    const dyP = pt.y - a.y;
+    const pctX = dxP / dxS;
+    const pctY = dyP / dyS;
     return pctX == pctY && pctX > 0 && pctY < 1;
 }
 /**
@@ -5177,8 +5203,8 @@ function polylineSelfIntersection(pt, points) {
     if (points.length <= 1) {
         return false;
     }
-    var p0 = points[points.length - 1];
-    for (var i = 1; i < points.length - 1; i++) {
+    const p0 = points[points.length - 1];
+    for (let i = 1; i < points.length - 1; i++) {
         if (segmentsIntersect(p0, pt, points[i - 1], points[i])) {
             segmentsIntersect(p0, pt, points[i - 1], points[i]);
             return true;
@@ -5200,17 +5226,17 @@ function isReachable(data, vert) {
         return false;
     }
     //if (indexInLine(vert.vertex) >= 0) return false;
-    var prev = getVertexData(data, _straightEdgeVertices[_straightEdgeVertices.length - 1]);
-    var dx = vert.centerPos.x - prev.centerPos.x;
-    var dy = vert.centerPos.y - prev.centerPos.y;
+    const prev = getVertexData(data, _straightEdgeVertices[_straightEdgeVertices.length - 1]);
+    const dx = vert.centerPos.x - prev.centerPos.x;
+    const dy = vert.centerPos.y - prev.centerPos.y;
     if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) {
         return false; // Can't re-select the previous point
     }
     else if (data.angleConstraints == undefined) {
         return true; // Any other point is valid
     }
-    var degrees = Math.atan2(dy, dx) * 180 / Math.PI + 360;
-    var mod = Math.abs((degrees + data.angleConstraintsOffset) % data.angleConstraints);
+    const degrees = Math.atan2(dy, dx) * 180 / Math.PI + 360;
+    let mod = Math.abs((degrees + data.angleConstraintsOffset) % data.angleConstraints);
     if (mod > data.angleConstraints / 2) {
         mod = data.angleConstraints - mod;
     }
@@ -5224,9 +5250,9 @@ function isReachable(data, vert) {
  * @param dupes A list of elements to append to
  */
 function findDuplicateEdges(attr, points, cls, dupes) {
-    var list = document.getElementsByClassName(cls);
-    for (var i = 0; i < list.length; i++) {
-        var elmt = list[i];
+    const list = document.getElementsByClassName(cls);
+    for (let i = 0; i < list.length; i++) {
+        const elmt = list[i];
         if (elmt.getAttributeNS('', attr) === points) {
             dupes.push(elmt);
         }
@@ -5238,41 +5264,40 @@ function findDuplicateEdges(attr, points, cls, dupes) {
  * @param edge The edge to remove
  */
 function deleteStraightEdge(edge) {
-    var _a;
-    var range = findParentOfClass(edge, area_class);
-    var data = createPartialRulerData(range);
-    for (var i = 0; i < _straightEdges.length; i++) {
+    const range = findParentOfClass(edge, area_class);
+    const data = createPartialRulerData(range);
+    for (let i = 0; i < _straightEdges.length; i++) {
         if (_straightEdges[i] === edge) {
             _straightEdges.splice(i, 1);
             break;
         }
     }
     // See if there's a duplicate straight-edge, of class word-select
-    var dupes = [];
-    var points = edge.getAttributeNS('', 'points');
+    let dupes = [];
+    const points = edge.getAttributeNS('', 'points');
     if (points) {
         dupes = findDuplicateEdges('points', points, selector_class, []);
         if (selector_fill_class) {
             dupes = findDuplicateEdges('points', points, selector_fill_class, dupes);
         }
     }
-    var vertexList = '';
-    for (var d = 0; d < dupes.length; d++) {
-        var dupe = dupes[d];
+    let vertexList = '';
+    for (let d = 0; d < dupes.length; d++) {
+        const dupe = dupes[d];
         if (!vertexList) {
             vertexList = dupe.getAttributeNS('', 'data-vertices') || '';
             if (vertexList) {
                 saveStraightEdge(vertexList, false); // Deletes from the saved list
             }
         }
-        (_a = dupe.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(dupe);
+        dupe.parentNode?.removeChild(dupe);
     }
     // See if there were any parallel bridges
     dupes = findDuplicateEdges('data-vertices', vertexList, selector_class, []);
     if (dupes.length >= 1) {
         // If so, re-layout to show fewer
-        for (var d = 0; d < dupes.length; d++) {
-            var offset = dupes.length == 1 ? 0
+        for (let d = 0; d < dupes.length; d++) {
+            const offset = dupes.length == 1 ? 0
                 : dupes.length == 2 ? data.bridgeOffset * (d * 2 - 1)
                     : data.bridgeOffset * (d - Math.floor(dupes.length / 2));
             offsetBridge(data, dupes[d], offset);
@@ -5285,13 +5310,13 @@ function deleteStraightEdge(edge) {
  * @returns A vertex data, or null if none close enough
  */
 function findNearestVertex(data) {
-    var min = data.hoverRange * data.hoverRange;
-    var vertices = data.svg.getElementsByClassName('vertex');
-    var nearest = null;
-    for (var i = 0; i < vertices.length; i++) {
-        var end = vertices[i];
-        var center = positionFromCenter(end);
-        var dist = distance2(center, data.evtPos);
+    let min = data.hoverRange * data.hoverRange;
+    const vertices = data.svg.getElementsByClassName('vertex');
+    let nearest = null;
+    for (let i = 0; i < vertices.length; i++) {
+        const end = vertices[i];
+        const center = positionFromCenter(end);
+        const dist = distance2(center, data.evtPos);
         if (min < 0 || dist < min) {
             min = dist;
             nearest = end;
@@ -5300,7 +5325,7 @@ function findNearestVertex(data) {
     return nearest;
 }
 function distanceToLine(edge, pt) {
-    var ret = {
+    const ret = {
         distance: NaN,
         ptOnLine: { x: NaN, y: NaN },
         fractionAlongLine: NaN
@@ -5309,22 +5334,22 @@ function distanceToLine(edge, pt) {
     if (!edge.points || edge.points.length != 2) {
         return ret;
     }
-    var p0 = edge.points[0];
-    var p1 = edge.points[1];
+    const p0 = edge.points[0];
+    const p1 = edge.points[1];
     // Line form: ax + by + c = 0
-    var line = {
+    const line = {
         a: p0.y - p1.y,
         b: p1.x - p0.x,
         c: -p0.x * (p0.y - p1.y) - p0.y * (p1.x - p1.x)
     };
-    var edgeLen = Math.sqrt(line.a * line.a + line.b * line.b); // Length of edge
+    const edgeLen = Math.sqrt(line.a * line.a + line.b * line.b); // Length of edge
     ret.distance = Math.abs(line.a * pt.x + line.b * pt.y + line.c) / edgeLen;
     // Normal vector
-    var nx = line.b / edgeLen;
-    var ny = -line.a / edgeLen;
+    const nx = line.b / edgeLen;
+    const ny = -line.a / edgeLen;
     // Not sure which direction, so consider both directions along normal
-    var n1 = { x: nx * ret.distance, y: ny * ret.distance };
-    var n2 = { x: nx * -ret.distance, y: ny * -ret.distance };
+    const n1 = { x: nx * ret.distance, y: ny * ret.distance };
+    const n2 = { x: nx * -ret.distance, y: ny * -ret.distance };
     // To find point p2 on the line
     ret.ptOnLine = Math.abs(line.a * n1.x + line.b * n1.y) < Math.abs(line.a * n2.x + line.b * n2.y) ? n1 : n2;
     // Calculate where on line, where 0 == p0 and 1 == p1
@@ -5339,12 +5364,12 @@ function distanceToLine(edge, pt) {
  * @returns A vertex data, or null if none close enough
  */
 function findEdgeUnder(data) {
-    var min = data.hoverRange;
-    var edges = data.svg.getElementsByClassName(selector_class);
-    var nearest = null;
-    for (var i = 0; i < edges.length; i++) {
-        var edge = edges[i];
-        var dtl = distanceToLine(edge, data.evtPoint);
+    let min = data.hoverRange;
+    const edges = data.svg.getElementsByClassName(selector_class);
+    let nearest = null;
+    for (let i = 0; i < edges.length; i++) {
+        const edge = edges[i];
+        const dtl = distanceToLine(edge, data.evtPoint);
         if (dtl.distance < min && dtl.fractionAlongLine > 0.1 && dtl.fractionAlongLine < 0.9) {
             // We're reasonably near the line segment
             min = dtl.distance;
@@ -5359,11 +5384,11 @@ function findEdgeUnder(data) {
  * @returns A straight edge, or null if none match
  */
 function findStraightEdgeFromVertex(index) {
-    var pat = ',' + String(index) + ',';
-    var edges = document.getElementsByClassName(selector_class);
-    for (var i = 0; i < edges.length; i++) {
-        var edge = edges[i];
-        var indexList = edge.getAttributeNS('', 'data-vertices');
+    const pat = ',' + String(index) + ',';
+    const edges = document.getElementsByClassName(selector_class);
+    for (let i = 0; i < edges.length; i++) {
+        const edge = edges[i];
+        const indexList = edge.getAttributeNS('', 'data-vertices');
         if (indexList && indexList.search(pat) >= 0) {
             return edge;
         }
@@ -5377,14 +5402,14 @@ function findStraightEdgeFromVertex(index) {
  * @returns An array of zero or more vertices
  */
 function findStraightEdgeVertices(edge) {
-    var indexList = edge.getAttributeNS('', 'data-vertices');
-    var vertices = [];
-    var indeces = indexList === null || indexList === void 0 ? void 0 : indexList.split(',');
+    const indexList = edge.getAttributeNS('', 'data-vertices');
+    const vertices = [];
+    const indeces = indexList?.split(',');
     if (indeces) {
-        var map = mapGlobalIndeces('vertex', 'vx');
-        for (var i = 0; i < indeces.length; i++) {
+        const map = mapGlobalIndeces('vertex', 'vx');
+        for (let i = 0; i < indeces.length; i++) {
             if (indeces[i]) {
-                var vertex = map[indeces[i]];
+                const vertex = map[indeces[i]];
                 vertices.push(vertex);
             }
         }
@@ -5397,13 +5422,13 @@ function findStraightEdgeVertices(edge) {
  * @param vertexList A joined list of vertex global-indeces, delimeted by commas
  */
 function createFromVertexList(vertexList) {
-    var map = mapGlobalIndeces('vertex', 'vx');
-    var vertices = vertexList.split(',');
-    var ruler = null;
-    for (var i = 0; i < vertices.length; i++) {
+    const map = mapGlobalIndeces('vertex', 'vx');
+    const vertices = vertexList.split(',');
+    let ruler = null;
+    for (let i = 0; i < vertices.length; i++) {
         if (vertices[i].length > 0) {
-            var id = parseInt(vertices[i]);
-            var vert = map[id];
+            const id = parseInt(vertices[i]);
+            const vert = map[id];
             if (vert) {
                 if (ruler == null) {
                     ruler = getRulerDataFromVertex(vert);
@@ -5421,21 +5446,19 @@ function createFromVertexList(vertexList) {
         completeStraightLine(ruler, vertexList, false /*no save while restoring*/);
     }
 }
-exports.createFromVertexList = createFromVertexList;
 function clearAllStraightEdges(id) {
-    var _a;
-    var svg = document.getElementById(id);
+    const svg = document.getElementById(id);
     if (!svg) {
         return;
     }
-    var edges = svg.getElementsByClassName(selector_class);
-    for (var i = edges.length - 1; i >= 0; i--) {
-        var edge = edges[i];
-        (_a = edge.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(edge);
+    const edges = svg.getElementsByClassName(selector_class);
+    for (let i = edges.length - 1; i >= 0; i--) {
+        const edge = edges[i];
+        edge.parentNode?.removeChild(edge);
     }
     // Remove styles from all vertices
-    var vertices = svg.getElementsByClassName('vertex');
-    for (var i = 0; i < _straightEdgeVertices.length; i++) {
+    const vertices = svg.getElementsByClassName('vertex');
+    for (let i = 0; i < _straightEdgeVertices.length; i++) {
         toggleClass(vertices[i], 'building', false);
         toggleClass(vertices[i], 'has-line', false);
     }
@@ -5443,22 +5466,21 @@ function clearAllStraightEdges(id) {
     _straightEdgeVertices = [];
     _straightEdgeBuilder = null;
 }
-exports.clearAllStraightEdges = clearAllStraightEdges;
 function onEdgeHoverStart(evt) {
-    var edge = evt.target;
+    const edge = evt.target;
 }
 function onEdgeHoverEnd(evt) {
-    var edge = evt.target;
+    const edge = evt.target;
 }
 function onDeleteEdge(evt) {
-    var edge = evt.target;
+    const edge = evt.target;
     deleteStraightEdge(edge);
 }
-var noEventDetails = {
+const noEventDetails = {
     'cssRoot': '../Css/',
     'links': []
 };
-var safariDocsDetails = {
+const safariDocsDetails = {
     'title': 'Puzzyl Utility Library',
     'logo': './Images/Sample_Logo.png',
     'icon': 'Images/monster-book-icon.png',
@@ -5468,7 +5490,7 @@ var safariDocsDetails = {
     'googleFonts': 'Caveat',
     'links': []
 };
-var safariSingleDetails = {
+const safariSingleDetails = {
     'title': 'Puzzle',
     'logo': './Images/Sample_Logo.png',
     'icon': './Images/Sample_Icon.png',
@@ -5481,7 +5503,7 @@ var safariSingleDetails = {
     //        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
     ]
 };
-var safariSampleDetails = {
+const safariSampleDetails = {
     'title': 'Puzzle Safari',
     'logo': './Images/Sample_Logo.png',
     'icon': './Images/Sample_Icon.png',
@@ -5491,60 +5513,60 @@ var safariSampleDetails = {
     'googleFonts': 'Caveat',
     'links': []
 };
-var safari20Details = {
+const safari20Details = {
     'title': 'Safari Labs',
     'logo': './Images/PS20 logo.png',
     'icon': './Images/Beaker_icon.png',
     'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
-    'googleFonts': 'Architects+Daughter,Caveat',
+    'googleFonts': 'Architects+Daughter,Caveat', // no whitespace
     'links': [],
     'qr_folders': { 'https://www.puzzyl.net/23/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
     // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 };
-var safari21Details = {
+const safari21Details = {
     'title': 'Safari Labs',
-    'logo': './Images/GS24_banner.png',
+    'logo': './Images/GS24_banner.png', // PS21 logo.png',
     'icon': './Images/Plate_icon.png',
     'puzzleList': './menuu.html',
     'cssRoot': '../Css/',
     'fontCss': '../24/Css/Fonts21.css',
-    'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',
+    'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat', // no whitespace
     'links': [],
     'qr_folders': { 'https://www.puzzyl.net/24/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/' },
     // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
 };
-var safari24Details = {
+const safari24Details = {
     'title': 'Game Night',
     // 'logo': './Images/PS24 logo.png',
     'icon': '../24/Images/Sample_Icon.png',
     // 'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': '../24/Css/Fonts24.css',
-    'googleFonts': 'Goblin+One,Caveat',
+    'googleFonts': 'Goblin+One,Caveat', // no whitespace
     'links': [],
     // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
     //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
     // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
 };
-var safariDggDetails = {
+const safariDggDetails = {
     'title': 'David’s Puzzles',
     'logo': './Images/octopus_watermark.png',
     'icon': './Images/octopus_icon.png',
     'puzzleList': './indexx.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat,Righteous,Cormorant+Upright',
+    'googleFonts': 'Caveat,Righteous,Cormorant+Upright', // no whitespace
     'links': [],
     'qr_folders': { 'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/' },
     // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
 };
 // Event for the PuzzylSafariTeam branch
-var puzzylSafariTeamDetails = {
+const puzzylSafariTeamDetails = {
     'title': 'Game Night',
     // 'logo': './Images/Sample_Logo.png',
     'icon': '24/favicon.png',
@@ -5557,7 +5579,7 @@ var puzzylSafariTeamDetails = {
     //        { rel:'preconnect', href:'https://fonts.gstatic.com', crossorigin:'' },
     ]
 };
-var pastSafaris = {
+const pastSafaris = {
     'Docs': safariDocsDetails,
     'Sample': safariSampleDetails,
     'Single': safariSingleDetails,
@@ -5568,7 +5590,7 @@ var pastSafaris = {
     'gs24': safari21Details,
     'team': puzzylSafariTeamDetails,
 };
-var safariDetails;
+let safariDetails;
 /**
 * Initialize a global reference to Safari event details
 */
@@ -5582,14 +5604,12 @@ function initSafariDetails(safariId) {
     safariDetails = pastSafaris[safariId];
     return safariDetails;
 }
-exports.initSafariDetails = initSafariDetails;
 /**
 * Return the details of this puzzle event
 */
 function getSafariDetails() {
     return safariDetails;
 }
-exports.getSafariDetails = getSafariDetails;
 /*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
@@ -5597,7 +5617,7 @@ exports.getSafariDetails = getSafariDetails;
  * Cache the URL parameneters as a dictionary.
  * Arguments that don't specify a value receive a default value of true
  */
-var urlArgs = {};
+const urlArgs = {};
 /**
  * Scan the url for special arguments.
  */
@@ -5606,7 +5626,7 @@ function debugSetup() {
     if (search !== '') {
         search = search.substring(1); // trim leading ?
         var args = search.split('&');
-        for (var i = 0; i < args.length; i++) {
+        for (let i = 0; i < args.length; i++) {
             var toks = args[i].split('=');
             if (toks.length > 1) {
                 urlArgs[toks[0].toLowerCase()] = toks[1];
@@ -5630,7 +5650,6 @@ function debugSetup() {
 function isDebug() {
     return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
 }
-exports.isDebug = isDebug;
 /**
  * Determines if the caller has specified <i>body-debug</i> in the URL,
  * or else if the puzzle explictly has set class='debug' on the body.
@@ -5639,7 +5658,6 @@ exports.isDebug = isDebug;
 function isBodyDebug() {
     return hasClass(document.getElementsByTagName('body')[0], 'debug');
 }
-exports.isBodyDebug = isBodyDebug;
 /**
  * Determines if this document is being loaded inside an iframe.
  * While any document could in theory be in an iframe, this library tags such pages with a url argument.
@@ -5648,7 +5666,6 @@ exports.isBodyDebug = isBodyDebug;
 function isIFrame() {
     return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
 }
-exports.isIFrame = isIFrame;
 /**
  * Determines if this document's URL was tagged with ?print
  * This is intended to as an alternative way to get a print-look, other than CSS's @media print
@@ -5657,7 +5674,6 @@ exports.isIFrame = isIFrame;
 function isPrint() {
     return urlArgs['print'] != undefined && urlArgs['print'] !== false;
 }
-exports.isPrint = isPrint;
 /**
  * Determines if this document's URL was tagged with ?icon
  * This is intended to as an alternative way to generate icons for each puzzle
@@ -5666,7 +5682,6 @@ exports.isPrint = isPrint;
 function isIcon() {
     return urlArgs['icon'] != undefined && urlArgs['icon'] !== false;
 }
-exports.isIcon = isIcon;
 /**
  * Special url arg to override any cached storage. Always restarts.
  * @returns true if this page's URL contains a restart argument (other than =false)
@@ -5674,7 +5689,6 @@ exports.isIcon = isIcon;
 function isRestart() {
     return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
 }
-exports.isRestart = isRestart;
 /**
  * Do we want to skip the UI that offers to reload?
  * @returns
@@ -5685,16 +5699,15 @@ function forceReload() {
     }
     return undefined;
 }
-exports.forceReload = forceReload;
-var print_as_color = { id: 'printAs', html: "<div style='color:#666;'>Print as <span style='color:#FF0000;'>c</span><span style='color:#538135;'>o</span><span style='color:#00B0F0;'>l</span><span style='color:#806000;'>o</span><span style='color:#7030A0;'>r</span>.</div>" };
-var print_as_grayscale = { id: 'printAs', text: "<div style='color:#666;'>Print as grayscale</div>" };
+const print_as_color = { id: 'printAs', html: "<div style='color:#666;'>Print as <span style='color:#FF0000;'>c</span><span style='color:#538135;'>o</span><span style='color:#00B0F0;'>l</span><span style='color:#806000;'>o</span><span style='color:#7030A0;'>r</span>.</div>" };
+const print_as_grayscale = { id: 'printAs', text: "<div style='color:#666;'>Print as grayscale</div>" };
 /**
  * Do some basic setup before of the page and boilerplate, before building new components
  * @param bp
  */
 function preSetup(bp) {
     exports._rawHtmlSource = document.documentElement.outerHTML;
-    var safariDetails = initSafariDetails(bp.safari);
+    const safariDetails = initSafariDetails(bp.safari);
     debugSetup();
     var bodies = document.getElementsByTagName('BODY');
     if (isIFrame()) {
@@ -5718,9 +5731,8 @@ function preSetup(bp) {
         }
     }
 }
-function createSimpleDiv(_a) {
-    var id = _a.id, cls = _a.cls, text = _a.text, html = _a.html;
-    var div = document.createElement('DIV');
+function createSimpleDiv({ id, cls, text, html }) {
+    let div = document.createElement('DIV');
     if (id !== undefined) {
         div.id = id;
     }
@@ -5735,9 +5747,8 @@ function createSimpleDiv(_a) {
     }
     return div;
 }
-function createSimpleA(_a) {
-    var id = _a.id, cls = _a.cls, friendly = _a.friendly, href = _a.href, target = _a.target;
-    var a = document.createElement('A');
+function createSimpleA({ id, cls, friendly, href, target }) {
+    let a = document.createElement('A');
     if (id !== undefined) {
         a.id = id;
     }
@@ -5752,7 +5763,7 @@ function createSimpleA(_a) {
 /**
  * Map puzzle types to alt text
  */
-var iconTypeAltText = {
+const iconTypeAltText = {
     'Word': 'Word puzzle',
     'Math': 'Math puzzle',
     'Rebus': 'Rebus puzzle',
@@ -5767,23 +5778,22 @@ var iconTypeAltText = {
  * @returns An img element, with inline base-64 data
  */
 function createPrintQrBase64(data) {
-    var qr = document.createElement('img');
+    const qr = document.createElement('img');
     qr.id = 'qr';
     qr.src = 'data:image/png;base64,' + data;
     qr.alt = 'QR code to online page';
     return qr;
 }
 function getQrPath() {
-    var safariDetails = getSafariDetails();
+    const safariDetails = getSafariDetails();
     if (safariDetails.qr_folders) {
-        var url = window.location.href;
-        for (var _i = 0, _a = Object.keys(safariDetails.qr_folders); _i < _a.length; _i++) {
-            var key = _a[_i];
+        const url = window.location.href;
+        for (const key of Object.keys(safariDetails.qr_folders)) {
             if (url.indexOf(key) == 0) {
-                var folder = safariDetails.qr_folders[key];
-                var names = window.location.pathname.split('/'); // trim off path before last slash
-                var name_4 = names[names.length - 1].split('.')[0]; // trim off extension
-                return folder + '/' + name_4 + '.png';
+                const folder = safariDetails.qr_folders[key];
+                const names = window.location.pathname.split('/'); // trim off path before last slash
+                const name = names[names.length - 1].split('.')[0]; // trim off extension
+                return folder + '/' + name + '.png';
             }
         }
     }
@@ -5791,9 +5801,9 @@ function getQrPath() {
 }
 function createPrintQr() {
     // Find relevant folder:
-    var path = getQrPath();
+    const path = getQrPath();
     if (path) {
-        var qr = document.createElement('img');
+        const qr = document.createElement('img');
         qr.id = 'qr';
         qr.src = path;
         qr.alt = 'QR code to online page';
@@ -5807,14 +5817,13 @@ function createPrintQr() {
  * @param icon_use the purpose of the icon
  * @returns A div element, to be appended to the pageWithinMargins
  */
-function createTypeIcon(puzzleType, icon_use) {
-    if (icon_use === void 0) { icon_use = ''; }
+function createTypeIcon(puzzleType, icon_use = '') {
     if (!icon_use) {
         icon_use = 'puzzle';
     }
-    var iconDiv = document.createElement('div');
+    const iconDiv = document.createElement('div');
     iconDiv.id = 'icons';
-    var icon = document.createElement('img');
+    const icon = document.createElement('img');
     icon.id = 'icons-' + iconDiv.childNodes.length;
     icon.src = './Icons/' + puzzleType.toLocaleLowerCase() + '.png';
     icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' ' + icon_use);
@@ -5864,52 +5873,53 @@ function boilerplate(bp) {
             expandControlTags();
         }
         catch (ex) {
-            var ctx = wrapContextError(ex);
-            throw ctx;
+            const ctx = wrapContextError(ex);
+            // Rethrow in 1 second, to let the rest of the boilerplate finish
+            setTimeout(() => { throw ctx; }, 1000);
         }
     }
     if (bp.tableBuilder) {
         constructTable(bp.tableBuilder);
     }
-    var html = document.getElementsByTagName('HTML')[0];
-    var head = document.getElementsByTagName('HEAD')[0];
-    var body = document.getElementsByTagName('BODY')[0];
-    var pageBody = document.getElementById('pageBody');
+    const html = document.getElementsByTagName('HTML')[0];
+    const head = document.getElementsByTagName('HEAD')[0];
+    const body = document.getElementsByTagName('BODY')[0];
+    const pageBody = document.getElementById('pageBody');
     if (bp.title) {
         document.title = bp.title;
     }
     html.lang = bp.lang || 'en-us';
-    var safariDetails = getSafariDetails();
-    for (var i = 0; i < safariDetails.links.length; i++) {
+    const safariDetails = getSafariDetails();
+    for (let i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
-    var viewport = document.createElement('META');
+    const viewport = document.createElement('META');
     viewport.name = 'viewport';
     viewport.content = 'width=device-width, initial-scale=1';
     head.appendChild(viewport);
     if (safariDetails.fontCss) {
         linkCss(safariDetails.fontCss);
     }
-    var gFonts = bp.googleFonts;
+    let gFonts = bp.googleFonts;
     if (safariDetails.googleFonts) {
         gFonts = safariDetails.googleFonts + (gFonts ? (',' + gFonts) : '');
     }
     if (gFonts) {
         //<link rel="preconnect" href="https://fonts.googleapis.com">
-        var gapis = {
+        const gapis = {
             'rel': 'preconnect',
             'href': 'https://fonts.googleapis.com'
         };
         addLink(head, gapis);
         //<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        var gstatic = {
+        const gstatic = {
             'rel': 'preconnect',
             'href': 'https://fonts.gstatic.com',
             'crossorigin': ''
         };
         addLink(head, gstatic);
-        var fonts = gFonts.split(',');
-        var link = {
+        const fonts = gFonts.split(',');
+        const link = {
             'href': 'https://fonts.googleapis.com/css2?family=' + fonts.join('&family=') + '&display=swap',
             'rel': 'stylesheet'
         };
@@ -5924,14 +5934,14 @@ function boilerplate(bp) {
         bp.orientation = 'portrait';
     }
     if (bp.paperSize.indexOf('|') > 0) {
-        var ps = bp.paperSize.split('|');
+        const ps = bp.paperSize.split('|');
         bp.paperSize = isPrint() ? ps[1] : ps[0];
     }
     toggleClass(body, bp.paperSize);
     toggleClass(body, bp.orientation);
     toggleClass(body, '_' + bp.safari); // So event fonts can trump defaults
-    var page = createSimpleDiv({ id: 'page', cls: 'printedPage' });
-    var margins = createSimpleDiv({ cls: 'pageWithinMargins' });
+    const page = createSimpleDiv({ id: 'page', cls: 'printedPage' });
+    const margins = createSimpleDiv({ cls: 'pageWithinMargins' });
     body.appendChild(page);
     page.appendChild(margins);
     margins.appendChild(pageBody);
@@ -5947,7 +5957,7 @@ function boilerplate(bp) {
     }
     if (safariDetails.icon) {
         // Set tab icon for safari event
-        var tabIcon = document.createElement('link');
+        const tabIcon = document.createElement('link');
         tabIcon.rel = 'shortcut icon';
         tabIcon.type = 'image/png';
         tabIcon.href = safariDetails.icon;
@@ -5957,7 +5967,7 @@ function boilerplate(bp) {
         margins.appendChild(createPrintQrBase64(bp.qr_base64));
     }
     else if (bp.print_qr) {
-        var qrImg = createPrintQr();
+        const qrImg = createPrintQr();
         if (qrImg) {
             margins.appendChild(qrImg);
         }
@@ -5986,23 +5996,23 @@ function boilerplate(bp) {
 }
 function debugPostSetup() {
     if (urlArgs['scan-layout'] != undefined) {
-        var summary = summarizePageLayout();
-        var json = JSON.stringify(summary);
-        var comment = document.createComment(json);
+        const summary = summarizePageLayout();
+        const json = JSON.stringify(summary);
+        const comment = document.createComment(json);
         document.getRootNode().appendChild(comment);
     }
     if (urlArgs['compare-layout'] != undefined) {
-        var after = summarizePageLayout();
-        var root = document.getRootNode();
-        for (var i = 0; i < root.childNodes.length; i++) {
+        const after = summarizePageLayout();
+        const root = document.getRootNode();
+        for (let i = 0; i < root.childNodes.length; i++) {
             if (root.childNodes[i].nodeType == Node.COMMENT_NODE) {
-                var comment = root.childNodes[i];
-                var commentJson = comment.textContent;
+                const comment = root.childNodes[i];
+                let commentJson = comment.textContent;
                 if (commentJson) {
                     commentJson = commentJson.trim();
                     if (commentJson.substring(0, 7) == 'layout=') {
-                        var before = JSON.parse(commentJson.substring(7));
-                        var diffs = diffSummarys(before, after);
+                        const before = JSON.parse(commentJson.substring(7));
+                        const diffs = diffSummarys(before, after);
                         if (diffs.length > 0) {
                             renderDiffs(diffs);
                         }
@@ -6017,8 +6027,8 @@ function theHead() {
     return document.getElementsByTagName('HEAD')[0];
 }
 function baseHref() {
-    var bases = document.getElementsByTagName('BASE');
-    for (var i = 0; i < bases.length; i++) {
+    const bases = document.getElementsByTagName('BASE');
+    for (let i = 0; i < bases.length; i++) {
         var href = bases[i].getAttribute('href');
         if (href) {
             return relHref(href, document.location.href || '');
@@ -6027,7 +6037,7 @@ function baseHref() {
     return document.location.href;
 }
 function relHref(path, fromBase) {
-    var paths = path.split('/');
+    const paths = path.split('/');
     if (paths[0].length == 0 || paths[0].indexOf(':') >= 0) {
         // Absolute path
         return path;
@@ -6035,9 +6045,9 @@ function relHref(path, fromBase) {
     if (fromBase === undefined) {
         fromBase = baseHref();
     }
-    var bases = fromBase.split('/');
+    const bases = fromBase.split('/');
     bases.pop(); // Remove filename at end of base path
-    var i = 0;
+    let i = 0;
     for (; i < paths.length; i++) {
         if (paths[i] == '..') {
             if (bases.length == 0 || (bases.length == 1 && bases[0].indexOf(':') > 0)) {
@@ -6054,7 +6064,7 @@ function relHref(path, fromBase) {
 /**
  * Count-down before we know all delay-linked CSS have been loaded
  */
-var cssToLoad = 1;
+let cssToLoad = 1;
 /**
  * Append any link tag to the header
  * @param head the head tag
@@ -6062,7 +6072,7 @@ var cssToLoad = 1;
  */
 function addLink(head, det) {
     head = head || theHead();
-    var link = document.createElement('link');
+    const link = document.createElement('link');
     link.href = relHref(det.href);
     link.rel = det.rel;
     if (det.type) {
@@ -6077,8 +6087,7 @@ function addLink(head, det) {
     }
     head.appendChild(link);
 }
-exports.addLink = addLink;
-var linkedCss = {};
+const linkedCss = {};
 /**
  * Append a CSS link to the header
  * @param relPath The contents of the link's href
@@ -6090,7 +6099,7 @@ function linkCss(relPath, head) {
     }
     linkedCss[relPath] = true;
     head = head || theHead();
-    var link = document.createElement('link');
+    const link = document.createElement('link');
     link.href = relHref(relPath);
     link.rel = "Stylesheet";
     link.type = "text/css";
@@ -6098,7 +6107,6 @@ function linkCss(relPath, head) {
     cssToLoad++;
     head.appendChild(link);
 }
-exports.linkCss = linkCss;
 /**
  * Each CSS file that is delay-linked needs time to load.
  * Decrement the count after each one.
@@ -6115,11 +6123,10 @@ function cssLoaded() {
  * Back-compat: Scan the contents of the <ability> tag for known emoji.
  */
 function setupAbilities(head, margins, data) {
-    var _a;
-    var safariDetails = getSafariDetails();
-    var ability = document.getElementById('ability');
+    const safariDetails = getSafariDetails();
+    let ability = document.getElementById('ability');
     if (ability != null) {
-        var text = ability.innerText;
+        const text = ability.innerText;
         if (text.search('✔️') >= 0) {
             data.checkMarks = true;
         }
@@ -6138,16 +6145,16 @@ function setupAbilities(head, margins, data) {
         ability.id = 'ability';
         margins.appendChild(ability);
     }
-    var fancy = '';
-    var count = 0;
+    let fancy = '';
+    let count = 0;
     if (data.checkMarks) {
         setupCrossOffs();
         fancy += '<span id="check-ability" title="Click items to check them off">✔️</span>';
         count++;
     }
     if (data.highlights) {
-        var instructions = "Ctrl+click to highlight cells";
-        if ((_a = theBoiler()) === null || _a === void 0 ? void 0 : _a.textInput) {
+        let instructions = "Ctrl+click to highlight cells";
+        if (theBoiler()?.textInput) {
             instructions = "Type ` or ctrl+click to highlight cells";
         }
         fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">💡</span>';
@@ -6230,7 +6237,7 @@ function pageBoiler() {
     }
     return undefined;
 }
-var _boiler = {};
+let _boiler = {};
 /**
  * Expose the boilerplate as an export
  * Only called by code which is triggered by a boilerplate, so safely not null
@@ -6238,11 +6245,9 @@ var _boiler = {};
 function theBoiler() {
     return _boiler;
 }
-exports.theBoiler = theBoiler;
 function testBoilerplate(bp) {
     boilerplate(bp);
 }
-exports.testBoilerplate = testBoilerplate;
 if (typeof window !== 'undefined') {
     window.onload = function () { boilerplate(pageBoiler()); }; // error if boiler still undefined
 }
@@ -6252,20 +6257,20 @@ if (typeof window !== 'undefined') {
 /**
  * Response codes for different kinds of responses
  */
-var ResponseType = {
+const ResponseType = {
     Error: 0,
-    Correct: 1,
-    Confirm: 2,
-    KeepGoing: 3,
-    Unlock: 4,
-    Load: 5,
+    Correct: 1, // aka solved
+    Confirm: 2, // confirm an intermediate step
+    KeepGoing: 3, // a wrong guess that deserves a hint
+    Unlock: 4, // offer players a link to a hidden page
+    Load: 5, // load another page in a hidden iframe
     Show: 6, // cause another cell to show
     //    Save: 7,     // write a key/value directly to storage
 };
 /**
  * CSS classes for each response type
  */
-var ResponseTypeClasses = [
+const ResponseTypeClasses = [
     'rt-error',
     'rt-correct',
     'rt-confirm',
@@ -6277,73 +6282,68 @@ var ResponseTypeClasses = [
 /**
  * The generic response for unknown submissions
  */
-var no_match_response = "0";
+const no_match_response = "0";
 /**
  * Default response text, if the validation block only specifies a type
  */
-var default_responses = [
-    "Incorrect",
-    "Correct!",
-    "Confirmed",
+const default_responses = [
+    "Incorrect", // Error
+    "Correct!", // Correct
+    "Confirmed", // Confirmation
     "Keep going", // Keep Going
 ];
 /**
  * img src= URLs for icons to further indicate whether guesses were correct or not
  */
-var response_img = [
-    "../Icons/X.png",
-    "../Icons/Check.png",
-    "../Icons/Thumb.png",
-    "../Icons/Thinking.png",
+const response_img = [
+    "../Icons/X.png", // Error
+    "../Icons/Check.png", // Correct
+    "../Icons/Thumb.png", // Confirmation
+    "../Icons/Thinking.png", // Keep Going
     "../Icons/Unlocked.png", // Unlock
 ];
 /**
  * The full history of guesses on the current puzzle
  */
-var guess_history = [];
+let guess_history = [];
 /**
  * This puzzle has a validation block, so there must be either a place for the
  * player to propose an answer, or an automatic extraction for other elements.
  */
 function setupValidation() {
-    var _a;
-    var buttons = document.getElementsByClassName('validater');
+    const buttons = document.getElementsByClassName('validater');
     if (buttons.length > 0) {
-        var hist = getHistoryDiv('');
+        let hist = getHistoryDiv('');
         if (!hist) {
             // Create a standard <div id="guess-log"> to track the all guesses
-            var log = document.createElement('div');
+            const log = document.createElement('div');
             log.id = 'guess-log';
-            var div = document.createElement('div');
+            const div = document.createElement('div');
             div.id = 'guess-history';
-            var span = document.createElement('span');
+            const span = document.createElement('span');
             span.id = 'guess-titlebar';
             span.appendChild(document.createTextNode('Guesses'));
             log.appendChild(span);
             log.appendChild(div);
-            (_a = document.getElementById('pageBody')) === null || _a === void 0 ? void 0 : _a.appendChild(log);
+            document.getElementById('pageBody')?.appendChild(log);
         }
     }
-    var _loop_1 = function (i) {
-        var btn = buttons[i];
+    for (let i = 0; i < buttons.length; i++) {
+        const btn = buttons[i];
         if (isTag(btn, 'button')) {
             btn.onclick = function (e) { clickValidationButton(e.target); };
-            var srcId = getOptionalStyle(btn, 'data-extracted-id') || 'extracted';
-            var src = document.getElementById(srcId);
+            const srcId = getOptionalStyle(btn, 'data-extracted-id') || 'extracted';
+            const src = document.getElementById(srcId);
             // If button is connected to a text field, hook up ENTER to submit
             if (src && ((isTag(src, 'input') && src.type == 'text')
                 || isTag(src, 'textarea'))) { // TODO: not multiline
                 src.onkeyup = function (e) { validateInputReady(btn, e.key); };
             }
         }
-    };
-    for (var i = 0; i < buttons.length; i++) {
-        _loop_1(i);
     }
 }
-exports.setupValidation = setupValidation;
 function calculateTextExtents(src, value) {
-    var fe = document.getElementById('fontExtents');
+    let fe = document.getElementById('fontExtents');
     if (!fe) {
         fe = document.createElement('span');
         fe.id = 'fontExtents';
@@ -6351,7 +6351,7 @@ function calculateTextExtents(src, value) {
         document.getElementsByTagName('body')[0].appendChild(fe);
     }
     fe.innerText = value;
-    var styles = window.getComputedStyle(src, null);
+    const styles = window.getComputedStyle(src, null);
     fe.style.fontFamily = styles.getPropertyValue('font-family');
     fe.style.fontSize = styles.getPropertyValue('font-size');
     fe.style.fontWeight = styles.getPropertyValue('font-weight');
@@ -6366,7 +6366,7 @@ function calculateTextExtents(src, value) {
  * @param value The current text
  */
 function horzScaleToFit(input, value) {
-    var widthPx = parseFloat(input.getAttribute('data-original-width') || '');
+    let widthPx = parseFloat(input.getAttribute('data-original-width') || '');
     if (!widthPx) {
         widthPx = calcPxStyle(input, 'width');
         input.setAttribute('data-original-width', '' + widthPx);
@@ -6375,28 +6375,28 @@ function horzScaleToFit(input, value) {
         input.style.transform = 'scale(100%, 100%)';
         input.style.width = widthPx + 'px';
     }
-    var curScale = calcTransform(input, 'scale', matrix.scaleX, 1);
-    var needPx = calculateTextExtents(input, value + '|'); // account for borders
+    const curScale = calcTransform(input, 'scale', matrix.scaleX, 1);
+    const needPx = calculateTextExtents(input, value + '|'); // account for borders
     if (needPx * curScale > widthPx) {
-        var wantPx = calculateTextExtents(input, value + ' 12345678'); // one more word
-        var newScalePct = Math.floor(widthPx * 100 / wantPx);
+        const wantPx = calculateTextExtents(input, value + ' 12345678'); // one more word
+        const newScalePct = Math.floor(widthPx * 100 / wantPx);
         if (newScalePct > 33) { // Maximum compression before unreadable
             input.style.transformOrigin = 'left';
             input.style.transform = 'scale(' + newScalePct + '%, 100%)';
             input.style.width = Math.floor(widthPx * 100 / newScalePct) + 'px';
         }
-        var test = calculateTextExtents(input, value);
+        const test = calculateTextExtents(input, value);
     }
 }
 function calcPxStyle(elmt, prop) {
-    var val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
+    const val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
     return parseFloat(val.substring(0, val.length - 2)); // px
 }
 function calcPctStyle(elmt, prop) {
-    var val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
+    const val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
     return parseFloat(val.substring(0, val.length - 1)); // %
 }
-var matrix = {
+const matrix = {
     scaleX: 0,
     rotX: 1,
     rotY: 2,
@@ -6405,14 +6405,14 @@ var matrix = {
     translateY: 5
 };
 function calcTransform(elmt, prop, index, defValue) {
-    var trans = window.getComputedStyle(elmt, null).getPropertyValue('transform');
-    var matrix = '1, 0, 0, 0, 1, 0'; // unit transform
+    const trans = window.getComputedStyle(elmt, null).getPropertyValue('transform');
+    let matrix = '1, 0, 0, 0, 1, 0'; // unit transform
     if (trans && trans.substring(0, 7) == 'matrix(') {
         matrix = trans.substring(7, trans.length - 8);
     }
-    var split = matrix.split(',');
+    const split = matrix.split(',');
     if (index < split.length) {
-        var val = split[index];
+        const val = split[index];
         if (val.substring(val.length - 1) == '%') {
             return parseFloat(val.substring(0, val.length - 1)) * 0.01;
         }
@@ -6432,13 +6432,13 @@ function calcTransform(elmt, prop, index, defValue) {
  * @param key What key was just typed, if any
  */
 function validateInputReady(btn, key) {
-    var id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
-    var ext = id ? document.getElementById(id) : null;
+    const id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
+    const ext = id ? document.getElementById(id) : null;
     if (!ext) {
         return;
     }
-    var value = getValueToValidate(ext);
-    var ready = isValueReady(btn, value);
+    const value = getValueToValidate(ext);
+    const ready = isValueReady(btn, value);
     toggleClass(btn, 'ready', ready);
     if (ready && key == 'Enter') {
         clickValidationButton(btn);
@@ -6447,7 +6447,6 @@ function validateInputReady(btn, key) {
         horzScaleToFit(ext, value);
     }
 }
-exports.validateInputReady = validateInputReady;
 /**
  * Submit buttons can be associated with various constructs.
  * Extract an appropriate value to submit
@@ -6456,7 +6455,7 @@ exports.validateInputReady = validateInputReady;
  */
 function getValueToValidate(container) {
     // If the extraction has alredy been cached, use it
-    var cached = container.getAttribute('data-extraction');
+    const cached = container.getAttribute('data-extraction');
     if (cached) {
         return cached;
     }
@@ -6468,19 +6467,19 @@ function getValueToValidate(container) {
         return container.value;
     }
     // If we contain multiple inputs, concat them
-    var inputs = container.getElementsByClassName('letter-input');
+    const inputs = container.getElementsByClassName('letter-input');
     if (inputs.length > 0) {
-        var value = '';
-        for (var i = 0; i < inputs.length; i++) {
+        let value = '';
+        for (let i = 0; i < inputs.length; i++) {
             value += inputs[i].value;
         }
         return value;
     }
     // If we contain multiple other extractions, concat them
-    var datas = getAllElementsWithAttribute(container, 'data-extraction');
+    const datas = getAllElementsWithAttribute(container, 'data-extraction');
     if (datas.length > 0) {
-        var value = '';
-        for (var i = 0; i < datas.length; i++) {
+        let value = '';
+        for (let i = 0; i < datas.length; i++) {
             value += datas[i].getAttribute('data-extraction');
         }
         return value;
@@ -6502,7 +6501,7 @@ function isValueReady(btn, value) {
     if (value.indexOf('_') >= 0) {
         return false;
     }
-    var minLength = getOptionalStyle(btn, 'data-min-length');
+    const minLength = getOptionalStyle(btn, 'data-min-length');
     if (minLength) {
         return value.length >= parseInt(minLength);
     }
@@ -6521,19 +6520,19 @@ function getHistoryDiv(id) {
  * The button can have parameters pointing to the extraction.
  */
 function clickValidationButton(btn) {
-    var id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
+    const id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
     if (!id) {
         return;
     }
-    var ext = document.getElementById(id);
+    const ext = document.getElementById(id);
     if (!ext) {
         return;
     }
-    var value = getValueToValidate(ext);
-    var ready = isValueReady(btn, value);
+    const value = getValueToValidate(ext);
+    const ready = isValueReady(btn, value);
     if (ready) {
-        var now = new Date();
-        var gl = { field: id, guess: value, time: now };
+        const now = new Date();
+        const gl = { field: id, guess: value, time: now };
         decodeAndValidate(gl);
     }
 }
@@ -6542,21 +6541,21 @@ function clickValidationButton(btn) {
  * @param gl the guess information, but not the response
  */
 function decodeAndValidate(gl) {
-    var validation = theBoiler().validation;
+    const validation = theBoiler().validation;
     if (validation && gl.field in validation) {
-        var obj = validation[gl.field];
+        const obj = validation[gl.field];
         // Normalize guesses
         // TODO: make this optional, in theBoiler, if a puzzle needs
         gl.guess = gl.guess.toUpperCase(); // All caps (permanent)
-        var guess = gl.guess.replace(/ /g, ''); // Remove spaces for hashing - keep in UI
+        let guess = gl.guess.replace(/ /g, ''); // Remove spaces for hashing - keep in UI
         // Keep all other punctuation
-        var hash = rot13(guess); // TODO: more complicated hashing
-        var block = appendGuess(gl);
+        const hash = rot13(guess); // TODO: more complicated hashing
+        const block = appendGuess(gl);
         if (hash in obj) {
-            var encoded = obj[hash];
+            const encoded = obj[hash];
             // Guess was expected. It may have multiple responses.
-            var multi = encoded.split('|');
-            for (var i = 0; i < multi.length; i++) {
+            const multi = encoded.split('|');
+            for (let i = 0; i < multi.length; i++) {
                 appendResponse(block, multi[i]);
             }
         }
@@ -6569,7 +6568,6 @@ function decodeAndValidate(gl) {
         console.error('Unrecognized validation field: ' + gl.field);
     }
 }
-exports.decodeAndValidate = decodeAndValidate;
 /**
  * Build a guess/response block, initialized with the guess
  * @param gl The user's guess info
@@ -6580,17 +6578,17 @@ function appendGuess(gl) {
     guess_history.push(gl);
     saveGuessHistory(guess_history);
     // Build a block for the guess and any connected responses
-    var hist = getHistoryDiv(gl.field);
-    var block = document.createElement('div');
+    const hist = getHistoryDiv(gl.field);
+    const block = document.createElement('div');
     block.classList.add('rt-block');
-    var div = document.createElement('div');
+    const div = document.createElement('div');
     div.classList.add('rt-guess');
     div.appendChild(document.createTextNode(gl.guess));
-    var now = gl.time;
-    var time = now.getHours() + ":"
+    const now = gl.time;
+    const time = now.getHours() + ":"
         + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes() + ":"
         + (now.getSeconds() < 10 ? "0" : "") + now.getSeconds();
-    var span = document.createElement('span');
+    const span = document.createElement('span');
     span.classList.add('rt-time');
     span.appendChild(document.createTextNode(time));
     div.appendChild(span);
@@ -6608,7 +6606,7 @@ function appendGuess(gl) {
  * If the response is only the type, pre-canned text is used instead.
  */
 function appendResponse(block, response) {
-    var type = parseInt(response[0]);
+    const type = parseInt(response[0]);
     response = response.substring(1);
     if (response.length == 0 && type < default_responses.length) {
         response = default_responses[type];
@@ -6616,21 +6614,21 @@ function appendResponse(block, response) {
     else {
         response = rot13(response);
     }
-    var div = document.createElement('div');
+    const div = document.createElement('div');
     div.classList.add('response');
     div.classList.add(ResponseTypeClasses[type]);
     if (type == ResponseType.Unlock) {
         // Create a link to a newly unlocked page.
         // The (decrypted) response is either just a URL, 
         // or else URL^Friendly (separated by a caret)
-        var caret = response.indexOf('^');
-        var friendly = caret < 0 ? response : response.substring(caret + 1);
+        const caret = response.indexOf('^');
+        const friendly = caret < 0 ? response : response.substring(caret + 1);
         if (caret >= 0) {
             response = response.substring(0, caret);
         }
-        var parts = response.split('^'); // caret not allowed in a URL
+        const parts = response.split('^'); // caret not allowed in a URL
         div.appendChild(document.createTextNode('You have unlocked '));
-        var link = document.createElement('a');
+        const link = document.createElement('a');
         link.href = response;
         link.target = '_blank';
         link.appendChild(document.createTextNode(friendly));
@@ -6639,13 +6637,13 @@ function appendResponse(block, response) {
     else if (type == ResponseType.Load) {
         // Use an iframe to navigate immediately to the response URL.
         // The iframe will be hidden, but any scripts will run immediately.
-        var iframe = document.createElement('iframe');
+        const iframe = document.createElement('iframe');
         iframe.src = response;
         div.appendChild(iframe);
     }
     else if (type == ResponseType.Show) {
-        var parts = response.split('^'); // caret not allowed in a URL
-        var elmt = document.getElementById(parts[0]);
+        const parts = response.split('^'); // caret not allowed in a URL
+        const elmt = document.getElementById(parts[0]);
         if (elmt) {
             if (parts.length > 1) {
                 toggleClass(elmt, parts[1]);
@@ -6660,7 +6658,7 @@ function appendResponse(block, response) {
         div.appendChild(document.createTextNode(response));
     }
     if (type < response_img.length) {
-        var img = document.createElement('img');
+        const img = document.createElement('img');
         img.classList.add('rt-img');
         img.src = response_img[type];
         div.appendChild(img);
@@ -6679,10 +6677,10 @@ function appendResponse(block, response) {
  * @param source Text to be encoded, or encoded text to be decoded
  */
 function rot13(source) {
-    var rot = '';
-    for (var i = 0; i < source.length; i++) {
-        var ch = source[i];
-        var r = ch;
+    let rot = '';
+    for (let i = 0; i < source.length; i++) {
+        const ch = source[i];
+        let r = ch;
         if (ch >= 'A' && ch <= 'Z') {
             r = String.fromCharCode(((ch.charCodeAt(0) - 52) % 26) + 65);
         }
@@ -6697,42 +6695,38 @@ function rot13(source) {
  * Custom error which identify which parts of the source document are malformed.
  * It can leverage nested try/catch blocks to add additional context.
  */
-var ContextError = /** @class */ (function (_super) {
-    __extends(ContextError, _super);
+class ContextError extends Error {
     /**
      * Create a new ContextError (or derived error)
      * @param msg The message of the Error
      * @param source Indicates which source text specifically triggered this error
      * @param inner The inner/causal error, if any
      */
-    function ContextError(msg, source, inner) {
-        var _this = _super.call(this, msg) || this;
-        _this.name = 'ContextError';
-        _this.cause = inner;
-        _this.functionStack = [];
-        _this.sourceStack = [];
-        _this.callStack = '';
+    constructor(msg, source, inner) {
+        super(msg);
+        this.name = 'ContextError';
+        this.cause = inner;
+        this.functionStack = [];
+        this.sourceStack = [];
+        this.callStack = '';
         if (source) {
             if (typeof (source) == 'function') {
-                _this.sourceStack.push(source());
+                this.sourceStack.push(source());
             }
             else {
-                _this.sourceStack.push(source);
+                this.sourceStack.push(source);
             }
         }
-        return _this;
     }
-    ContextError.prototype._cacheCallstack = function () {
-        var _a;
+    _cacheCallstack() {
         if (this.callStack === '') {
             this.callStack = this.cause ? this.cause.stack : this.stack;
-            if (((_a = this.callStack) === null || _a === void 0 ? void 0 : _a.substring(0, this.message.length)) == this.message) {
+            if (this.callStack?.substring(0, this.message.length) == this.message) {
                 this.callStack = this.callStack.substring(this.message.length); // REVIEW: trim \n ?
             }
         }
-    };
-    return ContextError;
-}(Error));
+    }
+}
 exports.ContextError = ContextError;
 /**
  * Type predicate to separate ContextErrors from generic errors.
@@ -6743,7 +6737,6 @@ function isContextError(err) {
     //return err instanceof ContextError;
     return err.name === 'ContextError';
 }
-exports.isContextError = isContextError;
 /**
  * Add additional information to a context error.
  * @param inner Another exception, which has just been caught.
@@ -6754,8 +6747,7 @@ exports.isContextError = isContextError;
  * Otherwise creates a new ContextError that wraps inner.
  */
 function wrapContextError(inner, func, src) {
-    var _a;
-    var ctxErr;
+    let ctxErr;
     if (isContextError(inner)) {
         ctxErr = inner;
     }
@@ -6765,7 +6757,7 @@ function wrapContextError(inner, func, src) {
     // Cache callstack
     if (ctxErr.callStack === '') {
         ctxErr.callStack = ctxErr.cause ? ctxErr.cause.stack : ctxErr.stack;
-        if (((_a = ctxErr.callStack) === null || _a === void 0 ? void 0 : _a.substring(0, ctxErr.message.length)) == ctxErr.message) {
+        if (ctxErr.callStack?.substring(0, ctxErr.message.length) == ctxErr.message) {
             ctxErr.callStack = ctxErr.callStack.substring(ctxErr.message.length); // REVIEW: trim \n ?
         }
     }
@@ -6781,16 +6773,15 @@ function wrapContextError(inner, func, src) {
     makeBetterStack(ctxErr);
     return ctxErr;
 }
-exports.wrapContextError = wrapContextError;
 /**
  * Once we've added context to the exception, update the stack to reflect it
  */
 function makeBetterStack(err) {
-    var msg = 'ContextError: ' + err.message;
-    var str = msg;
+    const msg = 'ContextError: ' + err.message;
+    let str = msg;
     if (err.sourceStack.length > 0) {
-        for (var i = 0; i < err.sourceStack.length; i++) {
-            var c = err.sourceStack[i];
+        for (let i = 0; i < err.sourceStack.length; i++) {
+            const c = err.sourceStack[i];
             str += '\n' + c.source;
             if (c.offset !== undefined) {
                 str += '\n' + Array(c.offset + 1).join(' ') + '^';
@@ -6814,6 +6805,19 @@ function makeBetterStack(err) {
     // }
     err.stack = str;
 }
+function nodeSourceOffset(node) {
+    if (node.nodeType == Node.ELEMENT_NODE) {
+        return elementSourceOffset(node);
+    }
+    else {
+        const tok = {
+            source: node.nodeValue || '', // for text elements, same as textContent
+            offset: 0,
+            length: 1, // No need to span the whole
+        };
+        return tok;
+    }
+}
 /**
  * Recreate the source for a tag. Then pinpoint the offset of a desired attribute.
  * @param elmt An HTML tag
@@ -6821,14 +6825,14 @@ function makeBetterStack(err) {
  * @returns A source offset, built on the recreation
  */
 function elementSourceOffset(elmt, attr) {
-    var str = '<' + elmt.localName;
-    var offset = 0;
-    var length = 0;
-    for (var i = 0; i < elmt.attributes.length; i++) {
-        var name_5 = elmt.attributes[i].name;
-        var value = elmt.attributes[i].value;
-        if (name_5 === attr) {
-            offset = str.length + name_5.length + 3; // The start of the value
+    let str = '<' + elmt.localName;
+    let offset = 0;
+    let length = 0;
+    for (let i = 0; i < elmt.attributes.length; i++) {
+        const name = elmt.attributes[i].name;
+        const value = elmt.attributes[i].value;
+        if (name === attr) {
+            offset = str.length + name.length + 3; // The start of the value
             length = value.length;
         }
         str += ' ' + elmt.attributes[i].name + '="' + elmt.attributes[i].value + '"';
@@ -6845,31 +6849,26 @@ function elementSourceOffset(elmt, attr) {
     if (offset == 0) {
         length = str.length; // Full tag
     }
-    var tok = { source: str, offset: offset, length: length };
+    const tok = { source: str, offset: offset, length: length };
     return tok;
 }
-exports.elementSourceOffset = elementSourceOffset;
 /**
  * Instead of creating a source offset every time, anticipating an exception
  * that rarely gets thrown, instead pass a lambda.
  */
 function elementSourceOffseter(elmt, attr) {
-    return function () { return elementSourceOffset(elmt, attr); };
+    return () => { return elementSourceOffset(elmt, attr); };
 }
-exports.elementSourceOffseter = elementSourceOffseter;
 /**
  * A code error has no additional fields.
  * It just acknowledges that the bug is probably the code's fault, and not the raw inputs's.
  */
-var CodeError = /** @class */ (function (_super) {
-    __extends(CodeError, _super);
-    function CodeError(msg) {
-        var _this = _super.call(this, msg) || this;
-        _this.name = 'CodeError';
-        return _this;
+class CodeError extends Error {
+    constructor(msg) {
+        super(msg);
+        this.name = 'CodeError';
     }
-    return CodeError;
-}(Error));
+}
 exports.CodeError = CodeError;
 /*-----------------------------------------------------------
  * _builder.ts
@@ -7027,32 +7026,31 @@ exports.CodeError = CodeError;
  *        </for>
  *      </div>
  */
-var builder_tags = [
+const builder_tags = [
     'build', 'use', 'for', 'if', 'else', 'elseif', 'xml'
 ];
 function firstBuilderElement() {
-    for (var _i = 0, builder_tags_1 = builder_tags; _i < builder_tags_1.length; _i++) {
-        var t = builder_tags_1[_i];
-        var tags = document.getElementsByTagName(t);
-        for (var i = 0; i < tags.length; i++) {
+    for (const t of builder_tags) {
+        const tags = document.getElementsByTagName(t);
+        for (let i = 0; i < tags.length; i++) {
             toggleClass(tags[i], '_builder_control_', true);
         }
     }
-    var builds = document.getElementsByClassName('_builder_control_');
+    const builds = document.getElementsByClassName('_builder_control_');
     if (builds.length == 0)
         return null;
-    var first = builds[0];
-    for (var i = builds.length - 1; i >= 0; i--) {
+    const first = builds[0];
+    for (let i = builds.length - 1; i >= 0; i--) {
         toggleClass(builds[i], '_builder_control_', false);
     }
     return first;
 }
-var src_element_stack = [];
-var dest_element_stack = [];
+let src_element_stack = [];
+let dest_element_stack = [];
 function initElementStack(elmt) {
     dest_element_stack = [];
     src_element_stack = [];
-    var parent_stack = [];
+    const parent_stack = [];
     while (elmt !== null && elmt.nodeName != '#document-fragment' && elmt.tagName !== 'BODY') {
         parent_stack.push(elmt);
         elmt = elmt.parentElement;
@@ -7080,12 +7078,12 @@ var TrimMode;
  * @returns
  */
 function getTrimMode() {
-    for (var i = src_element_stack.length - 1; i >= 0; i--) {
-        var elmt = src_element_stack[i];
+    for (let i = src_element_stack.length - 1; i >= 0; i--) {
+        const elmt = src_element_stack[i];
         if (hasClass(elmt, 'trim')) {
             return TrimMode.on;
         }
-        var trim = elmt.getAttributeNS('', 'trim');
+        let trim = elmt.getAttributeNS('', 'trim');
         trim = trim == null ? null : trim.toLowerCase();
         if (trim === 'all') {
             return TrimMode.all;
@@ -7096,33 +7094,31 @@ function getTrimMode() {
     }
     return TrimMode.off;
 }
-exports.getTrimMode = getTrimMode;
 /**
  * See if any parent element in the builder stack matches a lambda
  * @param fn a Lambda which takes an element and returns true for the desired condition
  * @returns the first parent element that satisfies the lambda, or null if none do
  */
 function getBuilderParentIf(fn) {
-    for (var i = dest_element_stack.length - 1; i >= 0; i--) {
+    for (let i = dest_element_stack.length - 1; i >= 0; i--) {
         if (fn(dest_element_stack[i])) {
             return dest_element_stack[i];
         }
     }
-    for (var i = src_element_stack.length - 1; i >= 0; i--) {
+    for (let i = src_element_stack.length - 1; i >= 0; i--) {
         if (fn(src_element_stack[i])) {
             return src_element_stack[i];
         }
     }
     return null; // no parent satisfied lambda
 }
-exports.getBuilderParentIf = getBuilderParentIf;
 /**
  * See if any parent element, either in the builder stack, or src element tree, matches a lambda
  * @param fn a Lambda which takes an element and returns true for the desired condition
  * @returns the first parent element that satisfies the lambda, or null if none do
  */
 function getParentIf(elmt, fn) {
-    var bp = getBuilderParentIf(fn);
+    const bp = getBuilderParentIf(fn);
     if (bp != null) {
         return bp;
     }
@@ -7134,27 +7130,25 @@ function getParentIf(elmt, fn) {
     }
     return null;
 }
-exports.getParentIf = getParentIf;
 /**
  * Is the current stack of building elements currently inside an SVG tag.
  * @returns returns true if inside an SVG, unless further inside an EMBEDDED_OBJECT.
  */
 function inSvgNamespace() {
-    var elmt = getBuilderParentIf(function (e) { return isTag(e, 'SVG') || isTag(e, 'FOREIGNOBJECT'); });
+    const elmt = getBuilderParentIf((e) => isTag(e, 'SVG') || isTag(e, 'FOREIGNOBJECT'));
     if (elmt) {
         return isTag(elmt, 'SVG');
     }
     return false;
 }
-exports.inSvgNamespace = inSvgNamespace;
 /**
  * See if we are inside an existing <svg> tag. Or multiple!
  * @param elmt Any element
  * @returns How many <svg> tags are in its parent chain
  */
 function getSvgDepth(elmt) {
-    var s = 0;
-    var parent = findParentOfTag(elmt, 'SVG');
+    let s = 0;
+    let parent = findParentOfTag(elmt, 'SVG');
     while (parent) {
         s++;
         parent = parent.parentElement ? findParentOfTag(parent.parentElement, 'SVG') : null;
@@ -7165,11 +7159,11 @@ function getSvgDepth(elmt) {
  * Look for control tags like for loops and if branches.
  */
 function expandControlTags() {
-    var ifResult = { passed: false, index: 0 };
-    for (var src = firstBuilderElement(); src != null; src = firstBuilderElement()) {
+    const ifResult = { passed: false, index: 0 };
+    for (let src = firstBuilderElement(); src != null; src = firstBuilderElement()) {
         try {
             initElementStack(src);
-            var dest = [];
+            let dest = [];
             if (isTag(src, ['if', 'elseif', 'else'])) {
                 dest = startIfBlock(src, ifResult);
             }
@@ -7185,12 +7179,12 @@ function expandControlTags() {
                     dest = useTemplate(src);
                 }
             }
-            var parent_2 = src.parentNode;
-            for (var d = 0; d < dest.length; d++) {
-                var node = dest[d];
-                parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.insertBefore(node, src);
+            const parent = src.parentNode;
+            for (let d = 0; d < dest.length; d++) {
+                const node = dest[d];
+                parent?.insertBefore(node, src);
             }
-            parent_2 === null || parent_2 === void 0 ? void 0 : parent_2.removeChild(src);
+            parent?.removeChild(src);
         }
         catch (ex) {
             throw wrapContextError(ex, "expandControlTags", elementSourceOffset(src));
@@ -7198,34 +7192,31 @@ function expandControlTags() {
     }
     initElementStack(null);
     // Call any post-builder method
-    var fn = theBoiler().postBuild;
+    const fn = theBoiler().postBuild;
     if (fn) {
         fn();
     }
 }
-exports.expandControlTags = expandControlTags;
 /**
  * Concatenate one list onto another
  * @param list The list to modified
  * @param add The list to add to the end
  */
 function pushRange(list, add) {
-    for (var i = 0; i < add.length; i++) {
+    for (let i = 0; i < add.length; i++) {
         list.push(add[i]);
     }
 }
-exports.pushRange = pushRange;
 /**
  * Append more than one child node to the end of a parent's child list
  * @param parent The parent node
  * @param add A list of new children
  */
 function appendRange(parent, add) {
-    for (var i = 0; i < add.length; i++) {
+    for (let i = 0; i < add.length; i++) {
         parent.insertBefore(add[i], null);
     }
 }
-exports.appendRange = appendRange;
 /**
  * Clone every node inside a parent element.
  * Any occurence of {curly} braces is in fact a lookup.
@@ -7235,12 +7226,12 @@ exports.appendRange = appendRange;
  * @returns A list of nodes
  */
 function expandContents(src) {
-    var dest = [];
-    var ifResult = { passed: false, index: 0 };
-    for (var i = 0; i < src.childNodes.length; i++) {
-        var child = src.childNodes[i];
+    const dest = [];
+    const ifResult = { passed: false, index: 0 };
+    for (let i = 0; i < src.childNodes.length; i++) {
+        const child = src.childNodes[i];
         if (child.nodeType == Node.ELEMENT_NODE) {
-            var child_elmt = child;
+            const child_elmt = child;
             try {
                 if (isTag(child_elmt, ['if', 'elseif', 'else'])) {
                     pushRange(dest, startIfBlock(child_elmt, ifResult));
@@ -7277,7 +7268,6 @@ function expandContents(src) {
     }
     return dest;
 }
-exports.expandContents = expandContents;
 /**
  * Some HTML elements and attributes are immediately acted upon by the DOM.
  * To delay that until after builds (especially <for> and <if>),
@@ -7301,8 +7291,7 @@ function normalizeName(name) {
     // Any other interior underscores are kept
     return name;
 }
-exports.normalizeName = normalizeName;
-var nameSpaces = {
+const nameSpaces = {
     '': '',
     'svg': exports.svg_xmlns,
     's': exports.svg_xmlns,
@@ -7317,8 +7306,8 @@ var nameSpaces = {
  * @returns A cloned element
  */
 function cloneWithContext(elmt) {
-    var tagName = normalizeName(elmt.localName);
-    var clone;
+    const tagName = normalizeName(elmt.localName);
+    let clone;
     if (inSvgNamespace() || tagName == 'svg') {
         // TODO: contents of embedded objects aren't SVG
         clone = document.createElementNS(exports.svg_xmlns, tagName);
@@ -7328,12 +7317,12 @@ function cloneWithContext(elmt) {
     }
     pushDestElement(clone);
     cloneAttributes(elmt, clone);
-    var ifResult = { passed: false, index: 0 };
-    for (var i = 0; i < elmt.childNodes.length; i++) {
-        var child = elmt.childNodes[i];
+    const ifResult = { passed: false, index: 0 };
+    for (let i = 0; i < elmt.childNodes.length; i++) {
+        const child = elmt.childNodes[i];
         try {
             if (child.nodeType == Node.ELEMENT_NODE) {
-                var child_elmt = child;
+                const child_elmt = child;
                 if (isTag(child_elmt, ['if', 'elseif', 'else'])) {
                     appendRange(clone, startIfBlock(child_elmt, ifResult));
                     continue;
@@ -7360,7 +7349,7 @@ function cloneWithContext(elmt) {
             }
         }
         catch (ex) {
-            throw wrapContextError(ex, "cloneWithContext", elementSourceOffset(elmt));
+            throw wrapContextError(ex, "cloneWithContext", nodeSourceOffset(child));
         }
     }
     popDestElement();
@@ -7384,8 +7373,7 @@ function cloneNode(node) {
 function theBoilerContext() {
     return theBoiler().builderLookup || {};
 }
-exports.theBoilerContext = theBoilerContext;
-var contextStack = [];
+const contextStack = [];
 /**
  * Get the current builder context.
  * If needed, initialized from boilerplate.builderLookup
@@ -7397,7 +7385,6 @@ function getBuilderContext() {
     }
     return contextStack[contextStack.length - 1];
 }
-exports.getBuilderContext = getBuilderContext;
 /**
  * Inject a builder context for testing purposes.
  * @param lookup Any object, or undefined to remove.
@@ -7406,7 +7393,6 @@ function testBuilderContext(lookup) {
     theBoiler().builderLookup = lookup;
     contextStack.splice(0, contextStack.length); // clear
 }
-exports.testBuilderContext = testBuilderContext;
 /**
  * Start a new top level builder context.
  * @param newContext If specified, this is the new context. If not, start from a clone of the current top context.
@@ -7419,7 +7405,6 @@ function pushBuilderContext(newContext) {
     contextStack.push(newContext);
     return getBuilderContext();
 }
-exports.pushBuilderContext = pushBuilderContext;
 /**
  * Pop the builder context stack.
  * @returns The new top-level builder context.
@@ -7428,7 +7413,6 @@ function popBuilderContext() {
     contextStack.pop();
     return getBuilderContext();
 }
-exports.popBuilderContext = popBuilderContext;
 /**
  * Try to look up a key in the current context level.
  * @param key A key name
@@ -7436,10 +7420,9 @@ exports.popBuilderContext = popBuilderContext;
  * @returns The value from that key, or undefined if not present
  */
 function valueFromContext(key, maybe) {
-    var context = getBuilderContext();
+    const context = getBuilderContext();
     return getKeyedChild(context, key, undefined, maybe);
 }
-exports.valueFromContext = valueFromContext;
 /**
  * Look up a value, according to the context path cached in an attribute
  * @param path A context path
@@ -7452,7 +7435,6 @@ function valueFromGlobalContext(path, maybe) {
     }
     return undefined;
 }
-exports.valueFromGlobalContext = valueFromGlobalContext;
 /**
  * Finish cloning an HTML element
  * @param src The element being cloned
@@ -7460,50 +7442,48 @@ exports.valueFromGlobalContext = valueFromGlobalContext;
  * @param context A dictionary of all accessible values
  */
 function cloneAttributes(src, dest) {
-    for (var i = 0; i < src.attributes.length; i++) {
-        var name_6 = normalizeName(src.attributes[i].name);
-        var value = src.attributes[i].value;
+    for (let i = 0; i < src.attributes.length; i++) {
+        const name = normalizeName(src.attributes[i].name);
+        let value = src.attributes[i].value;
         try {
             value = cloneText(value);
-            if (name_6 == 'id') {
+            if (name == 'id') {
                 dest.id = value;
             }
-            else if (name_6 == 'class') {
+            else if (name == 'class') {
                 if (value) {
-                    var classes = value.split(' ');
-                    for (var i_5 = 0; i_5 < classes.length; i_5++) {
-                        if (classes[i_5].length > 0) {
-                            dest.classList.add(classes[i_5]);
+                    const classes = value.split(' ');
+                    for (let i = 0; i < classes.length; i++) {
+                        if (classes[i].length > 0) {
+                            dest.classList.add(classes[i]);
                         }
                     }
                 }
             }
             // REVIEW: special case 'style'?
             else {
-                dest.setAttributeNS('', name_6, value);
+                dest.setAttributeNS('', name, value);
             }
         }
         catch (ex) {
-            throw wrapContextError(ex, 'cloneAttributes', elementSourceOffset(src, name_6));
+            throw wrapContextError(ex, 'cloneAttributes', elementSourceOffset(src, name));
         }
     }
 }
-exports.cloneAttributes = cloneAttributes;
 /**
  * Process a text node which may contain {curly} formatting.
  * @param text A text node
  * @returns A list with 1 or 0 text nodes
  */
 function cloneTextNode(text) {
-    var str = text.textContent || '';
-    var cloned = complexAttribute(str, getTrimMode());
+    const str = text.textContent || '';
+    const cloned = complexAttribute(str, getTrimMode());
     if (cloned === '') {
         return [];
     }
-    var node = document.createTextNode(cloned);
+    const node = document.createTextNode(cloned);
     return [node];
 }
-exports.cloneTextNode = cloneTextNode;
 /**
  * Process text which may contain {curly} formatting.
  * @param text Any text, including text inside attributes
@@ -7513,11 +7493,10 @@ function cloneText(str) {
     if (str === null) {
         return '';
     }
-    var trimMode = getTrimMode();
-    var cloned = complexAttribute(str, Math.max(trimMode, TrimMode.on));
+    const trimMode = getTrimMode();
+    const cloned = complexAttribute(str, Math.max(trimMode, TrimMode.on));
     return '' + cloned;
 }
-exports.cloneText = cloneText;
 /**
  * Resolve an attribute, in situations where it can resolve to an object,
  * and not just text. If any portion is text, then the entire will concatenate
@@ -7527,17 +7506,16 @@ exports.cloneText = cloneText;
  * @returns an object, if the entire raw attribute string is a {formula}.
  * Otherwise a string, which may simply be a clone of the original.
  */
-function complexAttribute(str, trim) {
-    if (trim === void 0) { trim = TrimMode.off; }
+function complexAttribute(str, trim = TrimMode.off) {
     if (str === null) {
         return '';
     }
     if (trim != TrimMode.off) {
         str = simpleTrim(str);
     }
-    var list = tokenizeText(str);
-    var buffer = '';
-    for (var i = 0; i < list.length; i++) {
+    const list = tokenizeText(str);
+    let buffer = '';
+    for (let i = 0; i < list.length; i++) {
         if (!list[i].formula) {
             if (trim == TrimMode.all) {
                 buffer += simpleTrim(list[i].text);
@@ -7548,7 +7526,7 @@ function complexAttribute(str, trim) {
         }
         else {
             try {
-                var complex = evaluateFormula(list[i].text);
+                const complex = evaluateFormula(list[i].text);
                 if (i == 0 && list.length == 1) {
                     return complex;
                 }
@@ -7561,15 +7539,14 @@ function complexAttribute(str, trim) {
     }
     return buffer;
 }
-exports.complexAttribute = complexAttribute;
 /**
  * Trim a string without taking non-breaking-spaces
  * @param str Any string
  * @returns A substring
  */
 function simpleTrim(str) {
-    var s = 0;
-    var e = str.length;
+    let s = 0;
+    let e = str.length;
     while (s < e && (str.charCodeAt(s) || 33) <= 32) {
         s++;
     }
@@ -7605,15 +7582,14 @@ var TokenType;
  * (Only exported for unit tests)
  */
 function tokenizeFormula(str) {
-    var _a, _b;
-    var tokens = [];
-    var stack = []; // currently open brackets
-    var tok = { text: '', type: TokenType.unset,
+    const tokens = [];
+    const stack = []; // currently open brackets
+    let tok = { text: '', type: TokenType.unset,
         source: str, offset: 0, length: 0 };
-    var escape = false;
-    var len = str.length;
-    for (var i = 0; i <= str.length; i++) {
-        var ch = i < str.length ? str[i] : '';
+    let escape = false;
+    const len = str.length;
+    for (let i = 0; i <= str.length; i++) {
+        const ch = i < str.length ? str[i] : '';
         if (ch == '`') {
             if (!escape) {
                 escape = true;
@@ -7622,35 +7598,35 @@ function tokenizeFormula(str) {
             escape = false;
             // Fall through, and process second ` as normal text
         }
-        var op = getOperator(ch);
+        const op = getOperator(ch);
         if (stack.length > 0 && !escape && ch == stack[stack.length - 1]) {
             // Found a matching close bracket
             stack.pop();
             if (tok.type != TokenType.unset) {
                 tokens.push(tok);
             } // push any token in progress
-            tokens.push(tok = { text: ch, type: TokenType.closeBracket,
+            tokens.push(tok = { text: ch, type: TokenType.closeBracket, // push close bracket
                 source: str, offset: i, length: 1 });
-            tok = { text: '', type: TokenType.unset,
+            tok = { text: '', type: TokenType.unset, // reset next token
                 source: str, offset: i + 1, length: 0 };
         }
         else if (!isInQuotes(stack) && !escape && (isBracketOperator(op) || isCloseBracket(op))) {
             // New open bracket, or unmatched close
-            var type = isBracketOperator(op) ? TokenType.openBracket : TokenType.closeBracket;
+            const type = isBracketOperator(op) ? TokenType.openBracket : TokenType.closeBracket;
             if (tok.type != TokenType.unset) {
                 tokens.push(tok);
             } // push any token in progress
-            tokens.push(tok = { text: ch, type: type,
+            tokens.push(tok = { text: ch, type: type, // push open bracket
                 source: str, offset: i, length: 1 });
             if (type == TokenType.openBracket) {
                 stack.push(op.closeChar); // cache the pending close bracket
             }
-            tok = { text: '', type: TokenType.unset,
+            tok = { text: '', type: TokenType.unset, // reset next token
                 source: str, offset: i + 1, length: 0 };
         }
         else if (!isInQuotes(stack) && !escape && op !== null) {
             // Found an operator
-            var tt = TokenType.unset;
+            let tt = TokenType.unset;
             if (isBinaryOperator(op)) {
                 tt |= TokenType.binaryOp;
             }
@@ -7660,9 +7636,9 @@ function tokenizeFormula(str) {
             if (tok.type != TokenType.unset) {
                 tokens.push(tok);
             } // push any token in progress
-            tokens.push(tok = { text: ch, type: tt,
+            tokens.push(tok = { text: ch, type: tt, // push operator (exact type TBD)
                 source: str, offset: i, length: 1 });
-            tok = { text: '', type: TokenType.unset,
+            tok = { text: '', type: TokenType.unset, // reset next token
                 source: str, offset: i + 1, length: 0 };
         }
         else {
@@ -7682,49 +7658,48 @@ function tokenizeFormula(str) {
         tokens.push(tok); // push any token in progress
     }
     // Re-scan tokens, to clarify operator and text sub-types
-    var prev = TokenType.unset;
-    for (var i = 0; i < tokens.length; i++) {
-        var tok_1 = tokens[i];
-        if (tok_1.source == undefined || tok_1.offset == undefined || tok_1.length == undefined) {
-            throw new CodeError('All tokens should know their source offset: ' + tok_1);
+    let prev = TokenType.unset;
+    for (let i = 0; i < tokens.length; i++) {
+        const tok = tokens[i];
+        if (tok.source == undefined || tok.offset == undefined || tok.length == undefined) {
+            throw new CodeError('All tokens should know their source offset: ' + tok);
         }
-        if (tok_1.type & TokenType.anyOperator) {
+        if (tok.type & TokenType.anyOperator) {
             if ((prev & (TokenType.word | TokenType.number | TokenType.closeBracket)) == 0) {
                 // If no object (text or a closeBracket) precedes us, we're a unary operator
                 // For example, consecutive operators mean all but the first are unary (since we have no post-fix unary operators)
-                tok_1.type = TokenType.unaryOp;
-                var op = getOperator(tok_1.text);
-                tok_1.text = (_a = op.unaryChar) !== null && _a !== void 0 ? _a : tok_1.text; // possibly substitute operator char
+                tok.type = TokenType.unaryOp;
+                const op = getOperator(tok.text);
+                tok.text = op.unaryChar ?? tok.text; // possibly substitute operator char
             }
-            else if (tok_1.type & TokenType.anyOperator) {
+            else if (tok.type & TokenType.anyOperator) {
                 // When an object does precede us, then ambiguous operators are binary
-                tok_1.type = TokenType.binaryOp;
-                var op = getOperator(tok_1.text);
-                tok_1.text = (_b = op.binaryChar) !== null && _b !== void 0 ? _b : tok_1.text; // possibly substitute operator char
+                tok.type = TokenType.binaryOp;
+                const op = getOperator(tok.text);
+                tok.text = op.binaryChar ?? tok.text; // possibly substitute operator char
             }
         }
-        else if (tok_1.type & TokenType.anyText) {
-            if (simpleTrim(tok_1.text).length == 0) {
-                tok_1.type = TokenType.spaces;
+        else if (tok.type & TokenType.anyText) {
+            if (simpleTrim(tok.text).length == 0) {
+                tok.type = TokenType.spaces;
             }
-            else if (isIntegerRegex(tok_1.text)) {
-                tok_1.type = TokenType.number;
+            else if (isIntegerRegex(tok.text)) {
+                tok.type = TokenType.number;
             }
             else {
-                tok_1.type = TokenType.word;
+                tok.type = TokenType.word;
             }
         }
-        if (tok_1.type != TokenType.spaces) {
-            prev = tok_1.type;
+        if (tok.type != TokenType.spaces) {
+            prev = tok.type;
         }
     }
     return tokens;
 }
-exports.tokenizeFormula = tokenizeFormula;
 function findCloseBracket(tokens, open) {
-    var closes = [tokens[open]];
-    for (var i = open + 1; i < tokens.length; i++) {
-        var tok = tokens[i];
+    const closes = [tokens[open]];
+    for (let i = open + 1; i < tokens.length; i++) {
+        const tok = tokens[i];
         if (tok.type == TokenType.closeBracket) {
             if (tok.text == bracketPairs[closes[closes.length - 1].text]) {
                 closes.pop();
@@ -7753,8 +7728,8 @@ function findCloseBracket(tokens, open) {
  * Nodes are decorated with any immediate bracket, which affects text parsing.
  * (Only exported for unit tests)
  */
-var FormulaNode = /** @class */ (function () {
-    function FormulaNode(value, right, left, span) {
+class FormulaNode {
+    constructor(value, right, left, span) {
         this.bracket = ''; // If this node is the root of a bracketed sub-formula, name the bracket char, else ''
         this.left = left;
         this.right = right;
@@ -7771,29 +7746,28 @@ var FormulaNode = /** @class */ (function () {
      * Recreate the expression, as text
      * @returns A string equivalent (including any brackets or quotes it was found inside)
      */
-    FormulaNode.prototype.toString = function () {
-        var _a, _b;
-        var rbrace = this.bracket === '' ? '' : bracketPairs[this.bracket];
+    toString() {
+        const rbrace = this.bracket === '' ? '' : bracketPairs[this.bracket];
         if (this.left) {
-            return this.bracket + this.left.toString() + ' ' + this.value + ' ' + ((_a = this.right) === null || _a === void 0 ? void 0 : _a.toString()) + rbrace;
+            return this.bracket + this.left.toString() + ' ' + this.value + ' ' + this.right?.toString() + rbrace;
         }
         else if (this.right) {
-            return this.bracket + this.value + ' ' + ((_b = this.right) === null || _b === void 0 ? void 0 : _b.toString()) + rbrace;
+            return this.bracket + this.value + ' ' + this.right?.toString() + rbrace;
         }
         else {
             return this.bracket + this.value + rbrace;
         }
-    };
+    }
     /**
      * Is this node plain-text?
      * @returns false if there is an operation and operands, else false
      */
-    FormulaNode.prototype.isSimple = function () {
+    isSimple() {
         return !this.left && !this.right;
-    };
-    FormulaNode.prototype.reRootContext = function () {
+    }
+    reRootContext() {
         return this.bracket == '[' || this.bracket == '{';
-    };
+    }
     /**
      * Evaluate this node.
      * @param evalText if true, any simple text nodes are assumed to be named objects or numbers
@@ -7801,22 +7775,21 @@ var FormulaNode = /** @class */ (function () {
      * @returns If it's a simple value, return it (any type).
      * If there's an operator and operands, return a type appropriate for that operator.
      */
-    FormulaNode.prototype.evaluate = function (evalText) {
-        var _a, _b, _c;
-        var result = undefined;
+    evaluate(evalText) {
+        let result = undefined;
         if (this.left) {
             try {
-                var op = getOperator(this.value.text);
-                var bop = op.binaryOp;
+                const op = getOperator(this.value.text);
+                const bop = op.binaryOp;
                 // right must also exist, because we're complete
-                var lValue = this.left.evaluate(op.evalLeft);
-                var rValue = this.right.evaluate(op.evalRight || this.right.reRootContext());
+                const lValue = this.left.evaluate(op.evalLeft);
+                const rValue = this.right.evaluate(op.evalRight || this.right.reRootContext());
                 if (!bop) {
                     throw new ContextError('Unrecognize binary operator', this.value);
                 }
-                result = bop(lValue, rValue, (_a = this.left) === null || _a === void 0 ? void 0 : _a.span, (_b = this.right) === null || _b === void 0 ? void 0 : _b.span);
+                result = bop(lValue, rValue, this.left?.span, this.right?.span);
                 if (result === undefined || Number.isNaN(result)) {
-                    throw new ContextError('Operation ' + (op === null || op === void 0 ? void 0 : op.raw) + ' resulted in ' + result + ' : ' + lValue + (op === null || op === void 0 ? void 0 : op.raw) + rValue, this.value);
+                    throw new ContextError('Operation ' + op?.raw + ' resulted in ' + result + ' : ' + lValue + op?.raw + rValue, this.value);
                 }
             }
             catch (ex) {
@@ -7825,15 +7798,15 @@ var FormulaNode = /** @class */ (function () {
         }
         else if (this.right) {
             try {
-                var op = getOperator(this.value.text);
-                var uop = op.unaryOp;
-                var rValue = this.right.evaluate(op.evalRight);
+                const op = getOperator(this.value.text);
+                const uop = op.unaryOp;
+                const rValue = this.right.evaluate(op.evalRight);
                 if (!uop) {
                     throw new ContextError('Unrecognize unary operator', this.value);
                 }
-                result = uop(rValue, (_c = this.right) === null || _c === void 0 ? void 0 : _c.span);
+                result = uop(rValue, this.right?.span);
                 if (result === undefined || Number.isNaN(result)) {
-                    throw new ContextError('Operation ' + (op === null || op === void 0 ? void 0 : op.raw) + ' resulted in ' + result + ' : ' + (op === null || op === void 0 ? void 0 : op.raw) + rValue, this.value);
+                    throw new ContextError('Operation ' + op?.raw + ' resulted in ' + result + ' : ' + op?.raw + rValue, this.value);
                 }
             }
             catch (ex) {
@@ -7848,8 +7821,8 @@ var FormulaNode = /** @class */ (function () {
             result = this.value.text; // unless overridden below
             // Could be plain text (or a number) or a name in context
             if (evalText === true) {
-                var trimmed = simpleTrim(this.value.text);
-                var context = getBuilderContext();
+                const trimmed = simpleTrim(this.value.text);
+                const context = getBuilderContext();
                 if (trimmed in context) {
                     result = context[trimmed];
                 }
@@ -7859,9 +7832,8 @@ var FormulaNode = /** @class */ (function () {
             }
         }
         return result;
-    };
-    return FormulaNode;
-}());
+    }
+}
 exports.FormulaNode = FormulaNode;
 /**
  * Does this string look like an integer?
@@ -7878,13 +7850,12 @@ function isIntegerRegex(str) {
  * or -1 if no remaining operators
  */
 function findHighestPrecedence(tokens) {
-    var _a;
-    var precedence = -1;
-    var first = -1;
-    for (var i = 0; i < tokens.length; i++) {
-        var tok = tokens[i];
+    let precedence = -1;
+    let first = -1;
+    for (let i = 0; i < tokens.length; i++) {
+        const tok = tokens[i];
         if (tok.type & TokenType.anyOperatorOrBracket) {
-            var op = getOperator((_a = tok.text) !== null && _a !== void 0 ? _a : '');
+            const op = getOperator(tok.text ?? '');
             if (op) {
                 if ((op.precedence || 0) > precedence) {
                     precedence = op.precedence;
@@ -7903,9 +7874,9 @@ function findHighestPrecedence(tokens) {
  * @returns A new token
  */
 function makeSpanToken(first, last, node) {
-    var start = Math.min(first.offset, last.offset);
-    var end = Math.max(first.offset + first.length, last.offset + last.length);
-    var tok = {
+    const start = Math.min(first.offset, last.offset);
+    const end = Math.max(first.offset + first.length, last.offset + last.length);
+    const tok = {
         type: node ? TokenType.node : TokenType.word,
         node: node,
         source: first.source,
@@ -7921,7 +7892,7 @@ function makeSpanToken(first, last, node) {
  * @returns An empty token, correctly positioned.
  */
 function makeEmptyToken(before) {
-    var tok = {
+    const tok = {
         type: TokenType.spaces,
         source: before.source,
         text: '',
@@ -7945,19 +7916,19 @@ function treeifyFormula(tokens, bracket) {
     if (tokens.length == 0 && !bracket) {
         throw new CodeError('Cannot treeify without content');
     }
-    var fullSpanTok = tokens.length > 0
+    const fullSpanTok = tokens.length > 0
         ? makeSpanToken(tokens[0], tokens[tokens.length - 1])
         : makeEmptyToken(bracket);
     if (bracket && isStringBracket(bracket.text)) {
         return new FormulaNode(fullSpanTok);
     }
     while (tokens.length > 0) {
-        var opIndex = findHighestPrecedence(tokens);
+        const opIndex = findHighestPrecedence(tokens);
         if (opIndex < 0) {
             // If well formed, there should only be a single non-space token left
-            var node = undefined;
-            for (var i = 0; i < tokens.length; i++) {
-                var tok = tokens[i];
+            let node = undefined;
+            for (let i = 0; i < tokens.length; i++) {
+                const tok = tokens[i];
                 if (tok.type != TokenType.spaces) {
                     if (node) {
                         // This is a 2nd token
@@ -7976,60 +7947,60 @@ function treeifyFormula(tokens, bracket) {
                 }
             }
             if (!node) {
-                var tok = makeSpanToken(tokens[0], tokens[tokens.length - 1]);
+                const tok = makeSpanToken(tokens[0], tokens[tokens.length - 1]);
                 throw new ContextError('No value tokens in span', tok);
             }
             return node;
         }
-        var opTok = tokens[opIndex];
-        var ch = opTok.text;
-        var op = getOperator(ch);
+        const opTok = tokens[opIndex];
+        const ch = opTok.text;
+        const op = getOperator(ch);
         if (isUnaryOperator(op)) {
-            var r = opIndex + 1;
+            let r = opIndex + 1;
             while (r < tokens.length && tokens[r].type == TokenType.spaces) {
                 r++;
             }
             if (r >= tokens.length) {
                 throw new ContextError('Unary operator without following operand', opTok);
             }
-            var rightSplit = tokens.splice(opIndex + 1, r - opIndex);
-            var right = treeifyFormula(rightSplit);
-            var node = new FormulaNode(opTok, right);
-            var tok = makeSpanToken(opTok, rightSplit[rightSplit.length - 1], node);
+            const rightSplit = tokens.splice(opIndex + 1, r - opIndex);
+            const right = treeifyFormula(rightSplit);
+            const node = new FormulaNode(opTok, right);
+            const tok = makeSpanToken(opTok, rightSplit[rightSplit.length - 1], node);
             node.span = tok;
             tokens[opIndex] = tok;
         }
         else if (isBinaryOperator(op)) {
-            var r = opIndex + 1;
+            let r = opIndex + 1;
             while (r < tokens.length && tokens[r].type == TokenType.spaces) {
                 r++;
             }
             if (r >= tokens.length) {
                 throw new ContextError('Binary operator without right operand', opTok);
             }
-            var rightSplit = tokens.splice(opIndex + 1, r - opIndex);
-            var right = treeifyFormula(rightSplit);
-            var l = opIndex - 1;
+            const rightSplit = tokens.splice(opIndex + 1, r - opIndex);
+            const right = treeifyFormula(rightSplit);
+            let l = opIndex - 1;
             while (l >= 0 && tokens[l].type == TokenType.spaces) {
                 l--;
             }
             if (l < 0) {
                 throw new ContextError('Binary operator without left operand', opTok);
             }
-            var leftSplit = tokens.splice(l, opIndex - l);
-            var left = treeifyFormula(leftSplit);
-            var node = new FormulaNode(opTok, right, left);
-            var tok = makeSpanToken(leftSplit[0], rightSplit[rightSplit.length - 1], node);
+            const leftSplit = tokens.splice(l, opIndex - l);
+            const left = treeifyFormula(leftSplit);
+            const node = new FormulaNode(opTok, right, left);
+            const tok = makeSpanToken(leftSplit[0], rightSplit[rightSplit.length - 1], node);
             node.span = tok;
             tokens[l] = tok;
         }
         else if (isBracketOperator(op)) {
-            var close_1 = findCloseBracket(tokens, opIndex);
-            var closeTok = tokens.splice(close_1, 1)[0];
-            var nested = tokens.splice(opIndex + 1, close_1 - opIndex - 1);
-            var node = treeifyFormula(nested, opTok);
+            const close = findCloseBracket(tokens, opIndex);
+            const closeTok = tokens.splice(close, 1)[0];
+            const nested = tokens.splice(opIndex + 1, close - opIndex - 1);
+            const node = treeifyFormula(nested, opTok);
             node.bracket = op.raw;
-            var tok = makeSpanToken(opTok, closeTok, node);
+            const tok = makeSpanToken(opTok, closeTok, node);
             node.span = tok;
             tokens[opIndex] = tok;
         }
@@ -8042,7 +8013,6 @@ function treeifyFormula(tokens, bracket) {
     }
     throw new ContextError('Treeify reduced to an empty span', fullSpanTok);
 }
-exports.treeifyFormula = treeifyFormula;
 /**
  * Evaluate a formula
  * @param str A single formula. The bracketing {} are assumed.
@@ -8053,15 +8023,14 @@ function evaluateFormula(str) {
         return '';
     }
     try {
-        var tokens = tokenizeFormula(str);
-        var node = treeifyFormula(tokens);
+        const tokens = tokenizeFormula(str);
+        const node = treeifyFormula(tokens);
         return node.evaluate(true);
     }
     catch (ex) {
         throw wrapContextError(ex, 'evaluateFormula');
     }
 }
-exports.evaluateFormula = evaluateFormula;
 /**
  * Evaluate a single attribute of an HTML element
  * @param elmt The HTML element
@@ -8072,7 +8041,7 @@ exports.evaluateFormula = evaluateFormula;
  * @returns Any data type
  */
 function evaluateAttribute(elmt, attr, implicitFormula, required) {
-    var val = elmt.getAttributeNS('', attr);
+    const val = elmt.getAttributeNS('', attr);
     if (!val) {
         if (required === false) { // true by default
             return undefined;
@@ -8089,7 +8058,6 @@ function evaluateAttribute(elmt, attr, implicitFormula, required) {
         throw wrapContextError(ex, undefined, elementSourceOffset(elmt, attr));
     }
 }
-exports.evaluateAttribute = evaluateAttribute;
 /* Context formula syntax has several components that need to play nicely with each other.
    Brackets:
      {} to start lookups
@@ -8109,7 +8077,7 @@ exports.evaluateAttribute = evaluateAttribute;
      .?:      object and context operators
 
  */
-var bracketPairs = {
+const bracketPairs = {
     '(': ')',
     '[': ']',
     '{': '}',
@@ -8142,13 +8110,12 @@ function isBracketChar(ch) {
  * @returns The float equivalent
  */
 function makeFloat(a, tok) {
-    var f = parseFloat(a);
+    const f = parseFloat(a);
     if (Number.isNaN(f)) {
         throw new ContextError('Not a number: ' + JSON.stringify(a), tok);
     }
     return f;
 }
-exports.makeFloat = makeFloat;
 /**
  * Convert any type to an integer, or throw in broken cases.
  * @param a Any data, but hopefully an int
@@ -8166,7 +8133,6 @@ function makeInt(a, tok) {
     }
     throw new ContextError('Not an integer: ' + a, tok);
 }
-exports.makeInt = makeInt;
 /**
  * Convert any type to string, or throw in broken cases.
  * @param a Any data, but hopefully string-friendly
@@ -8179,28 +8145,27 @@ function makeString(a, tok) {
     }
     return String(a);
 }
-exports.makeString = makeString;
-var minus = { raw: '-', unaryChar: '⁻', binaryChar: '−' }; // ambiguously unary or binary
-var concat = { raw: '&', precedence: 1, binaryOp: function (a, b, aa, bb) { return makeString(a, aa) + makeString(b, bb); }, evalLeft: true, evalRight: true };
-var entity = { raw: '@', precedence: 1, unaryOp: function (a, aa) { return deentify(a); }, evalRight: false };
-var plus = { raw: '+', precedence: 3, binaryOp: function (a, b, aa, bb) { return makeFloat(a, aa) + makeFloat(b, bb); }, evalLeft: true, evalRight: true };
-var subtract = { raw: '−', precedence: 3, binaryOp: function (a, b, aa, bb) { return makeFloat(a, aa) - makeFloat(b, bb); }, evalLeft: true, evalRight: true };
-var times = { raw: '*', precedence: 4, binaryOp: function (a, b, aa, bb) { return makeFloat(a, aa) * makeFloat(b, bb); }, evalLeft: true, evalRight: true };
-var divide = { raw: '/', precedence: 4, binaryOp: function (a, b, aa, bb) { return makeFloat(a, aa) / makeFloat(b, bb); }, evalLeft: true, evalRight: true };
-var intDivide = { raw: '\\', precedence: 4, binaryOp: function (a, b, aa, bb) { var f = makeFloat(a, aa) / makeFloat(b, bb); return f >= 0 ? Math.floor(f) : Math.ceil(f); }, evalLeft: true, evalRight: true }; // integer divide without Math.trunc
-var modulo = { raw: '%', precedence: 4, binaryOp: function (a, b, aa, bb) { return makeFloat(a, aa) % makeFloat(b, bb); }, evalLeft: true, evalRight: true };
-var negative = { raw: '⁻', precedence: 5, unaryOp: function (a, aa) { return -makeFloat(a, aa); }, evalRight: true };
-var childObj = { raw: '.', precedence: 6, binaryOp: function (a, b, aa, bb) { return getKeyedChild(a, b, bb, false); }, evalLeft: true, evalRight: false };
-var rootObj = { raw: ':', precedence: 7, unaryOp: function (a, aa) { return getKeyedChild(null, a, aa); }, evalRight: false };
-var roundBrackets = { raw: '(', precedence: 8, closeChar: ')' };
-var squareBrackets = { raw: '[', precedence: 8, closeChar: ']' };
-var curlyBrackets = { raw: '{', precedence: 8, closeChar: '}' };
-var closeRoundBrackets = { raw: ')', precedence: 0 };
-var closeSquareBrackets = { raw: ']', precedence: 0 };
-var closeCurlyBrackets = { raw: '}', precedence: 0 };
-var singleQuotes = { raw: '\'', precedence: 10, closeChar: '\'' };
-var doubleQuotes = { raw: '"', precedence: 10, closeChar: '"' };
-var allOperators = [
+const minus = { raw: '-', unaryChar: '⁻', binaryChar: '−' }; // ambiguously unary or binary
+const concat = { raw: '&', precedence: 1, binaryOp: (a, b, aa, bb) => { return makeString(a, aa) + makeString(b, bb); }, evalLeft: true, evalRight: true };
+const entity = { raw: '@', precedence: 1, unaryOp: (a, aa) => { return deentify(a); }, evalRight: false };
+const plus = { raw: '+', precedence: 3, binaryOp: (a, b, aa, bb) => { return makeFloat(a, aa) + makeFloat(b, bb); }, evalLeft: true, evalRight: true };
+const subtract = { raw: '−', precedence: 3, binaryOp: (a, b, aa, bb) => { return makeFloat(a, aa) - makeFloat(b, bb); }, evalLeft: true, evalRight: true };
+const times = { raw: '*', precedence: 4, binaryOp: (a, b, aa, bb) => { return makeFloat(a, aa) * makeFloat(b, bb); }, evalLeft: true, evalRight: true };
+const divide = { raw: '/', precedence: 4, binaryOp: (a, b, aa, bb) => { return makeFloat(a, aa) / makeFloat(b, bb); }, evalLeft: true, evalRight: true };
+const intDivide = { raw: '\\', precedence: 4, binaryOp: (a, b, aa, bb) => { const f = makeFloat(a, aa) / makeFloat(b, bb); return f >= 0 ? Math.floor(f) : Math.ceil(f); }, evalLeft: true, evalRight: true }; // integer divide without Math.trunc
+const modulo = { raw: '%', precedence: 4, binaryOp: (a, b, aa, bb) => { return makeFloat(a, aa) % makeFloat(b, bb); }, evalLeft: true, evalRight: true };
+const negative = { raw: '⁻', precedence: 5, unaryOp: (a, aa) => { return -makeFloat(a, aa); }, evalRight: true };
+const childObj = { raw: '.', precedence: 6, binaryOp: (a, b, aa, bb) => { return getKeyedChild(a, b, bb, false); }, evalLeft: true, evalRight: false };
+const rootObj = { raw: ':', precedence: 7, unaryOp: (a, aa) => { return getKeyedChild(null, a, aa); }, evalRight: false };
+const roundBrackets = { raw: '(', precedence: 8, closeChar: ')' };
+const squareBrackets = { raw: '[', precedence: 8, closeChar: ']' };
+const curlyBrackets = { raw: '{', precedence: 8, closeChar: '}' };
+const closeRoundBrackets = { raw: ')', precedence: 0 };
+const closeSquareBrackets = { raw: ']', precedence: 0 };
+const closeCurlyBrackets = { raw: '}', precedence: 0 };
+const singleQuotes = { raw: '\'', precedence: 10, closeChar: '\'' };
+const doubleQuotes = { raw: '"', precedence: 10, closeChar: '"' };
+const allOperators = [
     minus, concat, entity, plus, subtract,
     times, divide, intDivide, modulo, negative,
     childObj, rootObj,
@@ -8210,7 +8175,7 @@ var allOperators = [
 ];
 // Convert the list to a dictionary, keyed on the raw string
 // (accumulate each item in the list into a field in acc, which starts out as {})
-var operatorLookup = allOperators.reduce(function (acc, obj) { acc[obj.raw] = obj; return acc; }, {});
+const operatorLookup = allOperators.reduce((acc, obj) => { acc[obj.raw] = obj; return acc; }, {});
 function isOperator(ch) {
     return ch in isOperator;
 }
@@ -8227,37 +8192,37 @@ function getOperator(ch) {
     return ch;
 }
 function isUnaryOperator(ch) {
-    var op = getOperator(ch);
+    const op = getOperator(ch);
     return op !== null
         && (op.unaryChar !== undefined || op.unaryOp !== undefined);
 }
 function isBinaryOperator(ch) {
-    var op = getOperator(ch);
+    const op = getOperator(ch);
     return op !== null
         && (op.binaryChar !== undefined || op.binaryOp !== undefined);
 }
 function isBracketOperator(ch) {
-    var op = getOperator(ch);
+    const op = getOperator(ch);
     return op !== null && op.closeChar !== undefined;
 }
 function isCloseBracket(ch) {
-    var op = getOperator(ch);
+    const op = getOperator(ch);
     return op == closeRoundBrackets || op == closeSquareBrackets || op == closeCurlyBrackets;
 }
 function isStringBracket(ch) {
-    var op = getOperator(ch);
+    const op = getOperator(ch);
     return op !== null && (op.raw == '"' || op.raw == '\'');
 }
 /**
  * A few common named entities
  */
-var namedEntities = {
+const namedEntities = {
     'quot': '"',
     'apos': '\'',
     'lt': '<',
     'gt': '>',
-    'lb': '{',
-    'rb': '}',
+    'lb': '{', // not the real name. It should be &lbrace;
+    'rb': '}', // not the real name. It should be &rbrace;
     'lbrace': '{',
     'rbrace': '}',
     'amp': '&',
@@ -8278,7 +8243,7 @@ function deentify(str) {
         str = str.substring(0, str.length - 1);
     } // trim trailing semicolon
     if (str[0] == 'x' || (str[0] >= '0' && str[9] <= '9')) {
-        var code = 0;
+        let code = 0;
         if (str[0] == 'x') {
             str = str.substring(1);
             code = parseInt(str, 16);
@@ -8306,9 +8271,9 @@ function deentify(str) {
  */
 function findNonEscaped(raw, find, start) {
     while (start < raw.length) {
-        var curly = raw.indexOf(find, start);
+        let curly = raw.indexOf(find, start);
         if (curly > 0) {
-            var esc = 0;
+            let esc = 0;
             while (curly - esc > 0 && raw[curly - esc - 1] == '`') {
                 esc++;
             }
@@ -8331,16 +8296,16 @@ function findNonEscaped(raw, find, start) {
  * @returns A somg;e
  */
 function unescapeBraces(raw) {
-    var str = '';
-    var start = 0;
+    let str = '';
+    let start = 0;
     while (start <= raw.length) {
-        var i = raw.indexOf('`', start);
+        let i = raw.indexOf('`', start);
         if (i < 0) {
             str += raw.substring(start);
             break;
         }
         str += raw.substring(start, i);
-        var ch = i + 1 < raw.length ? raw[i + 1] : '';
+        const ch = i + 1 < raw.length ? raw[i + 1] : '';
         if (ch == '`' || ch == '{' || ch == '}') {
             // drop the ` escape, and keep the next char
             str += ch;
@@ -8360,17 +8325,17 @@ function unescapeBraces(raw) {
  * @returns The unescapes, user-friendly string
  */
 function unescapeOperators(raw) {
-    var str = '';
-    var start = 0;
+    let str = '';
+    let start = 0;
     while (start <= raw.length) {
-        var i = raw.indexOf('`', start);
+        let i = raw.indexOf('`', start);
         if (i < 0) {
             str += raw.substring(start);
             break;
         }
         str += raw.substring(start, i);
-        var ch = i + 1 < raw.length ? raw[i + 1] : '';
-        var op = getOperator(ch);
+        const ch = i + 1 < raw.length ? raw[i + 1] : '';
+        const op = getOperator(ch);
         if (op !== null || ch == '`') {
             str += ch; // The character after the escape
         }
@@ -8389,13 +8354,13 @@ function unescapeOperators(raw) {
  */
 function tokenizeText(raw, implicitFormula) {
     implicitFormula = implicitFormula || false;
-    var list = [];
-    var start = 0;
+    const list = [];
+    let start = 0;
     while (start < raw.length) {
-        var curly = findNonEscaped(raw, '{', start);
-        var errorClose = findNonEscaped(raw, '}', start);
+        let curly = findNonEscaped(raw, '{', start);
+        let errorClose = findNonEscaped(raw, '}', start);
         if (errorClose >= start && (curly < 0 || errorClose < curly)) {
-            var src = { source: raw, offset: errorClose, length: 1 };
+            const src = { source: raw, offset: errorClose, length: 1 };
             throw new ContextError('Close-curly brace without an open brace.', src);
         }
         if (curly < 0) {
@@ -8403,7 +8368,7 @@ function tokenizeText(raw, implicitFormula) {
         }
         if (curly > start) {
             // Plain text prior to a formula
-            var ttoken = {
+            const ttoken = {
                 text: unescapeBraces(raw.substring(start, curly)),
                 formula: false,
                 source: raw,
@@ -8412,13 +8377,13 @@ function tokenizeText(raw, implicitFormula) {
             };
             list.push(ttoken);
         }
-        var count = 1;
-        var inner = curly + 1;
+        let count = 1;
+        let inner = curly + 1;
         while (count > 0) {
-            var lb = findNonEscaped(raw, '{', inner);
-            var rb = findNonEscaped(raw, '}', inner);
+            let lb = findNonEscaped(raw, '{', inner);
+            let rb = findNonEscaped(raw, '}', inner);
             if (rb < 0) {
-                var src = { source: raw, offset: curly, length: 1 };
+                const src = { source: raw, offset: curly, length: 1 };
                 throw new ContextError('Unclosed curly braces.', src);
             }
             if (lb >= 0 && lb < rb) {
@@ -8431,7 +8396,7 @@ function tokenizeText(raw, implicitFormula) {
             }
         }
         // The contents of the formula (without the {} braces)
-        var ftoken = {
+        const ftoken = {
             text: unescapeOperators(raw.substring(curly + 1, inner - 1)),
             formula: true,
             source: raw,
@@ -8443,8 +8408,8 @@ function tokenizeText(raw, implicitFormula) {
     }
     if (start < raw.length) {
         // Any remaining plain text
-        var isFormula = implicitFormula && start == 0;
-        var ttoken = {
+        const isFormula = implicitFormula && start == 0;
+        const ttoken = {
             text: isFormula ? unescapeOperators(raw) : unescapeBraces(raw.substring(start)),
             formula: isFormula,
             source: raw,
@@ -8455,7 +8420,6 @@ function tokenizeText(raw, implicitFormula) {
     }
     return list;
 }
-exports.tokenizeText = tokenizeText;
 /**
  * Test a key in the current context
  * @param key A key, initially from {curly} notation
@@ -8463,16 +8427,15 @@ exports.tokenizeText = tokenizeText;
  */
 function keyExistsInContext(key) {
     try {
-        var a = evaluateFormula(key);
+        const a = evaluateFormula(key);
         // null, undefined, or '' count as not existing
         return a !== null && a !== undefined && a !== '';
         // Note: empty {} and [] do count as existing.
     }
-    catch (_a) {
+    catch {
         return false;
     }
 }
-exports.keyExistsInContext = keyExistsInContext;
 /**
  * Enable lookups into the context by key name.
  * Keys can be paths, separated by dots (.)
@@ -8485,10 +8448,9 @@ exports.keyExistsInContext = keyExistsInContext;
  * @returns Resolved text
  */
 function textFromContext(key) {
-    var obj = evaluateFormula(key);
+    const obj = evaluateFormula(key);
     return makeString(obj);
 }
-exports.textFromContext = textFromContext;
 /**
  * Get a keyed child of a parent, where the key is either a dictionary key
  * or a list index or a string offset.
@@ -8503,7 +8465,7 @@ function getKeyedChild(parent, key, kTok, maybe) {
     if (parent === null) {
         parent = theBoilerContext();
     }
-    var index = undefined;
+    let index = undefined;
     if (typeof (key) == 'number') {
         index = key;
     }
@@ -8534,7 +8496,7 @@ function getKeyedChild(parent, key, kTok, maybe) {
         return parent[index];
     }
     // Named members of objects
-    var trimmed = simpleTrim(key);
+    const trimmed = simpleTrim(key);
     if (!(trimmed in parent)) {
         if (maybe) {
             return '';
@@ -8558,10 +8520,10 @@ function getKeyedChild(parent, key, kTok, maybe) {
  * @returns a list of nodes, which will replace this <for> element
  */
 function startForLoop(src) {
-    var dest = [];
-    var iter = null;
-    var list = [];
-    var vals = []; // not always used
+    const dest = [];
+    let iter = null;
+    let list = [];
+    let vals = []; // not always used
     // <for each="variable_name" in="list">
     iter = getIterationVariable(src, 'each');
     if (iter) {
@@ -8600,9 +8562,9 @@ function startForLoop(src) {
     if (!list) {
         throw new ContextError('Unable to determine loop', elementSourceOffset(src));
     }
-    var inner_context = pushBuilderContext();
-    var iter_index = iter + '#';
-    for (var i = 0; i < list.length; i++) {
+    const inner_context = pushBuilderContext();
+    const iter_index = iter + '#';
+    for (let i = 0; i < list.length; i++) {
         inner_context[iter_index] = i;
         inner_context[iter] = list[i];
         if (vals.length > 0) {
@@ -8613,7 +8575,6 @@ function startForLoop(src) {
     popBuilderContext();
     return dest;
 }
-exports.startForLoop = startForLoop;
 /**
  * Read an attribute of the <for> tag, looking for the iteration variable name.
  * @param src The <for> element
@@ -8622,7 +8583,7 @@ exports.startForLoop = startForLoop;
  * @throws an error if the name is malformed - something other than a single word
  */
 function getIterationVariable(src, attr) {
-    var iter = src.getAttributeNS('', attr);
+    const iter = src.getAttributeNS('', attr);
     if (!iter) {
         return null;
     }
@@ -8639,47 +8600,47 @@ function getIterationVariable(src, attr) {
  * @returns a list of elements
  */
 function parseForEach(src) {
-    var obj = evaluateAttribute(src, 'in', true);
+    const obj = evaluateAttribute(src, 'in', true);
     if (Array.isArray(obj)) {
         return obj;
     }
     throw new ContextError("For each's in attribute must indicate a list", elementSourceOffseter(src, 'in'));
 }
 function parseForText(src, delim) {
-    var tok = elementSourceOffset(src, 'in');
-    var obj = evaluateAttribute(src, 'in', true);
-    var str = makeString(obj, tok);
+    const tok = elementSourceOffset(src, 'in');
+    const obj = evaluateAttribute(src, 'in', true);
+    const str = makeString(obj, tok);
     return str.split(delim);
 }
 function parseForRange(src) {
-    var from = evaluateAttribute(src, 'from', true, false);
-    var until = evaluateAttribute(src, 'until', true, false);
-    var last = evaluateAttribute(src, 'to', true, false);
-    var length = evaluateAttribute(src, 'len', true, false);
-    var step = evaluateAttribute(src, 'step', true, false);
-    var start = from ? makeInt(from, elementSourceOffseter(src, 'from')) : 0;
-    var end = until ? makeInt(until, elementSourceOffseter(src, 'until'))
+    const from = evaluateAttribute(src, 'from', true, false);
+    const until = evaluateAttribute(src, 'until', true, false);
+    const last = evaluateAttribute(src, 'to', true, false);
+    const length = evaluateAttribute(src, 'len', true, false);
+    const step = evaluateAttribute(src, 'step', true, false);
+    const start = from ? makeInt(from, elementSourceOffseter(src, 'from')) : 0;
+    let end = until ? makeInt(until, elementSourceOffseter(src, 'until'))
         : last ? (makeInt(last, elementSourceOffseter(src, 'last')) + 1)
             : length ? (makeString(length, elementSourceOffseter(src, 'len'))).length
                 : start;
-    var inc = step ? parseInt(cloneText(step)) : 1;
+    const inc = step ? parseInt(cloneText(step)) : 1;
     if (inc == 0) {
         throw new ContextError("Invalid loop step. Must be non-zero.", elementSourceOffseter(src, 'step'));
     }
     if (!until && inc < 0) {
         end -= 2; // from 5 to 1 step -1 means i >= 0
     }
-    var list = [];
-    for (var i = start; inc > 0 ? (i < end) : (i > end); i += inc) {
+    const list = [];
+    for (let i = start; inc > 0 ? (i < end) : (i > end); i += inc) {
         list.push(i);
     }
     return list;
 }
 function parseForKey(src) {
-    var obj = evaluateAttribute(src, 'in', true);
+    const obj = evaluateAttribute(src, 'in', true);
     try {
-        var keys = Object.keys(obj);
-        var vals = keys.map(function (k) { return obj[k]; });
+        const keys = Object.keys(obj);
+        const vals = keys.map(k => obj[k]);
         return [keys, vals];
     }
     catch (ex) {
@@ -8723,10 +8684,10 @@ function startIfBlock(src, result) {
                 return [];
             }
         }
-        var exists = evaluateAttribute(src, 'exists', false, false);
-        var notex = evaluateAttribute(src, 'notex', false, false);
-        var not = evaluateAttribute(src, 'not', true, false);
-        var test = evaluateAttribute(src, 'test', true, false);
+        let exists = evaluateAttribute(src, 'exists', false, false);
+        let notex = evaluateAttribute(src, 'notex', false, false);
+        let not = evaluateAttribute(src, 'not', true, false);
+        let test = evaluateAttribute(src, 'test', true, false);
         if (isTag(src, 'else')) {
             result.passed = true;
         }
@@ -8738,8 +8699,8 @@ function startIfBlock(src, result) {
             result.passed = (not === 'false') || (not === '') || (not === null);
         }
         else if (test !== undefined) {
-            var testTok = elementSourceOffseter(src, 'test');
-            var value = void 0;
+            const testTok = elementSourceOffseter(src, 'test');
+            let value;
             if (value = evaluateAttribute(src, 'eq', false, false)) {
                 result.passed = test === value; // REVIEW: no casting of either
             }
@@ -8787,7 +8748,7 @@ function startIfBlock(src, result) {
                 }
             }
             else if (value = evaluateAttribute(src, 'regex', false, false)) { // regular expression
-                var re = new RegExp(value);
+                const re = new RegExp(value);
                 result.passed = re.test(test);
             }
             else { // simple boolean
@@ -8806,7 +8767,6 @@ function startIfBlock(src, result) {
     }
     return [];
 }
-exports.startIfBlock = startIfBlock;
 /*-----------------------------------------------------------
  * _builderInput.ts
  *-----------------------------------------------------------*/
@@ -8827,16 +8787,16 @@ exports.inputAreaTagNames = [
  * @returns a node array containing a single <span>
  */
 function startInputArea(src) {
-    var span = document.createElement('span');
+    const span = document.createElement('span');
     // Copy most attributes. 
     // Special-cased ones are harmless - no meaning in generic spans
     cloneAttributes(src, span);
-    var cloneContents = false;
-    var literal = null;
-    var extract = src.hasAttributeNS('', 'extract') ? cloneText(src.getAttributeNS('', 'extract')) : null;
-    var styles = getLetterStyles(src, 'underline', '', 'box');
+    let cloneContents = false;
+    let literal = null;
+    const extract = src.hasAttributeNS('', 'extract') ? cloneText(src.getAttributeNS('', 'extract')) : null;
+    let styles = getLetterStyles(src, 'underline', '', 'box');
     // Convert special attributes to data-* attributes for later text setup
-    var attr;
+    let attr;
     if (isTag(src, 'letter')) { // 1 input cell for (usually) one character
         toggleClass(span, 'letter-cell', true);
         literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
@@ -8896,7 +8856,7 @@ function startInputArea(src) {
     else {
         return [src]; // Unknown tag. NYI?
     }
-    var block = src.getAttributeNS('', 'block'); // Used in grids
+    let block = src.getAttributeNS('', 'block'); // Used in grids
     if (block) {
         toggleClass(span, 'block', true);
         literal = literal || block;
@@ -8922,7 +8882,7 @@ function startInputArea(src) {
                 toggleClass(span, 'numbered', true);
                 toggleClass(span, 'extract-numbered', true);
                 span.setAttributeNS('', 'data-number', extract);
-                var under = document.createElement('span');
+                const under = document.createElement('span');
                 toggleClass(under, 'under-number');
                 under.innerText = extract;
                 span.appendChild(under);
@@ -8935,7 +8895,6 @@ function startInputArea(src) {
     }
     return [span];
 }
-exports.startInputArea = startInputArea;
 /**
  * Replace a <use> tag with the contents of a <template>.
  * Along the way, push any attributes of the <use> tag onto the context.
@@ -8947,33 +8906,38 @@ exports.startInputArea = startInputArea;
  * @returns An array of nodes to insert into the document in place of the <use> tag
  */
 function useTemplate(node, tempId) {
-    var dest = [];
-    try {
-        // We need to build the values to push onto the context, without changing the current context.
-        // Do all the evaluations first, and cache them.
-        var passed_args = [];
-        for (var i = 0; i < node.attributes.length; i++) {
-            var attr = node.attributes[i].name;
-            var val = node.attributes[i].value;
-            var attri = attr.toLowerCase();
+    let dest = [];
+    // We need to build the values to push onto the context, without changing the current context.
+    // Do all the evaluations first, and cache them.
+    const passed_args = [];
+    for (let i = 0; i < node.attributes.length; i++) {
+        const attr = node.attributes[i].name;
+        const val = node.attributes[i].value;
+        const attri = attr.toLowerCase();
+        try {
             if (attri != 'template' && attri != 'class') {
-                var arg = {
+                const arg = {
                     attr: attr,
-                    raw: val,
+                    raw: val, // Store the context path, so it can also be referenced
                     text: cloneText(val),
                     any: complexAttribute(val),
                 };
                 passed_args.push(arg);
             }
         }
+        catch (ex) {
+            throw wrapContextError(ex, 'useTemplate', elementSourceOffset(node, attr));
+        }
+    }
+    try {
         // Push a new context for inside the <use>.
         // Each passed arg generates 3 usable context entries:
         //  arg = 'text'          the attribute, evaluated as text
         //  arg! = *any*          the attribute, evaluated as any
         //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
-        var inner_context = pushBuilderContext();
-        for (var i = 0; i < passed_args.length; i++) {
-            var arg = passed_args[i];
+        const inner_context = pushBuilderContext();
+        for (let i = 0; i < passed_args.length; i++) {
+            const arg = passed_args[i];
             inner_context[arg.attr] = arg.text;
             inner_context[arg.attr + '!'] = arg.any;
             inner_context[arg.attr + '$'] = arg.raw;
@@ -8982,7 +8946,7 @@ function useTemplate(node, tempId) {
             tempId = node.getAttribute('template');
         }
         if (tempId) {
-            var template = getTemplate(tempId);
+            const template = getTemplate(tempId);
             if (!template) {
                 throw new ContextError('Template not found: ' + tempId, elementSourceOffset(node, 'template'));
             }
@@ -8990,7 +8954,7 @@ function useTemplate(node, tempId) {
                 throw new ContextError('Invalid template (no content): ' + tempId, elementSourceOffset(node, 'template'));
             }
             // The template doesn't have any child nodes. Its content must first be cloned.
-            var clone = template.content.cloneNode(true);
+            const clone = template.content.cloneNode(true);
             dest = expandContents(clone);
         }
         else {
@@ -9003,7 +8967,6 @@ function useTemplate(node, tempId) {
     }
     return dest;
 }
-exports.useTemplate = useTemplate;
 /*-----------------------------------------------------------
  * _templates.ts
  *-----------------------------------------------------------*/
@@ -9015,19 +8978,18 @@ exports.useTemplate = useTemplate;
  */
 function getTemplate(tempId) {
     if (tempId) {
-        var elmt = document.getElementById(tempId);
+        let elmt = document.getElementById(tempId);
         if (elmt) {
             return elmt;
         }
-        var template = builtInTemplate(tempId);
+        const template = builtInTemplate(tempId);
         if (template) {
             return template;
         }
     }
     throw new Error('Unresolved template ID: ' + tempId);
 }
-exports.getTemplate = getTemplate;
-var builtInTemplates = {
+const builtInTemplates = {
     paintByNumbers: paintByNumbersTemplate,
     paintByColorNumbers: paintByColorNumbersTemplate,
     classStampPalette: classStampPaletteTemplate,
@@ -9043,7 +9005,6 @@ function builtInTemplate(tempId) {
         return builtInTemplates[tempId]();
     }
 }
-exports.builtInTemplate = builtInTemplate;
 ;
 /**
  * Create a standard pant-by-numbers template element.
@@ -9052,10 +9013,53 @@ exports.builtInTemplate = builtInTemplate;
  */
 function paintByNumbersTemplate() {
     linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
-    var temp = document.createElement('template');
+    const temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        "<table_ class=\"paint-by-numbers stampable-container stamp-drag bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"../Images/Intro/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"group\" in=\"col\"><span class=\"pbn-col-group\" onclick=\"togglePbnClue(this)\">{.group}</span></for>\n          </td_>\n        </for>\n        <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n      </tr_>\n    </thead_>\n    <for each=\"row\" in=\"rowGroups\">\n      <tr_ class=\"pbn-row\">\n        <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n          &hairsp; <for each=\"group\" in=\"row\"><span class=\"pbn-row-group\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>&hairsp;\n        </td_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">&times;</td_>\n        </for>\n        <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n      </tr_>\n    </for>\n    <tfoot_>\n      <tr_ class=\"pbn-col-footer\">\n        <th_ class=\"pbn-corner\">&nbsp;</th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n        </for>\n        <th_ class=\"pbn-corner-validation\">\n          \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n          <br>\u2190&nbsp;validation</th_>\n      </tr_>\n    </tfoot_>\n  </table_>";
+        `<table_ class="paint-by-numbers stampable-container stamp-drag bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
+    <thead_>
+      <tr_ class="pbn-col-headers">
+        <th_ class="pbn-corner">
+          <span class="pbn-instructions">
+            This is a nonogram<br>(aka paint-by-numbers).<br>
+            For instructions, see 
+            <a href="https://help.puzzyl.net/PBN" target="_blank">
+              https://help.puzzyl.net/PBN<br>
+              <img src="../Images/Intro/pbn.png">
+            </a>
+          </span>
+        </th_>
+        <for each="col" in="colGroups">
+          <td_ id="colHeader-{col#}" class="pbn-col-header">
+            <for each="group" in="col"><span class="pbn-col-group" onclick="togglePbnClue(this)">{.group}</span></for>
+          </td_>
+        </for>
+        <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
+      </tr_>
+    </thead_>
+    <for each="row" in="rowGroups">
+      <tr_ class="pbn-row">
+        <td_ id="rowHeader-{row#}" class="pbn-row-header">
+          &hairsp; <for each="group" in="row"><span class="pbn-row-group" onclick="togglePbnClue(this)">{.group}</span> </for>&hairsp;
+        </td_>
+        <for each="col" in="colGroups">
+          <td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>
+        </for>
+        <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
+      </tr_>
+    </for>
+    <tfoot_>
+      <tr_ class="pbn-col-footer">
+        <th_ class="pbn-corner">&nbsp;</th_>
+        <for each="col" in="colGroups">
+          <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
+        </for>
+        <th_ class="pbn-corner-validation">
+          ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ
+          <br>←&nbsp;validation</th_>
+      </tr_>
+    </tfoot_>
+  </table_>`;
     return temp;
 }
 /**
@@ -9065,10 +9069,62 @@ function paintByNumbersTemplate() {
  */
 function paintByColorNumbersTemplate() {
     linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
-    var temp = document.createElement('template');
+    const temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        "<table_ class=\"paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\" data-stamp-list=\"{stamplist$}\">\n    <thead_>\n      <tr_ class=\"pbn-col-headers\">\n        <th_ class=\"pbn-corner\">\n          <span class=\"pbn-instructions\">\n            This is a nonogram<br>(aka paint-by-numbers).<br>\n            For instructions, see \n            <a href=\"https://help.puzzyl.net/PBN\" target=\"_blank\">\n              https://help.puzzyl.net/PBN<br>\n              <img src=\"https://help.puzzyl.net/pbn.png\">\n            </a>\n          </span>\n        </th_>\n        <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"colHeader-{col#}\" class=\"pbn-col-header\">\n            <for each=\"colorGroup\" in=\"col\"><for key=\"color\" in=\"colorGroup\"><for each=\"group\" in=\"color!\"><span class=\"pbn-col-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span></for></for></for>\n          </td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <th_ class=\"pbn-row-footer pbn-corner\">&nbsp;</th_>\n        </if>\n      </tr_>\n    </thead_>\n      <for each=\"row\" in=\"rowGroups\">\n        <tr_ class=\"pbn-row\">\n          <td_ id=\"rowHeader-{row#}\" class=\"pbn-row-header\">\n            &hairsp; \n            <for each=\"colorGroup\" in=\"row\"><for key=\"color\" in=\"colorGroup\">\n              <for each=\"group\" in=\"color!\"><span class=\"pbn-row-group pbn-color-{color}\" onclick=\"togglePbnClue(this)\">{.group}</span> </for>\n            &hairsp;</for></for>\n          </td_>\n          <for each=\"col\" in=\"colGroups\">\n          <td_ id=\"{row#}_{col#}\" class=\"pbn-cell stampable\">{blank?}</td_>\n        </for>\n        <if test=\"validate?\" ne=\"false\">\n          <td_ class=\"pbn-row-footer\"><span id=\"rowSummary-{row#}\" class=\"pbn-row-validation\"></span></td_>\n        </if>\n      </tr_>\n    </for>\n    <if test=\"validate?\" ne=\"false\">\n      <tfoot_>\n        <tr_ class=\"pbn-col-footer\">\n          <th_ class=\"pbn-corner\">&nbsp;</th_>\n          <for each=\"col\" in=\"colGroups\">\n            <td_ class=\"pbn-col-footer\"><span id=\"colSummary-{col#}\" class=\"pbn-col-validation\"></span></td_>\n          </for>\n          <th_ class=\"pbn-corner-validation\">\n            \uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B&nbsp;&nbsp;&nbsp;&nbsp;\uA71B\n            <br>\u2190&nbsp;validation</th_>\n        </tr_>\n      </tfoot_>\n    </if>\n  </table_>";
+        `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
+    <thead_>
+      <tr_ class="pbn-col-headers">
+        <th_ class="pbn-corner">
+          <span class="pbn-instructions">
+            This is a nonogram<br>(aka paint-by-numbers).<br>
+            For instructions, see 
+            <a href="https://help.puzzyl.net/PBN" target="_blank">
+              https://help.puzzyl.net/PBN<br>
+              <img src="https://help.puzzyl.net/pbn.png">
+            </a>
+          </span>
+        </th_>
+        <for each="col" in="colGroups">
+          <td_ id="colHeader-{col#}" class="pbn-col-header">
+            <for each="colorGroup" in="col"><for key="color" in="colorGroup"><for each="group" in="color!"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span></for></for></for>
+          </td_>
+        </for>
+        <if test="validate?" ne="false">
+          <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
+        </if>
+      </tr_>
+    </thead_>
+      <for each="row" in="rowGroups">
+        <tr_ class="pbn-row">
+          <td_ id="rowHeader-{row#}" class="pbn-row-header">
+            &hairsp; 
+            <for each="colorGroup" in="row"><for key="color" in="colorGroup">
+              <for each="group" in="color!"><span class="pbn-row-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span> </for>
+            &hairsp;</for></for>
+          </td_>
+          <for each="col" in="colGroups">
+          <td_ id="{row#}_{col#}" class="pbn-cell stampable">{blank?}</td_>
+        </for>
+        <if test="validate?" ne="false">
+          <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
+        </if>
+      </tr_>
+    </for>
+    <if test="validate?" ne="false">
+      <tfoot_>
+        <tr_ class="pbn-col-footer">
+          <th_ class="pbn-corner">&nbsp;</th_>
+          <for each="col" in="colGroups">
+            <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
+          </for>
+          <th_ class="pbn-corner-validation">
+            ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ
+            <br>←&nbsp;validation</th_>
+        </tr_>
+      </tfoot_>
+    </if>
+  </table_>`;
     return temp;
 }
 /**
@@ -9094,25 +9150,41 @@ function paintByColorNumbersTemplate() {
  */
 function classStampPaletteTemplate() {
     linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
-    var temp = document.createElement('template');
+    const temp = document.createElement('template');
     temp.id = 'classStampPalette';
     temp.innerHTML =
-        "<div id=\"stampPalette\" data-tool-count=\"3\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div id={tool.id} class=\"stampTool {size?}\" data-stamp-id=\"{tool.id}\" data-style=\"{tool.id}\" data-click-modifier=\"{tool.modifier?}\" title=\"{tool.modifier?} + draw\" data-next-stamp-id=\"{tool.next}\">\n        <div class=\"roundTool {tool.id}-button\">\n          <span id=\"{tool.id}-icon\" class=\"stampIcon\"><img src_=\"{tool.img}\"></span>\n          <span id=\"{tool.id}-label\" class=\"stampLabel\">{tool.label?}</span>\n          <span id=\"{tool.id}-mod\" class=\"stampMod\">{tool.modifier?}+click</span>\n        </div>\n      </div>\n    </for>\n  </div>";
+        `<div id="stampPalette" data-tool-count="3" data-tool-erase="{erase}">
+    <for each="tool" in="tools">
+      <div id={tool.id} class="stampTool {size?}" data-stamp-id="{tool.id}" data-style="{tool.id}" data-click-modifier="{tool.modifier?}" title="{tool.modifier?} + draw" data-next-stamp-id="{tool.next}">
+        <div class="roundTool {tool.id}-button">
+          <span id="{tool.id}-icon" class="stampIcon"><img src_="{tool.img}"></span>
+          <span id="{tool.id}-label" class="stampLabel">{tool.label?}</span>
+          <span id="{tool.id}-mod" class="stampMod">{tool.modifier?}+click</span>
+        </div>
+      </div>
+    </for>
+  </div>`;
     return temp;
 }
 function classStampNoToolsTemplate() {
     linkCss(getSafariDetails().cssRoot + 'PaintByNumbers.css');
-    var temp = document.createElement('template');
+    const temp = document.createElement('template');
     temp.id = 'classStampPalette';
     temp.innerHTML =
-        "<div id=\"stampPalette\" class=\"hidden\" data-tool-erase=\"{erase}\">\n    <for each=\"tool\" in=\"tools\">\n      <div class=\"stampTool\" data-stamp-id=\"{tool.id}\" data-next-stamp-id=\"{tool.next}\">\n      </div>\n    </for>\n  </div>";
+        `<div id="stampPalette" class="hidden" data-tool-erase="{erase}">
+    <for each="tool" in="tools">
+      <div class="stampTool" data-stamp-id="{tool.id}" data-next-stamp-id="{tool.next}">
+      </div>
+    </for>
+  </div>`;
     return temp;
 }
 function stampPaletteTemplate() {
     linkCss(getSafariDetails().cssRoot + 'StampTools.css');
-    var temp = document.createElement('template');
+    const temp = document.createElement('template');
     temp.innerHTML =
-        "<table_ class=\"paint-by-numbers bolden_5 bolden_10\" data-col-context=\"{cols$}\" data-row-context=\"{rows$}\">\n  </table_>";
+        `<table_ class="paint-by-numbers bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
+  </table_>`;
     return temp;
 }
 var pbnStampTools = [
@@ -9128,34 +9200,34 @@ var pbnStampTools = [
  * @param target The cell that was just modified
  */
 function validatePBN(target) {
-    var table = findParentOfClass(target, 'paint-by-numbers');
+    const table = findParentOfClass(target, 'paint-by-numbers');
     if (!table) {
         return;
     }
-    var stampList = getOptionalStyle(table, 'data-stamp-list');
+    const stampList = getOptionalStyle(table, 'data-stamp-list');
     if (stampList) {
         validateColorPBN(target, table, stampList);
         return;
     }
-    var pos = target.id.split('_');
-    var row = parseInt(pos[0]);
-    var col = parseInt(pos[1]);
-    var rSum = document.getElementById('rowSummary-' + row);
-    var cSum = document.getElementById('colSummary-' + col);
+    let pos = target.id.split('_');
+    const row = parseInt(pos[0]);
+    const col = parseInt(pos[1]);
+    const rSum = document.getElementById('rowSummary-' + row);
+    const cSum = document.getElementById('colSummary-' + col);
     if (!rSum && !cSum) {
         return; // this PBN does not have a UI for validation
     }
     // Scan all cells in this PBN table, looking for those in the current row & column
     // Track the painted ones as a list of row/column indices
-    var cells = table.getElementsByClassName('stampable');
-    var rowOn = [];
-    var colOn = [];
-    for (var i = 0; i < cells.length; i++) {
-        var cell = cells[i];
+    const cells = table.getElementsByClassName('stampable');
+    const rowOn = [];
+    const colOn = [];
+    for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
         if (hasClass(cell, 'stampPaint')) {
             pos = cell.id.split('_');
-            var r = parseInt(pos[0]);
-            var c = parseInt(pos[1]);
+            const r = parseInt(pos[0]);
+            const c = parseInt(pos[1]);
             if (r == row) {
                 rowOn.push(c);
             }
@@ -9164,45 +9236,43 @@ function validatePBN(target) {
             }
         }
     }
-    var rows = contextDataFromRef(table, 'data-row-context');
+    const rows = contextDataFromRef(table, 'data-row-context');
     if (rSum && rows) {
         // Convert a list of column indices to group notation
-        var groups = summarizePBN(rowOn);
+        const groups = summarizePBN(rowOn);
         rSum.innerHTML = '';
-        for (var _i = 0, groups_1 = groups; _i < groups_1.length; _i++) {
-            var g = groups_1[_i];
+        for (const g of groups) {
             if (g > 0) {
-                var span = document.createElement('span');
+                const span = document.createElement('span');
                 toggleClass(span, 'pbn-row-group', true);
                 span.innerText = g.toString();
                 rSum.appendChild(span);
             }
         }
-        var header = rows[row];
-        var comp = compareGroupsPBN(header, groups);
+        const header = rows[row];
+        const comp = compareGroupsPBN(header, groups);
         toggleClass(rSum, 'done', comp == 0);
         toggleClass(rSum, 'exceeded', comp > 0);
-        var rHead = document.getElementById('rowHeader-' + row);
+        const rHead = document.getElementById('rowHeader-' + row);
         toggleClass(rHead, 'done', comp == 0);
     }
-    var cols = contextDataFromRef(table, 'data-col-context');
+    const cols = contextDataFromRef(table, 'data-col-context');
     if (cSum) {
-        var groups = summarizePBN(colOn);
+        const groups = summarizePBN(colOn);
         cSum.innerHTML = '';
-        for (var _a = 0, groups_2 = groups; _a < groups_2.length; _a++) {
-            var g = groups_2[_a];
+        for (const g of groups) {
             if (g > 0) {
-                var span = document.createElement('span');
+                const span = document.createElement('span');
                 toggleClass(span, 'pbn-col-group', true);
                 span.innerText = g.toString();
                 cSum.appendChild(span);
             }
         }
-        var header = cols[col];
-        var comp = compareGroupsPBN(header, groups);
+        const header = cols[col];
+        const comp = compareGroupsPBN(header, groups);
         toggleClass(cSum, 'done', comp == 0);
         toggleClass(cSum, 'exceeded', comp > 0);
-        var cHead = document.getElementById('colHeader-' + col);
+        const cHead = document.getElementById('colHeader-' + col);
         toggleClass(cHead, 'done', comp == 0);
     }
 }
@@ -9213,7 +9283,7 @@ function validatePBN(target) {
  * @returns the stamp data, or undefined if none found
  */
 function dataFromTool(cell, stampTools) {
-    for (var i = 0; i < stampTools.length; i++) {
+    for (let i = 0; i < stampTools.length; i++) {
         if (stampTools[i].data && hasClass(cell, stampTools[i].id))
             return stampTools[i].data;
     }
@@ -9226,7 +9296,7 @@ function dataFromTool(cell, stampTools) {
  * @returns Any JSON object
  */
 function contextDataFromRef(elmt, attr) {
-    var path = getOptionalStyle(elmt, attr);
+    const path = getOptionalStyle(elmt, attr);
     if (path) {
         return evaluateFormula(path);
     }
@@ -9239,19 +9309,18 @@ function contextDataFromRef(elmt, attr) {
  * The leading- and trailing- empty cells are ignored. But if the whole series is empty, return [0]
  */
 function summarizePBN(list) {
-    var prev = NaN;
-    var consec = 0;
-    var summary = [];
+    let prev = NaN;
+    let consec = 0;
+    const summary = [];
     list.push(NaN);
-    for (var _i = 0, list_4 = list; _i < list_4.length; _i++) {
-        var next = list_4[_i];
+    for (const next of list) {
         if (next == prev + 1) {
             consec++;
         }
         else {
             if (consec > 0) {
                 summary.push(consec);
-                var gap = next - prev - 1;
+                const gap = next - prev - 1;
                 if (!isNaN(gap) && gap > 0) {
                     summary.push(-gap);
                 }
@@ -9273,13 +9342,12 @@ function summarizePBN(list) {
  * @returns 0 if exact, 1 if actual exceeds expected, or -1 if actual is not yet expected, but hasn't contradicted it yet
  */
 function compareGroupsPBN(expect, have) {
-    var exact = true;
-    var e = 0;
-    var gap = 0;
-    var prevH = 0;
-    var curE = expect.length > 0 ? expect[0] : 0;
-    for (var _i = 0, have_1 = have; _i < have_1.length; _i++) {
-        var h = have_1[_i];
+    let exact = true;
+    let e = 0;
+    let gap = 0;
+    let prevH = 0;
+    let curE = expect.length > 0 ? expect[0] : 0;
+    for (const h of have) {
         if (h <= 0) {
             gap = -h;
             continue;
@@ -9327,9 +9395,9 @@ function compareGroupsPBN(expect, have) {
 function togglePbnClue(group) {
     toggleClass(group, 'pbn-check');
 }
-var nonIndexTag = { index: NaN, tag: '' };
-var nonLinearTag = { len: 0, tag: '' };
-var outerGapTag = { len: 1, tag: '' };
+const nonIndexTag = { index: NaN, tag: '' };
+const nonLinearTag = { len: 0, tag: '' };
+const outerGapTag = { len: 1, tag: '' };
 /**
 * Validate the paint-by-numbers grid that contains this cell
 * @param target The cell that was just modified
@@ -9337,78 +9405,76 @@ var outerGapTag = { len: 1, tag: '' };
 * @param stampList
 */
 function validateColorPBN(target, table, stampList) {
-    var stampTools = valueFromGlobalContext(stampList);
-    var pos = target.id.split('_');
-    var row = parseInt(pos[0]);
-    var col = parseInt(pos[1]);
-    var rSum = document.getElementById('rowSummary-' + row);
-    var cSum = document.getElementById('colSummary-' + col);
+    const stampTools = valueFromGlobalContext(stampList);
+    let pos = target.id.split('_');
+    const row = parseInt(pos[0]);
+    const col = parseInt(pos[1]);
+    const rSum = document.getElementById('rowSummary-' + row);
+    const cSum = document.getElementById('colSummary-' + col);
     if (!rSum && !cSum) {
         return; // this PBN does not have a UI for validation
     }
     // Scan all cells in this PBN table, looking for those in the current row & column
     // Track the painted ones as a list of row/column indices
-    var cells = table.getElementsByClassName('stampable');
-    var rowOn = [];
-    var colOn = [];
-    for (var i = 0; i < cells.length; i++) {
-        var cell = cells[i];
-        var data = dataFromTool(cell, stampTools);
+    const cells = table.getElementsByClassName('stampable');
+    const rowOn = [];
+    const colOn = [];
+    for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
+        const data = dataFromTool(cell, stampTools);
         if (data) {
             pos = cell.id.split('_');
-            var r = parseInt(pos[0]);
-            var c = parseInt(pos[1]);
+            const r = parseInt(pos[0]);
+            const c = parseInt(pos[1]);
             if (r == row) {
-                var it = { index: c, tag: data };
+                const it = { index: c, tag: data };
                 rowOn.push(it);
             }
             if (c == col) {
-                var it = { index: r, tag: data };
+                const it = { index: r, tag: data };
                 colOn.push(it);
             }
         }
     }
-    var rows = contextDataFromRef(table, 'data-row-context');
+    const rows = contextDataFromRef(table, 'data-row-context');
     if (rSum && rows) {
         // Convert a list of column indices to group notation
-        var groups = summarizeTaggedPBN(rowOn);
+        const groups = summarizeTaggedPBN(rowOn);
         rSum.innerHTML = '';
-        for (var _i = 0, groups_3 = groups; _i < groups_3.length; _i++) {
-            var g = groups_3[_i];
+        for (const g of groups) {
             if (g.tag != '') {
-                var span = document.createElement('span');
+                const span = document.createElement('span');
                 toggleClass(span, 'pbn-row-group', true);
                 toggleClass(span, 'pbn-color-' + g.tag, true);
                 span.innerText = g.len.toString();
                 rSum.appendChild(span);
             }
         }
-        var header = invertColorTags(rows[row]);
-        var comp = compareTaggedGroupsPBN(header, groups);
+        const header = invertColorTags(rows[row]);
+        const comp = compareTaggedGroupsPBN(header, groups);
         toggleClass(rSum, 'done', comp == 0);
         toggleClass(rSum, 'exceeded', comp > 0);
-        var rHead = document.getElementById('rowHeader-' + row);
+        const rHead = document.getElementById('rowHeader-' + row);
         toggleClass(rHead, 'done', comp == 0);
     }
-    var cols = contextDataFromRef(table, 'data-col-context');
+    const cols = contextDataFromRef(table, 'data-col-context');
     if (cSum) {
-        var groups = summarizeTaggedPBN(colOn);
+        const groups = summarizeTaggedPBN(colOn);
         cSum.innerHTML = '';
-        for (var _a = 0, groups_4 = groups; _a < groups_4.length; _a++) {
-            var g = groups_4[_a];
+        for (const g of groups) {
             if (g.tag != '') {
-                var span = document.createElement('span');
+                const span = document.createElement('span');
                 toggleClass(span, 'pbn-col-group', true);
                 toggleClass(span, 'pbn-color-' + g.tag, true);
                 span.innerText = g.len.toString();
                 cSum.appendChild(span);
             }
         }
-        var header = invertColorTags(cols[col]);
-        var comp = compareTaggedGroupsPBN(header, groups);
+        const header = invertColorTags(cols[col]);
+        const comp = compareTaggedGroupsPBN(header, groups);
         toggleClass(cSum, 'done', comp == 0);
         toggleClass(cSum, 'exceeded', comp > 0);
-        var cHead = document.getElementById('colHeader-' + col);
+        const cHead = document.getElementById('colHeader-' + col);
         toggleClass(cHead, 'done', comp == 0);
     }
 }
@@ -9421,13 +9487,13 @@ function validateColorPBN(target, table, stampList) {
 * @returns linear-style header
 */
 function invertColorTags(header) {
-    var linear = [];
-    for (var i = 0; i < header.length; i++) {
-        var tagged = header[i]; // {tag:[1,2]}
-        var tag = Object.keys(tagged)[0];
-        var groups = tagged[tag];
-        for (var g = 0; g < groups.length; g++) {
-            var lt = { len: groups[g], tag: tag };
+    const linear = [];
+    for (let i = 0; i < header.length; i++) {
+        const tagged = header[i]; // {tag:[1,2]}
+        const tag = Object.keys(tagged)[0];
+        const groups = tagged[tag];
+        for (let g = 0; g < groups.length; g++) {
+            const lt = { len: groups[g], tag: tag };
             linear.push(lt);
         }
     }
@@ -9439,20 +9505,19 @@ function invertColorTags(header) {
  * @returns A list of groups and gaps, trimming exterior gaps.
  */
 function summarizeTaggedPBN(list) {
-    var prev = nonIndexTag;
-    var consec = 0;
-    var summary = [];
+    let prev = nonIndexTag;
+    let consec = 0;
+    const summary = [];
     list.push(nonIndexTag);
-    for (var _i = 0, list_5 = list; _i < list_5.length; _i++) {
-        var next = list_5[_i];
+    for (const next of list) {
         if (next.tag == prev.tag && next.index == prev.index + 1) {
             consec++;
         }
         else {
             if (consec > 0) {
-                var line = { len: consec, tag: prev.tag };
+                const line = { len: consec, tag: prev.tag };
                 summary.push(line);
-                var gap = { len: next.index - prev.index - 1, tag: '' };
+                const gap = { len: next.index - prev.index - 1, tag: '' };
                 if (next.tag != '') {
                     summary.push(gap);
                 }
@@ -9474,13 +9539,12 @@ function summarizeTaggedPBN(list) {
  * @returns 0 if exact, 1 if actual exceeds expected, or -1 if actual is not yet expected, but hasn't contradicted it yet
  */
 function compareTaggedGroupsPBN(expect, have) {
-    var exact = true;
-    var e = 0;
-    var gap = outerGapTag;
-    var prevH = nonLinearTag;
-    var curE = expect.length == 0 ? nonLinearTag : expect[0];
-    for (var _i = 0, have_2 = have; _i < have_2.length; _i++) {
-        var h = have_2[_i];
+    let exact = true;
+    let e = 0;
+    let gap = outerGapTag;
+    let prevH = nonLinearTag;
+    let curE = expect.length == 0 ? nonLinearTag : expect[0];
+    for (const h of have) {
         if (h.tag == '') {
             gap = h;
             continue;
@@ -9528,7 +9592,7 @@ function equalRect2D(a, b) {
  * @returns An equivalent Rect2D
  */
 function createRect2D(r) {
-    var rect = {
+    const rect = {
         left: Math.round(r.left * 10) / 10,
         right: Math.round(r.right * 10) / 10,
         top: Math.round(r.top * 10) / 10,
@@ -9542,10 +9606,9 @@ function createRect2D(r) {
  * @returns An new Rect2D
  */
 function pointAtCorner(r) {
-    var _a, _b;
-    var x = (_a = r === null || r === void 0 ? void 0 : r.left) !== null && _a !== void 0 ? _a : 0;
-    var y = (_b = r === null || r === void 0 ? void 0 : r.right) !== null && _b !== void 0 ? _b : 0;
-    var rect = {
+    const x = r?.left ?? 0;
+    const y = r?.right ?? 0;
+    const rect = {
         left: x,
         right: x,
         top: y,
@@ -9563,23 +9626,23 @@ function summarizeLayout(root, index) {
     if (index === undefined) {
         index = 0;
     }
-    var summary = {
+    const summary = {
         index: index,
         nodeType: root.nodeType,
         descendents: root.childNodes.length
     };
     if (root.nodeType == Node.ELEMENT_NODE) {
-        var elmt = root;
-        var rect = elmt.getBoundingClientRect();
+        const elmt = root;
+        const rect = elmt.getBoundingClientRect();
         summary.bounds = createRect2D(rect);
         if (elmt.id) {
             summary.id = elmt.id;
         }
         // summary.text = elmt.innerText;
-        var children = [];
-        for (var i = 0; i < root.childNodes.length; i++) {
-            var child = root.childNodes[i];
-            var cl = summarizeLayout(child, i);
+        const children = [];
+        for (let i = 0; i < root.childNodes.length; i++) {
+            const child = root.childNodes[i];
+            const cl = summarizeLayout(child, i);
             children.push(cl);
             summary.descendents += cl.descendents;
         }
@@ -9589,18 +9652,18 @@ function summarizeLayout(root, index) {
         summary.text = root.textContent;
         var range = document.createRange();
         range.selectNode(root);
-        var rect = range.getBoundingClientRect();
+        const rect = range.getBoundingClientRect();
         range.detach(); // frees up memory in older browsers
         summary.bounds = createRect2D(rect);
     }
     return summary;
 }
 function pageLayoutRootNode() {
-    var pageBody = document.getElementById('pageBody');
+    const pageBody = document.getElementById('pageBody');
     if (pageBody) {
         return pageBody;
     }
-    var bodies = document.getElementsByTagName('BODY');
+    const bodies = document.getElementsByTagName('BODY');
     if (bodies && bodies.length > 0) {
         return bodies[0];
     }
@@ -9613,10 +9676,9 @@ function pageLayoutRootNode() {
  * @returns A tree of LayoutSummary nodes
  */
 function summarizePageLayout() {
-    var pageRoot = pageLayoutRootNode();
+    const pageRoot = pageLayoutRootNode();
     return summarizeLayout(pageRoot);
 }
-exports.summarizePageLayout = summarizePageLayout;
 /**
  * Bit flags for how two layout summaries might differ
  */
@@ -9666,8 +9728,8 @@ function findComparableLayout(s, list, first) {
  * @returns A flat list of difference nodes, including differences among child nodes.
  */
 function diffSummarys(bef, aft) {
-    var diffs = [];
-    var ldt = LayoutDiffType.None;
+    const diffs = [];
+    let ldt = LayoutDiffType.None;
     if (bef.text != aft.text) {
         ldt |= LayoutDiffType.ChangeText;
     }
@@ -9677,14 +9739,14 @@ function diffSummarys(bef, aft) {
         }
     }
     if (bef.children && aft.children) {
-        var b = 0;
-        var a = 0;
+        let b = 0;
+        let a = 0;
         while (b < bef.children.length || a < aft.children.length) {
-            var bb = a >= aft.children.length ? bef.children.length :
+            const bb = a >= aft.children.length ? bef.children.length :
                 findComparableLayout(aft.children[a], bef.children, b);
             if (bb < 0) {
                 ldt |= LayoutDiffType.AddChild;
-                var added = {
+                const added = {
                     diffType: LayoutDiffType.Add,
                     after: aft.children[a]
                 };
@@ -9694,15 +9756,15 @@ function diffSummarys(bef, aft) {
             else {
                 for (; b < bb; b++) {
                     ldt |= LayoutDiffType.RemoveChild;
-                    var removed = {
+                    const removed = {
                         diffType: LayoutDiffType.Remove,
                         before: bef.children[b]
                     };
                     diffs.push(removed);
                 }
                 if (a < aft.children.length) {
-                    var ds = diffSummarys(bef.children[b], aft.children[a]);
-                    for (var i = 0; i < ds.length; i++) {
+                    const ds = diffSummarys(bef.children[b], aft.children[a]);
+                    for (let i = 0; i < ds.length; i++) {
                         diffs.push(ds[i]);
                     }
                     b++;
@@ -9720,7 +9782,7 @@ function diffSummarys(bef, aft) {
         // }
     }
     if (ldt != LayoutDiffType.None) {
-        var change = {
+        const change = {
             diffType: ldt,
             before: bef,
             after: aft
@@ -9729,35 +9791,32 @@ function diffSummarys(bef, aft) {
     }
     return diffs;
 }
-exports.diffSummarys = diffSummarys;
 function renderDiffs(diffs) {
-    var diffRoot = document.getElementById('render-diffs');
+    let diffRoot = document.getElementById('render-diffs');
     if (!diffRoot) {
         diffRoot = document.createElement('div');
         diffRoot.id = 'render-diffs';
-        var body = document.getElementsByTagName('BODY')[0];
+        const body = document.getElementsByTagName('BODY')[0];
         body.appendChild(diffRoot);
     }
     // toggleClass(diffRoot, 'diff-div', true);
-    for (var i = 0; i < diffs.length; i++) {
-        var diff = diffs[i];
+    for (let i = 0; i < diffs.length; i++) {
+        const diff = diffs[i];
         renderDiff(diffRoot, diff);
     }
 }
-exports.renderDiffs = renderDiffs;
 function renderDiff(diffRoot, diff) {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
-    if (!((_a = diff === null || diff === void 0 ? void 0 : diff.after) === null || _a === void 0 ? void 0 : _a.bounds) && !((_b = diff === null || diff === void 0 ? void 0 : diff.before) === null || _b === void 0 ? void 0 : _b.bounds)) {
+    if (!diff?.after?.bounds && !diff?.before?.bounds) {
         return; // Nowhere to show
     }
-    var div = document.createElement('div');
+    const div = document.createElement('div');
     toggleClass(div, 'diff-div', true);
     toggleClass(div, 'diff-add', (diff.diffType & LayoutDiffType.Add) != 0);
     toggleClass(div, 'diff-rem', (diff.diffType & LayoutDiffType.Remove) != 0);
     toggleClass(div, 'diff-text', (diff.diffType & LayoutDiffType.ChangeText) != 0);
     toggleClass(div, 'diff-rect', (diff.diffType & LayoutDiffType.ChangeRect) != 0);
-    var before = (_d = (_c = diff.before) === null || _c === void 0 ? void 0 : _c.bounds) !== null && _d !== void 0 ? _d : pointAtCorner((_e = diff.after) === null || _e === void 0 ? void 0 : _e.bounds);
-    var after = (_g = (_f = diff.after) === null || _f === void 0 ? void 0 : _f.bounds) !== null && _g !== void 0 ? _g : pointAtCorner((_h = diff.before) === null || _h === void 0 ? void 0 : _h.bounds);
+    const before = diff.before?.bounds ?? pointAtCorner(diff.after?.bounds);
+    const after = diff.after?.bounds ?? pointAtCorner(diff.before?.bounds);
     div.style.left = after.left + 'px';
     div.style.top = after.top + 'px';
     div.style.width = (after.right - after.left) + 'px';
@@ -9777,7 +9836,7 @@ function renderDiff(diffRoot, diff) {
     diffRoot.appendChild(div);
 }
 function createDiffDeltaRect(size, edge) {
-    var d = document.createElement('div');
+    const d = document.createElement('div');
     toggleClass(d, 'diff-shrink', size < 0);
     toggleClass(d, 'diff-grow', size > 0);
     if (edge == 'left') {
