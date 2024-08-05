@@ -392,7 +392,6 @@ export class FormulaNode {
   span: FormulaToken;   // For context, when debugging
   left?: FormulaNode;
   right?: FormulaNode;
-  complete: boolean;
   bracket: string = '';  // If this node is the root of a bracketed sub-formula, name the bracket char, else ''
   parent?: FormulaNode;
 
@@ -435,6 +434,10 @@ export class FormulaNode {
     return !this.left && !this.right;
   }
 
+  reRootContext():boolean {
+    return this.bracket == '[' || this.bracket == '{';
+  }
+
   /**
    * Evaluate this node.
    * @param evalText if true, any simple text nodes are assumed to be named objects or numbers
@@ -443,6 +446,8 @@ export class FormulaNode {
    * If there's an operator and operands, return a type appropriate for that operator.
    */
   evaluate(evalText?:boolean): any {
+    let result:any = undefined;
+
     if (this.left) {
       try {
         const op = getOperator(this.value.text!);
@@ -450,16 +455,15 @@ export class FormulaNode {
 
         // right must also exist, because we're complete
         const lValue = this.left.evaluate(op!.evalLeft);
-        const rValue = this.right!.evaluate(op!.evalRight);
+        const rValue = this.right!.evaluate(op!.evalRight || this.right!.reRootContext());
 
         if (!bop) {
           throw new ContextError('Unrecognize binary operator', this.value);
         }
-        const result = bop(lValue, rValue, this.left?.span, this.right?.span);
+        result = bop(lValue, rValue, this.left?.span, this.right?.span);
         if (result === undefined || Number.isNaN(result)) {
           throw new ContextError('Operation ' + op?.raw + ' resulted in ' + result + ' : ' + lValue + op?.raw + rValue, this.value);
         }
-        return result;
       }
       catch (ex) {
         throw wrapContextError(ex, 'evaluate:binary', this.span);
@@ -473,11 +477,10 @@ export class FormulaNode {
         if (!uop) {
           throw new ContextError('Unrecognize unary operator', this.value);
         }
-        const result = uop(rValue, this.right?.span);
+        result = uop(rValue, this.right?.span);
         if (result === undefined || Number.isNaN(result)) {
           throw new ContextError('Operation ' + op?.raw + ' resulted in ' + result + ' : ' + op?.raw + rValue, this.value);
         }
-        return result;
       }
       catch (ex) {
         throw wrapContextError(ex, 'evaluate:unary', this.span);
@@ -485,22 +488,24 @@ export class FormulaNode {
     }
     else if (this.bracket === '\"' || this.bracket === '\'') {
       // Reliably plain text
-      return this.value.text;
+      result = this.value.text;
     }
     else {
+      result = this.value.text;  // unless overridden below
+
       // Could be plain text (or a number) or a name in context
-      const trimmed = simpleTrim(this.value.text!);
       if (evalText === true) {
+        const trimmed = simpleTrim(this.value.text!);
         const context = getBuilderContext();
         if (trimmed in context) {
-          return context[trimmed];
+          result = context[trimmed];
         }
-        if (isIntegerRegex(trimmed)) {
-          return parseInt(trimmed);
+        else if (isIntegerRegex(trimmed)) {
+          result = parseInt(trimmed);
         }
       }
-      return this.value.text;
     }
+    return result;
   }
 }
 
@@ -617,6 +622,9 @@ export function treeifyFormula(tokens:FormulaToken[], bracket?:FormulaToken):For
           }
           else {
             node = new FormulaNode(tok);
+            if (bracket) {
+              node.bracket = bracket.text!;
+            }
           }
         }
       }
@@ -679,6 +687,7 @@ export function treeifyFormula(tokens:FormulaToken[], bracket?:FormulaToken):For
       const closeTok = tokens.splice(close, 1)[0];
       const nested = tokens.splice(opIndex + 1, close - opIndex - 1);
       const node = treeifyFormula(nested, opTok);
+      node.bracket = op!.raw;
       const tok = makeSpanToken(opTok, closeTok, node);
       node.span = tok;
       tokens[opIndex] = tok;

@@ -7,6 +7,7 @@ global.structuredClone = (val) => JSON.parse(JSON.stringify(val))
 test.beforeEach(() => {
   expect(testBuilderContext({
     num: 1234,
+    zeroth: 0,
     fonts: [ 'bold', 'italic' ],
     sentence: 'Unit tests are the best!',
     pt: { x: 3, y: 5 },
@@ -300,11 +301,16 @@ test('evaluateFormulaAny', () => {
   testEvaluateFormulaAny("'three' & pt.x", 'three3');
   testEvaluateFormulaAny("pt.y&'five'", '5five');
 
+  // One root variable as index into another
+  testEvaluateFormulaAny("fonts.:zeroth", 'bold');
+
+  // Implicit re-root variable
+  testEvaluateFormulaAny("fonts.[zeroth]", 'bold');
 });
 
 function testComplexAttribute(raw:string, obj:any) {
   const result = complexAttribute(raw);
-  console.log(typeof(result));
+  // console.log(typeof(result));
   expect(typeof(result)).toEqual(typeof(obj));
   expect(result).toEqual(obj);
 }

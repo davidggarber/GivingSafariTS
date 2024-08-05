@@ -5,6 +5,7 @@ import { SourceOffset, ContextError, isContextError, wrapContextError } from '..
 test.beforeEach(() => {
   expect(testBuilderContext({
     num: 1234,
+    zeroth: 0,
     fonts: [ 'bold', 'italic' ],
     sentence: 'Unit tests are the best!',
     pt: { x: 3, y: 5 },
@@ -122,6 +123,8 @@ test('evaluate', () => {
   // Not a child
   expect(catchEvaluate('pt.z')?.offset).toEqual(3);
 
+  // One variable as index into another, with re-rooting
+  expect(catchEvaluate("fonts.zeroth")?.offset).toEqual(6);
 })
 
 function catchCloneText(raw:string):SourceOffset|null {
