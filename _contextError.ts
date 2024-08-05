@@ -8,7 +8,8 @@ export type SourceOffset = {
 }
 
 /**
- * Custom error which can track nested exceptions
+ * Custom error which identify which parts of the source document are malformed.
+ * It can leverage nested try/catch blocks to add additional context.
  */
 export class ContextError extends Error {
   public cause: Error|undefined;
@@ -18,7 +19,7 @@ export class ContextError extends Error {
   public sourceStack: SourceOffset[];
 
   /**
-   * Create a new BuildError (or derived error)
+   * Create a new ContextError (or derived error)
    * @param msg The message of the Error
    * @param source Indicates which source text specifically triggered this error
    * @param inner The inner/causal error, if any

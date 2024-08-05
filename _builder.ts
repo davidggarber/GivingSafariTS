@@ -1,6 +1,5 @@
 import { theBoiler } from "./_boilerplate";
 import { cloneAttributes, cloneTextNode } from "./_builderContext";
-import { BuildError, BuildTagError } from "./_builderError";
 import { startForLoop } from "./_builderFor";
 import { ifResult, startIfBlock } from "./_builderIf";
 import { inputAreaTagNames, startInputArea } from "./_builderInput";

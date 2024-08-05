@@ -55,14 +55,14 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
     if (isTag(src, 'else')) {
       result.passed = true;
     }
-    else if (exists || notex) {
+    else if (exists !== undefined || notex !== undefined) {
       // Does this attribute exist at all?
       result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
     }
-    else if (not) {
+    else if (not !== undefined) {
       result.passed = (not === 'false') || (not === '') || (not === null);
     }
-    else if (test) {
+    else if (test !== undefined) {
       const testTok = elementSourceOffseter(src, 'test');
 
       let value:string|null;
