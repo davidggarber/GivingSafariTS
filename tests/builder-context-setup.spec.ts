@@ -45,6 +45,7 @@ test('push and clone context', () => {
 });
 
 test('value from', () => {
+  testBuilderContext();  // Ensure other tests haven't left any global context
   expect(valueFromGlobalContext('outer', true)).toEqual('');
 
   testBuilderContext({outer:true});
