@@ -252,7 +252,7 @@ export function shouldThrow(ex:Error, node1?:Node, node2?:Node, node3?:Node):boo
     if (!node || node.nodeType != Node.ELEMENT_NODE) {
         continue;
     }
-    
+
     const elmt = nodes[i] as Element;  // The first element that had a elmt
     if (hasClass(elmt, 'nothrow') || elmt.getAttributeNS('', 'nothrow') !== null) {
       console.error(ex);
@@ -262,6 +262,7 @@ export function shouldThrow(ex:Error, node1?:Node, node2?:Node, node3?:Node):boo
     if (fn) {
       const func = window[fn];
       if (func) {
+        console.error(ex);
         func(ex, elmt);
         return false;
       }

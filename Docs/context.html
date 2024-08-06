@@ -21,9 +21,16 @@
           name: 'Fred',
           sentence: 'For those about to rock, we salute you!',
           team: ['Velma', 'Daphne', 'Shaggy', 'Scooby'],
-          obj: {inner: {value:'nested', Fred:'Flintstone'}}
+          pt: {x:4, y:6},
+          obj: {inner: {value:'nested', Fred:'Flintstone'}},
+
+          codename: '"code" & ' + "'name'",  // used where I can't write this explicitly inside an attribute
         }
       };
+
+      function onthrow(err, elmt) {
+        alert(err);
+      }
 
     </script>
     <script src="docs.js"></script>
@@ -40,6 +47,22 @@
         border: solid 1px gray;
         padding: 6px;
       }
+
+      #Letter #right-side code {
+        display: inline-block;
+        width: initial;
+      }
+
+      #operators code {
+        padding: 2px;
+      }
+
+      td.big {
+        font-size: 16pt;
+        padding: 1px;
+        text-align: center;
+      }
+
       .error {
         background-color: #c00;
         color: white;
@@ -51,7 +74,6 @@
     <div id="pageBody">
       <div id="left-side">
         <h2>Test cases</h2>
-        <p>Each context argument has been passed to a template, which echoes the text back</p>
         <build>
           <ttable class="test-case-table">
             <ttr>
@@ -62,32 +84,21 @@
             <use template="echo" eval="plaintext" expected="plaintext" comment="plain text can be passed as an argument"></use>
             <use template="echo" eval="sentence" expected="sentence" comment="arguments that happen to look like variable names can still be plain text"></use>
             <use template="echo" eval="{sentence}" expected="For those about to rock, we salute you!" comment="use `{curly braces`} to lookup values in the 'builderLookup' data"></use>
-            <use template="echo" eval="{code}" expected="31415" comment=""></use>
-            <use template="echo" eval="{code + 2}" expected="31417" comment=""></use>
-            <use template="echo" eval="{name}" expected="Fred" comment="Simple string variable"></use>
-            <use template="echo" eval="{team.0}" expected="Velma" comment="Dot notation to index into a list. In this case, the 0th item"></use>
-            <use template="echo" eval="{2+3}" expected="5" comment="Simple addition"></use>
-            <use template="echo" eval="{team.[third]}" expected="Shaggy" comment="Square brackets needed, because third is not a named member of team, but rather a variable for 2."></use>
-            <use template="echo" eval="{team.:third}" expected="Shaggy" comment="[third] is converted to '2'. Then team.[2] is converted to team.2"></use>
+            <use template="echo" eval="hello, {name}" expected="hello, Fred" comment="Mix plaintext and lookups in `{curly braces`}."></use>
+            <use template="echo" eval="hello `{name`}" expected="hello `{name`}" comment="Use ` to escape operators and brackets"></use>
+            <use template="echo" eval="{code}" expected="31415" comment="Values can be many data types. Strings, numeric, boolean, ..."></use>
+            <use template="echo" eval="{code + 2}" expected="31417" comment="Lookups can also employ formulas"></use>
             <use template="echo" eval="{obj.inner.value}" expected="nested" comment="Dot notation to step into objects"></use>
+            <use template="echo" eval="{team.0}" expected="Velma" comment="Values can also be lists. Dot notation is also the index. Not [brackets]"></use>
+            <use template="echo" eval="{team.:third}" expected="Shaggy" comment=": prefix clarifies that 'third' is its own variable, rather than a named key within 'team'"></use>
+            <use template="echo" eval="{name.3}" expected="d" comment="Dot lookup on a string is a character index"></use>
+            <use template="echo" eval="{team.(third-1)}" expected="Daphne" comment="Parentheses needed, because . has higher precedence than -"></use>
             <use template="echo" eval="{obj.inner}" expected="[object Object]" comment="Passing objects is legal, but in this case the callee is expecting text"></use>
-            <use template="echo" eval="{obj.inner.value}" expected="nested" comment="Because 'value' is not a variable, it is interpreted as plaintext. As plaintext, it is a valid child member name."></use>
             <use template="echo" eval="{obj.inner.[name]}" expected="Flintstone" comment="'name' is a variable, so this becomes obj.inner.Fred"></use>
           </ttable>
         </build>
 
-        <h2>TODO...</h2>
-        <ol>
-          <li>Binary and unary operators, including parens, in as many contexts as possible</li>
-          <li>={} syntax</li>
-          <li>Escaping braces</li>
-          <li>Various scenarios where {} are implicit</li>
-        </ol>
-      </div>
-
-
-      <div id="right-side">
-        <h3>builderLookup used by test cases</h3>
+        <h3>builderLookup used by all examples on this page</h3>
 
 <code onclick="selectCodeBlock(this, event)"><pre>
   'builderLookup': {
@@ -96,14 +107,94 @@
     name: 'Fred',
     sentence: 'For those about to rock, we salute you!',
     team: ['Velma', 'Daphne', 'Shaggy', 'Scooby'],
-    obj: {inner: {value:'nested'}}
+    pt: {x:4, y:6},
+    obj: {inner: {value:'nested', Fred:'Flintstone'}}
   }</pre></code>
 
+      </div>
+
+
+      <div id="right-side">
+        <h3>Opators</h3>
+        <p>All supported operators are listed below, in decreasing precedence groups.</p>
+        <table id="operators" class="test-case-table">
+          <tr>
+            <th>Operator</th> <th>Meaning</th>
+            <th>Example &hellip;</th> <th>becomes</th>
+          </tr>
+          <tr>
+            <td class="big">`</td> <td>Escapes the next character, if operator or bracket</td>
+            <td><use template="code" value="```{name```}"></use></td> <td>{name}</td>
+          </tr>
+          <tr>
+            <td class="big">{&nbsp;}</td> <td>Indicates a formula or lookup within plaintext</td>
+            <td><use template="code" value="hello `{name`}!"></use></td> <td><nobr>hello Fred!</nobr></td>
+          </tr>
+          <tr>
+            <td class="big">&quot;&thinsp;&quot;&nbsp;&nbsp;&apos;&thinsp;&apos;</td> <td>Text literals</td>
+            <td><use template="code" value='{codename}'></use></td> <td><build>{"code" & 'name'}</build></td>
+          </tr>
+          <tr>
+            <td class="big">(&nbsp;)</td> <td>Parentheses</td>
+            <td><use template="code" value="2*(3+4)"></use></td> <td>14</td>
+          </tr>
+          <tr>
+            <td class="big">[&nbsp;]</td> <td>Alternate parentheses. Forces root-level lookup</td>
+            <td><use template="code" value="name.[third]"></use></td> <td>r</td>
+          </tr>
+          <tr>
+            <td class="big">:</td> <td>Lookup, in situations where that could be ambiguous</td>
+            <td><use template="code" value="obj.inner.:name"></use></td> <td>Flintstone</td>
+          </tr>
+          <tr>
+            <td class="big">.</td> <td>Named field of an object. Or indexed item of a list. Or indexed character in a string.</td>
+            <td><use template="code" value="name.1 & team.1 & pt.x"></use></td> <td><build>{name.1 & team.1 & pt.x}</build></td>
+          </tr>
+          <tr>
+            <td class="big">-</td> <td>Negative, if used as a unary operator before a number</td>
+            <td><use template="code" value="-code"></use></td> <td>-31415</td>
+          </tr>
+          <tr>
+            <td class="big">* / \ %</td> <td>Multiplication, division, integer division, modulo</td>
+            <td><use template="code" value="10 % 7 * 5 \ 2 / 2"></use></td> <td><build>{10 % 7 * 5 \ 2 / 2}</build></td>
+          </tr>
+          <tr>
+            <td class="big">+ -</td> <td>Addition, subtraction (when used between numbers)</td>
+            <td><use template="code" value="10 -5 + -2"></use></td> <td><build>{10 -5 + -2}</build></td>
+          </tr>
+          <tr>
+            <td class="big">&amp;</td> <td>String concatenation</td>
+            <td><use template="code" value="code & code"></use></td> <td><build>{code & code}</build></td>
+          </tr>
+        </table>
+        <p>Note that within formulas, whitespace is ignored, unless in text literals</p>
+        <p>Some operators that are not supported include:</p>
+        <ul>
+          <li>Equality and inequality</li>
+          <li>Logical and/or/not</li>
+          <li>Ternary ? :</li>
+          <li>Bitwise</li>
+        </ul>
+
+        <h3>Implicit and explicit {lookups/formulas}</h3>
+        <p>
+          In order for lookups and formulas to work at all,
+          they must appear within the new Builder tags. 
+          Either as attributes of those tags, or anywhere (attribute or plain text) in those tags' contents.
+        </p>
+        <p>The Builder tags are:</p>
+        <ul>
+          <li><use template="taglink" value="build"></use> &mdash; no meaning, but causes all contents to follow Builder rules</li>
+          <li><use template="taglink" value="for" dest="for.html"></use> &mdash; for loops</li>
+          <li><use template="taglink" value="if" dest="if.html"></use>, <use template="taglink" value="elseif"></use>, <use template="taglink" value="else"></use> &mdash; conditional blocks</li>
+          <li><use template="taglink" value="use" dest="use.html"></use> &mdash; inject templates</li>
+          <li><use template="taglink" value="letter" dest="letter.html"></use>, <use template="taglink" value="word"></use>, <use template="taglink" value="pattern"></use>, etc. &mdash; input areas</li>
+        </ul>
 
       </div>
     </div>
 
-    <template id="echo" nothrow>
+    <template id="echo" onthrow="onthrow">
       <ttr>
         <ttd>
           <code onclick="selectCodeBlock(this, event)"><pre>{eval$}</pre></code>
@@ -122,6 +213,19 @@
           {comment?}
         </ttd>  
     </ttr>
+    </template>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)"><nobr>{value}</nobr></code>
+    </template>
+
+    <template id="taglink">
+      <if exists="dest?">
+        <a href="{dest}"><code onclick="selectCodeBlock(this, event)">{value}</code></a>
+      </if>
+      <else>
+        <code onclick="selectCodeBlock(this, event)">{value}</code>
+      </else>
     </template>
 
   </body>

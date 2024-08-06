@@ -6503,8 +6503,7 @@ function boilerplate(bp: BoilerPlateData) {
         }
         catch (ex) {
             const ctx = wrapContextError(ex);
-            // Rethrow in 1 second, to let the rest of the boilerplate finish
-            setTimeout(() => { throw ctx; }, 1000);
+            console.error(ctx);  // Log, but then continue with the rest of the page
         }
     }
 
@@ -7870,7 +7869,7 @@ export enum TrimMode {
 /**
  * When in trim mode, cloning text between elements will omit any sections that are pure whitespace.
  * Sections that include both text and whitespace will be kept in entirety.
- * @returns 
+ * @returns One of three trim states, set anywhere in the current element heirarchy.
  */
 export function getTrimMode():TrimMode {
   for (let i = src_element_stack.length - 1; i >= 0; i--) {
@@ -7888,6 +7887,40 @@ export function getTrimMode():TrimMode {
     }
   }
   return TrimMode.off;
+}
+
+/**
+ * Throwing exceptions while building will hide large chunks of page.
+ * Instead, set nothrow on any build element (not normal elements) to disable rethrow at that level.
+ * In that case, the error will be logged, but then building will continue.
+ * FUTURE: set onthrow to the name of a local function, and onthrow will call that, passing the error
+ * @returns true if the current element expresses nothrow as either a class or attribute.
+ */
+export function shouldThrow(ex:Error, node1?:Node, node2?:Node, node3?:Node):boolean {
+  // Inspect any passed-in nodes for throwing instructions.
+  const nodes = [node1, node2, node3, src_element_stack.length > 0 ? src_element_stack[src_element_stack.length - 1] : undefined];
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (!node || node.nodeType != Node.ELEMENT_NODE) {
+        continue;
+    }
+
+    const elmt = nodes[i] as Element;  // The first element that had a elmt
+    if (hasClass(elmt, 'nothrow') || elmt.getAttributeNS('', 'nothrow') !== null) {
+      console.error(ex);
+      return false;
+    }
+    const fn = elmt.getAttributeNS('', 'onthrow');
+    if (fn) {
+      const func = window[fn];
+      if (func) {
+        console.error(ex);
+        func(ex, elmt);
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 /**
@@ -7993,7 +8026,8 @@ export function expandControlTags() {
       parent?.removeChild(src);
     }
     catch (ex) {
-      throw wrapContextError(ex, "expandControlTags", elementSourceOffset(src));
+      const ctxerr = wrapContextError(ex, "expandControlTags", elementSourceOffset(src));
+      if (shouldThrow(ctxerr, src)) { throw ctxerr; }
     }
   }
   initElementStack(null);
@@ -8067,7 +8101,8 @@ export function expandContents(src:HTMLElement):Node[] {
         }
       }
       catch (ex) {
-        throw wrapContextError(ex, "expandContents", elementSourceOffset(child_elmt));
+        const ctxerr = wrapContextError(ex, "expandContents", elementSourceOffset(child_elmt));
+        if (shouldThrow(ctxerr, child_elmt, src)) { throw ctxerr; }
       }
     }
     else if (child.nodeType == Node.TEXT_NODE) {
@@ -8166,7 +8201,8 @@ function cloneWithContext(elmt:HTMLElement):Element {
       }
     }
     catch (ex) {
-      throw wrapContextError(ex, "cloneWithContext", nodeSourceOffset(child));
+      const ctxerr = wrapContextError(ex, "cloneWithContext", nodeSourceOffset(child));
+      if (shouldThrow(ctxerr, child, elmt)) { throw ctxerr; }
     }
     
   }
@@ -8364,7 +8400,7 @@ export function complexAttribute(str:string, trim:TrimMode = TrimMode.off):any {
     }
     else {
       try {
-        const complex = evaluateFormula(list[i].text);
+        const complex = evaluateFormula('{' + list[i].text + '}');
         if (i == 0 && list.length == 1) {
           return complex;
         }
@@ -8679,16 +8715,28 @@ export class FormulaNode {
     }
     else {
       result = this.value.text;  // unless overridden below
+      let trimmed = simpleTrim(result);
+
+      const maybe = result && trimmed[trimmed.length - 1] == '?';
+      if (maybe) {
+        trimmed = trimmed.substring(0, trimmed.length - 1);
+        evalText = true;
+      }
 
       // Could be plain text (or a number) or a name in context
       if (evalText === true) {
-        const trimmed = simpleTrim(this.value.text!);
         const context = getBuilderContext();
         if (trimmed in context) {
           result = context[trimmed];
         }
+        else if (maybe) {
+          return '';  // Special case
+        }
         else if (isIntegerRegex(trimmed)) {
           result = parseInt(trimmed);
+        }
+        else if (this.bracket == '{') {
+          throw new ContextError('Name lookup failed', this.span);
         }
       }
     }
@@ -8916,9 +8964,10 @@ export function evaluateFormula(str:string|null):any {
  * @param implicitFormula Whether the contents of the attribute require {} to indicate a formula
  * @param required Whether the attribute is required, in which case it will throw if not present. 
  * Otherwise it would return undefined
+ * @param onerr What to return in the special case of an exception. If omitted, exceptions throw.
  * @returns Any data type
  */
-export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boolean, required?:boolean) {
+export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boolean, required?:boolean, onerr?:any) {
   const val = elmt.getAttributeNS('', attr);
   if (!val) {
     if (required === false) {  // true by default
@@ -8933,6 +8982,9 @@ export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boo
     return complexAttribute(val);
   }
   catch (ex) {
+    if (onerr !== undefined) {
+      return onerr;
+    }
     throw wrapContextError(ex, undefined, elementSourceOffset(elmt, attr));
   }
 
@@ -9232,7 +9284,7 @@ function unescapeBraces(raw:string):string {
       start = i + 2;
     }
     else {
-      str += str += '`';  // not a real escape
+      str += '`';  // not a real escape
       start = i + 1;
     }
   }
@@ -9650,8 +9702,8 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       }
     }
 
-    let exists = evaluateAttribute(src, 'exists', false, false);
-    let notex = evaluateAttribute(src, 'notex', false, false);
+    let exists = evaluateAttribute(src, 'exists', false, false, false);
+    let notex = evaluateAttribute(src, 'notex', false, false, true);
     let not = evaluateAttribute(src, 'not', true, false);
     let test = evaluateAttribute(src, 'test', true, false);
 
@@ -9659,8 +9711,14 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       result.passed = true;
     }
     else if (exists !== undefined || notex !== undefined) {
-      // Does this attribute exist at all?
-      result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
+      if (exists === false || notex === true) {
+        // Special case: calling one of these threw an exception, which is still informative
+        result.passed = notex ? true : exists;
+      }
+      else {
+        // Does this attribute exist at all?
+        result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
+      }
     }
     else if (not !== undefined) {
       result.passed = (not === 'false') || (not === '') || (not === null);
@@ -9728,7 +9786,8 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
     }
   }
   catch (ex) {
-    throw wrapContextError(ex, 'startIfBlock', elementSourceOffset(src));
+    const ctxerr = wrapContextError(ex, 'startIfBlock', elementSourceOffset(src));
+    if (shouldThrow(ctxerr, src)) { throw ctxerr; }
   }
 
   if (result.passed) {
@@ -9908,66 +9967,89 @@ type TemplateArg = {
  */
 export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
   let dest:Node[] = [];
+
+  if (!tempId) {
+    tempId = node.getAttribute('template');
+    if (!tempId) {
+      throw new ContextError('<use> tag must specify a template attribute');
+    }
+  }
+  let template:HTMLTemplateElement|null = null;
+  try {
+    template = getTemplate(tempId);
+    if (!template.content) {
+      throw new ContextError('Invalid template (no content): ' + tempId);
+    }
+  }
+  catch (ex) {
+    const ctxerr = wrapContextError(ex, 'useTemplate', elementSourceOffset(node, 'template'));
+    if (shouldThrow(ctxerr, node)) { throw ctxerr; }
+    template = null;
+  }
   
-  // We need to build the values to push onto the context, without changing the current context.
-  // Do all the evaluations first, and cache them.
-  const passed_args:TemplateArg[] = [];
-  for (let i = 0; i < node.attributes.length; i++) {
-    const attr = node.attributes[i].name;
-    const val = node.attributes[i].value;
-    const attri = attr.toLowerCase();
-    try {
-      if (attri != 'template' && attri != 'class') {
-        const arg:TemplateArg = {
-          attr: attr,
-          raw: val,  // Store the context path, so it can also be referenced
-          text: cloneText(val),
-          any: complexAttribute(val),
+  if (template) {
+    // We need to build the values to push onto the context, without changing the current context.
+    // Do all the evaluations first, and cache them.
+    const passed_args:TemplateArg[] = [];
+    for (let i = 0; i < node.attributes.length; i++) {
+      const attr = node.attributes[i].name;
+      const val = node.attributes[i].value;
+      const attri = attr.toLowerCase();
+      try {
+        if (attri != 'template' && attri != 'class') {
+          const arg:TemplateArg = {
+            attr: attr,
+            raw: val,  // Store the context path, so it can also be referenced
+            text: cloneText(val),
+            any: complexAttribute(val),
+          }
+          passed_args.push(arg);
         }
-        passed_args.push(arg);
+      }
+      catch (ex) {
+        const ctxerr = wrapContextError(ex, 'useTemplate', elementSourceOffset(node, attr));
+        if (shouldThrow(ctxerr, node, template)) { throw ctxerr; }
+      }
+    }
+
+    try {
+      // Push a new context for inside the <use>.
+      // Each passed arg generates 3 usable context entries:
+      //  arg = 'text'          the attribute, evaluated as text
+      //  arg! = *any*          the attribute, evaluated as any
+      //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
+      const inner_context = pushBuilderContext();
+      for (let i = 0; i < passed_args.length; i++) {
+        const arg = passed_args[i];
+        inner_context[arg.attr] = arg.text;
+        inner_context[arg.attr + '!'] = arg.any;
+        inner_context[arg.attr + '$'] = arg.raw;
+      }
+
+      if (!tempId) {
+        tempId = node.getAttribute('template');
+      }
+      if (tempId) {
+        const template = getTemplate(tempId);
+        if (!template) {
+          throw new ContextError('Template not found: ' + tempId, elementSourceOffset(node, 'template'));
+        }
+        if (!template.content) {
+          throw new ContextError('Invalid template (no content): ' + tempId, elementSourceOffset(node, 'template'));
+        }
+        // The template doesn't have any child nodes. Its content must first be cloned.
+        const clone = template.content.cloneNode(true) as HTMLElement;
+        dest = expandContents(clone);
+      }
+      else {
+        dest = expandContents(node);
       }
     }
     catch (ex) {
-      throw wrapContextError(ex, 'useTemplate', elementSourceOffset(node, attr));
-    }
-  }
-
-  try {
-    // Push a new context for inside the <use>.
-    // Each passed arg generates 3 usable context entries:
-    //  arg = 'text'          the attribute, evaluated as text
-    //  arg! = *any*          the attribute, evaluated as any
-    //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
-    const inner_context = pushBuilderContext();
-    for (let i = 0; i < passed_args.length; i++) {
-      const arg = passed_args[i];
-      inner_context[arg.attr] = arg.text;
-      inner_context[arg.attr + '!'] = arg.any;
-      inner_context[arg.attr + '$'] = arg.raw;
-    }
-
-    if (!tempId) {
-      tempId = node.getAttribute('template');
-    }
-    if (tempId) {
-      const template = getTemplate(tempId);
-      if (!template) {
-        throw new ContextError('Template not found: ' + tempId, elementSourceOffset(node, 'template'));
-      }
-      if (!template.content) {
-        throw new ContextError('Invalid template (no content): ' + tempId, elementSourceOffset(node, 'template'));
-      }
-      // The template doesn't have any child nodes. Its content must first be cloned.
-      const clone = template.content.cloneNode(true) as HTMLElement;
-      dest = expandContents(clone);
-    }
-    else {
-      dest = expandContents(node);
+      const ctxerr = wrapContextError(ex, 'useTemplate', elementSourceOffset(node));
+      if (shouldThrow(ctxerr, node, template)) { throw ctxerr; }
     }
     popBuilderContext();
-  }
-  catch (ex) {
-    throw wrapContextError(ex, 'useTemplate', elementSourceOffset(node));
   }
 
   return dest;
@@ -9996,7 +10078,7 @@ export function getTemplate(tempId:string) :HTMLTemplateElement {
       return template;
     }
   }
-  throw new Error('Unresolved template ID: ' + tempId);
+  throw new ContextError('Template not found: ' + tempId);
 }
 
 const builtInTemplates = {

@@ -134,7 +134,7 @@ function catchCloneText(raw:string):SourceOffset|null {
   }
   catch (ex) {
     const ctx = wrapContextError(ex);
-    // console.log(ctx);  // Uncomment to visually verify
+    console.log(ctx);  // Uncomment to visually verify
     return (ctx as ContextError).sourceStack[0];
   }
 }
@@ -144,5 +144,5 @@ test('formulaInText', () => {
   expect(cloneText('this is {fonts.0}')).toEqual('this is bold');
 
   // innermost offset is relative to the formula, not the whole
-  expect(catchCloneText('this is {fonts.3}')?.offset).toEqual(6);
+  expect(catchCloneText('this is {fonts.3}')?.offset).toEqual(7);
 })

@@ -177,7 +177,7 @@ export function complexAttribute(str:string, trim:TrimMode = TrimMode.off):any {
     }
     else {
       try {
-        const complex = evaluateFormula(list[i].text);
+        const complex = evaluateFormula('{' + list[i].text + '}');
         if (i == 0 && list.length == 1) {
           return complex;
         }
@@ -512,6 +512,9 @@ export class FormulaNode {
         else if (isIntegerRegex(trimmed)) {
           result = parseInt(trimmed);
         }
+        else if (this.bracket == '{') {
+          throw new ContextError('Name lookup failed', this.span);
+        }
       }
     }
     return result;
@@ -738,9 +741,10 @@ export function evaluateFormula(str:string|null):any {
  * @param implicitFormula Whether the contents of the attribute require {} to indicate a formula
  * @param required Whether the attribute is required, in which case it will throw if not present. 
  * Otherwise it would return undefined
+ * @param onerr What to return in the special case of an exception. If omitted, exceptions throw.
  * @returns Any data type
  */
-export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boolean, required?:boolean) {
+export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boolean, required?:boolean, onerr?:any) {
   const val = elmt.getAttributeNS('', attr);
   if (!val) {
     if (required === false) {  // true by default
@@ -755,6 +759,9 @@ export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boo
     return complexAttribute(val);
   }
   catch (ex) {
+    if (onerr !== undefined) {
+      return onerr;
+    }
     throw wrapContextError(ex, undefined, elementSourceOffset(elmt, attr));
   }
 
@@ -872,7 +879,7 @@ type OperatorInfo = {
 
 const minus:OperatorInfo = { raw:'-', unaryChar:'⁻', binaryChar:'−'};  // ambiguously unary or binary
 const concat:OperatorInfo = { raw:'&', precedence:1, binaryOp:(a,b,aa,bb) => {return makeString(a,aa) + makeString(b,bb)}, evalLeft:true, evalRight:true};
-const entity:OperatorInfo = { raw:'@', precedence:1, unaryOp:(a,aa) => {return deentify(a)}, evalRight:false};
+//const entity:OperatorInfo = { raw:'@', precedence:1, unaryOp:(a,aa) => {return deentify(a)}, evalRight:false};
 const plus:OperatorInfo = { raw:'+', precedence:3, binaryOp:(a,b,aa,bb) => {return makeFloat(a,aa) + makeFloat(b,bb)}, evalLeft:true, evalRight:true};
 const subtract:OperatorInfo = { raw:'−', precedence:3, binaryOp:(a,b,aa,bb) => {return makeFloat(a,aa) - makeFloat(b,bb)}, evalLeft:true, evalRight:true};
 const times:OperatorInfo = { raw:'*', precedence:4, binaryOp:(a,b,aa,bb) => {return makeFloat(a,aa) * makeFloat(b,bb)}, evalLeft:true, evalRight:true};
@@ -892,7 +899,7 @@ const singleQuotes:OperatorInfo = { raw:'\'', precedence:10, closeChar:'\''};
 const doubleQuotes:OperatorInfo = { raw:'"', precedence:10, closeChar:'"'};
 
 const allOperators:OperatorInfo[] = [
-  minus, concat, entity, plus, subtract,
+  minus, concat, plus, subtract, // entity, 
   times, divide, intDivide, modulo, negative,
   childObj, rootObj,
   roundBrackets, squareBrackets, curlyBrackets,
@@ -1054,7 +1061,7 @@ function unescapeBraces(raw:string):string {
       start = i + 2;
     }
     else {
-      str += str += '`';  // not a real escape
+      str += '`';  // not a real escape
       start = i + 1;
     }
   }

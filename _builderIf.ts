@@ -47,8 +47,8 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       }
     }
 
-    let exists = evaluateAttribute(src, 'exists', false, false);
-    let notex = evaluateAttribute(src, 'notex', false, false);
+    let exists = evaluateAttribute(src, 'exists', false, false, false);
+    let notex = evaluateAttribute(src, 'notex', false, false, true);
     let not = evaluateAttribute(src, 'not', true, false);
     let test = evaluateAttribute(src, 'test', true, false);
 
@@ -56,8 +56,14 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       result.passed = true;
     }
     else if (exists !== undefined || notex !== undefined) {
-      // Does this attribute exist at all?
-      result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
+      if (exists === false || notex === true) {
+        // Special case: calling one of these threw an exception, which is still informative
+        result.passed = notex ? true : exists;
+      }
+      else {
+        // Does this attribute exist at all?
+        result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
+      }
     }
     else if (not !== undefined) {
       result.passed = (not === 'false') || (not === '') || (not === null);

@@ -3,157 +3,10 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.inputAreaTagNames = exports.FormulaNode = exports.TrimMode = exports.CodeError = exports.ContextError = exports._rawHtmlSource = exports.EdgeTypes = exports.PuzzleStatus = exports.svg_xmlns = void 0;
-exports.toggleClass = toggleClass;
-exports.hasClass = hasClass;
-exports.applyAllClasses = applyAllClasses;
-exports.clearAllClasses = clearAllClasses;
-exports.findNextOfClass = findNextOfClass;
-exports.indexInContainer = indexInContainer;
-exports.childAtIndex = childAtIndex;
-exports.findInNextContainer = findInNextContainer;
-exports.findEndInContainer = findEndInContainer;
-exports.isTag = isTag;
-exports.findParentOfClass = findParentOfClass;
-exports.isSelfOrParent = isSelfOrParent;
-exports.findParentOfTag = findParentOfTag;
-exports.findFirstChildOfClass = findFirstChildOfClass;
-exports.findNthChildOfClass = findNthChildOfClass;
-exports.siblingIndexOfClass = siblingIndexOfClass;
-exports.getOptionalStyle = getOptionalStyle;
-exports.getOptionalContext = getOptionalContext;
-exports.getAllElementsWithAttribute = getAllElementsWithAttribute;
-exports.moveFocus = moveFocus;
-exports.SortElements = SortElements;
-exports.newTR = newTR;
-exports.constructTable = constructTable;
-exports.constructSvgTextCell = constructSvgTextCell;
-exports.constructSvgImageCell = constructSvgImageCell;
-exports.constructSvgStampable = constructSvgStampable;
-exports.setupNotes = setupNotes;
-exports.toggleNotes = toggleNotes;
-exports.setupCrossOffs = setupCrossOffs;
-exports.setupHighlights = setupHighlights;
-exports.toggleHighlight = toggleHighlight;
-exports.setupDecoderToggle = setupDecoderToggle;
-exports.toggleDecoder = toggleDecoder;
-exports.storageKey = storageKey;
-exports.checkLocalStorage = checkLocalStorage;
-exports.saveLetterLocally = saveLetterLocally;
-exports.saveWordLocally = saveWordLocally;
-exports.saveNoteLocally = saveNoteLocally;
-exports.saveCheckLocally = saveCheckLocally;
-exports.saveContainerLocally = saveContainerLocally;
-exports.savePositionLocally = savePositionLocally;
-exports.saveStampingLocally = saveStampingLocally;
-exports.saveHighlightLocally = saveHighlightLocally;
-exports.saveStraightEdge = saveStraightEdge;
-exports.saveGuessHistory = saveGuessHistory;
-exports.getGlobalIndex = getGlobalIndex;
-exports.findGlobalIndex = findGlobalIndex;
-exports.mapGlobalIndeces = mapGlobalIndeces;
-exports.indexAllInputFields = indexAllInputFields;
-exports.indexAllNoteFields = indexAllNoteFields;
-exports.indexAllCheckFields = indexAllCheckFields;
-exports.indexAllDragDropFields = indexAllDragDropFields;
-exports.indexAllDrawableFields = indexAllDrawableFields;
-exports.indexAllHighlightableFields = indexAllHighlightableFields;
-exports.indexAllVertices = indexAllVertices;
-exports.updatePuzzleList = updatePuzzleList;
-exports.getPuzzleStatus = getPuzzleStatus;
-exports.listPuzzlesOfStatus = listPuzzlesOfStatus;
-exports.resetAllPuzzleStatus = resetAllPuzzleStatus;
-exports.resetPuzzleProgress = resetPuzzleProgress;
-exports.getCurFileName = getCurFileName;
-exports.onLetterKeyDown = onLetterKeyDown;
-exports.onLetterKeyUp = onLetterKeyUp;
-exports.onLetterKey = onLetterKey;
-exports.afterInputUpdate = afterInputUpdate;
-exports.onWordKey = onWordKey;
-exports.updateWordExtraction = updateWordExtraction;
-exports.extractWordIndex = extractWordIndex;
-exports.onLetterChange = onLetterChange;
-exports.onWordChange = onWordChange;
-exports.autoCompleteWord = autoCompleteWord;
-exports.textSetup = textSetup;
-exports.getLetterStyles = getLetterStyles;
-exports.setupSubways = setupSubways;
-exports.positionFromStyle = positionFromStyle;
-exports.preprocessDragFunctions = preprocessDragFunctions;
-exports.initFreeDropZorder = initFreeDropZorder;
-exports.quickMove = quickMove;
-exports.quickFreeMove = quickFreeMove;
-exports.preprocessStampObjects = preprocessStampObjects;
-exports.getCurrentStampToolId = getCurrentStampToolId;
-exports.getStampParent = getStampParent;
-exports.doStamp = doStamp;
-exports.positionFromCenter = positionFromCenter;
-exports.distance2Mouse = distance2Mouse;
-exports.distance2 = distance2;
-exports.preprocessRulerFunctions = preprocessRulerFunctions;
-exports.getStraightEdgeType = getStraightEdgeType;
-exports.createFromVertexList = createFromVertexList;
-exports.clearAllStraightEdges = clearAllStraightEdges;
-exports.initSafariDetails = initSafariDetails;
-exports.getSafariDetails = getSafariDetails;
-exports.isDebug = isDebug;
-exports.isBodyDebug = isBodyDebug;
-exports.isIFrame = isIFrame;
-exports.isPrint = isPrint;
-exports.isIcon = isIcon;
-exports.isRestart = isRestart;
-exports.forceReload = forceReload;
-exports.addLink = addLink;
-exports.linkCss = linkCss;
-exports.theBoiler = theBoiler;
-exports.testBoilerplate = testBoilerplate;
-exports.setupValidation = setupValidation;
-exports.validateInputReady = validateInputReady;
-exports.decodeAndValidate = decodeAndValidate;
-exports.isContextError = isContextError;
-exports.wrapContextError = wrapContextError;
-exports.nodeSourceOffset = nodeSourceOffset;
-exports.elementSourceOffset = elementSourceOffset;
-exports.elementSourceOffseter = elementSourceOffseter;
-exports.getTrimMode = getTrimMode;
-exports.getBuilderParentIf = getBuilderParentIf;
-exports.getParentIf = getParentIf;
-exports.inSvgNamespace = inSvgNamespace;
-exports.expandControlTags = expandControlTags;
-exports.pushRange = pushRange;
-exports.appendRange = appendRange;
-exports.expandContents = expandContents;
-exports.normalizeName = normalizeName;
-exports.theBoilerContext = theBoilerContext;
-exports.getBuilderContext = getBuilderContext;
-exports.testBuilderContext = testBuilderContext;
-exports.pushBuilderContext = pushBuilderContext;
-exports.popBuilderContext = popBuilderContext;
-exports.valueFromContext = valueFromContext;
-exports.valueFromGlobalContext = valueFromGlobalContext;
-exports.cloneAttributes = cloneAttributes;
-exports.cloneTextNode = cloneTextNode;
-exports.cloneText = cloneText;
-exports.complexAttribute = complexAttribute;
-exports.tokenizeFormula = tokenizeFormula;
-exports.treeifyFormula = treeifyFormula;
-exports.evaluateFormula = evaluateFormula;
-exports.evaluateAttribute = evaluateAttribute;
-exports.makeFloat = makeFloat;
-exports.makeInt = makeInt;
-exports.makeString = makeString;
-exports.tokenizeText = tokenizeText;
-exports.keyExistsInContext = keyExistsInContext;
-exports.textFromContext = textFromContext;
-exports.startForLoop = startForLoop;
-exports.startIfBlock = startIfBlock;
-exports.startInputArea = startInputArea;
-exports.useTemplate = useTemplate;
-exports.getTemplate = getTemplate;
-exports.builtInTemplate = builtInTemplate;
-exports.summarizePageLayout = summarizePageLayout;
-exports.diffSummarys = diffSummarys;
-exports.renderDiffs = renderDiffs;
+exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
+exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -189,6 +42,7 @@ function toggleClass(obj, cls, bool) {
         }
     }
 }
+exports.toggleClass = toggleClass;
 /**
  * Check if an HTML element is tagged with a given CSS class
  * @param obj - A page element, or id of an element
@@ -210,6 +64,7 @@ function hasClass(obj, cls) {
         && elmt.classList !== null
         && elmt.classList.contains(cls);
 }
+exports.hasClass = hasClass;
 /**
  * Apply all classes in a list of classes.
  * @param obj - A page element, or id of an element
@@ -221,6 +76,7 @@ function applyAllClasses(obj, classes) {
         toggleClass(obj, cls, true);
     }
 }
+exports.applyAllClasses = applyAllClasses;
 /**
  * Apply all classes in a list of classes.
  * @param obj - A page element, or id of an element
@@ -232,6 +88,7 @@ function clearAllClasses(obj, classes) {
         toggleClass(obj, cls, false);
     }
 }
+exports.clearAllClasses = clearAllClasses;
 /**
  * Given one element, find the next one in the document that matches the desired class
  * @param current - An existing element
@@ -254,6 +111,7 @@ function findNextOfClass(current, matchClass, skipClass, dir = 1) {
     }
     return null;
 }
+exports.findNextOfClass = findNextOfClass;
 /**
  * Find the index of the current element among the siblings under its parent
  * @param current - An existing element
@@ -277,6 +135,7 @@ function indexInContainer(current, parentObj, sibClass) {
     }
     return -1;
 }
+exports.indexInContainer = indexInContainer;
 /**
  * Get the index'ed child element within this parent
  * @param parent - An existing element
@@ -297,6 +156,7 @@ function childAtIndex(parent, childClass, index) {
     }
     return sibs[index];
 }
+exports.childAtIndex = childAtIndex;
 /**
  * Given an input in one container, find an input in the next container
 * @param current - the reference element
@@ -321,6 +181,7 @@ function findInNextContainer(current, matchClass, skipClass, containerClass, dir
     }
     return null;
 }
+exports.findInNextContainer = findInNextContainer;
 /**
  * Find either the first or last sibling element under a parent
 * @param current - the reference element
@@ -337,6 +198,7 @@ function findEndInContainer(current, matchClass, skipClass, containerClass, dir 
     }
     return findFirstChildOfClass(container, matchClass, skipClass, dir);
 }
+exports.findEndInContainer = findEndInContainer;
 /**
  * Determine the tag type, based on the tag name (case-insenstive)
  * @param elmt An HTML element
@@ -355,6 +217,7 @@ function isTag(elmt, tag) {
     }
     return false;
 }
+exports.isTag = isTag;
 /**
  * Find the nearest containing node that contains the desired class.
  * @param elmt - An existing element
@@ -377,6 +240,7 @@ function findParentOfClass(elmt, parentClass) {
     }
     return null;
 }
+exports.findParentOfClass = findParentOfClass;
 /**
  * Is the element anywhere underneath parent (including itself)
  * @param elmt An element
@@ -392,6 +256,7 @@ function isSelfOrParent(elmt, parent) {
     }
     return false;
 }
+exports.isSelfOrParent = isSelfOrParent;
 /**
  * Find the nearest containing node of the specified tag type.
  * @param elmt - An existing element
@@ -415,6 +280,7 @@ function findParentOfTag(elmt, parentTag) {
     }
     return null;
 }
+exports.findParentOfTag = findParentOfTag;
 /**
  * Find the first child/descendent of the current element which matches a desired class
  * @param elmt - A parent element
@@ -433,6 +299,7 @@ function findFirstChildOfClass(elmt, childClass, skipClass = undefined, dir = 1)
     }
     return null;
 }
+exports.findFirstChildOfClass = findFirstChildOfClass;
 /**
  * Find the first child/descendent of the current element which matches a desired class
  * @param parent - A parent element
@@ -450,6 +317,7 @@ function findNthChildOfClass(parent, childClass, index) {
         return (index >= 0) ? children[index] : null;
     }
 }
+exports.findNthChildOfClass = findNthChildOfClass;
 /**
  * Get the index of an element among its siblings.
  * @param parent A parent/ancestor of the child
@@ -466,6 +334,7 @@ function siblingIndexOfClass(parent, child, childClass) {
     }
     return -1;
 }
+exports.siblingIndexOfClass = siblingIndexOfClass;
 /**
  * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
  * @param elmt - A page element
@@ -483,6 +352,7 @@ function getOptionalStyle(elmt, attrName, defaultStyle, prefix) {
     val = val !== null ? cloneText(val) : (defaultStyle || null);
     return (val === null || prefix === undefined) ? val : (prefix + val);
 }
+exports.getOptionalStyle = getOptionalStyle;
 /**
  * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
  * @param elmt - A page element
@@ -497,6 +367,7 @@ function getOptionalContext(elmt, attrName) {
     const val = e ? e.getAttribute(attrName) : null;
     return val !== null ? evaluateFormula(val) : null;
 }
+exports.getOptionalContext = getOptionalContext;
 /**
  * Loop through all elements in a DOM sub-tree, looking for any elements with an optional tag.
  * Recurse as needed. But once found, don't recurse within the find.
@@ -524,6 +395,7 @@ function getAllElementsWithAttribute(root, attr) {
     }
     return list;
 }
+exports.getAllElementsWithAttribute = getAllElementsWithAttribute;
 /**
  * Move focus to the given input (if not null), and select the entire contents.
  * If input is of type number, do nothing.
@@ -546,6 +418,7 @@ function moveFocus(input, caret) {
     }
     return false;
 }
+exports.moveFocus = moveFocus;
 /**
  * Sort a collection of elements into an array
  * @param src A collection of elements, as from document.getElementsByClassName
@@ -584,6 +457,7 @@ function SortElements(src, sort_attr = 'data-extract-order') {
     }
     return sorted;
 }
+exports.SortElements = SortElements;
 /**
  * Create a generic TR tag for each row in a table.
  * Available for TableDetails.onRow where that is all that's needed
@@ -591,6 +465,7 @@ function SortElements(src, sort_attr = 'data-extract-order') {
 function newTR(y) {
     return document.createElement('tr');
 }
+exports.newTR = newTR;
 /**
  * Create a table from details
  * @param details A TableDetails, which can exist in several permutations with optional fields
@@ -621,6 +496,7 @@ function constructTable(details) {
         }
     }
 }
+exports.constructTable = constructTable;
 exports.svg_xmlns = 'http://www.w3.org/2000/svg';
 const html_xmlns = 'http://www.w3.org/2000/xmlns';
 function constructSvgTextCell(val, dx, dy, cls, stampable) {
@@ -652,6 +528,7 @@ function constructSvgTextCell(val, dx, dy, cls, stampable) {
     }
     return vg;
 }
+exports.constructSvgTextCell = constructSvgTextCell;
 function constructSvgImageCell(img, dx, dy, id, cls) {
     var vg = document.createElementNS(exports.svg_xmlns, 'g');
     if (id) {
@@ -670,6 +547,7 @@ function constructSvgImageCell(img, dx, dy, id, cls) {
     vg.appendChild(i);
     return vg;
 }
+exports.constructSvgImageCell = constructSvgImageCell;
 function constructSvgStampable() {
     var fo = document.createElementNS(exports.svg_xmlns, 'foreignObject');
     fo.classList.add('fo-stampable');
@@ -679,6 +557,7 @@ function constructSvgStampable() {
     fo.appendChild(fod);
     return fo;
 }
+exports.constructSvgStampable = constructSvgStampable;
 /*-----------------------------------------------------------
  * _notes.ts
  *-----------------------------------------------------------*/
@@ -724,6 +603,7 @@ function setupNotes(margins) {
         setNoteState(NoteState.Visible);
     }
 }
+exports.setupNotes = setupNotes;
 /**
  * Find all objects tagged as needing notes, then create a note cell adjacent.
  * @param findClass The class of the puzzle element that wants notes
@@ -806,7 +686,7 @@ var NoteState = {
     Disabled: -1,
     Unmarked: 0,
     Visible: 1,
-    Subdued: 2, // Enabled but not highlighted
+    Subdued: 2,
     MOD: 3,
 };
 /**
@@ -866,6 +746,7 @@ function toggleNotes() {
     setNoteState((state + 1) % NoteState.MOD);
     setupNotesToggle(null);
 }
+exports.toggleNotes = toggleNotes;
 /**
  * Elements tagged with class = 'cross-off' are for puzzles clues that don't indicate where to use it.
  * Any such elements are clickable. When clicked, a check mark is toggled on and off, allowed players to mark some clues as done.
@@ -883,6 +764,7 @@ function setupCrossOffs() {
     }
     indexAllCheckFields();
 }
+exports.setupCrossOffs = setupCrossOffs;
 /**
  * Handler for when an object that can be crossed off is clicked
  * @param event The mouse event
@@ -939,6 +821,7 @@ function setupHighlights() {
     // Index will now include all children from above expansion rules
     indexAllHighlightableFields();
 }
+exports.setupHighlights = setupHighlights;
 /**
  * If an element can be highlighted, toggle that highlight on or off
  * @param elmt The element to highlight
@@ -953,6 +836,7 @@ function toggleHighlight(elmt) {
         saveHighlightLocally(highlight);
     }
 }
+exports.toggleHighlight = toggleHighlight;
 /**
  * Clicking on highlightable elements can toggle their highlighting.
  * If they are not input elements, a simple click works.
@@ -1033,6 +917,7 @@ function setupDecoderToggle(margins, mode) {
     }
     toggle.href = 'javascript:toggleDecoder()';
 }
+exports.setupDecoderToggle = setupDecoderToggle;
 /**
  * Rotate to the next note visibility state.
  */
@@ -1041,6 +926,7 @@ function toggleDecoder() {
     setDecoderState(!visible);
     setupDecoderToggle(null);
 }
+exports.toggleDecoder = toggleDecoder;
 var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], guesses: [], time: null };
 ////////////////////////////////////////////////////////////////////////
 // User interface
@@ -1053,6 +939,7 @@ let checkStorage = null;
 function storageKey() {
     return window.location.origin + window.location.pathname;
 }
+exports.storageKey = storageKey;
 /**
  * If storage exists from a previous visit to this puzzle, offer to reload.
  */
@@ -1090,6 +977,7 @@ function checkLocalStorage() {
         }
     }
 }
+exports.checkLocalStorage = checkLocalStorage;
 /**
  * Globals for reload UI elements
  */
@@ -1242,6 +1130,7 @@ function saveLetterLocally(input) {
         }
     }
 }
+exports.saveLetterLocally = saveLetterLocally;
 /**
  * Update the saved words object
  * @param element an word-input element
@@ -1255,6 +1144,7 @@ function saveWordLocally(input) {
         }
     }
 }
+exports.saveWordLocally = saveWordLocally;
 /**
  * Update the saved notes object
  * @param element an note-input element
@@ -1268,6 +1158,7 @@ function saveNoteLocally(input) {
         }
     }
 }
+exports.saveNoteLocally = saveNoteLocally;
 /**
  * Update the saved checkmark object
  * @param element an element which might contain a checkmark
@@ -1281,6 +1172,7 @@ function saveCheckLocally(element, value) {
         }
     }
 }
+exports.saveCheckLocally = saveCheckLocally;
 /**
  * Update the saved containers objects
  * @param element an element which can move between containers
@@ -1295,6 +1187,7 @@ function saveContainerLocally(element, container) {
         }
     }
 }
+exports.saveContainerLocally = saveContainerLocally;
 /**
  * Update the saved positions object
  * @param element a moveable element which can free-move in its container
@@ -1309,6 +1202,7 @@ function savePositionLocally(element) {
         }
     }
 }
+exports.savePositionLocally = savePositionLocally;
 /**
  * Update the saved drawings object
  * @param element an element which might contain a drawn object
@@ -1329,6 +1223,7 @@ function saveStampingLocally(element) {
         }
     }
 }
+exports.saveStampingLocally = saveStampingLocally;
 /**
  * Update the saved highlights object
  * @param element a highlightable object
@@ -1342,6 +1237,7 @@ function saveHighlightLocally(element) {
         }
     }
 }
+exports.saveHighlightLocally = saveHighlightLocally;
 /**
  * Update the local cache with this vertex list.
  * @param vertexList A list of vertex global indeces
@@ -1359,6 +1255,7 @@ function saveStraightEdge(vertexList, add) {
     }
     saveCache();
 }
+exports.saveStraightEdge = saveStraightEdge;
 /**
  * Update the local cache with the full set of guesses for this puzzle
  * @param guesses An array of guesses, in time order
@@ -1367,6 +1264,7 @@ function saveGuessHistory(guesses) {
     localCache.guesses = guesses;
     saveCache();
 }
+exports.saveGuessHistory = saveGuessHistory;
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -1409,6 +1307,7 @@ function getGlobalIndex(elmt, suffix) {
     }
     return -1;
 }
+exports.getGlobalIndex = getGlobalIndex;
 /**
  * At page initialization, every element that can be cached gets an index attached to it.
  * Possibly more than one, if it can cache multiple traits.
@@ -1428,6 +1327,7 @@ function findGlobalIndex(cls, index, suffix) {
     }
     return null;
 }
+exports.findGlobalIndex = findGlobalIndex;
 /**
  * Create a dictionary, mapping global indeces to the corresponding elements
  * @param cls the class tag on all applicable elements
@@ -1444,6 +1344,7 @@ function mapGlobalIndeces(cls, suffix) {
     }
     return map;
 }
+exports.mapGlobalIndeces = mapGlobalIndeces;
 /**
  * Assign globalIndeces to every letter- or word- input field
  */
@@ -1453,6 +1354,7 @@ function indexAllInputFields() {
     inputs = document.getElementsByClassName('word-input');
     applyGlobalIndeces(inputs);
 }
+exports.indexAllInputFields = indexAllInputFields;
 /**
  * Assign globalIndeces to every note field
  */
@@ -1460,6 +1362,7 @@ function indexAllNoteFields() {
     const inputs = document.getElementsByClassName('note-input');
     applyGlobalIndeces(inputs);
 }
+exports.indexAllNoteFields = indexAllNoteFields;
 /**
  * Assign globalIndeces to every check mark
  */
@@ -1467,6 +1370,7 @@ function indexAllCheckFields() {
     const checks = document.getElementsByClassName('cross-off');
     applyGlobalIndeces(checks);
 }
+exports.indexAllCheckFields = indexAllCheckFields;
 /**
  * Assign globalIndeces to every moveable element and drop target
  */
@@ -1476,6 +1380,7 @@ function indexAllDragDropFields() {
     inputs = document.getElementsByClassName('drop-target');
     applyGlobalIndeces(inputs);
 }
+exports.indexAllDragDropFields = indexAllDragDropFields;
 /**
  * Assign globalIndeces to every stampable element
  */
@@ -1483,6 +1388,7 @@ function indexAllDrawableFields() {
     const inputs = document.getElementsByClassName('stampable');
     applyGlobalIndeces(inputs);
 }
+exports.indexAllDrawableFields = indexAllDrawableFields;
 /**
  * Assign globalIndeces to every highlightable element
  */
@@ -1490,6 +1396,7 @@ function indexAllHighlightableFields() {
     const inputs = document.getElementsByClassName('can-highlight');
     applyGlobalIndeces(inputs, 'ch');
 }
+exports.indexAllHighlightableFields = indexAllHighlightableFields;
 /**
  * Assign globalIndeces to every vertex
  */
@@ -1497,6 +1404,7 @@ function indexAllVertices() {
     const inputs = document.getElementsByClassName('vertex');
     applyGlobalIndeces(inputs, 'vx');
 }
+exports.indexAllVertices = indexAllVertices;
 ////////////////////////////////////////////////////////////////////////
 // Load from local storage
 //
@@ -1707,10 +1615,10 @@ function restoreGuesses(guesses) {
  * A limited list of meaningful puzzle statuses
  */
 exports.PuzzleStatus = {
-    Hidden: 'hidden', // A puzzle the player should not even see
-    Locked: 'locked', // A puzzle the player should not have a link to
-    Unlocked: 'unlocked', // A puzzle that the player can now reach
-    Loaded: 'loaded', // A puzzle which has been loaded, possibly triggering secondary storage
+    Hidden: 'hidden',
+    Locked: 'locked',
+    Unlocked: 'unlocked',
+    Loaded: 'loaded',
     Solved: 'solved', // A puzzle which is fully solved
 };
 /**
@@ -1736,6 +1644,7 @@ function updatePuzzleList(puzzle, status) {
     pList[puzzle] = status;
     localStorage.setItem(key, JSON.stringify(pList));
 }
+exports.updatePuzzleList = updatePuzzleList;
 /**
  * Lookup the status of a puzzle
  * @param puzzle The name of a puzzle
@@ -1759,6 +1668,7 @@ function getPuzzleStatus(puzzle, defaultStatus) {
     }
     return defaultStatus;
 }
+exports.getPuzzleStatus = getPuzzleStatus;
 /**
  * Return a list of puzzles we are tracking, which currently have the indicated status
  * @param status one of the valid status strings
@@ -1783,6 +1693,7 @@ function listPuzzlesOfStatus(status) {
     }
     return list;
 }
+exports.listPuzzlesOfStatus = listPuzzlesOfStatus;
 /**
  * Clear the list of which puzzles have been saved, unlocked, etc.
  */
@@ -1790,6 +1701,7 @@ function resetAllPuzzleStatus() {
     var key = getOtherFileHref('puzzle_list', 0);
     localStorage.setItem(key, JSON.stringify(null));
 }
+exports.resetAllPuzzleStatus = resetAllPuzzleStatus;
 /**
  * Clear any saved progress on this puzzle
  * @param puzzleFile a puzzle filename
@@ -1798,6 +1710,7 @@ function resetPuzzleProgress(puzzleFile) {
     var key = getOtherFileHref(puzzleFile, 0);
     localStorage.setItem(key, JSON.stringify(null));
 }
+exports.resetPuzzleProgress = resetPuzzleProgress;
 ////////////////////////////////////////////////////////////////////////
 // Utils for sharing data between puzzles
 //
@@ -1846,6 +1759,7 @@ function getCurFileName(no_extension = true) {
     }
     return name;
 }
+exports.getCurFileName = getCurFileName;
 // Convert the absolute href of the current window to a relative href
 // levels: 1=just this file, 2=parent folder + file, etc.
 function getRelFileHref(levels) {
@@ -2065,6 +1979,7 @@ function onLetterKeyDown(event) {
         }
     }
 }
+exports.onLetterKeyDown = onLetterKeyDown;
 /**
  * Does a typed character match the input rules?
  * @param input
@@ -2095,6 +2010,7 @@ function onLetterKeyUp(event) {
         inputChangeCallback(input, event.key);
     }
 }
+exports.onLetterKeyUp = onLetterKeyUp;
 /**
  * Process the end of a keystroke
  * @param event - A keyboard event
@@ -2155,6 +2071,7 @@ function onLetterKey(event) {
     afterInputUpdate(input, event.key);
     return false;
 }
+exports.onLetterKey = onLetterKey;
 /**
  * Re-scan for extractions
  * @param input The input which just changed
@@ -2217,6 +2134,7 @@ function afterInputUpdate(input, key) {
     }
     inputChangeCallback(input, key);
 }
+exports.afterInputUpdate = afterInputUpdate;
 /**
  * Extract contents of an extract-flagged input
  * @param input an input field
@@ -2529,6 +2447,7 @@ function onWordKey(event) {
     }
     saveWordLocally(input);
 }
+exports.onWordKey = onWordKey;
 /**
  * Update extractions that come from word input
  * @param extractedId The ID of an extraction area
@@ -2567,6 +2486,7 @@ function updateWordExtraction(extractedId) {
         ApplyExtraction(extraction, extracted, !partial);
     }
 }
+exports.updateWordExtraction = updateWordExtraction;
 /**
  * Extract a single letter from an input. Either using an absolute index, or else a word.letter index.
  * @param input User's input string
@@ -2601,6 +2521,7 @@ function extractWordIndex(input, index) {
     }
     return '_';
 }
+exports.extractWordIndex = extractWordIndex;
 /**
  * Callback when user has changed the text in a letter-input
  * @param event A keyboard event
@@ -2613,6 +2534,7 @@ function onLetterChange(event) {
     saveLetterLocally(input);
     inputChangeCallback(input, event.key);
 }
+exports.onLetterChange = onLetterChange;
 /**
  * Callback when user has changed the text in a word-input
  * @param event A keyboard event
@@ -2625,6 +2547,7 @@ function onWordChange(event) {
     inputChangeCallback(input, event.key);
     saveWordLocally(input);
 }
+exports.onWordChange = onWordChange;
 /**
  * Anytime any note changes, inform any custom callback
  * @param inp The affected input
@@ -2986,6 +2909,7 @@ function autoCompleteWord(input, list) {
     }
     return false; // no matches
 }
+exports.autoCompleteWord = autoCompleteWord;
 /*-----------------------------------------------------------
  * _textSetup.ts
  *-----------------------------------------------------------*/
@@ -3001,6 +2925,7 @@ function textSetup() {
     setupWordCells();
     indexAllInputFields();
 }
+exports.textSetup = textSetup;
 /**
  * Look for elements of class 'create-from-pattern'.
  * When found, use the pattern, as well as other inputs, to build out a sequence of text inputs inside that element.
@@ -3157,6 +3082,7 @@ function getLetterStyles(elmt, defLetter, defLiteral, defExtract) {
         'literal': literal
     };
 }
+exports.getLetterStyles = getLetterStyles;
 /**
  * Create a span block for a literal character, which can be a sibling of text input fields.
  * It should occupy the same space, although may not have the same decorations such as underline.
@@ -3498,6 +3424,7 @@ function setupSubways() {
         createSubway(subways[i]);
     }
 }
+exports.setupSubways = setupSubways;
 /**
  * Maximum of two numbers, or the second, if current is null
  * @param val A new value
@@ -3783,6 +3710,7 @@ function getAnchor(id_index, edge) {
 function positionFromStyle(elmt) {
     return { x: parseInt(elmt.style.left), y: parseInt(elmt.style.top) };
 }
+exports.positionFromStyle = positionFromStyle;
 // VOCABULARY
 // moveable: any object which can be clicked on to begin a move
 // drop-target: a container that can receive a (single) moveable element
@@ -3814,6 +3742,7 @@ function preprocessDragFunctions() {
         initFreeDropZorder(elem);
     }
 }
+exports.preprocessDragFunctions = preprocessDragFunctions;
 /**
  * Hook up the necessary mouse events to each moveable item
  * @param elem a moveable element
@@ -3863,6 +3792,7 @@ function initFreeDropZorder(container) {
         child.style.zIndex = String(z);
     }
 }
+exports.initFreeDropZorder = initFreeDropZorder;
 /**
  * The most recent object to be moved
  */
@@ -4138,6 +4068,7 @@ function quickMove(moveable, destination) {
         doDrop(destination);
     }
 }
+exports.quickMove = quickMove;
 /**
  * Move an object within a free-move container
  * @param moveable The object to move
@@ -4151,6 +4082,7 @@ function quickFreeMove(moveable, position) {
         toggleClass(moveable, 'placed', true);
     }
 }
+exports.quickFreeMove = quickFreeMove;
 /*-----------------------------------------------------------
  * _stampTools.ts
  *-----------------------------------------------------------*/
@@ -4263,6 +4195,7 @@ function preprocessStampObjects() {
         _firstTool = _stampTools[0];
     }
 }
+exports.preprocessStampObjects = preprocessStampObjects;
 let prevStampablePointer = null;
 function pointerDownInContainer(event) {
     if (!isPrimaryButton(event)) {
@@ -4424,6 +4357,7 @@ function getCurrentStampToolId() {
     var id = _selectedTool.id;
     return id || '';
 }
+exports.getCurrentStampToolId = getCurrentStampToolId;
 /**
  * A stampable element can be the eventual container of the stamp. (example: TD)
  * Or it can assign another element to be the stamp container, with the data-stamp-parent attribute.
@@ -4438,6 +4372,7 @@ function getStampParent(target) {
     }
     return target;
 }
+exports.getStampParent = getStampParent;
 /**
  * When drawing on a surface where something is already drawn. The first click
  * always erases the existing drawing.
@@ -4560,6 +4495,7 @@ function doStamp(target, tool) {
         fn(target);
     }
 }
+exports.doStamp = doStamp;
 let _dragDrawTool = null;
 let _lastDrawTool = null;
 /**
@@ -4653,6 +4589,7 @@ function positionFromCenter(elmt) {
     const rect = elmt.getBoundingClientRect();
     return new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
 }
+exports.positionFromCenter = positionFromCenter;
 /**
  * Find the square of the distance between a point and the mouse
  * @param elmt A position, in screen coordinates
@@ -4664,11 +4601,13 @@ function distance2Mouse(pos, evt) {
     const dy = pos.y - evt.y;
     return dx * dx + dy * dy;
 }
+exports.distance2Mouse = distance2Mouse;
 function distance2(pos, pos2) {
     const dx = pos.x - pos2.x;
     const dy = pos.y - pos2.y;
     return dx * dx + dy * dy;
 }
+exports.distance2 = distance2;
 // VOCABULARY
 // vertex: any point that can anchor a straight edge
 // straight-edge-area: the potential drag range
@@ -4693,6 +4632,7 @@ function preprocessRulerFunctions(mode, fill) {
     indexAllVertices();
     // TODO: make lines editable
 }
+exports.preprocessRulerFunctions = preprocessRulerFunctions;
 /**
  * Identified which type of selector is enabled for this page
  * @returns either 'straight-edge' or 'word-select'
@@ -4700,6 +4640,7 @@ function preprocessRulerFunctions(mode, fill) {
 function getStraightEdgeType() {
     return selector_class;
 }
+exports.getStraightEdgeType = getStraightEdgeType;
 /**
  * Hook up the necessary mouse events to each moveable item
  * @param elem a moveable element
@@ -4762,7 +4703,7 @@ function createPartialRulerData(range) {
         angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
         angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
-        evtPos: new DOMPoint(NaN, NaN), // stub
+        evtPos: new DOMPoint(NaN, NaN),
         evtPoint: svg.createSVGPoint(), // stub 
     };
     return data;
@@ -5446,6 +5387,7 @@ function createFromVertexList(vertexList) {
         completeStraightLine(ruler, vertexList, false /*no save while restoring*/);
     }
 }
+exports.createFromVertexList = createFromVertexList;
 function clearAllStraightEdges(id) {
     const svg = document.getElementById(id);
     if (!svg) {
@@ -5466,6 +5408,7 @@ function clearAllStraightEdges(id) {
     _straightEdgeVertices = [];
     _straightEdgeBuilder = null;
 }
+exports.clearAllStraightEdges = clearAllStraightEdges;
 function onEdgeHoverStart(evt) {
     const edge = evt.target;
 }
@@ -5520,7 +5463,7 @@ const safari20Details = {
     'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
-    'googleFonts': 'Architects+Daughter,Caveat', // no whitespace
+    'googleFonts': 'Architects+Daughter,Caveat',
     'links': [],
     'qr_folders': { 'https://www.puzzyl.net/23/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
@@ -5528,12 +5471,12 @@ const safari20Details = {
 };
 const safari21Details = {
     'title': 'Safari Labs',
-    'logo': './Images/GS24_banner.png', // PS21 logo.png',
+    'logo': './Images/GS24_banner.png',
     'icon': './Images/Plate_icon.png',
     'puzzleList': './menuu.html',
     'cssRoot': '../Css/',
     'fontCss': '../24/Css/Fonts21.css',
-    'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat', // no whitespace
+    'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',
     'links': [],
     'qr_folders': { 'https://www.puzzyl.net/24/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/' },
@@ -5546,7 +5489,7 @@ const safari24Details = {
     // 'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': '../24/Css/Fonts24.css',
-    'googleFonts': 'Goblin+One,Caveat', // no whitespace
+    'googleFonts': 'Goblin+One,Caveat',
     'links': [],
     // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
     //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
@@ -5559,7 +5502,7 @@ const safariDggDetails = {
     'puzzleList': './indexx.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
-    'googleFonts': 'Caveat,Righteous,Cormorant+Upright', // no whitespace
+    'googleFonts': 'Caveat,Righteous,Cormorant+Upright',
     'links': [],
     'qr_folders': { 'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/' },
@@ -5604,12 +5547,14 @@ function initSafariDetails(safariId) {
     safariDetails = pastSafaris[safariId];
     return safariDetails;
 }
+exports.initSafariDetails = initSafariDetails;
 /**
 * Return the details of this puzzle event
 */
 function getSafariDetails() {
     return safariDetails;
 }
+exports.getSafariDetails = getSafariDetails;
 /*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
@@ -5650,6 +5595,7 @@ function debugSetup() {
 function isDebug() {
     return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
 }
+exports.isDebug = isDebug;
 /**
  * Determines if the caller has specified <i>body-debug</i> in the URL,
  * or else if the puzzle explictly has set class='debug' on the body.
@@ -5658,6 +5604,7 @@ function isDebug() {
 function isBodyDebug() {
     return hasClass(document.getElementsByTagName('body')[0], 'debug');
 }
+exports.isBodyDebug = isBodyDebug;
 /**
  * Determines if this document is being loaded inside an iframe.
  * While any document could in theory be in an iframe, this library tags such pages with a url argument.
@@ -5666,6 +5613,7 @@ function isBodyDebug() {
 function isIFrame() {
     return urlArgs['iframe'] != undefined && urlArgs['iframe'] !== false;
 }
+exports.isIFrame = isIFrame;
 /**
  * Determines if this document's URL was tagged with ?print
  * This is intended to as an alternative way to get a print-look, other than CSS's @media print
@@ -5674,6 +5622,7 @@ function isIFrame() {
 function isPrint() {
     return urlArgs['print'] != undefined && urlArgs['print'] !== false;
 }
+exports.isPrint = isPrint;
 /**
  * Determines if this document's URL was tagged with ?icon
  * This is intended to as an alternative way to generate icons for each puzzle
@@ -5682,6 +5631,7 @@ function isPrint() {
 function isIcon() {
     return urlArgs['icon'] != undefined && urlArgs['icon'] !== false;
 }
+exports.isIcon = isIcon;
 /**
  * Special url arg to override any cached storage. Always restarts.
  * @returns true if this page's URL contains a restart argument (other than =false)
@@ -5689,6 +5639,7 @@ function isIcon() {
 function isRestart() {
     return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
 }
+exports.isRestart = isRestart;
 /**
  * Do we want to skip the UI that offers to reload?
  * @returns
@@ -5699,6 +5650,7 @@ function forceReload() {
     }
     return undefined;
 }
+exports.forceReload = forceReload;
 const print_as_color = { id: 'printAs', html: "<div style='color:#666;'>Print as <span style='color:#FF0000;'>c</span><span style='color:#538135;'>o</span><span style='color:#00B0F0;'>l</span><span style='color:#806000;'>o</span><span style='color:#7030A0;'>r</span>.</div>" };
 const print_as_grayscale = { id: 'printAs', text: "<div style='color:#666;'>Print as grayscale</div>" };
 /**
@@ -5874,8 +5826,7 @@ function boilerplate(bp) {
         }
         catch (ex) {
             const ctx = wrapContextError(ex);
-            // Rethrow in 1 second, to let the rest of the boilerplate finish
-            setTimeout(() => { throw ctx; }, 1000);
+            console.error(ctx); // Log, but then continue with the rest of the page
         }
     }
     if (bp.tableBuilder) {
@@ -6087,6 +6038,7 @@ function addLink(head, det) {
     }
     head.appendChild(link);
 }
+exports.addLink = addLink;
 const linkedCss = {};
 /**
  * Append a CSS link to the header
@@ -6107,6 +6059,7 @@ function linkCss(relPath, head) {
     cssToLoad++;
     head.appendChild(link);
 }
+exports.linkCss = linkCss;
 /**
  * Each CSS file that is delay-linked needs time to load.
  * Decrement the count after each one.
@@ -6245,9 +6198,11 @@ let _boiler = {};
 function theBoiler() {
     return _boiler;
 }
+exports.theBoiler = theBoiler;
 function testBoilerplate(bp) {
     boilerplate(bp);
 }
+exports.testBoilerplate = testBoilerplate;
 if (typeof window !== 'undefined') {
     window.onload = function () { boilerplate(pageBoiler()); }; // error if boiler still undefined
 }
@@ -6259,11 +6214,11 @@ if (typeof window !== 'undefined') {
  */
 const ResponseType = {
     Error: 0,
-    Correct: 1, // aka solved
-    Confirm: 2, // confirm an intermediate step
-    KeepGoing: 3, // a wrong guess that deserves a hint
-    Unlock: 4, // offer players a link to a hidden page
-    Load: 5, // load another page in a hidden iframe
+    Correct: 1,
+    Confirm: 2,
+    KeepGoing: 3,
+    Unlock: 4,
+    Load: 5,
     Show: 6, // cause another cell to show
     //    Save: 7,     // write a key/value directly to storage
 };
@@ -6287,19 +6242,19 @@ const no_match_response = "0";
  * Default response text, if the validation block only specifies a type
  */
 const default_responses = [
-    "Incorrect", // Error
-    "Correct!", // Correct
-    "Confirmed", // Confirmation
+    "Incorrect",
+    "Correct!",
+    "Confirmed",
     "Keep going", // Keep Going
 ];
 /**
  * img src= URLs for icons to further indicate whether guesses were correct or not
  */
 const response_img = [
-    "../Icons/X.png", // Error
-    "../Icons/Check.png", // Correct
-    "../Icons/Thumb.png", // Confirmation
-    "../Icons/Thinking.png", // Keep Going
+    "../Icons/X.png",
+    "../Icons/Check.png",
+    "../Icons/Thumb.png",
+    "../Icons/Thinking.png",
     "../Icons/Unlocked.png", // Unlock
 ];
 /**
@@ -6342,6 +6297,7 @@ function setupValidation() {
         }
     }
 }
+exports.setupValidation = setupValidation;
 function calculateTextExtents(src, value) {
     let fe = document.getElementById('fontExtents');
     if (!fe) {
@@ -6447,6 +6403,7 @@ function validateInputReady(btn, key) {
         horzScaleToFit(ext, value);
     }
 }
+exports.validateInputReady = validateInputReady;
 /**
  * Submit buttons can be associated with various constructs.
  * Extract an appropriate value to submit
@@ -6568,6 +6525,7 @@ function decodeAndValidate(gl) {
         console.error('Unrecognized validation field: ' + gl.field);
     }
 }
+exports.decodeAndValidate = decodeAndValidate;
 /**
  * Build a guess/response block, initialized with the guess
  * @param gl The user's guess info
@@ -6737,6 +6695,7 @@ function isContextError(err) {
     //return err instanceof ContextError;
     return err.name === 'ContextError';
 }
+exports.isContextError = isContextError;
 /**
  * Add additional information to a context error.
  * @param inner Another exception, which has just been caught.
@@ -6773,6 +6732,7 @@ function wrapContextError(inner, func, src) {
     makeBetterStack(ctxErr);
     return ctxErr;
 }
+exports.wrapContextError = wrapContextError;
 /**
  * Once we've added context to the exception, update the stack to reflect it
  */
@@ -6811,13 +6771,14 @@ function nodeSourceOffset(node) {
     }
     else {
         const tok = {
-            source: node.nodeValue || '', // for text elements, same as textContent
+            source: node.nodeValue || '',
             offset: 0,
             length: 1, // No need to span the whole
         };
         return tok;
     }
 }
+exports.nodeSourceOffset = nodeSourceOffset;
 /**
  * Recreate the source for a tag. Then pinpoint the offset of a desired attribute.
  * @param elmt An HTML tag
@@ -6852,6 +6813,7 @@ function elementSourceOffset(elmt, attr) {
     const tok = { source: str, offset: offset, length: length };
     return tok;
 }
+exports.elementSourceOffset = elementSourceOffset;
 /**
  * Instead of creating a source offset every time, anticipating an exception
  * that rarely gets thrown, instead pass a lambda.
@@ -6859,6 +6821,7 @@ function elementSourceOffset(elmt, attr) {
 function elementSourceOffseter(elmt, attr) {
     return () => { return elementSourceOffset(elmt, attr); };
 }
+exports.elementSourceOffseter = elementSourceOffseter;
 /**
  * A code error has no additional fields.
  * It just acknowledges that the bug is probably the code's fault, and not the raw inputs's.
@@ -7075,7 +7038,7 @@ var TrimMode;
 /**
  * When in trim mode, cloning text between elements will omit any sections that are pure whitespace.
  * Sections that include both text and whitespace will be kept in entirety.
- * @returns
+ * @returns One of three trim states, set anywhere in the current element heirarchy.
  */
 function getTrimMode() {
     for (let i = src_element_stack.length - 1; i >= 0; i--) {
@@ -7094,6 +7057,40 @@ function getTrimMode() {
     }
     return TrimMode.off;
 }
+exports.getTrimMode = getTrimMode;
+/**
+ * Throwing exceptions while building will hide large chunks of page.
+ * Instead, set nothrow on any build element (not normal elements) to disable rethrow at that level.
+ * In that case, the error will be logged, but then building will continue.
+ * FUTURE: set onthrow to the name of a local function, and onthrow will call that, passing the error
+ * @returns true if the current element expresses nothrow as either a class or attribute.
+ */
+function shouldThrow(ex, node1, node2, node3) {
+    // Inspect any passed-in nodes for throwing instructions.
+    const nodes = [node1, node2, node3, src_element_stack.length > 0 ? src_element_stack[src_element_stack.length - 1] : undefined];
+    for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+        if (!node || node.nodeType != Node.ELEMENT_NODE) {
+            continue;
+        }
+        const elmt = nodes[i]; // The first element that had a elmt
+        if (hasClass(elmt, 'nothrow') || elmt.getAttributeNS('', 'nothrow') !== null) {
+            console.error(ex);
+            return false;
+        }
+        const fn = elmt.getAttributeNS('', 'onthrow');
+        if (fn) {
+            const func = window[fn];
+            if (func) {
+                console.error(ex);
+                func(ex, elmt);
+                return false;
+            }
+        }
+    }
+    return true;
+}
+exports.shouldThrow = shouldThrow;
 /**
  * See if any parent element in the builder stack matches a lambda
  * @param fn a Lambda which takes an element and returns true for the desired condition
@@ -7112,6 +7109,7 @@ function getBuilderParentIf(fn) {
     }
     return null; // no parent satisfied lambda
 }
+exports.getBuilderParentIf = getBuilderParentIf;
 /**
  * See if any parent element, either in the builder stack, or src element tree, matches a lambda
  * @param fn a Lambda which takes an element and returns true for the desired condition
@@ -7130,6 +7128,7 @@ function getParentIf(elmt, fn) {
     }
     return null;
 }
+exports.getParentIf = getParentIf;
 /**
  * Is the current stack of building elements currently inside an SVG tag.
  * @returns returns true if inside an SVG, unless further inside an EMBEDDED_OBJECT.
@@ -7141,6 +7140,7 @@ function inSvgNamespace() {
     }
     return false;
 }
+exports.inSvgNamespace = inSvgNamespace;
 /**
  * See if we are inside an existing <svg> tag. Or multiple!
  * @param elmt Any element
@@ -7187,7 +7187,10 @@ function expandControlTags() {
             parent?.removeChild(src);
         }
         catch (ex) {
-            throw wrapContextError(ex, "expandControlTags", elementSourceOffset(src));
+            const ctxerr = wrapContextError(ex, "expandControlTags", elementSourceOffset(src));
+            if (shouldThrow(ctxerr, src)) {
+                throw ctxerr;
+            }
         }
     }
     initElementStack(null);
@@ -7197,6 +7200,7 @@ function expandControlTags() {
         fn();
     }
 }
+exports.expandControlTags = expandControlTags;
 /**
  * Concatenate one list onto another
  * @param list The list to modified
@@ -7207,6 +7211,7 @@ function pushRange(list, add) {
         list.push(add[i]);
     }
 }
+exports.pushRange = pushRange;
 /**
  * Append more than one child node to the end of a parent's child list
  * @param parent The parent node
@@ -7217,6 +7222,7 @@ function appendRange(parent, add) {
         parent.insertBefore(add[i], null);
     }
 }
+exports.appendRange = appendRange;
 /**
  * Clone every node inside a parent element.
  * Any occurence of {curly} braces is in fact a lookup.
@@ -7256,7 +7262,10 @@ function expandContents(src) {
                 }
             }
             catch (ex) {
-                throw wrapContextError(ex, "expandContents", elementSourceOffset(child_elmt));
+                const ctxerr = wrapContextError(ex, "expandContents", elementSourceOffset(child_elmt));
+                if (shouldThrow(ctxerr, child_elmt, src)) {
+                    throw ctxerr;
+                }
             }
         }
         else if (child.nodeType == Node.TEXT_NODE) {
@@ -7268,6 +7277,7 @@ function expandContents(src) {
     }
     return dest;
 }
+exports.expandContents = expandContents;
 /**
  * Some HTML elements and attributes are immediately acted upon by the DOM.
  * To delay that until after builds (especially <for> and <if>),
@@ -7291,6 +7301,7 @@ function normalizeName(name) {
     // Any other interior underscores are kept
     return name;
 }
+exports.normalizeName = normalizeName;
 const nameSpaces = {
     '': '',
     'svg': exports.svg_xmlns,
@@ -7349,7 +7360,10 @@ function cloneWithContext(elmt) {
             }
         }
         catch (ex) {
-            throw wrapContextError(ex, "cloneWithContext", nodeSourceOffset(child));
+            const ctxerr = wrapContextError(ex, "cloneWithContext", nodeSourceOffset(child));
+            if (shouldThrow(ctxerr, child, elmt)) {
+                throw ctxerr;
+            }
         }
     }
     popDestElement();
@@ -7373,6 +7387,7 @@ function cloneNode(node) {
 function theBoilerContext() {
     return theBoiler().builderLookup || {};
 }
+exports.theBoilerContext = theBoilerContext;
 const contextStack = [];
 /**
  * Get the current builder context.
@@ -7385,6 +7400,7 @@ function getBuilderContext() {
     }
     return contextStack[contextStack.length - 1];
 }
+exports.getBuilderContext = getBuilderContext;
 /**
  * Inject a builder context for testing purposes.
  * @param lookup Any object, or undefined to remove.
@@ -7393,6 +7409,7 @@ function testBuilderContext(lookup) {
     theBoiler().builderLookup = lookup;
     contextStack.splice(0, contextStack.length); // clear
 }
+exports.testBuilderContext = testBuilderContext;
 /**
  * Start a new top level builder context.
  * @param newContext If specified, this is the new context. If not, start from a clone of the current top context.
@@ -7405,6 +7422,7 @@ function pushBuilderContext(newContext) {
     contextStack.push(newContext);
     return getBuilderContext();
 }
+exports.pushBuilderContext = pushBuilderContext;
 /**
  * Pop the builder context stack.
  * @returns The new top-level builder context.
@@ -7413,6 +7431,7 @@ function popBuilderContext() {
     contextStack.pop();
     return getBuilderContext();
 }
+exports.popBuilderContext = popBuilderContext;
 /**
  * Try to look up a key in the current context level.
  * @param key A key name
@@ -7423,6 +7442,7 @@ function valueFromContext(key, maybe) {
     const context = getBuilderContext();
     return getKeyedChild(context, key, undefined, maybe);
 }
+exports.valueFromContext = valueFromContext;
 /**
  * Look up a value, according to the context path cached in an attribute
  * @param path A context path
@@ -7435,6 +7455,7 @@ function valueFromGlobalContext(path, maybe) {
     }
     return undefined;
 }
+exports.valueFromGlobalContext = valueFromGlobalContext;
 /**
  * Finish cloning an HTML element
  * @param src The element being cloned
@@ -7470,6 +7491,7 @@ function cloneAttributes(src, dest) {
         }
     }
 }
+exports.cloneAttributes = cloneAttributes;
 /**
  * Process a text node which may contain {curly} formatting.
  * @param text A text node
@@ -7484,6 +7506,7 @@ function cloneTextNode(text) {
     const node = document.createTextNode(cloned);
     return [node];
 }
+exports.cloneTextNode = cloneTextNode;
 /**
  * Process text which may contain {curly} formatting.
  * @param text Any text, including text inside attributes
@@ -7497,6 +7520,7 @@ function cloneText(str) {
     const cloned = complexAttribute(str, Math.max(trimMode, TrimMode.on));
     return '' + cloned;
 }
+exports.cloneText = cloneText;
 /**
  * Resolve an attribute, in situations where it can resolve to an object,
  * and not just text. If any portion is text, then the entire will concatenate
@@ -7526,7 +7550,7 @@ function complexAttribute(str, trim = TrimMode.off) {
         }
         else {
             try {
-                const complex = evaluateFormula(list[i].text);
+                const complex = evaluateFormula('{' + list[i].text + '}');
                 if (i == 0 && list.length == 1) {
                     return complex;
                 }
@@ -7539,6 +7563,7 @@ function complexAttribute(str, trim = TrimMode.off) {
     }
     return buffer;
 }
+exports.complexAttribute = complexAttribute;
 /**
  * Trim a string without taking non-breaking-spaces
  * @param str Any string
@@ -7605,9 +7630,9 @@ function tokenizeFormula(str) {
             if (tok.type != TokenType.unset) {
                 tokens.push(tok);
             } // push any token in progress
-            tokens.push(tok = { text: ch, type: TokenType.closeBracket, // push close bracket
+            tokens.push(tok = { text: ch, type: TokenType.closeBracket,
                 source: str, offset: i, length: 1 });
-            tok = { text: '', type: TokenType.unset, // reset next token
+            tok = { text: '', type: TokenType.unset,
                 source: str, offset: i + 1, length: 0 };
         }
         else if (!isInQuotes(stack) && !escape && (isBracketOperator(op) || isCloseBracket(op))) {
@@ -7616,12 +7641,12 @@ function tokenizeFormula(str) {
             if (tok.type != TokenType.unset) {
                 tokens.push(tok);
             } // push any token in progress
-            tokens.push(tok = { text: ch, type: type, // push open bracket
+            tokens.push(tok = { text: ch, type: type,
                 source: str, offset: i, length: 1 });
             if (type == TokenType.openBracket) {
                 stack.push(op.closeChar); // cache the pending close bracket
             }
-            tok = { text: '', type: TokenType.unset, // reset next token
+            tok = { text: '', type: TokenType.unset,
                 source: str, offset: i + 1, length: 0 };
         }
         else if (!isInQuotes(stack) && !escape && op !== null) {
@@ -7636,9 +7661,9 @@ function tokenizeFormula(str) {
             if (tok.type != TokenType.unset) {
                 tokens.push(tok);
             } // push any token in progress
-            tokens.push(tok = { text: ch, type: tt, // push operator (exact type TBD)
+            tokens.push(tok = { text: ch, type: tt,
                 source: str, offset: i, length: 1 });
-            tok = { text: '', type: TokenType.unset, // reset next token
+            tok = { text: '', type: TokenType.unset,
                 source: str, offset: i + 1, length: 0 };
         }
         else {
@@ -7696,6 +7721,7 @@ function tokenizeFormula(str) {
     }
     return tokens;
 }
+exports.tokenizeFormula = tokenizeFormula;
 function findCloseBracket(tokens, open) {
     const closes = [tokens[open]];
     for (let i = open + 1; i < tokens.length; i++) {
@@ -7819,15 +7845,26 @@ class FormulaNode {
         }
         else {
             result = this.value.text; // unless overridden below
+            let trimmed = simpleTrim(result);
+            const maybe = result && trimmed[trimmed.length - 1] == '?';
+            if (maybe) {
+                trimmed = trimmed.substring(0, trimmed.length - 1);
+                evalText = true;
+            }
             // Could be plain text (or a number) or a name in context
             if (evalText === true) {
-                const trimmed = simpleTrim(this.value.text);
                 const context = getBuilderContext();
                 if (trimmed in context) {
                     result = context[trimmed];
                 }
+                else if (maybe) {
+                    return ''; // Special case
+                }
                 else if (isIntegerRegex(trimmed)) {
                     result = parseInt(trimmed);
+                }
+                else if (this.bracket == '{') {
+                    throw new ContextError('Name lookup failed', this.span);
                 }
             }
         }
@@ -8013,6 +8050,7 @@ function treeifyFormula(tokens, bracket) {
     }
     throw new ContextError('Treeify reduced to an empty span', fullSpanTok);
 }
+exports.treeifyFormula = treeifyFormula;
 /**
  * Evaluate a formula
  * @param str A single formula. The bracketing {} are assumed.
@@ -8031,6 +8069,7 @@ function evaluateFormula(str) {
         throw wrapContextError(ex, 'evaluateFormula');
     }
 }
+exports.evaluateFormula = evaluateFormula;
 /**
  * Evaluate a single attribute of an HTML element
  * @param elmt The HTML element
@@ -8038,9 +8077,10 @@ function evaluateFormula(str) {
  * @param implicitFormula Whether the contents of the attribute require {} to indicate a formula
  * @param required Whether the attribute is required, in which case it will throw if not present.
  * Otherwise it would return undefined
+ * @param onerr What to return in the special case of an exception. If omitted, exceptions throw.
  * @returns Any data type
  */
-function evaluateAttribute(elmt, attr, implicitFormula, required) {
+function evaluateAttribute(elmt, attr, implicitFormula, required, onerr) {
     const val = elmt.getAttributeNS('', attr);
     if (!val) {
         if (required === false) { // true by default
@@ -8055,9 +8095,13 @@ function evaluateAttribute(elmt, attr, implicitFormula, required) {
         return complexAttribute(val);
     }
     catch (ex) {
+        if (onerr !== undefined) {
+            return onerr;
+        }
         throw wrapContextError(ex, undefined, elementSourceOffset(elmt, attr));
     }
 }
+exports.evaluateAttribute = evaluateAttribute;
 /* Context formula syntax has several components that need to play nicely with each other.
    Brackets:
      {} to start lookups
@@ -8116,6 +8160,7 @@ function makeFloat(a, tok) {
     }
     return f;
 }
+exports.makeFloat = makeFloat;
 /**
  * Convert any type to an integer, or throw in broken cases.
  * @param a Any data, but hopefully an int
@@ -8133,6 +8178,7 @@ function makeInt(a, tok) {
     }
     throw new ContextError('Not an integer: ' + a, tok);
 }
+exports.makeInt = makeInt;
 /**
  * Convert any type to string, or throw in broken cases.
  * @param a Any data, but hopefully string-friendly
@@ -8145,6 +8191,7 @@ function makeString(a, tok) {
     }
     return String(a);
 }
+exports.makeString = makeString;
 const minus = { raw: '-', unaryChar: '⁻', binaryChar: '−' }; // ambiguously unary or binary
 const concat = { raw: '&', precedence: 1, binaryOp: (a, b, aa, bb) => { return makeString(a, aa) + makeString(b, bb); }, evalLeft: true, evalRight: true };
 const entity = { raw: '@', precedence: 1, unaryOp: (a, aa) => { return deentify(a); }, evalRight: false };
@@ -8221,8 +8268,8 @@ const namedEntities = {
     'apos': '\'',
     'lt': '<',
     'gt': '>',
-    'lb': '{', // not the real name. It should be &lbrace;
-    'rb': '}', // not the real name. It should be &rbrace;
+    'lb': '{',
+    'rb': '}',
     'lbrace': '{',
     'rbrace': '}',
     'amp': '&',
@@ -8312,7 +8359,7 @@ function unescapeBraces(raw) {
             start = i + 2;
         }
         else {
-            str += str += '`'; // not a real escape
+            str += '`'; // not a real escape
             start = i + 1;
         }
     }
@@ -8420,6 +8467,7 @@ function tokenizeText(raw, implicitFormula) {
     }
     return list;
 }
+exports.tokenizeText = tokenizeText;
 /**
  * Test a key in the current context
  * @param key A key, initially from {curly} notation
@@ -8436,6 +8484,7 @@ function keyExistsInContext(key) {
         return false;
     }
 }
+exports.keyExistsInContext = keyExistsInContext;
 /**
  * Enable lookups into the context by key name.
  * Keys can be paths, separated by dots (.)
@@ -8451,6 +8500,7 @@ function textFromContext(key) {
     const obj = evaluateFormula(key);
     return makeString(obj);
 }
+exports.textFromContext = textFromContext;
 /**
  * Get a keyed child of a parent, where the key is either a dictionary key
  * or a list index or a string offset.
@@ -8575,6 +8625,7 @@ function startForLoop(src) {
     popBuilderContext();
     return dest;
 }
+exports.startForLoop = startForLoop;
 /**
  * Read an attribute of the <for> tag, looking for the iteration variable name.
  * @param src The <for> element
@@ -8684,16 +8735,22 @@ function startIfBlock(src, result) {
                 return [];
             }
         }
-        let exists = evaluateAttribute(src, 'exists', false, false);
-        let notex = evaluateAttribute(src, 'notex', false, false);
+        let exists = evaluateAttribute(src, 'exists', false, false, false);
+        let notex = evaluateAttribute(src, 'notex', false, false, true);
         let not = evaluateAttribute(src, 'not', true, false);
         let test = evaluateAttribute(src, 'test', true, false);
         if (isTag(src, 'else')) {
             result.passed = true;
         }
         else if (exists !== undefined || notex !== undefined) {
-            // Does this attribute exist at all?
-            result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
+            if (exists === false || notex === true) {
+                // Special case: calling one of these threw an exception, which is still informative
+                result.passed = notex ? true : exists;
+            }
+            else {
+                // Does this attribute exist at all?
+                result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
+            }
         }
         else if (not !== undefined) {
             result.passed = (not === 'false') || (not === '') || (not === null);
@@ -8760,13 +8817,17 @@ function startIfBlock(src, result) {
         }
     }
     catch (ex) {
-        throw wrapContextError(ex, 'startIfBlock', elementSourceOffset(src));
+        const ctxerr = wrapContextError(ex, 'startIfBlock', elementSourceOffset(src));
+        if (shouldThrow(ctxerr, src)) {
+            throw ctxerr;
+        }
     }
     if (result.passed) {
         return expandContents(src);
     }
     return [];
 }
+exports.startIfBlock = startIfBlock;
 /*-----------------------------------------------------------
  * _builderInput.ts
  *-----------------------------------------------------------*/
@@ -8895,6 +8956,7 @@ function startInputArea(src) {
     }
     return [span];
 }
+exports.startInputArea = startInputArea;
 /**
  * Replace a <use> tag with the contents of a <template>.
  * Along the way, push any attributes of the <use> tag onto the context.
@@ -8907,66 +8969,95 @@ function startInputArea(src) {
  */
 function useTemplate(node, tempId) {
     let dest = [];
-    // We need to build the values to push onto the context, without changing the current context.
-    // Do all the evaluations first, and cache them.
-    const passed_args = [];
-    for (let i = 0; i < node.attributes.length; i++) {
-        const attr = node.attributes[i].name;
-        const val = node.attributes[i].value;
-        const attri = attr.toLowerCase();
+    if (!tempId) {
+        tempId = node.getAttribute('template');
+        if (!tempId) {
+            throw new ContextError('<use> tag must specify a template attribute');
+        }
+    }
+    let template = null;
+    try {
+        template = getTemplate(tempId);
+        if (!template.content) {
+            throw new ContextError('Invalid template (no content): ' + tempId);
+        }
+    }
+    catch (ex) {
+        const ctxerr = wrapContextError(ex, 'useTemplate', elementSourceOffset(node, 'template'));
+        if (shouldThrow(ctxerr, node)) {
+            throw ctxerr;
+        }
+        template = null;
+    }
+    if (template) {
+        // We need to build the values to push onto the context, without changing the current context.
+        // Do all the evaluations first, and cache them.
+        const passed_args = [];
+        for (let i = 0; i < node.attributes.length; i++) {
+            const attr = node.attributes[i].name;
+            const val = node.attributes[i].value;
+            const attri = attr.toLowerCase();
+            try {
+                if (attri != 'template' && attri != 'class') {
+                    const arg = {
+                        attr: attr,
+                        raw: val,
+                        text: cloneText(val),
+                        any: complexAttribute(val),
+                    };
+                    passed_args.push(arg);
+                }
+            }
+            catch (ex) {
+                const ctxerr = wrapContextError(ex, 'useTemplate', elementSourceOffset(node, attr));
+                if (shouldThrow(ctxerr, node, template)) {
+                    throw ctxerr;
+                }
+            }
+        }
         try {
-            if (attri != 'template' && attri != 'class') {
-                const arg = {
-                    attr: attr,
-                    raw: val, // Store the context path, so it can also be referenced
-                    text: cloneText(val),
-                    any: complexAttribute(val),
-                };
-                passed_args.push(arg);
+            // Push a new context for inside the <use>.
+            // Each passed arg generates 3 usable context entries:
+            //  arg = 'text'          the attribute, evaluated as text
+            //  arg! = *any*          the attribute, evaluated as any
+            //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
+            const inner_context = pushBuilderContext();
+            for (let i = 0; i < passed_args.length; i++) {
+                const arg = passed_args[i];
+                inner_context[arg.attr] = arg.text;
+                inner_context[arg.attr + '!'] = arg.any;
+                inner_context[arg.attr + '$'] = arg.raw;
+            }
+            if (!tempId) {
+                tempId = node.getAttribute('template');
+            }
+            if (tempId) {
+                const template = getTemplate(tempId);
+                if (!template) {
+                    throw new ContextError('Template not found: ' + tempId, elementSourceOffset(node, 'template'));
+                }
+                if (!template.content) {
+                    throw new ContextError('Invalid template (no content): ' + tempId, elementSourceOffset(node, 'template'));
+                }
+                // The template doesn't have any child nodes. Its content must first be cloned.
+                const clone = template.content.cloneNode(true);
+                dest = expandContents(clone);
+            }
+            else {
+                dest = expandContents(node);
             }
         }
         catch (ex) {
-            throw wrapContextError(ex, 'useTemplate', elementSourceOffset(node, attr));
-        }
-    }
-    try {
-        // Push a new context for inside the <use>.
-        // Each passed arg generates 3 usable context entries:
-        //  arg = 'text'          the attribute, evaluated as text
-        //  arg! = *any*          the attribute, evaluated as any
-        //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
-        const inner_context = pushBuilderContext();
-        for (let i = 0; i < passed_args.length; i++) {
-            const arg = passed_args[i];
-            inner_context[arg.attr] = arg.text;
-            inner_context[arg.attr + '!'] = arg.any;
-            inner_context[arg.attr + '$'] = arg.raw;
-        }
-        if (!tempId) {
-            tempId = node.getAttribute('template');
-        }
-        if (tempId) {
-            const template = getTemplate(tempId);
-            if (!template) {
-                throw new ContextError('Template not found: ' + tempId, elementSourceOffset(node, 'template'));
+            const ctxerr = wrapContextError(ex, 'useTemplate', elementSourceOffset(node));
+            if (shouldThrow(ctxerr, node, template)) {
+                throw ctxerr;
             }
-            if (!template.content) {
-                throw new ContextError('Invalid template (no content): ' + tempId, elementSourceOffset(node, 'template'));
-            }
-            // The template doesn't have any child nodes. Its content must first be cloned.
-            const clone = template.content.cloneNode(true);
-            dest = expandContents(clone);
-        }
-        else {
-            dest = expandContents(node);
         }
         popBuilderContext();
     }
-    catch (ex) {
-        throw wrapContextError(ex, 'useTemplate', elementSourceOffset(node));
-    }
     return dest;
 }
+exports.useTemplate = useTemplate;
 /*-----------------------------------------------------------
  * _templates.ts
  *-----------------------------------------------------------*/
@@ -8987,8 +9078,9 @@ function getTemplate(tempId) {
             return template;
         }
     }
-    throw new Error('Unresolved template ID: ' + tempId);
+    throw new ContextError('Template not found: ' + tempId);
 }
+exports.getTemplate = getTemplate;
 const builtInTemplates = {
     paintByNumbers: paintByNumbersTemplate,
     paintByColorNumbers: paintByColorNumbersTemplate,
@@ -9005,6 +9097,7 @@ function builtInTemplate(tempId) {
         return builtInTemplates[tempId]();
     }
 }
+exports.builtInTemplate = builtInTemplate;
 ;
 /**
  * Create a standard pant-by-numbers template element.
@@ -9679,6 +9772,7 @@ function summarizePageLayout() {
     const pageRoot = pageLayoutRootNode();
     return summarizeLayout(pageRoot);
 }
+exports.summarizePageLayout = summarizePageLayout;
 /**
  * Bit flags for how two layout summaries might differ
  */
@@ -9791,6 +9885,7 @@ function diffSummarys(bef, aft) {
     }
     return diffs;
 }
+exports.diffSummarys = diffSummarys;
 function renderDiffs(diffs) {
     let diffRoot = document.getElementById('render-diffs');
     if (!diffRoot) {
@@ -9805,6 +9900,7 @@ function renderDiffs(diffs) {
         renderDiff(diffRoot, diff);
     }
 }
+exports.renderDiffs = renderDiffs;
 function renderDiff(diffRoot, diff) {
     if (!diff?.after?.bounds && !diff?.before?.bounds) {
         return; // Nowhere to show
