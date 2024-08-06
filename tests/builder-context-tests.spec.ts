@@ -55,6 +55,9 @@ test('tokenizeText', () => {
   // nested braces
   testTokenizeText('{pt.{x}}', ['pt.{x}'], [true]);
 
+  // maybe?
+  testTokenizeText('{maybe?}', ['maybe?'], [true]);
+
 });
 
 const tokenShorthand = {
@@ -137,6 +140,8 @@ test('tokenizeFormula', () => {
   // whitespace, both in words and numbers, and alone
   testTokenizeFormula('"word " &  (num + 2)', '",word ,", ,&,  ,(,num ,+, 2,)', '[t] . [t.#]');
 
+  // maybe?
+  testTokenizeFormula('maybe?', 'maybe?', 't');
 });
 
 /**
@@ -212,6 +217,8 @@ test('treeifyFormula', () => {
   // Note: 1st & in prefix is 2nd in infix
   expect(testTreeifyFormula("'My '&sentence&\"!!\"", '&,&,My ,sentence,!!')).toBeTruthy();
 
+  // maybe?
+  expect(testTreeifyFormula('maybe?', 'maybe?')).toBeTruthy();
 });
 
 function testEvaluateFormulaTree(raw:string, result:string) {
@@ -260,6 +267,9 @@ test('evaluateFormulaTree', () => {
   // Quotes
   testEvaluateFormulaTree("'My '&sentence&\"!!\"", 'My Unit tests are the best!!!');
 
+  // maybe?
+  testEvaluateFormulaTree("maybe?", '');
+  testEvaluateFormulaTree("num?", '1234');
 });
 
 function testEvaluateFormulaAny(raw:string, obj:any) {
@@ -306,6 +316,10 @@ test('evaluateFormulaAny', () => {
 
   // Implicit re-root variable
   testEvaluateFormulaAny("fonts.[zeroth]", 'bold');
+
+  // maybe?
+  testEvaluateFormulaAny("maybe?", '');
+  testEvaluateFormulaAny("num?", 1234);
 });
 
 function testComplexAttribute(raw:string, obj:any) {
@@ -339,4 +353,7 @@ test('complexAttribute', () => {
 
   // Object by name. But don't cast object to string
   testComplexAttribute("pt: (x={pt.x},y={pt.y})", "pt: (x=3,y=5)");
+
+  // maybe?
+  testComplexAttribute("{num? & maybe?}", '1234');
 });

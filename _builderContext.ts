@@ -492,13 +492,22 @@ export class FormulaNode {
     }
     else {
       result = this.value.text;  // unless overridden below
+      let trimmed = simpleTrim(result);
+
+      const maybe = result && trimmed[trimmed.length - 1] == '?';
+      if (maybe) {
+        trimmed = trimmed.substring(0, trimmed.length - 1);
+        evalText = true;
+      }
 
       // Could be plain text (or a number) or a name in context
       if (evalText === true) {
-        const trimmed = simpleTrim(this.value.text!);
         const context = getBuilderContext();
         if (trimmed in context) {
           result = context[trimmed];
+        }
+        else if (maybe) {
+          return '';  // Special case
         }
         else if (isIntegerRegex(trimmed)) {
           result = parseInt(trimmed);

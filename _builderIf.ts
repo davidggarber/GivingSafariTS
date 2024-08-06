@@ -1,4 +1,4 @@
-import { expandContents } from "./_builder";
+import { expandContents, shouldThrow } from "./_builder";
 import { evaluateAttribute, keyExistsInContext, makeFloat } from "./_builderContext";
 import { isTag } from "./_classUtil";
 import { ContextError, elementSourceOffset, elementSourceOffseter, wrapContextError } from "./_contextError";
@@ -125,7 +125,8 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
     }
   }
   catch (ex) {
-    throw wrapContextError(ex, 'startIfBlock', elementSourceOffset(src));
+    const ctxerr = wrapContextError(ex, 'startIfBlock', elementSourceOffset(src));
+    if (shouldThrow(ctxerr, src)) { throw ctxerr; }
   }
 
   if (result.passed) {

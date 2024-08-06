@@ -65,7 +65,7 @@
             <use template="echo" eval="{code}" expected="31415" comment=""></use>
             <use template="echo" eval="{code + 2}" expected="31417" comment=""></use>
             <use template="echo" eval="{name}" expected="Fred" comment="Simple string variable"></use>
-            <use template="echo" eval="{team.6}" expected="Velma" comment="Dot notation to index into a list. In this case, the 0th item"></use>
+            <use template="echo" eval="{team.0}" expected="Velma" comment="Dot notation to index into a list. In this case, the 0th item"></use>
             <use template="echo" eval="{2+3}" expected="5" comment="Simple addition"></use>
             <use template="echo" eval="{team.[third]}" expected="Shaggy" comment="Square brackets needed, because third is not a named member of team, but rather a variable for 2."></use>
             <use template="echo" eval="{team.:third}" expected="Shaggy" comment="[third] is converted to '2'. Then team.[2] is converted to team.2"></use>
@@ -103,7 +103,7 @@
       </div>
     </div>
 
-    <template id="echo">
+    <template id="echo" nothrow>
       <ttr>
         <ttd>
           <code onclick="selectCodeBlock(this, event)"><pre>{eval$}</pre></code>

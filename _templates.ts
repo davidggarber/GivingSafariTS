@@ -1,4 +1,5 @@
 import { linkCss } from "./_boilerplate";
+import { ContextError } from "./_contextError";
 import { getSafariDetails } from "./_events";
 
 /**
@@ -18,7 +19,7 @@ export function getTemplate(tempId:string) :HTMLTemplateElement {
       return template;
     }
   }
-  throw new Error('Unresolved template ID: ' + tempId);
+  throw new ContextError('Template not found: ' + tempId);
 }
 
 const builtInTemplates = {

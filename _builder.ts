@@ -217,7 +217,7 @@ export enum TrimMode {
 /**
  * When in trim mode, cloning text between elements will omit any sections that are pure whitespace.
  * Sections that include both text and whitespace will be kept in entirety.
- * @returns 
+ * @returns One of three trim states, set anywhere in the current element heirarchy.
  */
 export function getTrimMode():TrimMode {
   for (let i = src_element_stack.length - 1; i >= 0; i--) {
@@ -235,6 +235,39 @@ export function getTrimMode():TrimMode {
     }
   }
   return TrimMode.off;
+}
+
+/**
+ * Throwing exceptions while building will hide large chunks of page.
+ * Instead, set nothrow on any build element (not normal elements) to disable rethrow at that level.
+ * In that case, the error will be logged, but then building will continue.
+ * FUTURE: set onthrow to the name of a local function, and onthrow will call that, passing the error
+ * @returns true if the current element expresses nothrow as either a class or attribute.
+ */
+export function shouldThrow(ex:Error, node1?:Node, node2?:Node, node3?:Node):boolean {
+  // Inspect any passed-in nodes for throwing instructions.
+  const nodes = [node1, node2, node3, src_element_stack.length > 0 ? src_element_stack[src_element_stack.length - 1] : undefined];
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (!node || node.nodeType != Node.ELEMENT_NODE) {
+        continue;
+    }
+    
+    const elmt = nodes[i] as Element;  // The first element that had a elmt
+    if (hasClass(elmt, 'nothrow') || elmt.getAttributeNS('', 'nothrow') !== null) {
+      console.error(ex);
+      return false;
+    }
+    const fn = elmt.getAttributeNS('', 'onthrow');
+    if (fn) {
+      const func = window[fn];
+      if (func) {
+        func(ex, elmt);
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 /**
@@ -340,7 +373,8 @@ export function expandControlTags() {
       parent?.removeChild(src);
     }
     catch (ex) {
-      throw wrapContextError(ex, "expandControlTags", elementSourceOffset(src));
+      const ctxerr = wrapContextError(ex, "expandControlTags", elementSourceOffset(src));
+      if (shouldThrow(ctxerr, src)) { throw ctxerr; }
     }
   }
   initElementStack(null);
@@ -414,7 +448,8 @@ export function expandContents(src:HTMLElement):Node[] {
         }
       }
       catch (ex) {
-        throw wrapContextError(ex, "expandContents", elementSourceOffset(child_elmt));
+        const ctxerr = wrapContextError(ex, "expandContents", elementSourceOffset(child_elmt));
+        if (shouldThrow(ctxerr, child_elmt, src)) { throw ctxerr; }
       }
     }
     else if (child.nodeType == Node.TEXT_NODE) {
@@ -513,7 +548,8 @@ function cloneWithContext(elmt:HTMLElement):Element {
       }
     }
     catch (ex) {
-      throw wrapContextError(ex, "cloneWithContext", nodeSourceOffset(child));
+      const ctxerr = wrapContextError(ex, "cloneWithContext", nodeSourceOffset(child));
+      if (shouldThrow(ctxerr, child, elmt)) { throw ctxerr; }
     }
     
   }
