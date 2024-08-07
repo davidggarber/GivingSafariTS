@@ -1,270 +1,268 @@
-<p>Buider HTML is loosely inspired by React or ASP.<br>It defines the data first.<br>Then the HTML supports special tags for loops and conditionals,<br>and the text and attributes support lookups into the data.  </p>
-<h1 id="data-initialization">Data initialization:</h1>
-<p>In the script block of the page, add two values to the boilerplate:</p>
-<pre><code>const boiler = {
-  ...
-  &#39;reactiveBuilder&#39;: true,  // required
-  &#39;lookup&#39;: {        // free-form, for example...
-    magic: 123,
-    line: { start: {x:1, y:2}, end: {x:3, y:4} },
-    fonts: [ &#39;bold&#39;, &#39;italic&#39; ],
-    grid: [
-      [1, 2, 3],
-      [4, 5, 6]
-    ]
-  }
-};
-</code></pre>
-<h1 id="data-lookup">Data lookup:</h1>
-<p>In HTML text or attribute values, use curly-brace syntax to inject named values:</p>
-<p>Examples in text:</p>
-<table>
-<thead>
-<tr>
-<th>Example</th>
-<th>Generated</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>{magic}</code></td>
-<td>123</td>
-<td></td>
-</tr>
-<tr>
-<td><code>{line.end.x}</code></td>
-<td>3</td>
-<td></td>
-</tr>
-<tr>
-<td><code>{grid.0.1}</code></td>
-<td>2</td>
-<td><em>note that .0 and .1 are indeces</em></td>
-</tr>
-</tbody></table>
-<p>Examples in attributes:</p>
-<table>
-<thead>
-<tr>
-<th>Example</th>
-<th>Generated</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>&lt;div id=&quot;{magic}&quot; class=&quot;{fonts.0} {fonts.1}&quot;&gt;</code></td>
-<td><div id="123" class="bold italic"></td>
-<td></td>
-</tr>
-<tr>
-<td><code>&lt;img_ src_=&quot;{fonts.0}Icon.png&quot;&gt;</code></td>
-<td>&lt;img src=&quot;boldIcon.png&quot;&gt;</td>
-<td>There is a special rule for tags and attributes suffixed with _ <br> when you need to avoid the pre-processed tags/attributes being acted upon by the DOM.</td>
-</tr>
-<tr>
-<td><code>{grid.[line.start.x].[line.start.y]}</code></td>
-<td>5  (same as {grid.1.2})</td>
-<td>Parameterized lookups allow one lookup to be used to name the child of another. <br> Any nested pair of <strong>[brackets]</strong> restarts the lookup context at the root.</td>
-</tr>
-</tbody></table>
-<h1 id="for-loops">&lt;for&gt; Loops:</h1>
-<p>Use the new <strong>&lt;for&gt;</strong> tag to loop over a set of values,<br>cloning and re-evaluating the contents of the loop for each.  </p>
-<p>The targets of loops are implicitly lookups, so the {curly} syntax is not needed.<br>As they expand, new nested values are dynamically added to the lookup table, to reflect the loop state.  </p>
-<p>There are several variant syntaxes of &lt;for&gt; loop, differentiated by the first attribute, which names the iterator.
-Within the body of the &lt;for&gt; tags, new temporary lookup values are available, based on the iterator names.</p>
-<table>
-<thead>
-<tr>
-<th>List type</th>
-<th>Syntax</th>
-<th>Generates</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Each</strong> element in a list</td>
-<td><code>&lt;for each=&quot;font&quot; in=&quot;fonts&quot;&gt;{font#}:{font} &lt;/for&gt;</code></td>
-<td>0:bold 1:italic</td>
-<td><code>{font}</code> is the element <br> <code>{font#}</code> is the index (starting at 0)</td>
-</tr>
-<tr>
-<td><strong>Key</strong>s in an object</td>
-<td><code>&lt;for key=&quot;a&quot; in=&quot;line.end&quot;&gt;{a#}:{a}={a!} &lt;/for&gt;</code></td>
-<td>0:x=3 1:y=4</td>
-<td><code>{a}</code> is the key <br> <code>{a!}</code> is the value <br> <code>{a#}</code> is the index</td>
-</tr>
-<tr>
-<td><strong>Char</strong>acters in text</td>
-<td><code>&lt;for char=&quot;ch&quot; in=&quot;fonts.0&quot;&gt;{ch} &lt;/for&gt;</code> <br> <code>&lt;for char=&quot;ch&quot; in=&quot;other&quot;&gt;{ch} &lt;/for&gt;</code></td>
-<td>b o l d <br> o t h e r</td>
-<td>Note that the <code>in=&quot;value&quot;</code> can be a literal.</td>
-</tr>
-<tr>
-<td><strong>Word</strong>s in text</td>
-<td><code>&lt;for char=&quot;w&quot; in=&quot;Hello World!&quot;&gt;{w}-{w}&lt;/for&gt;</code></td>
-<td>Hello-HelloWorld!-World!</td>
-<td>A word is really anything delimited by spaces.</td>
-</tr>
-<tr>
-<td><strong>Range</strong>s of values</td>
-<td><code>&lt;for range=&quot;i&quot; from=&quot;1&quot; to=&quot;3&quot;&gt;{i}&lt;/for&gt;</code> <br> <code>&lt;for range=&quot;i&quot; from=&quot;1&quot; until=&quot;3&quot;&gt;{i}&lt;/for&gt;</code> <br> <code>&lt;for range=&quot;i&quot; from=&quot;5&quot; to=&quot;0&quot; step=&quot;-2&quot;&gt;{i}&lt;/for&gt;</code> <br> <code>&lt;for range=&quot;i&quot; length=&quot;fonts&quot;&gt;{fonts.[i]} &lt;/for&gt;</code></td>
-<td>123 <br> 12 <br> 531 <br> bold italic</td>
-<td><code>from=&quot;&quot;</code>   specifies the start value (default 0) <br> <code>to=&quot;&quot;</code> specifies the last value (inclusive) <br> <code>until=&quot;&quot;</code> specifies a stop value (exclusive) <br> <code>length=&quot;&quot;</code> is equivalent to until=length-of-list <br> <code>step=&quot;&quot;</code> specifies a step value, if not 1</td>
-</tr>
-<tr>
-<td></td>
-<td><code>&lt;for range=&quot;row&quot; from=&quot;0&quot; to=&quot;1&quot;&gt;&lt;for range=&quot;col&quot; from=&quot;0&quot; to=&quot;2&quot;&gt;{grid.[row].[col]}&lt;/for&gt;,&lt;/for&gt;</code></td>
-<td>123,456</td>
-<td>Use ranges in compound lookups</td>
-</tr>
-</tbody></table>
-<h1 id="if-conditionals">&lt;if&gt; conditionals</h1>
-<p>Use the new <strong>&lt;if&gt;</strong> tag to check a lookup against various states.<br>The checked values are implicitly lookups, so the {curly} syntax is not needed.<br>No new temporary values are generated by ifs.  </p>
-<p>Note: there is no else syntax. Instead, concatenate multiple ifs.
-As such, be careful not to nest, unless intended.</p>
-<table>
-<thead>
-<tr>
-<th>Example</th>
-<th>Generates</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>&lt;if test=&quot;magic&quot; eq=&quot;123&quot;&gt;Magic!&lt;/if&gt;</code> <br> <code>&lt;if test=&quot;magic&quot; ne=&quot;123&quot;&gt;Lame.&lt;/if&gt;</code></td>
-<td>Magic!</td>
-</tr>
-<tr>
-<td><code>&lt;if test=&quot;magic&quot; ge=&quot;100&quot;&gt;Big!</code> <br> <code>&lt;if test=&quot;magic&quot; ge=&quot;120&quot;&gt;Bigger!&lt;/if&gt;</code> <br> <code>&lt;/if&gt;</code></td>
-<td>Big!Bigger!</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>Attributes</th>
-<th>Operations</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>eq=&quot;x&quot;</code></td>
-<td>Equals &quot;x&quot; <em>(always case-sensitive)</em></td>
-</tr>
-<tr>
-<td><code>ne=&quot; &quot;</code></td>
-<td>Not-equals a space</td>
-</tr>
-<tr>
-<td><code>gt=&quot;0&quot;</code></td>
-<td>Greater than 0</td>
-</tr>
-<tr>
-<td><code>lt=&quot;10&quot;</code></td>
-<td>Less than 10</td>
-</tr>
-<tr>
-<td><code>ge=&quot;0&quot;</code></td>
-<td>Greater than or equals 0</td>
-</tr>
-<tr>
-<td><code>le=&quot;9&quot;</code></td>
-<td>Less than or equals 9</td>
-</tr>
-<tr>
-<td><code>in=&quot;super&quot;</code></td>
-<td>Test value is IN (a substring of) &quot;super&quot;</td>
-</tr>
-<tr>
-<td><code>ni=&quot;super&quot;</code></td>
-<td>Test value is NOT IN (not a substring of) &quot;super&quot;</td>
-</tr>
-<tr>
-<td><em>default</em></td>
-<td>If no evaluation is specified, the tested value is checked for boolean true</td>
-</tr>
-</tbody></table>
-<p><em>There is no NOT modifier. Instead, use the converse operator.</em><br><em>Nor are there AND or OR modifiers. Consider secondary lookup tables.</em>  </p>
-<h2 id="incompatibility-with-tables">Incompatibility with Tables:</h2>
-<p>It is tempting to use loops inside &lt;table&gt; tags.<br>However, the DOM will likely refactor them if found inside a &lt;table&gt; but not inside a &lt;td&gt;.</p>
-<p>Some options include: suffix syntax, table CSS, or grid CSS</p>
-<table>
-<thead>
-<tr>
-<th>sufix_ syntax</th>
-<th>Table CSS</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>&lt;table_&gt;</code> <br>&nbsp;&nbsp;<code>&lt;for ...&gt;</code> <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;tr_&gt;...&lt;/tr_&gt;</code> <br>&nbsp;&nbsp;<code>&lt;/for&gt;</code> <br> <code>&lt;/table_&gt;</code></td>
-<td><code>&lt;div style=&quot;display:table&quot;&gt;</code> <br>&nbsp;&nbsp;<code>&lt;for ...&gt;</code> <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;div style=&quot;display:table-row&quot;&gt;...&lt;/div&gt;</code> <br>&nbsp;&nbsp;<code>&lt;/for&gt;</code> <br> <code>&lt;/div&gt;</code></td>
-</tr>
-</tbody></table>
-<h1 id="text-input-shortcuts">Text input shortcuts</h1>
-<p>The builder defines several custom tags</p>
-<table>
-<thead>
-<tr>
-<th>Tag</th>
-<th>Creates</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>&lt;letter&gt;</code></td>
-<td>An input area for a single letter.</td>
-</tr>
-<tr>
-<td><code>&lt;letters&gt;</code></td>
-<td>An input area for a couple letters.</td>
-</tr>
-<tr>
-<td><code>&lt;word&gt;</code></td>
-<td>An input area for short text, no line wrap.</td>
-</tr>
-<tr>
-<td><code>&lt;literal&gt;</code></td>
-<td>Literal text, visually similar to a user-input letter.</td>
-</tr>
-<tr>
-<td><code>&lt;number&gt;</code></td>
-<td>An input area for a single digit.</td>
-</tr>
-<tr>
-<td><code>&lt;pattern&gt;</code></td>
-<td>Generates a sequence of <letter> and <literal> tags, details below.</td>
-</tr>
-</tbody></table>
-<h2 id="pattern-syntax">Pattern syntax</h2>
-<table>
-<thead>
-<tr>
-<th>Attribute</th>
-<th>Creates</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>&lt;pattern pattern=&quot;5&quot;&gt;&gt;</code></td>
-<td>Creates 5 letter inputs in a row</td>
-</tr>
-<tr>
-<td><code>&lt;pattern pattern=&quot;2 3&quot;&gt;</code></td>
-<td>Creates 5 letter inputs, with a space gap after the 2nd</td>
-</tr>
-<tr>
-<td><code>&lt;pattern pattern=&quot;3-3-4&quot;&gt;</code></td>
-<td>Creates 10 letter inputs with dash separators, in this case, like a phone number pattern</td>
-</tr>
-<tr>
-<td><code>&lt;pattern pattern=&quot;5&quot; extract=&quot;3&quot;&gt;</code></td>
-<td>5 letters, where the 3rd is treated as an extract element. <br>It will be colored differently, and if possible, hooked up to an #extracted element.</td>
-</tr>
-<tr>
-<td><code>&lt;pattern pattern=&quot;5&quot; extract=&quot;2 4&quot;&gt;</code></td>
-<td>5 letters, where the 2nd and 4th are both treated as extract elements. <br>All extracts on the page are assumed to read in book-reading order.</td>
-</tr>
-<tr>
-<td><code>&lt;pattern pattern=&quot;5&quot; numbers=&quot;2=5 4=1&quot;&gt;</code></td>
-<td>5 letters, where the 2nd is the 5th letter of an extraction, and the 4th letter here is the 1st letter of an extraction.</td>
-</tr>
-</tbody></table>
-<h2 id="letter-styles">Letter styles</h2>
-<p>By default, letters are underlined and extracted letters are shaded gray. Literals are neither.
-Any of these can be customized (details pending).</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Docs',
+        'title': 'Builder',
+        'paperSize': 'ledger',
+        'orientation': 'landscape',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true,
+        'lookup': {
+          size: 20,
+          color: 'red',
+          voted: true,
+          ducks: ['Huey', 'Duey', 'Louie'],
+          pt: {x:4, y:6},
+
+          inputTags: [
+            ['letter', 'letter', 'A small input for a single character'],
+            ['letters', 'letters', "Input for a couple of characters, when that's meant to be ambiguous"],
+            ['number', 'letters', 'Like <letter>, but restricted to numbers'],
+            ['numbers', 'letters', 'Like <letters>'],
+            ['word', 'word', 'A wider input, suitable for a word or phrase'],
+            ['literal', 'letters', 'Places fixed text amidst letter inputs. Useful for punctuation.'],
+            ['pattern', 'pattern', 'Generates multiple <letter> inputs, with variable extraction.']
+          ],
+          controlTags: [
+            [['for'], 'Generates copies of the contents of this element in a parameterized loop'],
+            [['if','elseif','else'], 'Either includes or omits the contents of this element, depending on conditions'],
+            [['use'], 'Like a function call. Replaces this element with the contents of a <template>.'],
+          ],
+        }
+      };
+
+      function onthrow(err, elmt) {
+        alert(err);
+      }
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      .tall-rows th, .tall-rows td {
+        padding: 3px;
+      }
+
+      .tight p, .tight ul {
+        margin:0px;
+      }
+
+      .bigbold {
+        font-size: larger;
+        font-weight: bold;
+      }
+
+      .error {
+        background-color: #c00;
+        color: white;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body id="Builder">
+    <div id="pageBody">
+      <div id="left-side">
+
+        <h2>Dynamically built pages</h2>
+        <p>
+          While you can build full puzzle pages from scratch, without dynamic elements,
+          many puzzles benefit from programatic construction.
+        </p>
+        <p>
+          It can help to separate the puzzle structure from the page layout. 
+          Especially given that page layout in HTML can be very verbose.
+        </p>
+        <p>
+          Furthermore, many puzzles have repeating components, such as a table or grid.
+          Coding all of those elements individually and consistently invites subtle errors,
+          either as typos when authoring, or as incomplete edits that missed a row.
+        </p>
+        <p>
+          There is now a set of tool to enable two chunks of functionality.
+        </p>  
+        <ul>
+          <li>An extended set of new HTML elements. 
+            Some focused on standardizing text inputs. 
+            Others for dynamic page construction.</li>
+          <li>Access to variables defined in javascript, 
+            which can be be injected into text and elements.</li>
+        </ul>
+        <p>
+          To enable all of these features, set <span class="bigbold">reactiveBuilder:true</span>
+          in the <a href="boiler.html">boiler</a> script.
+        </p>
+        move all of the puzzle elements into one element
+          If you specify <b>reactiveBuilder</b> in the boiler, 
+          you can define ranges of the page that will be parsed and rebuilt based 
+          on a set of HTML-extended elements and text injection.
+        </p>
+
+        <h3>Content Elements</h3>
+
+        <p>There is a growing list of new elements which inject useful puzzle controls. Especially text input.</p>
+        <build>
+          <ttable class="tall-rows">
+            <for each="inp" in="inputTags">
+              <ttr>
+                <tth><a href="{inp.1}.html">&lt;{inp.0}&gt;</a></tth>
+                <ttd>&mdash; {inp.2}</ttd>
+              </ttr>
+            </for>
+          </ttable>
+        </build>
+
+        <h3>Dynamic HTML</h3>
+
+        <p>Sometimes, you want to have some HTML generate lots more. To that end&hellip;</p>
+        <build>
+          <ttable class="tall-rows">
+            <for each="inp" in="controlTags">
+              <ttr>
+                <tth>
+                  <for each="tag" in="inp.0">
+                    <a href="{inp.0.0}.html">&lt;{tag}&gt;</a>
+                  </for>
+                </tth>
+                <ttd>&mdash; {inp.1}</ttd>
+              </ttr>
+            </for>
+          </ttable>
+        </build>
+
+      </div>
+
+
+      <div id="right-side">
+
+        <h3>Text Lookup and Injection</h3>
+        <p>First, declare a set of variables in javascript, as part of the <a href="boiler.html">boiler</a> script.</p>
+<code><pre>
+&lt;script&gt;
+    const boiler = {
+        &hellip;
+        <span class="bigbold">reactiveBuilder</span>: true,
+        <span class="bigbold">lookup</span>: {  // the following are examples
+            size: 20,
+            color: 'red',
+            voted: true,
+            ducks: ['Huey', 'Duey', 'Louie'],
+            pt: {x:4, y:6},
+        }
+    };
+&lt;/script&gt;
+</pre></code>
+
+        <build>
+          <p>
+            Then ensure that you are using at least one of the extended builder elements.
+            When in doubt, wrap any relevant HTML inside 
+            <code style="width:initial">&lt;build&gt; &hellip; &lt;/build&gt;</code> tags.
+          </p>
+
+          <p>
+            Then use curly braces <span class="bigbold">`{`}</span> in any text context. 
+            They will re-evaluate their contents programatically.
+          </p>
+          <p style="position: relative;">
+            For example:
+            <code style="width:initial">&lt;span style='color:`{color`};font-size:`{size`}pt'&gt;Code `{color`} `{size`}&lt;/span&gt;</code> 
+          </p>
+          <div style="position: relative; height: 24pt;">
+            would look like:
+            <div style="position:relative; left:1.2in; top:-16pt; width: 2in; border: solid 1px gray; padding: 3px;" >
+              <span sstyle='color:{color};font-size:{size}pt'>Code {color} {size}</span>
+            </div>
+          </div>
+        </build>
+
+
+        <h3>Global Variables</h3>
+        <p>Initially, all the values specified in <span class="bigbold">lookup</span> 
+          are variables that can be looked up and injected.
+        </p>
+        <p>That includes exploring and manipulating those values, such as 
+          <code style="width:initial">{pt.x}</code> or even <code style="width:initial">{pt.x + 2}</code>.
+          <br>See <a href="formulas.html">formulas</a> for in-depth documentation.
+        </p>
+        
+        <h3>Local Scope Variables</h3>
+        <p>Inside the dynamic HTML control elements (listed at left), additional variables are created.</p>
+        <table>
+          <tr>
+            <th style="width:1in; vertical-align: top;">
+              <a href="for.html">&lt;for&gt;</a>
+            </th>
+            <td class="tight">
+              <p>Creates iterating variables that are available to the contents. 
+                <br>The name is declared in the element, such as 
+                <code style="width:initial">&lt;for <span class="bigbold">each='duck'</span> in='{ducks}'&gt;</code>
+              </p>
+              <ul>
+                <li><code style="width:initial">{duck}</code> &mdash; the name of each duck</li>
+                <li><code style="width:initial">{duck#}</code> &mdash; a counter of the progress through the list, starting at 0</li>
+              </ul>
+              <p>Or when iterating through an object, such as 
+                <code style="width:initial">&lt;for <span class="bigbold">key='axis'</span> in='{pt}'&gt;</code>
+              </p>
+              <ul>
+                <li><code style="width:initial">{axis}</code> &mdash; the name of each axis key</li>
+                <li><code style="width:initial">{axis!}</code> &mdash; the value of each axis, which could also be 
+                  <code style="width:initial">{pt.[axis]}</code>
+                </li>
+                <li><code style="width:initial">{axis#}</code> &mdash; is still a counter</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <th style="width:1in; vertical-align: top;">
+              <a href="use.html">&lt;use&gt;</a>
+            </th>
+            <td class="tight">
+              <p>Creates arguments, which can be employed in the &lt;template&gt;s they call. 
+                <br>Any number of arguments can be declared in the &lt;use&gt; tag, such as 
+                <code style="width:initial">&lt;use template="review" <span class="bigbold">name='Bob' vote='{voted}'</span>&gt;</code>
+                Within the template&hellip;
+              </p>
+              <ul>
+                <li><code style="width:initial">{vote}</code> &mdash; will be 'true' (text)</li>
+                <li><code style="width:initial">{vote!}</code> &mdash; will be True (boolean)</li>
+                <li><code style="width:initial">{vote$}</code> &mdash; will be '{voted}', in case that's interesting</li>
+                <li><code style="width:initial">{name}</code>, <code style="width:initial">{name!}</code>,
+                  <code style="width:initial">{name$}</code> &mdash; will all be 'Bob'</li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+        
+
+            <br>
+          </li>
+        </p>
+
+
+      </div>
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)"><nobr>{value}</nobr></code>
+    </template>
+
+    <template id="taglink">
+      <if exists="dest?">
+        <a href="{dest}"><code onclick="selectCodeBlock(this, event)">{value}</code></a>
+      </if>
+      <else>
+        <code onclick="selectCodeBlock(this, event)">{value}</code>
+      </else>
+    </template>
+
+  </body>
+</html>

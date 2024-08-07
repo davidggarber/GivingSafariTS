@@ -26,7 +26,7 @@ td {
 #left-side {
   width:7.5in;
 }
-#left-side tr:nth-child(odd) td {
+.alternating-rows tr:nth-child(odd) td {
   background-color: #ffffdd;
 }
 
@@ -50,6 +50,6 @@ code pre {
   margin: 4px;
 }
 
-.alternating-rows tr:nth-child(even) td {
+.alternating-even tr:nth-child(even) td {
   background-color: #ffffdd;
 }

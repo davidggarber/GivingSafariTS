@@ -64,7 +64,7 @@
             Each &lt;letter&gt; is repeated 6 times, in 3 pairs.<br>
             There are also 4 simple text characters: smart quotes, a space, and a dash.
           </p>
-          <table>
+          <table class="alternating-rows">
             <tr>
               <td><use template="tag" value="letter"></use> with default 
                 <use template="code" value="data-input-style='underline'"></use></td>
@@ -85,7 +85,7 @@
             Text literals can be incorporated into the input area as peers.<br>
             Each row has an apostrophe and exclamation mark.
           </p>
-          <table>
+          <table class="alternating-rows">
             <tr>
               <td>By default, literals render like filled inputs.</td>
               <td><use template="lit"></use></td>
@@ -120,7 +120,7 @@
             or <input id="letter-grid-discover" type="checkbox" onclick="toggleGrid2d(this)"><use template="code" value="class='letter-grid-discover'"></use> on a container,<br>
             and <use template="code" value="class='letter-cell-block'"></use> on each row.
           </p>
-          <table id="grid-sample" class='letter-grid-2d'>
+          <table id="grid-sample" class='letter-grid-2d alternating-rows'>
             <tr>
               <td>
                 <use template="tag" value="letter data-input-style='grid'"></use>
@@ -142,7 +142,7 @@
             Each &lt;letter&gt; is repeated 6 times, in 3 pairs.<br>
             There are also 4 simple text characters: smart quotes, a space, and a dash.
           </p>
-          <table>
+          <table class="alternating-rows">
             <tr>
               <td>Some letters are <use template="tag" value="letter extract"></use><br>
                 Default: normal inputs are underlines. Extracts are boxes.</td>
