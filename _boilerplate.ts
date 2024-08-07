@@ -9,7 +9,7 @@ import { EdgeTypes, preprocessRulerFunctions } from "./_straightEdge";
 import { TableDetails, constructTable } from "./_tableBuilder";
 import { setupSubways } from "./_subway";
 import { setupValidation } from "./_confirmation";
-import { expandControlTags } from "./_builder";
+import { expandControlTags, hasBuilderElements } from "./_builder";
 import { LinkDetails, getSafariDetails, initSafariDetails } from "./_events";
 import { diffSummarys, LayoutSummary, renderDiffs, summarizePageLayout } from "./_testUtils";
 import { wrapContextError } from "./_contextError";
@@ -149,7 +149,7 @@ export type BoilerPlateData = {
     validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
     reactiveBuilder?: boolean;  // invoke the new reactive builder
-    builderLookup?: object;  // a dictionary of javascript objects and/or pointers
+    lookup?: object;  // a dictionary of json data available to builder code
     postBuild?: () => void;  // invoked after the builder is done
     preSetup?: () => void;
     postSetup?: () => void;
@@ -363,6 +363,10 @@ function boilerplate(bp: BoilerPlateData) {
             const ctx = wrapContextError(ex);
             console.error(ctx);  // Log, but then continue with the rest of the page
         }
+    }
+    else if (hasBuilderElements(document)) {
+        const warn = Error('WARNING: this page contains <build>-style elements.\nSet boiler.reactiveBuilder:true to engage.');
+        console.error(warn);
     }
 
     if (bp.tableBuilder) {

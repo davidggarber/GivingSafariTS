@@ -5,8 +5,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
-exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = void 0;
+exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -5829,6 +5829,10 @@ function boilerplate(bp) {
             console.error(ctx); // Log, but then continue with the rest of the page
         }
     }
+    else if (hasBuilderElements(document)) {
+        const warn = Error('WARNING: this page contains <build>-style elements.\nSet boiler.reactiveBuilder:true to engage.');
+        console.error(warn);
+    }
     if (bp.tableBuilder) {
         constructTable(bp.tableBuilder);
     }
@@ -6849,7 +6853,7 @@ exports.CodeError = CodeError;
  *        const boiler = {
  *          ...
  *          'reactiveBuilder': true,  // required
- *          'builderLookup': {        // free-form, for example...
+ *          'lookup': {               // free-form, for example...
  *            magic: 123,
  *            line: { start: {x:1, y:2}, end: {x:3, y:4} },
  *            fonts: [ 'bold', 'italic' ],
@@ -6871,9 +6875,9 @@ exports.CodeError = CodeError;
  *      <div id="{magic}" class="{fonts.0} {fonts.1}">
  *                          =>  <div id="123" class="bold italic">
  *
-*    There is a special rule for tags and attributes prefixed with _
+*    There is a special rule for tags and attributes prefixed with _, or starting with a double-letter
  *    when you need to avoid the pre-processed tags/attributes being acted upon by the DOM.
- *      <_img _src="{fonts.0}Icon.png">
+ *      <iimg ssrc="{fonts.0}Icon.png">
  *                          =>  <img src="boldIcon.png">
  *
  *   Parameterized lookups allow one lookup to be used to name the child of another.
@@ -6968,17 +6972,17 @@ exports.CodeError = CodeError;
  *
  *  Loops and Tables:
  *    It is tempting to use loops inside <table> tags.
- *    However, the DOM will likely refactor them if found inside a <table> but not inside <td>.
+ *    However, the DOM will refactor them if found inside a <table> but not inside <td>.
  *
- *    Two options: _prefix and CSS
- *      <_table>
+ *    Two options: _prefix (or pprefix) and CSS
+ *      <ttable>
  *        <for ...>
- *          <_tr>
- *            <if eq ...><_th></_th></if>
- *            <if ne ...><_td></_td></if>
- *          </_tr>
+ *          <ttr>
+ *            <if eq ...><tth></tth></if>
+ *            <if ne ...><ttd></ttd></if>
+ *          </ttr>
  *        </for>
- *      </_table>
+ *      </ttable>
  *
  *      <div style="display:table">
  *        <for ...>
@@ -6990,10 +6994,11 @@ exports.CodeError = CodeError;
  *      </div>
  */
 const builder_tags = [
-    'build', 'use', 'for', 'if', 'else', 'elseif', 'xml'
+    'build', 'use', 'for', 'if', 'else', 'elseif'
 ];
 function firstBuilderElement() {
-    for (const t of builder_tags) {
+    const btags = builder_tags.concat(exports.inputAreaTagNames);
+    for (const t of btags) {
         const tags = document.getElementsByTagName(t);
         for (let i = 0; i < tags.length; i++) {
             toggleClass(tags[i], '_builder_control_', true);
@@ -7008,6 +7013,21 @@ function firstBuilderElement() {
     }
     return first;
 }
+/**
+ * Does this document contain any builder elements?
+ * @param doc An HTML document
+ * @returns true if any of our custom tags are present.
+ * NOTE: Does not detect {curlies} in plain text or plain elements.
+ */
+function hasBuilderElements(doc) {
+    const btags = builder_tags.concat(exports.inputAreaTagNames);
+    for (let i = 0; i < btags.length; i++) {
+        if (doc.getElementsByTagName(builder_tags[i]).length > 0) {
+            return true;
+        }
+    }
+}
+exports.hasBuilderElements = hasBuilderElements;
 let src_element_stack = [];
 let dest_element_stack = [];
 function initElementStack(elmt) {
@@ -7169,7 +7189,7 @@ function expandControlTags() {
             }
             else {
                 ifResult.index = 0; // Reset
-                if (isTag(src, 'build') || isTag(src, 'xml')) {
+                if (isTag(src, 'build')) {
                     dest = expandContents(src);
                 }
                 else if (isTag(src, 'for')) {
@@ -7382,16 +7402,16 @@ function cloneNode(node) {
  *-----------------------------------------------------------*/
 /**
  * The root context for all builder functions
- * @returns the builderLookup object on the boiler.
+ * @returns the lookup object on the boiler.
  */
 function theBoilerContext() {
-    return theBoiler().builderLookup || {};
+    return theBoiler().lookup || {};
 }
 exports.theBoilerContext = theBoilerContext;
 const contextStack = [];
 /**
  * Get the current builder context.
- * If needed, initialized from boilerplate.builderLookup
+ * If needed, initialized from boilerplate.lookup
  * @returns The top context on the stack.
  */
 function getBuilderContext() {
@@ -7406,7 +7426,7 @@ exports.getBuilderContext = getBuilderContext;
  * @param lookup Any object, or undefined to remove.
  */
 function testBuilderContext(lookup) {
-    theBoiler().builderLookup = lookup;
+    theBoiler().lookup = lookup;
     contextStack.splice(0, contextStack.length); // clear
 }
 exports.testBuilderContext = testBuilderContext;

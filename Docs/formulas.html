@@ -15,7 +15,7 @@
         'abilities': {
         },
         'reactiveBuilder': true,
-        'builderLookup': {
+        'lookup': {
           code: 1234,
           third: 2,  // lists are 0-indexed
           name: 'Fred',
@@ -23,8 +23,6 @@
           team: ['Velma', 'Daphne', 'Shaggy', 'Scooby'],
           pt: {x:4, y:6},
           obj: {inner: {value:'nested', Fred:'Flintstone'}},
-
-          codename: '"code" & ' + "'name'",  // used where I can't write this explicitly inside an attribute
         }
       };
 
@@ -48,7 +46,7 @@
         padding: 6px;
       }
 
-      #Letter #right-side code {
+      #Formulas #right-side code {
         display: inline-block;
         width: initial;
       }
@@ -70,7 +68,7 @@
       }
     </style>
   </head>
-  <body id="Letter">
+  <body id="Formulas">
     <div id="pageBody">
       <div id="left-side">
 
@@ -84,7 +82,7 @@
             </ttr>
             <use template="echo" eval="plaintext" expected="plaintext" comment="plain text can be passed as an argument"></use>
             <use template="echo" eval="sentence" expected="sentence" comment="arguments that happen to look like variable names can still be plain text"></use>
-            <use template="echo" eval="{sentence}" expected="For those about to rock, we salute you!" comment="use `{curly braces`} to lookup values in the 'builderLookup' data"></use>
+            <use template="echo" eval="{sentence}" expected="For those about to rock, we salute you!" comment="use `{curly braces`} to lookup values in the 'lookup' data"></use>
             <use template="echo" eval="hello, {name}" expected="hello, Fred" comment="Mix plaintext and lookups in `{curly braces`}."></use>
             <use template="echo" eval="hello `{name`}" expected="hello `{name`}" comment="Use ` to escape operators and brackets"></use>
             <use template="echo" eval="{code}" expected="1234" comment="Values can be many data types. Strings, numeric, boolean, ..."></use>
@@ -99,10 +97,10 @@
           </ttable>
         </build>
 
-        <h3>builderLookup used by all examples on this page</h3>
+        <h3>lookup used by all examples on this page</h3>
 
 <code onclick="selectCodeBlock(this, event)"><pre>
-  'builderLookup': {
+  'lookup': {
     code: 1234,
     third: 2,   // lists are 0-indexed
     name: 'Fred',

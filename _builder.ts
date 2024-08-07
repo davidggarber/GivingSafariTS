@@ -21,7 +21,7 @@ import { svg_xmlns } from "./_tableBuilder";
  *        const boiler = {
  *          ...
  *          'reactiveBuilder': true,  // required
- *          'builderLookup': {        // free-form, for example...
+ *          'lookup': {               // free-form, for example...
  *            magic: 123,
  *            line: { start: {x:1, y:2}, end: {x:3, y:4} },
  *            fonts: [ 'bold', 'italic' ],
@@ -43,9 +43,9 @@ import { svg_xmlns } from "./_tableBuilder";
  *      <div id="{magic}" class="{fonts.0} {fonts.1}">
  *                          =>  <div id="123" class="bold italic">
  * 
-*    There is a special rule for tags and attributes prefixed with _
+*    There is a special rule for tags and attributes prefixed with _, or starting with a double-letter
  *    when you need to avoid the pre-processed tags/attributes being acted upon by the DOM.
- *      <_img _src="{fonts.0}Icon.png">
+ *      <iimg ssrc="{fonts.0}Icon.png">
  *                          =>  <img src="boldIcon.png">
  * 
  *   Parameterized lookups allow one lookup to be used to name the child of another.
@@ -140,17 +140,17 @@ import { svg_xmlns } from "./_tableBuilder";
  * 
  *  Loops and Tables:
  *    It is tempting to use loops inside <table> tags.
- *    However, the DOM will likely refactor them if found inside a <table> but not inside <td>.
+ *    However, the DOM will refactor them if found inside a <table> but not inside <td>.
  *    
- *    Two options: _prefix and CSS
- *      <_table>
+ *    Two options: _prefix (or pprefix) and CSS
+ *      <ttable>
  *        <for ...>
- *          <_tr>
- *            <if eq ...><_th></_th></if>
- *            <if ne ...><_td></_td></if>
- *          </_tr>
+ *          <ttr>
+ *            <if eq ...><tth></tth></if>
+ *            <if ne ...><ttd></ttd></if>
+ *          </ttr>
  *        </for>
- *      </_table>
+ *      </ttable>
  * 
  *      <div style="display:table">
  *        <for ...>
@@ -164,14 +164,16 @@ import { svg_xmlns } from "./_tableBuilder";
 
 
 const builder_tags = [
-  'build', 'use', 'for', 'if', 'else', 'elseif', 'xml'
+  'build', 'use', 'for', 'if', 'else', 'elseif'
 ];
+
 function firstBuilderElement():HTMLElement|null {
-  for (const t of builder_tags) {
+  const btags = builder_tags.concat(inputAreaTagNames);
+  for (const t of btags) {
     const tags = document.getElementsByTagName(t);
     for (let i=0; i < tags.length; i++) {
       toggleClass(tags[i], '_builder_control_', true);
-    }  
+    }
   }
   const builds = document.getElementsByClassName('_builder_control_');
   if (builds.length == 0)
@@ -181,6 +183,21 @@ function firstBuilderElement():HTMLElement|null {
     toggleClass(builds[i], '_builder_control_', false);
   }
   return first as HTMLElement;
+}
+
+/**
+ * Does this document contain any builder elements?
+ * @param doc An HTML document
+ * @returns true if any of our custom tags are present.
+ * NOTE: Does not detect {curlies} in plain text or plain elements.
+ */
+export function hasBuilderElements(doc:Document) {
+  const btags = builder_tags.concat(inputAreaTagNames);
+  for (let i = 0; i < btags.length; i++) {
+    if (doc.getElementsByTagName(builder_tags[i]).length > 0) {
+      return true;
+    }
+  }
 }
 
 let src_element_stack:Element[] = [];
@@ -356,7 +373,7 @@ export function expandControlTags() {
       else {
         ifResult.index = 0;  // Reset
 
-        if (isTag(src, 'build') || isTag(src, 'xml')) {
+        if (isTag(src, 'build')) {
           dest = expandContents(src);
         }
         else if (isTag(src, 'for')) {

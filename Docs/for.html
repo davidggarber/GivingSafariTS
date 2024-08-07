@@ -15,7 +15,7 @@
         'abilities': {
         },
         'reactiveBuilder': true,
-        'builderLookup': {
+        'lookup': {
           types: [
             { type: 'each', var: 'item', in: 'in', src: '{list}' }, 
             { type: 'key', var: 'k', in: 'in', src: '{obj}' }, 
@@ -117,7 +117,7 @@
         <p>The examples at right are based on these sample entries in the boiler javascript object.</p>
         <code onclick="selectCodeBlock(this, event)"><pre>
 const boiler = {
-  'builderLookup': {
+  'lookup': {
     sentence: 'Help docs',
     line: { 
       start: {x:1, y:2}, 

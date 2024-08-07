@@ -4,17 +4,17 @@ import { SourceOffset, ContextError, wrapContextError, CodeError, elementSourceO
 
 /**
  * The root context for all builder functions
- * @returns the builderLookup object on the boiler.
+ * @returns the lookup object on the boiler.
  */
 export function theBoilerContext() {
-  return theBoiler().builderLookup || {};
+  return theBoiler().lookup || {};
 }
 
 const contextStack:object[] = [];
 
 /**
  * Get the current builder context.
- * If needed, initialized from boilerplate.builderLookup
+ * If needed, initialized from boilerplate.lookup
  * @returns The top context on the stack.
  */
 export function getBuilderContext():object {
@@ -29,7 +29,7 @@ export function getBuilderContext():object {
  * @param lookup Any object, or undefined to remove.
  */
 export function testBuilderContext(lookup?:object) {
-  theBoiler().builderLookup = lookup;
+  theBoiler().lookup = lookup;
   contextStack.splice(0, contextStack.length);  // clear
 }
 
