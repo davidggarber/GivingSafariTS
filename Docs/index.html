@@ -13,10 +13,14 @@
         'reactiveBuilder': true,
         'builderLookup': {
           groups: [
+            { heading: 'Getting started',
+              pages: ['boilerplate'] },
+            { heading: 'Injecting Data',
+              pages: ['lookup', 'formulas'] },
             { heading: 'Control Flow',
-              pages: ['for', 'if', 'use'] },
+              tags: ['for', 'if', 'use'] },
             { heading: 'Text Input',
-              pages: ['letter', 'letters', 'pattern', 'word'] },
+              tags: ['letter', 'letters', 'pattern', 'word'] },
           ],
         },        
       };
@@ -34,15 +38,29 @@
   <body id="Index">
     <div id="pageBody">
       <img id="big-logo" src="Images/logo.jpg">
-      <for each="group" in="{groups}">
-        <use template="group" title="{group.heading}" pages="{group.pages}"></use>
+      <for each="group" in="{groups}" nothrow>
+        <if exists="group.pages">
+          <use template="pageGroup" title="{group.heading}" pages="{group.pages}"></use>
+        </if>
+        <elseif exists="group.tags">
+          <use template="tagGroup" title="{group.heading}" pages="{group.tags}"></use>
+        </if>
       </for>
     </div>
 
-    <template id="group">
+    <template id="pageGroup">
       <h2>{title}</h2>
       <ul>
-        <for each="page" in="{pages}">
+        <for each="page" in="{pages!}">
+          <li><a href="{page}.html"><code>{page}</code></a></li>
+        </for>
+      </ul>
+    </template>
+
+    <template id="tagGroup">
+      <h2>{title}</h2>
+      <ul>
+        <for each="page" in="{pages!}">
           <li><a href="{page}.html"><code>&lt;{page}&gt;</code></a></li>
         </for>
       </ul>

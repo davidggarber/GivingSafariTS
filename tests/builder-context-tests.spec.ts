@@ -52,6 +52,9 @@ test('tokenizeText', () => {
   // escaped escapes and real braces
   testTokenizeText('``{num}', ['`','num'], [false,true]);
 
+  // entities don't apply outside formulas
+  testTokenizeText('at@at;', ['at@at;'], [false]);
+
   // nested braces
   testTokenizeText('{pt.{x}}', ['pt.{x}'], [true]);
 
@@ -133,6 +136,9 @@ test('tokenizeFormula', () => {
 
   // escaped brackets
   testTokenizeFormula('"`(abc`)"&\'`[def`]\'', '",(abc),",&,\',[def],\'', '[t].[t]');
+
+  // entities in formulas and in literals
+  testTokenizeFormula('"test@at;"&@at;', '",test@at;,",&,@,at;', '[t].!t');
 
   // brackets and operators in quotes
   testTokenizeFormula('"(abc)"&\'[d"e+f]\'', '",(abc),",&,\',[d"e+f],\'', '[t].[t]');
@@ -217,6 +223,9 @@ test('treeifyFormula', () => {
   // Note: 1st & in prefix is 2nd in infix
   expect(testTreeifyFormula("'My '&sentence&\"!!\"", '&,&,My ,sentence,!!')).toBeTruthy();
 
+  // entities in formulas and in literals
+  expect(testTreeifyFormula('"test@at;"&@at;', '&,test@at;,@,at;')).toBeTruthy();
+
   // maybe?
   expect(testTreeifyFormula('maybe?', 'maybe?')).toBeTruthy();
 });
@@ -224,10 +233,11 @@ test('treeifyFormula', () => {
 function testEvaluateFormulaTree(raw:string, result:string) {
   const tokens = tokenizeFormula(raw);
   const tree = treeifyFormula(tokens);
-  expect('' + tree.evaluate(true)).toEqual(result);
+  expect(raw + '= ' + tree.evaluate(true)).toEqual(raw + '= ' + result);
 }
 
 test('evaluateFormulaTree', () => {
+
   // Simple string
   testEvaluateFormulaTree("hello", 'hello');
 
@@ -267,6 +277,15 @@ test('evaluateFormulaTree', () => {
   // Quotes
   testEvaluateFormulaTree("'My '&sentence&\"!!\"", 'My Unit tests are the best!!!');
 
+  // Entities in formulas
+  testEvaluateFormulaTree("'@' & @quot;", '@"');
+
+  // Entities in text literals
+  testEvaluateFormulaTree("'@at;@quot;'", '@"');
+
+  // Numeric entities
+  testEvaluateFormulaTree("@33;&@x33;&@#33;&@#x33;", '!3!3');
+
   // maybe?
   testEvaluateFormulaTree("maybe?", '');
   testEvaluateFormulaTree("num?", '1234');
@@ -274,12 +293,13 @@ test('evaluateFormulaTree', () => {
 
 function testEvaluateFormulaAny(raw:string, obj:any) {
   const result = evaluateFormula(raw);
-  console.log(typeof(result));
+  // console.log(typeof(result));
   expect(typeof(result)).toEqual(typeof(obj));
   expect(result).toEqual(obj);
 }
 
 test('evaluateFormulaAny', () => {
+
   // Simple string
   testEvaluateFormulaAny("hello", 'hello');
 
@@ -306,6 +326,12 @@ test('evaluateFormulaAny', () => {
 
   // Quotes
   testEvaluateFormulaAny("'My '&sentence&\"!!\"", 'My Unit tests are the best!!!');
+
+  // Entities
+  testEvaluateFormulaAny('"code" & @quot; & ' + "'name'", 'code"name');
+
+  // NCRs in text and formulas
+  testEvaluateFormulaAny('"@#33;" & @(5*7)', '!#');
 
   // Concatenate text with numbers
   testEvaluateFormulaAny("'three' & pt.x", 'three3');

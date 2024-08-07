@@ -8,7 +8,7 @@
     <script>
       const boiler = {
         'safari': 'Docs',
-        'title': 'Builder Context',
+        'title': 'Formulas',
         'paperSize': 'ledger',
         'orientation': 'landscape',
         'textInput': true,
@@ -16,7 +16,7 @@
         },
         'reactiveBuilder': true,
         'builderLookup': {
-          code: 31415,
+          code: 1234,
           third: 2,  // lists are 0-indexed
           name: 'Fred',
           sentence: 'For those about to rock, we salute you!',
@@ -73,6 +73,7 @@
   <body id="Letter">
     <div id="pageBody">
       <div id="left-side">
+
         <h2>Test cases</h2>
         <build>
           <ttable class="test-case-table">
@@ -86,8 +87,8 @@
             <use template="echo" eval="{sentence}" expected="For those about to rock, we salute you!" comment="use `{curly braces`} to lookup values in the 'builderLookup' data"></use>
             <use template="echo" eval="hello, {name}" expected="hello, Fred" comment="Mix plaintext and lookups in `{curly braces`}."></use>
             <use template="echo" eval="hello `{name`}" expected="hello `{name`}" comment="Use ` to escape operators and brackets"></use>
-            <use template="echo" eval="{code}" expected="31415" comment="Values can be many data types. Strings, numeric, boolean, ..."></use>
-            <use template="echo" eval="{code + 2}" expected="31417" comment="Lookups can also employ formulas"></use>
+            <use template="echo" eval="{code}" expected="1234" comment="Values can be many data types. Strings, numeric, boolean, ..."></use>
+            <use template="echo" eval="{code + 2}" expected="1236" comment="Lookups can also employ formulas"></use>
             <use template="echo" eval="{obj.inner.value}" expected="nested" comment="Dot notation to step into objects"></use>
             <use template="echo" eval="{team.0}" expected="Velma" comment="Values can also be lists. Dot notation is also the index. Not [brackets]"></use>
             <use template="echo" eval="{team.:third}" expected="Shaggy" comment=": prefix clarifies that 'third' is its own variable, rather than a named key within 'team'"></use>
@@ -102,7 +103,7 @@
 
 <code onclick="selectCodeBlock(this, event)"><pre>
   'builderLookup': {
-    code: 31415,
+    code: 1234,
     third: 2,   // lists are 0-indexed
     name: 'Fred',
     sentence: 'For those about to rock, we salute you!',
@@ -115,7 +116,7 @@
 
 
       <div id="right-side">
-        <h3>Opators</h3>
+        <h3>Operators</h3>
         <p>All supported operators are listed below, in decreasing precedence groups.</p>
         <table id="operators" class="test-case-table">
           <tr>
@@ -132,7 +133,7 @@
           </tr>
           <tr>
             <td class="big">&quot;&thinsp;&quot;&nbsp;&nbsp;&apos;&thinsp;&apos;</td> <td>Text literals</td>
-            <td><use template="code" value='{codename}'></use></td> <td><build>{"code" & 'name'}</build></td>
+            <td><use template="code" value='"code" & @apos;name@apos;'></use></td> <td><build>{"code" & 'name'}</build></td>
           </tr>
           <tr>
             <td class="big">(&nbsp;)</td> <td>Parentheses</td>
@@ -152,7 +153,7 @@
           </tr>
           <tr>
             <td class="big">-</td> <td>Negative, if used as a unary operator before a number</td>
-            <td><use template="code" value="-code"></use></td> <td>-31415</td>
+            <td><use template="code" value="-code"></use></td> <td><build>{-code}</build></td>
           </tr>
           <tr>
             <td class="big">* / \ %</td> <td>Multiplication, division, integer division, modulo</td>
@@ -160,7 +161,11 @@
           </tr>
           <tr>
             <td class="big">+ -</td> <td>Addition, subtraction (when used between numbers)</td>
-            <td><use template="code" value="10 -5 + -2"></use></td> <td><build>{10 -5 + -2}</build></td>
+            <td><use template="code" value="10 - 5 + -2"></use></td> <td><build>{10 - 5 + -2}</build></td>
+          </tr>
+          <tr>
+            <td class="big">@</td> <td>Character entities, usable within string literals or in formulas</td>
+            <td><use template="code" value="'@at;quot;hi' & @(code%100)"></use></td> <td><build>{'@quot;hi' & @(code % 100)}</build></td>
           </tr>
           <tr>
             <td class="big">&amp;</td> <td>String concatenation</td>

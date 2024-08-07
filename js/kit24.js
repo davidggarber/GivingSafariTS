@@ -7550,7 +7550,7 @@ function complexAttribute(str, trim = TrimMode.off) {
         }
         else {
             try {
-                const complex = evaluateFormula('{' + list[i].text + '}');
+                const complex = evaluateFormula(list[i].text);
                 if (i == 0 && list.length == 1) {
                     return complex;
                 }
@@ -7841,10 +7841,10 @@ class FormulaNode {
         }
         else if (this.bracket === '\"' || this.bracket === '\'') {
             // Reliably plain text
-            result = this.value.text;
+            result = resolveEntities(this.value.text);
         }
         else {
-            result = this.value.text; // unless overridden below
+            result = resolveEntities(this.value.text); // unless overridden below
             let trimmed = simpleTrim(result);
             const maybe = result && trimmed[trimmed.length - 1] == '?';
             if (maybe) {
@@ -7856,6 +7856,7 @@ class FormulaNode {
                 const context = getBuilderContext();
                 if (trimmed in context) {
                     result = context[trimmed];
+                    result = resolveEntities(result);
                 }
                 else if (maybe) {
                     return ''; // Special case
@@ -8194,7 +8195,7 @@ function makeString(a, tok) {
 exports.makeString = makeString;
 const minus = { raw: '-', unaryChar: '⁻', binaryChar: '−' }; // ambiguously unary or binary
 const concat = { raw: '&', precedence: 1, binaryOp: (a, b, aa, bb) => { return makeString(a, aa) + makeString(b, bb); }, evalLeft: true, evalRight: true };
-const entity = { raw: '@', precedence: 1, unaryOp: (a, aa) => { return deentify(a); }, evalRight: false };
+const entity = { raw: '@', precedence: 2, unaryOp: (a, aa) => { return entitize(a, aa); }, evalRight: false };
 const plus = { raw: '+', precedence: 3, binaryOp: (a, b, aa, bb) => { return makeFloat(a, aa) + makeFloat(b, bb); }, evalLeft: true, evalRight: true };
 const subtract = { raw: '−', precedence: 3, binaryOp: (a, b, aa, bb) => { return makeFloat(a, aa) - makeFloat(b, bb); }, evalLeft: true, evalRight: true };
 const times = { raw: '*', precedence: 4, binaryOp: (a, b, aa, bb) => { return makeFloat(a, aa) * makeFloat(b, bb); }, evalLeft: true, evalRight: true };
@@ -8213,7 +8214,7 @@ const closeCurlyBrackets = { raw: '}', precedence: 0 };
 const singleQuotes = { raw: '\'', precedence: 10, closeChar: '\'' };
 const doubleQuotes = { raw: '"', precedence: 10, closeChar: '"' };
 const allOperators = [
-    minus, concat, entity, plus, subtract,
+    minus, concat, plus, subtract, entity,
     times, divide, intDivide, modulo, negative,
     childObj, rootObj,
     roundBrackets, squareBrackets, curlyBrackets,
@@ -8273,38 +8274,87 @@ const namedEntities = {
     'lbrace': '{',
     'rbrace': '}',
     'amp': '&',
+    'at': '@',
     'nbsp': '\xa0',
 };
 /**
  * Convert an entity term into simple text.
  * Note that the entity prefix is # rather than &, because & injects an actual entity, which becomes text before we see it.
  * Supports decimal @34; and hex @x22; and a few named like @quot;
- * @param str the contents of the entity, after the @
+ * @param str the contents of the entity, after the @, up to the first semicolon
  * @returns a single character, if known, else throws an exception
  */
-function deentify(str) {
-    if (!str || str == ';') {
-        return '';
+function entitize(str, tok) {
+    if (typeof (str) == 'number') {
+        return String.fromCharCode(str);
     }
-    if (str[str.length - 1] == ';') {
-        str = str.substring(0, str.length - 1);
-    } // trim trailing semicolon
-    if (str[0] == 'x' || (str[0] >= '0' && str[9] <= '9')) {
-        let code = 0;
-        if (str[0] == 'x') {
-            str = str.substring(1);
-            code = parseInt(str, 16);
-            // REVIEW: will fromCharCode work for codes > 0x10000?
+    str = makeString(str, tok);
+    if (str) {
+        str = simpleTrim(str);
+        if (str.indexOf(';') == str.length - 1) {
+            str = str.substring(0, str.length - 1);
+        } // trim optional trailing semicolon
+        if (str[0] == 'x' || str[0] == '#' || (str[0] >= '0' && str[0] <= '9')) {
+            if (str[0] == '#') {
+                str = str.substring(1);
+            } // # isn't required, but allow it like HTML NCRs
+            let code = 0;
+            if (str[0] == 'x') {
+                str = str.substring(1);
+                code = parseInt(str, 16);
+                // REVIEW: will fromCharCode work for codes > 0x10000?
+            }
+            else {
+                code = parseInt(str, 10);
+            }
+            return String.fromCharCode(code);
+        }
+        if (str in namedEntities) {
+            return namedEntities[str];
+        }
+    }
+    if (tok) {
+        throw new ContextError('Not a recognized entity: ' + str, tok);
+    }
+    return '';
+}
+/**
+ * Find any entities in a text string, and convert to
+ * Escape characters elsewhere are left.
+ * @param raw A string which may contain `
+ * @returns The unescapes, user-friendly string
+ */
+function resolveEntities(raw) {
+    if (typeof (raw) != 'string') {
+        return raw;
+    }
+    let str = '';
+    let start = 0;
+    while (start <= raw.length) {
+        const at = raw.indexOf('@', start);
+        if (at < 0) {
+            str += raw.substring(start);
+            break;
+        }
+        str += raw.substring(start, at);
+        const semi = raw.indexOf(';', at + 1);
+        if (semi < 0) {
+            // Not a valid entity. Treat as plain text.
+            str += raw.substring(at);
+            break;
+        }
+        const ent = entitize(raw.substring(at + 1, semi + 1));
+        if (ent == '') {
+            // Ignore any malformed entities
+            str += '@';
+            start = at + 1;
         }
         else {
-            code = parseInt(str, 10);
+            str += ent;
+            start = semi + 1;
         }
-        return String.fromCharCode(code);
     }
-    if (str in namedEntities) {
-        return namedEntities[str];
-    }
-    throw new ContextError('Not a recognized entity: ' + str);
+    return str;
 }
 /**
  * Find the next instance of a character, making sure the character isn't escaped.

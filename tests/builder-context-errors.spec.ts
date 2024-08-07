@@ -117,6 +117,10 @@ test('evaluate', () => {
   // Not a string
   expect(catchEvaluate("'fonts:'&fonts&'more'")?.offset).toEqual(9);
 
+  // Bogus entity
+  expect(catchEvaluate('@z;')?.offset).toEqual(1);
+  expect(catchEvaluate('@z')?.offset).toEqual(1);
+
   // Index out of range
   expect(catchEvaluate('fonts.2')?.offset).toEqual(6);
 
@@ -144,5 +148,5 @@ test('formulaInText', () => {
   expect(cloneText('this is {fonts.0}')).toEqual('this is bold');
 
   // innermost offset is relative to the formula, not the whole
-  expect(catchCloneText('this is {fonts.3}')?.offset).toEqual(7);
+  expect(catchCloneText('this is {fonts.3}')?.offset).toEqual(6);
 })
