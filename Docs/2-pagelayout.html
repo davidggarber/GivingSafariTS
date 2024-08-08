@@ -1,0 +1,177 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: '24',
+        title: 'Optional Page Features',
+        paperSize: 'ledger',
+        orientation: 'landscape',
+        googleFonts: 'Chewy,Playwrite PE',
+        type: 'word',
+        textInput: true,
+        abilities: {
+        }
+      };
+
+      function onthrow(err, elmt) {
+        alert(err);
+      }
+
+    </script>
+    <script src="docs.js"></script>
+    <style>
+      td {
+        vertical-align: top;
+      }
+      .code {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 13pt;
+      }
+      pre {
+        padding: 8px;
+        line-height: 24px;
+      }
+      .comments {
+        position: relative;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 12pt;
+      }
+
+      .comments img {
+        position: absolute;
+        height: 30px;
+        margin-left: 4px;
+        margin-top: -2px;
+      }
+
+      .blue {
+        background-color: lightblue;
+        border: blue solid 1px;
+      }
+      .customize {
+        background-color: white;
+      }
+
+      .intro {
+        font-size: 12pt;
+      }
+      .chewy {
+        font-family: 'Chewy';
+        font-size: 20pt;
+      }
+      .play {
+        font-family: 'Playwrite PE';
+      }
+
+      .error {
+        background-color: #c00;
+        color: white;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body id="Boilerplate">
+    <div id="pageBody">
+      <div id="left-side">
+
+        <p style="height:30px;">&nbsp;</p>
+        <p class="intro">
+          All fields of the <b>boiler</b> are optional. Below, <i>author</i> and <i>copyright</i> are omitted.
+        </p>
+        <p class="intro">
+          Additional features are appropriate for some puzzles are events. Setting them in <b>boiler</b> will configure everything.
+        </p>
+
+        <table>
+          <tr>
+            <td>
+              <pre><code class="code" onclick="selectCodeBlock(this, event)">
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;&lt;/meta&gt;
+    &lt;script&gt; var exports = {}; &lt;/script&gt;
+    &lt;script src="../js/kit24.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+      const boiler = {
+        safari: '<span class='customize'>24</span>',
+        title: '<span class='customize'>Your puzzle title</span>',
+<div class="blue">        pageSize: '<span class='customize'>letter</span>',
+        orientation: '<span class='customize'>portrait</span>',
+        googleFonts: '<span class='customize'>Chewy,Playwrite PE</span>',
+        textInput: <span class='customize'>true</span>,
+        type: '<span class='customize'>word</span>',</div>      };
+    &lt;/script&gt;
+    &lt;style&gt;
+      #pageBody { font-family: 'Chewy'; font-size: 20pt; }
+      .play { font-family: 'Playwrite PE'; }
+    &lt;/style&gt;
+  &lt;/head&gt;
+  &lt;body id="<span class='customize'>YourPuzzleTitle</span>"&gt;
+    &lt;div id="pageBody"&gt;
+      Fancy &lt;span class='play'&gt;fonts!&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </td>
+            <td>
+              <pre><code class="comments">
+
+
+
+
+
+
+
+
+
+&larr; Set the paper size. <i>Letter</i> is default. Others options: <i>legal, tabloid, ledger, scrapbook</i>.
+&larr; Set to either <i>portrait</i> (the default) or <i>landscape</i>. This document page is ledger + landscape.
+&larr; Any additional Google fonts to automatically load. Separate with commas. Spaces allowed within names.
+&larr; Enables text input functionality, when puzzles contain lots of little entry boxes.
+&larr; Place a puzzle-type icon in the top-right corner of the page. Helpful for novice puzzlers to pick a puzzle.
+&nbsp;&nbsp;&nbsp; Examples: <i>word</i><img src="..\24\Icons\word.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>logic</i><img src="..\24\Icons\logic.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>math</i><img src="..\24\Icons\math.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>search</i><img src="..\24\Icons\search.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>code</i><img src="..\24\Icons\code.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>reassemble</i><img src="..\24\Icons\reassemble.png">
+
+
+&larr; This style is now easy to write, because of the <i>googleFont</i> imported above.
+
+
+
+
+&larr; Put the <i>googleFont</i> to the test.
+</code></pre>
+
+              <p class='chewy' style="margin-left:0.5in;">Fancy <span class='play'>fonts!</span></p>
+
+            </td>
+          </tr>
+        </table>
+
+
+
+      </div>
+
+
+      <div id="right-side">
+
+
+      </div>
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)"><nobr>{value}</nobr></code>
+    </template>
+
+    <template id="taglink">
+      <if exists="dest?">
+        <a href="{dest}"><code onclick="selectCodeBlock(this, event)">{value}</code></a>
+      </if>
+      <else>
+        <code onclick="selectCodeBlock(this, event)">{value}</code>
+      </else>
+    </template>
+
+  </body>
+</html>

@@ -486,7 +486,7 @@ function boilerplate(bp: BoilerPlateData) {
         bp.preSetup();
     }
 
-    if (bp.textInput) {
+    if (bp.textInput !== false) {  // If omitted, default to true
         textSetup()
     }
     setupAbilities(head, margins, bp.abilities || {});

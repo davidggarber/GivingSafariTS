@@ -5425,11 +5425,12 @@ const noEventDetails = {
 };
 const safariDocsDetails = {
     'title': 'Puzzyl Utility Library',
-    'logo': './Images/Sample_Logo.png',
-    'icon': 'Images/monster-book-icon.png',
-    'puzzleList': './index.html',
+    'logo': '../Docs/Images/logo.jpg',
+    'icon': '../Docs/Images/monster-book-icon.png',
+    'iconRoot': '../24/Icons/',
+    'puzzleList': '../Docs/index.html',
     'cssRoot': '../Css/',
-    'fontCss': './Css/Fonts.css',
+    'fontCss': '../Docs/Css/Fonts.css',
     'googleFonts': 'Caveat',
     'links': []
 };
@@ -5437,6 +5438,7 @@ const safariSingleDetails = {
     'title': 'Puzzle',
     'logo': './Images/Sample_Logo.png',
     'icon': './Images/Sample_Icon.png',
+    'iconRoot': './Icons/',
     'puzzleList': '',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
@@ -5450,6 +5452,7 @@ const safariSampleDetails = {
     'title': 'Puzzle Safari',
     'logo': './Images/Sample_Logo.png',
     'icon': './Images/Sample_Icon.png',
+    'iconRoot': './Icons/',
     'puzzleList': './index.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
@@ -5460,6 +5463,7 @@ const safari20Details = {
     'title': 'Safari Labs',
     'logo': './Images/PS20 logo.png',
     'icon': './Images/Beaker_icon.png',
+    'iconRoot': './Icons/',
     'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
@@ -5473,6 +5477,7 @@ const safari21Details = {
     'title': 'Safari Labs',
     'logo': './Images/GS24_banner.png',
     'icon': './Images/Plate_icon.png',
+    'iconRoot': './Icons/',
     'puzzleList': './menuu.html',
     'cssRoot': '../Css/',
     'fontCss': '../24/Css/Fonts21.css',
@@ -5484,8 +5489,9 @@ const safari21Details = {
 };
 const safari24Details = {
     'title': 'Game Night',
-    // 'logo': './Images/PS24 logo.png',
+    // 'logo': '../24/Images/PS24 logo.png',
     'icon': '../24/Images/Sample_Icon.png',
+    'iconRoot': '../24/Icons/',
     // 'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': '../24/Css/Fonts24.css',
@@ -5499,6 +5505,7 @@ const safariDggDetails = {
     'title': 'David’s Puzzles',
     'logo': './Images/octopus_watermark.png',
     'icon': './Images/octopus_icon.png',
+    'iconRoot': './Icons/',
     'puzzleList': './indexx.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
@@ -5513,6 +5520,7 @@ const puzzylSafariTeamDetails = {
     'title': 'Game Night',
     // 'logo': './Images/Sample_Logo.png',
     'icon': '24/favicon.png',
+    'iconRoot': './Icons/',
     'puzzleList': '',
     'cssRoot': 'Css/',
     'fontCss': '24/Fonts24.css',
@@ -5542,7 +5550,9 @@ function initSafariDetails(safariId) {
         return safariDetails = noEventDetails;
     }
     if (!(safariId in pastSafaris)) {
-        throw new Error('Unrecognized Safari Event ID: ' + safariId);
+        const err = new Error('Unrecognized Safari Event ID: ' + safariId);
+        console.error(err);
+        return safariDetails = noEventDetails;
     }
     safariDetails = pastSafaris[safariId];
     return safariDetails;
@@ -5777,7 +5787,7 @@ function createTypeIcon(puzzleType, icon_use = '') {
     iconDiv.id = 'icons';
     const icon = document.createElement('img');
     icon.id = 'icons-' + iconDiv.childNodes.length;
-    icon.src = './Icons/' + puzzleType.toLocaleLowerCase() + '.png';
+    icon.src = getSafariDetails().iconRoot + puzzleType.toLocaleLowerCase() + '.png';
     icon.alt = iconTypeAltText[puzzleType] || (puzzleType + ' ' + icon_use);
     iconDiv.appendChild(icon);
     return iconDiv;
