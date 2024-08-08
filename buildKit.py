@@ -30,7 +30,7 @@ kitFiles = [
 
 merged = [
   '/************************************************************\n',
-  ' * Puzzyl.net puzzle-building web kit                       *\n'
+  ' * Puzzyl.net puzzle-building web kit                       *\n',
   ' ************************************************************/\n',
 ]
 cwd = os.getcwd()
