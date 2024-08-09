@@ -382,6 +382,9 @@ export function expandControlTags() {
         else if (isTag(src, 'use')) {
           dest = useTemplate(src);
         }
+        else if (isTag(src, inputAreaTagNames)) {
+          dest = startInputArea(src);
+        }
       }
       const parent = src.parentNode;
       for (let d = 0; d < dest.length; d++) {

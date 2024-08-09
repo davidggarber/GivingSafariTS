@@ -3270,8 +3270,8 @@ function setupLetterPatterns() {
         var pattern = parseNumberPattern(parent, 'data-letter-pattern');
         var extractPattern = parsePattern(parent, 'data-extract-indeces');
         var numberedPattern = parsePattern2(parent, 'data-number-assignments');
-        var vertical = hasClass(parent, 'vertical');
-        var numeric = hasClass(parent, 'numeric');
+        var vertical = hasClass(parent, 'vertical');  // If set, each input and literal needs to be on a separate line
+        var numeric = hasClass(parent, 'numeric');  // Forces inputs to be numeric
         var styles = getLetterStyles(parent, 'underline', '', numberedPattern == null ? 'box' : 'numbered');
 
         if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
@@ -3279,6 +3279,10 @@ function setupLetterPatterns() {
             for (let pi = 0; pi < pattern.length; pi++) {
                 if (pattern[pi]['count']) {
                     var count:number = pattern[pi]['count'] as number;
+                    var word = document.createElement('span');
+                    if (!vertical) {
+                        toggleClass(word, 'letter-cell-set', true);  // usually, each number wants to be nobr
+                    }
                     for (let ci = 1; ci <= count; ci++) {
                         var span = document.createElement('span');
                         toggleClass(span, 'letter-cell', true);
@@ -3301,11 +3305,12 @@ function setupLetterPatterns() {
                             span.setAttribute('data-number', numberedPattern[index]);
                             span.appendChild(number);
                         }
-                        parent.appendChild(span);
+                        word.appendChild(span);
                         if (vertical && (ci < count || pi < pattern.length - 1)) {
-                            parent.appendChild(document.createElement('br'));
+                            word.appendChild(document.createElement('br'));
                         }
                     }
+                    parent.appendChild(word);
                     prevCount += count;
                 }
                 else if (pattern[pi]['char'] !== null) {
@@ -6640,7 +6645,7 @@ function boilerplate(bp: BoilerPlateData) {
         bp.preSetup();
     }
 
-    if (bp.textInput) {
+    if (bp.textInput !== false) {  // If omitted, default to true
         textSetup()
     }
     setupAbilities(head, margins, bp.abilities || {});
@@ -8049,6 +8054,9 @@ export function expandControlTags() {
         }
         else if (isTag(src, 'use')) {
           dest = useTemplate(src);
+        }
+        else if (isTag(src, inputAreaTagNames)) {
+          dest = startInputArea(src);
         }
       }
       const parent = src.parentNode;
@@ -9963,14 +9971,17 @@ export function startInputArea(src:HTMLElement):Node[] {
     }
   }
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
-    toggleClass(span, 'create-from-pattern', true);
+    toggleClass(span, 'letter-cell-block', true);
     if (attr = src.getAttributeNS('', 'pattern')) {
-      if (src.getAttributeNS('', 'numbered') != null) {
+      toggleClass(span, 'create-from-pattern', true);
+      span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+    }
+    else if (attr = src.getAttributeNS('', 'extract-numbers')) {
         span.setAttributeNS('', 'data-number-pattern', cloneText(attr));
-      }
-      else {
-        span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
-      }
+    }
+    else if (attr = src.getAttributeNS('', 'extract-pattern')) {
+      span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+      span.setAttributeNS('', 'data-indexed-by-letter', '');
     }
     if (attr = src.getAttributeNS('', 'extract')) {
       span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));

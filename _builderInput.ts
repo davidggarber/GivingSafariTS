@@ -1,6 +1,6 @@
 import { appendRange, expandContents } from "./_builder";
 import { cloneAttributes, cloneText } from "./_builderContext";
-import { applyAllClasses, isTag, toggleClass } from "./_classUtil";
+import { applyAllClasses, isTag, toggleClass, isExtracted } from "./_classUtil";
 import { getLetterStyles } from "./_textSetup";
 
 export const inputAreaTagNames = [
@@ -76,14 +76,17 @@ export function startInputArea(src:HTMLElement):Node[] {
     }
   }
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
-    toggleClass(span, 'create-from-pattern', true);
+    toggleClass(span, 'letter-cell-block', true);
     if (attr = src.getAttributeNS('', 'pattern')) {
-      if (src.getAttributeNS('', 'numbered') != null) {
+      toggleClass(span, 'create-from-pattern', true);
+      span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+    }
+    else if (attr = src.getAttributeNS('', 'extract-numbers')) {
         span.setAttributeNS('', 'data-number-pattern', cloneText(attr));
-      }
-      else {
-        span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
-      }
+    }
+    else if (attr = src.getAttributeNS('', 'extract-pattern')) {
+      span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
+      span.setAttributeNS('', 'data-indexed-by-letter', '');
     }
     if (attr = src.getAttributeNS('', 'extract')) {
       span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));

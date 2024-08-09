@@ -104,8 +104,8 @@ function setupLetterPatterns() {
         var pattern = parseNumberPattern(parent, 'data-letter-pattern');
         var extractPattern = parsePattern(parent, 'data-extract-indeces');
         var numberedPattern = parsePattern2(parent, 'data-number-assignments');
-        var vertical = hasClass(parent, 'vertical');
-        var numeric = hasClass(parent, 'numeric');
+        var vertical = hasClass(parent, 'vertical');  // If set, each input and literal needs to be on a separate line
+        var numeric = hasClass(parent, 'numeric');  // Forces inputs to be numeric
         var styles = getLetterStyles(parent, 'underline', '', numberedPattern == null ? 'box' : 'numbered');
 
         if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
@@ -113,6 +113,10 @@ function setupLetterPatterns() {
             for (let pi = 0; pi < pattern.length; pi++) {
                 if (pattern[pi]['count']) {
                     var count:number = pattern[pi]['count'] as number;
+                    var word = document.createElement('span');
+                    if (!vertical) {
+                        toggleClass(word, 'letter-cell-set', true);  // usually, each number wants to be nobr
+                    }
                     for (let ci = 1; ci <= count; ci++) {
                         var span = document.createElement('span');
                         toggleClass(span, 'letter-cell', true);
@@ -135,11 +139,12 @@ function setupLetterPatterns() {
                             span.setAttribute('data-number', numberedPattern[index]);
                             span.appendChild(number);
                         }
-                        parent.appendChild(span);
+                        word.appendChild(span);
                         if (vertical && (ci < count || pi < pattern.length - 1)) {
-                            parent.appendChild(document.createElement('br'));
+                            word.appendChild(document.createElement('br'));
                         }
                     }
+                    parent.appendChild(word);
                     prevCount += count;
                 }
                 else if (pattern[pi]['char'] !== null) {
