@@ -7076,8 +7076,8 @@ var TrimMode;
  * @returns One of three trim states, set anywhere in the current element heirarchy.
  */
 function getTrimMode() {
-    for (let i = src_element_stack.length - 1; i >= 0; i--) {
-        const elmt = src_element_stack[i];
+    const elmt = getBuilderParentIf(e => hasClass(e, 'trim') || e.getAttributeNS('', 'trim') !== null);
+    if (elmt) {
         if (hasClass(elmt, 'trim')) {
             return TrimMode.on;
         }
@@ -7102,7 +7102,7 @@ exports.getTrimMode = getTrimMode;
  */
 function shouldThrow(ex, node1, node2, node3) {
     // Inspect any passed-in nodes for throwing instructions.
-    const nodes = [node1, node2, node3, src_element_stack.length > 0 ? src_element_stack[src_element_stack.length - 1] : undefined];
+    const nodes = [node1, node2, node3];
     for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
         if (!node || node.nodeType != Node.ELEMENT_NODE) {
