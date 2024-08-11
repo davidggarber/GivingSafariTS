@@ -1,6 +1,6 @@
 import { appendRange, expandContents } from "./_builder";
 import { cloneAttributes, cloneText } from "./_builderContext";
-import { applyAllClasses, isTag, toggleClass, isExtracted } from "./_classUtil";
+import { applyAllClasses, isTag, toggleClass } from "./_classUtil";
 import { getLetterStyles } from "./_textSetup";
 
 export const inputAreaTagNames = [

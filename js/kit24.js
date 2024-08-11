@@ -9149,6 +9149,29 @@ function useTemplate(node, tempId) {
     return dest;
 }
 exports.useTemplate = useTemplate;
+/**
+ * Replace the current contents of a parent element with
+ * the contents of a template.
+ * @param parent Parent element
+ * @param tempId ID of a <template> element
+ */
+function refillFromTemplate(parent, tempId) {
+    if (!tempId) {
+        throw new ContextError('Template ID not specified');
+    }
+    const template = getTemplate(tempId);
+    if (!template) {
+        throw new ContextError('Template not found: ' + tempId);
+    }
+    if (!template.content) {
+        throw new ContextError('Invalid template (no content): ' + tempId);
+    }
+    const clone = template.content.cloneNode(true);
+    while (parent.childNodes.length > 0) {
+        parent.removeChild(parent.childNodes[0]);
+    }
+    parent.appendChild(clone);
+}
 /*-----------------------------------------------------------
  * _templates.ts
  *-----------------------------------------------------------*/
