@@ -1,0 +1,162 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        'safari': '24',
+        'title': 'Your puzzle title',
+        'author': '[Your Name]',
+        'copyright': '[year]',
+        'paperSize': 'ledger',
+        'orientation': 'landscape',
+        'textInput': true,
+        'abilities': {
+        }
+      };
+
+      function onthrow(err, elmt) {
+        alert(err);
+      }
+
+    </script>
+    <script src="docs.js"></script>
+    <style>
+      td {
+        vertical-align: top;
+      }
+      .code {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 13pt;
+      }
+      pre {
+        padding: 8px;
+        line-height: 24px;
+      }
+      .comments {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 12pt;
+      }
+
+      .blue {
+        background-color: lightblue;
+        border: blue solid 1px;
+      }
+      .customize {
+        background-color: white;
+      }
+
+      #Boilerplate .title {
+        border: solid 1px red;
+        padding: 10px;
+        margin-left: -10px;
+        margin-top: -10px;
+        width: 5in;
+      }
+
+      #Boilerplate #copyright {
+        border: solid 1px lime;
+        padding: 10px;
+        left: -10px;
+        bottom: -10px;
+      }
+
+      .bigbold {
+        font-size: larger;
+        font-weight: bold;
+      }
+
+      .error {
+        background-color: #c00;
+        color: white;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body id="Abilities">
+    <div id="pageBody">
+      <div id="left-side">
+
+        <h2 style="margin-top: 50px;">An introduction to the parts of a blank page</h2>
+
+        <table>
+          <tr>
+            <td>
+              <pre class="blue"><code class="code" onclick="selectCodeBlock(this, event)">
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;&lt;/meta&gt;
+    &lt;script&gt; var exports = {}; &lt;/script&gt;
+    &lt;script src="../js/kit24.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+      const boiler = {
+        'safari': '<span class='customize'>24</span>',
+        'title': '<span class='customize'>Your puzzle title</span>',
+        'author': '<span class='customize'>[Your Name]</span>',
+        'copyright': '<span class='customize'>[year]</span>',
+      };
+    &lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body id="<span class='customize'>YourPuzzleTitle</span>"&gt;
+    &lt;div id="pageBody"&gt;
+
+
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </td>
+            <td>
+              <pre><code class="comments">
+
+
+&larr; Always a good idea to be clear about the charset
+&larr; Quirk, needed by hand-rigged typescript macro
+&larr; Load kit24.js. It will establish its own onload handler to initialize.
+
+&larr; Define <b>boiler</b>, which guides the kit's initialization.
+  &larr; Setting which safari event loads the accompanying fonts and icons.
+  &larr; Setting the <span style="position:absolute; margin-top:-2px; border: solid 1px red; padding:1px 4px;">title</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; is mirrored above.
+  &larr; If you name the author, they get credited in a <span style="position:absolute; margin-top:-2px; border: solid 1px lime; padding:1px 4px;">&copy; copyright notice</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at the bottom.
+  &larr; The year of the copyright
+
+
+
+&larr; Setting the body's id is an effective way to override imported styles.
+  &larr; The pageBody element is expected by the kit. All contents it creates will happen here.
+  
+
+
+
+</code></pre>
+              
+            </td>
+          </tr>
+        </table>
+
+
+
+      </div>
+
+
+      <div id="right-side">
+
+
+      </div>
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)"><nobr>{value}</nobr></code>
+    </template>
+
+    <template id="taglink">
+      <if exists="dest?">
+        <a href="{dest}"><code onclick="selectCodeBlock(this, event)">{value}</code></a>
+      </if>
+      <else>
+        <code onclick="selectCodeBlock(this, event)">{value}</code>
+      </else>
+    </template>
+
+  </body>
+</html>

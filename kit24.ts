@@ -9699,11 +9699,81 @@ function parseForEach(src:HTMLElement):any[] {
   throw new ContextError("For each's in attribute must indicate a list", elementSourceOffseter(src, 'in'));
 }
 
-function parseForText(src:HTMLElement, delim:string) {
+function parseForText(src:HTMLElement, delim:string):string[] {
   const tok = elementSourceOffset(src, 'in');
   const obj = evaluateAttribute(src, 'in', true);
   const str = makeString(obj, tok);
+  if (delim == '') {  // When splitting every character, we still want to keep graphemes together
+    return splitEmoji(str);
+  }
   return str.split(delim);
+}
+
+/**
+ * Splitting a text string by character is complicated when emoji are involved.
+ * There are multiple ways glyphs can be combined or extended.
+ * @param str A plain text string
+ * @returns An array of strings that represent individual visible glyphs.
+ */
+function splitEmoji(str:string):string[] {
+  const glyphs:string[] = [];
+  let joining = 0;
+  let prev = 0;
+  let code = 0;
+  for (let ch of str) {
+    // Track the current and previous characters
+    prev = code;
+    code = ch.length == 1 ? ch.charCodeAt(0)
+      : ch.length == 2 ? (0x10000 + (((ch.charCodeAt(0) & 0x3ff) << 10)  | (ch.charCodeAt(1) & 0x3ff)))
+      : -1;  // error
+
+    if (code < 0) {
+      // Expecting loop to always feed 1 UCS-4 character at a time
+      throw new ContextError('Unexpected unicode combination: ' + ch + ' at byte ' + (glyphs.join('').length) + ' in ' + str);
+    }
+    else if (code >= 0xd800 && code <= 0xdf00) {
+      // Half of surrogate pair
+      throw new ContextError('Unexpected half of unicode surrogate: ' + code.toString(16) + ' at byte ' + (glyphs.join('').length) + ' in ' + str);
+    }
+    else if (code >= 0x1f3fb && code <= 0x1f3ff) {
+      joining += 1;  // Fitzpatrick skin-tone modifier
+    }
+    else if (code >= 0xfe00 && code <= 0xfe0f) {
+      joining += 1;  // Variation selectors
+    }
+    else if (code == 0x200d) {
+      joining += 2;  // this character plus next
+    }
+    else if (code >= 0x1f1e6 && code <= 0x1f1ff) {
+      // Regional indicator symbols
+      if (prev >= 0x1f1e6 && prev <= 0x1f1ff && glyphs[glyphs.length - 1].length == 2) {
+        // Always come in pairs, so only join if the previous code was also one
+        // and that hasn't already built a pair. Note, a pair of these is length==4
+        joining += 1;
+      }
+    }
+    else if (code >= 0xe0001 && code <= 0xe007f) {
+      // Tags block
+      if (prev != 0xe007f) {  // Don't concat past a cancel tag
+        joining += 1;
+      }
+    }
+
+    if (joining > 0) {
+      joining--;
+      if (glyphs.length == 0) {
+        throw new ContextError('Unexpected unicode join character ' + code.toString(16) + ' at byte 0 of ' + str);
+      }
+      const cur = glyphs.pop();
+      ch = cur + ch;
+    }
+
+    glyphs.push(ch);
+  }
+  if (joining > 0) {
+    throw new Error('The final emoji sequence expected ' + joining + ' additional characters')
+  }  
+  return glyphs;
 }
 
 function parseForRange(src:HTMLElement):any {
@@ -10070,6 +10140,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
     if (!tempId) {
       throw new ContextError('<use> tag must specify a template attribute');
     }
+    tempId = cloneText(tempId);
   }
   let template:HTMLTemplateElement|null = null;
   try {

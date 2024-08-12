@@ -28,6 +28,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
     if (!tempId) {
       throw new ContextError('<use> tag must specify a template attribute');
     }
+    tempId = cloneText(tempId);
   }
   let template:HTMLTemplateElement|null = null;
   try {
