@@ -196,7 +196,7 @@ input[type=number]::-webkit-outer-spin-button {
   height: 107%;
   left: -1px;
   top: -1px;
-  z-index: 0;
+  z-index: 100;
 }
 
 .letter-grid .extract-image {
@@ -317,7 +317,7 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .extract-image {
-  z-index: 0;
+  z-index: 100;
   -moz-user-select: -moz-none;
   -khtml-user-select: none;
   -webkit-user-select: none;
@@ -326,7 +326,7 @@ input[type=number]::-webkit-outer-spin-button {
   pointer-events: none;
 }
 input {
-  z-index: 100;
+  z-index: 200;
 }
 
 .word-cell {

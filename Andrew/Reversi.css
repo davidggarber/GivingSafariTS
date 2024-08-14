@@ -48,7 +48,7 @@
   position: absolute;
   width: 100%;
   text-align: center;
-  z-index: 1; /* Ensures the text is above the circle */
+  z-index: 101; /* Ensures the text is above the circle */
 }
 
 .underlined-text {

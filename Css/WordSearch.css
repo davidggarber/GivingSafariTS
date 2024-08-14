@@ -1,8 +1,8 @@
 .vertex-g {
-  z-index: 100;
+  z-index: 200;
 }
 .vertex {
-  z-index: 101;
+  z-index: 201;
 }
 
 .word-select-area {
@@ -23,7 +23,7 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   fill: none;
-  z-index: 1;
+  z-index: 101;
 }
 .word-select-fill {
   stroke:#ffffff33;
@@ -31,12 +31,12 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   fill: none;
-  z-index: 2;
+  z-index: 102;
 }
 
 .word-select.building {
   stroke: #ff000099;
-  z-index: 10;
+  z-index: 110;
 }
 .word-select.building.open-ended {
   stroke: #ff550066;

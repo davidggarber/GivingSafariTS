@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
 exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -6172,6 +6172,11 @@ function setupAbilities(head, margins, data) {
         setupNotes(margins);
         // no ability icon
     }
+    if (data.scratchPad) {
+        setupScratch();
+        let instructions = "Ctrl+click anywhere on the page to create a note. Escape to leave note mode.";
+        fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">📔</span>';
+    }
     if (data.decoder) {
         setupDecoderToggle(margins, data.decoderMode);
     }
@@ -9466,6 +9471,154 @@ var pbnStampTools = [
     { id: 'stampBlank', modifier: 'shift', label: 'Blank', img: '../Images/Stamps/blankH.png', next: 'stampErase' },
     { id: 'stampErase', modifier: 'alt', label: 'Erase', img: '../Images/Stamps/eraserH.png', next: 'stampPaint' },
 ];
+/*-----------------------------------------------------------
+ * _scratch.ts
+ *-----------------------------------------------------------*/
+let scratchPad;
+let currentScratchInput = undefined;
+function setupScratch() {
+    const page = (document.getElementById('page')
+        || document.getElementsByClassName('printedPage')[0]);
+    if (!page) {
+        return;
+    }
+    scratchPad = document.createElement('div');
+    scratchPad.id = 'scratch-pad';
+    scratchPad.onclick = function (e) { scratchClick(e); };
+    page.onclick = function (e) { scratchPageClick(e); };
+    // const backDiv = document.createElement('div');
+    // backDiv.id = 'scratch-background';
+    // const transparent = document.createElement('img')
+    page.appendChild(scratchPad);
+    if (getSafariDetails()) {
+        linkCss(getSafariDetails()?.cssRoot + 'ScratchPad.css');
+    }
+}
+exports.setupScratch = setupScratch;
+function scratchClick(evt) {
+    if (currentScratchInput && currentScratchInput !== evt.target) {
+        scratchFlatten();
+    }
+    if (evt.target && hasClass(evt.target, 'scratch-div')) {
+        scratchRehydrate(evt.target);
+        return;
+    }
+    const spRect = scratchPad.getBoundingClientRect();
+    currentScratchInput = document.createElement('textarea');
+    // Position the new textarea where its first character would be at the click point
+    currentScratchInput.style.left = (evt.clientX - spRect.left - 5) + 'px';
+    currentScratchInput.style.top = (evt.clientY - spRect.top - 5) + 'px';
+    currentScratchInput.style.width = (spRect.right - evt.clientX) + 'px'; // TODO: utilize right edge of scratch
+    disableSpellcheck(currentScratchInput);
+    currentScratchInput.title = 'Escape to exit note mode';
+    currentScratchInput.onkeyup = function (e) { scratchTyped(e); };
+    toggleClass(scratchPad, 'topmost', true);
+    scratchPad.appendChild(currentScratchInput);
+    currentScratchInput.focus();
+}
+function scratchPageClick(evt) {
+    if (evt.ctrlKey) {
+        const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
+        for (let i = 0; i < targets.length; i++) {
+            const target = targets[i];
+            if (hasClass(target, 'scratch-div')) {
+                scratchRehydrate(target);
+                return;
+            }
+            if (target.id == 'scratch-pad') {
+                scratchClick(evt);
+                return;
+            }
+            if (isTag(target, 'input') || isTag(target, 'textarea')) {
+                return; // Don't steal clicks from inputs
+            }
+            if (target.id != 'page' && target.onclick) {
+                return; // Don't steal clicks from anything else with a click handler
+            }
+        }
+    }
+}
+function disableSpellcheck(elmt) {
+    elmt.setAttribute('spellCheck', 'false');
+    elmt.setAttribute('autoComplete', 'false');
+    elmt.setAttribute('autoCorrect', 'false');
+    elmt.setAttribute('autoCapitalize', 'false');
+}
+function scratchTyped(evt) {
+    if (!evt.target) {
+        return; // WTF?
+    }
+    if (evt.code == 'Escape') {
+        scratchFlatten();
+        return;
+    }
+    scratchResize(evt.target);
+}
+function scratchResize(ta) {
+    const lines = 1 + (ta.value || '').split('\n').length;
+    ta.setAttributeNS('', 'rows', lines.toString());
+}
+function scratchFlatten() {
+    if (!currentScratchInput) {
+        return;
+    }
+    toggleClass(scratchPad, 'topmost', false);
+    const text = currentScratchInput.value.trimEnd();
+    if (text) {
+        const div = document.createElement('div');
+        toggleClass(div, 'scratch-div', true);
+        const lines = text.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            if (i > 0) {
+                div.appendChild(document.createElement('br'));
+            }
+            div.appendChild(document.createTextNode(lines[i]));
+        }
+        const rect = currentScratchInput.getBoundingClientRect();
+        const spRect = scratchPad.getBoundingClientRect();
+        div.style.left = currentScratchInput.style.left;
+        div.style.top = currentScratchInput.style.top;
+        div.style.maxWidth = currentScratchInput.style.width;
+        div.style.maxHeight = rect.height + 'px';
+        currentScratchInput.parentNode.append(div);
+    }
+    currentScratchInput.parentNode.removeChild(currentScratchInput);
+    currentScratchInput = undefined;
+}
+function scratchRehydrate(div) {
+    if (!hasClass(div, 'scratch-div')) {
+        return;
+    }
+    const ta = document.createElement('textarea');
+    let text = '';
+    for (let i = 0; i < div.childNodes.length; i++) {
+        const child = div.childNodes[i];
+        if (child.nodeType == Node.TEXT_NODE) {
+            text += child.textContent;
+        }
+        else if (child.nodeType == Node.ELEMENT_NODE && isTag(child, 'br')) {
+            text += '\n';
+        }
+        else {
+            console.log('Unexpected contents of a scratch-div: ' + child);
+        }
+    }
+    ta.value = text;
+    const rcSP = scratchPad.getBoundingClientRect();
+    const rcD = div.getBoundingClientRect();
+    ta.style.left = div.style.left;
+    ta.style.top = div.style.top;
+    ta.style.width = (rcSP.right - rcD.left) + 'px';
+    disableSpellcheck(ta);
+    ta.title = 'Escape to exit note mode';
+    scratchResize(ta);
+    ta.onkeyup = function (e) { scratchTyped(e); };
+    toggleClass(scratchPad, 'topmost', true);
+    div.parentNode.append(ta);
+    div.parentNode.removeChild(div);
+    currentScratchInput = ta;
+    ta.focus();
+}
 /*-----------------------------------------------------------
  * _validatePBN.ts
  *-----------------------------------------------------------*/

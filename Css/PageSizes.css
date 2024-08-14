@@ -138,7 +138,7 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
   position: absolute;
   width: 100%;
   top: 0.5in;
-  z-index: 0;
+  z-index: 100;
 }
 
 .letter.portrait #pageBody {
@@ -268,7 +268,7 @@ body, p, td {
       bottom: 0px;
       right: 0px;
       box-shadow:0px 0px 5px orange; 
-      z-index: 1;
+      z-index: 101;
   }
   .print #notes-toggle {
     display: none;
@@ -306,6 +306,7 @@ body, p, td {
       bottom: -16pt;
       font-size: 14pt;
       cursor: help;
+      z-index: 99;
   }
   .print #ability {
     display: none;
@@ -401,7 +402,7 @@ body, p, td {
   border-radius: 6px;
   padding: 5px 10px;
   position: absolute;
-  z-index: 1;
+  z-index: 101;
   bottom: 125%;
   left: 50%;
   width: 1in;

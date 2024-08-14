@@ -24,6 +24,7 @@ kitFiles = [
     '_builderInput.ts',
     '_builderUse.ts',
     '_templates.ts',
+    '_scratch.ts',
     '_validatePBN.ts',
     '_testUtils.ts',
 ]

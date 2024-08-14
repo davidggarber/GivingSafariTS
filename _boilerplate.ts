@@ -13,6 +13,7 @@ import { expandControlTags, hasBuilderElements } from "./_builder";
 import { LinkDetails, getSafariDetails, initSafariDetails } from "./_events";
 import { diffSummarys, LayoutSummary, renderDiffs, summarizePageLayout } from "./_testUtils";
 import { wrapContextError } from "./_contextError";
+import { setupScratch } from "./_scratch";
 
 
 /**
@@ -128,6 +129,7 @@ type AbilityData = {
     wordSearch?: boolean;
     hashiBridge?: boolean;
     subway?: boolean;
+    scratchPad?: boolean;
 }
 
 export type BoilerPlateData = {
@@ -718,6 +720,11 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     if (data.notes) {
         setupNotes(margins);
         // no ability icon
+    }
+    if (data.scratchPad) {
+        setupScratch();
+        let instructions = "Ctrl+click anywhere on the page to create a note. Escape to leave note mode.";
+        fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">📔</span>';
     }
     if (data.decoder) {
         setupDecoderToggle(margins, data.decoderMode);
