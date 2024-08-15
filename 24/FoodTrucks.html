@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Food Truck',
+        author: 'Jesse McGatha',
+        copyright: '2021',
+        type: 'logic',
+        textInput: true,
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          grid: ['RNTEO','BLYSI','QHUKP','FWGAC','MDXVJ'],
+          lefts: 'NTELYIHUPGACV',
+          tops: 'SWAMDJ',
+          gridStyles: {
+
+          }
+        },
+      };
+
+      for (var i = 0; i < 25; i++) {
+        var ch = String.fromCharCode(65 + i);
+        let cls = '';
+        if (boiler.lookup.lefts.indexOf(ch) >= 0) { cls += 'left'}
+        if (boiler.lookup.tops.indexOf(ch) >= 0) { cls += 'top'}
+        boiler.lookup.gridStyles[ch] = cls;
+      }
+
+
+    </script>
+    <style>
+      #letter-grid {
+        border: solid 6px black;
+        border-collapse: collapse;
+      }
+      #letter-grid td {
+        width: 0.7in;
+        height: 0.7in;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 36pt;
+        font-weight: bold;
+        color: #bfbfbf;
+        border-left: 0.5px solid gray;
+        border-top: 0.5px solid gray;
+      }
+      #letter-grid td.left {
+        border-left: solid 6px black;
+      }
+      #letter-grid td.top {
+        border-top: solid 6px black;
+      }
+      #letter-grid td.lefttop {
+        border-left: solid 6px black;
+        border-top: solid 6px black;
+      }
+      #right-clues {
+        position: absolute;
+        left: 4.2in;
+        top: 1in;
+        width: 3.3in;
+      }
+      #right-clues li {
+        margin-top: 12px;
+      }
+      #north {
+        position: absolute;
+        left: 4.2in;
+        bottom: 4.4in;
+        font-size: 28pt;
+        font-weight: bold;
+        color: #bfbfbf;
+      }
+      .truck path {
+        fill: #E7E6E6;
+        stroke: black;
+        stroke-width: 0.5px;
+      }
+      .truck circle {
+        fill: #595959;
+        stroke: black;
+        stroke-width: 0.5px;
+      }
+      .truck rect {
+        fill: #767171;
+        stroke: black;
+        stroke-width: 0.5px;
+      }
+      .truck text {
+        color: white;
+        fill: white;
+        text-anchor: middle;
+      }
+      #FoodTruck .truck-group .letter-cell {
+        font-size: 24pt;
+      }
+      .letter-rbox {
+        border: solid 1px black;
+        border-radius: 7px;
+        margin-left: -1px;
+        height: 2.5ex;
+      }
+
+    </style>
+  </head>
+  <body id="FoodTruck">
+    <div id="pageBody">
+      <p class="flavor">
+        Five friends each have a food truck and contracted to be the only concessions at an outdoor festival. They 
+        want to maximize their availability to the crowd, so they each agree to park their trucks in a different 
+        <b>row</b>, <b>column</b>, and <b>region</b> on the festival grounds, with each <b>block</b> on the grounds 
+        identified by a letter of the alphabet. They further agree not to park on a block directly next to each other, even diagonally.
+      </p>
+
+      <build>
+        <ttable id="letter-grid">
+          <for each="row" in="{grid}">
+            <ttr>
+              <for char="ch" in="{row}">
+                <ttd class="{gridStyles.{ch}}">{ch}</ttd>
+              </for>
+            </ttr>
+          </for>
+        </ttable>
+      </build>
+
+      <div id="right-clues">
+        Here are a few clues for their final parking spots:
+        <ol>
+          <li>Annie took a bigger region than Dan.</li>
+          <li>Everyone had a region adjacent to Ed’s region.</li>
+          <li>Bill’s truck was parked farther north than Carol’s truck. </li>
+          <li>Since they are siblings, Bill and Carol did not want to have adjacent regions.</li>
+          <li>Ed’s truck was parked farther west than Annie’s truck.</li>
+        </ol>
+      </div>
+
+      <div id="north">
+        <img src="FoodTrucks/up-arrow.png" style="height:0.76in">
+        <span style="display:inline-block; margin-left:-24px; ">North</span>
+      </div>
+
+      <p class="flavor">
+        After the event, the friends pull off their block, <i>add up</i> their cash, and <i>drive around</i> 
+        to their favorite gathering spot. What did the friends then share to celebrate?
+      </p>
+
+      <div style="position: absolute; top: 5.55in; left: 0px;">
+        <use template="truck-group" t1="Angie's" t2="Burgers: $7"></use>
+      </div>
+      <div style="position: absolute; top: 5.55in; left: 2.6in;">
+        <use template="truck-group" t1="Bill's Ice" t2="Cream: $3"></use>
+      </div>
+      <div style="position: absolute; top: 6.7in; left: 5in;">
+        <use template="truck-group" t1="Ed's Funnel" t2="Cake: $6"></use>
+      </div>
+      <div style="position: absolute; top: 7.5in; left: 0px;">
+        <use template="truck-group" t1="Carol's Hot" t2="Dogs: $4"></use>
+      </div>
+      <div style="position: absolute; top: 7.5in; left: 2.6in;">
+        <use template="truck-group" t1="Dan's BBQ" t2="$12"></use>
+      </div>
+
+    </div>
+
+
+    <template id="truck-group">
+      <div class="truck-group" data-input-style="rbox">
+        <svg width="250" height="120" class="truck">
+          <path d="M0,0 h165 v92 h-165 Z"></path>
+          <path d="M165,0 h22 l8,39 h-30 Z"></path>
+          <path d="M165,39 h65 q11,0,11,11 v38 q-4,4,-8,4 h-68 Z"></path>
+          <circle cx="39" cy="92" r="23"></circle>
+          <circle cx="210" cy="92" r="23"></circle>
+          <rect x="13" y="10" width="127" height="43"></rect>
+          <text x="76" y="28">{t1}</text>
+          <text x="76" y="44">{t2}</text>
+        </svg>
+        <p style="margin-left:20px; margin-top:-20px">BLOCK 
+          <letter></letter>
+          <img src="FoodTrucks/right-arrow.png" style="height:0.29in;">
+          <letter></letter>
+        </p>
+      </div>
+    </template>
+  </body>
+</html>
