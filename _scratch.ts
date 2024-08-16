@@ -41,6 +41,11 @@ function scratchClick(evt:MouseEvent) {
         return;
     }
    
+    if (!evt.ctrlKey) {
+        // One way to leave scratch mode is to click away
+        return;
+    }
+
     const spRect = scratchPad.getBoundingClientRect();
 
     currentScratchInput = document.createElement('textarea');

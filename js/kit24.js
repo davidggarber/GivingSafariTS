@@ -9503,6 +9503,10 @@ function scratchClick(evt) {
         scratchRehydrate(evt.target);
         return;
     }
+    if (!evt.ctrlKey) {
+        // One way to leave scratch mode is to click away
+        return;
+    }
     const spRect = scratchPad.getBoundingClientRect();
     currentScratchInput = document.createElement('textarea');
     // Position the new textarea where its first character would be at the click point
