@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Greens',
+        author: 'Margaret Shaver',
+        copyright: '2021',
+        type: 'trivia',
+        textInput: true,
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          colors: [
+            { name: '---', value: '#FFFFFF' },
+            { name: 'Amazon', value: '#3B7A57' },
+            { name: 'Artichoke', value: '#8F9779' },
+            { name: 'Asparagus', value: '#87A96B' },
+            { name: 'Avocado', value: '#568203' },
+            { name: 'Dollar Bill', value: '#85BB65' },
+            { name: 'Erin', value: '#00FF40' },
+            { name: 'Fern', value: '#4F7942' },
+            { name: 'Forest', value: '#228B22' },
+            { name: 'Gin', value: '#D8E4BC' },
+            { name: 'Granny Smith Apple', value: '#A8E4A0' },
+            { name: 'Harlequin', value: '#3FFF00' },
+            { name: 'Honeydew', value: '#F0FFF0' },
+            { name: 'Hunter', value: '#355E3B' },
+            { name: 'Inchworm', value: '#B2EC5D' },
+            { name: 'Jungle', value: '#29AB87' },
+            { name: 'Kelly', value: '#1E4909' },
+            { name: 'Lime', value: '#00FF00' },
+            { name: 'Limerick', value: '#9DC209' },
+            { name: 'Mantis', value: '#74C365' },
+            { name: 'Mint', value: '#98FF98' },
+            { name: 'Myrtle', value: '#21421E' },
+            { name: 'Pistachio', value: '#93C572' },
+            { name: 'Tea', value: '#D0F0C0' },
+            { name: 'Volt', value: '#CEFF00' },
+          ],
+          questions: [
+            [
+              'Dancer Gene (4)',
+              'Prime provider (5)',
+              'Odor-producing food, for some (7)',
+              'Mythical warrior (5)',
+            ],
+            [
+              'Chevy Hybrid (2)',
+              'Found on floor of the right (1)',
+              'Endor moon terrain (6)',
+              'Muppet prof (1)',
+            ],
+            [
+              '"Praying" insect (5)',
+              'Popular pie filler (7)',
+              'Kids playground (with "gym") (1)',
+              'Trophy collector? (2)',
+            ],
+            [
+              'Guardian of the Galaxy (6)',
+              'Coining location (4)',
+              'Tonic mate (2)',
+              'Guac requisite (4)',
+            ],
+            [
+              'Drink with jam and bread (2)',
+              'Talkshow host Ripa (3)',
+              'Actor Whitaker (4)',
+              'Shadow Run immortal elf (2)',
+            ],
+            [
+              'Spear vegetable (7)',
+              'Orion alias (2)',
+              'Tahoe National, for one (4)',
+              'Bathroom moaner (3)',	
+            ]
+          ],
+        },
+      };
+
+      function onCombo(select) {
+        select.style.backgroundColor = select.value;
+        var td = select.parentNode;
+        td.style.backgroundColor = select.value;
+      }
+    </script>
+    <style>
+    </style>
+  </head>
+  <body id="__puzzle_name">
+    <div id="pageBody">
+      <p class="flavor">
+        Note: Each answer may appear multiple times or never at all
+      </p>
+      <build>
+        <ttable>
+          <for each="row" in="{questions}">
+            <ttr>
+              <for each="q" in="{row}">
+                <ttd>
+                  <p>{q}</p>
+                  <use template="colors"></use>
+                </ttd>
+              </for>
+            </ttr>
+          </for>
+        </ttable>
+      </build>
+    </div>
+
+    <template id="colors">
+      <sselect onchange="onCombo(this)">
+        <for each="col" in="{colors}">
+          <ooption value="{col.value}">{col.name}</ooption>
+        </for>
+      </sselect>
+    </template>
+  </body>
+</html>
