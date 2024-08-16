@@ -38,6 +38,21 @@
   height: 2.5ex;
 }
 
+.literal-box {
+  border: solid 1px black;
+  margin-left: -1px;
+  height: 2.5ex;
+}
+
+.letter-hover {
+  border: solid 1px transparent;
+}
+
+.letter-hover:hover {
+  background-color: #80808010;
+}
+
+
 .letter-grid {
   width: 4ex;
   height: 4ex;

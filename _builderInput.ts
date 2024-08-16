@@ -32,7 +32,7 @@ export function startInputArea(src:HTMLElement):Node[] {
   let literal:string|null = null;
   const extract = src.hasAttributeNS('', 'extract') ? cloneText(src.getAttributeNS('', 'extract')) : null;
 
-  let styles = getLetterStyles(src, 'underline', '', 'box');
+  let styles = getLetterStyles(src, 'underline', 'none', 'box');
 
   // Convert special attributes to data-* attributes for later text setup
   let attr:string|null;

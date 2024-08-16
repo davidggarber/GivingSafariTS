@@ -106,7 +106,7 @@ function setupLetterPatterns() {
         var numberedPattern = parsePattern2(parent, 'data-number-assignments');
         var vertical = hasClass(parent, 'vertical');  // If set, each input and literal needs to be on a separate line
         var numeric = hasClass(parent, 'numeric');  // Forces inputs to be numeric
-        var styles = getLetterStyles(parent, 'underline', '', numberedPattern == null ? 'box' : 'numbered');
+        var styles = getLetterStyles(parent, 'underline', 'none', numberedPattern == null ? 'box' : 'numbered');
 
         if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
             var prevCount = 0;

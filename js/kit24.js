@@ -3016,7 +3016,7 @@ function setupLetterPatterns() {
         var numberedPattern = parsePattern2(parent, 'data-number-assignments');
         var vertical = hasClass(parent, 'vertical'); // If set, each input and literal needs to be on a separate line
         var numeric = hasClass(parent, 'numeric'); // Forces inputs to be numeric
-        var styles = getLetterStyles(parent, 'underline', '', numberedPattern == null ? 'box' : 'numbered');
+        var styles = getLetterStyles(parent, 'underline', 'none', numberedPattern == null ? 'box' : 'numbered');
         if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
             var prevCount = 0;
             for (let pi = 0; pi < pattern.length; pi++) {
@@ -9014,7 +9014,7 @@ function startInputArea(src) {
     let cloneContents = false;
     let literal = null;
     const extract = src.hasAttributeNS('', 'extract') ? cloneText(src.getAttributeNS('', 'extract')) : null;
-    let styles = getLetterStyles(src, 'underline', '', 'box');
+    let styles = getLetterStyles(src, 'underline', 'none', 'box');
     // Convert special attributes to data-* attributes for later text setup
     let attr;
     if (isTag(src, 'letter')) { // 1 input cell for (usually) one character

@@ -61,8 +61,7 @@
         <build>
           <h3 style="margin-top: 0px;">Letter input styles</h3>
           <p>
-            Each &lt;letter&gt; is repeated 6 times, in 3 pairs.<br>
-            There are also 4 simple text characters: smart quotes, a space, and a dash.
+            Each &lt;letter&gt; is repeated 6 times, in 3 pairs. The characters in between (spaces, quotes) are plain text.
           </p>
           <table class="alternating-rows">
             <tr>
@@ -78,44 +77,40 @@
               <td><use template="tag" value="letter data-input-style='grid'"></use></td>
               <td><use template="simple" dis="grid"></use></td>
             </tr>
+            <tr>
+              <td><use template="tag" value="letter data-input-style='hover'"></use></td>
+              <td><use template="simple" dis="hover"></use></td>
+            </tr>
           </table>
 
           <h3>Letter literal styles</h3>
           <p>
-            Text literals can be incorporated into the input area as peers.<br>
-            Each row has an apostrophe and exclamation mark.
+            Text literals can be incorporated into the input area as peers.
+            <use template="tag" value="letter literal='X'"></use><br>
+            In the following examples, there is a dash, apostrophe, and exclamation mark as letter literals.
           </p>
           <table class="alternating-rows">
             <tr>
-              <td>By default, literals render like filled inputs.</td>
+              <td>By default, literals render with no borders, but full width.</td>
               <td><use template="lit"></use></td>
             </tr>
             <tr>
-              <td><use template="tag" value="letter data-literal-style='none'"></use></td>
-              <td><use template="lit" dls="none"></use></td>
+              <td>To render them with underlines, set <use template="code" value="data-literal-style='underline'"></use></td>
+              <td><use template="lit" dls="underline"></use></td>
             </tr>
             <tr>
-              <td><use template="tag" value="letter data-literal-style='box'"></use></td>
-              <td><use template="lit" dls="box"></use></td>
-            </tr>
-            <tr>
-              <td>With boxes.</td>
+              <td>With boxes. Default:</td>
               <td><use template="lit" dis="box"></use></td>
             </tr>
             <tr>
-              <td><use template="tag" value="letter data-literal-style='box'"></use></td>
+              <td>Or with <use template="code" value="data-literal-style='box'"></use></td>
               <td><use template="lit" dis="box" dls="box"></use></td>
-            </tr>
-            <tr>
-              <td><use template="tag" value="letter data-literal-style='none'"></use></td>
-              <td><use template="lit" dis="box" dls="none"></use></td>
             </tr>
           </table>
 
           <h3>2D Grids</h3>
           <p>
-            2D grids aim for boxes that are squares<br>
-            It also supports black-ish blocks.<br>
+            2D grids aim for boxes that are squares. It also supports black-ish blocks.<br>
             Be sure to set <input id="letter-grid-2d" type="checkbox" checked onclick="toggleGrid2d(this)"><use template="code" value="class='letter-grid-2d'"></use> 
             or <input id="letter-grid-discover" type="checkbox" onclick="toggleGrid2d(this)"><use template="code" value="class='letter-grid-discover'"></use> on a container,<br>
             and <use template="code" value="class='letter-cell-block'"></use> on each row.
@@ -139,13 +134,11 @@
 
           <h3>Letter extract styles</h3>
           <p>
-            Each &lt;letter&gt; is repeated 6 times, in 3 pairs.<br>
-            There are also 4 simple text characters: smart quotes, a space, and a dash.
+            The following examples have 6&times; <use template="tag" value="letter"></use> tags, with #2 and #5 being <use template="tag" value="letter extract"></use>.
           </p>
           <table class="alternating-rows">
             <tr>
-              <td>Some letters are <use template="tag" value="letter extract"></use><br>
-                Default: normal inputs are underlines. Extracts are boxes.</td>
+              <td>Default: normal inputs are underlines. Extracts are boxes.</td>
               <td><use template="extr"></use></td>
             </tr>
             <tr>
@@ -165,6 +158,43 @@
               <td id="extracted"></td>
             </tr>
           </table>
+
+          <h3>Overriding page-wide defaults</h3>
+            <p>The style of each letter, literal, or extract is determined by the first container it finds with an override.
+              <br>As such, it is often convenient to set the override once on a top-level &lt;div&gt; or &lt;table&gt; element.
+            </p>
+          <table style="width:100%;">
+            <tr>
+              <th>Override attribute</th>
+              <th>Default, if unset</th>
+              <th>Other options</th>
+            </tr>
+            <tr>
+              <td>data-input-style</td>
+              <td>underline: <letter></letter><letter></letter></td>
+              <td>box: <span data-input-style="box"><letter></letter><letter></letter></span> 
+                , grid: <span data-input-style="grid"><letter></letter><letter></letter></span> 
+                , hover: <span data-input-style="hover"><letter></letter><letter></letter></span> 
+              </td></d>
+            </tr>
+            <tr>
+              <td>data-literal-style</td>
+              <td>none: <letter></letter><letter literal="+"></letter><letter></letter></td>
+              <td>underline: <span data-literal-style="underline"><letter></letter><letter literal="+"></letter><letter></letter></span> 
+                , box: <span data-input-style="box" data-literal-style="box"><letter></letter><letter literal="+"></letter><letter></letter></span> 
+                , grid: <span data-input-style="grid" data-literal-style="grid"><letter></letter><letter literal="+"></letter><letter></letter></span> 
+              </td></d>
+            </tr>            
+            <tr>
+              <td>data-extract-style</td>
+              <td>box: <letter></letter><letter extract></letter><letter></letter></td>
+              <td>highlight: <span data-extract-style="highlight"><letter></letter><letter extract></letter><letter></letter></span> 
+                , box: <span data-input-style="box" data-literal-style="highlight"><letter></letter><letter extract></letter><letter></letter></span> 
+                , grid: <span data-input-style="grid" data-literal-style="highlight"><letter></letter><letter extract></letter><letter></letter></span> 
+              </td></d>
+            </tr>            
+          </table>
+          <p>Pages can also invent their own overrides.</p>
         </build>
       </div>
 
