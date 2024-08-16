@@ -42,6 +42,7 @@ var puzzles = [
     { title: 'Fridge Raider 2', thumb: '', author: 'Jeffrey Lin', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Food Trucks', thumb: '', author: 'Jesse McGatha', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: '🍽️🎥', file:'EmojiDM', thumb: '', author: 'Morgan Grobin', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: 'Greens', thumb: '', author: 'Margaret Shaver', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [] },
 ];
 
 function puzzleFile(puz) {
