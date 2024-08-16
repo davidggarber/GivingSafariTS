@@ -72,10 +72,10 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       const testTok = elementSourceOffseter(src, 'test');
 
       let value:string|null;
-      if (value = evaluateAttribute(src, 'eq', false, false)) {
+      if ((value = evaluateAttribute(src, 'eq', false, false)) !== undefined) {
         result.passed = test === value;  // REVIEW: no casting of either
       }
-      else if (value = evaluateAttribute(src, 'ne', false, false)) {  // not-equals
+      else if ((value = evaluateAttribute(src, 'ne', false, false)) !== undefined) {  // not-equals
         result.passed = test !== value;  // REVIEW: no casting of either
       }
       else if (value = evaluateAttribute(src, 'lt', false, false)) {  // less-than

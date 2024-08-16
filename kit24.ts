@@ -9015,11 +9015,11 @@ export function evaluateFormula(str:string|null):any {
  * @param onerr What to return in the special case of an exception. If omitted, exceptions throw.
  * @returns Any data type
  */
-export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boolean, required?:boolean, onerr?:any) {
+export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boolean, required?:boolean, onerr?:any):any {
   const val = elmt.getAttributeNS('', attr);
   if (!val) {
     if (required === false) {  // true by default
-      return undefined;
+      return val == '' ? '' : undefined;  // empty string is interestingly different from missing
     }
     throw new ContextError('Missing required attribute: ' + attr, elementSourceOffset(elmt));
   }
@@ -9897,10 +9897,10 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       const testTok = elementSourceOffseter(src, 'test');
 
       let value:string|null;
-      if (value = evaluateAttribute(src, 'eq', false, false)) {
+      if ((value = evaluateAttribute(src, 'eq', false, false)) !== undefined) {
         result.passed = test === value;  // REVIEW: no casting of either
       }
-      else if (value = evaluateAttribute(src, 'ne', false, false)) {  // not-equals
+      else if ((value = evaluateAttribute(src, 'ne', false, false)) !== undefined) {  // not-equals
         result.passed = test !== value;  // REVIEW: no casting of either
       }
       else if (value = evaluateAttribute(src, 'lt', false, false)) {  // less-than

@@ -8128,7 +8128,7 @@ function evaluateAttribute(elmt, attr, implicitFormula, required, onerr) {
     const val = elmt.getAttributeNS('', attr);
     if (!val) {
         if (required === false) { // true by default
-            return undefined;
+            return val == '' ? '' : undefined; // empty string is interestingly different from missing
         }
         throw new ContextError('Missing required attribute: ' + attr, elementSourceOffset(elmt));
     }
@@ -8917,10 +8917,10 @@ function startIfBlock(src, result) {
         else if (test !== undefined) {
             const testTok = elementSourceOffseter(src, 'test');
             let value;
-            if (value = evaluateAttribute(src, 'eq', false, false)) {
+            if ((value = evaluateAttribute(src, 'eq', false, false)) !== undefined) {
                 result.passed = test === value; // REVIEW: no casting of either
             }
-            else if (value = evaluateAttribute(src, 'ne', false, false)) { // not-equals
+            else if ((value = evaluateAttribute(src, 'ne', false, false)) !== undefined) { // not-equals
                 result.passed = test !== value; // REVIEW: no casting of either
             }
             else if (value = evaluateAttribute(src, 'lt', false, false)) { // less-than

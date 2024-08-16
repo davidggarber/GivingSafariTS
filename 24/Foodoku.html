@@ -132,15 +132,14 @@
             <for each="row" in="{grid}">
               <div class="grid-row">
                 <for each="cell" in="{row}">
-                  <if exists="{cell}">
+                  <if test="{cell}" ne="">
                     <div class="grid-cell">
                       <img_ src="{cell}">
                     </div>
                   </if>
-                  <if notex="{cell}">
-                    <div class="grid-cell stampable">
-                    </div>
-                  </if>
+                  <else>
+                    <div class="grid-cell stampable"></div>
+                  </else>
                 </for>
               </div>
             </for>
