@@ -180,7 +180,8 @@ export function getLetterStyles(   elmt: Element,
                             defLiteral: string|undefined, 
                             defExtract: string)
                             : LetterStyles {
-    var letter = getOptionalStyle(elmt, 'data-input-style', defLetter, 'letter-');
+    var letter = getOptionalStyle(elmt, 'data-letter-style', undefined, 'letter-')
+        || getOptionalStyle(elmt, 'data-input-style', defLetter, 'letter-');
     var literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
     literal = (literal != null) ? ('literal-' + literal) : letter;
     var extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');

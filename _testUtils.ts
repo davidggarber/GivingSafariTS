@@ -110,7 +110,7 @@ function pageLayoutRootNode(): Node {
     if (pageBody) {
         return pageBody;
     }
-    const bodies = document.getElementsByTagName('BODY');
+    const bodies = document.getElementsByTagName('body');
     if (bodies && bodies.length > 0) {
         return bodies[0];
     }
@@ -261,7 +261,7 @@ export function renderDiffs(diffs:LayoutDiff[]) {
     if (!diffRoot) {
         diffRoot = document.createElement('div');
         diffRoot.id = 'render-diffs';
-        const body = document.getElementsByTagName('BODY')[0];
+        const body = document.getElementsByTagName('body')[0];
         body.appendChild(diffRoot);
     }
 

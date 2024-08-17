@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'Docs',
+        'title': '<letter>',
+        'paperSize': 'ledger',
+        'orientation': 'landscape',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true
+      };
+
+      function toggleGrid2d(check) {
+        var val = check.checked;
+        var table = document.getElementById('grid-sample');
+        if (!val) {
+          toggleClass(table, check.id, false);
+        }
+        else {
+          var discover = check.id == 'letter-grid-discover';
+          toggleClass(table, 'letter-grid-discover', discover);
+          toggleClass(table, 'letter-grid-2d', !discover);
+          // toggle the other checkbox off
+          document.getElementById(discover ? 'letter-grid-2d' : 'letter-grid-discover').checked = false;
+        }
+      }
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      #Letter.inp-font .letter-cell {
+        font-family: 'Cambria';
+        font-size: 16pt;
+      }
+      #Letter.big-extract #extracted {
+        font-family: 'Caveat';
+        font-size: 24pt;
+        color: lime;
+      }
+      #Letter.small-under .under-number {
+        font-size: 7pt;
+      }
+      #Letter.thick-underline .letter-underline {
+        border-bottom: solid 2px black;
+      }
+      #Letter.more-space .letter-underline {
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body id="Letter">
+    <div id="pageBody">
+      <div id="examples">
+        <build>
+          <h3 style="margin-top: 0px;">Letter input styles</h3>
+          <p>
+            Each &lt;letter&gt; is repeated 6 times, in 3 pairs. The characters in between (spaces, quotes) are plain text.
+          </p>
+          <table class="alternating-rows">
+            <tr>
+              <td><use template="tag" value="letter"></use> with default 
+                <use template="code" value="data-input-style='underline'"></use></td>
+              <td><use template="simple"></use></td>
+            </tr>
+            <tr>
+              <td><use template="tag" value="letter data-input-style='box'"></use></td>
+              <td><use template="simple" dis="box"></use></td>
+            </tr>
+            <tr>
+              <td><use template="tag" value="letter data-input-style='grid'"></use></td>
+              <td><use template="simple" dis="grid"></use></td>
+            </tr>
+            <tr>
+              <td><use template="tag" value="letter data-input-style='hover'"></use></td>
+              <td><use template="simple" dis="hover"></use></td>
+            </tr>
+          </table>
+
+          <h3>Letter literal styles</h3>
+          <p>
+            Text literals can be incorporated into the input area as peers.
+            <use template="tag" value="letter literal='X'"></use><br>
+            In the following examples, there is a dash, apostrophe, and exclamation mark as letter literals.
+          </p>
+          <table class="alternating-rows">
+            <tr>
+              <td>By default, literals render with no borders, but full width.</td>
+              <td><use template="lit"></use></td>
+            </tr>
+            <tr>
+              <td>To render them with underlines, set <use template="code" value="data-literal-style='underline'"></use></td>
+              <td><use template="lit" dls="underline"></use></td>
+            </tr>
+            <tr>
+              <td>With boxes. Default:</td>
+              <td><use template="lit" dis="box"></use></td>
+            </tr>
+            <tr>
+              <td>Or with <use template="code" value="data-literal-style='box'"></use></td>
+              <td><use template="lit" dis="box" dls="box"></use></td>
+            </tr>
+          </table>
+
+          <h3>2D Grids</h3>
+          <p>
+            2D grids aim for boxes that are squares. It also supports black-ish blocks.<br>
+            Be sure to set <input id="letter-grid-2d" type="checkbox" checked onclick="toggleGrid2d(this)"><use template="code" value="class='letter-grid-2d'"></use> 
+            or <input id="letter-grid-discover" type="checkbox" onclick="toggleGrid2d(this)"><use template="code" value="class='letter-grid-discover'"></use> on a container,<br>
+            and <use template="code" value="class='letter-cell-block'"></use> on each row.
+          </p>
+          <table id="grid-sample" class='letter-grid-2d alternating-rows'>
+            <tr>
+              <td>
+                <use template="tag" value="letter data-input-style='grid'"></use>
+              </td>
+              <td><use template="gridblocks" dis="grid"></use></td>
+            </tr>
+            <tr>
+              <td>... <use template="code" value="data-literal-style='gridgap'"></use></td>
+              <td><use template="gridblocks" dis="grid" dls="gridgap"></use></td>
+            </tr>
+            <tr>
+              <td>... <use template="code" value="data-literal-style='block'"></use></td>
+              <td><use template="gridblocks" dis="grid" dls="block"></use></td>
+            </tr>
+          </table>
+
+          <h3>Letter extract styles</h3>
+          <p>
+            The following examples have 6&times; <use template="tag" value="letter"></use> tags, with #2 and #5 being <use template="tag" value="letter extract"></use>.
+          </p>
+          <table class="alternating-rows">
+            <tr>
+              <td>Default: normal inputs are underlines. Extracts are boxes.</td>
+              <td><use template="extr"></use></td>
+            </tr>
+            <tr>
+              <td>Alternately, <use template="tag" value="letter data-extract-style='highlight'"></use></td>
+              <td><use template="extr" des="highlight"></use></td>
+            </tr>
+            <tr>
+              <td>Ordered extractions look like <use template="tag" value="letter extract='5'"></use><br>
+                Customize the <use template="code" value=".under-number"></use> fonts with styles.
+              </td>
+              <td style="vertical-align: top;">
+                <letter></letter><letter extract="6"></letter><letter></letter> <letter></letter><letter extract="5"></letter><letter></letter>
+              </td>
+            </tr>
+            <tr>
+              <td>Letters tagged extract are mirrored to an element with <use template="code" value="id='extracted'"></use>:</td>
+              <td id="extracted"></td>
+            </tr>
+          </table>
+
+          <h3>Overriding page-wide defaults</h3>
+            <p>The style of each letter, literal, or extract is determined by the first container it finds with an override.
+              <br>As such, it is often convenient to set the override once on a top-level &lt;div&gt; or &lt;table&gt; element.
+            </p>
+          <table style="width:100%;">
+            <tr>
+              <th>Override attribute</th>
+              <th>Default, if unset</th>
+              <th>Other options</th>
+            </tr>
+            <tr>
+              <td>data-input-style</td>
+              <td>underline: <letter></letter><letter></letter></td>
+              <td>box: <span data-input-style="box"><letter></letter><letter></letter></span> 
+                , grid: <span data-input-style="grid"><letter></letter><letter></letter></span> 
+                , hover: <span data-input-style="hover"><letter></letter><letter></letter></span> 
+              </td></d>
+            </tr>
+            <tr>
+              <td>data-literal-style</td>
+              <td>none: <letter></letter><letter literal="+"></letter><letter></letter></td>
+              <td>underline: <span data-literal-style="underline"><letter></letter><letter literal="+"></letter><letter></letter></span> 
+                , box: <span data-input-style="box" data-literal-style="box"><letter></letter><letter literal="+"></letter><letter></letter></span> 
+                , grid: <span data-input-style="grid" data-literal-style="grid"><letter></letter><letter literal="+"></letter><letter></letter></span> 
+              </td></d>
+            </tr>            
+            <tr>
+              <td>data-extract-style</td>
+              <td>box: <letter></letter><letter extract></letter><letter></letter></td>
+              <td>highlight: <span data-extract-style="highlight"><letter></letter><letter extract></letter><letter></letter></span> 
+                , box: <span data-input-style="box" data-literal-style="highlight"><letter></letter><letter extract></letter><letter></letter></span> 
+                , grid: <span data-input-style="grid" data-literal-style="highlight"><letter></letter><letter extract></letter><letter></letter></span> 
+              </td></d>
+            </tr>            
+          </table>
+          <p>Pages can also invent their own overrides.</p>
+        </build>
+      </div>
+
+      <div id="css-styles">
+        <h2 style="margin-top: 0px;">Overridable CSS styles</h2>
+        <p>Defaults are in <a href="../Css/TextInput.css">TextInput.css</a>. Here are examples of overrides.<br>
+          See tips for <a href="overridingCss">overriding default CSS</a>.
+        </p>
+        <table style="width:100%;">
+          <tr>
+            <td colspan="2"><h3>User input font</h3></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('inp-font')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.letter-cell {                <i>/* for inputs generated by &lt;letter&gt; tags*/</i></pre>
+                <pre>  font-family: 'Cambria';</pre>
+                <pre>  font-size: 16pt;            <i>/* note that input boxes grow to match*/</i></pre>
+                <pre>}</pre>
+              </code> 
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.input-font {                 <i>/* for other HTML meant to mimic &lt;letter&gt; tags*/</i></pre>
+                <pre>  font-family: 'Caveat';</pre>
+                <pre>}</pre>
+              </code>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"><h3>Extracted text font</h3></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('big-extract')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>#extracted {                  <i>/* for extractions into a &lt;div&gt;*/</i></pre>
+                <pre>  font-family: 'Caveat';</pre>
+                <pre>  font-size: 24pt;</pre>
+                <pre>  color: lime;</pre>
+                <pre>}</pre>      
+              </code> 
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>#extracted .letter-cell {     <i>/* for extracting into a &lt;pattern&gt;*/</i></pre>
+                <pre>  font-family: 'Caveat';</pre>
+                <pre>  font-size: 24pt;</pre>
+                <pre>  color: blue;</pre>
+                <pre>}</pre>      
+              </code> 
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"><h3>Fine-tuning underlines</h3></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('thick-underline')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.letter-underline {                  <i>/* for thicker underlines*/</i></pre>
+                <pre>  border-bottom: solid 2px black</pre>
+                <pre>}</pre>      
+              </code> 
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('more-space')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.letter-underline {                  <i>/* for more space between underlines*/</i></pre>
+                <pre>  margin-right: 10px;</pre>
+                <pre>}</pre>      
+              </code> 
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"><h3>Under-numbers</h3></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" onclick="toggleCss('small-under')"></td>
+            <td>
+              <code onclick="selectCodeBlock(this, event)">
+                <pre>.under-number {  </pre>
+                <pre>  font-size: 7pt;             <i>/* default is full size*/</i></pre>
+                <pre>}</pre>
+              </code> 
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <template id="code">
+        <code ondblclick="selectCode(this, event)">{value}</code>
+      </template>
+      <template id="tag">
+        <use template="code" value="&lt;{value}&gt;"></use>
+      </template>
+
+      <template id="simple">
+        <span data-input-style="{dis?}">
+          &ldquo;<letter></letter><letter></letter> 
+          <letter></letter><letter></letter>-<letter></letter><letter></letter>&rdquo;
+        </span>
+      </template>
+
+      <template id="lit">
+        <span data-input-style="{dis?}" data-literal-style="{dls?}">
+          <letter></letter><letter literal="-"></letter><letter></letter><letter literal="&rsquo;"></letter><letter></letter><letter literal="!"></letter>
+        </span>
+      </template>
+      <template id="gridblocks">
+        <div data-input-style="grid" data-literal-style="{dls?}">
+          <div class="letter-cell-block"><letter literal="¤"></letter><letter></letter><letter></letter><letter literal=" "></letter><letter></letter><letter literal="$"></letter></div>
+        </div>
+      </template>
+
+      <template id="extr">
+        <span data-input-style="{dis?}" data-extract-style="{des?}">
+          <letter></letter><letter extract></letter><letter></letter> <letter></letter><letter extract></letter><letter></letter>
+        </span>
+      </template>
+    </div>
+  </body>
+</html>

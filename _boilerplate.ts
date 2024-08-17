@@ -174,7 +174,7 @@ function preSetup(bp:BoilerPlateData) {
     _rawHtmlSource = document.documentElement.outerHTML;
     const safariDetails = initSafariDetails(bp.safari);
     debugSetup();
-    var bodies = document.getElementsByTagName('BODY');
+    var bodies = document.getElementsByTagName('body');
     if (isIFrame()) {
         bodies[0].classList.add('iframe');
     }
@@ -204,7 +204,7 @@ interface CreateSimpleDivArgs {
     html?: string;  // html code
 }
 function createSimpleDiv({id, cls, text, html}: CreateSimpleDivArgs) : HTMLDivElement {
-    let div: HTMLDivElement = document.createElement('DIV') as HTMLDivElement;
+    let div: HTMLDivElement = document.createElement('div') as HTMLDivElement;
     if (id !== undefined) {
         div.id = id;
     }
@@ -228,7 +228,7 @@ interface CreateSimpleAArgs {
     target?: string;
 }
 function createSimpleA({id, cls, friendly, href, target}: CreateSimpleAArgs) : HTMLAnchorElement {
-    let a: HTMLAnchorElement = document.createElement('A') as HTMLAnchorElement;
+    let a: HTMLAnchorElement = document.createElement('a') as HTMLAnchorElement;
     if (id !== undefined) {
         a.id = id;
     }
@@ -375,9 +375,9 @@ function boilerplate(bp: BoilerPlateData) {
         constructTable(bp.tableBuilder);
     }
 
-    const html:HTMLHtmlElement = document.getElementsByTagName('HTML')[0] as HTMLHtmlElement;
-    const head:HTMLHeadElement = document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
-    const body:HTMLBodyElement = document.getElementsByTagName('BODY')[0] as HTMLBodyElement;
+    const html:HTMLHtmlElement = document.getElementsByTagName('html')[0] as HTMLHtmlElement;
+    const head:HTMLHeadElement = document.getElementsByTagName('head')[0] as HTMLHeadElement;
+    const body:HTMLBodyElement = document.getElementsByTagName('body')[0] as HTMLBodyElement;
     const pageBody:HTMLDivElement = document.getElementById('pageBody') as HTMLDivElement;
 
     if (bp.title) {
@@ -391,7 +391,7 @@ function boilerplate(bp: BoilerPlateData) {
         addLink(head, safariDetails.links[i]);
     }
 
-    const viewport = document.createElement('META') as HTMLMetaElement;
+    const viewport = document.createElement('meta') as HTMLMetaElement;
     viewport.name = 'viewport';
     viewport.content = 'width=device-width, initial-scale=1'
     head.appendChild(viewport);
@@ -536,11 +536,11 @@ function debugPostSetup() {
 }
 
 function theHead(): HTMLHeadElement {
-    return document.getElementsByTagName('HEAD')[0] as HTMLHeadElement;
+    return document.getElementsByTagName('head')[0] as HTMLHeadElement;
 }
 
 function baseHref(): string {
-    const bases = document.getElementsByTagName('BASE');
+    const bases = document.getElementsByTagName('base');
     for (let i = 0; i < bases.length; i++) {
         var href = bases[i].getAttribute('href');
         if (href) {

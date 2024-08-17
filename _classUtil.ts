@@ -56,7 +56,7 @@ export function hasClass( obj: Node|string|null,
         elmt = obj as Element;
     }
     return elmt !== null 
-        && elmt.classList !== null
+        && elmt.classList
         && elmt.classList.contains(cls);
 }
 
@@ -245,11 +245,7 @@ export function findParentOfClass(elmt: Element,
     if (parentClass == null || parentClass == undefined) {
         return null;
     }
-    while (elmt !== null && elmt.tagName !== 'BODY') {
-        const name = elmt.tagName;
-        if (name == 'BODY') {
-            break;
-        }
+    while (elmt !== null && !isTag(elmt, 'body')) {
         if (hasClass(elmt, parentClass)) {
             return elmt;
         }
@@ -265,7 +261,7 @@ export function findParentOfClass(elmt: Element,
  * @returns true if parent is anywhere in elmt's parent chain
  */
 export function isSelfOrParent(elmt: Element, parent: Element) {
-    while (elmt !== null && elmt.tagName !== 'BODY') {
+    while (elmt !== null && !isTag(elmt, 'body')) {
         if (elmt === parent) {
             return true;
         }
@@ -361,7 +357,7 @@ export function siblingIndexOfClass(parent: Element, child: Element, childClass:
 }
 
 /**
- * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
+ * Look for any attribute in the current tag, and all parents (up to, but not including, body)
  * @param elmt - A page element
  * @param attrName - An attribute name
  * @param defaultStyle - (optional) The default value, if no tag is found with the attribute. Null if omitted.
@@ -383,7 +379,7 @@ export function getOptionalStyle(   elmt: Element|null,
 }
 
 /**
- * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
+ * Look for any attribute in the current tag, and all parents (up to, but not including, body)
  * @param elmt - A page element
  * @param attrName - An attribute name
  * @returns The found data, looked up in context

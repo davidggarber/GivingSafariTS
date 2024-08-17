@@ -61,7 +61,7 @@ function hasClass(obj, cls) {
         elmt = obj;
     }
     return elmt !== null
-        && elmt.classList !== null
+        && elmt.classList
         && elmt.classList.contains(cls);
 }
 exports.hasClass = hasClass;
@@ -228,11 +228,7 @@ function findParentOfClass(elmt, parentClass) {
     if (parentClass == null || parentClass == undefined) {
         return null;
     }
-    while (elmt !== null && elmt.tagName !== 'BODY') {
-        const name = elmt.tagName;
-        if (name == 'BODY') {
-            break;
-        }
+    while (elmt !== null && !isTag(elmt, 'body')) {
         if (hasClass(elmt, parentClass)) {
             return elmt;
         }
@@ -248,7 +244,7 @@ exports.findParentOfClass = findParentOfClass;
  * @returns true if parent is anywhere in elmt's parent chain
  */
 function isSelfOrParent(elmt, parent) {
-    while (elmt !== null && elmt.tagName !== 'BODY') {
+    while (elmt !== null && !isTag(elmt, 'body')) {
         if (elmt === parent) {
             return true;
         }
@@ -336,7 +332,7 @@ function siblingIndexOfClass(parent, child, childClass) {
 }
 exports.siblingIndexOfClass = siblingIndexOfClass;
 /**
- * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
+ * Look for any attribute in the current tag, and all parents (up to, but not including, body)
  * @param elmt - A page element
  * @param attrName - An attribute name
  * @param defaultStyle - (optional) The default value, if no tag is found with the attribute. Null if omitted.
@@ -354,7 +350,7 @@ function getOptionalStyle(elmt, attrName, defaultStyle, prefix) {
 }
 exports.getOptionalStyle = getOptionalStyle;
 /**
- * Look for any attribute in the current tag, and all parents (up to, but not including, BODY)
+ * Look for any attribute in the current tag, and all parents (up to, but not including, body)
  * @param elmt - A page element
  * @param attrName - An attribute name
  * @returns The found data, looked up in context
@@ -3077,7 +3073,8 @@ function setupLetterPatterns() {
  * @returns An object with a style name for each role
  */
 function getLetterStyles(elmt, defLetter, defLiteral, defExtract) {
-    var letter = getOptionalStyle(elmt, 'data-input-style', defLetter, 'letter-');
+    var letter = getOptionalStyle(elmt, 'data-letter-style', undefined, 'letter-')
+        || getOptionalStyle(elmt, 'data-input-style', defLetter, 'letter-');
     var literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
     literal = (literal != null) ? ('literal-' + literal) : letter;
     var extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
@@ -5676,7 +5673,7 @@ function preSetup(bp) {
     exports._rawHtmlSource = document.documentElement.outerHTML;
     const safariDetails = initSafariDetails(bp.safari);
     debugSetup();
-    var bodies = document.getElementsByTagName('BODY');
+    var bodies = document.getElementsByTagName('body');
     if (isIFrame()) {
         bodies[0].classList.add('iframe');
     }
@@ -5699,7 +5696,7 @@ function preSetup(bp) {
     }
 }
 function createSimpleDiv({ id, cls, text, html }) {
-    let div = document.createElement('DIV');
+    let div = document.createElement('div');
     if (id !== undefined) {
         div.id = id;
     }
@@ -5715,7 +5712,7 @@ function createSimpleDiv({ id, cls, text, html }) {
     return div;
 }
 function createSimpleA({ id, cls, friendly, href, target }) {
-    let a = document.createElement('A');
+    let a = document.createElement('a');
     if (id !== undefined) {
         a.id = id;
     }
@@ -5851,9 +5848,9 @@ function boilerplate(bp) {
     if (bp.tableBuilder) {
         constructTable(bp.tableBuilder);
     }
-    const html = document.getElementsByTagName('HTML')[0];
-    const head = document.getElementsByTagName('HEAD')[0];
-    const body = document.getElementsByTagName('BODY')[0];
+    const html = document.getElementsByTagName('html')[0];
+    const head = document.getElementsByTagName('head')[0];
+    const body = document.getElementsByTagName('body')[0];
     const pageBody = document.getElementById('pageBody');
     if (bp.title) {
         document.title = bp.title;
@@ -5863,7 +5860,7 @@ function boilerplate(bp) {
     for (let i = 0; i < safariDetails.links.length; i++) {
         addLink(head, safariDetails.links[i]);
     }
-    const viewport = document.createElement('META');
+    const viewport = document.createElement('meta');
     viewport.name = 'viewport';
     viewport.content = 'width=device-width, initial-scale=1';
     head.appendChild(viewport);
@@ -5994,10 +5991,10 @@ function debugPostSetup() {
     }
 }
 function theHead() {
-    return document.getElementsByTagName('HEAD')[0];
+    return document.getElementsByTagName('head')[0];
 }
 function baseHref() {
-    const bases = document.getElementsByTagName('BASE');
+    const bases = document.getElementsByTagName('base');
     for (let i = 0; i < bases.length; i++) {
         var href = bases[i].getAttribute('href');
         if (href) {
@@ -10094,7 +10091,7 @@ function pageLayoutRootNode() {
     if (pageBody) {
         return pageBody;
     }
-    const bodies = document.getElementsByTagName('BODY');
+    const bodies = document.getElementsByTagName('body');
     if (bodies && bodies.length > 0) {
         return bodies[0];
     }
@@ -10229,7 +10226,7 @@ function renderDiffs(diffs) {
     if (!diffRoot) {
         diffRoot = document.createElement('div');
         diffRoot.id = 'render-diffs';
-        const body = document.getElementsByTagName('BODY')[0];
+        const body = document.getElementsByTagName('body')[0];
         body.appendChild(diffRoot);
     }
     // toggleClass(diffRoot, 'diff-div', true);

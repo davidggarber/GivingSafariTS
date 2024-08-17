@@ -8,6 +8,12 @@ body.debug {
   box-shadow:0px 0px 15px #009999; 
 }
 
+#pageBody.none {
+  top: 0px;
+  height: 0px;
+}
+
+
 /*
 Use class="letter portrait"       for 8½  x 11
 Use class="letter landscape"      for 11" x 8½"
