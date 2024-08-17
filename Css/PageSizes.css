@@ -218,7 +218,7 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
   box-shadow:0px 0px 15px #993333; 
 }
 
-body, p, td {
+body, p, td, th {
   font-family: 'Verdana';
   font-size: 10pt;
 }

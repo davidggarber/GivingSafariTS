@@ -1,4 +1,6 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
@@ -9,7 +11,7 @@
         safari: 'Docs',
         paperSize: 'ledger',
         orientation: 'portrait',
-        title: '<letter>',
+        title: '&lt;letter&gt;',
         reactiveBuilder: true
       };
     </script>
@@ -49,6 +51,7 @@
       }
     </style>
   </head>
+
   <body id="Letter">
     <div id="pageBody">
       <h2>Attribute-driven variations:</h2>
@@ -63,7 +66,7 @@
             <td class="code" onclick="selectCodeBlock(this, event)">
               &lt;letter&gt;
             </td>
-            <td class="rendered"><letter></letter></td>
+            <td class="rendered"><letter /></td>
             <td class="comment">Input for a single letter</td>
           </tr>
 
@@ -73,11 +76,11 @@
               &lt;letter <b>extract</b>&gt;
             </td>
             <td class="rendered">
-              <letter></letter>
-              <letter extract></letter>
+              <letter />
+              <letter extract='true' />
             </td>
             <td class="comment">
-              2nd letter is marked for extraction.<br>
+              2nd letter is marked for extraction.<br />
               Will be mirrored in document order to any element with <b>id="extracted"</b>.
             </td>
           </tr>
@@ -87,7 +90,7 @@
               &lt;letter extract<b>="3"</b>&gt;&lt;letter extract<b>="5"</b>&gt;
             </td>
             <td class="rendered">
-              <letter extract="3"></letter><letter extract="5"></letter>
+              <letter extract="3" /><letter extract="5" />
             </td>
             <td class="comment">
               The two letters will become the 3rd and 5th letters in the eventual extraction.
@@ -99,10 +102,10 @@
               &lt;letter&gt;&lt;letter <b>literal="+"</b>&gt;&lt;letter&gt;
             </td>
             <td class="rendered">
-              <letter></letter><letter literal="+"></letter><letter></letter>
+              <letter /><letter literal="+" /><letter />
             </td>
             <td class="comment">
-              The middle letter is marked literal.<br>
+              The middle letter is marked literal.<br />
               It is read-only, and often renders differently.
             </td>
           </tr>
@@ -114,7 +117,7 @@
 
       <h2>Page-wide overrides</h2>
       <p>Letter styles are implemented through CSS. Each letter becomes an &lt;span&gt;&lt;input&gt;&lt;/span&gt;
-        <br>where the span is assigned a style based on the variant and any style overrides.
+        <br />where the span is assigned a style based on the variant and any style overrides.
       </p>
       <table class="alternating-rows" style="width:100%;">
         <tr>
@@ -124,26 +127,26 @@
         </tr>
         <tr class="alt">
           <td class="override">data-letter-style</td>
-          <td>underline: <letter></letter><letter></letter></td>
-          <td>box: <span data-letter-style="box"><letter></letter><letter></letter></span> 
-            , grid: <span data-letter-style="grid"><letter></letter><letter></letter></span> 
-            , hover: <span data-letter-style="hover"><letter></letter><letter></letter></span> 
+          <td>underline: <letter /><letter /></td>
+          <td>box: <span data-letter-style="box"><letter /><letter /></span> 
+            , grid: <span data-letter-style="grid"><letter /><letter /></span> 
+            , hover: <span data-letter-style="hover"><letter /><letter /></span> 
           </td>
         </tr>
         <tr class="alt">
           <td class="override">data-literal-style</td>
-          <td>none: <letter></letter><letter literal="+"></letter><letter></letter></td>
-          <td>underline: <span data-literal-style="underline"><letter></letter><letter literal="+"></letter><letter></letter></span> 
-            , box: <span data-letter-style="box" data-literal-style="box"><letter></letter><letter literal="+"></letter><letter></letter></span> 
-            , grid: <span data-letter-style="grid" data-literal-style="grid"><letter></letter><letter literal="+"></letter><letter></letter></span> 
+          <td>none: <letter /><letter literal="+" /><letter /></td>
+          <td>underline: <span data-literal-style="underline"><letter /><letter literal="+" /><letter /></span> 
+            , box: <span data-letter-style="box" data-literal-style="box"><letter /><letter literal="+" /><letter /></span> 
+            , grid: <span data-letter-style="grid" data-literal-style="grid"><letter /><letter literal="+" /><letter /></span> 
           </td>
         </tr>            
         <tr class="alt">
           <td class="override">data-extract-style</td>
-          <td>box: <letter></letter><letter extract></letter><letter></letter></td>
-          <td>highlight: <span data-extract-style="highlight"><letter></letter><letter extract></letter><letter></letter></span> 
-            , box: <span data-letter-style="box" data-literal-style="highlight"><letter></letter><letter extract></letter><letter></letter></span> 
-            , grid: <span data-letter-style="grid" data-literal-style="highlight"><letter></letter><letter extract></letter><letter></letter></span> 
+          <td>box: <letter /><letter extract='true' /><letter /></td>
+          <td>highlight: <span data-extract-style="highlight"><letter /><letter extract='true' /><letter /></span> 
+            , box: <span data-letter-style="box" data-literal-style="highlight"><letter /><letter extract='true' /><letter /></span> 
+            , grid: <span data-letter-style="grid" data-literal-style="highlight"><letter /><letter extract='true' /><letter /></span> 
           </td>
         </tr>            
       </table>
@@ -167,12 +170,12 @@
           <td class="style">.letter-input</td>
           <td>The &lt;input&gt; itself</td>
           <td>
-            <li>Nothing!<br>The intent is that inputs inherit formatting from their span.letter-cell</li>
+            <li>Nothing!<br />The intent is that inputs inherit formatting from their span.letter-cell</li>
           </td>
         </tr>
 
         <tr>
-          <th colspan="3">Letter styles (always ".letter-" + the style name)</th>
+          <td colspan="3" style="font-weight: bold;">Letter styles (always ".letter-" + the style name)</td>
         </tr>
         <tr class="alt">
           <td class="style">.letter-underline</td>
@@ -205,7 +208,7 @@
         </tr>
 
         <tr>
-          <th colspan="3">Literal styles (".literal-" + the style name)</th>
+          <td colspan="3" style="font-weight: bold;">Literal styles (".literal-" + the style name)</td>
         </tr>
         <tr class="alt">
           <td class="style">.letter-cell<b>.literal</b></td>
@@ -231,7 +234,7 @@
         </tr>
 
         <tr>
-          <th colspan="3">Extract styles</th>
+          <td colspan="3" style="font-weight: bold;">Extract styles</td>
         </tr>
         <tr class="alt">
           <td class="style">.letter-cell<b>.extract</b></td>
@@ -257,7 +260,7 @@
         </tr>
 
       </table>
-      <p>To ensure a successful override, prefix your local CSS rule with the puzzle's body ID. i.e.<br>
+      <p>To ensure a successful override, prefix your local CSS rule with the puzzle's body ID. i.e.<br />
         <code>#MyPuzzle .letter-cell { font-size: 20pt; }</code>
       </p>
 
@@ -266,9 +269,10 @@
         <code>literal="¤"</code>
         <span style="margin-left:.3in;">When present, the literal character is a solid dark-gray box. 
           Especially handy in grids:</span>
-        <span data-letter-style="grid" data-literal-style="grid"><letter></letter><letter literal="¤"></letter><letter></letter></span>
+        <span data-letter-style="grid" data-literal-style="grid"><letter /><letter literal="¤" /><letter /></span>
       </div>
 
     </div>
   </body>
+        
 </html>
