@@ -369,21 +369,30 @@ input {
   text-transform: uppercase;
 }
 
-.word-input.word-underline {
+.word-underline {
   border-bottom: solid 1px black;
 }
 
-.word-input.word-dotted {
+.word-dotted {
   border-bottom: dotted 1px black;
 }
 
-.word-input.word-box {
+.word-box {
   border: solid 1px black;
 }
 
-.word-input.word-literal {
+.word-literal {
   width: 1in;
 }
+
+.word-hover {
+  border: solid 1px transparent;
+}
+
+.word-hover:hover {
+  background-color: #80808010;
+}
+
 
 .highlighted {
   background-color: yellow;
