@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
@@ -171,58 +172,58 @@
   <body id="DodecadentDinner">
     <div id="pageBody">
       <build>
-        <table_ id="dodecoder" data-input-style="none">
-          <tr_>
+        <ttable id="dodecoder" data-input-style="none">
+          <ttr>
             <th_ colspan="2">(Do-)decoder key:</th_>
-          </tr_>
+          </ttr>
           <for each="row" in="decoder">
-            <tr_>
-              <td_>
-                <img _src="{images.[row.0]}"> =
+            <ttr>
+              <ttd>
+                <img ssrc="{images.[row.0]}" /> =
                 <letters id="dd_{row.0}" class="multiple-letter" data-onchange="updateDecoder"></letters>
-              </td_>
-              <td_>
-                <img _src="{images.[row.1]}"> =
+              </ttd>
+              <ttd>
+                <img ssrc="{images.[row.1]}" /> =
                 <letters id="dd_{row.1}" class="multiple-letter" data-onchange="updateDecoder"></letters>
-              </td_>
-            </tr_>
+              </ttd>
+            </ttr>
           </for>
-          <tr_>
-            <td_ colspan="2" style="text-align: center; font-size: 9pt;">Each food maps to a <b>unique</b> digit.</td_>
-          </tr_>
-        </table_>
+          <ttr>
+            <ttd colspan="2" style="text-align: center; font-size: 9pt;">Each food maps to a <b>unique</b> digit.</ttd>
+          </ttr>
+        </ttable>
       </build>
 
       <table id="given" class="small-food">
         <tr>
           <td style="width: 1in;">Given:</td>
           <td style="width: 1.5in; text-align: right;">
-            <span class="line"><use template="fruitDigits" sequence="grt"></use></span><br>
-            <span class="underline"><use template="operator" op="−"></use><use template="fruitDigits" sequence="__trg"></use></span><br>
+            <span class="line"><use template="fruitDigits" sequence="grt"></use></span><br />
+            <span class="underline"><use template="operator" op="−"></use><use template="fruitDigits" sequence="__trg"></use></span><br />
             <span class="line"><use template="fruitDigits" sequence="tmi"></use></span>    
           </td>
           <td style="width: 1.5in; text-align: center;">and</td>
           <td style="width: 1.5in; text-align: right;">
-            <span class="line"><use template="fruitDigits" sequence="tmi"></use></span><br>
-            <span class="underline"><use template="operator" op="+"></use><use template="fruitDigits" sequence="__imt"></use></span><br>
+            <span class="line"><use template="fruitDigits" sequence="tmi"></use></span><br />
+            <span class="underline"><use template="operator" op="+"></use><use template="fruitDigits" sequence="__imt"></use></span><br />
             <span class="line"><use template="fruitDigits" sequence="aeom"></use></span>    
           </td>
         </tr>
-      </div>
+      </table>
 
       <div id="solving" class="small-food">
         <p style="text-align: left; font-size: 12pt;">And solving this long division:</p>
-        <span class="underline"><use template="fruitDigits" sequence="___aarheo"></use></span><br>
-        <span class="line"><use template="fruitDigits" sequence="tma__cchsteto"></use></span><br>
-        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="tma"></use></span><span class="line"><use template="fruitDigits" sequence="_____"></use></span><br>
-        <span class="line"><use template="fruitDigits" sequence="srsteto"></use></span><br>
-        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="tma"></use></span><span class="line"><use template="fruitDigits" sequence="____"></use></span><br>
-        <span class="line"><use template="fruitDigits" sequence="ahcteto"></use></span><br>
-        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="agrr"></use></span><span class="line"><use template="fruitDigits" sequence="___"></use></span><br>
-        <span class="line"><use template="fruitDigits" sequence="appeto"></use></span><br>
-        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="apgh"></use></span><span class="line"><use template="fruitDigits" sequence="__"></use></span><br>
-        <span class="line"><use template="fruitDigits" sequence="tgto"></use></span><br>
-        <use template="operator" op="−"></use><span class="double underline"><use template="fruitDigits" sequence="tgto"></use></span><br>
+        <span class="underline"><use template="fruitDigits" sequence="___aarheo"></use></span><br />
+        <span class="line"><use template="fruitDigits" sequence="tma__cchsteto"></use></span><br />
+        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="tma"></use></span><span class="line"><use template="fruitDigits" sequence="_____"></use></span><br />
+        <span class="line"><use template="fruitDigits" sequence="srsteto"></use></span><br />
+        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="tma"></use></span><span class="line"><use template="fruitDigits" sequence="____"></use></span><br />
+        <span class="line"><use template="fruitDigits" sequence="ahcteto"></use></span><br />
+        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="agrr"></use></span><span class="line"><use template="fruitDigits" sequence="___"></use></span><br />
+        <span class="line"><use template="fruitDigits" sequence="appeto"></use></span><br />
+        <use template="operator" op="−"></use><span class="underline"><use template="fruitDigits" sequence="apgh"></use></span><span class="line"><use template="fruitDigits" sequence="__"></use></span><br />
+        <span class="line"><use template="fruitDigits" sequence="tgto"></use></span><br />
+        <use template="operator" op="−"></use><span class="double underline"><use template="fruitDigits" sequence="tgto"></use></span><br />
         <svg width="15" height="40" style="position:absolute; top: 92.5px; left:163px">
           <ellipse cx="-30" cy="20" rx="40" ry="40" fill="none" stroke="black" stroke-width="1"></ellipse>
         </svg>
@@ -231,19 +232,19 @@
       <build>
         <div id="whatIs" data-input-style="underline">
           <p style="position: absolute; left:0px; top: 0.3in; font-size: 12pt;">What is:</p>
-          <span class="big-food"><use template="fruitDigits" sequence="rephotograph"></use></span><br>
-          <span class="big-food" style="border-bottom: solid 1px black;"><use template="operator" op="+"></use><use template="fruitDigits" sequence="_tprhethpaeti"></use></span><br>
+          <span class="big-food"><use template="fruitDigits" sequence="rephotograph"></use></span><br />
+          <span class="big-food" style="border-bottom: solid 1px black;"><use template="operator" op="+"></use><use template="fruitDigits" sequence="_tprhethpaeti"></use></span><br />
           <pattern pattern="12" class="no-print"></pattern>
         </div>
       </build>
 
       <div class="no-print" style="position:absolute; bottom: -0.5in; left: 4in;">
-        Answer:<br><input id="final-answer" class="extracted" type="text" style="width:2.5in; text-transform: uppercase;"></input>
+        Answer:<br /><input id="final-answer" class="extracted" type="text" style="width:2.5in; text-transform: uppercase;"></input>
         <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
       </div>
 
       <template id="fruitDigits">
-        <for char="ch" in="sequence"><span class="fruitDigit"><img _src="{images.[ch]}"><span class="overlay fd_{ch}"></span></span></for>
+        <for char="ch" in="sequence"><span class="fruitDigit"><img ssrc="{images.[ch]}" /><span class="overlay fd_{ch}"></span></span></for>
       </template>
 
       <template id="operator">

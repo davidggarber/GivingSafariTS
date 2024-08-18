@@ -904,14 +904,16 @@ function setupDecoderToggle(margins, mode) {
         toggle.id = 'decoder-toggle';
         margins.appendChild(toggle);
     }
-    const visible = getDecoderState();
-    if (visible) {
-        toggle.innerText = 'Hide Decoders';
+    if (toggle) {
+        const visible = getDecoderState();
+        if (visible) {
+            toggle.innerText = 'Hide Decoders';
+        }
+        else {
+            toggle.innerText = 'Show Decoders';
+        }
+        toggle.href = 'javascript:toggleDecoder()';
     }
-    else {
-        toggle.innerText = 'Show Decoders';
-    }
-    toggle.href = 'javascript:toggleDecoder()';
 }
 exports.setupDecoderToggle = setupDecoderToggle;
 /**
@@ -8234,7 +8236,7 @@ function makeString(a, tok) {
 }
 exports.makeString = makeString;
 const minus = { raw: '-', unaryChar: '⁻', binaryChar: '−' }; // ambiguously unary or binary
-const concat = { raw: '&', precedence: 1, binaryOp: (a, b, aa, bb) => { return makeString(a, aa) + makeString(b, bb); }, evalLeft: true, evalRight: true };
+const concat = { raw: '~', precedence: 1, binaryOp: (a, b, aa, bb) => { return makeString(a, aa) + makeString(b, bb); }, evalLeft: true, evalRight: true };
 const entity = { raw: '@', precedence: 2, unaryOp: (a, aa) => { return entitize(a, aa); }, evalRight: false };
 const plus = { raw: '+', precedence: 3, binaryOp: (a, b, aa, bb) => { return makeFloat(a, aa) + makeFloat(b, bb); }, evalLeft: true, evalRight: true };
 const subtract = { raw: '−', precedence: 3, binaryOp: (a, b, aa, bb) => { return makeFloat(a, aa) - makeFloat(b, bb); }, evalLeft: true, evalRight: true };
@@ -8314,6 +8316,7 @@ const namedEntities = {
     'lbrace': '{',
     'rbrace': '}',
     'amp': '&',
+    'tilde': '~',
     'at': '@',
     'nbsp': '\xa0',
 };

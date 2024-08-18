@@ -56,14 +56,16 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:string) {
         toggle.id = 'decoder-toggle';
         margins.appendChild(toggle);
     }
-    const visible = getDecoderState();
-    if (visible) {
-        toggle.innerText = 'Hide Decoders';
+    if (toggle) {
+        const visible = getDecoderState();
+        if (visible) {
+            toggle.innerText = 'Hide Decoders';
+        }
+        else {
+            toggle.innerText = 'Show Decoders';
+        }
+        toggle.href = 'javascript:toggleDecoder()';
     }
-    else {
-        toggle.innerText = 'Show Decoders';
-    }
-    toggle.href = 'javascript:toggleDecoder()';
 }
 
 /**

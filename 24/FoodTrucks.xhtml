@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
@@ -26,6 +27,7 @@
         },
       };
 
+      //<![CDATA[
       for (var i = 0; i < 25; i++) {
         var ch = String.fromCharCode(65 + i);
         let cls = '';
@@ -33,7 +35,7 @@
         if (boiler.lookup.tops.indexOf(ch) >= 0) { cls += 'top'}
         boiler.lookup.gridStyles[ch] = cls;
       }
-
+      //]]>
 
     </script>
     <style>
@@ -144,7 +146,7 @@
       </div>
 
       <div id="north">
-        <img src="FoodTrucks/up-arrow.png" style="height:0.76in">
+        <img src="FoodTrucks/up-arrow.png" style="height:0.76in" />
         <span style="display:inline-block; margin-left:-24px; ">North</span>
       </div>
 
@@ -186,7 +188,7 @@
         </svg>
         <p style="margin-left:20px; margin-top:-20px">BLOCK 
           <letter></letter>
-          <img src="FoodTrucks/right-arrow.png" style="height:0.29in;">
+          <img src="FoodTrucks/right-arrow.png" style="height:0.29in;" />
           <letter></letter>
         </p>
       </div>

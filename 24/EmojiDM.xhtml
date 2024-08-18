@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
@@ -149,7 +150,7 @@
             { emoji: [
               '👦👴🏻🤶🏻👴🏼👵🏻🛏️__👦🍫🎟️😲👦🏼🏃🏼',
               '👦🏼👴🏻➡️🏭🍬🍩🍬🍫🍬🍭🍫🍦🍨🍫🍬🍭🧁🍫🍭_👦🏼👴🏻🏆' ],
-              pattern: "5 5 & 3 9 7",
+              pattern: "5 5 &amp; 3 9 7",
               extract: "21",
               special: {},
             }
@@ -185,14 +186,14 @@
           <p class="emoji" trim="all">
             <for each="line" in="{q.emoji}">
               <span class="line">
-                <for char="ch" in="line" nothrow>
-                  <if exists="{q.special.(line#&'-'&ch#)}">
-                    <use template="{q.special.(line#&'-'&ch#)}" char="{ch}"></use>
+                <for char="ch" in="line" nothrow="true">
+                  <if exists="{q.special.(line#~'-'~ch#)}">
+                    <use template="{q.special.(line#~'-'~ch#)}" char="{ch}"></use>
                   </if>
                   <else>
-                    <img class="normal" ssrc="EmojiDM/{emoji.[ch]}.png">
+                    <img class="normal" ssrc="EmojiDM/{emoji.[ch]}.png" />
                   </else>
-                </for><br>
+                </for><br />
               </span>
             </for>
           </p>
@@ -206,17 +207,19 @@
     </div>
 
     <template id="idea">
-      <span class="position:relative" trim="all">
-        <img src="EmojiDM/{emoji.[ch]}.png" style="position:relative; top:-15px; height:0.16in; margin-left:-8px;">
+      <span style="position:relative" trim="all">
+        <img src="EmojiDM/{emoji.[ch]}.png" style="position:relative; top:-15px; height:0.16in; margin-left:-8px;" />
       </span>
     </template>
     <template id="tall">
-        <img src="EmojiDM/{emoji.[ch]}.png" style="height:0.47in;">
+      <span>
+        <img src="EmojiDM/{emoji.[ch]}.png" style="height:0.47in;" />
       </span>
     </template>
     <template id="above">
-      <img src="EmojiDM/{emoji.[ch]}.png" style="position:absolute; left:1.93in; top:-0.44in;">
-    </span>
-  </template>
-</body>
+      <span style="position:relative">
+        <img src="EmojiDM/{emoji.[ch]}.png" style="position:absolute; left:-2.1em; top:-0.44in;" />
+      </span>
+    </template>
+  </body>
 </html>

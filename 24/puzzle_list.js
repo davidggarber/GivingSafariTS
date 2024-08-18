@@ -46,7 +46,7 @@ var puzzles = [
     { title: 'Starters', thumb: '', author: 'Anne Grier', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Techniques', thumb: '', author: 'Anne Grier', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Beyond Seasonable Doubt', thumb: '', author: 'Wendy Stidmon', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
-    // { title: 'Title', thumb: '', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: 'Title', thumb: '', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: "Ding's Dim Sum", file:'DingsDimSum', thumb: '', author: 'Philippe Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: 'Foodie Game', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: 'LasagnaDoku', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
@@ -67,7 +67,7 @@ function puzzleFile(puz) {
 }
 
 function puzzleHref(puz) {
-    return puzzleFile(puz) + '.html';
+    return puzzleFile(puz) + '.xhtml';
 }
 
 // Fill in the puzzle hrefs

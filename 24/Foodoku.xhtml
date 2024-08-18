@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
@@ -16,7 +17,7 @@
       const boiler = {
         'safari': 'gs24',
         'title': 'FOODoku',
-        'author': 'Wendy Stidmon & Jeffrey Lin',
+        'author': 'Wendy Stidmon &amp; Jeffrey Lin',
         'copyright': '2021',
         'type': 'logic',
         'textInput': true,
@@ -112,18 +113,18 @@
 
       <p id="print-symbols" style="text-align: center;">
         <for key="tool" in="{tools}">
-          <img_ src="{tool!.img}">
+          <img_ src="{tool!.img}" />
         </for>
       </p>
 
       <p id="stampPalette" data-tool-count="7" data-tool-erase="erase-tool" style="text-align: center;">
         <for key="tool" in="{tools}">
           <span id="{tool}-tool" class="stampTool" data-use-template-id="food-stamp" img="{tool!.img}">
-            <img_ src="{tool!.img}">
+            <img_ src="{tool!.img}" />
           </span>  
         </for>
         <span id="erase-tool" class="stampTool" data-erase="true" img="{tool!.img}">
-          <img src="Foodoku/eraser.png">
+          <img src="Foodoku/eraser.png" />
         </span>  
       </p>
       <build>
@@ -134,7 +135,7 @@
                 <for each="cell" in="{row}">
                   <if test="{cell}" ne="">
                     <div class="grid-cell">
-                      <img_ src="{cell}">
+                      <img_ src="{cell}" />
                     </div>
                   </if>
                   <else>
@@ -159,7 +160,7 @@
     </div>
 
     <template id="food-stamp">
-      <img src_="{img}" class="stampedObject">
+      <img src_="{img}" class="stampedObject" />
     </template>
 
   </body>

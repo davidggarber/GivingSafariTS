@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
@@ -19,27 +20,27 @@
         lookup: {
           colors: [
             { name: '---', value: '#FFFFFF' },
-            { name: 'Amazon', value: '#3B7A57' },
+            { name: 'Amazon', value: '#3B7A57', fg: '#bdb' },
             { name: 'Artichoke', value: '#8F9779' },
             { name: 'Asparagus', value: '#87A96B' },
-            { name: 'Avocado', value: '#568203' },
+            { name: 'Avocado', value: '#568203', fg: '#bdb' },
             { name: 'Dollar Bill', value: '#85BB65' },
             { name: 'Erin', value: '#00FF40' },
-            { name: 'Fern', value: '#4F7942' },
-            { name: 'Forest', value: '#228B22' },
+            { name: 'Fern', value: '#4F7942', fg: '#bdb' },
+            { name: 'Forest', value: '#228B22', fg: '#bdb' },
             { name: 'Gin', value: '#D8E4BC' },
             { name: 'Granny Smith Apple', value: '#A8E4A0' },
             { name: 'Harlequin', value: '#3FFF00' },
             { name: 'Honeydew', value: '#F0FFF0' },
-            { name: 'Hunter', value: '#355E3B' },
+            { name: 'Hunter', value: '#355E3B', fg: '#bdb' },
             { name: 'Inchworm', value: '#B2EC5D' },
             { name: 'Jungle', value: '#29AB87' },
-            { name: 'Kelly', value: '#1E4909' },
+            { name: 'Kelly', value: '#1E4909', fg: '#bdb' },
             { name: 'Lime', value: '#00FF00' },
             { name: 'Limerick', value: '#9DC209' },
             { name: 'Mantis', value: '#74C365' },
             { name: 'Mint', value: '#98FF98' },
-            { name: 'Myrtle', value: '#21421E' },
+            { name: 'Myrtle', value: '#21421E', fg: '#bdb' },
             { name: 'Pistachio', value: '#93C572' },
             { name: 'Tea', value: '#D0F0C0' },
             { name: 'Volt', value: '#CEFF00' },
@@ -89,9 +90,18 @@
         select.style.backgroundColor = select.value;
         var td = select.parentNode;
         td.style.backgroundColor = select.value;
+        var fg = boiler.lookup.colors.filter(c => c.value == select.value)[0].fg || 'black';
+        td.style.color = fg;
+        select.style.color = fg;
       }
     </script>
     <style>
+      .square {
+        width: 180px;
+        height: 90px;
+        vertical-align: bottom;
+        padding: 10px 10px 40px;
+      }
     </style>
   </head>
   <body id="__puzzle_name">
@@ -104,7 +114,7 @@
           <for each="row" in="{questions}">
             <ttr>
               <for each="q" in="{row}">
-                <ttd>
+                <ttd class="square">
                   <p>{q}</p>
                   <use template="colors"></use>
                 </ttd>

@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
@@ -75,6 +76,9 @@
         text-align: center;
         vertical-align: middle;
       }
+      #Wine .right .letter-cell {
+        font-size: 24pt;
+      }
       #bottles {
         position: absolute;
         right: 0px;
@@ -109,14 +113,14 @@
                 <p class="hint">{hint}</p>
                 <p class="inputs"><pattern pattern="{inputs.[hint#]}"></pattern></p>
             </td_>
-            <td_ class="right"><letter class="extract" data-input-style="none"></letter></td_>
+            <td_ class="right"><letter class="extract" data-input-style="hover"></letter></td_>
           </tr_>
         </for>
       </table_>
       <div id="bottles">
         <for each="bottle" in="bottles">
           <div class="bottle-row" class_="cross-off">
-            <img src="Wine/bottle.png">
+            <img src="Wine/bottle.png" />
             <span class="label">{bottle}</span>
           </div>
         </for>  

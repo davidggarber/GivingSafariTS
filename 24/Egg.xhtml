@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
@@ -7,30 +8,30 @@
     <script>
       const boiler = {
         'safari': 'gs24',
-        'title': 'Chicken',
-        'author': 'Rorke Haining & Jess McGatha',
+        'title': 'Egg',
+        'author': 'Rorke Haining &amp; Jess McGatha',
         'copyright': '2021',
         'type': 'Word',
         'textInput': true,
         'abilities': {
           scratchPad: true,
-          checkMarks:true,
         },
         'reactiveBuilder': true,
         'lookup': {
         },
       };
 
+
       var hints = [
-        ['Playroom', 7, 4],
-        ['Like a Granny Smith apple', 10, 7],
-        ['Overdue funds', 7, 6],
-        ['Delicious but unhealthy', 7, 4],
-        ['Divert', 9, 9],
-        ['911 call destination', 9, 5],
-        ['Gloomy or slow', 8, 6],
-        ['Type of bridge', 8, 6],
-        ['Fancy, cute instrument', 9, 9],
+        ['Revenge', 7, 4],
+        ['Betting place', 9, 7],
+        ['Kitchen danger', 9, 8],
+        ['Assault', 8, 5],
+        ['Newbord descendent', 9, 8],
+        ['Religious holiday', 8, 8],
+        ['Distant ancestor', 7, 6],
+        ['Approve', 10, 7],
+        ['Metal baking dish', 7, 7],
       ];
 
       boiler.lookup = {
@@ -42,7 +43,7 @@
         font-size: 24pt;
       }
 
-      #Chicken .letter-cell {
+      #Egg .letter-cell {
         font-size: 12pt;
       }
 
@@ -62,19 +63,19 @@
       }
 
       .extract-chicken::after {
-        background-image: url('Chicken/chicken.png');
-        background-size: 1.2em 1.2em;
+        background-image: url('Egg/egg.png');
+        background-size: 1.2em 1.7em;
         content: ' ';
         display: block;
         position: absolute;
         width: 1.2em;
-        height: 1.2em;
+        height: 1.7em;
         top: 22px;
         left: -0.1em;
       }
 
       .img-list img {
-        margin-bottom: 0.25in;
+        margin-bottom: 0.5in;
         max-width: 1.4in;
         max-height: 1.5in;
       }
@@ -103,18 +104,18 @@
 
     </style>
   </head>
-  <body id="Chicken">
+  <body id="Egg">
     <div id="pageBody">
       <p class="flavor">
-        Remember: <span class="title-font">Chicken</span> words, like the 9 images below, always come first, before <span class="title-font">Egg</span> words!
+        Remember: <span class="title-font">Egg</span> words, like the 9 images below, always come first, before <span class="title-font">Egg</span> words!
       </p>
 
       <build>
         <div style="width: 7.5in; display:grid; grid-template-columns:1.7in 4.3in 1.5in; margin-top: 0.5in;">
           <div class="img-list" style="text-align: center;">
-            <div class_="cross-off"><img src="Chicken/fire.png"></div>
-            <div class_="cross-off"><img src="Chicken/pentagon.png"></div>
-            <div class_="cross-off"><img src="Chicken/bulb.png"></div>
+            <div class_="cross-off"><img src="Egg/cave.png" /></div>
+            <div class_="cross-off"><img src="Egg/green.png" /></div>
+            <div class_="cross-off"><img src="Egg/beat.png" /></div>
           </div>
 
           <div>
@@ -127,16 +128,16 @@
           </div>
 
           <div class="img-list" style="text-align: center;">
-            <div class_="cross-off"><img src="Chicken/mario.png"></div>
-            <div class_="cross-off"><img src="Chicken/down.png"></div>
-            <div class_="cross-off"><img src="Chicken/men.png"></div>
+            <div class_="cross-off"><img src="Egg/quarterback.jpg" /></div>
+            <div class_="cross-off"><img src="Egg/thousand.png" /></div>
+            <div class_="cross-off"><img src="Egg/cake.png" /></div>
           </div>
         </div>
 
         <div class="img-list" style="width: 7.5in; display: flex; justify-content: space-around;">
-          <div class_="cross-off"><img src="Chicken/pan.png"></div>
-          <div class_="cross-off"><img src="Chicken/back.png"></div>
-          <div class_="cross-off"><img src="Chicken/baby.png"></div>
+          <div class_="cross-off"><img src="Egg/credit.png" /></div>
+          <div class_="cross-off"><img src="Egg/house.png" /></div>
+          <div class_="cross-off"><img src="Egg/track.png" /></div>
         </div>
 
         <div id="question">
