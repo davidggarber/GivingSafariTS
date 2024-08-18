@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Giving Puzzle Safari 24: Epicurious Enigmas</title>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <link href="index.css" rel="Stylesheet" type="text/css" />
+    <script src="puzzle_list.js" />
+    <script src="index_utils.js" />
+    <script>
+      const boiler = {
+        'safari': 'gs24',
+        paperSize: 'minimalist',
+        'textInput': true,
+        'abilities': {
+        },
+        'reactiveBuilder': true,
+        'lookup': {
+          puzzles: puzzles,
+          feeders: false,
+          submitable: false,
+          table_cols: 4,
+        },
+      };
+    </script>
+    <style>
+    </style>
+  </head>
+  <body id="Menu">
+    <div id="pageBody">
+
+      <build>
+        <ttable id="table" style="border-collapse: collapse">
+          <tthead>
+            <ttr style="text-align: center;">
+              <tth colspan="{table_cols}" class="title-font" style="text-align: center; position: relative;">
+                Giving Safari 2024
+                <img src="Images/PS21_logo.png" style="position:absolute; right: -4in; width: 3.75in;" />
+              </tth>
+            </ttr>
+            <ttr id="sortHeader">
+              <tth class="icons" onclick="sortTable(this)">Type</tth>
+              <tth class="html" onclick="sortTable(this)">Puzzle</tth>
+              <if test="feeders">
+                <tth class="feeders" onclick="sortTable(this)">Feeder</tth>
+              </if>
+              <tth class="author" onclick="sortTable(this)">Author</tth>
+              <if test="submitable">
+                <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
+              </if>
+            </ttr>    
+          </tthead>
+
+          <ttbody id="puzzle_list">
+            <for each="puz" in="puzzles">
+              <ttr class_="sortable">
+                <ttd class_="icons">
+                  <if exists="puz.icon">
+                    <img src_="Icons/{puz.icon}.png" />
+                  </if>
+                  <if notex="puz.icon">
+                    <img src_="Icons/{puz.type.icon}.png" title="puz.type.alt" />
+                  </if>
+                </ttd>
+                <ttd class_="html">
+                  <a class_="hover" href="{puz.href}" target="_blank">
+                    {puz.title}
+                    <if exists="{puz.thumb}">
+                      <img class_="thumb" src_="Thumbs/{puz.thumb}.png" />
+                    </if>
+                  </a>
+                </ttd>
+                <if test="feeders">
+                  <ttd class_="feeders"></ttd>
+                </if>
+                <ttd class_="authors">
+                  {puz.author}
+                </ttd>
+                <if test="submitable">
+                  <ttd class_="submital"></ttd>
+                </if>
+              </ttr>
+            </for>
+          </ttbody>
+
+          <ttfoot id="meta_list">
+              <ttr>
+                  <tth colspan="{table_cols}" style="background-color: #D1D6D7">&nbsp;</tth>
+              </ttr>
+              <ttr>
+                  <tth>&nbsp;</tth>
+                  <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
+                  <if test="feeders">
+                    <tth>Unlocked</tth>
+                  </if>
+                  <tth class="author" style="text-align: left;">Author</tth>
+                  <if test="submitable">
+                    <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
+                  </if>
+              </ttr>    
+          </ttfoot>
+        </ttable>
+      </build>
+
+      <table id="legend" style="margin-top: 0.5in; margin-left: 0.25in;">
+        <tr>
+            <th colspan="2">Special web-ready features in HTML puzzles</th>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; width: 1.25in;">Text entry</td>
+            <td>Any underlines, boxes, etc. that look like they take text entry do.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;"><span style="box-shadow:0px 0px 5px fuchsia;"><a href="javascript:toggleDecoder()">Show Decoders</a></span></td>
+            <td>Click on this to open a side-panel to decode <a href="https://www.decrypt.fun/index.html" target="_blank">common puzzle encodings</a></td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;">📔</td>
+            <td>When this icon is in the bottom-right, ctrl+clicking will allow you to write notes on the page.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;">&#x2714;&#xFE0F;<!--✔️--></td>
+            <td>When this icon is in the bottom-right, clicking on hints will check them off as you utilize them.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px black;">&#x1f4a1;<!--💡--></td>
+            <td>When this icon is in the bottom-right, clicking on cells will highlight them.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px black;">&#x1f448;<!--👈--></td>
+            <td>When this icon is in the bottom-right, elements of the page may be drag-dropped around the page.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px #ff0;">&#x1F4D0;<!--📐--></td>
+            <td>When this icon is in the bottom-right, a line drawing tool will connect vertices.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px black;">&#x1F48A;<!--💊--></td>
+            <td>When this icon is in the bottom-right, a word-circling tool is available.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px black;"><img src="Icons/stamp-glow.png" style="height:3ex;" /><!--✒️--></td>
+            <td>Some puzzles offer stamping tools to mark directly on elements of the page.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;">Printing <span style="text-shadow: 0 0 10px yellow;">&#x1f5a8;&#xfe0f;</span></td>
+            <td style="line-height:normal;"><b>Important steps to print</b>
+                <br />Puzzles printed from this site require two settings to render correctly.
+                <br />&nbsp; &bullet; &nbsp; Margins = None
+                <br />&nbsp; &bullet; &nbsp; Background graphics = checked
+                <br />Both are found in "More settings"
+            </td>
+        </tr>
+      </table>
+
+    </div>
+  </body>
+</html>

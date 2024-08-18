@@ -97,7 +97,9 @@
 .under-number {
   display: block;
   position: absolute;
-  bottom: -1.4em;
+  bottom: -10pt;
+  height: initial;
+  line-height: initial;
   width: 100%;
   text-align: center;
   color: black;

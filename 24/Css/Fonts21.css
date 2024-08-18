@@ -54,12 +54,6 @@
   color: #ff0099;
 }
 
-#extracted .letter-input {
-  font-family: 'Caveat';
-  font-size: 20pt;
-  color: #ff0099;
-}
-
 @media print {
   .screen-only {
     display: none;
