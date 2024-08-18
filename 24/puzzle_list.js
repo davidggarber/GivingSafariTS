@@ -43,7 +43,20 @@ var puzzles = [
     { title: 'Food Trucks', thumb: '', author: 'Jesse McGatha', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: '🍽️🎥', file:'EmojiDM', thumb: '', author: 'Morgan Grobin', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Greens', thumb: '', author: 'Margaret Shaver', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [] },
-    { title: 'Starters', thumb: '', author: 'Anne Grier', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: 'Starters', thumb: '', author: 'Anne Grier', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: 'Techniques', thumb: '', author: 'Anne Grier', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'Title', thumb: '', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: "Ding's Dim Sum", file:'DingsDimSum', thumb: '', author: 'Philippe Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'Beyond Seasonable Doubt', thumb: '', author: 'Wendy Stidmon', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'Foodie Game', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'LasagnaDoku', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'Spaghetti Code', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'Plexiglass Dividers', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'Smorgasbord', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'Dining Philosophers', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'Snack Time', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'Food Shortage', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: '', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
 ];
 
 function puzzleFile(puz) {

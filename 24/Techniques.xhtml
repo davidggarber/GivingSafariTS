@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Techniques',
+        author: 'Anne Grier',
+        copyright: '2021',
+        type: 'rebus',
+        textInput: true,
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          left: [
+            { before: 1, after: 2 },
+            { before: 3, after: 0 },
+            { before: 1, after: 2 },
+            { before: 1, after: 3 },
+            { before: 1, after: 2 },
+          ],
+          right: [
+            { before: 4, after: 0 },
+            { before: 1, after: 3 },
+            { before: 1, after: 3 },
+            { before: 3, after: 0 },
+            { before: 6, after: 0 },
+            { before: 1, after: 3 },
+            { before: 2, after: 0 },
+          ],
+        },
+      };
+    </script>
+    <style>
+      #left {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        border: solid black 0.5px;
+      }
+      #right {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 3.5in;
+        border: solid black 0.5px;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      td.before {
+        text-align: right;
+        padding-left: 10px;
+      }
+      td.gray {
+        background-color: #E7E6E6;
+      }
+      td.after {
+        text-align: left;
+        padding-right: 10px;
+      }
+      td.image img {
+        height: 1in;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body id="Techniques">
+    <div id="pageBody">
+      <build>
+        <ttable id="left" trim="all" data-extract-style="underline">
+          <for each="row" in="{left}">
+            <ttr>
+              <ttd class="before"><pattern pattern="{row.before}" /></ttd>
+              <ttd class="gray"><letter extract='true' /></ttd>
+              <ttd class="after"><pattern pattern="{row.after}" /></ttd>
+              <ttd class="image"><img ssrc="Techniques/l{row#+1}.jpg" /></ttd>
+            </ttr>
+          </for>
+        </ttable>
+
+        <ttable id="right" trim="all" data-extract-style="underline">
+          <for each="row" in="{right}">
+            <ttr>
+              <ttd class="before"><pattern pattern="{row.before}" /></ttd>
+              <ttd class="gray"><letter extract='true' /></ttd>
+              <ttd class="after"><pattern pattern="{row.after}" /></ttd>
+              <ttd class="image"><img ssrc="Techniques/r{row#+1}.jpg" /></ttd>
+            </ttr>
+          </for>
+        </ttable>
+
+        <div id="extracted" style="position:absolute; left: 0px; top: 8in;"></div>
+      </build>
+    </div>
+  </body>
+</html>
