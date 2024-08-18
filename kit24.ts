@@ -8208,6 +8208,10 @@ function cloneWithContext(elmt:HTMLElement):Element {
     // TODO: contents of embedded objects aren't SVG
     clone = document.createElementNS(svg_xmlns, tagName);
   }
+  else if (elmt.getAttribute('xmlns')) {
+    const xmlns = elmt.getAttribute('xmlns');
+    clone = document.createElementNS(xmlns, tagName);
+  }
   else {
     clone = document.createElement(tagName);
   }
@@ -8373,7 +8377,9 @@ export function cloneAttributes(src:Element, dest:Element) {
           }
         }    
       }
-      // REVIEW: special case 'style'?
+      else if (name == 'xmlns') {
+        // These are applied when the node is cloned, not here as an attribute
+      }
       else {
         dest.setAttributeNS('', name, value);
       }

@@ -104,7 +104,9 @@ export function cloneAttributes(src:Element, dest:Element) {
           }
         }    
       }
-      // REVIEW: special case 'style'?
+      else if (name == 'xmlns') {
+        // These are applied when the node is cloned, not here as an attribute
+      }
       else {
         dest.setAttributeNS('', name, value);
       }

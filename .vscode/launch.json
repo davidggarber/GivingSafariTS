@@ -85,7 +85,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\24\\FridgeRaider.html",
+      "url": "${workspaceFolder}\\24\\LasagneDoku.xhtml",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"

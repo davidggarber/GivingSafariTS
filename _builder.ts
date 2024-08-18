@@ -530,6 +530,10 @@ function cloneWithContext(elmt:HTMLElement):Element {
     // TODO: contents of embedded objects aren't SVG
     clone = document.createElementNS(svg_xmlns, tagName);
   }
+  else if (elmt.getAttribute('xmlns')) {
+    const xmlns = elmt.getAttribute('xmlns');
+    clone = document.createElementNS(xmlns, tagName);
+  }
   else {
     clone = document.createElement(tagName);
   }
