@@ -362,7 +362,7 @@ function boilerplate(bp: BoilerPlateData) {
         }
         catch (ex) {
             const ctx = wrapContextError(ex);
-            console.error(ctx);  // Log, but then continue with the rest of the page
+            console.error(ctx.stack);  // Log, but then continue with the rest of the page
         }
     }
     else if (hasBuilderElements(document)) {

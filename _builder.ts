@@ -272,14 +272,14 @@ export function shouldThrow(ex:Error, node1?:Node, node2?:Node, node3?:Node):boo
 
     const elmt = nodes[i] as Element;  // The first element that had a elmt
     if (hasClass(elmt, 'nothrow') || elmt.getAttributeNS('', 'nothrow') !== null) {
-      console.error(ex);
+      console.error(ex.stack);
       return false;
     }
     const fn = elmt.getAttributeNS('', 'onthrow');
     if (fn) {
       const func = window[fn];
       if (func) {
-        console.error(ex);
+        console.error(ex.stack);
         func(ex, elmt);
         return false;
       }
@@ -501,7 +501,7 @@ export function normalizeName(name:string):string {
   if (name.substring(name.length - 1) == '_') {
     return name.substring(0, name.length - 1);
   }
-  if (name.length > 2 && name[0] == name[1]) {
+  if (name.length >= 2 && name[0] == name[1]) {
     return name.substring(1);
   }
   // Any other interior underscores are kept
@@ -530,8 +530,8 @@ function cloneWithContext(elmt:HTMLElement):Element {
     // TODO: contents of embedded objects aren't SVG
     clone = document.createElementNS(svg_xmlns, tagName);
   }
-  else if (elmt.getAttribute('xmlns')) {
-    const xmlns = elmt.getAttribute('xmlns');
+  else if (elmt.getAttribute('xmlns') || elmt.getAttribute('xxmlns')) {
+    const xmlns = elmt.getAttribute('xmlns') || elmt.getAttribute('xxmlns');
     clone = document.createElementNS(xmlns, tagName);
   }
   else {
