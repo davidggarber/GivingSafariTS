@@ -1,4 +1,4 @@
-import { expandContents, pushRange } from "./_builder";
+import { consoleComment, expandContents, pushRange } from "./_builder";
 import { cloneText, evaluateAttribute, makeInt, makeString, popBuilderContext, pushBuilderContext } from "./_builderContext";
 import { ContextError, elementSourceOffset, elementSourceOffseter } from "./_contextError";
 
@@ -60,9 +60,12 @@ export function startForLoop(src:HTMLElement):Node[] {
     throw new ContextError('Unable to determine loop', elementSourceOffset(src));
   }
 
+  dest.push(consoleComment('Iterating ' + iter + ' over ' + list.length + ' items...'));
+
   const inner_context = pushBuilderContext();
   const iter_index = iter + '#';
   for (let i = 0; i < list.length; i++) {
+    dest.push(consoleComment(iter + ' #' + i + ' == ' + JSON.stringify(list[i])));
     inner_context[iter_index] = i;
     inner_context[iter] = list[i];
     if (vals.length > 0) {

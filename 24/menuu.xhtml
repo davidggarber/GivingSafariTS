@@ -55,31 +55,31 @@
 
           <ttbody id="puzzle_list">
             <for each="puz" in="puzzles">
-              <ttr class_="sortable">
-                <ttd class_="icons">
+              <ttr class="sortable">
+                <ttd class="icons">
                   <if exists="puz.icon">
-                    <img src_="Icons/{puz.icon}.png" />
+                    <img ssrc="Icons/{puz.icon}.png" />
                   </if>
                   <if notex="puz.icon">
-                    <img src_="Icons/{puz.type.icon}.png" title="puz.type.alt" />
+                    <img ssrc="Icons/{puz.type.icon}.png" title="{puz.type.alt}" />
                   </if>
                 </ttd>
-                <ttd class_="html">
-                  <a class_="hover" href="{puz.href}" target="_blank">
+                <ttd class="html">
+                  <a class="hover" href="{puz.href}" target="_blank">
                     {puz.title}
                     <if exists="{puz.thumb}">
-                      <img class_="thumb" src_="Thumbs/{puz.thumb}.png" />
+                      <img class="thumb" ssrc="Thumbs/{puz.thumb}.png" />
                     </if>
                   </a>
                 </ttd>
                 <if test="feeders">
-                  <ttd class_="feeders"></ttd>
+                  <ttd class="feeders"></ttd>
                 </if>
-                <ttd class_="authors">
+                <ttd class="authors">
                   {puz.author}
                 </ttd>
                 <if test="submitable">
-                  <ttd class_="submital"></ttd>
+                  <ttd class="submital"></ttd>
                 </if>
               </ttr>
             </for>

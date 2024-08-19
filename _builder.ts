@@ -1,4 +1,4 @@
-import { theBoiler } from "./_boilerplate";
+import { isDebug, theBoiler } from "./_boilerplate";
 import { cloneAttributes, cloneTextNode } from "./_builderContext";
 import { startForLoop } from "./_builderFor";
 import { ifResult, startIfBlock } from "./_builderIf";
@@ -590,3 +590,10 @@ function cloneWithContext(elmt:HTMLElement):Element {
 function cloneNode(node:Node):Node {
   return node;  // STUB: keep original node
 }
+
+export function consoleComment(str:string):Comment {
+  if (isDebug()) {
+    console.log(str);
+  }
+  return document.createComment(str);
+} 

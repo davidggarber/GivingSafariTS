@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Snack Time',
+        author: 'Marni Hager',
+        copyright: '2021',
+        type: 'word',
+        textInput: true,
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          rows: [
+            [ 'A long-winged web-footed seabird', 'Main body of a ship', 4, 1],
+            [ 'Of wider range or scope', 'Encampment formed by circle of wagons', 6, 3],
+            ['The postal system', 'A sheltered walk or promenade', 4, 3],
+            ['Drop of thick liquid or viscous substance', 'A foolish or stupid person', 4, 2],
+            ['Jagged white flash of lightning', 'A wrestling or boxing match', 4, 3],
+            ['Thousands of dollars (slang)', 'Precious or semi- precious stones', 4, 3],
+            ['A young human', 'A small hot-tasting pod of a variety of capsicum', 5, 5]
+          ]
+        },
+      };
+    </script>
+    <style>
+      td {
+        height: 60px;
+      }
+      .left.clue {
+        width: 1.5in;
+      }
+      .right.clue {
+        width: 2in;
+      }
+      .left.entry {
+        width: 2in;
+        text-align: right;
+        padding-right: 0.25in;
+      }
+      .right.entry {
+        width: 2in;
+      }
+    </style>
+  </head>
+  <body id="SnackTime">
+    <div id="pageBody">
+      <build>
+        <ttable data-extract-style="highlight" style="margin-top:1in;">
+          <for each="row" in="{rows}">
+            <ttr>
+              <ttd class="left clue">{row.0}</ttd>
+              <ttd class="left entry"><pattern pattern="{row.2}" extract="{row.3}" /></ttd>
+              <ttd class="right entry"><pattern pattern="{row.2}" extract="{row.3}" /></ttd>
+              <ttd class="right clue">{row.1}</ttd>
+            </ttr>
+          </for>
+        </ttable>
+      </build>
+
+    </div>
+  </body>
+</html>
