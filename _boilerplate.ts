@@ -121,8 +121,7 @@ type AbilityData = {
     notes?: boolean;
     checkMarks?: boolean;
     highlights?: boolean;
-    decoder?: boolean;
-    decoderMode?: string;
+    decoder?: boolean|string;  // If a string, should be Proper case
     dragDrop?: boolean;
     stamping?: boolean;
     straightEdge?: boolean;
@@ -645,6 +644,7 @@ function cssLoaded() {
  */
 function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:AbilityData) {
     const safariDetails = getSafariDetails();
+    const page = (margins.parentNode || document.getElementById('page') || margins) as HTMLDivElement;
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;
@@ -664,7 +664,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     else {
         ability = document.createElement('div');
         ability.id = 'ability';
-        margins.appendChild(ability);
+        page.appendChild(ability);
     }
     let fancy = '';
     let count = 0;
@@ -723,16 +723,16 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.scratchPad) {
         setupScratch();
-        let instructions = "Ctrl+click anywhere on the page to create a note. Escape to leave note mode.";
+        let instructions = "Ctrl+click anywhere on the page to create a note.";
         fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">📔</span>';
     }
     if (data.decoder) {
-        setupDecoderToggle(margins, data.decoderMode);
+        setupDecoderToggle(page, data.decoder);
     }
     ability.innerHTML = fancy;
-    ability.style.bottom = data.decoder ? '-32pt' : '-16pt';
+    ability.style.bottom = data.decoder ? '4pt' : '20pt';
     if (count == 2) {
-        ability.style.right = '0.1in';
+        ability.style.right = '0.6in';
     }
 
     // Release our lock on css loading

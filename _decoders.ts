@@ -38,14 +38,14 @@ function setDecoderState(state: boolean) {
  * @param margins the parent node of the toggle UI
  * @param mode the default decoder mode, if specified
  */
-export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:string) {
+export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:boolean|string) {
     let iframe = document.getElementById('decoder-frame') as HTMLIFrameElement;
     if (iframe == null) {
         iframe = document.createElement('iframe');
         iframe.id = 'decoder-frame';
         iframe.style.display = 'none';
-        if (mode != undefined) {
-            iframe.setAttributeNS(null, 'data-decoder-mode', mode);
+        if (mode !== undefined && mode !== true) {
+            iframe.setAttributeNS(null, 'data-decoder-mode', mode as string);
         }
         document.getElementsByTagName('body')[0]?.appendChild(iframe);
     }

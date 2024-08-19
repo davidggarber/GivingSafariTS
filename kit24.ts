@@ -982,14 +982,14 @@ function setDecoderState(state: boolean) {
  * @param margins the parent node of the toggle UI
  * @param mode the default decoder mode, if specified
  */
-export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:string) {
+export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:boolean|string) {
     let iframe = document.getElementById('decoder-frame') as HTMLIFrameElement;
     if (iframe == null) {
         iframe = document.createElement('iframe');
         iframe.id = 'decoder-frame';
         iframe.style.display = 'none';
-        if (mode != undefined) {
-            iframe.setAttributeNS(null, 'data-decoder-mode', mode);
+        if (mode !== undefined && mode !== true) {
+            iframe.setAttributeNS(null, 'data-decoder-mode', mode as string);
         }
         document.getElementsByTagName('body')[0]?.appendChild(iframe);
     }
@@ -6278,8 +6278,7 @@ type AbilityData = {
     notes?: boolean;
     checkMarks?: boolean;
     highlights?: boolean;
-    decoder?: boolean;
-    decoderMode?: string;
+    decoder?: boolean|string;  // If a string, should be Proper case
     dragDrop?: boolean;
     stamping?: boolean;
     straightEdge?: boolean;
@@ -6802,6 +6801,7 @@ function cssLoaded() {
  */
 function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:AbilityData) {
     const safariDetails = getSafariDetails();
+    const page = (margins.parentNode || document.getElementById('page') || margins) as HTMLDivElement;
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;
@@ -6821,7 +6821,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     else {
         ability = document.createElement('div');
         ability.id = 'ability';
-        margins.appendChild(ability);
+        page.appendChild(ability);
     }
     let fancy = '';
     let count = 0;
@@ -6880,16 +6880,16 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.scratchPad) {
         setupScratch();
-        let instructions = "Ctrl+click anywhere on the page to create a note. Escape to leave note mode.";
+        let instructions = "Ctrl+click anywhere on the page to create a note.";
         fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">📔</span>';
     }
     if (data.decoder) {
-        setupDecoderToggle(margins, data.decoderMode);
+        setupDecoderToggle(page, data.decoder);
     }
     ability.innerHTML = fancy;
-    ability.style.bottom = data.decoder ? '-32pt' : '-16pt';
+    ability.style.bottom = data.decoder ? '4pt' : '20pt';
     if (count == 2) {
-        ability.style.right = '0.1in';
+        ability.style.right = '0.6in';
     }
 
     // Release our lock on css loading
@@ -10555,7 +10555,7 @@ function scratchClick(evt:MouseEvent) {
 
     // Position the new textarea where its first character would be at the click point
     currentScratchInput.style.left = (evt.clientX - spRect.left - 5) + 'px';  
-    currentScratchInput.style.top = (evt.clientY - spRect.top - 5) + 'px';  
+    currentScratchInput.style.top = (evt.clientY - spRect.top - 10) + 'px';  
     currentScratchInput.style.width = (spRect.right - evt.clientX) + 'px';  // TODO: utilize right edge of scratch
     disableSpellcheck(currentScratchInput);
     currentScratchInput.title = 'Escape to exit note mode';

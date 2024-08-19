@@ -52,7 +52,7 @@ function scratchClick(evt:MouseEvent) {
 
     // Position the new textarea where its first character would be at the click point
     currentScratchInput.style.left = (evt.clientX - spRect.left - 5) + 'px';  
-    currentScratchInput.style.top = (evt.clientY - spRect.top - 5) + 'px';  
+    currentScratchInput.style.top = (evt.clientY - spRect.top - 10) + 'px';  
     currentScratchInput.style.width = (spRect.right - evt.clientX) + 'px';  // TODO: utilize right edge of scratch
     disableSpellcheck(currentScratchInput);
     currentScratchInput.title = 'Escape to exit note mode';

@@ -290,9 +290,10 @@ body, p, td, th {
   #decoder-toggle {
       display: inline-block;
       position: absolute;
-      bottom: -16pt;
-      right: 0px;
-      box-shadow:0px 0px 5px fuchsia; 
+      bottom: 20pt;
+      right: 0.5in;
+      box-shadow:0px 0px 5px fuchsia;
+      z-index: 110; 
   }
   .print #decoder-toggle {
     display: none;
@@ -308,8 +309,8 @@ body, p, td, th {
   #ability {
       position: absolute;
       display: block;
-      right: 0.3in;
-      bottom: -16pt;
+      right: 0.8in;
+      bottom: 20pt;
       font-size: 14pt;
       cursor: help;
       z-index: 99;
