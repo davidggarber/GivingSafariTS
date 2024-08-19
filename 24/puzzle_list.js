@@ -33,7 +33,6 @@ var puzzles = [
     { title: 'Wine', thumb: '', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Dodecadent Dinner', thumb: '', author: 'David Garber', type: types.math, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Grandma’s Secret Recipe',file:'GrandmasSecretRecipe', thumb: '', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
-    // { title: 'Leftovers', thumb: '', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', thumb: '', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Foodoku', thumb: '', author: 'Wendy Stidmon & Jeffrey Lin', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Boaty McBoatface', thumb: '', author: 'Martyn Lovell', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [] },
@@ -47,9 +46,9 @@ var puzzles = [
     { title: 'Techniques', thumb: '', author: 'Anne Grier', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Beyond Seasonable Doubt', thumb: '', author: 'Wendy Stidmon', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Title', thumb: '', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: 'LasagnaDoku', thumb: '', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: 'Foodie Game', thumb: '', author: 'Zhenya Ross', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: "Ding's Dim Sum", file:'DingsDimSum', thumb: '', author: 'Philippe Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
-    // { title: 'Foodie Game', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
-    // { title: 'LasagnaDoku', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: 'Spaghetti Code', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: 'Plexiglass Dividers', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: 'Smorgasbord', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
@@ -57,6 +56,7 @@ var puzzles = [
     // { title: 'Snack Time', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: 'Food Shortage', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: '', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    // { title: 'Leftovers', thumb: '', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
 ];
 
 function puzzleFile(puz) {

@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Foodie Games',
+        author: 'Zhenya Ross',
+        copyright: '2021',
+        type: 'logic',
+        textInput: true,
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          pics: [
+            'abc',
+            'defg',
+            'hij',
+          ],
+          left: [
+            ['PEACH', 1, 0],
+            ['LIMES', 2, 1],
+            ['CHARD', 0, 0],
+            ['BACON', 2, 0],
+            ['PECAN', 2, 0],          
+          ],
+          right: [
+            ['SLICE', 3, 0],
+            ['TUILE', 3, 0],
+            ['ENJOY', 0, 2],
+            ['ROAST', 0, 0],
+            ['HONEY', 0, 1],          
+          ]
+        },
+      };
+    </script>
+    <style>
+      #FoodieGames td {
+        width: 1in;
+        height: 36px;
+        font-family: 'Lucida Console', Courier, monospace;
+        font-size: 14pt;
+      }
+      #FoodieGames .word-input {
+        width: 0.65in;
+      }
+    </style>
+  </head>
+  <body id="FoodieGames">
+    <div id="pageBody">
+      <p class="flavor">
+        Two foodies are playing a game.  Each one of them came up with a secret word that the other one is trying to guess.  
+        Each secret word consists of unique letters.  Below is a series of guesses and feedback on how well they match the secret word. 
+        The first column indicates how many letters in the guess are in the right position (R) in the secret word. 
+        The second column indicates how many letters in the guess are present in the secret word but are in the wrong position (W).  
+        Can you guess what the secret words are?
+      </p>
+      <build>
+        <div style="position:relative; margin-top: 0.4in; height: 3in;">
+          <ttable id="left" style="position:absolute; top:0px; left:1in;">
+            <for each="guess" in="left">
+              <ttr>
+                <ttd>{guess.0}</ttd>
+                <ttd>{guess.1}R&nbsp; {guess.2}W</ttd>
+              </ttr>
+            </for>
+            <ttr>
+                <ttd><word/></ttd>
+                <ttd>5R&nbsp; 0W</ttd>
+              </ttr>
+          </ttable>
+          <ttable id="right" style="position:absolute; top:0px; right:1in;">
+            <for each="guess" in="right">
+              <ttr>
+                <ttd>{guess.0}</ttd>
+                <ttd>{guess.1}R&nbsp; {guess.2}W</ttd>
+              </ttr>
+            </for>
+            <ttr>
+                <ttd><word/></ttd>
+                <ttd>5R&nbsp; 0W</ttd>
+              </ttr>
+          </ttable>
+        </div>
+
+        <div style="text-align: center;">
+          <for each="row" in="{pics}">
+            <p>
+              <for char="ch" in="{row}">
+                <img ssrc="FoodieGames/{ch}.png" />
+              </for>
+            </p>
+          </for>  
+        </div>
+
+      </build>
+    </div>
+  </body>
+</html>
