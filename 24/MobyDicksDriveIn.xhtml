@@ -13,8 +13,8 @@
         'copyright': '2021',
         'printAsColor': false,
         'type': 'Trivia',
-        'textInput': true,
-        'abilities': {
+        abilities: {
+          textInput: 'nearest',
           scratchPad: true,
         },
         'reactiveBuilder': true,
@@ -107,10 +107,6 @@
       .letter-cell.letter-box {
         position: relative;
         width: 2.5ex;
-      }
-      .letter-input {
-        position: relative;
-        top: -3px;
       }
       #MobyDick .letter-literal {
         top: -1px;

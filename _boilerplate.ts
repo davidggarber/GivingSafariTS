@@ -1,4 +1,4 @@
-import { textSetup } from "./_textSetup"
+import { clicksFindInputs, textSetup } from "./_textSetup"
 import { hasClass, toggleClass } from "./_classUtil"
 import { setupNotes, setupCrossOffs, setupHighlights } from "./_notes"
 import { setupDecoderToggle } from "./_decoders"
@@ -118,6 +118,7 @@ export function forceReload(): boolean|undefined {
 
 
 type AbilityData = {
+    textInput?: boolean|string;  // true by default
     notes?: boolean;
     checkMarks?: boolean;
     highlights?: boolean;
@@ -144,7 +145,6 @@ export type BoilerPlateData = {
     paperSize?: string;  // letter by default
     orientation?: string;  // portrait by default
     printAsColor?: boolean;  // true=color, false=grayscale, unset=unmentioned
-    textInput?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
     validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
@@ -487,9 +487,6 @@ function boilerplate(bp: BoilerPlateData) {
         bp.preSetup();
     }
 
-    if (bp.textInput !== false) {  // If omitted, default to true
-        textSetup()
-    }
     setupAbilities(head, margins, bp.abilities || {});
 
     if (bp.validation) {
@@ -645,6 +642,14 @@ function cssLoaded() {
 function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:AbilityData) {
     const safariDetails = getSafariDetails();
     const page = (margins.parentNode || document.getElementById('page') || margins) as HTMLDivElement;
+
+    if (data.textInput !== false) {  // If omitted, default to true
+        textSetup()
+        if (data.textInput == 'nearest') {
+            clicksFindInputs(page);
+        }
+    }
+
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;
@@ -675,7 +680,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.highlights) {
         let instructions = "Ctrl+click to highlight cells";
-        if (theBoiler()?.textInput) {
+        if (theBoiler()?.abilities?.textInput) {
             instructions = "Type ` or ctrl+click to highlight cells";
         }
         fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">💡</span>';

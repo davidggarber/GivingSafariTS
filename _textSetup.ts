@@ -1,4 +1,4 @@
-import { hasClass, toggleClass, applyAllClasses, getOptionalStyle, findParentOfClass } from "./_classUtil";
+import { hasClass, toggleClass, applyAllClasses, getOptionalStyle, findParentOfClass, isTag } from "./_classUtil";
 import { onLetterKeyDown, onLetterKey, onLetterChange, onWordKey, onWordChange, onLetterKeyUp } from "./_textInput";
 import { indexAllInputFields } from "./_storage"
 
@@ -561,4 +561,112 @@ function hasProgress(event: Event): boolean {
         }
     }
     return false;
+}
+
+/**
+ * Setup a click handler on the page to help sloppy clickers find inputs
+ * @param page 
+ */
+export function clicksFindInputs(page:HTMLDivElement) {
+    page.addEventListener('click', function (e) { focusNearestInput(e); } );
+}
+
+/**
+ * Move the focus to the nearest input-appropriate element.
+ * @param evt A mouse event
+ */
+function focusNearestInput(evt:MouseEvent) {
+    // Ignore shift states
+    // Ignore fake events (!isTrusted)
+    if (!evt.ctrlKey && !evt.shiftKey && !evt.altKey && evt.isTrusted) {
+        const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
+
+        for (let i = 0; i < targets.length; i++) {
+            const target = targets[i] as HTMLElement;
+            if ((target.getAttribute('disabled') === null) &&
+                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a'))) {
+                return;  // Shouldn't need my help
+            }
+            if (hasClass(target, 'stampTool') || hasClass(target, 'stampable') || hasClass(target, 'stampLock')) {
+                return;  // Stamping elements don't handler their own clicks; the page does
+            }
+            if (target.id == 'page' || target.id == 'scratch-pad' || hasClass(target as Node, 'scratch-div')) {
+                break;  // Found none. Continue below
+            }
+            if (target.onclick || target.onmousedown || target.onmouseup || target.onpointerdown || target.onpointerup) {
+                return;  // Target has its own handler
+            }
+        }
+
+        let nearestD:number = NaN;
+        let nearest:HTMLElement|undefined = undefined;
+        const tags = ['input', 'textarea', 'select', 'a'];
+
+        for (let t = 0; t < tags.length; t++) {
+            const elements = document.getElementsByTagName(tags[t]);
+            for (let i = 0; i < elements.length; i++) {
+                const elmt = elements[i] as HTMLElement;
+                if (elmt.style.display !== 'none' && elmt.getAttribute('disabled') === null) {
+                    const d = distanceToElement(evt, elmt);
+                    if (Number.isNaN(nearestD) || d < nearestD) {
+                        nearest = elmt;
+                        nearestD = d;
+                    }
+                }
+            }
+        }
+
+        if (nearest) {
+            if (isTag(nearest, 'a')) {
+                nearest.click();
+            }
+            else {
+                nearest.focus();
+            }
+        }
+    }
+
+}
+
+/**
+ * Distance between a mouse event and the nearest edge or corner of an element
+ * @param evt A mouse event
+ * @param elmt A rectangular element
+ * @returns A distance in client pixels
+ */
+function distanceToElement(evt:MouseEvent, elmt:HTMLElement):number {
+    const rect = elmt.getBoundingClientRect();
+    if (evt.clientX < rect.left) {
+        if (evt.clientY < rect.top) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.left, rect.top);
+        }
+        if (evt.clientY < rect.bottom) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.left, evt.clientY);
+        }
+        return distanceP2P(evt.clientX, evt.clientY, rect.left, rect.bottom);
+    }
+    if (evt.clientX > rect.right) {
+        if (evt.clientY < rect.top) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.right, rect.top);
+        }
+        if (evt.clientY < rect.bottom) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.right, evt.clientY);
+        }
+        return distanceP2P(evt.clientX, evt.clientY, rect.right, rect.bottom);
+    }
+    if (evt.clientY < rect.top) {
+        return distanceP2P(evt.clientX, evt.clientY, evt.clientX, rect.top);
+    }
+    if (evt.clientY < rect.bottom) {
+        return 0;
+    }
+    return distanceP2P(evt.clientX, evt.clientY, evt.clientX, rect.bottom);
+}
+
+/**
+ * Pythagorean distance, but favor X more than Y
+ * @returns A distance in client pixels
+ */
+function distanceP2P(x1:number, y1:number, x2:number, y2:number):number {
+    return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) * 3);
 }

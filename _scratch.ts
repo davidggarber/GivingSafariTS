@@ -16,13 +16,8 @@ export function setupScratch() {
     scratchPad = document.createElement('div');
     scratchPad.id = 'scratch-pad';
 
-    scratchPad.onclick = function(e) { scratchClick(e); }
-    page.onclick = function(e) { scratchPageClick(e); }
-
-    // const backDiv = document.createElement('div');
-    // backDiv.id = 'scratch-background';
-
-    // const transparent = document.createElement('img')
+    scratchPad.addEventListener('click', function (e) { scratchClick(e); } );
+    page.addEventListener('click', function (e) { scratchPageClick(e); } );
 
     page.appendChild(scratchPad);
 

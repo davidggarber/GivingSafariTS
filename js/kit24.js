@@ -4,9 +4,9 @@
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
-exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = void 0;
+exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
+exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -3415,6 +3415,106 @@ function hasProgress(event) {
     }
     return false;
 }
+/**
+ * Setup a click handler on the page to help sloppy clickers find inputs
+ * @param page
+ */
+function clicksFindInputs(page) {
+    page.addEventListener('click', function (e) { focusNearestInput(e); });
+}
+exports.clicksFindInputs = clicksFindInputs;
+/**
+ * Move the focus to the nearest input-appropriate element.
+ * @param evt A mouse event
+ */
+function focusNearestInput(evt) {
+    // Ignore shift states
+    // Ignore fake events (!isTrusted)
+    if (!evt.ctrlKey && !evt.shiftKey && !evt.altKey && evt.isTrusted) {
+        const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
+        for (let i = 0; i < targets.length; i++) {
+            const target = targets[i];
+            if ((target.getAttribute('disabled') === null) &&
+                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a'))) {
+                return; // Shouldn't need my help
+            }
+            if (hasClass(target, 'stampTool') || hasClass(target, 'stampable') || hasClass(target, 'stampLock')) {
+                return; // Stamping elements don't handler their own clicks; the page does
+            }
+            if (target.id == 'page' || target.id == 'scratch-pad' || hasClass(target, 'scratch-div')) {
+                break; // Found none. Continue below
+            }
+            if (target.onclick || target.onmousedown || target.onmouseup || target.onpointerdown || target.onpointerup) {
+                return; // Target has its own handler
+            }
+        }
+        let nearestD = NaN;
+        let nearest = undefined;
+        const tags = ['input', 'textarea', 'select', 'a'];
+        for (let t = 0; t < tags.length; t++) {
+            const elements = document.getElementsByTagName(tags[t]);
+            for (let i = 0; i < elements.length; i++) {
+                const elmt = elements[i];
+                if (elmt.style.display !== 'none' && elmt.getAttribute('disabled') === null) {
+                    const d = distanceToElement(evt, elmt);
+                    if (Number.isNaN(nearestD) || d < nearestD) {
+                        nearest = elmt;
+                        nearestD = d;
+                    }
+                }
+            }
+        }
+        if (nearest) {
+            if (isTag(nearest, 'a')) {
+                nearest.click();
+            }
+            else {
+                nearest.focus();
+            }
+        }
+    }
+}
+/**
+ * Distance between a mouse event and the nearest edge or corner of an element
+ * @param evt A mouse event
+ * @param elmt A rectangular element
+ * @returns A distance in client pixels
+ */
+function distanceToElement(evt, elmt) {
+    const rect = elmt.getBoundingClientRect();
+    if (evt.clientX < rect.left) {
+        if (evt.clientY < rect.top) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.left, rect.top);
+        }
+        if (evt.clientY < rect.bottom) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.left, evt.clientY);
+        }
+        return distanceP2P(evt.clientX, evt.clientY, rect.left, rect.bottom);
+    }
+    if (evt.clientX > rect.right) {
+        if (evt.clientY < rect.top) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.right, rect.top);
+        }
+        if (evt.clientY < rect.bottom) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.right, evt.clientY);
+        }
+        return distanceP2P(evt.clientX, evt.clientY, rect.right, rect.bottom);
+    }
+    if (evt.clientY < rect.top) {
+        return distanceP2P(evt.clientX, evt.clientY, evt.clientX, rect.top);
+    }
+    if (evt.clientY < rect.bottom) {
+        return 0;
+    }
+    return distanceP2P(evt.clientX, evt.clientY, evt.clientX, rect.bottom);
+}
+/**
+ * Pythagorean distance, but favor X more than Y
+ * @returns A distance in client pixels
+ */
+function distanceP2P(x1, y1, x2, y2) {
+    return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) * 3);
+}
 /*-----------------------------------------------------------
  * _subway.ts
  *-----------------------------------------------------------*/
@@ -5951,9 +6051,6 @@ function boilerplate(bp) {
     if (bp.preSetup) {
         bp.preSetup();
     }
-    if (bp.textInput !== false) { // If omitted, default to true
-        textSetup();
-    }
     setupAbilities(head, margins, bp.abilities || {});
     if (bp.validation) {
         linkCss(safariDetails.cssRoot + 'Guesses.css');
@@ -6096,6 +6193,12 @@ function cssLoaded() {
 function setupAbilities(head, margins, data) {
     const safariDetails = getSafariDetails();
     const page = (margins.parentNode || document.getElementById('page') || margins);
+    if (data.textInput !== false) { // If omitted, default to true
+        textSetup();
+        if (data.textInput == 'nearest') {
+            clicksFindInputs(page);
+        }
+    }
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;
@@ -6126,7 +6229,7 @@ function setupAbilities(head, margins, data) {
     }
     if (data.highlights) {
         let instructions = "Ctrl+click to highlight cells";
-        if (theBoiler()?.textInput) {
+        if (theBoiler()?.abilities?.textInput) {
             instructions = "Type ` or ctrl+click to highlight cells";
         }
         fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">💡</span>';
@@ -9500,11 +9603,8 @@ function setupScratch() {
     }
     scratchPad = document.createElement('div');
     scratchPad.id = 'scratch-pad';
-    scratchPad.onclick = function (e) { scratchClick(e); };
-    page.onclick = function (e) { scratchPageClick(e); };
-    // const backDiv = document.createElement('div');
-    // backDiv.id = 'scratch-background';
-    // const transparent = document.createElement('img')
+    scratchPad.addEventListener('click', function (e) { scratchClick(e); });
+    page.addEventListener('click', function (e) { scratchPageClick(e); });
     page.appendChild(scratchPad);
     if (getSafariDetails()) {
         linkCss(getSafariDetails()?.cssRoot + 'ScratchPad.css');

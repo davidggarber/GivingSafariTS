@@ -3727,6 +3727,113 @@ function hasProgress(event: Event): boolean {
     return false;
 }
 
+/**
+ * Setup a click handler on the page to help sloppy clickers find inputs
+ * @param page 
+ */
+export function clicksFindInputs(page:HTMLDivElement) {
+    page.addEventListener('click', function (e) { focusNearestInput(e); } );
+}
+
+/**
+ * Move the focus to the nearest input-appropriate element.
+ * @param evt A mouse event
+ */
+function focusNearestInput(evt:MouseEvent) {
+    // Ignore shift states
+    // Ignore fake events (!isTrusted)
+    if (!evt.ctrlKey && !evt.shiftKey && !evt.altKey && evt.isTrusted) {
+        const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
+
+        for (let i = 0; i < targets.length; i++) {
+            const target = targets[i] as HTMLElement;
+            if ((target.getAttribute('disabled') === null) &&
+                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a'))) {
+                return;  // Shouldn't need my help
+            }
+            if (hasClass(target, 'stampTool') || hasClass(target, 'stampable') || hasClass(target, 'stampLock')) {
+                return;  // Stamping elements don't handler their own clicks; the page does
+            }
+            if (target.id == 'page' || target.id == 'scratch-pad' || hasClass(target as Node, 'scratch-div')) {
+                break;  // Found none. Continue below
+            }
+            if (target.onclick || target.onmousedown || target.onmouseup || target.onpointerdown || target.onpointerup) {
+                return;  // Target has its own handler
+            }
+        }
+
+        let nearestD:number = NaN;
+        let nearest:HTMLElement|undefined = undefined;
+        const tags = ['input', 'textarea', 'select', 'a'];
+
+        for (let t = 0; t < tags.length; t++) {
+            const elements = document.getElementsByTagName(tags[t]);
+            for (let i = 0; i < elements.length; i++) {
+                const elmt = elements[i] as HTMLElement;
+                if (elmt.style.display !== 'none' && elmt.getAttribute('disabled') === null) {
+                    const d = distanceToElement(evt, elmt);
+                    if (Number.isNaN(nearestD) || d < nearestD) {
+                        nearest = elmt;
+                        nearestD = d;
+                    }
+                }
+            }
+        }
+
+        if (nearest) {
+            if (isTag(nearest, 'a')) {
+                nearest.click();
+            }
+            else {
+                nearest.focus();
+            }
+        }
+    }
+
+}
+
+/**
+ * Distance between a mouse event and the nearest edge or corner of an element
+ * @param evt A mouse event
+ * @param elmt A rectangular element
+ * @returns A distance in client pixels
+ */
+function distanceToElement(evt:MouseEvent, elmt:HTMLElement):number {
+    const rect = elmt.getBoundingClientRect();
+    if (evt.clientX < rect.left) {
+        if (evt.clientY < rect.top) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.left, rect.top);
+        }
+        if (evt.clientY < rect.bottom) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.left, evt.clientY);
+        }
+        return distanceP2P(evt.clientX, evt.clientY, rect.left, rect.bottom);
+    }
+    if (evt.clientX > rect.right) {
+        if (evt.clientY < rect.top) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.right, rect.top);
+        }
+        if (evt.clientY < rect.bottom) {
+            return distanceP2P(evt.clientX, evt.clientY, rect.right, evt.clientY);
+        }
+        return distanceP2P(evt.clientX, evt.clientY, rect.right, rect.bottom);
+    }
+    if (evt.clientY < rect.top) {
+        return distanceP2P(evt.clientX, evt.clientY, evt.clientX, rect.top);
+    }
+    if (evt.clientY < rect.bottom) {
+        return 0;
+    }
+    return distanceP2P(evt.clientX, evt.clientY, evt.clientX, rect.bottom);
+}
+
+/**
+ * Pythagorean distance, but favor X more than Y
+ * @returns A distance in client pixels
+ */
+function distanceP2P(x1:number, y1:number, x2:number, y2:number):number {
+    return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) * 3);
+}
 
 /*-----------------------------------------------------------
  * _subway.ts
@@ -6275,6 +6382,7 @@ export function forceReload(): boolean|undefined {
 
 
 type AbilityData = {
+    textInput?: boolean|string;  // true by default
     notes?: boolean;
     checkMarks?: boolean;
     highlights?: boolean;
@@ -6301,7 +6409,6 @@ export type BoilerPlateData = {
     paperSize?: string;  // letter by default
     orientation?: string;  // portrait by default
     printAsColor?: boolean;  // true=color, false=grayscale, unset=unmentioned
-    textInput?: boolean;  // false by default
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
     validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
@@ -6644,9 +6751,6 @@ function boilerplate(bp: BoilerPlateData) {
         bp.preSetup();
     }
 
-    if (bp.textInput !== false) {  // If omitted, default to true
-        textSetup()
-    }
     setupAbilities(head, margins, bp.abilities || {});
 
     if (bp.validation) {
@@ -6802,6 +6906,14 @@ function cssLoaded() {
 function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:AbilityData) {
     const safariDetails = getSafariDetails();
     const page = (margins.parentNode || document.getElementById('page') || margins) as HTMLDivElement;
+
+    if (data.textInput !== false) {  // If omitted, default to true
+        textSetup()
+        if (data.textInput == 'nearest') {
+            clicksFindInputs(page);
+        }
+    }
+
     let ability = document.getElementById('ability');
     if (ability != null) {
         const text = ability.innerText;
@@ -6832,7 +6944,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.highlights) {
         let instructions = "Ctrl+click to highlight cells";
-        if (theBoiler()?.textInput) {
+        if (theBoiler()?.abilities?.textInput) {
             instructions = "Type ` or ctrl+click to highlight cells";
         }
         fancy += '<span id="highlight-ability" title="' + instructions + '" style="text-shadow: 0 0 3px black;">💡</span>';
@@ -10528,13 +10640,8 @@ export function setupScratch() {
     scratchPad = document.createElement('div');
     scratchPad.id = 'scratch-pad';
 
-    scratchPad.onclick = function(e) { scratchClick(e); }
-    page.onclick = function(e) { scratchPageClick(e); }
-
-    // const backDiv = document.createElement('div');
-    // backDiv.id = 'scratch-background';
-
-    // const transparent = document.createElement('img')
+    scratchPad.addEventListener('click', function (e) { scratchClick(e); } );
+    page.addEventListener('click', function (e) { scratchPageClick(e); } );
 
     page.appendChild(scratchPad);
 

@@ -12,11 +12,10 @@
         'author': 'Rorke Haining',
         'copyright': '2021',
         'type': 'Word',
-        'textInput': true,
         'abilities': {
+          textInput: 'nearest',
           scratchPad: true,
           checkMarks:true,
-          notes:true,
         },
         'reactiveBuilder': true
       };
@@ -66,11 +65,6 @@
       #hints .letter-cell {
         margin-right: 10px;
       }
-      #hints .note-right {
-        width: 0.5in;
-        height: 16pt;
-        text-align: center;
-      }
     </style>
   </head>
   <body id="Beef">
@@ -89,7 +83,7 @@
         <for each="hint" in="hints">
           <tr_>
             <td_ class="left">{hint.[0]}</td_>
-            <td_ class="right" class_="notes-right"><pattern pattern="{hint.[1]}"></pattern></td_>
+            <td_ class="right"><pattern pattern="{hint.[1]}"></pattern></td_>
           </tr_>
         </for>
       </table_>

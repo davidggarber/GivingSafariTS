@@ -20,8 +20,8 @@
         'author': 'Wendy Stidmon &amp; Jeffrey Lin',
         'copyright': '2021',
         'type': 'logic',
-        'textInput': true,
-        'abilities': {
+        abilities: {
+          textInput: 'nearest',
           'stamping': true,
         },
         'reactiveBuilder': true,
@@ -134,7 +134,7 @@
               <div class="grid-row">
                 <for each="cell" in="{row}">
                   <if test="{cell}" ne="">
-                    <div class="grid-cell">
+                    <div class="grid-cell stampLock">
                       <img_ src="{cell}" />
                     </div>
                   </if>

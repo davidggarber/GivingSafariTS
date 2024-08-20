@@ -12,8 +12,8 @@
         author: 'Martyn Lovell',
         copyright: '2021',
         type: 'logic',
-        textInput: true,
         abilities: {
+          textInput: 'nearest',
           scratchPad: true,
         },
         reactiveBuilder: true,
@@ -135,21 +135,21 @@
             <for int="y" from="0" until="9">
               <for int="x" from="0" until="9">
                 <if test="{x}" in="{grays.[y]}">
-                  <rect x="{2+60*x}" y="{2+60*y}" class="gray" />
+                  <rect xx="{2+60*x}" yy="{2+60*y}" class="gray" />
                 </if>
                 <else>
-                  <rect x="{2+60*x}" y="{2+60*y}" class="thin" />
+                  <rect xx="{2+60*x}" yy="{2+60*y}" class="thin" />
                 </else>
               </for>
             </for>
             <for int="y" from="0" until="3">
               <for int="x" from="0" until="3">
-                <rect x="{2+180*x}" y="{2+180*y}" class="red" />
+                <rect xx="{2+180*x}" yy="{2+180*y}" class="red" />
               </for>
             </for>
             <for int="y" from="0" until="2">
               <for int="x" from="0" until="2">
-                <rect x="{62+60*4*x}" y="{62+60*4*y}" class="black" />
+                <rect xx="{62+60*4*x}" yy="{62+60*4*y}" class="black" />
               </for>
             </for>
           </svg>
