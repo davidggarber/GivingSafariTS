@@ -6,6 +6,7 @@ import { toggleHighlight } from "./_notes";
 import { isDebug, theBoiler } from "./_boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./_storage";
 import { validateInputReady } from "./_confirmation";
+import { read } from "fs";
 
 /**
  * Any event stemming from key in this list should be ignored
@@ -390,48 +391,42 @@ function UpdateExtraction(extractedId:string|null) {
         return;    
     }
     
-    const delayLiterals = DelayLiterals(extractedId);
     const inputs = document.getElementsByClassName('extract-input');
     const sorted_inputs = SortElements(inputs);
-    let extraction = '';
+    const parts:string[] = [];
+    let hiddens = false;
     let ready = true;
     for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
             continue;
         }
-        let letter = '';
         if (hasClass(input, 'extract-literal')) {
-            // Several ways to extract literals:
-            const de = getOptionalStyle(input, 'data-extract-delay');  // placeholder value to extract, until player has finished other work
-            const ev = getOptionalStyle(input, 'data-extract-value');  // always extract this value
-            const ec = getOptionalStyle(input, 'data-extract-copy');  // this extraction is a copy of another
-            if (delayLiterals && de) {
-                letter = de;
-            }
-            else if (ec) {
-                letter = extraction[parseInt(ec) - 1];
-            }
-            else {
-                letter = ev || '';
-            }
+            parts.push(HiddenExtract(input, false));
+            hiddens = true;
         }
         else {
             const inp = input as HTMLInputElement;
-            letter = inp.value || '';
-            letter = letter.trim();    
-        }
-        if (extraction.length > 0) {
-            extraction += join;
-        }
-        if (letter.length == 0) {
-            extraction += '_';
-            ready = false;
-        }
-        else {
-            extraction += letter;
+            let letter = inp.value || '';
+            letter = letter.trim();
+            ready = ready && letter.length > 0;
+            parts.push(letter || '_');
         }
     }
+    if (hiddens) {
+        let p = 0;
+        for (let i = 0; i < sorted_inputs.length; i++) {
+            const input = sorted_inputs[i];
+            if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+                continue;
+            }
+            if (hasClass(input, 'extract-literal')) {
+                parts[p] = HiddenExtract(input, ready, parts);
+            }
+            p++;
+        }
+    }
+    let extraction = parts.join(join);
 
     if (extracted.getAttribute('data-letter-pattern') != null) {
         const inps = extracted.getElementsByClassName('extractor-input');
@@ -477,36 +472,33 @@ function ExtractViaData(elmt:HTMLElement, value:string|null, extractedId:string|
 }
 
 /**
- * Puzzles can specify delayed literals within their extraction, 
- * which only show up if all non-literal cells are filled in.
- * @param extractedId The id of an element that collects extractions
- * @returns true if this puzzle uses this technique, and the non-literals are not yet done
+ * Hidden literal extracts often have rules for when they are applied.
+ * @param span The (hidden) span that contains the literal value and possible rules
+ * @param ready Whether the non-hidden inputs are now complete
+ * @param extraction Either undefined, if still building, or a list of all extracted elements, of which this is one part.
+ * @returns A letter to extract right now
  */
-function DelayLiterals(extractedId:string|null) :boolean {
-    let delayedLiterals = false;
-    let isComplete = true;
-    var inputs = document.getElementsByClassName('extract-input');
-    const sorted_inputs = SortElements(inputs);
-    for (let i = 0; i < sorted_inputs.length; i++) {
-        const input = sorted_inputs[i];
-        if (extractedId != null && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
-            continue;
-        }
-        if (hasClass(input, 'extract-literal')) {
-            if (getOptionalStyle(input, 'data-extract-delay')) {
-                delayedLiterals = true;
-            }
-        }
-        else {
-            const inp = input as HTMLInputElement;
-            let letter = inp.value || '';
-            letter = letter.trim();
-            if (letter.length == 0) {
-                isComplete = false;
-            }
-        }
+function HiddenExtract(span:Element, ready:boolean, extraction?:string[]):string {
+    // Several ways to extract literals.
+    // Old-style used data-* optional styles.
+    // New style uses simpler names, only on current span.
+    const de = span.hasAttributeNS('', 'delay') !== null     // placeholder value to extract, until player has finished other work
+            ? span.getAttributeNS('', 'delay')               // empty is ok
+            : getOptionalStyle(span, 'data-extract-delay');  
+    const ev = span.getAttributeNS('', 'value')              // eventual extraction (unless a copy)
+            || getOptionalStyle(span, 'data-extract-value'); 
+    const ec = getOptionalStyle(span, 'data-extract-copy');  // this extraction is a copy of another
+    if (!ready && de != null) {
+        return de;
     }
-    return delayedLiterals && !isComplete;
+    else if (ec) {
+        // On the first pass, extraction may be undefined, so return ''. Later, copy another cell.
+        return extraction ? extraction[parseInt(ec) - 1] : '';
+    }
+    else {
+        return ev || '';
+    }
+
 }
 
 /**
@@ -705,14 +697,21 @@ export function updateWordExtraction(extractedId:string|null) {
         return;
     }
     
-    var inputs = document.getElementsByClassName('word-input');
+    let inputs = document.getElementsByClassName('word-input');
     const sorted_inputs = SortElements(inputs);
-    var extraction = '';
-    var hasWordExtraction = false;
-    var partial = false;
+    const parts:string[] = [];
+    let hasWordExtraction = false;
+    let partial = false;
+    let ready = true;
+    let hiddens = false;
     for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
         if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            continue;
+        }
+        if (hasClass(input, 'extract-literal')) {
+            parts.push(HiddenExtract(input, false));
+            hiddens = true;
             continue;
         }
         var index = getOptionalStyle(input, 'data-extract-index', '') as string;
@@ -721,15 +720,32 @@ export function updateWordExtraction(extractedId:string|null) {
         }
         hasWordExtraction = true;
         const indeces = index.split(' ');
+        let letters = '';
         for (let j = 0; j < indeces.length; j++) {
             const inp = input as HTMLInputElement;  
             const letter = extractWordIndex(inp.value, indeces[j]);
             if (letter) {
-                extraction += letter;
+                letters += letter;
                 partial = partial || (letter != '_');
+                ready = ready && (letter != '_');
             }
         }
+        parts.push(letters);
     }
+    if (hiddens) {
+        let p = 0;
+        for (let i = 0; i < sorted_inputs.length; i++) {
+            const input = sorted_inputs[i];
+            if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+                continue;
+            }
+            if (hasClass(input, 'extract-literal')) {
+                parts[p] = HiddenExtract(input, ready, parts);
+            }
+            p++;
+        }
+    }
+    let extraction = parts.join('');
 
     if (hasWordExtraction) {
         ApplyExtraction(extraction, extracted, !partial);

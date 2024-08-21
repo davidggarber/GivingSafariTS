@@ -4,7 +4,7 @@ import { applyAllClasses, isTag, toggleClass } from "./_classUtil";
 import { getLetterStyles } from "./_textSetup";
 
 export const inputAreaTagNames = [
-  'letter', 'letters', 'literal', 'number', 'numbers', 'pattern', 'word'
+  'letter', 'letters', 'literal', 'number', 'numbers', 'pattern', 'word', 'extract'
 ];
 
 /**
@@ -31,7 +31,7 @@ export function startInputArea(src:HTMLElement):Node[] {
   let cloneContents = false;
   let literal:string|null = null;
   const extract = src.hasAttributeNS('', 'extract') ? cloneText(src.getAttributeNS('', 'extract')) : null;
-
+  
   let styles = getLetterStyles(src, 'underline', 'none', 'box');
 
   // Convert special attributes to data-* attributes for later text setup
@@ -62,9 +62,10 @@ export function startInputArea(src:HTMLElement):Node[] {
     // To support longer (or negative) numbers, set class = 'multiple-letter'
     literal = src.getAttributeNS('', 'literal');  // converts letter to letter-literal
   }
-  else if (isTag(src, 'word')) {  // 1 input cell for (usually) one character
+  else if (isTag(src, 'word')) {  // 1 input cell for one or more words
     toggleClass(span, 'word-cell', true);
     if (attr = src.getAttributeNS('', 'extract')) {
+      // attr should be 1 or more numbers (separated by spaces), detailing which letters to extract
       span.setAttributeNS('', 'data-extract-index', cloneText(attr));
     }
     if (attr = src.getAttributeNS('', 'extracted-id')) {
@@ -74,6 +75,22 @@ export function startInputArea(src:HTMLElement):Node[] {
       toggleClass(span, 'literal', true);
       span.innerText = cloneText(attr);
     }
+  }
+  else if (isTag(src, 'extract')) {
+    // Backdoor way to inject literals into extraction.
+    // They can have rules too.
+    // Don't specify a *-cell, since we don't actually need an <input>
+    span.style.display = 'none';
+    toggleClass(span, 'extract-literal', true);
+    if (attr = src.getAttributeNS('', 'word')) {
+      toggleClass(span, 'word-input', true);
+      span.setAttributeNS('', 'value', attr);
+    }
+    else if (attr = src.getAttributeNS('', 'letter') || src.getAttributeNS('', 'letters')) {  // can be multiple letters
+      toggleClass(span, 'extract-input', true);
+      span.setAttributeNS('', 'value', attr);
+    }
+    // Other styles, especially data-*, have already copied across
   }
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
     toggleClass(span, 'letter-cell-block', true);
