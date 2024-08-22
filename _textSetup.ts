@@ -617,7 +617,7 @@ function focusNearestInput(evt:MouseEvent) {
         }
 
         if (nearest) {
-            if (isTag(nearest, 'a')) {
+            if (isTag(nearest, 'a') && nearestD < 50) {  // 1/2 inch max
                 nearest.click();
             }
             else {

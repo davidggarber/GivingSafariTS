@@ -15,6 +15,7 @@
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
+          stamping: true,
         },
         reactiveBuilder: true,
         lookup: {
@@ -111,6 +112,34 @@
         height: 2.5ex;
       }
 
+      .stampTool.selected img {
+        background-color: #bff;
+      }
+
+      td.table-stamp:after {
+        content: "";
+        position: absolute;
+        top: 65%;
+        left: 5%;
+        width: 0.5in;
+        height: 0.25in;
+        background-image: url('FoodTrucks/truck.svg');
+        background-size: cover;
+        opacity: 0.7; /* Optional: Adjust the opacity */
+      }
+
+      td.blank-stamp:after {
+        content: "";
+        position: absolute;
+        top: 55%;
+        left: 0;
+        width: 50%;
+        height: 50%;
+        background-image: url('../Images/Stamps/blank.png');
+        background-size: cover;
+        opacity: 0.7; /* Optional: Adjust the opacity */
+      }
+
     </style>
   </head>
   <body id="FoodTruck">
@@ -123,15 +152,21 @@
       </p>
 
       <build>
-        <ttable id="letter-grid">
+        <ttable id="letter-grid" class="no-user-select">
           <for each="row" in="{grid}">
             <ttr>
               <for char="ch" in="{row}">
-                <ttd class="{gridStyles.{ch}}">{ch}</ttd>
+                <ttd class="{gridStyles.{ch}} stampable">{ch}</ttd>
               </for>
             </ttr>
           </for>
         </ttable>
+
+        <div id="stampPalette" data-tool-count="2" data-tool-erase="erase-tool" style="position:absolute; right: 0px; top:3.5in;" trim="all">
+          <span id="table-tool" class="stampTool" data-style="table-stamp"><img src="FoodTrucks/truck.svg" style="padding-top: 16px; padding-bottom: 16px;"/></span>
+          <span id="blank-tool" class="stampTool" data-style="blank-stamp" data-unstyle="table-stamp"><img src="../Images/Stamps/blank.png" /></span>
+          <span id="erase-tool" class="stampTool" data-unstyle="table-stamp blank-stamp"><img src="../Images/Stamps/eraser.png" /></span>
+        </div>
       </build>
 
       <div id="right-clues">

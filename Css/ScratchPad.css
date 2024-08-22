@@ -7,6 +7,12 @@
     background-color: #ffffee88;
 }
 
+@media print {
+    #scratch-pad {
+        display: none;
+    }    
+}
+
 .letter.portrait #scratch-pad {
     height: 11in;
 }

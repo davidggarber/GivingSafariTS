@@ -84,7 +84,7 @@ const safari21Details:PuzzleEventDetails = {
   'logo': './Images/GS24_banner.png',  // PS21 logo.png',
   'icon': './Images/Plate_icon.png',
   'iconRoot': './Icons/',
-  'puzzleList': './menuu.html',
+  'puzzleList': './menuu.xhtml',
   'cssRoot': '../Css/',
   'fontCss': '../24/Css/Fonts21.css',
   'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',  // no whitespace

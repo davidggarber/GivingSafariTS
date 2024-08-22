@@ -2252,11 +2252,11 @@ function HiddenExtract(span, ready, extraction) {
     // Several ways to extract literals.
     // Old-style used data-* optional styles.
     // New style uses simpler names, only on current span.
-    const de = span.getAttributeNS('', 'delay') !== null // empty is ok
-        ? span.getAttributeNS('', 'delay')
-        : getOptionalStyle(span, 'data-extract-delay'); // placeholder value to extract, until player has finished other work
-    const ev = span.getAttributeNS('', 'value')
-        || getOptionalStyle(span, 'data-extract-value'); // always extract this value
+    const de = span.hasAttributeNS('', 'delay') !== null // placeholder value to extract, until player has finished other work
+        ? span.getAttributeNS('', 'delay') // empty is ok
+        : getOptionalStyle(span, 'data-extract-delay');
+    const ev = span.getAttributeNS('', 'value') // eventual extraction (unless a copy)
+        || getOptionalStyle(span, 'data-extract-value');
     const ec = getOptionalStyle(span, 'data-extract-copy'); // this extraction is a copy of another
     if (!ready && de != null) {
         return de;
@@ -3479,7 +3479,7 @@ function focusNearestInput(evt) {
             }
         }
         if (nearest) {
-            if (isTag(nearest, 'a')) {
+            if (isTag(nearest, 'a') && nearestD < 50) { // 1/2 inch max
                 nearest.click();
             }
             else {
@@ -5596,7 +5596,7 @@ const safari21Details = {
     'logo': './Images/GS24_banner.png',
     'icon': './Images/Plate_icon.png',
     'iconRoot': './Icons/',
-    'puzzleList': './menuu.html',
+    'puzzleList': './menuu.xhtml',
     'cssRoot': '../Css/',
     'fontCss': '../24/Css/Fonts21.css',
     'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',
@@ -9179,7 +9179,7 @@ function startInputArea(src) {
     else if (isTag(src, 'word')) { // 1 input cell for one or more words
         toggleClass(span, 'word-cell', true);
         if (attr = src.getAttributeNS('', 'extract')) {
-            // The value is 1 or more numbers (separated by spaces), detailing which letters to extract
+            // attr should be 1 or more numbers (separated by spaces), detailing which letters to extract
             span.setAttributeNS('', 'data-extract-index', cloneText(attr));
         }
         if (attr = src.getAttributeNS('', 'extracted-id')) {
@@ -9244,18 +9244,6 @@ function startInputArea(src) {
         }
         toggleClass(span, 'literal', true);
         applyAllClasses(span, styles.literal);
-        if (extract != null) {
-            // Literals can be extracted too.
-            // Tag as input or word, so that the correct extraction process catches it
-            toggleClass(span, 'extract-literal', true);
-            if (isTag(src, 'word')) {
-                toggleClass(span, 'extract-word', true);
-            }
-            else {
-                toggleClass(span, 'extract-input', true);
-            }
-            applyAllClasses(span, styles.extract);
-        }
     }
     else if (!isTag(src, 'pattern')) {
         if (!isTag(src, 'word')) {
