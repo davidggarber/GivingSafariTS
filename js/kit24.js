@@ -3,10 +3,10 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.isIFrame = exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = void 0;
-exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = void 0;
+exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = void 0;
+exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -925,7 +925,7 @@ function toggleDecoder() {
     setupDecoderToggle(null);
 }
 exports.toggleDecoder = toggleDecoder;
-var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], guesses: [], time: null };
+var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, controls: {}, scratch: {}, edges: [], guesses: [], time: null };
 ////////////////////////////////////////////////////////////////////////
 // User interface
 //
@@ -1263,6 +1263,25 @@ function saveGuessHistory(guesses) {
     saveCache();
 }
 exports.saveGuessHistory = saveGuessHistory;
+/**
+ * Update the local cache with the latest notes, and where they're placed.
+ * NOTE: only call this once any active note has been flattened.
+ * @param scratchPad The parent div of all notes
+ */
+function saveScratches(scratchPad) {
+    const map = {};
+    const divs = scratchPad.getElementsByClassName('scratch-div');
+    for (let i = 0; i < divs.length; i++) {
+        const div = divs[i];
+        const rect = div.getBoundingClientRect();
+        const pos = [rect.left, rect.top, rect.width, rect.height].join(',');
+        const text = textFromScratchDiv(div);
+        map[pos] = text;
+        localCache.scratch = map;
+        saveCache();
+    }
+}
+exports.saveScratches = saveScratches;
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -1425,6 +1444,7 @@ function loadLocalStorage(storage) {
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
     restoreGuesses(storage.guesses);
+    restoreScratches(storage.scratch);
     reloading = false;
     const fn = theBoiler().onRestore;
     if (fn) {
@@ -1604,6 +1624,20 @@ function restoreGuesses(guesses) {
         const gl = { field: src.field, guess: src.guess, time: new Date(String(src.time)) };
         decodeAndValidate(gl);
         // Decoding will rebuild the localCache
+    }
+}
+/**
+ * Update the local cache with the latest notes, and where they're placed.
+ * NOTE: only call this once any active note has been flattened.
+ */
+function restoreScratches(scratch) {
+    scratchClear();
+    const points = Object.keys(scratch);
+    for (let i = 0; i < points.length; i++) {
+        const pos = points[i];
+        const xywh = pos.split(',').map(n => parseInt(n));
+        const text = scratch[pos];
+        scratchCreate(xywh[0], xywh[1], xywh[2], xywh[3], text);
     }
 }
 ////////////////////////////////////////////////////////////////////////
@@ -9629,6 +9663,9 @@ var pbnStampTools = [
  *-----------------------------------------------------------*/
 let scratchPad;
 let currentScratchInput = undefined;
+/**
+ * Setup a scratch pad that is the same size as the page.
+ */
 function setupScratch() {
     const page = (document.getElementById('page')
         || document.getElementsByClassName('printedPage')[0]);
@@ -9645,6 +9682,13 @@ function setupScratch() {
     }
 }
 exports.setupScratch = setupScratch;
+/**
+ * Click on the scratch pad (which is normally in the background).
+ * If ctrl+click, start a new note.
+ * Otherwise, flatten the current note.
+ * @param evt
+ * @returns
+ */
 function scratchClick(evt) {
     if (currentScratchInput && currentScratchInput !== evt.target) {
         scratchFlatten();
@@ -9670,6 +9714,11 @@ function scratchClick(evt) {
     scratchPad.appendChild(currentScratchInput);
     currentScratchInput.focus();
 }
+/**
+ * Callback when the top-level page is clicked.
+ * If it's a ctrl+click, try to create a scratch note at that point.
+ * @param evt The mouse event
+ */
 function scratchPageClick(evt) {
     if (evt.ctrlKey) {
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
@@ -9692,12 +9741,22 @@ function scratchPageClick(evt) {
         }
     }
 }
+/**
+ * Disable all squigglies from the note surface. They are distracting.
+ * @param elmt A newly created TextArea
+ */
 function disableSpellcheck(elmt) {
     elmt.setAttribute('spellCheck', 'false');
     elmt.setAttribute('autoComplete', 'false');
     elmt.setAttribute('autoCorrect', 'false');
     elmt.setAttribute('autoCapitalize', 'false');
 }
+/**
+ * Callback when the user types in the active textarea.
+ * Ensures that the textarea stays correctly sized.
+ * Exits scratch mode on Escape.
+ * @param evt The keyboard event
+ */
 function scratchTyped(evt) {
     if (!evt.target) {
         return; // WTF?
@@ -9708,10 +9767,18 @@ function scratchTyped(evt) {
     }
     scratchResize(evt.target);
 }
+/**
+ * Ensure that the active textarea is big enough for all its rows of text
+ * @param ta The active textarea
+ */
 function scratchResize(ta) {
     const lines = 1 + (ta.value || '').split('\n').length;
     ta.setAttributeNS('', 'rows', lines.toString());
 }
+/**
+ * Convert the active textarea to a flattened div
+ * The textarea will be removed, and the new div added to the scratchPad.
+ */
 function scratchFlatten() {
     if (!currentScratchInput) {
         return;
@@ -9719,31 +9786,19 @@ function scratchFlatten() {
     toggleClass(scratchPad, 'topmost', false);
     const text = currentScratchInput.value.trimEnd();
     if (text) {
-        const div = document.createElement('div');
-        toggleClass(div, 'scratch-div', true);
-        const lines = text.split('\n');
-        for (let i = 0; i < lines.length; i++) {
-            if (i > 0) {
-                div.appendChild(document.createElement('br'));
-            }
-            div.appendChild(document.createTextNode(lines[i]));
-        }
         const rect = currentScratchInput.getBoundingClientRect();
-        const spRect = scratchPad.getBoundingClientRect();
-        div.style.left = currentScratchInput.style.left;
-        div.style.top = currentScratchInput.style.top;
-        div.style.maxWidth = currentScratchInput.style.width;
-        div.style.maxHeight = rect.height + 'px';
-        currentScratchInput.parentNode.append(div);
+        scratchCreate(parseInt(currentScratchInput.style.left), parseInt(currentScratchInput.style.top), parseInt(currentScratchInput.style.width), rect.height, text);
     }
     currentScratchInput.parentNode.removeChild(currentScratchInput);
     currentScratchInput = undefined;
+    saveScratches(scratchPad);
 }
-function scratchRehydrate(div) {
-    if (!hasClass(div, 'scratch-div')) {
-        return;
-    }
-    const ta = document.createElement('textarea');
+/**
+ * Convert the <div> HTML contents to text appropriate for a textarea or storage
+ * @param div A flattened scratch note
+ * @returns A string of lines of notes with \n line breaks
+ */
+function textFromScratchDiv(div) {
     let text = '';
     for (let i = 0; i < div.childNodes.length; i++) {
         const child = div.childNodes[i];
@@ -9757,7 +9812,19 @@ function scratchRehydrate(div) {
             console.log('Unexpected contents of a scratch-div: ' + child);
         }
     }
-    ta.value = text;
+    return text;
+}
+exports.textFromScratchDiv = textFromScratchDiv;
+/**
+ * Convert a flattened div back to a textarea in the same location
+ * @param div A flattened div, which will be removed, and replaced
+ */
+function scratchRehydrate(div) {
+    if (!hasClass(div, 'scratch-div')) {
+        return;
+    }
+    const ta = document.createElement('textarea');
+    ta.value = textFromScratchDiv(div);
     const rcSP = scratchPad.getBoundingClientRect();
     const rcD = div.getBoundingClientRect();
     ta.style.left = div.style.left;
@@ -9773,6 +9840,47 @@ function scratchRehydrate(div) {
     currentScratchInput = ta;
     ta.focus();
 }
+/**
+ * Wipe away all scratches
+ */
+function scratchClear() {
+    if (currentScratchInput) {
+        currentScratchInput.parentNode.removeChild(currentScratchInput);
+        currentScratchInput = undefined;
+    }
+    const divs = scratchPad.getElementsByClassName('scratch-div');
+    for (let i = divs.length - 1; i >= 0; i--) {
+        scratchPad.removeChild(divs[i]);
+    }
+}
+exports.scratchClear = scratchClear;
+/**
+ * Create a scratch div
+ * @param x The client-x of the div
+ * @param y The client-y of the div
+ * @param width The (max) width of the div
+ * @param height The (max) height of the div
+ * @param text The text contents, as they would come from a textarea, with \n
+ */
+function scratchCreate(x, y, width, height, text) {
+    if (text) {
+        const div = document.createElement('div');
+        toggleClass(div, 'scratch-div', true);
+        const lines = text.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            if (i > 0) {
+                div.appendChild(document.createElement('br'));
+            }
+            div.appendChild(document.createTextNode(lines[i]));
+        }
+        div.style.left = x + 'px';
+        div.style.top = y + 'px';
+        div.style.maxWidth = width + 'px';
+        div.style.maxHeight = height + 'px';
+        scratchPad.append(div);
+    }
+}
+exports.scratchCreate = scratchCreate;
 /*-----------------------------------------------------------
  * _validatePBN.ts
  *-----------------------------------------------------------*/

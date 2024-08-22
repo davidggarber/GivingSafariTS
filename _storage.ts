@@ -6,6 +6,7 @@ import { doStamp, getStampParent } from "./_stampTools";
 import { createFromVertexList } from "./_straightEdge";
 import { GuessLog, decodeAndValidate } from "./_confirmation";
 import { getSafariDetails } from "./_events";
+import { scratchClear, scratchCreate, textFromScratchDiv } from "./_scratch";
 
 ////////////////////////////////////////////////////////////////////////
 // Types
@@ -24,12 +25,14 @@ type LocalCacheStruct = {
     positions: object;  // number => Position
     stamps: object;     // number => string
     highlights: object; // number => boolean
+    controls: object;   // number => number|string
+    scratch: object;    // (x,y) => string
     edges: string[];    // strings
     guesses: GuessLog[];
     time: Date|null;
 }
 
-var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, edges: [], guesses: [], time: null };
+var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, controls: {}, scratch: {}, edges: [], guesses: [], time: null };
 
 ////////////////////////////////////////////////////////////////////////
 // User interface
@@ -375,6 +378,25 @@ export function saveGuessHistory(guesses: GuessLog[]) {
     saveCache();
 }
 
+/**
+ * Update the local cache with the latest notes, and where they're placed.
+ * NOTE: only call this once any active note has been flattened.
+ * @param scratchPad The parent div of all notes
+ */
+export function saveScratches(scratchPad:HTMLDivElement) {
+    const map = {};
+    const divs = scratchPad.getElementsByClassName('scratch-div');
+    for (let i = 0; i < divs.length; i++) {
+        const div = divs[i] as HTMLDivElement;
+        const rect = div.getBoundingClientRect();
+        const pos = [rect.left,rect.top,rect.width,rect.height].join(',');
+        const text = textFromScratchDiv(div);
+        map[pos] = text;
+        localCache.scratch = map;
+        saveCache();
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -541,6 +563,7 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreHighlights(storage.highlights);
     restoreEdges(storage.edges);
     restoreGuesses(storage.guesses);
+    restoreScratches(storage.scratch);
     reloading = false;
 
     const fn = theBoiler().onRestore;
@@ -732,6 +755,21 @@ function restoreGuesses(guesses:GuessLog[]) {
         const gl:GuessLog = { field:src.field, guess:src.guess, time:new Date(String(src.time)) };
         decodeAndValidate(gl);
         // Decoding will rebuild the localCache
+    }
+}
+
+/**
+ * Update the local cache with the latest notes, and where they're placed.
+ * NOTE: only call this once any active note has been flattened.
+ */
+function restoreScratches(scratch:object) {
+    scratchClear();
+    const points = Object.keys(scratch);
+    for (let i = 0; i < points.length; i++) {
+        const pos = points[i];
+        const xywh = pos.split(',').map(n => parseInt(n));
+        const text = scratch[pos];
+        scratchCreate(xywh[0], xywh[1], xywh[2], xywh[3], text);
     }
 }
 

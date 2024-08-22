@@ -1,11 +1,14 @@
 import { linkCss } from "./_boilerplate";
 import { hasClass, isTag, toggleClass } from "./_classUtil";
-import { ContextError } from "./_contextError";
 import { getSafariDetails } from "./_events";
+import { saveScratches } from "./_storage";
 
 let scratchPad:HTMLDivElement;
 let currentScratchInput:HTMLTextAreaElement|undefined = undefined;
 
+/**
+ * Setup a scratch pad that is the same size as the page.
+ */
 export function setupScratch() {
     const page = (document.getElementById('page')
         || document.getElementsByClassName('printedPage')[0])  as HTMLElement;
@@ -26,6 +29,13 @@ export function setupScratch() {
     }
 }
 
+/**
+ * Click on the scratch pad (which is normally in the background).
+ * If ctrl+click, start a new note.
+ * Otherwise, flatten the current note.
+ * @param evt 
+ * @returns 
+ */
 function scratchClick(evt:MouseEvent) {
     if (currentScratchInput && currentScratchInput !== evt.target) {
         scratchFlatten();
@@ -59,6 +69,11 @@ function scratchClick(evt:MouseEvent) {
     currentScratchInput.focus();
 }
 
+/**
+ * Callback when the top-level page is clicked.
+ * If it's a ctrl+click, try to create a scratch note at that point.
+ * @param evt The mouse event
+ */
 function scratchPageClick(evt:MouseEvent) {
     if (evt.ctrlKey) {
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
@@ -84,6 +99,10 @@ function scratchPageClick(evt:MouseEvent) {
     }
 }
 
+/**
+ * Disable all squigglies from the note surface. They are distracting.
+ * @param elmt A newly created TextArea
+ */
 function disableSpellcheck(elmt:Element) {
     elmt.setAttribute('spellCheck', 'false');
     elmt.setAttribute('autoComplete', 'false');
@@ -91,6 +110,12 @@ function disableSpellcheck(elmt:Element) {
     elmt.setAttribute('autoCapitalize', 'false');
 }
 
+/**
+ * Callback when the user types in the active textarea.
+ * Ensures that the textarea stays correctly sized.
+ * Exits scratch mode on Escape.
+ * @param evt The keyboard event
+ */
 function scratchTyped(evt:KeyboardEvent) {
     if (!evt.target) {
         return;  // WTF?
@@ -102,11 +127,20 @@ function scratchTyped(evt:KeyboardEvent) {
 
     scratchResize(evt.target as HTMLTextAreaElement);
 }
+
+/**
+ * Ensure that the active textarea is big enough for all its rows of text
+ * @param ta The active textarea
+ */
 function scratchResize(ta: HTMLTextAreaElement) {
     const lines = 1 + (ta.value || '').split('\n').length;
     ta.setAttributeNS('', 'rows', lines.toString());
 }
 
+/**
+ * Convert the active textarea to a flattened div
+ * The textarea will be removed, and the new div added to the scratchPad.
+ */
 function scratchFlatten() {
     if (!currentScratchInput) {
         return;
@@ -115,37 +149,26 @@ function scratchFlatten() {
 
     const text = currentScratchInput!.value.trimEnd();
     if (text) {
-        const div = document.createElement('div');
-        toggleClass(div, 'scratch-div', true);
-
-        const lines = text.split('\n');
-        for (let i = 0; i < lines.length; i++) {
-            if (i > 0) {
-                div.appendChild(document.createElement('br'));
-            }
-            div.appendChild(document.createTextNode(lines[i]));
-        }
-
         const rect = currentScratchInput!.getBoundingClientRect();
-        const spRect = scratchPad.getBoundingClientRect();
-
-        div.style.left = currentScratchInput!.style.left;  
-        div.style.top = currentScratchInput!.style.top;  
-        div.style.maxWidth = currentScratchInput!.style.width;
-        div.style.maxHeight = rect.height + 'px';
-
-        currentScratchInput!.parentNode!.append(div);
+        scratchCreate(parseInt(currentScratchInput!.style.left), 
+            parseInt(currentScratchInput!.style.top),
+            parseInt(currentScratchInput!.style.width), 
+            rect.height,
+            text
+        );
     }
     currentScratchInput!.parentNode!.removeChild(currentScratchInput!);
     currentScratchInput = undefined;
+
+    saveScratches(scratchPad);
 }
 
-function scratchRehydrate(div:HTMLDivElement) {
-    if (!hasClass(div, 'scratch-div')) {
-        return;
-    }
-
-    const ta = document.createElement('textarea');
+/**
+ * Convert the <div> HTML contents to text appropriate for a textarea or storage
+ * @param div A flattened scratch note
+ * @returns A string of lines of notes with \n line breaks
+ */
+export function textFromScratchDiv(div:HTMLDivElement):string {
     let text = '';
     for (let i = 0; i < div.childNodes.length; i++) {
         const child = div.childNodes[i];
@@ -159,7 +182,20 @@ function scratchRehydrate(div:HTMLDivElement) {
             console.log('Unexpected contents of a scratch-div: ' + child);
         }
     }
-    ta.value = text;
+    return text;
+}
+
+/**
+ * Convert a flattened div back to a textarea in the same location
+ * @param div A flattened div, which will be removed, and replaced
+ */
+function scratchRehydrate(div:HTMLDivElement) {
+    if (!hasClass(div, 'scratch-div')) {
+        return;
+    }
+
+    const ta = document.createElement('textarea');
+    ta.value = textFromScratchDiv(div);
 
     const rcSP = scratchPad.getBoundingClientRect();
     const rcD = div.getBoundingClientRect();
@@ -179,4 +215,48 @@ function scratchRehydrate(div:HTMLDivElement) {
     div.parentNode!.removeChild(div);
     currentScratchInput = ta;
     ta.focus();
+}
+
+/**
+ * Wipe away all scratches
+ */
+export function scratchClear() {
+    if (currentScratchInput) {
+        currentScratchInput.parentNode!.removeChild(currentScratchInput);
+        currentScratchInput = undefined;
+    }
+    const divs = scratchPad.getElementsByClassName('scratch-div');
+    for (let i = divs.length - 1; i >= 0; i--) {
+        scratchPad.removeChild(divs[i]);
+    }
+}
+
+/**
+ * Create a scratch div
+ * @param x The client-x of the div
+ * @param y The client-y of the div
+ * @param width The (max) width of the div
+ * @param height The (max) height of the div
+ * @param text The text contents, as they would come from a textarea, with \n
+ */
+export function scratchCreate(x:number, y:number, width:number, height:number, text:string) {
+    if (text) {
+        const div = document.createElement('div');
+        toggleClass(div, 'scratch-div', true);
+
+        const lines = text.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            if (i > 0) {
+                div.appendChild(document.createElement('br'));
+            }
+            div.appendChild(document.createTextNode(lines[i]));
+        }
+
+        div.style.left = x + 'px';
+        div.style.top = y + 'px';
+        div.style.maxWidth = width + 'px';
+        div.style.maxHeight = height + 'px';
+
+        scratchPad.append(div);
+    }
 }
