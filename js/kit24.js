@@ -3487,20 +3487,22 @@ function focusNearestInput(evt) {
                 return; // Shouldn't need my help
             }
             if (hasClass(target, 'stampTool') || hasClass(target, 'stampable') || hasClass(target, 'stampLock')) {
-                return; // Stamping elements don't handler their own clicks; the page does
+                return; // Stamping elements don't handle their own clicks; the page does
             }
             if (target.id == 'page' || target.id == 'scratch-pad' || hasClass(target, 'scratch-div')) {
                 break; // Found none. Continue below
             }
-            if (target.onclick || target.onmousedown || target.onmouseup || target.onpointerdown || target.onpointerup) {
+            if (target.onclick || target.onmousedown || target.onmouseup
+                || target.onpointerdown || target.onpointerup || hasClass(target, 'clickable')) {
                 return; // Target has its own handler
             }
         }
         let nearestD = NaN;
         let nearest = undefined;
-        const tags = ['input', 'textarea', 'select', 'a'];
+        const tags = ['input', 'textarea', 'select', 'a', 'clickable'];
         for (let t = 0; t < tags.length; t++) {
-            const elements = document.getElementsByTagName(tags[t]);
+            const elements = tags[t] === 'clickable' ? document.getElementsByClassName(tags[t])
+                : document.getElementsByTagName(tags[t]);
             for (let i = 0; i < elements.length; i++) {
                 const elmt = elements[i];
                 if (elmt.style.display !== 'none' && elmt.getAttribute('disabled') === null) {
@@ -3514,6 +3516,9 @@ function focusNearestInput(evt) {
         }
         if (nearest) {
             if (isTag(nearest, 'a') && nearestD < 50) { // 1/2 inch max
+                nearest.click();
+            }
+            else if (hasClass(nearest, 'clickable')) {
                 nearest.click();
             }
             else {

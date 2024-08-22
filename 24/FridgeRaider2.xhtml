@@ -14,6 +14,7 @@
         'type': 'rebus',
         abilities: {
           textInput: 'nearest',
+          stamping: true,
           scratchPad: true,
         },
         'reactiveBuilder': true,
@@ -21,23 +22,14 @@
         },
       };
 
-      var tristate_list = ['tristate-pm', 'tristate-plus', 'tristate-minus'];
-
-      function rotateState(elmt) {
-        var state = elmt.getAttributeNS('', 'data-state');
-        var i = tristate_list.findIndex(s => s == state);
-        var next = tristate_list[(i + 1) % tristate_list.length];
-        refillFromTemplate(elmt, next);
-        elmt.setAttributeNS('', 'data-state', next);
-      }
-
       var checkbox_images = ['FridgeRaider2/checkbox.svg', 'FridgeRaider2/checked.svg']
 
-      function toggleCheckbox(elmt) {
-        var src = elmt.getAttributeNS('', 'src');
+      function toggleCheckbox(row) {
+        var img = row.getElementsByClassName('checkbox')[0];
+        var src = img.getAttributeNS('', 'src');
         var i = checkbox_images.findIndex(s => s == src);
         var next = checkbox_images[(i + 1) % checkbox_images.length];
-        elmt.setAttributeNS('', 'src', next);
+        img.setAttributeNS('', 'src', next);
       }
 
     </script>
@@ -88,15 +80,36 @@
         height:24pt;
         right: 2px;
         bottom: 2px;
-        xbackground-color: #0f08;
       }
-      .tristate-fill .sign {
+
+      .tristate.plus-stamp .pm, .tristate.minus-stamp .pm {
+        display: none;
+      }
+
+      .tristate.plus-stamp:after {
+        content: "+";
+        font-size: 24pt;
         position: absolute;
-        display: block;
-        bottom: 2px;
-        font-size:24pt;
-        xbackground-color: #0ff8;
+        top: -5px;
+        left: 5px;
+        width: 30px;
+        height: 40px;
+        padding: 0px;
+        background-color: none;
       }
+
+      .tristate.minus-stamp:after {
+        content: "&minus;";
+        font-size: 24pt;
+        position: absolute;
+        top: -5px;
+        left: 5px;
+        width: 30px;
+        height: 40px;
+        padding: 0px;
+        background-color: none;
+      }
+
       #right {
         position: absolute;
         right: 0px;
@@ -127,8 +140,8 @@
           <div class="left">
             <img src="FridgeRaider2/a.svg" style="height:1.52in;" />
             <div class="linp trim" style="top:110px;">
-              <span class="tristate">
-                <use template="tristate-plus"></use>
+              <span class="tristate plus-stamp">
+                <span class="tristate-fill" />
               </span>
               <letter literal="F" class="input-font"></letter>
             </div>
@@ -234,20 +247,20 @@
             <ttd class="r2"><img src="FridgeRaider2/1.png" /></ttd>
           </ttr>
           <for int="item" from="2" to="5">
-            <ttr>
-              <ttd class="cb"><img src="FridgeRaider2/checkbox.svg" onclick="toggleCheckbox(this)" /></ttd>
-              <ttd class="r2"><img ssrc="FridgeRaider2/{item}.svg" /></ttd>
+            <ttr onclick="toggleCheckbox(this)">
+              <ttd class="cb clickable"><img src="FridgeRaider2/checkbox.svg" class="checkbox" /></ttd>
+              <ttd class="r2 clickable"><img ssrc="FridgeRaider2/{item}.svg" /></ttd>
             </ttr>
           </for>
-          <ttr>
-            <ttd class="cb"><img src="FridgeRaider2/checkbox.svg" onclick="toggleCheckbox(this)" /></ttd>
-            <ttd class="r2"><img src="FridgeRaider2/6.svg" />
+          <ttr onclick="toggleCheckbox(this)">
+            <ttd class="cb clickable"><img src="FridgeRaider2/checkbox.svg" class="checkbox" /></ttd>
+            <ttd class="r2 clickable"><img src="FridgeRaider2/6.svg" />
               <img src="FridgeRaider2/6b.svg" style="position:absolute;left:0px;bottom:0px;height:0.32in;" /></ttd>
           </ttr>
           <for int="item" from="7" to="13">
-            <ttr>
-              <ttd class="cb"><img src="FridgeRaider2/checkbox.svg" onclick="toggleCheckbox(this)" /></ttd>
-              <ttd class="r2"><img ssrc="FridgeRaider2/{item}.svg" /></ttd>
+            <ttr onclick="toggleCheckbox(this)">
+              <ttd class="cb clickable"><img src="FridgeRaider2/checkbox.svg" class="checkbox" /></ttd>
+              <ttd class="r2 clickable"><img ssrc="FridgeRaider2/{item}.svg" /></ttd>
             </ttr>
           </for>
         </ttable>
@@ -258,22 +271,17 @@
         <pattern pattern="13" data-input-style="underline"></pattern>
       </div>
 
+      <div id="stampPalette" data-tool-count="2" data-tool-erase="pm-tool" style="display:none">
+        <span id="plus-tool" class="stampTool" data-style="plus-stamp" data-unstyle="minus-stamp" />
+        <span id="minus-tool" class="stampTool" data-style="minus-stamp" data-unstyle="plus-stamp" />
+        <span id="pm-tool" class="stampTool" data-unstyle="table-stamp minus-stamp" />
+      </div>
 
     </div>
 
-    <template id="tristate-pm">
-      <span class="tristate-fill"><img class="pm" src="FridgeRaider2/pm.svg" /></span>
-    </template>
-    <template id="tristate-plus">
-      <span class="tristate-fill"><span class="sign">&plus;</span></span>
-    </template>
-    <template id="tristate-minus">
-      <span class="tristate-fill"><span class="sign">&minus;</span></span>
-    </template>
-
     <template id="tristate">
-      <span class="tristate" onclick="rotateState(this)" data-state="tristate-pm">
-        <use template="tristate-pm"></use>
+      <span class="tristate stampable">
+        <span class="tristate-fill"><img class="pm" src="FridgeRaider2/pm.svg" /></span>
       </span>
     </template>
 
