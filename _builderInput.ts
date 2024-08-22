@@ -1,6 +1,7 @@
 import { appendRange, expandContents } from "./_builder";
 import { cloneAttributes, cloneText } from "./_builderContext";
 import { applyAllClasses, isTag, toggleClass } from "./_classUtil";
+import { ContextError, elementSourceOffset, nodeSourceOffset, SourceOffset } from "./_contextError";
 import { getLetterStyles } from "./_textSetup";
 
 export const inputAreaTagNames = [
@@ -156,6 +157,9 @@ export function startInputArea(src:HTMLElement):Node[] {
 
   if (cloneContents) {
     appendRange(span, expandContents(src));
+  }
+  else if (src.childNodes.length > 0) {
+    throw new ContextError('Input tags like <' + src.localName + '/> should be empty elements', nodeSourceOffset(src.childNodes[0]));
   }
 
   return [span];
