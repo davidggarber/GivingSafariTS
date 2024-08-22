@@ -53,7 +53,7 @@ var puzzles = [
     { title: 'Plexiglass Dividers', thumb: '', author: 'Peter Golde', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Snack Time', thumb: '', author: 'Marni Hager', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Dining Philosophers', thumb: '', author: 'Joey Marianer', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
-    // { title: "Ding's Dim Sum", file:'DingsDimSum', thumb: '', author: 'Philippe Nicolle', type: types.math, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: "Ding's Dim Sum", file:'DingsDimSum', thumb: '', author: 'Philippe Nicolle', type: types.math, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: 'Smorgasbord', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: 'Food Shortage', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: '', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
