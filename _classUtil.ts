@@ -10,15 +10,9 @@ import { cloneText, evaluateFormula, textFromContext } from "./_builderContext";
 export function toggleClass(obj: Node|string|null|undefined, 
                             cls: string|null, 
                             bool?: boolean) {
-    if (obj === null || obj === undefined || cls === null || cls === undefined) {
+    const elmt = getElement(obj);
+    if (!elmt || !cls) {
         return;
-    }
-    let elmt: Element;
-    if ('string' === typeof obj) {
-        elmt = document.getElementById(obj as string) as Element;
-    }
-    else {
-        elmt = obj as Element;
     }
     if (elmt !== null && elmt.classList !== null) {
         if (bool === undefined) {
@@ -37,6 +31,23 @@ export function toggleClass(obj: Node|string|null|undefined,
 }
 
 /**
+ * Several utilities allow an element to be passed as either a pointer,
+ * or by its ID, or omitted completely.
+ * Resolve to the actual pointer, if possible.
+ * @param obj An element pointer, ID (string), or null/undefined
+ * @returns The actual element, or else null
+ */
+function getElement(obj: Node|string|null|undefined):Element|null {
+    if (!obj) {
+        return null;
+    }
+    if ('string' === typeof obj) {
+        return document.getElementById(obj as string) as Element;
+    }
+    return obj as Element;
+}
+
+/**
  * Check if an HTML element is tagged with a given CSS class
  * @param obj - A page element, or id of an element
  * @param cls - A class name to test
@@ -45,15 +56,9 @@ export function toggleClass(obj: Node|string|null|undefined,
 export function hasClass( obj: Node|string|null, 
                           cls: string|undefined) 
                           : boolean {
-    if (obj === null || obj === undefined || cls === undefined) {
+    const elmt = getElement(obj);
+    if (!elmt || !cls) {
         return false;
-    }
-    let elmt: Element;
-    if ('string' === typeof obj) {
-        elmt = document.getElementById(obj as string) as Element;
-    }
-    else {
-        elmt = obj as Element;
     }
     return elmt !== null 
         && elmt.classList
@@ -74,13 +79,35 @@ export function applyAllClasses(obj: Node|string,
 }
 
 /**
+ * Convert the classList to a simple array of strings
+ * @param obj A page element, or id of an element
+ * @returns a string[]
+ */
+export function getAllClasses(obj: Node|string):string[] {
+    const elmt = getElement(obj) as Element;
+    const list:string[] = [];
+    elmt.classList.forEach((s,n) => list.push(s));
+    return list;
+}
+
+/**
  * Apply all classes in a list of classes.
  * @param obj - A page element, or id of an element
  * @param classes - A list of class names, delimited by spaces
  */
 export function clearAllClasses(obj: Node|string, 
-                                classes:string) {
-    var list = classes.split(' ');
+                                classes?:string|string[]) {
+    const elmt = getElement(obj) as Element;
+    let list:string[] = [];
+    if (!classes) {
+        elmt.classList.forEach((s,n) => list.push(s));
+    }
+    else if (typeof(classes) == 'string') {
+        list = classes.split(' ');
+    }
+    else {
+        list = classes as string[];
+    }
     for (let cls of list) {
         toggleClass(obj, cls, false);
     }

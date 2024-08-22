@@ -30,6 +30,8 @@
         var i = checkbox_images.findIndex(s => s == src);
         var next = checkbox_images[(i + 1) % checkbox_images.length];
         img.setAttributeNS('', 'src', next);
+
+        saveStates();
       }
 
     </script>
@@ -248,18 +250,18 @@
           </ttr>
           <for int="item" from="2" to="5">
             <ttr onclick="toggleCheckbox(this)">
-              <ttd class="cb clickable"><img src="FridgeRaider2/checkbox.svg" class="checkbox" /></ttd>
+              <use template="checkbox" cid="cid_{item}" />
               <ttd class="r2 clickable"><img ssrc="FridgeRaider2/{item}.svg" /></ttd>
             </ttr>
           </for>
           <ttr onclick="toggleCheckbox(this)">
-            <ttd class="cb clickable"><img src="FridgeRaider2/checkbox.svg" class="checkbox" /></ttd>
+            <use template="checkbox" cid="cid_6" />
             <ttd class="r2 clickable"><img src="FridgeRaider2/6.svg" />
               <img src="FridgeRaider2/6b.svg" style="position:absolute;left:0px;bottom:0px;height:0.32in;" /></ttd>
           </ttr>
           <for int="item" from="7" to="13">
             <ttr onclick="toggleCheckbox(this)">
-              <ttd class="cb clickable"><img src="FridgeRaider2/checkbox.svg" class="checkbox" /></ttd>
+              <use template="checkbox" cid="cid_{item}" />
               <ttd class="r2 clickable"><img ssrc="FridgeRaider2/{item}.svg" /></ttd>
             </ttr>
           </for>
@@ -283,6 +285,10 @@
       <span class="tristate stampable">
         <span class="tristate-fill"><img class="pm" src="FridgeRaider2/pm.svg" /></span>
       </span>
+    </template>
+
+    <template id="checkbox">
+      <ttd class="cb clickable"><img id="{cid}" src="FridgeRaider2/checkbox.svg" class="checkbox save-state" data-save-state="src" /></ttd>
     </template>
 
   </body>

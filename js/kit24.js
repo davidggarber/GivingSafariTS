@@ -3,10 +3,10 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.isBodyDebug = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = void 0;
-exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = void 0;
+exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = void 0;
+exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -17,15 +17,9 @@ exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = expor
  * @param bool - If omitted, cls is toggled in the classList; if true, cls is added; if false, cls is removed
  */
 function toggleClass(obj, cls, bool) {
-    if (obj === null || obj === undefined || cls === null || cls === undefined) {
+    const elmt = getElement(obj);
+    if (!elmt || !cls) {
         return;
-    }
-    let elmt;
-    if ('string' === typeof obj) {
-        elmt = document.getElementById(obj);
-    }
-    else {
-        elmt = obj;
     }
     if (elmt !== null && elmt.classList !== null) {
         if (bool === undefined) {
@@ -44,21 +38,31 @@ function toggleClass(obj, cls, bool) {
 }
 exports.toggleClass = toggleClass;
 /**
+ * Several utilities allow an element to be passed as either a pointer,
+ * or by its ID, or omitted completely.
+ * Resolve to the actual pointer, if possible.
+ * @param obj An element pointer, ID (string), or null/undefined
+ * @returns The actual element, or else null
+ */
+function getElement(obj) {
+    if (!obj) {
+        return null;
+    }
+    if ('string' === typeof obj) {
+        return document.getElementById(obj);
+    }
+    return obj;
+}
+/**
  * Check if an HTML element is tagged with a given CSS class
  * @param obj - A page element, or id of an element
  * @param cls - A class name to test
  * @returns true iff the class is in the classList
  */
 function hasClass(obj, cls) {
-    if (obj === null || obj === undefined || cls === undefined) {
+    const elmt = getElement(obj);
+    if (!elmt || !cls) {
         return false;
-    }
-    let elmt;
-    if ('string' === typeof obj) {
-        elmt = document.getElementById(obj);
-    }
-    else {
-        elmt = obj;
     }
     return elmt !== null
         && elmt.classList
@@ -78,12 +82,34 @@ function applyAllClasses(obj, classes) {
 }
 exports.applyAllClasses = applyAllClasses;
 /**
+ * Convert the classList to a simple array of strings
+ * @param obj A page element, or id of an element
+ * @returns a string[]
+ */
+function getAllClasses(obj) {
+    const elmt = getElement(obj);
+    const list = [];
+    elmt.classList.forEach((s, n) => list.push(s));
+    return list;
+}
+exports.getAllClasses = getAllClasses;
+/**
  * Apply all classes in a list of classes.
  * @param obj - A page element, or id of an element
  * @param classes - A list of class names, delimited by spaces
  */
 function clearAllClasses(obj, classes) {
-    var list = classes.split(' ');
+    const elmt = getElement(obj);
+    let list = [];
+    if (!classes) {
+        elmt.classList.forEach((s, n) => list.push(s));
+    }
+    else if (typeof (classes) == 'string') {
+        list = classes.split(' ');
+    }
+    else {
+        list = classes;
+    }
     for (let cls of list) {
         toggleClass(obj, cls, false);
     }
@@ -1282,6 +1308,60 @@ function saveScratches(scratchPad) {
     }
 }
 exports.saveScratches = saveScratches;
+/**
+ * Save one attribute from any element that is tagged with the class 'save-state'
+ * The attribute to save is named in the optional attribute 'data-save-state'.
+ * If omitted, the default is the value of an form field.
+ */
+function saveStates() {
+    const map = {};
+    const savers = document.getElementsByClassName('save-state');
+    for (let i = 0; i < savers.length; i++) {
+        const elmt = savers[i];
+        const id = elmt.id;
+        if (id) {
+            const attr = getOptionalStyle(elmt, 'data-save-state');
+            let val = '';
+            if (!attr && isTag(elmt, ['input', 'select', 'textarea', 'button'])) {
+                // Since form-field values are not normal attributes, don't specify them in data-save-state
+                const val = elmt.value;
+                if (val) {
+                    map[id] = val;
+                }
+                // if (isTag(elmt, 'input')) {
+                //     val = (elmt as HTMLInputElement).value
+                // }
+                // else if (isTag(elmt, 'select')) {
+                //     val = (elmt as HTMLSelectElement).value
+                // }
+                // else if (isTag(elmt, 'textarea')) {
+                //     val = (elmt as HTMLTextAreaElement).value
+                // }
+                // else if (isTag(elmt, 'button')) {
+                //     val = (elmt as HTMLButtonElement).value
+                // }
+            }
+            else if (attr == 'class') {
+                const classes = [];
+                elmt.classList.forEach((s, n) => classes.push(s));
+                if (classes.length > 0) {
+                    map[id] = classes.join(' ');
+                }
+            }
+            else if (attr) {
+                const val = elmt.getAttributeNS('', attr);
+                if (val) {
+                    map[id] = val;
+                }
+            }
+        }
+    }
+    if (Object.keys(map).length > 0) {
+        localCache.controls = map;
+        saveCache();
+    }
+}
+exports.saveStates = saveStates;
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -1445,6 +1525,7 @@ function loadLocalStorage(storage) {
     restoreEdges(storage.edges);
     restoreGuesses(storage.guesses);
     restoreScratches(storage.scratch);
+    restoreStates(storage.controls);
     reloading = false;
     const fn = theBoiler().onRestore;
     if (fn) {
@@ -1631,6 +1712,7 @@ function restoreGuesses(guesses) {
  * NOTE: only call this once any active note has been flattened.
  */
 function restoreScratches(scratch) {
+    localCache.scratch = scratch;
     scratchClear();
     const points = Object.keys(scratch);
     for (let i = 0; i < points.length; i++) {
@@ -1638,6 +1720,42 @@ function restoreScratches(scratch) {
         const xywh = pos.split(',').map(n => parseInt(n));
         const text = scratch[pos];
         scratchCreate(xywh[0], xywh[1], xywh[2], xywh[3], text);
+    }
+}
+/**
+ * Restore any elements tagged as save-state.
+ * They must each have a unique ID. One attribute may be saved for each.
+ * @param controls
+ */
+function restoreStates(controls) {
+    localCache.controls = controls;
+    const savers = document.getElementsByClassName('save-state');
+    for (let i = 0; i < savers.length; i++) {
+        const elmt = savers[i];
+        const id = elmt.id;
+        if (id && controls[id] !== undefined) {
+            const attr = getOptionalStyle(elmt, 'data-save-state');
+            if (!attr && isTag(elmt, ['input', 'select', 'textarea', 'button'])) {
+                elmt.value = controls[id];
+            }
+            else if (attr === 'class') {
+                const oldClasses = getAllClasses(elmt).filter((v) => v !== 'save-state');
+                clearAllClasses(elmt, oldClasses);
+                const classes = controls[id].split(' ');
+                for (let c = 0; c < classes.length; c++) {
+                    toggleClass(elmt, classes[c], true);
+                }
+            }
+            else if (attr) {
+                elmt.setAttributeNS('', attr, controls[id]);
+            }
+            else {
+                continue;
+            }
+            // If we've set anything, give the element a chance to reload
+            const load = new Event("load");
+            elmt.dispatchEvent(load);
+        }
     }
 }
 ////////////////////////////////////////////////////////////////////////

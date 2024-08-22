@@ -93,6 +93,8 @@
         var fg = boiler.lookup.colors.filter(c => c.value == select.value)[0].fg || 'black';
         td.style.color = fg;
         select.style.color = fg;
+        
+        saveStates();
       }
     </script>
     <style>
@@ -116,7 +118,7 @@
               <for each="q" in="{row}">
                 <ttd class="square">
                   <p>{q}</p>
-                  <use template="colors"></use>
+                  <use template="colors" qid="sel_{row#}_{q#}"></use>
                 </ttd>
               </for>
             </ttr>
@@ -126,7 +128,7 @@
     </div>
 
     <template id="colors">
-      <sselect onchange="onCombo(this)">
+      <sselect id="{qid}" onchange="onCombo(this)" class="save-state" onload="onCombo(this)">
         <for each="col" in="{colors}">
           <ooption value="{col.value}">{col.name}</ooption>
         </for>

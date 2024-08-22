@@ -17,15 +17,9 @@
 export function toggleClass(obj: Node|string|null|undefined, 
                             cls: string|null, 
                             bool?: boolean) {
-    if (obj === null || obj === undefined || cls === null || cls === undefined) {
+    const elmt = getElement(obj);
+    if (!elmt || !cls) {
         return;
-    }
-    let elmt: Element;
-    if ('string' === typeof obj) {
-        elmt = document.getElementById(obj as string) as Element;
-    }
-    else {
-        elmt = obj as Element;
     }
     if (elmt !== null && elmt.classList !== null) {
         if (bool === undefined) {
@@ -44,6 +38,23 @@ export function toggleClass(obj: Node|string|null|undefined,
 }
 
 /**
+ * Several utilities allow an element to be passed as either a pointer,
+ * or by its ID, or omitted completely.
+ * Resolve to the actual pointer, if possible.
+ * @param obj An element pointer, ID (string), or null/undefined
+ * @returns The actual element, or else null
+ */
+function getElement(obj: Node|string|null|undefined):Element|null {
+    if (!obj) {
+        return null;
+    }
+    if ('string' === typeof obj) {
+        return document.getElementById(obj as string) as Element;
+    }
+    return obj as Element;
+}
+
+/**
  * Check if an HTML element is tagged with a given CSS class
  * @param obj - A page element, or id of an element
  * @param cls - A class name to test
@@ -52,15 +63,9 @@ export function toggleClass(obj: Node|string|null|undefined,
 export function hasClass( obj: Node|string|null, 
                           cls: string|undefined) 
                           : boolean {
-    if (obj === null || obj === undefined || cls === undefined) {
+    const elmt = getElement(obj);
+    if (!elmt || !cls) {
         return false;
-    }
-    let elmt: Element;
-    if ('string' === typeof obj) {
-        elmt = document.getElementById(obj as string) as Element;
-    }
-    else {
-        elmt = obj as Element;
     }
     return elmt !== null 
         && elmt.classList
@@ -81,13 +86,35 @@ export function applyAllClasses(obj: Node|string,
 }
 
 /**
+ * Convert the classList to a simple array of strings
+ * @param obj A page element, or id of an element
+ * @returns a string[]
+ */
+export function getAllClasses(obj: Node|string):string[] {
+    const elmt = getElement(obj) as Element;
+    const list:string[] = [];
+    elmt.classList.forEach((s,n) => list.push(s));
+    return list;
+}
+
+/**
  * Apply all classes in a list of classes.
  * @param obj - A page element, or id of an element
  * @param classes - A list of class names, delimited by spaces
  */
 export function clearAllClasses(obj: Node|string, 
-                                classes:string) {
-    var list = classes.split(' ');
+                                classes?:string|string[]) {
+    const elmt = getElement(obj) as Element;
+    let list:string[] = [];
+    if (!classes) {
+        elmt.classList.forEach((s,n) => list.push(s));
+    }
+    else if (typeof(classes) == 'string') {
+        list = classes.split(' ');
+    }
+    else {
+        list = classes as string[];
+    }
     for (let cls of list) {
         toggleClass(obj, cls, false);
     }
@@ -1045,7 +1072,7 @@ type LocalCacheStruct = {
     positions: object;  // number => Position
     stamps: object;     // number => string
     highlights: object; // number => boolean
-    controls: object;   // number => number|string
+    controls: object;   // id => attribute
     scratch: object;    // (x,y) => string
     edges: string[];    // strings
     guesses: GuessLog[];
@@ -1417,6 +1444,62 @@ export function saveScratches(scratchPad:HTMLDivElement) {
     }
 }
 
+type ValuableElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLButtonElement;
+
+/**
+ * Save one attribute from any element that is tagged with the class 'save-state'
+ * The attribute to save is named in the optional attribute 'data-save-state'.
+ * If omitted, the default is the value of an form field.
+ */
+export function saveStates() {
+    const map = {};
+    const savers = document.getElementsByClassName('save-state');
+    for (let i = 0; i < savers.length; i++) {
+        const elmt = savers[i];
+        const id = elmt.id;
+        if (id) {
+            const attr = getOptionalStyle(elmt, 'data-save-state');
+            let val:string = '';
+            if (!attr && isTag(elmt, ['input', 'select', 'textarea', 'button'])) {
+                // Since form-field values are not normal attributes, don't specify them in data-save-state
+                const val = (elmt as ValuableElement).value;
+                if (val) {
+                    map[id] = val;
+                }
+                // if (isTag(elmt, 'input')) {
+                //     val = (elmt as HTMLInputElement).value
+                // }
+                // else if (isTag(elmt, 'select')) {
+                //     val = (elmt as HTMLSelectElement).value
+                // }
+                // else if (isTag(elmt, 'textarea')) {
+                //     val = (elmt as HTMLTextAreaElement).value
+                // }
+                // else if (isTag(elmt, 'button')) {
+                //     val = (elmt as HTMLButtonElement).value
+                // }
+            }
+            else if (attr == 'class') {
+                const classes:string[] = [];
+                elmt.classList.forEach((s,n) => classes.push(s));
+                if (classes.length > 0) {
+                    map[id] = classes.join(' ');
+                }
+            }
+            else if (attr) {
+                const val = elmt.getAttributeNS('', attr);
+                if (val) {
+                    map[id] = val;
+                }
+            }
+        }
+    }
+    if (Object.keys(map).length > 0) {
+        localCache.controls = map;
+        saveCache();
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -1584,6 +1667,7 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreEdges(storage.edges);
     restoreGuesses(storage.guesses);
     restoreScratches(storage.scratch);
+    restoreStates(storage.controls);
     reloading = false;
 
     const fn = theBoiler().onRestore;
@@ -1783,6 +1867,8 @@ function restoreGuesses(guesses:GuessLog[]) {
  * NOTE: only call this once any active note has been flattened.
  */
 function restoreScratches(scratch:object) {
+    localCache.scratch = scratch;
+    
     scratchClear();
     const points = Object.keys(scratch);
     for (let i = 0; i < points.length; i++) {
@@ -1790,6 +1876,45 @@ function restoreScratches(scratch:object) {
         const xywh = pos.split(',').map(n => parseInt(n));
         const text = scratch[pos];
         scratchCreate(xywh[0], xywh[1], xywh[2], xywh[3], text);
+    }
+}
+
+/**
+ * Restore any elements tagged as save-state.
+ * They must each have a unique ID. One attribute may be saved for each.
+ * @param controls 
+ */
+function restoreStates(controls:object) {
+    localCache.controls = controls;
+
+    const savers = document.getElementsByClassName('save-state');
+    for (let i = 0; i < savers.length; i++) {
+        const elmt = savers[i];
+        const id = elmt.id;
+        if (id && controls[id] !== undefined) {
+            const attr = getOptionalStyle(elmt, 'data-save-state');
+            if (!attr && isTag(elmt, ['input', 'select', 'textarea', 'button'])) {
+                (elmt as ValuableElement).value = controls[id];
+            }
+            else if (attr === 'class') {
+                const oldClasses = getAllClasses(elmt).filter((v) => v !== 'save-state');
+                clearAllClasses(elmt, oldClasses);
+                const classes = controls[id].split(' ');
+                for (let c = 0; c < classes.length; c++) {
+                    toggleClass(elmt, classes[c], true);
+                }
+            }
+            else if (attr) {
+                elmt.setAttributeNS('', attr, controls[id]);
+            }
+            else {
+                continue;
+            }
+
+            // If we've set anything, give the element a chance to reload
+            const load = new Event("load");
+            elmt.dispatchEvent(load);
+        }
     }
 }
 

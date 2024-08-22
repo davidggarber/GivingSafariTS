@@ -1,5 +1,5 @@
 import { forceReload, isIFrame, isRestart, theBoiler } from "./_boilerplate";
-import { hasClass, toggleClass, getOptionalStyle, findFirstChildOfClass } from "./_classUtil";
+import { hasClass, toggleClass, getOptionalStyle, findFirstChildOfClass, clearAllClasses, isTag, getAllClasses } from "./_classUtil";
 import { afterInputUpdate, updateWordExtraction } from "./_textInput";
 import { quickMove, quickFreeMove, Position, positionFromStyle } from "./_dragDrop";
 import { doStamp, getStampParent } from "./_stampTools";
@@ -25,7 +25,7 @@ type LocalCacheStruct = {
     positions: object;  // number => Position
     stamps: object;     // number => string
     highlights: object; // number => boolean
-    controls: object;   // number => number|string
+    controls: object;   // id => attribute
     scratch: object;    // (x,y) => string
     edges: string[];    // strings
     guesses: GuessLog[];
@@ -397,6 +397,62 @@ export function saveScratches(scratchPad:HTMLDivElement) {
     }
 }
 
+type ValuableElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLButtonElement;
+
+/**
+ * Save one attribute from any element that is tagged with the class 'save-state'
+ * The attribute to save is named in the optional attribute 'data-save-state'.
+ * If omitted, the default is the value of an form field.
+ */
+export function saveStates() {
+    const map = {};
+    const savers = document.getElementsByClassName('save-state');
+    for (let i = 0; i < savers.length; i++) {
+        const elmt = savers[i];
+        const id = elmt.id;
+        if (id) {
+            const attr = getOptionalStyle(elmt, 'data-save-state');
+            let val:string = '';
+            if (!attr && isTag(elmt, ['input', 'select', 'textarea', 'button'])) {
+                // Since form-field values are not normal attributes, don't specify them in data-save-state
+                const val = (elmt as ValuableElement).value;
+                if (val) {
+                    map[id] = val;
+                }
+                // if (isTag(elmt, 'input')) {
+                //     val = (elmt as HTMLInputElement).value
+                // }
+                // else if (isTag(elmt, 'select')) {
+                //     val = (elmt as HTMLSelectElement).value
+                // }
+                // else if (isTag(elmt, 'textarea')) {
+                //     val = (elmt as HTMLTextAreaElement).value
+                // }
+                // else if (isTag(elmt, 'button')) {
+                //     val = (elmt as HTMLButtonElement).value
+                // }
+            }
+            else if (attr == 'class') {
+                const classes:string[] = [];
+                elmt.classList.forEach((s,n) => classes.push(s));
+                if (classes.length > 0) {
+                    map[id] = classes.join(' ');
+                }
+            }
+            else if (attr) {
+                const val = elmt.getAttributeNS('', attr);
+                if (val) {
+                    map[id] = val;
+                }
+            }
+        }
+    }
+    if (Object.keys(map).length > 0) {
+        localCache.controls = map;
+        saveCache();
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Utilities for applying global indeces for saving and loading
 //
@@ -564,6 +620,7 @@ function loadLocalStorage(storage:LocalCacheStruct) {
     restoreEdges(storage.edges);
     restoreGuesses(storage.guesses);
     restoreScratches(storage.scratch);
+    restoreStates(storage.controls);
     reloading = false;
 
     const fn = theBoiler().onRestore;
@@ -763,6 +820,8 @@ function restoreGuesses(guesses:GuessLog[]) {
  * NOTE: only call this once any active note has been flattened.
  */
 function restoreScratches(scratch:object) {
+    localCache.scratch = scratch;
+    
     scratchClear();
     const points = Object.keys(scratch);
     for (let i = 0; i < points.length; i++) {
@@ -770,6 +829,45 @@ function restoreScratches(scratch:object) {
         const xywh = pos.split(',').map(n => parseInt(n));
         const text = scratch[pos];
         scratchCreate(xywh[0], xywh[1], xywh[2], xywh[3], text);
+    }
+}
+
+/**
+ * Restore any elements tagged as save-state.
+ * They must each have a unique ID. One attribute may be saved for each.
+ * @param controls 
+ */
+function restoreStates(controls:object) {
+    localCache.controls = controls;
+
+    const savers = document.getElementsByClassName('save-state');
+    for (let i = 0; i < savers.length; i++) {
+        const elmt = savers[i];
+        const id = elmt.id;
+        if (id && controls[id] !== undefined) {
+            const attr = getOptionalStyle(elmt, 'data-save-state');
+            if (!attr && isTag(elmt, ['input', 'select', 'textarea', 'button'])) {
+                (elmt as ValuableElement).value = controls[id];
+            }
+            else if (attr === 'class') {
+                const oldClasses = getAllClasses(elmt).filter((v) => v !== 'save-state');
+                clearAllClasses(elmt, oldClasses);
+                const classes = controls[id].split(' ');
+                for (let c = 0; c < classes.length; c++) {
+                    toggleClass(elmt, classes[c], true);
+                }
+            }
+            else if (attr) {
+                elmt.setAttributeNS('', attr, controls[id]);
+            }
+            else {
+                continue;
+            }
+
+            // If we've set anything, give the element a chance to reload
+            const load = new Event("load");
+            elmt.dispatchEvent(load);
+        }
     }
 }
 
