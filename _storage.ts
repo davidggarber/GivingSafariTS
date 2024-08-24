@@ -385,11 +385,17 @@ export function saveGuessHistory(guesses: GuessLog[]) {
  */
 export function saveScratches(scratchPad:HTMLDivElement) {
     const map = {};
+    const rectSP = scratchPad.getBoundingClientRect();
     const divs = scratchPad.getElementsByClassName('scratch-div');
     for (let i = 0; i < divs.length; i++) {
         const div = divs[i] as HTMLDivElement;
         const rect = div.getBoundingClientRect();
-        const pos = [rect.left,rect.top,rect.width,rect.height].join(',');
+        const pos = [
+            Math.ceil(rect.left-rectSP.left),
+            Math.ceil(rect.top-rectSP.top),
+            rect.width,
+            rect.height
+        ].join(',');
         const text = textFromScratchDiv(div);
         map[pos] = text;
         localCache.scratch = map;

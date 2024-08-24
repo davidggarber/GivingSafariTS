@@ -1432,11 +1432,17 @@ export function saveGuessHistory(guesses: GuessLog[]) {
  */
 export function saveScratches(scratchPad:HTMLDivElement) {
     const map = {};
+    const rectSP = scratchPad.getBoundingClientRect();
     const divs = scratchPad.getElementsByClassName('scratch-div');
     for (let i = 0; i < divs.length; i++) {
         const div = divs[i] as HTMLDivElement;
         const rect = div.getBoundingClientRect();
-        const pos = [rect.left,rect.top,rect.width,rect.height].join(',');
+        const pos = [
+            Math.ceil(rect.left-rectSP.left),
+            Math.ceil(rect.top-rectSP.top),
+            rect.width,
+            rect.height
+        ].join(',');
         const text = textFromScratchDiv(div);
         map[pos] = text;
         localCache.scratch = map;
@@ -10845,8 +10851,9 @@ export function setupScratch() {
     scratchPad = document.createElement('div');
     scratchPad.id = 'scratch-pad';
 
-    scratchPad.addEventListener('click', function (e) { scratchClick(e); } );
+    scratchPad.addEventListener('click', function (e) { scratchPadClick(e); } );
     page.addEventListener('click', function (e) { scratchPageClick(e); } );
+    window.addEventListener('blur', function (e) { scratchFlatten(); } );
 
     page.appendChild(scratchPad);
 
@@ -10884,7 +10891,7 @@ function scratchClick(evt:MouseEvent) {
     // Position the new textarea where its first character would be at the click point
     currentScratchInput.style.left = (evt.clientX - spRect.left - 5) + 'px';  
     currentScratchInput.style.top = (evt.clientY - spRect.top - 10) + 'px';  
-    currentScratchInput.style.width = (spRect.right - evt.clientX) + 'px';  // TODO: utilize right edge of scratch
+    currentScratchInput.style.width = Math.min(spRect.right - evt.clientX, spRect.width / 3) + 'px';
     disableSpellcheck(currentScratchInput);
     currentScratchInput.title = 'Escape to exit note mode';
 
@@ -10895,6 +10902,14 @@ function scratchClick(evt:MouseEvent) {
     currentScratchInput.focus();
 }
 
+function scratchPadClick(evt:MouseEvent) {
+    if (!evt.ctrlKey) {
+        if (evt.target != currentScratchInput) {
+            scratchFlatten();
+        }
+    }
+}
+
 /**
  * Callback when the top-level page is clicked.
  * If it's a ctrl+click, try to create a scratch note at that point.
@@ -10903,6 +10918,7 @@ function scratchClick(evt:MouseEvent) {
 function scratchPageClick(evt:MouseEvent) {
     if (evt.ctrlKey) {
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
+        let underScratch = false;
 
         for (let i = 0; i < targets.length; i++) {
             const target = targets[i] as HTMLElement;
@@ -10910,17 +10926,28 @@ function scratchPageClick(evt:MouseEvent) {
                 scratchRehydrate(target as HTMLDivElement);
                 return;
             }
-            if (target.id == 'scratch-pad') {
-                scratchClick(evt);
-                return;
+            if (target.id === 'scratch-pad') {
+                underScratch = true;
+                continue;
             }
-            if (isTag(target, 'input') || isTag(target, 'textarea')) {
-                return;  // Don't steal clicks from inputs
+            if (isTag(target, 'a')) {
+                if (underScratch) {
+                    // The scratch pad is covering a link. Invoke it.
+                    target.click();
+                    return;
+                }
+            }
+
+            if (isTag(target, ['input', 'textarea', 'select', 'a'])) {
+                return;  // Don't steal clicks from form fields or links
             }
             if (target.id != 'page' && target.onclick) {
                 return;  // Don't steal clicks from anything else with a click handler
             }
         }
+
+        // We haven't deferred to other controls, so invoke scratch notes
+        scratchClick(evt);
 
     }
 }
@@ -11022,13 +11049,14 @@ function scratchRehydrate(div:HTMLDivElement) {
 
     const ta = document.createElement('textarea');
     ta.value = textFromScratchDiv(div);
+    ta.addEventListener('blur', function (e) { scratchFlatten(); } );
 
     const rcSP = scratchPad.getBoundingClientRect();
     const rcD = div.getBoundingClientRect();
 
     ta.style.left = div.style.left;  
     ta.style.top = div.style.top;  
-    ta.style.width = (rcSP.right - rcD.left) + 'px';
+    ta.style.width = Math.min(rcSP.width / 3, rcSP.right - rcD.left) + 'px';
     disableSpellcheck(ta);
     ta.title = 'Escape to exit note mode';
 
