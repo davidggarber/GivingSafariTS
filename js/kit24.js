@@ -5,8 +5,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = void 0;
-exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = void 0;
+exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -792,6 +792,9 @@ exports.setupCrossOffs = setupCrossOffs;
  * @param event The mouse event
  */
 function onCrossOff(event) {
+    if (event.ctrlKey || event.shiftKey || event.altKey) {
+        return; // Do nothing in shift states
+    }
     let obj = event.target;
     if (obj.tagName == 'A' || hasClass(obj, 'note-input') || hasClass(obj, 'letter-input') || hasClass(obj, 'word-input')) {
         return; // Clicking on lines, notes, or inputs should not check anything
@@ -6113,7 +6116,7 @@ function boilerplate(bp) {
      */
     if (bp.reactiveBuilder) {
         try {
-            expandControlTags();
+            expandControlTags(bp.reactiveBuilder);
         }
         catch (ex) {
             const ctx = wrapContextError(ex);
@@ -7137,6 +7140,27 @@ class CodeError extends Error {
     }
 }
 exports.CodeError = CodeError;
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+function debugTagAttrs(elmt, expandFormulas = false) {
+    let str = '<' + elmt.localName;
+    for (let i = 0; i < elmt.attributes.length; i++) {
+        let val = elmt.attributes[i].value;
+        if (expandFormulas) {
+            val = makeString(complexAttribute(val));
+        }
+        str += ' ' + elmt.attributes[i].name + '="' + val + '"';
+    }
+    if (elmt.childNodes.length == 0) {
+        str += ' /'; // show as empty tag
+    }
+    str += '>'; // close tag
+    return str;
+}
+exports.debugTagAttrs = debugTagAttrs;
 /*-----------------------------------------------------------
  * _builder.ts
  *-----------------------------------------------------------*/
@@ -7477,10 +7501,19 @@ function getSvgDepth(elmt) {
 }
 /**
  * Look for control tags like for loops and if branches.
+ * @param rootId: if true, search for known builder elements.
+ * If a string (usually pageBody), start with that node.
  */
-function expandControlTags() {
+function expandControlTags(rootId) {
+    let src = null;
+    if (typeof (rootId) === 'string') {
+        src = document.getElementById(rootId);
+    }
+    if (!src) {
+        src = firstBuilderElement();
+    }
     const ifResult = { passed: false, index: 0 };
-    for (let src = firstBuilderElement(); src != null; src = firstBuilderElement()) {
+    for (; src !== null; src = firstBuilderElement()) {
         try {
             initElementStack(src);
             let dest = [];
@@ -7500,6 +7533,9 @@ function expandControlTags() {
                 }
                 else if (isTag(src, exports.inputAreaTagNames)) {
                     dest = startInputArea(src);
+                }
+                else {
+                    dest = [cloneWithContext(src)];
                 }
             }
             const parent = src.parentNode;
@@ -8958,6 +8994,7 @@ function getKeyedChild(parent, key, kTok, maybe) {
  */
 function startForLoop(src) {
     const dest = [];
+    dest.push(consoleComment(debugTagAttrs(src)));
     let iter = null;
     let list = [];
     let vals = []; // not always used
@@ -9304,6 +9341,12 @@ exports.inputAreaTagNames = [
  */
 function startInputArea(src) {
     const span = document.createElement('span');
+    const dbg1 = debugTagAttrs(src);
+    const dbg2 = debugTagAttrs(src, true);
+    span.appendChild(consoleComment(dbg1));
+    if (dbg2 !== dbg1) {
+        span.appendChild(consoleComment(dbg2));
+    }
     // Copy most attributes. 
     // Special-cased ones are harmless - no meaning in generic spans
     cloneAttributes(src, span);
@@ -9371,21 +9414,21 @@ function startInputArea(src) {
     }
     else if (isTag(src, 'pattern')) { // multiple input cells for (usually) one character each
         toggleClass(span, 'letter-cell-block', true);
-        if (attr = src.getAttributeNS('', 'pattern')) {
+        if (attr = src.getAttributeNS('', 'pattern')) { // Pattern for input
             toggleClass(span, 'create-from-pattern', true);
             span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
         }
-        else if (attr = src.getAttributeNS('', 'extract-numbers')) {
+        else if (attr = src.getAttributeNS('', 'extract-numbers')) { // Pattern for #extracted with numbers
             span.setAttributeNS('', 'data-number-pattern', cloneText(attr));
         }
-        else if (attr = src.getAttributeNS('', 'extract-pattern')) {
+        else if (attr = src.getAttributeNS('', 'extract-pattern')) { // Pattern for the #extracted target
             span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
             span.setAttributeNS('', 'data-indexed-by-letter', '');
         }
-        if (attr = src.getAttributeNS('', 'extract')) {
+        if (attr = src.getAttributeNS('', 'extract')) { // Extraction indeces
             span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));
         }
-        if (attr = src.getAttributeNS('', 'numbers')) {
+        if (attr = src.getAttributeNS('', 'numbers')) { // Extraction with under-numbers
             span.setAttributeNS('', 'data-number-assignments', cloneText(attr));
         }
     }
@@ -9879,6 +9922,9 @@ function scratchPageClick(evt) {
             }
             if (isTag(target, ['input', 'textarea', 'select', 'a'])) {
                 return; // Don't steal clicks from form fields or links
+            }
+            if (hasClass(target, 'cross-off')) {
+                continue; // checkmarks react to click, not ctrl+click
             }
             if (target.id != 'page' && target.onclick) {
                 return; // Don't steal clicks from anything else with a click handler

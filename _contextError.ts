@@ -1,5 +1,6 @@
 import { off } from "process";
 import { _rawHtmlSource } from "./_boilerplate";
+import { complexAttribute, makeString } from "./_builderContext";
 
 export type SourceOffset = {
   source:string;
@@ -225,4 +226,25 @@ export class CodeError extends Error {
     super(msg);
     this.name = 'CodeError';
   }
+}
+
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+export function debugTagAttrs(elmt:Element, expandFormulas:boolean=false): string {
+  let str = '<' + elmt.localName;
+  for (let i = 0; i < elmt.attributes.length; i++) {
+    let val = elmt.attributes[i].value;
+    if (expandFormulas) {
+      val = makeString(complexAttribute(val));
+    }
+    str += ' ' + elmt.attributes[i].name + '="' + val + '"';
+  }
+  if (elmt.childNodes.length == 0) {
+    str += ' /';  // show as empty tag
+  }
+  str += '>';  // close tag
+  return str;
 }

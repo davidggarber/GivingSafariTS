@@ -1,7 +1,7 @@
-import { appendRange, expandContents } from "./_builder";
+import { appendRange, consoleComment, expandContents } from "./_builder";
 import { cloneAttributes, cloneText } from "./_builderContext";
 import { applyAllClasses, isTag, toggleClass } from "./_classUtil";
-import { ContextError, elementSourceOffset, nodeSourceOffset, SourceOffset } from "./_contextError";
+import { ContextError, debugTagAttrs, elementSourceOffset, nodeSourceOffset, SourceOffset } from "./_contextError";
 import { getLetterStyles } from "./_textSetup";
 
 export const inputAreaTagNames = [
@@ -23,6 +23,12 @@ export const inputAreaTagNames = [
  */
 export function startInputArea(src:HTMLElement):Node[] {
   const span = document.createElement('span');
+  const dbg1 = debugTagAttrs(src);
+  const dbg2 = debugTagAttrs(src,true);
+  span.appendChild(consoleComment(dbg1));
+  if (dbg2 !== dbg1) {
+    span.appendChild(consoleComment(dbg2));
+  }
 
   // Copy most attributes. 
   // Special-cased ones are harmless - no meaning in generic spans
@@ -95,21 +101,21 @@ export function startInputArea(src:HTMLElement):Node[] {
   }
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
     toggleClass(span, 'letter-cell-block', true);
-    if (attr = src.getAttributeNS('', 'pattern')) {
+    if (attr = src.getAttributeNS('', 'pattern')) {  // Pattern for input
       toggleClass(span, 'create-from-pattern', true);
       span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
     }
-    else if (attr = src.getAttributeNS('', 'extract-numbers')) {
+    else if (attr = src.getAttributeNS('', 'extract-numbers')) {  // Pattern for #extracted with numbers
         span.setAttributeNS('', 'data-number-pattern', cloneText(attr));
     }
-    else if (attr = src.getAttributeNS('', 'extract-pattern')) {
+    else if (attr = src.getAttributeNS('', 'extract-pattern')) {  // Pattern for the #extracted target
       span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
       span.setAttributeNS('', 'data-indexed-by-letter', '');
     }
-    if (attr = src.getAttributeNS('', 'extract')) {
+    if (attr = src.getAttributeNS('', 'extract')) {  // Extraction indeces
       span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));
     }
-    if (attr = src.getAttributeNS('', 'numbers')) {
+    if (attr = src.getAttributeNS('', 'numbers')) {  // Extraction with under-numbers
       span.setAttributeNS('', 'data-number-assignments', cloneText(attr));
     }
   }

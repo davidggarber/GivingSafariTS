@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'I Need A Gyro',
+        author: 'Rorke Haining',
+        copyright: '2021',
+        type: 'Rebus',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          checkMarks:true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          pics: [
+            ['a',87,91,31,47], // name, width, height, x, y (in 100ths of inch)
+            ['b',100,119,157,32],
+            ['c',138,153,289,0],
+            ['d',109,90,460,35],
+            ['e',177,81,610,42],
+
+            ['f',190,117,16,160],
+            ['g',110,37,223,206],
+            ['h',81,150,351,157],
+            ['i',129,155,458,143],
+            ['j',151,100,624,180],
+            
+            ['k',121,95,10,296],
+            ['l',136,116,119,285],
+            ['m',101,95,287,298],
+            ['n',108,93,450,307],
+            ['o',111,92,637,301],
+
+            ['p',192,128,0,412],
+            ['q',108,112,221,422],
+            ['r',110,92,358,431],
+            ['s',147,98,481,429],
+            ['t',130,106,656,422],
+          ],
+          gyros: [
+            [
+              [[3,3,10], [2,1,18], [3,1,3]],
+              [[6,6,2], [5,2,15]],
+              [[4,4,12], [6,3,5]],
+              [[3,2,13], [3,3,17], [3,3,8]]
+            ],
+            [
+              [[3,2,7], [2,1,19]],
+              [[3,1,1], [1,1,4], [4,1,9]],
+              [[3,1,11], [3,2,16]],
+              [[4,2,14], [3,1,6], [3,2,20]]
+            ]
+          ]
+        },
+      };
+    </script>
+    <style>
+      .pic {
+        position: absolute;
+      }
+      #table {
+        position:absolute;
+        top: 5.25in;
+        left: 0px;
+        width: 7.5in;
+      }
+      .gyro {
+        width: 25%;
+        text-align: center;
+        vertical-align: middle;
+      }
+      .gyro .top {
+        width: 1.5in;
+        height: 0.38in;
+      }
+      .gyro .bottom {
+        width: 1.5in;
+        height: 0.32in;
+      }
+      #INeedAGyro .letter-cell {
+        font-size: 20pt;
+      }
+      #INeedAGyro #table .under-number {
+        bottom: -0.5px;
+        text-align: right;
+      }
+      #extracted {
+        position:absolute;
+        bottom: 0px;
+        width: 100%;
+        text-align: center;
+      }
+      #INeedAGyro #extracted .letter-cell {
+        font-size: 16pt;
+      }
+    </style>
+  </head>
+  <body id="INeedAGyro">
+    <div id="pageBody">
+      <p style="position:absolute; left:4.02in; top:-0.6in; font-style:italic;">
+        Syllables and sandwiches<br />
+        are both alphabetized as<br />
+        they are spelled here.
+      </p>
+
+      <div style="position:absolute; left:-0.23in; top:-.23in;">
+        <for each="pic" in="{pics}">
+          <div class="pic cross-off" sstyle="left:{pic.3/100}in; top:{pic.4/100}in;">
+            <img ssrc="INeedAGyo/{pic.0}.png" sstyle="width:{pic.1/100}in; height:{pic.2/100}in;" />
+          </div>
+        </for>
+      </div>
+
+      <ttable id="table" data-letter-style="box" data-extract-style="box">
+        <for each="row" in="{gyros}">
+          <ttr>
+            <for each="gyro" in="{row}">
+              <ttd class="gyro">
+                <img class="top" src="INeedAGyo/top.png" /><br />
+                <for each="line" in="{gyro}">
+                  <pattern pattern="{line.0}" numbers="{line.1}={line.2}" /><br />
+                </for>
+                <img class="bottom" src="INeedAGyo/bottom.png" />
+              </ttd>
+            </for>
+          </ttr>
+        </for>
+      </ttable>
+
+      <pattern id="extracted" extract-numbers="20" />
+
+      <div class="gyro"></div>
+
+    </div>
+  </body>
+</html>

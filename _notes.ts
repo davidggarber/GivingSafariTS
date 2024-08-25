@@ -231,6 +231,9 @@ export function setupCrossOffs() {
  * @param event The mouse event
  */
 function onCrossOff(event:MouseEvent) {
+    if (event.ctrlKey || event.shiftKey || event.altKey) {
+        return;  // Do nothing in shift states
+    }
     let obj = event.target as HTMLElement;
     if (obj.tagName == 'A' || hasClass(obj, 'note-input') || hasClass(obj, 'letter-input') || hasClass(obj, 'word-input')) {
         return;  // Clicking on lines, notes, or inputs should not check anything

@@ -1,6 +1,6 @@
 import { consoleComment, expandContents, pushRange } from "./_builder";
 import { cloneText, evaluateAttribute, makeInt, makeString, popBuilderContext, pushBuilderContext } from "./_builderContext";
-import { ContextError, elementSourceOffset, elementSourceOffseter } from "./_contextError";
+import { ContextError, debugTagAttrs, elementSourceOffset, elementSourceOffseter } from "./_contextError";
 
 /**
  * Potentially several kinds of for loops:
@@ -15,6 +15,7 @@ import { ContextError, elementSourceOffset, elementSourceOffseter } from "./_con
  */
 export function startForLoop(src:HTMLElement):Node[] {
   const dest:Node[] = [];
+  dest.push(consoleComment(debugTagAttrs(src)));
 
   let iter:string|null = null;
   let list:any[] = [];

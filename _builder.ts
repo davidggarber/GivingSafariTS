@@ -360,10 +360,19 @@ function getSvgDepth(elmt:Element) {
 
 /**
  * Look for control tags like for loops and if branches.
+ * @param rootId: if true, search for known builder elements.
+ * If a string (usually pageBody), start with that node.
  */
-export function expandControlTags() {
+export function expandControlTags(rootId:string|boolean) {
+  let src:HTMLElement|null = null;
+  if (typeof(rootId) === 'string') {
+    src = document.getElementById(rootId as string)
+  }
+  if (!src) {
+    src = firstBuilderElement();
+  }
   const ifResult:ifResult = {passed:false, index:0};
-  for (let src = firstBuilderElement(); src != null; src = firstBuilderElement()) {
+  for ( ; src !== null; src = firstBuilderElement()) {
     try {
       initElementStack(src);
       let dest:Node[] = [];
@@ -384,6 +393,9 @@ export function expandControlTags() {
         }
         else if (isTag(src, inputAreaTagNames)) {
           dest = startInputArea(src);
+        }
+        else {
+          dest = [cloneWithContext(src)];
         }
       }
       const parent = src.parentNode;

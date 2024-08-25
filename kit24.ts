@@ -877,6 +877,9 @@ export function setupCrossOffs() {
  * @param event The mouse event
  */
 function onCrossOff(event:MouseEvent) {
+    if (event.ctrlKey || event.shiftKey || event.altKey) {
+        return;  // Do nothing in shift states
+    }
     let obj = event.target as HTMLElement;
     if (obj.tagName == 'A' || hasClass(obj, 'note-input') || hasClass(obj, 'letter-input') || hasClass(obj, 'word-input')) {
         return;  // Clicking on lines, notes, or inputs should not check anything
@@ -6601,7 +6604,7 @@ export type BoilerPlateData = {
     pathToRoot?: string;  // By default, '.'
     validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
-    reactiveBuilder?: boolean;  // invoke the new reactive builder
+    reactiveBuilder?: boolean|string;  // invoke the new reactive builder
     lookup?: object;  // a dictionary of json data available to builder code
     postBuild?: () => void;  // invoked after the builder is done
     preSetup?: () => void;
@@ -6810,7 +6813,7 @@ function boilerplate(bp: BoilerPlateData) {
 
     if (bp.reactiveBuilder) {
         try {
-            expandControlTags();
+            expandControlTags(bp.reactiveBuilder);
         }
         catch (ex) {
             const ctx = wrapContextError(ex);
@@ -7981,6 +7984,27 @@ export class CodeError extends Error {
   }
 }
 
+/**
+ * For debug traces, summarize a tag without including its children/contents
+ * @param elmt Any HTML element
+ * @returns A recreation of its start tag
+ */
+export function debugTagAttrs(elmt:Element, expandFormulas:boolean=false): string {
+  let str = '<' + elmt.localName;
+  for (let i = 0; i < elmt.attributes.length; i++) {
+    let val = elmt.attributes[i].value;
+    if (expandFormulas) {
+      val = makeString(complexAttribute(val));
+    }
+    str += ' ' + elmt.attributes[i].name + '="' + val + '"';
+  }
+  if (elmt.childNodes.length == 0) {
+    str += ' /';  // show as empty tag
+  }
+  str += '>';  // close tag
+  return str;
+}
+
 /*-----------------------------------------------------------
  * _builder.ts
  *-----------------------------------------------------------*/
@@ -8338,10 +8362,19 @@ function getSvgDepth(elmt:Element) {
 
 /**
  * Look for control tags like for loops and if branches.
+ * @param rootId: if true, search for known builder elements.
+ * If a string (usually pageBody), start with that node.
  */
-export function expandControlTags() {
+export function expandControlTags(rootId:string|boolean) {
+  let src:HTMLElement|null = null;
+  if (typeof(rootId) === 'string') {
+    src = document.getElementById(rootId as string)
+  }
+  if (!src) {
+    src = firstBuilderElement();
+  }
   const ifResult:ifResult = {passed:false, index:0};
-  for (let src = firstBuilderElement(); src != null; src = firstBuilderElement()) {
+  for ( ; src !== null; src = firstBuilderElement()) {
     try {
       initElementStack(src);
       let dest:Node[] = [];
@@ -8362,6 +8395,9 @@ export function expandControlTags() {
         }
         else if (isTag(src, inputAreaTagNames)) {
           dest = startInputArea(src);
+        }
+        else {
+          dest = [cloneWithContext(src)];
         }
       }
       const parent = src.parentNode;
@@ -9924,6 +9960,7 @@ function getKeyedChild(parent:any, key:any, kTok?:SourceOffsetable, maybe?:boole
  */
 export function startForLoop(src:HTMLElement):Node[] {
   const dest:Node[] = [];
+  dest.push(consoleComment(debugTagAttrs(src)));
 
   let iter:string|null = null;
   let list:any[] = [];
@@ -10308,6 +10345,12 @@ export const inputAreaTagNames = [
  */
 export function startInputArea(src:HTMLElement):Node[] {
   const span = document.createElement('span');
+  const dbg1 = debugTagAttrs(src);
+  const dbg2 = debugTagAttrs(src,true);
+  span.appendChild(consoleComment(dbg1));
+  if (dbg2 !== dbg1) {
+    span.appendChild(consoleComment(dbg2));
+  }
 
   // Copy most attributes. 
   // Special-cased ones are harmless - no meaning in generic spans
@@ -10380,21 +10423,21 @@ export function startInputArea(src:HTMLElement):Node[] {
   }
   else if (isTag(src, 'pattern')) {  // multiple input cells for (usually) one character each
     toggleClass(span, 'letter-cell-block', true);
-    if (attr = src.getAttributeNS('', 'pattern')) {
+    if (attr = src.getAttributeNS('', 'pattern')) {  // Pattern for input
       toggleClass(span, 'create-from-pattern', true);
       span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
     }
-    else if (attr = src.getAttributeNS('', 'extract-numbers')) {
+    else if (attr = src.getAttributeNS('', 'extract-numbers')) {  // Pattern for #extracted with numbers
         span.setAttributeNS('', 'data-number-pattern', cloneText(attr));
     }
-    else if (attr = src.getAttributeNS('', 'extract-pattern')) {
+    else if (attr = src.getAttributeNS('', 'extract-pattern')) {  // Pattern for the #extracted target
       span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
       span.setAttributeNS('', 'data-indexed-by-letter', '');
     }
-    if (attr = src.getAttributeNS('', 'extract')) {
+    if (attr = src.getAttributeNS('', 'extract')) {  // Extraction indeces
       span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));
     }
-    if (attr = src.getAttributeNS('', 'numbers')) {
+    if (attr = src.getAttributeNS('', 'numbers')) {  // Extraction with under-numbers
       span.setAttributeNS('', 'data-number-assignments', cloneText(attr));
     }
   }
@@ -10940,6 +10983,9 @@ function scratchPageClick(evt:MouseEvent) {
 
             if (isTag(target, ['input', 'textarea', 'select', 'a'])) {
                 return;  // Don't steal clicks from form fields or links
+            }
+            if (hasClass(target, 'cross-off')) {
+                continue;  // checkmarks react to click, not ctrl+click
             }
             if (target.id != 'page' && target.onclick) {
                 return;  // Don't steal clicks from anything else with a click handler

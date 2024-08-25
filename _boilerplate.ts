@@ -149,7 +149,7 @@ export type BoilerPlateData = {
     pathToRoot?: string;  // By default, '.'
     validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
-    reactiveBuilder?: boolean;  // invoke the new reactive builder
+    reactiveBuilder?: boolean|string;  // invoke the new reactive builder
     lookup?: object;  // a dictionary of json data available to builder code
     postBuild?: () => void;  // invoked after the builder is done
     preSetup?: () => void;
@@ -358,7 +358,7 @@ function boilerplate(bp: BoilerPlateData) {
 
     if (bp.reactiveBuilder) {
         try {
-            expandControlTags();
+            expandControlTags(bp.reactiveBuilder);
         }
         catch (ex) {
             const ctx = wrapContextError(ex);

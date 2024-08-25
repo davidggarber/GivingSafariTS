@@ -109,6 +109,9 @@ function scratchPageClick(evt:MouseEvent) {
             if (isTag(target, ['input', 'textarea', 'select', 'a'])) {
                 return;  // Don't steal clicks from form fields or links
             }
+            if (hasClass(target, 'cross-off')) {
+                continue;  // checkmarks react to click, not ctrl+click
+            }
             if (target.id != 'page' && target.onclick) {
                 return;  // Don't steal clicks from anything else with a click handler
             }
