@@ -201,7 +201,7 @@ function parseForRange(src:HTMLElement):any {
     : last ? (makeInt(last, elementSourceOffseter(src, 'last')) + 1)
     : length ? (makeString(length, elementSourceOffseter(src, 'len'))).length
     : start;
-  const inc = step ? parseInt(cloneText(step)) : 1;
+  const inc = step ? makeInt(step, elementSourceOffseter(src, 'step')) : 1;
   if (inc == 0) {
     throw new ContextError("Invalid loop step. Must be non-zero.", elementSourceOffseter(src, 'step'));
   }

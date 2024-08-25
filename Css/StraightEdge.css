@@ -14,6 +14,7 @@
 .straight-edge {
   stroke: #b00;
   stroke-width: 2.5px;
+  stroke-linecap: round;
   fill: none;
 }
 .straight-edge.building {
