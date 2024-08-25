@@ -28,6 +28,7 @@ var challenge = {
 }
 
 var puzzles = [
+    { title: 'A Hotdog is not a Sandwich', thumb: '', author: 'Michael Cohen', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Beef', thumb: '', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Beyond Seasonable Doubt', thumb: '', author: 'Wendy Stidmon', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Breakfast', thumb: '', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
@@ -45,8 +46,10 @@ var puzzles = [
     { title: 'Fridge Raider 2', thumb: '', author: 'Jeffrey Lin', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Grandma’s Secret Recipe',file:'GrandmasSecretRecipe', thumb: '', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Greens', thumb: '', author: 'Margaret Shaver', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: 'I Need A Gyro', thumb: '', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'LasagneDoku', thumb: '', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', thumb: '', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: 'Overeating', thumb: '', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Plexiglass Dividers', thumb: '', author: 'Peter Golde', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Snack Time', thumb: '', author: 'Marni Hager', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Spaghetti Code', thumb: '', author: 'Joseph Joy', type: types.maze, group: group.puzzle, orientation: orient.portrait, feeder: [] },
@@ -55,9 +58,6 @@ var puzzles = [
     { title: 'Title', thumb: '', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Wine', thumb: '', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: '🍽️🎥', file:'EmojiDM', thumb: '', author: 'Morgan Grobin', type: types.rebus, group: group.puzzle, orientation: orient.portrait, feeder: [] },
-    // { title: 'Overeating', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
-    // { title: 'I Need A Gyro', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
-    // { title: 'A Hotdog is not a Sandwich', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: 'Smorgasbord', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     // { title: '', thumb: '', author: '', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
 ];
