@@ -85,7 +85,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\24\\FoodTrucks.xhtml",
+      "url": "${workspaceFolder}\\Docs\\letter.xhtml",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"

@@ -3535,11 +3535,16 @@ export function getLetterStyles(   elmt: Element,
                             defLiteral: string|undefined, 
                             defExtract: string)
                             : LetterStyles {
-    var letter = getOptionalStyle(elmt, 'data-letter-style', undefined, 'letter-')
+    let letter = getOptionalStyle(elmt, 'data-letter-style', undefined, 'letter-')
         || getOptionalStyle(elmt, 'data-input-style', defLetter, 'letter-');
-    var literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
+    if (letter === 'letter-grid') {
+        // Special case: grid overrides other defaults
+        defLiteral = 'grid';
+        defExtract = 'grid-highlight';
+    }
+    let literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
     literal = (literal != null) ? ('literal-' + literal) : letter;
-    var extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
+    let extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
 
     return {
         'letter' : letter as string,
@@ -3761,7 +3766,7 @@ function setupLetterCells() {
 
         if (hasClass(cell, 'literal')) {
             toggleClass(inp, 'letter-non-input');
-            const val = cell.innerText || cell.innerHTML;
+            const val = cell.innerText;
             cell.innerHTML = '';
 
             inp.setAttribute('data-literal', val == '\xa0' ? ' ' : val);
@@ -10364,8 +10369,6 @@ type InputAttributeConversion = {
   spanRename?: object,     // If any key attribute is present, rename it to the value attribute on the span
   spanClass?: object,      // If any key attribute is present, apply the value as a class on the span
   optionalStyle?: object   // If any key attribute is present, apply one of the optional data styles. First one wins
-  // input?: object,       // If any key attribute is present, rename it to the value attribute on the input
-  // inputClass?: object,  // If any key attribute is present, apply the value as a class on the input
   specialCases?: object    // If any key attribute is present, call the value as a SpecialCaseFunction
 }
 
@@ -10391,6 +10394,7 @@ const inputAttributeConversions = {
       extract: 'extract'
     },
     specialCases: {
+      extract: underNumberExtracts,
       literal: specialLiterals,
       block: specialLiterals,
     }
@@ -10438,7 +10442,6 @@ const inputAttributeConversions = {
       'extracted-id': 'data-extracted-id',
     },
     specialCases: {
-      extract: numericWordExtracts,
       literal: specialLiterals,
       block: specialLiterals,
     }
@@ -10479,12 +10482,12 @@ const inputAttributeConversions = {
 };
 
 /**
- * If a <word> has an extract attribute, check if its value is numeric.
+ * If a <letter> has an extract attribute, check if its value is numeric.
  * If so, set up the under-number.
  * @param extract The value of the extract attribute
  * @param span The span that  will contain an input
  */
-function numericWordExtracts(extract:string, span:HTMLSpanElement) {
+function underNumberExtracts(extract:string, span:HTMLSpanElement) {
   if (parseInt(extract) > 0) {
     toggleClass(span, 'numbered', true);
     toggleClass(span, 'extract-numbered', true);

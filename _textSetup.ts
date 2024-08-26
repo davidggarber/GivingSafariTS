@@ -181,11 +181,16 @@ export function getLetterStyles(   elmt: Element,
                             defLiteral: string|undefined, 
                             defExtract: string)
                             : LetterStyles {
-    var letter = getOptionalStyle(elmt, 'data-letter-style', undefined, 'letter-')
+    let letter = getOptionalStyle(elmt, 'data-letter-style', undefined, 'letter-')
         || getOptionalStyle(elmt, 'data-input-style', defLetter, 'letter-');
-    var literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
+    if (letter === 'letter-grid') {
+        // Special case: grid overrides other defaults
+        defLiteral = 'grid';
+        defExtract = 'grid-highlight';
+    }
+    let literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
     literal = (literal != null) ? ('literal-' + literal) : letter;
-    var extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
+    let extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
 
     return {
         'letter' : letter as string,
@@ -407,7 +412,7 @@ function setupLetterCells() {
 
         if (hasClass(cell, 'literal')) {
             toggleClass(inp, 'letter-non-input');
-            const val = cell.innerText || cell.innerHTML;
+            const val = cell.innerText;
             cell.innerHTML = '';
 
             inp.setAttribute('data-literal', val == '\xa0' ? ' ' : val);

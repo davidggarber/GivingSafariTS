@@ -53,14 +53,7 @@
 }
 
 
-.letter-grid {
-  width: 4ex;
-  height: 4ex;
-  border: solid 1px black;
-  margin-left: -1px;
-}
-
-.literal-grid {
+.letter-grid, .literal-grid, .extract-grid, .extract-grid-highlight {
   width: 4ex;
   height: 4ex;
   border: solid 1px black;
@@ -109,6 +102,7 @@
 
 .extract-box {
   border: solid 1px black;
+  height: 2.5ex;
 }
 
 #fontExtents {
@@ -127,13 +121,13 @@
 }
 
 @media screen {
-  .extract-highlight {
-      background-color: #cccccc;
+  .extract-highlight, .extract-grid-highlight {
+    background-color: #cccccc;
   }
 }
 @media print {
-  .extract-highlight {
-      background-color: #999999;
+  .extract-highlight, .extract-grid-highlight {
+    background-color: #999999;
   }
 
   #fontExtents {

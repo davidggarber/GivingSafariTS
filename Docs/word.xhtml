@@ -11,13 +11,16 @@
         safari: 'Docs',
         paperSize: 'ledger',
         orientation: 'portrait',
-        title: '&lt;word&gt;',
-        reactiveBuilder: 'pageBody'
+        title: '&lt;word/&gt;',
+        reactiveBuilder: true
       };
     </script>
     <script src="docs.js"></script>
     <link href="docs.css" rel="Stylesheet" type="text/css"></link>
     <style>
+      code b, .code b {
+        font-size: 11pt;
+      }
       th {
         text-align: left;
       }
@@ -34,6 +37,9 @@
       td.comment {
         font-style: italic;
       }
+      td.comment code {
+        font-style: normal;
+      }
       td.override {
         font-family: 'Courier New', Courier, monospace;
         white-space: nowrap;
@@ -48,6 +54,10 @@
       }
       tr.alt:nth-child(odd) td.code {
         background-color: lightblue;
+      }
+      td li {
+        text-indent: -20px;
+        padding-left: 20px;
       }
     </style>
   </head>
@@ -72,59 +82,74 @@
           </tr>
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;word&gt;
+              &lt;word/&gt;
             </td>
-            <td class="rendered"><letter /></td>
-            <td class="comment">Input for a single letter</td>
-          </tr>
-
-          <tr class="alt">
-            <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;word&gt;
-              &lt;word <b>extract</b>&gt;
-            </td>
-            <td class="rendered">
-              <letter />
-              <letter extract='true' />
-            </td>
+            <td class="rendered"><word /></td>
             <td class="comment">
-              2nd letter is marked for extraction.<br />
-              Will be mirrored in document order to any element with <b>id="extracted"</b>.
+              Input for a typical word (default width: 1.5 inch)<br />
+              But there is no constraint. Players may type multiple words.
             </td>
           </tr>
 
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;word extract<b>="3"</b>&gt;&lt;word extract<b>="5"</b>&gt;
+              &lt;word <b>extract='3'</b>/&gt;
             </td>
             <td class="rendered">
-              <letter extract="3" /><letter extract="5" />
+              <word extract='3' />
             </td>
             <td class="comment">
-              The two letters will become the 3rd and 5th letters in the eventual extraction.
+              <code>extract='[index]'</code>
+              marks n<sup>th</sup> letter in that word for extraction.<br />
+              Extracted entries will be mirrored to an element with <b>id="extracted"</b>,<br />
+              preserving their relative order within the document.
             </td>
           </tr>
 
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;word&gt;&lt;word <b>literal="+"</b>&gt;&lt;word&gt;
+              &lt;word extract<b>="2.1"</b>/&gt;
             </td>
             <td class="rendered">
-              <letter /><letter literal="+" /><letter />
+              <word extract="2.1" />
             </td>
             <td class="comment">
-              The middle letter is marked literal.<br />
-              It is read-only, and often renders differently.
+              <code>extract='[word.index]'</code> marks the n<sup>th</sup> letter in the m<sup>th</sup> word for extraction.<br />
+              The lengths of other words are immaterial.
             </td>
           </tr>
 
-        </table>  
-      </build>      
+          <tr class="alt">
+            <td class="code" onclick="selectCodeBlock(this, event)">
+              &lt;word extract="&hellip;" <br />&nbsp; <b>extractedid="alt"</b>/&gt;
+            </td>
+            <td class="rendered">
+              <word extract='' extractedid="alt" />
+            </td>
+            <td class="comment">
+              <code>extractedid='[suffix]'</code> re-routes extracted entries to alternate collections.<br />
+              In this case, to <b>id="extracted-<i>alt</i>"</b>.
+            </td>
+          </tr>
 
+          <tr class="alt">
+            <td class="code" onclick="selectCodeBlock(this, event)">
+              &lt;word <b>literal="+"</b>/&gt;
+            </td>
+            <td class="rendered">
+              <word literal="+" />
+            </td>
+            <td class="comment">
+              <code>literal="[char]"</code> identifies this text as read-only.<br />
+              Its rendering is initially different, and can be controlled separately.
+            </td>
+          </tr>
 
+        </table>
+      </build>
 
       <h2>Page-wide overrides</h2>
-      <p>Letter styles are implemented through CSS. Each letter becomes an &lt;span&gt;&lt;input&gt;&lt;/span&gt;
+      <p>Word styles are implemented through CSS. Each letter becomes an &lt;span&gt;&lt;input&gt;&lt;/span&gt;
         <br />where the span is assigned a style based on the variant and any style overrides.
       </p>
       <table class="alternating-rows" style="width:100%;">
@@ -134,33 +159,16 @@
           <th>Other Suggestions</th>
         </tr>
         <tr class="alt">
-          <td class="override">data-letter-style</td>
-          <td>underline: <letter /><letter /></td>
-          <td>box: <span data-letter-style="box"><letter /><letter /></span> 
-            , grid: <span data-letter-style="grid"><letter /><letter /></span> 
-            , hover: <span data-letter-style="hover"><letter /><letter /></span> 
+          <td class="override">data-word-style</td>
+          <td>underline: <word /> <word /></td>
+          <td style="background-color: red;">TODO: extraction markings: under, after
           </td>
         </tr>
-        <tr class="alt">
-          <td class="override">data-literal-style</td>
-          <td>none: <letter /><letter literal="+" /><letter /></td>
-          <td>underline: <span data-literal-style="underline"><letter /><letter literal="+" /><letter /></span> 
-            , box: <span data-letter-style="box" data-literal-style="box"><letter /><letter literal="+" /><letter /></span> 
-            , grid: <span data-letter-style="grid" data-literal-style="grid"><letter /><letter literal="+" /><letter /></span> 
-          </td>
-        </tr>            
-        <tr class="alt">
-          <td class="override">data-extract-style</td>
-          <td>box: <letter /><letter extract='true' /><letter /></td>
-          <td>highlight: <span data-extract-style="highlight"><letter /><letter extract='true' /><letter /></span> 
-            , box: <span data-letter-style="box" data-literal-style="highlight"><letter /><letter extract='true' /><letter /></span> 
-            , grid: <span data-letter-style="grid" data-literal-style="highlight"><letter /><letter extract='true' /><letter /></span> 
-          </td>
-        </tr>            
       </table>
-        
-      <h2>CSS overrides</h2>
-      <p>Letter tags generate &lt;span&gt; and &lt;input&gt; elements, with styles that can be overridden.</p>
+
+
+      <h2>CSS overrides <span style="background-color:red">UNDER DEVELOPEMENT</span></h2>
+      <p>Word tags generate &lt;span&gt; and &lt;input&gt; elements, with styles that can be overridden.</p>
       <table class="alternating-rows" style="width:100%;">
         <tr>
           <th>Style</th>
@@ -168,48 +176,48 @@
           <th>Good place to override</th>
         </tr>
         <tr class="alt">
-          <td class="style">.letter-cell</td>
+          <td class="style">.word-cell</td>
           <td>The &lt;span&gt; around each &lt;input&gt;, regardless of display style</td>
           <td>
             <li>Font (family, size, color)</li>
           </td>
         </tr>
         <tr class="alt">
-          <td class="style">.letter-input</td>
+          <td class="style">.word-input</td>
           <td>The &lt;input&gt; itself</td>
           <td>
-            <li>Nothing!<br />The intent is that inputs inherit formatting from their span.letter-cell</li>
+            <li>Resize the input width - i.e. to allow longer phrases</li>
           </td>
         </tr>
 
         <tr>
-          <td colspan="3" style="font-weight: bold;">Letter styles (always ".letter-" + the style name)</td>
+          <td colspan="3" style="font-weight: bold;">Word styles (always ".word-" + the style name)</td>
         </tr>
         <tr class="alt">
-          <td class="style">.letter-underline</td>
-          <td>The span.letter-cell, when data-letter-style=<b>underline</b></td>
+          <td class="style">.word-underline</td>
+          <td>The span.word-cell, when data-letter-style=<b>underline</b></td>
           <td>
             <li>Any change in spacing (margin) between underlines</li>
           </td>
         </tr>
         <tr class="alt">
-          <td class="style">.letter-box</td>
-          <td>The span.letter-cell, when data-letter-style=<b>box</b></td>
+          <td class="style">.word-box</td>
+          <td>The span.word-cell, when data-letter-style=<b>box</b></td>
           <td>
             <li>Any change in spacing (margin) between boxes</li>
             <li>Rounded corners on boxes</li>
           </td>
         </tr>
         <tr class="alt">
-          <td class="style">.letter-grid</td>
-          <td>The span.letter-cell, when data-letter-style=<b>grid</b></td>
+          <td class="style">.word-grid</td>
+          <td>The span.word-cell, when data-letter-style=<b>grid</b></td>
           <td>
             <li>tbd</li>
           </td>
         </tr>
         <tr class="alt">
-          <td class="style">.letter-hover:hover</td>
-          <td>The span.letter-cell, when data-letter-style=<b>hover</b></td>
+          <td class="style">.word-hover:hover</td>
+          <td>The span.word-cell, when data-letter-style=<b>hover</b></td>
           <td>
             <li>Any change in hover effecgt</li>
           </td>
@@ -219,8 +227,8 @@
           <td colspan="3" style="font-weight: bold;">Literal styles (".literal-" + the style name)</td>
         </tr>
         <tr class="alt">
-          <td class="style">.letter-cell<b>.literal</b></td>
-          <td>The span.letter-cell when input is a literal</td>
+          <td class="style">.word-cell<b>.literal</b></td>
+          <td>The span.word-cell when input is a literal</td>
           <td>
             <li>Literal text's font</li>
             <li>Literal text's vertical alignment, relative to input text</li>
@@ -228,16 +236,23 @@
         </tr>
         <tr class="alt">
           <td class="style">.literal-underline</td>
-          <td>The span.letter-cell.literal, when data-literal-style=<b>underline</b></td>
+          <td>The span.word-cell.literal, when data-literal-style=<b>underline</b></td>
           <td>
-            <li>Mirror any changes to .letter-underline</li>
+            <li>Mirror any changes to .word-underline</li>
           </td>
         </tr>
         <tr class="alt">
           <td class="style">.literal-box</td>
-          <td>The span.letter-cell.literal, when data-literal-style=<b>box</b></td>
+          <td>The span.word-cell.literal, when data-literal-style=<b>box</b></td>
           <td>
-            <li>Mirror any changes to .letter-box</li>
+            <li>Mirror any changes to .word-box</li>
+          </td>
+        </tr>
+        <tr class="alt">
+          <td class="style">.block</td>
+          <td>The span.word-cell.literal, when <b>block=''</b></td>
+          <td>
+            <li>Change the block color</li>
           </td>
         </tr>
 
@@ -245,23 +260,24 @@
           <td colspan="3" style="font-weight: bold;">Extract styles</td>
         </tr>
         <tr class="alt">
-          <td class="style">.letter-cell<b>.extract</b></td>
-          <td>The span.letter-cell, when input an extracter</td>
+          <td class="style">.word-cell<b>.extract</b></td>
+          <td>The span.word-cell, when input an extracter</td>
           <td>
             <li>TBD</li>
           </td>
         </tr>
         <tr class="alt">
           <td class="style">.extract-highlight</td>
-          <td>The span.letter-cell.extract, when data-extract-style=<b>highlight</b></td>
+          <td>The span.word-cell.extract, when data-extract-style=<b>highlight</b></td>
           <td>
-            <li>The font (size, color, &hellip;) of letters typed into extraction cells.</li>
+            <li>The font (size, color, &hellip;) of letters in extraction cells.</li>
+            <li>Change the highlight color</li>
           </td>
         </tr>
 
         <tr class="alt">
           <td class="style">.under-number</td>
-          <td>A second span, inside the span.letter-cell, which contains the extraction number</td>
+          <td>A second span, inside the span.word-cell, which contains the extraction number</td>
           <td>
             <li>The font (face, size, &hellip;) of numbers under extractions, indicating mirrored cell.</li>
           </td>
@@ -269,16 +285,8 @@
 
       </table>
       <p>To ensure a successful override, prefix your local CSS rule with the puzzle's body ID. i.e.<br />
-        <code>#MyPuzzle .letter-cell { font-size: 20pt; }</code>
+        <code>#MyPuzzle .word-cell { font-size: 20pt; }</code>
       </p>
-
-      <h2>Special Literal Characters</h2>
-      <div>
-        <code>literal="¤"</code>
-        <span style="margin-left:.3in;">When present, the literal character is a solid dark-gray box. 
-          Especially handy in grids:</span>
-        <span data-letter-style="grid" data-literal-style="grid"><letter /><letter literal="¤" /><letter /></span>
-      </div>
 
     </div>
   </body>

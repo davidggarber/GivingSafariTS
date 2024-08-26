@@ -15,8 +15,6 @@ type InputAttributeConversion = {
   spanRename?: object,     // If any key attribute is present, rename it to the value attribute on the span
   spanClass?: object,      // If any key attribute is present, apply the value as a class on the span
   optionalStyle?: object   // If any key attribute is present, apply one of the optional data styles. First one wins
-  // input?: object,       // If any key attribute is present, rename it to the value attribute on the input
-  // inputClass?: object,  // If any key attribute is present, apply the value as a class on the input
   specialCases?: object    // If any key attribute is present, call the value as a SpecialCaseFunction
 }
 
@@ -42,6 +40,7 @@ const inputAttributeConversions = {
       extract: 'extract'
     },
     specialCases: {
+      extract: underNumberExtracts,
       literal: specialLiterals,
       block: specialLiterals,
     }
@@ -89,7 +88,6 @@ const inputAttributeConversions = {
       'extracted-id': 'data-extracted-id',
     },
     specialCases: {
-      extract: numericWordExtracts,
       literal: specialLiterals,
       block: specialLiterals,
     }
@@ -130,12 +128,12 @@ const inputAttributeConversions = {
 };
 
 /**
- * If a <word> has an extract attribute, check if its value is numeric.
+ * If a <letter> has an extract attribute, check if its value is numeric.
  * If so, set up the under-number.
  * @param extract The value of the extract attribute
  * @param span The span that  will contain an input
  */
-function numericWordExtracts(extract:string, span:HTMLSpanElement) {
+function underNumberExtracts(extract:string, span:HTMLSpanElement) {
   if (parseInt(extract) > 0) {
     toggleClass(span, 'numbered', true);
     toggleClass(span, 'extract-numbered', true);
