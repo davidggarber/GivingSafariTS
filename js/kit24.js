@@ -5,8 +5,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = void 0;
-exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = void 0;
+exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.debugTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -2826,6 +2826,10 @@ function findNext2dInput(root, start, dx, dy, cls, clsSkip) {
     if (dy != 0) {
         // In a 2D grid, up/down keep their relative horizontal positions
         var parent = findParentOfClass(start, 'letter-cell-block');
+        if (!parent) {
+            throw new Error("letter-grid-2d navigation requires all inputs to be grouped in " +
+                "'letter-cell-block' ranges. For example, provided by <pattern>s");
+        }
         var index = indexInContainer(start, parent, cls);
         var nextParent = findNextOfClass(parent, 'letter-cell-block', 'letter-grid-2d', dy);
         while (nextParent != null) {
@@ -3258,7 +3262,8 @@ function getLetterStyles(elmt, defLetter, defLiteral, defExtract) {
     return {
         'letter': letter,
         'extract': extract,
-        'literal': literal
+        'literal': literal,
+        'hidden': 'hide-element',
     };
 }
 exports.getLetterStyles = getLetterStyles;
@@ -6424,10 +6429,11 @@ function setupAbilities(head, margins, data) {
         count++;
     }
     if (data.stamping) {
+        // Review: ability icon
+        fancy += '<span id="stamp-ability" style="text-shadow: 0 0 10px black;"><img src="../Images/Stamps/stamp-glow.png" style="height:22px;" /></span>';
         preprocessStampObjects();
         indexAllDrawableFields();
         linkCss(safariDetails.cssRoot + 'StampTools.css');
-        // No ability icon
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
@@ -7161,6 +7167,26 @@ function debugTagAttrs(elmt, expandFormulas = false) {
     return str;
 }
 exports.debugTagAttrs = debugTagAttrs;
+/**
+ * For debugging, mirror a builder tag as a comment inside the new tag it generated.
+ * Show attributes in their raw version, potentially with formulas,
+ * and again with resolved values, if different.
+ * @param src The original builder element
+ * @param dest The new element that replaces it
+ * @param expandFormulas If true, try expanding formulas.
+ * Don't use if the resolved formulas are at risk of being large (i.e. objects or lists)
+ */
+function debugTagComment(src, dest, expandFormulas) {
+    const dbg1 = debugTagAttrs(src);
+    dest.appendChild(consoleComment(dbg1));
+    if (expandFormulas) {
+        const dbg2 = debugTagAttrs(src, true);
+        if (dbg2 !== dbg1) {
+            dest.appendChild(consoleComment(dbg2));
+        }
+    }
+}
+exports.debugTagComment = debugTagComment;
 /*-----------------------------------------------------------
  * _builder.ts
  *-----------------------------------------------------------*/
@@ -9326,6 +9352,209 @@ exports.startIfBlock = startIfBlock;
 exports.inputAreaTagNames = [
     'letter', 'letters', 'literal', 'number', 'numbers', 'pattern', 'word', 'extract'
 ];
+const inputAttributeConversions = {
+    '': {
+        span: {},
+        input: {}
+    },
+    letter: {
+        inherit: '',
+        spanClass: {
+            '': 'letter-cell',
+            block: 'block',
+            literal: 'literal',
+            extract: 'extract',
+        },
+        spanRename: {
+            'extracted-id': 'data-extracted-id',
+        },
+        optionalStyle: {
+            '': 'letter',
+            literal: 'literal',
+            extract: 'extract'
+        },
+        specialCases: {
+            literal: specialLiterals,
+            block: specialLiterals,
+        }
+    },
+    letters: {
+        inherit: 'letter',
+        spanClass: {
+            '': 'multiple-letter',
+        }
+    },
+    number: {
+        inherit: 'letter',
+        spanClass: {
+            '': 'numeric',
+        }
+    },
+    numbers: {
+        inherit: 'number',
+        spanClass: {
+            '': 'multiple-letter',
+        }
+    },
+    literal: {
+        inherit: 'letter',
+        spanClass: {
+            '': 'literal'
+        },
+        optionalStyle: {
+            '': 'literal',
+        },
+        specialCases: {
+            '': specialLiterals,
+            'block': specialLiterals,
+        }
+    },
+    word: {
+        inherit: '',
+        spanClass: {
+            '': 'word-cell',
+            literal: 'literal',
+        },
+        spanRename: {
+            extract: 'data-extract-index',
+            'extracted-id': 'data-extracted-id',
+        },
+        specialCases: {
+            extract: numericWordExtracts,
+            literal: specialLiterals,
+            block: specialLiterals,
+        }
+    },
+    pattern: {
+        inherit: '',
+        spanClass: {
+            '': 'letter-cell-block',
+            pattern: 'create-from-pattern',
+        },
+        spanRename: {
+            pattern: 'data-letter-pattern',
+            'extract-numbers': 'data-number-pattern',
+            'extract-pattern': 'data-letter-pattern',
+            extract: 'data-extract-indeces',
+            numbers: 'data-number-assignments'
+        },
+    },
+    extract: {
+        inherit: '',
+        spanClass: {
+            '': 'extract-literal',
+            word: 'word-input',
+            letter: 'extract-input',
+            letters: 'extract-input',
+        },
+        spanRename: {
+            word: 'value',
+            letter: 'value',
+            letters: 'value',
+        },
+        optionalStyle: {
+            '': 'hidden',
+        }
+    },
+};
+/**
+ * If a <word> has an extract attribute, check if its value is numeric.
+ * If so, set up the under-number.
+ * @param extract The value of the extract attribute
+ * @param span The span that  will contain an input
+ */
+function numericWordExtracts(extract, span) {
+    if (parseInt(extract) > 0) {
+        toggleClass(span, 'numbered', true);
+        toggleClass(span, 'extract-numbered', true);
+        span.setAttributeNS('', 'data-number', extract);
+        const under = document.createElement('span');
+        toggleClass(under, 'under-number');
+        under.innerText = extract;
+        span.appendChild(under);
+    }
+}
+function specialLiterals(literal, span) {
+    if (literal === '¤') {
+        toggleClass(span, 'block', true);
+        literal = ' ';
+    }
+    span.appendChild(document.createTextNode(literal));
+}
+function startInputArea(src) {
+    const span = document.createElement('span');
+    debugTagComment(src, span, true);
+    // Copy most attributes. 
+    // Special-cased ones are harmless - no meaning in generic spans
+    cloneAttributes(src, span);
+    let optionalStyleSet = undefined;
+    let conversion = inputAttributeConversions[src.localName.toLowerCase()];
+    while (conversion) {
+        // Apply any classes to the span
+        if (conversion.spanClass) {
+            if (conversion.spanClass['']) {
+                applyAllClasses(span, conversion.spanClass['']);
+            }
+            const keys = Object.keys(conversion.spanClass);
+            for (let i = 0; i < keys.length; i++) {
+                if (src.getAttributeNS('', keys[i]) !== null) {
+                    toggleClass(span, conversion.spanClass[keys[i]]);
+                }
+            }
+        }
+        // Which group of optional styles should be applied. First one wins.
+        if (conversion.optionalStyle && !optionalStyleSet) {
+            const keys = Object.keys(conversion.optionalStyle);
+            for (let i = 0; i < keys.length; i++) {
+                if (src.getAttributeNS('', keys[i]) !== null) {
+                    optionalStyleSet = conversion.optionalStyle[keys[i]];
+                    break;
+                }
+            }
+            if (!optionalStyleSet && '' in conversion.optionalStyle) {
+                optionalStyleSet = conversion.optionalStyle[''];
+            }
+        }
+        // Rename some attributes
+        if (conversion.spanRename) {
+            const keys = Object.keys(conversion.spanRename);
+            for (let i = 0; i < keys.length; i++) {
+                const attr = src.getAttributeNS('', keys[i]);
+                if (attr !== null) {
+                    span.setAttributeNS('', conversion.spanRename[keys[i]], cloneText(attr));
+                }
+            }
+        }
+        // Some attributes need custom handling
+        if (conversion.specialCases) {
+            const keys = Object.keys(conversion.specialCases);
+            for (let i = 0; i < keys.length; i++) {
+                const attr = src.getAttributeNS('', keys[i]);
+                if (attr !== null) {
+                    const func = conversion.specialCases[keys[i]];
+                    func(cloneText(attr), span);
+                }
+            }
+            if ('' in conversion.specialCases && src.innerText.length > 0) {
+                // Special case any innerText
+                const func = conversion.specialCases[''];
+                func(cloneText(src.innerText), span);
+            }
+        }
+        // Repeat with any additional inherited rules
+        conversion = conversion.inherit ? inputAttributeConversions[conversion.inherit] : undefined;
+    }
+    if (optionalStyleSet) {
+        // This tag accepts one of the groups of optional styles
+        let styles = getLetterStyles(src, 'underline', 'none', 'box');
+        applyAllClasses(span, styles[optionalStyleSet]);
+    }
+    if (src.localName !== 'literal' && src.childNodes.length > 0) {
+        throw new ContextError('Input tags like <' + src.localName + '/> should be empty elements', nodeSourceOffset(src.childNodes[0]));
+    }
+    return [span];
+}
+exports.startInputArea = startInputArea;
 /**
  * Shortcut tags for text input. These include:
  *  letter: any single character
@@ -9339,14 +9568,9 @@ exports.inputAreaTagNames = [
  * @param context A dictionary of all values that can be looked up
  * @returns a node array containing a single <span>
  */
-function startInputArea(src) {
+function startInputArea1(src) {
     const span = document.createElement('span');
-    const dbg1 = debugTagAttrs(src);
-    const dbg2 = debugTagAttrs(src, true);
-    span.appendChild(consoleComment(dbg1));
-    if (dbg2 !== dbg1) {
-        span.appendChild(consoleComment(dbg2));
-    }
+    debugTagComment(src, span, true);
     // Copy most attributes. 
     // Special-cased ones are harmless - no meaning in generic spans
     cloneAttributes(src, span);
@@ -9477,7 +9701,7 @@ function startInputArea(src) {
     }
     return [span];
 }
-exports.startInputArea = startInputArea;
+exports.startInputArea1 = startInputArea1;
 /**
  * Replace a <use> tag with the contents of a <template>.
  * Along the way, push any attributes of the <use> tag onto the context.

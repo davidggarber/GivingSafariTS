@@ -165,6 +165,7 @@ interface LetterStyles {
     letter: string;
     literal: string;
     extract: string;
+    hidden: string;
 }
 
 /**
@@ -189,7 +190,8 @@ export function getLetterStyles(   elmt: Element,
     return {
         'letter' : letter as string,
         'extract' : extract as string,
-        'literal' : literal as string
+        'literal' : literal as string,
+        'hidden': 'hide-element',
     };
 }
 

@@ -1,6 +1,7 @@
 import { off } from "process";
 import { _rawHtmlSource } from "./_boilerplate";
 import { complexAttribute, makeString } from "./_builderContext";
+import { consoleComment } from "./_builder";
 
 export type SourceOffset = {
   source:string;
@@ -247,4 +248,24 @@ export function debugTagAttrs(elmt:Element, expandFormulas:boolean=false): strin
   }
   str += '>';  // close tag
   return str;
+}
+
+/**
+ * For debugging, mirror a builder tag as a comment inside the new tag it generated.
+ * Show attributes in their raw version, potentially with formulas,
+ * and again with resolved values, if different.
+ * @param src The original builder element
+ * @param dest The new element that replaces it
+ * @param expandFormulas If true, try expanding formulas.
+ * Don't use if the resolved formulas are at risk of being large (i.e. objects or lists)
+ */
+export function debugTagComment(src:Element, dest:Element, expandFormulas:boolean) {
+  const dbg1 = debugTagAttrs(src);
+  dest.appendChild(consoleComment(dbg1));
+  if (expandFormulas) {
+    const dbg2 = debugTagAttrs(src,true);
+    if (dbg2 !== dbg1) {
+      dest.appendChild(consoleComment(dbg2));
+    }  
+  }
 }

@@ -76,6 +76,9 @@
       .cell_ {
         background-color: #FFC000;
       }
+      #Breakfast .letter-cell.extract-underline {
+        font-size: 20pt;
+      }
       #Breakfast .letter-cell.letter-underline {
         font-size: 20pt;
         margin: 0px;
@@ -109,12 +112,12 @@
         <img src="Breakfast/fork.png" style="position:absolute; left:0.04in; top:0.2in; width:0.46in; height:3.33in;" />
         <img src="Breakfast/knife.png" style="position:absolute; right:0.1in; top:0.2in; width:0.33in; height:3.33in;" />
 
-        <div id="table" trim="all" data-extract-style="underline" class="letter-grid-2d">
+        <div id="table" trim="all" data-extract-style="underline" class="letter-grid-discover">
           <for each="row" in="{placemat}">
             <for char="ch" in="{row}">
               <div class="cell cell{ch}">
                 <if test="{ch}" eq=" ">&nbsp;</if>
-                <elseif test="{ch}" eq="_"><letter extract="true" data-extracted-id="{row#%2}" /></elseif>
+                <elseif test="{ch}" eq="_"><letter extract="true" extracted-id="{row#%2}" /></elseif>
                 <elseif test="{ch}" eq="."><letter /></elseif>
                 <else><literal>{ch}</literal></else>
               </div>

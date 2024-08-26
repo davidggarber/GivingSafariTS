@@ -939,6 +939,10 @@ function findNext2dInput(   root: Element,
     if (dy != 0) {
         // In a 2D grid, up/down keep their relative horizontal positions
         var parent = findParentOfClass(start, 'letter-cell-block');
+        if (!parent) {
+            throw new Error("letter-grid-2d navigation requires all inputs to be grouped in " +
+                "'letter-cell-block' ranges. For example, provided by <pattern>s");
+        }
         var index = indexInContainer(start, parent as Element, cls);
         var nextParent = findNextOfClass(parent as Element, 'letter-cell-block', 'letter-grid-2d', dy);
         while (nextParent != null) {

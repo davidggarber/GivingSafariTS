@@ -3070,6 +3070,10 @@ function findNext2dInput(   root: Element,
     if (dy != 0) {
         // In a 2D grid, up/down keep their relative horizontal positions
         var parent = findParentOfClass(start, 'letter-cell-block');
+        if (!parent) {
+            throw new Error("letter-grid-2d navigation requires all inputs to be grouped in " +
+                "'letter-cell-block' ranges. For example, provided by <pattern>s");
+        }
         var index = indexInContainer(start, parent as Element, cls);
         var nextParent = findNextOfClass(parent as Element, 'letter-cell-block', 'letter-grid-2d', dy);
         while (nextParent != null) {
@@ -3515,6 +3519,7 @@ interface LetterStyles {
     letter: string;
     literal: string;
     extract: string;
+    hidden: string;
 }
 
 /**
@@ -3539,7 +3544,8 @@ export function getLetterStyles(   elmt: Element,
     return {
         'letter' : letter as string,
         'extract' : extract as string,
-        'literal' : literal as string
+        'literal' : literal as string,
+        'hidden': 'hide-element',
     };
 }
 
@@ -7150,10 +7156,11 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         count++;
     }
     if (data.stamping) {
+        // Review: ability icon
+        fancy += '<span id="stamp-ability" style="text-shadow: 0 0 10px black;"><img src="../Images/Stamps/stamp-glow.png" style="height:22px;" /></span>';
         preprocessStampObjects();
         indexAllDrawableFields();
         linkCss(safariDetails.cssRoot + 'StampTools.css');
-        // No ability icon
     }
     if (data.straightEdge) {
         fancy += '<span id="drag-ability" title="Line-drawing enabled" style="text-shadow: 0 0 3px black;">📐</span>';
@@ -8003,6 +8010,26 @@ export function debugTagAttrs(elmt:Element, expandFormulas:boolean=false): strin
   }
   str += '>';  // close tag
   return str;
+}
+
+/**
+ * For debugging, mirror a builder tag as a comment inside the new tag it generated.
+ * Show attributes in their raw version, potentially with formulas,
+ * and again with resolved values, if different.
+ * @param src The original builder element
+ * @param dest The new element that replaces it
+ * @param expandFormulas If true, try expanding formulas.
+ * Don't use if the resolved formulas are at risk of being large (i.e. objects or lists)
+ */
+export function debugTagComment(src:Element, dest:Element, expandFormulas:boolean) {
+  const dbg1 = debugTagAttrs(src);
+  dest.appendChild(consoleComment(dbg1));
+  if (expandFormulas) {
+    const dbg2 = debugTagAttrs(src,true);
+    if (dbg2 !== dbg1) {
+      dest.appendChild(consoleComment(dbg2));
+    }  
+  }
 }
 
 /*-----------------------------------------------------------
@@ -10330,6 +10357,235 @@ export const inputAreaTagNames = [
   'letter', 'letters', 'literal', 'number', 'numbers', 'pattern', 'word', 'extract'
 ];
 
+type SpecialCaseFunction = (attr:string,span:HTMLSpanElement) => void;
+
+type InputAttributeConversion = {
+  inherit?: string,        // If present, this conversion extends the named set of conversion rules
+  spanRename?: object,     // If any key attribute is present, rename it to the value attribute on the span
+  spanClass?: object,      // If any key attribute is present, apply the value as a class on the span
+  optionalStyle?: object   // If any key attribute is present, apply one of the optional data styles. First one wins
+  // input?: object,       // If any key attribute is present, rename it to the value attribute on the input
+  // inputClass?: object,  // If any key attribute is present, apply the value as a class on the input
+  specialCases?: object    // If any key attribute is present, call the value as a SpecialCaseFunction
+}
+
+const inputAttributeConversions = {
+  '': {
+    span: {},
+    input: {}
+  },
+  letter: {
+    inherit: '',
+    spanClass: {
+      '': 'letter-cell',
+      block: 'block',
+      literal: 'literal',
+      extract: 'extract',
+    },
+    spanRename: {
+      'extracted-id': 'data-extracted-id',
+    },
+    optionalStyle: {
+      '': 'letter',
+      literal: 'literal',
+      extract: 'extract'
+    },
+    specialCases: {
+      literal: specialLiterals,
+      block: specialLiterals,
+    }
+  },
+  letters: {
+    inherit: 'letter',
+    spanClass: {
+      '': 'multiple-letter',
+    }
+  },
+  number: {
+    inherit: 'letter',
+    spanClass: {
+      '': 'numeric',
+    }
+  },
+  numbers: {
+    inherit: 'number',
+    spanClass: {
+      '': 'multiple-letter',
+    }
+  },
+  literal: {
+    inherit: 'letter',
+    spanClass: {
+      '': 'literal'
+    },
+    optionalStyle: {
+      '': 'literal',
+    },
+    specialCases: {
+      '': specialLiterals,  // process the inner text
+      'block': specialLiterals,
+    }
+  },
+
+  word: {
+    inherit: '',
+    spanClass: {
+      '': 'word-cell',
+      literal: 'literal',
+    },
+    spanRename: {
+      extract: 'data-extract-index',
+      'extracted-id': 'data-extracted-id',
+    },
+    specialCases: {
+      extract: numericWordExtracts,
+      literal: specialLiterals,
+      block: specialLiterals,
+    }
+  },
+
+  pattern: {
+    inherit: '',
+    spanClass: {
+      '': 'letter-cell-block',
+      pattern: 'create-from-pattern',
+    },
+    spanRename: {
+      pattern: 'data-letter-pattern',
+      'extract-numbers': 'data-number-pattern',
+      'extract-pattern': 'data-letter-pattern',
+      extract: 'data-extract-indeces',
+      numbers: 'data-number-assignments'
+    },
+  },
+
+  extract: {
+    inherit: '',
+    spanClass: {
+      '': 'extract-literal',
+      word: 'word-input',
+      letter: 'extract-input',
+      letters: 'extract-input',
+    },
+    spanRename: {
+      word: 'value',
+      letter: 'value',
+      letters: 'value',
+    },
+    optionalStyle: {
+      '': 'hidden',
+    }
+  },
+};
+
+/**
+ * If a <word> has an extract attribute, check if its value is numeric.
+ * If so, set up the under-number.
+ * @param extract The value of the extract attribute
+ * @param span The span that  will contain an input
+ */
+function numericWordExtracts(extract:string, span:HTMLSpanElement) {
+  if (parseInt(extract) > 0) {
+    toggleClass(span, 'numbered', true);
+    toggleClass(span, 'extract-numbered', true);
+    span.setAttributeNS('', 'data-number', extract);
+    
+    const under = document.createElement('span');
+    toggleClass(under, 'under-number');
+    under.innerText = extract;
+    span.appendChild(under);
+  }
+}
+
+function specialLiterals(literal:string, span:HTMLSpanElement) {
+  if (literal === '¤') {
+    toggleClass(span, 'block', true);
+    literal = ' ';
+  }
+  span.appendChild(document.createTextNode(literal));
+}
+
+export function startInputArea(src:HTMLElement):Node[] {
+  const span = document.createElement('span');
+  debugTagComment(src, span, true);
+
+  // Copy most attributes. 
+  // Special-cased ones are harmless - no meaning in generic spans
+  cloneAttributes(src, span);
+
+  let optionalStyleSet:string|undefined = undefined;
+  let conversion:InputAttributeConversion = inputAttributeConversions[src.localName.toLowerCase()];
+  while (conversion) {
+    // Apply any classes to the span
+    if (conversion.spanClass) {
+      if (conversion.spanClass['']) {
+        applyAllClasses(span, conversion.spanClass['']);
+      }
+      const keys = Object.keys(conversion.spanClass);
+      for (let i = 0; i < keys.length; i++) {
+        if (src.getAttributeNS('', keys[i]) !== null) {
+          toggleClass(span, conversion.spanClass[keys[i]]);
+        }
+      }
+    }
+    // Which group of optional styles should be applied. First one wins.
+    if (conversion.optionalStyle && !optionalStyleSet) {
+      const keys = Object.keys(conversion.optionalStyle);
+      for (let i = 0; i < keys.length; i++) {
+        if (src.getAttributeNS('', keys[i]) !== null) {
+          optionalStyleSet = conversion.optionalStyle[keys[i]];
+          break;
+        }
+      }
+      if (!optionalStyleSet && '' in conversion.optionalStyle) {
+        optionalStyleSet = conversion.optionalStyle[''] as string;
+      }
+    }
+    // Rename some attributes
+    if (conversion.spanRename) {
+      const keys = Object.keys(conversion.spanRename);
+      for (let i = 0; i < keys.length; i++) {
+        const attr = src.getAttributeNS('', keys[i]);
+        if (attr !== null) {
+          span.setAttributeNS('', conversion.spanRename[keys[i]], cloneText(attr));
+        }
+      }
+    }
+    // Some attributes need custom handling
+    if (conversion.specialCases) {
+      const keys = Object.keys(conversion.specialCases);
+      for (let i = 0; i < keys.length; i++) {
+        const attr = src.getAttributeNS('', keys[i]);
+        if (attr !== null) {
+          const func:SpecialCaseFunction = conversion.specialCases[keys[i]] as SpecialCaseFunction;
+          func(cloneText(attr), span);
+        }
+      }
+      if ('' in conversion.specialCases && src.innerText.length > 0) {
+        // Special case any innerText
+        const func:SpecialCaseFunction = conversion.specialCases[''] as SpecialCaseFunction;
+        func(cloneText(src.innerText), span);
+      }
+    }
+
+    // Repeat with any additional inherited rules
+    conversion = conversion.inherit ? inputAttributeConversions[conversion.inherit] : undefined;
+  }
+
+  if (optionalStyleSet) {
+    // This tag accepts one of the groups of optional styles
+    let styles = getLetterStyles(src, 'underline', 'none', 'box');
+    applyAllClasses(span, styles[optionalStyleSet]);
+  }
+
+  if (src.localName !== 'literal' && src.childNodes.length > 0) {
+    throw new ContextError('Input tags like <' + src.localName + '/> should be empty elements', nodeSourceOffset(src.childNodes[0]));
+  }
+
+  return [span];
+}
+
+
 /**
  * Shortcut tags for text input. These include:
  *  letter: any single character
@@ -10343,14 +10599,9 @@ export const inputAreaTagNames = [
  * @param context A dictionary of all values that can be looked up
  * @returns a node array containing a single <span>
  */
-export function startInputArea(src:HTMLElement):Node[] {
+export function startInputArea1(src:HTMLElement):Node[] {
   const span = document.createElement('span');
-  const dbg1 = debugTagAttrs(src);
-  const dbg2 = debugTagAttrs(src,true);
-  span.appendChild(consoleComment(dbg1));
-  if (dbg2 !== dbg1) {
-    span.appendChild(consoleComment(dbg2));
-  }
+  debugTagComment(src, span, true);
 
   // Copy most attributes. 
   // Special-cased ones are harmless - no meaning in generic spans

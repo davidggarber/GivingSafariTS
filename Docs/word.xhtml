@@ -11,8 +11,8 @@
         safari: 'Docs',
         paperSize: 'ledger',
         orientation: 'portrait',
-        title: '&lt;letter&gt;',
-        reactiveBuilder: true
+        title: '&lt;word&gt;',
+        reactiveBuilder: 'pageBody'
       };
     </script>
     <script src="docs.js"></script>
@@ -52,14 +52,14 @@
     </style>
   </head>
 
-  <body id="Letter">
+  <body id="Word">
     <div id="pageBody">
-      <p style="font-weight:bold">Creates a small input field, sized for a single letter.</p>
-      <p>Automatically gains type-support features.</p>
-      <li>Typing moves the focus to the next field (in doc order).</li>
-      <li>Backspace deletes, and moves focus back to previous field.</li>
-      <li>Left/right arrow keys work.</li>
-      <li>Up/down arrow keys need additional infrastructure. (NEED LINK)</li>
+      <p style="font-weight:bold">Creates a wider input field, sized for a medium-long word.</p>
+      <p>Automatically gains some type-support features, but not as many as &lt;letter&gt;.</p>
+      <li>Typing stays in the same field. User must type tab or an arrow.</li>
+      <li>Backspace deletes within the field. Once empty, backspace moves focus back to previous field.</li>
+      <li>Left/right arrow keys work, first within the field, then between them.</li>
+      <li>Up/down arrow keys need additional infrastructure. By default, they always move to the next field. (NEED LINK)</li>
       <li>Support for several common stylings, such as underlines and boxes (see below).</li>
 
       <h2>Attribute-driven variations:</h2>
@@ -72,7 +72,7 @@
           </tr>
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;letter&gt;
+              &lt;word&gt;
             </td>
             <td class="rendered"><letter /></td>
             <td class="comment">Input for a single letter</td>
@@ -80,8 +80,8 @@
 
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;letter&gt;
-              &lt;letter <b>extract</b>&gt;
+              &lt;word&gt;
+              &lt;word <b>extract</b>&gt;
             </td>
             <td class="rendered">
               <letter />
@@ -95,7 +95,7 @@
 
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;letter extract<b>="3"</b>&gt;&lt;letter extract<b>="5"</b>&gt;
+              &lt;word extract<b>="3"</b>&gt;&lt;word extract<b>="5"</b>&gt;
             </td>
             <td class="rendered">
               <letter extract="3" /><letter extract="5" />
@@ -107,22 +107,7 @@
 
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;letter&gt;
-              &lt;letter <b>extracted</b>&gt;
-            </td>
-            <td class="rendered">
-              <letter />
-              <letter extract='true' />
-            </td>
-            <td class="comment">
-              2nd letter is marked for extraction.<br />
-              Will be mirrored in document order to any element with <b>id="extracted"</b>.
-            </td>
-          </tr>
-
-          <tr class="alt">
-            <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;letter&gt;&lt;letter <b>literal="+"</b>&gt;&lt;letter&gt;
+              &lt;word&gt;&lt;word <b>literal="+"</b>&gt;&lt;word&gt;
             </td>
             <td class="rendered">
               <letter /><letter literal="+" /><letter />

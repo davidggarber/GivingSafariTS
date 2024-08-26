@@ -149,6 +149,9 @@
 .extract-underline {
   border-bottom: solid 2.5px black;
 }
+.extract-thin-underline {
+  border-bottom: solid 1px black;
+}
 .letter-input {
   position: absolute;
   bottom: 0px;
@@ -406,6 +409,10 @@ input {
   -webkit-user-select: none;
   -o-user-select: none;
   user-select: none;
+}
+
+.hide-element {
+  display: none;
 }
 
 .no-user-select {
