@@ -12,7 +12,7 @@
         paperSize: 'ledger',
         orientation: 'portrait',
         title: '&lt;word/&gt;',
-        reactiveBuilder: true
+        reactiveBuilder: 'pageBody'
       };
     </script>
     <script src="docs.js"></script>
@@ -41,11 +41,6 @@
       td.comment code {
         font-style: normal;
       }
-      td.override {
-        font-family: 'Courier New', Courier, monospace;
-        white-space: nowrap;
-        vertical-align: bottom;
-      }
       td.style {
         font-family: 'Courier New', Courier, monospace;
         white-space: nowrap;
@@ -60,13 +55,21 @@
         text-indent: -20px;
         padding-left: 20px;
       }
+      #overrides td {
+        vertical-align: top;
+      }
+      #overrides td.override {
+        font-family: 'Courier New', Courier, monospace;
+        white-space: nowrap;
+        padding-top: 8px;
+      }
     </style>
   </head>
 
   <body id="Word">
     <div id="pageBody">
       <p style="font-weight:bold">Creates a wider input field, sized for a medium-long word.</p>
-      <p>Automatically gains some type-support features, but not as many as &lt;letter&gt;.</p>
+      <p>Automatically gains some type-support features, but not as many as <use template="link" elmt="letter" />.</p>
       <li>Typing stays in the same field. User must type tab or an arrow.</li>
       <li>Backspace deletes within the field. Once empty, backspace moves focus back to previous field.</li>
       <li>Left/right arrow keys work, first within the field, then between them.</li>
@@ -74,87 +77,92 @@
       <li>Support for several common stylings, such as underlines and boxes (see below).</li>
 
       <h2>Attribute-driven variations:</h2>
-      <build>
-        <table class="alternating-rows" style="width:100%; border-spacing: 2px;">
-          <tr>
-            <th>HTML</th>
-            <th>Rendered</th>
-            <th></th>
-          </tr>
-          <tr class="alt">
-            <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;word/&gt;
-            </td>
-            <td class="rendered"><word /></td>
-            <td class="comment">
-              Input for a typical word (default width: 1.5 inch)<br />
-              But there is no constraint. Players may type multiple words.
-            </td>
-          </tr>
+      <table class="alternating-rows" style="width:100%; border-spacing: 2px;">
+        <tr>
+          <th>HTML</th>
+          <th>Rendered</th>
+          <th></th>
+        </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;word/&gt;
+          </td>
+          <td class="rendered"><word /></td>
+          <td class="comment">
+            Input for a typical word (default width: 1.5 inch)<br />
+            But there is no constraint. Players may type multiple words.
+          </td>
+        </tr>
 
-          <tr class="alt">
-            <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;word <b>extract='3'</b>/&gt;
-            </td>
-            <td class="rendered">
-              <word extract='3' />
-            </td>
-            <td class="comment">
-              <code>extract='[index]'</code>
-              marks n<sup>th</sup> letter in that word for extraction.<br />
-              Extracted entries will be mirrored to an element with <b>id="extracted"</b>,<br />
-              preserving their relative order within the document.
-            </td>
-          </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;word <b>extract='3'</b>/&gt;
+          </td>
+          <td class="rendered">
+            <word extract='3' />
+          </td>
+          <td class="comment">
+            <code>extract='[index]'</code>
+            marks n<sup>th</sup> letter in that word for extraction.<br />
+            Extracted entries will be mirrored to an element with <b>id="extracted"</b>,<br />
+            preserving their relative order within the document.
+          </td>
+        </tr>
 
-          <tr class="alt">
-            <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;word extract<b>="2.1"</b>/&gt;
-            </td>
-            <td class="rendered">
-              <word extract="2.1" />
-            </td>
-            <td class="comment">
-              <code>extract='[word.index]'</code> marks the n<sup>th</sup> letter in the m<sup>th</sup> word for extraction.<br />
-              The lengths of other words are immaterial.
-            </td>
-          </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;word extract<b>="2.1"</b>/&gt;
+          </td>
+          <td class="rendered">
+            <word extract="2.1" />
+          </td>
+          <td class="comment">
+            <code>extract='[word.index]'</code> marks the n<sup>th</sup> letter in the m<sup>th</sup> word for extraction.<br />
+            The lengths of other words are immaterial.
+          </td>
+        </tr>
 
-          <tr class="alt">
-            <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;word extract="&hellip;" <br />
-                    <b>extractedid="alt"</b>/&gt;
-            </td>
-            <td class="rendered">
-              <word extract='' extractedid="alt" />
-            </td>
-            <td class="comment">
-              <code>extractedid='[suffix]'</code> re-routes extracted entries to alternate collections.<br />
-              In this case, to <b>id="extracted-<i>alt</i>"</b>.
-            </td>
-          </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;word extract="1" <br />
+                  <b>extracted-id="alt"</b>/&gt;
+          </td>
+          <td class="rendered">
+            <word extract='1' extracted-id="alt" />
+          </td>
+          <td class="comment">
+            <code>extracted-id='[suffix]'</code> re-routes extracted entries to alternate collections.<br />
+            In this case, to <b>id="extracted-<i>alt</i>"</b>.
+          </td>
+        </tr>
 
-          <tr class="alt">
-            <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;word <b>literal="+"</b>/&gt;
-            </td>
-            <td class="rendered">
-              <word literal="+" />
-            </td>
-            <td class="comment">
-              <code>literal="[char]"</code> identifies this text as read-only.<br />
-              Its rendering is initially different, and can be controlled separately.
-            </td>
-          </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;word <b>literal="+"</b>/&gt;
+          </td>
+          <td class="rendered">
+            <word literal="+" />
+          </td>
+          <td class="comment">
+            <code>literal="[char]"</code> identifies this text as read-only.<br />
+            Its rendering is initially different, and can be controlled separately.
+          </td>
+        </tr>
+      </table>
 
-        </table>
-      </build>
+      <div>
+        All &lt;word extract='...'/&gt; examples on this page will mirror extractions to here:
+        <span id="extracted" />
+        (unless the extracted-id points elsewhere).
+      </div>
+      
 
       <h2>Page-wide overrides</h2>
       <p>Word styles are implemented through CSS. Each letter becomes an &lt;span&gt;&lt;input&gt;&lt;/span&gt;
         <br />where the span is assigned a style based on the variant and any style overrides.
+        <br />NOTE: multiple styles can be combined. Separate with spaces.
       </p>
-      <table class="alternating-rows" style="width:100%;">
+      <table id="overrides" class="alternating-rows" style="width:100%;">
         <tr>
           <th>Override attribute</th>
           <th>Default, if unset</th>
@@ -163,14 +171,27 @@
         <tr class="alt">
           <td class="override">data-word-style</td>
           <td>underline: <word /> <word /></td>
-          <td style="background-color: red;">TODO: extraction markings: under, after
+          <td>box: <span data-word-style="box"><word /></span> 
+          </td>
+        </tr>
+        <tr class="alt">
+          <td class="override">data-index-style</td>
+          <td>none: <word extract="3" /></td>
+          <td>under: <span data-index-style="under"><word extract="3" /></span>,
+            after: <span data-index-style="after"><word extract="3" /></span> 
+            <br />&nbsp;
+            <br />Note that these 'under-numbers' are different than letters',
+            <br />as they reflect the index of the source, not the destination.
           </td>
         </tr>
       </table>
 
 
-      <h2>CSS overrides <span style="background-color:red">UNDER DEVELOPEMENT</span></h2>
-      <p>Word tags generate &lt;span&gt; and &lt;input&gt; elements, with styles that can be overridden.</p>
+      <h2>CSS overrides</h2>
+      <p>Word tags generate &lt;span&gt; and &lt;input&gt; elements, with styles that can be overridden.<br />
+        If there is an extracted letter, its index is placed in a separate &lt;span&gt;[index]&lt;/span&gt; inside the above &lt;span&gt;.
+      </p>
+      <span style="background-color:red">UNDER DEVELOPEMENT</span>
       <table class="alternating-rows" style="width:100%;">
         <tr>
           <th>Style</th>
@@ -287,10 +308,16 @@
 
       </table>
       <p>To ensure a successful override, prefix your local CSS rule with the puzzle's body ID. i.e.<br />
-        <code>#MyPuzzle .word-cell { font-size: 20pt; }</code>
+        <code>#MyPuzzle .word-cell `{ font-size: 20pt; `}</code>
       </p>
 
     </div>
+
+    <template id="link" trim="all">
+      <if exists="{elmt?}"><a href="{elmt}.xhtml">&lt;{elmt}/&gt;</a></if>
+      <else><a href="{page}.xhtml">{page}</a></else>
+    </template>
+
   </body>
         
 </html>

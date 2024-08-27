@@ -374,6 +374,18 @@ function ExtractFromInput(input:HTMLInputElement) {
 }
 
 /**
+ * Ensure that two extraction sources are pointing at the same target.
+ * Either or both could leave that undefined, in which case it is id=='extracted'.
+ * @param extractedId The extractedId we're trying to match.
+ * @param input Another input
+ * @return true if they are effectively the same
+ */
+function sameExtractedTarget(extractedId:string|null, input:Element):boolean {
+    const id2 = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
+    return (extractedId || 'extracted') === (id2 || 'extracted');
+}
+
+/**
  * Update an extraction destination
  * @param extractedId The id of an element that collects extractions
  */
@@ -398,7 +410,7 @@ function UpdateExtraction(extractedId:string|null) {
     let ready = true;
     for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
-        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+        if (!sameExtractedTarget(extractedId, input)) {
             continue;
         }
         if (hasClass(input, 'extract-literal')) {
@@ -417,7 +429,7 @@ function UpdateExtraction(extractedId:string|null) {
         let p = 0;
         for (let i = 0; i < sorted_inputs.length; i++) {
             const input = sorted_inputs[i];
-            if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            if (!sameExtractedTarget(extractedId, input)) {
                 continue;
             }
             if (hasClass(input, 'extract-literal')) {
@@ -510,7 +522,7 @@ function ExtractionIsInteresting(text:string): boolean {
     if (text == undefined) {
         return false;
     }
-    return text.length > 0 && text.match(/[^_]/) != null;
+    return text.length > 0 && text.match(/[^_\u00A0\u0020]/) != null;
 }
 
 /**
@@ -561,8 +573,7 @@ function ApplyExtraction(   text:string,
  * @param extractedId The id of an extraction area
  */
 function UpdateNumbered(extractedId:string|null) {
-    extractedId = extractedId || 'extracted';
-    const div = document.getElementById(extractedId);
+    const div = document.getElementById(extractedId || 'extracted');
     var outputs = div?.getElementsByTagName('input');
     var inputs = document.getElementsByClassName('extract-input');
     const sorted_inputs = SortElements(inputs);
@@ -583,7 +594,7 @@ function UpdateNumbered(extractedId:string|null) {
         concat += letter;
     }
     if (div) {
-        updateExtractionData(extractedId, concat, concat.length == inputs.length);
+        updateExtractionData(div, concat, concat.length == inputs.length);
     }
 
 }
@@ -594,7 +605,8 @@ function UpdateNumbered(extractedId:string|null) {
  * @returns 
  */
 function UpdateExtractionSource(input:HTMLInputElement) {
-    //var extractedId = getOptionalStyle(input, 'data-extracted-id', null, 'extracted-');
+    var extractedId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
+
     var extractors = document.getElementsByClassName('extractor-input');
     var index = getOptionalStyle(input.parentNode as Element, 'data-number');
     if (index === null) {
@@ -614,6 +626,10 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     const extraction:string[] = [];
     for (let i = 0; i < sources.length; i++) {
         var src = sources[i] as HTMLInputElement;
+        if (!sameExtractedTarget(extractedId, src)) {
+            continue;
+        }
+
         var dataNumber = getOptionalStyle(src, 'data-number');
         if (dataNumber != null) {
             if (dataNumber == index) {
@@ -706,7 +722,7 @@ export function updateWordExtraction(extractedId:string|null) {
     let hiddens = false;
     for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
-        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+        if (!sameExtractedTarget(extractedId, input)) {
             continue;
         }
         if (hasClass(input, 'extract-literal')) {
@@ -736,7 +752,7 @@ export function updateWordExtraction(extractedId:string|null) {
         let p = 0;
         for (let i = 0; i < sorted_inputs.length; i++) {
             const input = sorted_inputs[i];
-            if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            if (!sameExtractedTarget(extractedId, input)) {
                 continue;
             }
             if (hasClass(input, 'extract-literal')) {

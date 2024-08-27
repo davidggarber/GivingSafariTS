@@ -346,14 +346,32 @@ input {
 .word-cell {
   position: relative;
 }
-.word-cell .under-number {
+.word-cell .letter-index {
   display: none;
 }
-.word-cell .under-number::before {
+.word-cell .letter-index::before {
   content: '('
 }
-.word-cell .under-number::after {
+.word-cell .letter-index::after {
   content: ')'
+}
+.word-cell .letter-index.index-under {
+  display: block;
+  position: absolute;
+  width: 100%;
+  left: 0px;
+  text-align: center;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 7pt;
+  bottom: -2.4ex;
+}
+.word-cell .letter-index.index-after {
+  display: block;
+  position: absolute;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 8pt;
+  top: 25%;
+  right: -2em;
 }
 
 .word-input {

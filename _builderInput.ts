@@ -1,6 +1,6 @@
 import { appendRange, consoleComment, expandContents, normalizeName } from "./_builder";
 import { cloneAttributes, cloneText } from "./_builderContext";
-import { applyAllClasses, isTag, toggleClass } from "./_classUtil";
+import { applyAllClasses, getOptionalStyle, isTag, toggleClass } from "./_classUtil";
 import { ContextError, debugTagAttrs, traceTagComment, elementSourceOffset, nodeSourceOffset, SourceOffset } from "./_contextError";
 import { getLetterStyles } from "./_textSetup";
 
@@ -87,6 +87,7 @@ const inputAttributeConversions = {
     spanClass: {
       '': 'word-cell',
       literal: 'literal',
+      // TODO: numbers (destination)
     },
     spanRename: {
       extract: 'data-extract-index',       // Either letter index, or word.letter index
@@ -95,6 +96,9 @@ const inputAttributeConversions = {
     specialCases: {
       literal: specialLiterals,
       block: specialLiterals,
+    },
+    optionalStyle: {
+      '': 'word',
     }
   },
 

@@ -2311,6 +2311,17 @@ function ExtractFromInput(input) {
     }
 }
 /**
+ * Ensure that two extraction sources are pointing at the same target.
+ * Either or both could leave that undefined, in which case it is id=='extracted'.
+ * @param extractedId The extractedId we're trying to match.
+ * @param input Another input
+ * @return true if they are effectively the same
+ */
+function sameExtractedTarget(extractedId, input) {
+    const id2 = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
+    return (extractedId || 'extracted') === (id2 || 'extracted');
+}
+/**
  * Update an extraction destination
  * @param extractedId The id of an element that collects extractions
  */
@@ -2332,7 +2343,7 @@ function UpdateExtraction(extractedId) {
     let ready = true;
     for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
-        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+        if (!sameExtractedTarget(extractedId, input)) {
             continue;
         }
         if (hasClass(input, 'extract-literal')) {
@@ -2351,7 +2362,7 @@ function UpdateExtraction(extractedId) {
         let p = 0;
         for (let i = 0; i < sorted_inputs.length; i++) {
             const input = sorted_inputs[i];
-            if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            if (!sameExtractedTarget(extractedId, input)) {
                 continue;
             }
             if (hasClass(input, 'extract-literal')) {
@@ -2439,7 +2450,7 @@ function ExtractionIsInteresting(text) {
     if (text == undefined) {
         return false;
     }
-    return text.length > 0 && text.match(/[^_]/) != null;
+    return text.length > 0 && text.match(/[^_\u00A0\u0020]/) != null;
 }
 /**
  * Update an extraction area with new text
@@ -2483,8 +2494,7 @@ function ApplyExtraction(text, dest, ready) {
  * @param extractedId The id of an extraction area
  */
 function UpdateNumbered(extractedId) {
-    extractedId = extractedId || 'extracted';
-    const div = document.getElementById(extractedId);
+    const div = document.getElementById(extractedId || 'extracted');
     var outputs = div?.getElementsByTagName('input');
     var inputs = document.getElementsByClassName('extract-input');
     const sorted_inputs = SortElements(inputs);
@@ -2505,7 +2515,7 @@ function UpdateNumbered(extractedId) {
         concat += letter;
     }
     if (div) {
-        updateExtractionData(extractedId, concat, concat.length == inputs.length);
+        updateExtractionData(div, concat, concat.length == inputs.length);
     }
 }
 /**
@@ -2514,7 +2524,7 @@ function UpdateNumbered(extractedId) {
  * @returns
  */
 function UpdateExtractionSource(input) {
-    //var extractedId = getOptionalStyle(input, 'data-extracted-id', null, 'extracted-');
+    var extractedId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
     var extractors = document.getElementsByClassName('extractor-input');
     var index = getOptionalStyle(input.parentNode, 'data-number');
     if (index === null) {
@@ -2533,6 +2543,9 @@ function UpdateExtractionSource(input) {
     const extraction = [];
     for (let i = 0; i < sources.length; i++) {
         var src = sources[i];
+        if (!sameExtractedTarget(extractedId, src)) {
+            continue;
+        }
         var dataNumber = getOptionalStyle(src, 'data-number');
         if (dataNumber != null) {
             if (dataNumber == index) {
@@ -2615,7 +2628,7 @@ function updateWordExtraction(extractedId) {
     let hiddens = false;
     for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
-        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+        if (!sameExtractedTarget(extractedId, input)) {
             continue;
         }
         if (hasClass(input, 'extract-literal')) {
@@ -2645,7 +2658,7 @@ function updateWordExtraction(extractedId) {
         let p = 0;
         for (let i = 0; i < sorted_inputs.length; i++) {
             const input = sorted_inputs[i];
-            if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            if (!sameExtractedTarget(extractedId, input)) {
                 continue;
             }
             if (hasClass(input, 'extract-literal')) {
@@ -3268,11 +3281,13 @@ function getLetterStyles(elmt, defLetter, defLiteral, defExtract) {
     let literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
     literal = (literal != null) ? ('literal-' + literal) : letter;
     let extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
+    let word = getOptionalStyle(elmt, 'data-word-style', 'underline', 'word-');
     return {
-        'letter': letter,
-        'extract': extract,
-        'literal': literal,
-        'hidden': 'hide-element',
+        letter: letter,
+        extract: extract,
+        literal: literal,
+        word: word,
+        hidden: 'hide-element',
     };
 }
 exports.getLetterStyles = getLetterStyles;
@@ -3500,7 +3515,7 @@ function setupWordCells() {
     for (let i = 0; i < cells.length; i++) {
         const cell = cells[i];
         let inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
-        // Place a small text input field in each cell
+        // Place a text input field in each cell
         const inp = document.createElement('input');
         inp.type = 'text';
         toggleClass(inp, 'word-input');
@@ -3525,9 +3540,20 @@ function setupWordCells() {
             inp.onchange = function (e) { onWordChange(e); };
         }
         if (inpStyle != null) {
-            toggleClass(inp, inpStyle);
+            applyAllClasses(inp, inpStyle);
         }
         cell.appendChild(inp);
+        const extractIndex = cell.getAttributeNS('', 'data-extract-index');
+        if (extractIndex !== null) {
+            const index = document.createElement('span');
+            toggleClass(index, 'letter-index');
+            index.innerText = extractIndex;
+            let indexStyle = getOptionalStyle(cell, 'data-index-style', 'none', 'index-');
+            if (indexStyle) {
+                applyAllClasses(index, indexStyle);
+            }
+            cell.appendChild(index);
+        }
     }
 }
 /**
@@ -9466,6 +9492,7 @@ const inputAttributeConversions = {
         spanClass: {
             '': 'word-cell',
             literal: 'literal',
+            // TODO: numbers (destination)
         },
         spanRename: {
             extract: 'data-extract-index',
@@ -9474,6 +9501,9 @@ const inputAttributeConversions = {
         specialCases: {
             literal: specialLiterals,
             block: specialLiterals,
+        },
+        optionalStyle: {
+            '': 'word',
         }
     },
     pattern: {
@@ -10114,7 +10144,7 @@ var pbnStampTools = [
 /*-----------------------------------------------------------
  * _scratch.ts
  *-----------------------------------------------------------*/
-let scratchPad;
+let scratchPad = undefined;
 let currentScratchInput = undefined;
 /**
  * Setup a scratch pad that is the same size as the page.
@@ -10144,6 +10174,9 @@ exports.setupScratch = setupScratch;
  * @returns
  */
 function scratchClick(evt) {
+    if (!scratchPad) {
+        return;
+    }
     if (currentScratchInput && currentScratchInput !== evt.target) {
         scratchFlatten();
     }
@@ -10254,7 +10287,7 @@ function scratchResize(ta) {
  * The textarea will be removed, and the new div added to the scratchPad.
  */
 function scratchFlatten() {
-    if (!currentScratchInput) {
+    if (!scratchPad || !currentScratchInput) {
         return;
     }
     toggleClass(scratchPad, 'topmost', false);
@@ -10294,7 +10327,7 @@ exports.textFromScratchDiv = textFromScratchDiv;
  * @param div A flattened div, which will be removed, and replaced
  */
 function scratchRehydrate(div) {
-    if (!hasClass(div, 'scratch-div')) {
+    if (!scratchPad || !hasClass(div, 'scratch-div')) {
         return;
     }
     const ta = document.createElement('textarea');
@@ -10319,6 +10352,9 @@ function scratchRehydrate(div) {
  * Wipe away all scratches
  */
 function scratchClear() {
+    if (!scratchPad) {
+        return;
+    }
     if (currentScratchInput) {
         currentScratchInput.parentNode.removeChild(currentScratchInput);
         currentScratchInput = undefined;
@@ -10338,6 +10374,9 @@ exports.scratchClear = scratchClear;
  * @param text The text contents, as they would come from a textarea, with \n
  */
 function scratchCreate(x, y, width, height, text) {
+    if (!scratchPad) {
+        return;
+    }
     if (text) {
         const div = document.createElement('div');
         toggleClass(div, 'scratch-div', true);

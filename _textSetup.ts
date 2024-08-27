@@ -171,6 +171,7 @@ interface LetterStyles {
     letter: string;
     literal: string;
     extract: string;
+    word: string;
     hidden: string;
 }
 
@@ -197,12 +198,14 @@ export function getLetterStyles(   elmt: Element,
     let literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
     literal = (literal != null) ? ('literal-' + literal) : letter;
     let extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
+    let word = getOptionalStyle(elmt, 'data-word-style', 'underline', 'word-');
 
     return {
-        'letter' : letter as string,
-        'extract' : extract as string,
-        'literal' : literal as string,
-        'hidden': 'hide-element',
+        letter : letter as string,
+        extract : extract as string,
+        literal : literal as string,
+        word: word as string,
+        hidden: 'hide-element',
     };
 }
 
@@ -464,7 +467,7 @@ function setupWordCells() {
         const cell:HTMLElement = cells[i] as HTMLElement;
         let inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
 
-        // Place a small text input field in each cell
+        // Place a text input field in each cell
         const inp:HTMLInputElement = document.createElement('input');
         inp.type = 'text';
         toggleClass(inp, 'word-input');
@@ -492,10 +495,24 @@ function setupWordCells() {
         }
 
         if (inpStyle != null) {
-            toggleClass(inp, inpStyle);
+            applyAllClasses(inp, inpStyle);
         }
 
         cell.appendChild(inp);
+
+        const extractIndex = cell.getAttributeNS('', 'data-extract-index')
+        if (extractIndex !== null) {
+            const index = document.createElement('span');
+            toggleClass(index, 'letter-index');
+            index.innerText = extractIndex;
+
+            let indexStyle = getOptionalStyle(cell, 'data-index-style', 'none', 'index-');
+            if (indexStyle) {
+                applyAllClasses(index, indexStyle);
+            }
+            
+            cell.appendChild(index);
+        }
     }
 }
 

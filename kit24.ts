@@ -2505,6 +2505,18 @@ function ExtractFromInput(input:HTMLInputElement) {
 }
 
 /**
+ * Ensure that two extraction sources are pointing at the same target.
+ * Either or both could leave that undefined, in which case it is id=='extracted'.
+ * @param extractedId The extractedId we're trying to match.
+ * @param input Another input
+ * @return true if they are effectively the same
+ */
+function sameExtractedTarget(extractedId:string|null, input:Element):boolean {
+    const id2 = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
+    return (extractedId || 'extracted') === (id2 || 'extracted');
+}
+
+/**
  * Update an extraction destination
  * @param extractedId The id of an element that collects extractions
  */
@@ -2529,7 +2541,7 @@ function UpdateExtraction(extractedId:string|null) {
     let ready = true;
     for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
-        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+        if (!sameExtractedTarget(extractedId, input)) {
             continue;
         }
         if (hasClass(input, 'extract-literal')) {
@@ -2548,7 +2560,7 @@ function UpdateExtraction(extractedId:string|null) {
         let p = 0;
         for (let i = 0; i < sorted_inputs.length; i++) {
             const input = sorted_inputs[i];
-            if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            if (!sameExtractedTarget(extractedId, input)) {
                 continue;
             }
             if (hasClass(input, 'extract-literal')) {
@@ -2641,7 +2653,7 @@ function ExtractionIsInteresting(text:string): boolean {
     if (text == undefined) {
         return false;
     }
-    return text.length > 0 && text.match(/[^_]/) != null;
+    return text.length > 0 && text.match(/[^_\u00A0\u0020]/) != null;
 }
 
 /**
@@ -2692,8 +2704,7 @@ function ApplyExtraction(   text:string,
  * @param extractedId The id of an extraction area
  */
 function UpdateNumbered(extractedId:string|null) {
-    extractedId = extractedId || 'extracted';
-    const div = document.getElementById(extractedId);
+    const div = document.getElementById(extractedId || 'extracted');
     var outputs = div?.getElementsByTagName('input');
     var inputs = document.getElementsByClassName('extract-input');
     const sorted_inputs = SortElements(inputs);
@@ -2714,7 +2725,7 @@ function UpdateNumbered(extractedId:string|null) {
         concat += letter;
     }
     if (div) {
-        updateExtractionData(extractedId, concat, concat.length == inputs.length);
+        updateExtractionData(div, concat, concat.length == inputs.length);
     }
 
 }
@@ -2725,7 +2736,8 @@ function UpdateNumbered(extractedId:string|null) {
  * @returns 
  */
 function UpdateExtractionSource(input:HTMLInputElement) {
-    //var extractedId = getOptionalStyle(input, 'data-extracted-id', null, 'extracted-');
+    var extractedId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
+
     var extractors = document.getElementsByClassName('extractor-input');
     var index = getOptionalStyle(input.parentNode as Element, 'data-number');
     if (index === null) {
@@ -2745,6 +2757,10 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     const extraction:string[] = [];
     for (let i = 0; i < sources.length; i++) {
         var src = sources[i] as HTMLInputElement;
+        if (!sameExtractedTarget(extractedId, src)) {
+            continue;
+        }
+
         var dataNumber = getOptionalStyle(src, 'data-number');
         if (dataNumber != null) {
             if (dataNumber == index) {
@@ -2837,7 +2853,7 @@ export function updateWordExtraction(extractedId:string|null) {
     let hiddens = false;
     for (let i = 0; i < sorted_inputs.length; i++) {
         const input = sorted_inputs[i];
-        if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+        if (!sameExtractedTarget(extractedId, input)) {
             continue;
         }
         if (hasClass(input, 'extract-literal')) {
@@ -2867,7 +2883,7 @@ export function updateWordExtraction(extractedId:string|null) {
         let p = 0;
         for (let i = 0; i < sorted_inputs.length; i++) {
             const input = sorted_inputs[i];
-            if (extractedId && getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-') != extractedId) {
+            if (!sameExtractedTarget(extractedId, input)) {
                 continue;
             }
             if (hasClass(input, 'extract-literal')) {
@@ -3524,6 +3540,7 @@ interface LetterStyles {
     letter: string;
     literal: string;
     extract: string;
+    word: string;
     hidden: string;
 }
 
@@ -3550,12 +3567,14 @@ export function getLetterStyles(   elmt: Element,
     let literal = getOptionalStyle(elmt, 'data-literal-style', defLiteral);
     literal = (literal != null) ? ('literal-' + literal) : letter;
     let extract = getOptionalStyle(elmt, 'data-extract-style', defExtract, 'extract-');
+    let word = getOptionalStyle(elmt, 'data-word-style', 'underline', 'word-');
 
     return {
-        'letter' : letter as string,
-        'extract' : extract as string,
-        'literal' : literal as string,
-        'hidden': 'hide-element',
+        letter : letter as string,
+        extract : extract as string,
+        literal : literal as string,
+        word: word as string,
+        hidden: 'hide-element',
     };
 }
 
@@ -3817,7 +3836,7 @@ function setupWordCells() {
         const cell:HTMLElement = cells[i] as HTMLElement;
         let inpStyle = getOptionalStyle(cell, 'data-word-style', 'underline', 'word-');
 
-        // Place a small text input field in each cell
+        // Place a text input field in each cell
         const inp:HTMLInputElement = document.createElement('input');
         inp.type = 'text';
         toggleClass(inp, 'word-input');
@@ -3845,10 +3864,24 @@ function setupWordCells() {
         }
 
         if (inpStyle != null) {
-            toggleClass(inp, inpStyle);
+            applyAllClasses(inp, inpStyle);
         }
 
         cell.appendChild(inp);
+
+        const extractIndex = cell.getAttributeNS('', 'data-extract-index')
+        if (extractIndex !== null) {
+            const index = document.createElement('span');
+            toggleClass(index, 'letter-index');
+            index.innerText = extractIndex;
+
+            let indexStyle = getOptionalStyle(cell, 'data-index-style', 'none', 'index-');
+            if (indexStyle) {
+                applyAllClasses(index, indexStyle);
+            }
+            
+            cell.appendChild(index);
+        }
     }
 }
 
@@ -10416,6 +10449,7 @@ type InputAttributeConversion = {
   spanClass?: object,      // If any key attribute is present, apply the value as a class on the span
   optionalStyle?: object   // If any key attribute is present, apply one of the optional data styles. First one wins
   specialCases?: object    // If any key attribute is present, call the value as a SpecialCaseFunction
+  required?: string,       // If any attribute is required
 }
 // Note that the same input attribute can be a key in multiple conversion fields.
 // For example, it could trigger a spanClass, and also an optional style,
@@ -10486,6 +10520,7 @@ const inputAttributeConversions = {
     spanClass: {
       '': 'word-cell',
       literal: 'literal',
+      // TODO: numbers (destination)
     },
     spanRename: {
       extract: 'data-extract-index',       // Either letter index, or word.letter index
@@ -10494,6 +10529,9 @@ const inputAttributeConversions = {
     specialCases: {
       literal: specialLiterals,
       block: specialLiterals,
+    },
+    optionalStyle: {
+      '': 'word',
     }
   },
 
@@ -11188,7 +11226,7 @@ var pbnStampTools = [
  *-----------------------------------------------------------*/
 
 
-let scratchPad:HTMLDivElement;
+let scratchPad:HTMLDivElement|undefined = undefined;
 let currentScratchInput:HTMLTextAreaElement|undefined = undefined;
 
 /**
@@ -11223,6 +11261,8 @@ export function setupScratch() {
  * @returns 
  */
 function scratchClick(evt:MouseEvent) {
+    if (!scratchPad) { return; }
+
     if (currentScratchInput && currentScratchInput !== evt.target) {
         scratchFlatten();
     }
@@ -11351,9 +11391,8 @@ function scratchResize(ta: HTMLTextAreaElement) {
  * The textarea will be removed, and the new div added to the scratchPad.
  */
 function scratchFlatten() {
-    if (!currentScratchInput) {
-        return;
-    }
+    if (!scratchPad || !currentScratchInput) { return; }
+
     toggleClass(scratchPad, 'topmost', false);
 
     const text = currentScratchInput!.value.trimEnd();
@@ -11399,7 +11438,7 @@ export function textFromScratchDiv(div:HTMLDivElement):string {
  * @param div A flattened div, which will be removed, and replaced
  */
 function scratchRehydrate(div:HTMLDivElement) {
-    if (!hasClass(div, 'scratch-div')) {
+    if (!scratchPad || !hasClass(div, 'scratch-div')) {
         return;
     }
 
@@ -11431,6 +11470,8 @@ function scratchRehydrate(div:HTMLDivElement) {
  * Wipe away all scratches
  */
 export function scratchClear() {
+    if (!scratchPad) { return; }
+
     if (currentScratchInput) {
         currentScratchInput.parentNode!.removeChild(currentScratchInput);
         currentScratchInput = undefined;
@@ -11450,6 +11491,8 @@ export function scratchClear() {
  * @param text The text contents, as they would come from a textarea, with \n
  */
 export function scratchCreate(x:number, y:number, width:number, height:number, text:string) {
+    if (!scratchPad) { return; }
+
     if (text) {
         const div = document.createElement('div');
         toggleClass(div, 'scratch-div', true);

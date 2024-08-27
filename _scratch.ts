@@ -3,7 +3,7 @@ import { hasClass, isTag, toggleClass } from "./_classUtil";
 import { getSafariDetails } from "./_events";
 import { saveScratches } from "./_storage";
 
-let scratchPad:HTMLDivElement;
+let scratchPad:HTMLDivElement|undefined = undefined;
 let currentScratchInput:HTMLTextAreaElement|undefined = undefined;
 
 /**
@@ -38,6 +38,8 @@ export function setupScratch() {
  * @returns 
  */
 function scratchClick(evt:MouseEvent) {
+    if (!scratchPad) { return; }
+
     if (currentScratchInput && currentScratchInput !== evt.target) {
         scratchFlatten();
     }
@@ -166,9 +168,8 @@ function scratchResize(ta: HTMLTextAreaElement) {
  * The textarea will be removed, and the new div added to the scratchPad.
  */
 function scratchFlatten() {
-    if (!currentScratchInput) {
-        return;
-    }
+    if (!scratchPad || !currentScratchInput) { return; }
+
     toggleClass(scratchPad, 'topmost', false);
 
     const text = currentScratchInput!.value.trimEnd();
@@ -214,7 +215,7 @@ export function textFromScratchDiv(div:HTMLDivElement):string {
  * @param div A flattened div, which will be removed, and replaced
  */
 function scratchRehydrate(div:HTMLDivElement) {
-    if (!hasClass(div, 'scratch-div')) {
+    if (!scratchPad || !hasClass(div, 'scratch-div')) {
         return;
     }
 
@@ -246,6 +247,8 @@ function scratchRehydrate(div:HTMLDivElement) {
  * Wipe away all scratches
  */
 export function scratchClear() {
+    if (!scratchPad) { return; }
+
     if (currentScratchInput) {
         currentScratchInput.parentNode!.removeChild(currentScratchInput);
         currentScratchInput = undefined;
@@ -265,6 +268,8 @@ export function scratchClear() {
  * @param text The text contents, as they would come from a textarea, with \n
  */
 export function scratchCreate(x:number, y:number, width:number, height:number, text:string) {
+    if (!scratchPad) { return; }
+
     if (text) {
         const div = document.createElement('div');
         toggleClass(div, 'scratch-div', true);
