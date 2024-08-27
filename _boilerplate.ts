@@ -55,10 +55,20 @@ function debugSetup() {
 
 /**
  * Determines if the caller has specified <i>debug</i> in the URL
+ * NOTE: Debug features can be intrusive. Rendering artifacts and alerts.
  * @returns true if set, unless explictly set to false
  */
 export function isDebug() {
     return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
+}
+
+/**
+ * Determines if the caller has specified <i>trace</i> in the URL
+ * NOTE: Trace features should not be intrusive. Only console output.
+ * @returns true if set, unless explictly set to false
+ */
+export function isTrace() {
+    return urlArgs['trace'] != undefined && urlArgs['trace'] !== false;
 }
 
 /**

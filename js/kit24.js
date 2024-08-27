@@ -5,8 +5,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = void 0;
-exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.debugTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isDebug = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = void 0;
+exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -2361,7 +2361,7 @@ function UpdateExtraction(extractedId) {
         }
     }
     let extraction = parts.join(join);
-    if (extracted.getAttribute('data-letter-pattern') != null) {
+    if (hasClass(extracted, 'create-from-pattern')) {
         const inps = extracted.getElementsByClassName('extractor-input');
         if (inps.length > extraction.length) {
             extraction += Array(1 + inps.length - extraction.length).join('_');
@@ -3096,7 +3096,7 @@ exports.autoCompleteWord = autoCompleteWord;
  */
 function textSetup() {
     setupLetterPatterns();
-    setupExtractPattern();
+    setupExtractedPatterns();
     setupLetterCells();
     setupLetterInputs();
     setupWordCells();
@@ -3188,12 +3188,15 @@ function setupLetterPatterns() {
     var patterns = document.getElementsByClassName('create-from-pattern');
     for (let i = 0; i < patterns.length; i++) {
         var parent = patterns[i];
+        if (parent.id === 'extracted' || hasClass(parent, 'extracted')) {
+            continue; // This isn't an input pattern. It's a destination pattern
+        }
         var pattern = parseNumberPattern(parent, 'data-letter-pattern');
         var extractPattern = parsePattern(parent, 'data-extract-indeces');
         var numberedPattern = parsePattern2(parent, 'data-number-assignments');
         var vertical = hasClass(parent, 'vertical'); // If set, each input and literal needs to be on a separate line
         var numeric = hasClass(parent, 'numeric'); // Forces inputs to be numeric
-        var styles = getLetterStyles(parent, 'underline', 'none', numberedPattern == null ? 'box' : 'numbered');
+        var styles = getLetterStyles(parent, 'underline', 'none', Object.keys(numberedPattern).length == 0 ? 'box' : 'numbered');
         if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
             var prevCount = 0;
             for (let pi = 0; pi < pattern.length; pi++) {
@@ -3215,6 +3218,7 @@ function setupLetterPatterns() {
                             applyAllClasses(span, styles.extract);
                         }
                         if (numberedPattern[index] !== undefined) {
+                            span.setAttributeNS('', 'data-extract-order', '' + numberedPattern[index]);
                             toggleClass(span, 'extract', true);
                             toggleClass(span, 'numbered', true); // indicates numbers used in extraction
                             applyAllClasses(span, styles.extract); // 'extract-numbered' indicates the visual appearance
@@ -3527,54 +3531,82 @@ function setupWordCells() {
     }
 }
 /**
- * Expand any tag with class="extracted" to create the landing point for extracted answers
- * The area may be further annotated with data-number-pattern="..." and optionally
- * data-indexed-by-letter="true" to create sequences of numbered/lettered destination points.
+ * Among the patterns (class='create-from-pattern'), process those tagged as
+ * extraction destinations. Either id="extracted" or class="extracted".
  *
  * @todo: clarify the difference between "extracted" and "extractor"
  */
-function setupExtractPattern() {
-    const extracted = document.getElementById('extracted');
+function setupExtractedPatterns() {
+    var patterns = document.getElementsByClassName('create-from-pattern');
+    for (let pat of patterns) {
+        if (pat.id === 'extracted' || hasClass(pat, 'extracted')) {
+            setupExtractPattern(pat);
+        }
+    }
+}
+/**
+ * Evaluate one area tagged as an extract destination.
+ * The area may be further annotated with data-numbered-pattern="..."
+ * and optionally data-indexed-by-letter="true" to create sequences of
+ * numbered/lettered destination points.
+ *
+ * Several styles:
+ *   + un-numbered blanks, with optional literals
+ *   + numbered blanks
+ *   + lettered blanks (handy variant, when data itself is numeric)
+ *
+ * NOTE: Don't use patterns for the other extracted styles:
+ *   + initially hidden, converting to blanks once extraction starts
+ *   + initially hidden, converting to simple letters once extraction starts
+ *
+ * @param extracted The container for the extraction.
+ */
+function setupExtractPattern(extracted) {
     if (extracted === null) {
         return;
     }
-    let numbered = true;
-    // Special case: if extracted root is tagged data-indexed-by-letter, 
-    // then the indeces that lead here are letters rather than the usual numbers.
-    const lettered = extracted.getAttributeNS('', 'data-indexed-by-letter') != null;
-    // Get the style to use for each extracted value. Default: "letter-underline"
-    var extractorStyle = getOptionalStyle(extracted, 'data-extractor-style', 'underline', 'letter-');
-    let numPattern = parseNumberPattern(extracted, 'data-number-pattern');
-    if (numPattern === null || numPattern.length === 0) {
-        numbered = false;
-        numPattern = parseNumberPattern(extracted, 'data-letter-pattern');
+    // All three variants use the same syntax (length list)
+    let patternAttr = 'data-letter-pattern'; // If user uses input-style syntax
+    let numbered = false;
+    let lettered = false;
+    if (extracted.hasAttributeNS('', 'data-extract-numbered')) {
+        numbered = true;
+        patternAttr = 'data-extract-numbered';
     }
-    if (numPattern != null) {
-        var nextNumber = 1;
-        for (let pi = 0; pi < numPattern.length; pi++) {
-            if (numPattern[pi]['count']) {
-                var count = numPattern[pi]['count'];
-                for (let ci = 1; ci <= count; ci++) {
-                    const span = document.createElement('span');
-                    toggleClass(span, 'letter-cell', true);
-                    toggleClass(span, 'extractor', true);
-                    toggleClass(span, extractorStyle, true);
-                    extracted.appendChild(span);
-                    if (numbered) {
-                        toggleClass(span, 'numbered');
-                        const number = document.createElement('span');
-                        toggleClass(number, 'under-number');
-                        number.innerText = lettered ? String.fromCharCode(64 + nextNumber) : ("" + nextNumber);
-                        span.setAttribute('data-number', "" + nextNumber);
-                        span.appendChild(number);
-                        nextNumber++;
-                    }
+    else if (extracted.hasAttributeNS('', 'data-extract-lettered')) {
+        numbered = lettered = true;
+        patternAttr = 'data-extract-lettered';
+    }
+    else if (extracted.hasAttributeNS('', 'data-extracted-pattern')) {
+        patternAttr = 'data-extracted-pattern';
+    }
+    var styles = getLetterStyles(extracted, 'underline', 'none', '');
+    let numPattern = parseNumberPattern(extracted, patternAttr);
+    var nextNumber = 1;
+    for (let pi = 0; pi < numPattern.length; pi++) {
+        if (numPattern[pi]['count']) {
+            var count = numPattern[pi]['count'];
+            for (let ci = 1; ci <= count; ci++) {
+                const span = document.createElement('span');
+                toggleClass(span, 'letter-cell', true);
+                toggleClass(span, 'extractor', true);
+                applyAllClasses(span, styles.letter); // letter-style, not extract-style
+                extracted.appendChild(span);
+                if (numbered) {
+                    toggleClass(span, 'numbered');
+                    const number = document.createElement('span');
+                    toggleClass(number, 'under-number');
+                    number.innerText = lettered ? String.fromCharCode(64 + nextNumber) : ("" + nextNumber);
+                    span.setAttribute('data-number', "" + nextNumber);
+                    span.appendChild(number);
+                    nextNumber++;
                 }
             }
-            else if (numPattern[pi]['char'] !== null) {
-                var span = createLetterLiteral(numPattern[pi]['char']);
-                extracted.appendChild(span);
-            }
+        }
+        else if (numPattern[pi]['char'] !== null) {
+            var span = createLetterLiteral(numPattern[pi]['char']);
+            applyAllClasses(span, styles.literal);
+            extracted.appendChild(span);
         }
     }
 }
@@ -5894,12 +5926,22 @@ function debugSetup() {
 }
 /**
  * Determines if the caller has specified <i>debug</i> in the URL
+ * NOTE: Debug features can be intrusive. Rendering artifacts and alerts.
  * @returns true if set, unless explictly set to false
  */
 function isDebug() {
     return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
 }
 exports.isDebug = isDebug;
+/**
+ * Determines if the caller has specified <i>trace</i> in the URL
+ * NOTE: Trace features should not be intrusive. Only console output.
+ * @returns true if set, unless explictly set to false
+ */
+function isTrace() {
+    return urlArgs['trace'] != undefined && urlArgs['trace'] !== false;
+}
+exports.isTrace = isTrace;
 /**
  * Determines if the caller has specified <i>body-debug</i> in the URL,
  * or else if the puzzle explictly has set class='debug' on the body.
@@ -7181,7 +7223,7 @@ exports.debugTagAttrs = debugTagAttrs;
  * @param expandFormulas If true, try expanding formulas.
  * Don't use if the resolved formulas are at risk of being large (i.e. objects or lists)
  */
-function debugTagComment(src, dest, expandFormulas) {
+function traceTagComment(src, dest, expandFormulas) {
     const dbg1 = debugTagAttrs(src);
     dest.appendChild(consoleComment(dbg1));
     if (expandFormulas) {
@@ -7191,7 +7233,7 @@ function debugTagComment(src, dest, expandFormulas) {
         }
     }
 }
-exports.debugTagComment = debugTagComment;
+exports.traceTagComment = traceTagComment;
 /*-----------------------------------------------------------
  * _builder.ts
  *-----------------------------------------------------------*/
@@ -7772,7 +7814,7 @@ function cloneNode(node) {
     return node; // STUB: keep original node
 }
 function consoleComment(str) {
-    if (isDebug()) {
+    if (isTrace()) {
         console.log(str);
     }
     return document.createComment(str);
@@ -9357,6 +9399,10 @@ exports.startIfBlock = startIfBlock;
 exports.inputAreaTagNames = [
     'letter', 'letters', 'literal', 'number', 'numbers', 'pattern', 'word', 'extract'
 ];
+// Note that the same input attribute can be a key in multiple conversion fields.
+// For example, it could trigger a spanClass, and also an optional style,
+// and also get renamed or special cased. The last two should not coexit.
+// Separate from anything keyed explicitly, anything else copies verbatim.
 const inputAttributeConversions = {
     '': {
         span: {},
@@ -9371,7 +9417,7 @@ const inputAttributeConversions = {
             extract: 'extract',
         },
         spanRename: {
-            'extracted-id': 'data-extracted-id',
+            'extracted-id': 'data-extracted-id', // Destination of extraction
         },
         optionalStyle: {
             '': 'letter',
@@ -9381,25 +9427,25 @@ const inputAttributeConversions = {
         specialCases: {
             extract: underNumberExtracts,
             literal: specialLiterals,
-            block: specialLiterals,
+            block: specialLiterals, // this letter will extract (if a number, then under-numbered)
         }
     },
     letters: {
         inherit: 'letter',
         spanClass: {
-            '': 'multiple-letter',
+            '': 'multiple-letter', // A few letters, squeezed together
         }
     },
     number: {
         inherit: 'letter',
         spanClass: {
-            '': 'numeric',
+            '': 'numeric', // Constrain input to decimal digits (or - or .)
         }
     },
     numbers: {
         inherit: 'number',
         spanClass: {
-            '': 'multiple-letter',
+            '': 'multiple-letter', // Same as letters, but just numbers
         }
     },
     literal: {
@@ -9412,7 +9458,7 @@ const inputAttributeConversions = {
         },
         specialCases: {
             '': specialLiterals,
-            'block': specialLiterals,
+            'block': specialLiterals, // literal rendered as a dark block
         }
     },
     word: {
@@ -9423,7 +9469,7 @@ const inputAttributeConversions = {
         },
         spanRename: {
             extract: 'data-extract-index',
-            'extracted-id': 'data-extracted-id',
+            'extracted-id': 'data-extracted-id', // Destination of extraction
         },
         specialCases: {
             literal: specialLiterals,
@@ -9435,13 +9481,19 @@ const inputAttributeConversions = {
         spanClass: {
             '': 'letter-cell-block',
             pattern: 'create-from-pattern',
+            extracted: 'create-from-pattern extracted',
+            'extract-numbered': 'create-from-pattern extracted',
+            'extract-lettered': 'create-from-pattern extracted',
         },
         spanRename: {
             pattern: 'data-letter-pattern',
-            'extract-numbers': 'data-number-pattern',
-            'extract-pattern': 'data-letter-pattern',
             extract: 'data-extract-indeces',
-            numbers: 'data-number-assignments'
+            numbers: 'data-number-assignments',
+            'extracted-id': 'data-extracted-id',
+            // Extracted cases
+            extracted: 'data-extracted-pattern',
+            'extract-numbered': 'data-extract-numbered',
+            'extract-lettered': 'data-extract-lettered', // same as numbered, but under-numbers are alphabetic
         },
     },
     extract: {
@@ -9488,7 +9540,7 @@ function specialLiterals(literal, span) {
 }
 function startInputArea(src) {
     const span = document.createElement('span');
-    debugTagComment(src, span, true);
+    traceTagComment(src, span, true);
     // Copy most attributes. 
     // Special-cased ones are harmless - no meaning in generic spans
     cloneAttributes(src, span);
@@ -9503,7 +9555,7 @@ function startInputArea(src) {
             const keys = Object.keys(conversion.spanClass);
             for (let i = 0; i < keys.length; i++) {
                 if (src.getAttributeNS('', keys[i]) !== null) {
-                    toggleClass(span, conversion.spanClass[keys[i]]);
+                    applyAllClasses(span, conversion.spanClass[keys[i]]);
                 }
             }
         }
@@ -9575,7 +9627,7 @@ exports.startInputArea = startInputArea;
  */
 function startInputArea1(src) {
     const span = document.createElement('span');
-    debugTagComment(src, span, true);
+    traceTagComment(src, span, true);
     // Copy most attributes. 
     // Special-cased ones are harmless - no meaning in generic spans
     cloneAttributes(src, span);

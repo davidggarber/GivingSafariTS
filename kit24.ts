@@ -2559,7 +2559,7 @@ function UpdateExtraction(extractedId:string|null) {
     }
     let extraction = parts.join(join);
 
-    if (extracted.getAttribute('data-letter-pattern') != null) {
+    if (hasClass(extracted, 'create-from-pattern')) {
         const inps = extracted.getElementsByClassName('extractor-input');
         if (inps.length > extraction.length) {
             extraction += Array(1 + inps.length - extraction.length).join('_');
@@ -3362,7 +3362,7 @@ export function autoCompleteWord(input:HTMLInputElement|HTMLTextAreaElement, lis
  */
 export function textSetup() {
     setupLetterPatterns();
-    setupExtractPattern();
+    setupExtractedPatterns();
     setupLetterCells();
     setupLetterInputs();
     setupWordCells();
@@ -3455,12 +3455,16 @@ function setupLetterPatterns() {
     var patterns:HTMLCollectionOf<Element> = document.getElementsByClassName('create-from-pattern');
     for (let i = 0; i < patterns.length; i++) {
         var parent = patterns[i];
+        if (parent.id === 'extracted' || hasClass(parent, 'extracted')) {
+            continue;  // This isn't an input pattern. It's a destination pattern
+        }
         var pattern = parseNumberPattern(parent, 'data-letter-pattern');
         var extractPattern = parsePattern(parent, 'data-extract-indeces');
         var numberedPattern = parsePattern2(parent, 'data-number-assignments');
         var vertical = hasClass(parent, 'vertical');  // If set, each input and literal needs to be on a separate line
         var numeric = hasClass(parent, 'numeric');  // Forces inputs to be numeric
-        var styles = getLetterStyles(parent, 'underline', 'none', numberedPattern == null ? 'box' : 'numbered');
+        var styles = getLetterStyles(parent, 'underline', 'none', 
+            Object.keys(numberedPattern).length == 0 ? 'box' : 'numbered');
 
         if (pattern != null && pattern.length > 0) { //if (parent.classList.contains('letter-cell-block')) {
             var prevCount = 0;
@@ -3484,6 +3488,7 @@ function setupLetterPatterns() {
                             applyAllClasses(span, styles.extract);
                         }
                         if (numberedPattern[index] !== undefined) {
+                            span.setAttributeNS('', 'data-extract-order', '' + numberedPattern[index]);
                             toggleClass(span, 'extract', true);
                             toggleClass(span, 'numbered', true);  // indicates numbers used in extraction
                             applyAllClasses(span, styles.extract);  // 'extract-numbered' indicates the visual appearance
@@ -3848,55 +3853,86 @@ function setupWordCells() {
 }
 
 /**
- * Expand any tag with class="extracted" to create the landing point for extracted answers
- * The area may be further annotated with data-number-pattern="..." and optionally
- * data-indexed-by-letter="true" to create sequences of numbered/lettered destination points.
+ * Among the patterns (class='create-from-pattern'), process those tagged as
+ * extraction destinations. Either id="extracted" or class="extracted".
  * 
  * @todo: clarify the difference between "extracted" and "extractor"
  */
-function setupExtractPattern() {
-    const extracted = document.getElementById('extracted');
+function setupExtractedPatterns() {
+    var patterns:HTMLCollectionOf<Element> = document.getElementsByClassName('create-from-pattern');
+    for (let pat of patterns) {
+        if (pat.id === 'extracted' || hasClass(pat, 'extracted')) {
+            setupExtractPattern(pat);
+        }
+    }
+}
+
+/**
+ * Evaluate one area tagged as an extract destination.
+ * The area may be further annotated with data-numbered-pattern="..." 
+ * and optionally data-indexed-by-letter="true" to create sequences of 
+ * numbered/lettered destination points.
+ * 
+ * Several styles: 
+ *   + un-numbered blanks, with optional literals
+ *   + numbered blanks
+ *   + lettered blanks (handy variant, when data itself is numeric)
+ * 
+ * NOTE: Don't use patterns for the other extracted styles:
+ *   + initially hidden, converting to blanks once extraction starts
+ *   + initially hidden, converting to simple letters once extraction starts
+ * 
+ * @param extracted The container for the extraction.
+ */
+function setupExtractPattern(extracted:Element) {
     if (extracted === null) {
         return;
     }
-    let numbered:boolean = true;
-    // Special case: if extracted root is tagged data-indexed-by-letter, 
-    // then the indeces that lead here are letters rather than the usual numbers.
-    const lettered:boolean = extracted.getAttributeNS('', 'data-indexed-by-letter') != null;
-    // Get the style to use for each extracted value. Default: "letter-underline"
-    var extractorStyle = getOptionalStyle(extracted, 'data-extractor-style', 'underline', 'letter-');
 
-    let numPattern = parseNumberPattern(extracted, 'data-number-pattern');
-    if (numPattern === null || numPattern.length === 0) {
-        numbered = false;
-        numPattern = parseNumberPattern(extracted, 'data-letter-pattern');
+    // All three variants use the same syntax (length list)
+    let patternAttr = 'data-letter-pattern';  // If user uses input-style syntax
+    let numbered:boolean = false;
+    let lettered:boolean = false;
+    if (extracted.hasAttributeNS('', 'data-extract-numbered')) {
+        numbered = true;
+        patternAttr = 'data-extract-numbered';
     }
-    if (numPattern != null) {
-        var nextNumber = 1;
-        for (let pi = 0; pi < numPattern.length; pi++) {
-            if (numPattern[pi]['count']) {
-                var count = numPattern[pi]['count'] as number;
-                for (let ci = 1; ci <= count; ci++) {
-                    const span:HTMLSpanElement = document.createElement('span');
-                    toggleClass(span, 'letter-cell', true);
-                    toggleClass(span, 'extractor', true);
-                    toggleClass(span, extractorStyle, true);
-                    extracted.appendChild(span);
-                    if (numbered) {
-                        toggleClass(span, 'numbered');
-                        const number:HTMLSpanElement = document.createElement('span');
-                        toggleClass(number, 'under-number');
-                        number.innerText = lettered ? String.fromCharCode(64 + nextNumber) : ("" + nextNumber);
-                        span.setAttribute('data-number', "" + nextNumber);
-                        span.appendChild(number);
-                        nextNumber++;
-                    }
+    else if (extracted.hasAttributeNS('', 'data-extract-lettered')) {
+        numbered = lettered = true;
+        patternAttr = 'data-extract-lettered';
+    }
+    else if (extracted.hasAttributeNS('', 'data-extracted-pattern')) {
+        patternAttr = 'data-extracted-pattern';
+    }
+    
+    var styles = getLetterStyles(extracted, 'underline', 'none', '');
+
+    let numPattern = parseNumberPattern(extracted, patternAttr);
+    var nextNumber = 1;
+    for (let pi = 0; pi < numPattern.length; pi++) {
+        if (numPattern[pi]['count']) {
+            var count = numPattern[pi]['count'] as number;
+            for (let ci = 1; ci <= count; ci++) {
+                const span:HTMLSpanElement = document.createElement('span');
+                toggleClass(span, 'letter-cell', true);
+                toggleClass(span, 'extractor', true);
+                applyAllClasses(span, styles.letter);  // letter-style, not extract-style
+                extracted.appendChild(span);
+                if (numbered) {
+                    toggleClass(span, 'numbered');
+                    const number:HTMLSpanElement = document.createElement('span');
+                    toggleClass(number, 'under-number');
+                    number.innerText = lettered ? String.fromCharCode(64 + nextNumber) : ("" + nextNumber);
+                    span.setAttribute('data-number', "" + nextNumber);
+                    span.appendChild(number);
+                    nextNumber++;
                 }
             }
-            else if (numPattern[pi]['char'] !== null) {
-                var span = createLetterLiteral(numPattern[pi]['char'] as string);
-                extracted.appendChild(span);
-            }
+        }
+        else if (numPattern[pi]['char'] !== null) {
+            var span = createLetterLiteral(numPattern[pi]['char'] as string);
+            applyAllClasses(span, styles.literal);
+            extracted.appendChild(span);
         }
     }
 }
@@ -6521,10 +6557,20 @@ function debugSetup() {
 
 /**
  * Determines if the caller has specified <i>debug</i> in the URL
+ * NOTE: Debug features can be intrusive. Rendering artifacts and alerts.
  * @returns true if set, unless explictly set to false
  */
 export function isDebug() {
     return urlArgs['debug'] != undefined && urlArgs['debug'] !== false;
+}
+
+/**
+ * Determines if the caller has specified <i>trace</i> in the URL
+ * NOTE: Trace features should not be intrusive. Only console output.
+ * @returns true if set, unless explictly set to false
+ */
+export function isTrace() {
+    return urlArgs['trace'] != undefined && urlArgs['trace'] !== false;
 }
 
 /**
@@ -8026,7 +8072,7 @@ export function debugTagAttrs(elmt:Element, expandFormulas:boolean=false): strin
  * @param expandFormulas If true, try expanding formulas.
  * Don't use if the resolved formulas are at risk of being large (i.e. objects or lists)
  */
-export function debugTagComment(src:Element, dest:Element, expandFormulas:boolean) {
+export function traceTagComment(src:Element, dest:Element, expandFormulas:boolean) {
   const dbg1 = debugTagAttrs(src);
   dest.appendChild(consoleComment(dbg1));
   if (expandFormulas) {
@@ -8638,7 +8684,7 @@ function cloneNode(node:Node):Node {
 }
 
 export function consoleComment(str:string):Comment {
-  if (isDebug()) {
+  if (isTrace()) {
     console.log(str);
   }
   return document.createComment(str);
@@ -10371,6 +10417,10 @@ type InputAttributeConversion = {
   optionalStyle?: object   // If any key attribute is present, apply one of the optional data styles. First one wins
   specialCases?: object    // If any key attribute is present, call the value as a SpecialCaseFunction
 }
+// Note that the same input attribute can be a key in multiple conversion fields.
+// For example, it could trigger a spanClass, and also an optional style,
+// and also get renamed or special cased. The last two should not coexit.
+// Separate from anything keyed explicitly, anything else copies verbatim.
 
 const inputAttributeConversions = {
   '': {
@@ -10386,35 +10436,35 @@ const inputAttributeConversions = {
       extract: 'extract',
     },
     spanRename: {
-      'extracted-id': 'data-extracted-id',
+      'extracted-id': 'data-extracted-id', // Destination of extraction
     },
     optionalStyle: {
       '': 'letter',
       literal: 'literal',
-      extract: 'extract'
+      extract: 'extract'   
     },
     specialCases: {
-      extract: underNumberExtracts,
-      literal: specialLiterals,
-      block: specialLiterals,
+      extract: underNumberExtracts,  // extracted letter
+      literal: specialLiterals,      // literal, read-only
+      block: specialLiterals,        // this letter will extract (if a number, then under-numbered)
     }
   },
   letters: {
     inherit: 'letter',
     spanClass: {
-      '': 'multiple-letter',
+      '': 'multiple-letter',  // A few letters, squeezed together
     }
   },
   number: {
     inherit: 'letter',
     spanClass: {
-      '': 'numeric',
+      '': 'numeric',  // Constrain input to decimal digits (or - or .)
     }
   },
   numbers: {
     inherit: 'number',
     spanClass: {
-      '': 'multiple-letter',
+      '': 'multiple-letter',  // Same as letters, but just numbers
     }
   },
   literal: {
@@ -10426,8 +10476,8 @@ const inputAttributeConversions = {
       '': 'literal',
     },
     specialCases: {
-      '': specialLiterals,  // process the inner text
-      'block': specialLiterals,
+      '': specialLiterals,      // process the inner text
+      'block': specialLiterals, // literal rendered as a dark block
     }
   },
 
@@ -10438,8 +10488,8 @@ const inputAttributeConversions = {
       literal: 'literal',
     },
     spanRename: {
-      extract: 'data-extract-index',
-      'extracted-id': 'data-extracted-id',
+      extract: 'data-extract-index',       // Either letter index, or word.letter index
+      'extracted-id': 'data-extracted-id', // Destination of extraction
     },
     specialCases: {
       literal: specialLiterals,
@@ -10452,13 +10502,19 @@ const inputAttributeConversions = {
     spanClass: {
       '': 'letter-cell-block',
       pattern: 'create-from-pattern',
+      extracted:          'create-from-pattern extracted',
+      'extract-numbered': 'create-from-pattern extracted',
+      'extract-lettered': 'create-from-pattern extracted',
     },
     spanRename: {
-      pattern: 'data-letter-pattern',
-      'extract-numbers': 'data-number-pattern',
-      'extract-pattern': 'data-letter-pattern',
-      extract: 'data-extract-indeces',
-      numbers: 'data-number-assignments'
+      pattern: 'data-letter-pattern',       // A length list
+      extract: 'data-extract-indeces',      // An index list of extract indeces
+      numbers: 'data-number-assignments',   // A list of index=number pairs
+      'extracted-id': 'data-extracted-id',  // Destination of extraction
+    // Extracted cases
+      extracted: 'data-extracted-pattern',        // same as pattern, but as the extracted target
+      'extract-numbered': 'data-extract-numbered',  // each letter is given an under-number
+      'extract-lettered': 'data-extract-lettered',  // same as numbered, but under-numbers are alphabetic
     },
   },
 
@@ -10510,7 +10566,7 @@ function specialLiterals(literal:string, span:HTMLSpanElement) {
 
 export function startInputArea(src:HTMLElement):Node[] {
   const span = document.createElement('span');
-  debugTagComment(src, span, true);
+  traceTagComment(src, span, true);
 
   // Copy most attributes. 
   // Special-cased ones are harmless - no meaning in generic spans
@@ -10527,7 +10583,7 @@ export function startInputArea(src:HTMLElement):Node[] {
       const keys = Object.keys(conversion.spanClass);
       for (let i = 0; i < keys.length; i++) {
         if (src.getAttributeNS('', keys[i]) !== null) {
-          toggleClass(span, conversion.spanClass[keys[i]]);
+          applyAllClasses(span, conversion.spanClass[keys[i]]);
         }
       }
     }
@@ -10604,7 +10660,7 @@ export function startInputArea(src:HTMLElement):Node[] {
  */
 export function startInputArea1(src:HTMLElement):Node[] {
   const span = document.createElement('span');
-  debugTagComment(src, span, true);
+  traceTagComment(src, span, true);
 
   // Copy most attributes. 
   // Special-cased ones are harmless - no meaning in generic spans

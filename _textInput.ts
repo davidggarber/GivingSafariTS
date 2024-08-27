@@ -428,7 +428,7 @@ function UpdateExtraction(extractedId:string|null) {
     }
     let extraction = parts.join(join);
 
-    if (extracted.getAttribute('data-letter-pattern') != null) {
+    if (hasClass(extracted, 'create-from-pattern')) {
         const inps = extracted.getElementsByClassName('extractor-input');
         if (inps.length > extraction.length) {
             extraction += Array(1 + inps.length - extraction.length).join('_');

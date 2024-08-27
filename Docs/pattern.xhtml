@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script src="docs.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        paperSize: 'ledger',
+        orientation: 'portrait',
+        title: '&lt;pattern/&gt;',
+        reactiveBuilder: 'pageBody'
+      };
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      code b, .code b {
+        font-size: 11pt;
+        background-color: #c3e5f0;
+      }
+      th {
+        text-align: left;
+      }
+      td.code {
+        font-family: 'Courier New', Courier, monospace;
+        background-color: lightblue;
+        border: blue solid 1px;
+        white-space: nowrap;
+      } 
+      td.rendered {
+        text-align: center;
+        white-space: nowrap;
+      }
+      td.comment {
+        font-style: italic;
+      }
+      td.comment code {
+        font-style: normal;
+      }
+      td.override {
+        font-family: 'Courier New', Courier, monospace;
+        white-space: nowrap;
+        vertical-align: bottom;
+      }
+      td.style {
+        font-family: 'Courier New', Courier, monospace;
+        white-space: nowrap;
+      }
+      tr.alt:nth-child(odd) td {
+        background-color: #ffffdd;
+      }
+      tr.alt:nth-child(odd) td.code {
+        background-color: lightblue;
+      }
+      td li {
+        text-indent: -20px;
+        padding-left: 20px;
+      }
+      table.spaced {
+        width:100%;
+        border-spacing: 8px;
+      }
+    </style>
+  </head>
+
+  <body id="pattern">
+    <div id="pageBody">
+      <p style="font-weight:bold">Creates a sequence of letters and literals, including extacted letters.</p>
+      <li>Gains all the type support of <use template="link" elmt="letter" />, plus row-awareness for vertical movement.</li>
+      <li>Supports common stylings, such as underlines and boxes (see below), concurrently for the letters, literals, and extracts.</li>
+
+      <h2>Attribute-driven variations:</h2>
+      <table id="attributes" class="alternating-rows spaced">
+        <tr>
+          <th>HTML</th>
+          <th>Rendered</th>
+          <th></th>
+        </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern/&gt;
+          </td>
+          <td class="rendered">n/a</td>
+          <td class="comment">
+            This element requires the pattern attribute.
+          </td>
+        </tr>
+
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern <b>pattern='1 2'</b>/&gt;
+          </td>
+          <td class="rendered">
+            <pattern pattern='1 2' />
+          </td>
+          <td class="comment">
+            <code>pattern='[lengths]'</code>. Where <b>lengths</b> is a sequence of numbers are other text.<br />
+            Numbers are lengths of consecutive letters.<br />
+            Every other character is treated as a literal.
+          </td>
+        </tr>
+
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern pattern='1 2'<br />
+                     <b>extract='1 3'</b>/&gt;
+          </td>
+          <td class="rendered">
+            <pattern pattern='1 2' extract="1 3" extracted-id="1" />
+          </td>
+          <td class="comment">
+            <code>extract='[indeces]'</code>. <br />
+            Each index (separted by spaces) identifies a letter as <b>extract</b>.
+          </td>
+        </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern id='extracted'<br />
+                     <b>extracted='1 1'</b>/&gt;
+          </td>
+          <td class="rendered">
+            <pattern id="extracted-1" extracted="1 1" />
+          </td>
+          <td class="comment">
+            <code>extracted='[lengths]'</code>. Same syntax as pattern.<br />
+            But these cells are the destination for extractions.<br />
+            Any direct entry will reverse-propogate to the <b>extract</b> sources.
+          </td>
+        </tr>
+
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern pattern='1 2'<br />
+                     <b>numbers='1=2 3=1'</b>/&gt;
+          </td>
+          <td class="rendered">
+            <pattern pattern='1 2' numbers='1=2 3=1' extracted-id="2" />
+          </td>
+          <td class="comment">
+            <code>numbers='[pos=number ...]'</code>. <br />
+            Where <b>pos</b> is the letter index within this pattern (not counting literals),<br />
+            and <b>number</b> is the numbered destination in the extraction.
+          </td>
+        </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern id='extracted'<br />
+                     <b>extract-numbered='2!'</b>/&gt;
+          </td>
+          <td class="rendered">
+            <pattern id="extracted-2" extract-numbered="2!" />
+          </td>
+          <td class="comment">
+            <code>extract-numbered='[lengths]'</code>. Same syntax as pattern, but cells are<br />
+            explicitly numbered. This allows connections to numbered inputs.<br />
+            Direct entry will still reverse-propogate to the <b>extract</b> sources.
+          </td>
+        </tr>
+
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern pattern='1 2'<br />
+                     <b>numbers='1=B 3=A'</b>/&gt;
+          </td>
+          <td class="rendered">
+            <pattern pattern='1 2' numbers='1=A 3=B' extracted-id="3" />
+          </td>
+          <td class="comment">
+            <code>numbers='[pos=letter ...]'</code>. <br />
+            Where <b>pos</b> is the letter index within this pattern (not counting literals),<br />
+            and <b>letter</b> is the lettered destination in the extraction.
+          </td>
+        </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern id='extracted'<br />
+                     <b>extract-lettered='¿2?'</b>/&gt;
+          </td>
+          <td class="rendered">
+            <pattern id="extracted-3" extract-lettered="¿2?" />
+          </td>
+          <td class="comment">
+            <code>extract-lettered='[lengths]'</code>. Same syntax as pattern, but cells are<br />
+            explicitly lettered. This allows connections to lettered inputs (max 26).<br />
+            Handy when inputs are numeric - i.e. &lt;number/&gt;.
+          </td>
+        </tr>
+
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern pattern=<b>'3¶2'</b>/&gt;
+          </td>
+          <td class="rendered">
+            <pattern pattern='3¶2' />
+          </td>
+          <td class="comment">
+            <code>Literal ¶</code>. A paragraph-mark in literal text injects a line break.
+          </td>
+        </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern pattern=<b>'2¤1'</b><br />
+                     data-letter-style='grid'/&gt;
+          </td>
+          <td class="rendered">
+            <pattern pattern='2¤1' data-letter-style='grid' />
+          </td>
+          <td class="comment">
+            <code>Literal ¤</code>. A currency-mark in literal text injects a cross-word style block.<br />
+            Especially handy when data-letter-style='grid'.
+          </td>
+        </tr>
+
+
+      </table>
+
+      <h2>Page-wide overrides</h2>
+      <p>Patterns use the same optional styles as <use template="link" elmt="letter" />.</p>
+      <li>When in input mode, they use all 3 as the pattern calls for: <code>data-letter-style</code>, <code>data-literal-style</code>, <code>data-extract-style</code>.</li>
+      <li>When in extracted mode, they don't use <code>data-extract-style</code>.</li>
+
+
+      <h2>CSS overrides</h2>
+      <p>Patterns generate most the same classes as <use template="link" elmt="letter" />.</p>
+      <li>They <i>do <u>not</u></i> generate <use template="link" elmt="number" /> or <use template="link" elmt="letters" /> cells.</li>
+      <p>The few new classes include:</p>
+
+      <table id="classes" class="alternating-rows spaced">
+        <tr>
+          <th>Style</th>
+          <th>Found on</th>
+          <th>Good place to override</th>
+        </tr>
+        <tr class="alt">
+          <td class="style">.create-from-pattern</td>
+          <td>The &lt;span&gt; for all cells generated by one pattern.</td>
+          <td>
+            <li><b>Rarely!</b> This style is a remnant of the construction of the patterns, and is not intended to have a UI.</li>
+          </td>
+        </tr>
+        <tr class="alt">
+          <td class="style">.letter-cell-block</td>
+          <td>The &lt;span&gt; for all cells generated by one pattern.<br />
+            This is the basis of up/down and home/end navigation.
+          </td>
+          <td>
+            <li>TBD</li>
+          </td>
+        </tr>
+        <tr class="alt">
+          <td class="style">.letter-cell-set</td>
+          <td>The &lt;span&gt; for all cells from a single length segment, generally representing one word.
+          </td>
+          <td>
+            <li>TBD</li>
+          </td>
+        </tr>
+      </table>
+      <p>To ensure a successful override, prefix your local CSS rule with the puzzle's body ID. i.e.
+        <code>#MyPuzzle .letter-cell `{ font-size: 20pt; `}</code>
+      </p>
+
+    </div>
+
+    <template id="link" trim="all">
+      <if exists="{elmt?}"><a href="{elmt}.xhtml">&lt;{elmt}/&gt;</a></if>
+      <else><a href="{page}.xhtml">{page}</a></else>
+    </template>
+  </body>
+        
+</html>

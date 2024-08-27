@@ -20,6 +20,7 @@
     <style>
       code b, .code b {
         font-size: 11pt;
+        background-color: #c3e5f0;
       }
       th {
         text-align: left;
@@ -90,7 +91,7 @@
 
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;letter/&gt;
+              &lt;letter/&gt;<br />
               &lt;letter <b>extract=''</b>/&gt;
             </td>
             <td class="rendered">
@@ -107,10 +108,11 @@
 
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;letter extract<b>="5"</b>/&gt;&lt;letter extract<b>="3"</b>/&gt;
+              &lt;letter extract<b>="5"</b>/&gt;<br />
+              &lt;letter extract<b>="3"</b>/&gt;
             </td>
             <td class="rendered">
-              <letter extract="5" /><letter extract="3" />
+              <letter extract="5" /> <letter extract="3" />
             </td>
             <td class="comment">
               <code>extract='[number]'</code> allows the entries mirrored to <b>id="extracted"</b><br />
@@ -120,7 +122,8 @@
 
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;letter extract="true" <b>extractedid="alt"</b>/&gt;
+              &lt;letter extract="true"<br />
+                      <b>extractedid="alt"</b>/&gt;
             </td>
             <td class="rendered">
               <letter extract='' extractedid="alt" />
@@ -133,7 +136,9 @@
 
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;letter/&gt;&lt;letter <b>literal="+"</b>/&gt;&lt;letter/&gt;
+              &lt;letter/&gt;<br />
+              &lt;letter <b>literal="+"</b>/&gt;<br />
+              &lt;letter/&gt;
             </td>
             <td class="rendered">
               <letter /><letter literal="+" /><letter />
@@ -146,7 +151,9 @@
 
           <tr class="alt">
             <td class="code" onclick="selectCodeBlock(this, event)">
-              &lt;letter/&gt;&lt;letter <b>block=""</b>/&gt;&lt;letter/&gt;
+              &lt;letter/&gt;<br />
+              &lt;letter <b>block=""</b>/&gt;<br />
+              &lt;letter/&gt;
             </td>
             <td class="rendered">
               <letter /><letter block="" /><letter />

@@ -259,7 +259,7 @@ export function debugTagAttrs(elmt:Element, expandFormulas:boolean=false): strin
  * @param expandFormulas If true, try expanding formulas.
  * Don't use if the resolved formulas are at risk of being large (i.e. objects or lists)
  */
-export function debugTagComment(src:Element, dest:Element, expandFormulas:boolean) {
+export function traceTagComment(src:Element, dest:Element, expandFormulas:boolean) {
   const dbg1 = debugTagAttrs(src);
   dest.appendChild(consoleComment(dbg1));
   if (expandFormulas) {

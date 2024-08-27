@@ -1,7 +1,7 @@
 import { appendRange, consoleComment, expandContents, normalizeName } from "./_builder";
 import { cloneAttributes, cloneText } from "./_builderContext";
 import { applyAllClasses, isTag, toggleClass } from "./_classUtil";
-import { ContextError, debugTagAttrs, debugTagComment, elementSourceOffset, nodeSourceOffset, SourceOffset } from "./_contextError";
+import { ContextError, debugTagAttrs, traceTagComment, elementSourceOffset, nodeSourceOffset, SourceOffset } from "./_contextError";
 import { getLetterStyles } from "./_textSetup";
 
 export const inputAreaTagNames = [
@@ -16,7 +16,12 @@ type InputAttributeConversion = {
   spanClass?: object,      // If any key attribute is present, apply the value as a class on the span
   optionalStyle?: object   // If any key attribute is present, apply one of the optional data styles. First one wins
   specialCases?: object    // If any key attribute is present, call the value as a SpecialCaseFunction
+  required?: string,       // If any attribute is required
 }
+// Note that the same input attribute can be a key in multiple conversion fields.
+// For example, it could trigger a spanClass, and also an optional style,
+// and also get renamed or special cased. The last two should not coexit.
+// Separate from anything keyed explicitly, anything else copies verbatim.
 
 const inputAttributeConversions = {
   '': {
@@ -32,35 +37,35 @@ const inputAttributeConversions = {
       extract: 'extract',
     },
     spanRename: {
-      'extracted-id': 'data-extracted-id',
+      'extracted-id': 'data-extracted-id', // Destination of extraction
     },
     optionalStyle: {
       '': 'letter',
       literal: 'literal',
-      extract: 'extract'
+      extract: 'extract'   
     },
     specialCases: {
-      extract: underNumberExtracts,
-      literal: specialLiterals,
-      block: specialLiterals,
+      extract: underNumberExtracts,  // extracted letter
+      literal: specialLiterals,      // literal, read-only
+      block: specialLiterals,        // this letter will extract (if a number, then under-numbered)
     }
   },
   letters: {
     inherit: 'letter',
     spanClass: {
-      '': 'multiple-letter',
+      '': 'multiple-letter',  // A few letters, squeezed together
     }
   },
   number: {
     inherit: 'letter',
     spanClass: {
-      '': 'numeric',
+      '': 'numeric',  // Constrain input to decimal digits (or - or .)
     }
   },
   numbers: {
     inherit: 'number',
     spanClass: {
-      '': 'multiple-letter',
+      '': 'multiple-letter',  // Same as letters, but just numbers
     }
   },
   literal: {
@@ -72,8 +77,8 @@ const inputAttributeConversions = {
       '': 'literal',
     },
     specialCases: {
-      '': specialLiterals,  // process the inner text
-      'block': specialLiterals,
+      '': specialLiterals,      // process the inner text
+      'block': specialLiterals, // literal rendered as a dark block
     }
   },
 
@@ -84,8 +89,8 @@ const inputAttributeConversions = {
       literal: 'literal',
     },
     spanRename: {
-      extract: 'data-extract-index',
-      'extracted-id': 'data-extracted-id',
+      extract: 'data-extract-index',       // Either letter index, or word.letter index
+      'extracted-id': 'data-extracted-id', // Destination of extraction
     },
     specialCases: {
       literal: specialLiterals,
@@ -98,13 +103,19 @@ const inputAttributeConversions = {
     spanClass: {
       '': 'letter-cell-block',
       pattern: 'create-from-pattern',
+      extracted:          'create-from-pattern extracted',
+      'extract-numbered': 'create-from-pattern extracted',
+      'extract-lettered': 'create-from-pattern extracted',
     },
     spanRename: {
-      pattern: 'data-letter-pattern',
-      'extract-numbers': 'data-number-pattern',
-      'extract-pattern': 'data-letter-pattern',
-      extract: 'data-extract-indeces',
-      numbers: 'data-number-assignments'
+      pattern: 'data-letter-pattern',       // A length list
+      extract: 'data-extract-indeces',      // An index list of extract indeces
+      numbers: 'data-number-assignments',   // A list of index=number pairs
+      'extracted-id': 'data-extracted-id',  // Destination of extraction
+    // Extracted cases
+      extracted: 'data-extracted-pattern',        // same as pattern, but as the extracted target
+      'extract-numbered': 'data-extract-numbered',  // each letter is given an under-number
+      'extract-lettered': 'data-extract-lettered',  // same as numbered, but under-numbers are alphabetic
     },
   },
 
@@ -156,7 +167,7 @@ function specialLiterals(literal:string, span:HTMLSpanElement) {
 
 export function startInputArea(src:HTMLElement):Node[] {
   const span = document.createElement('span');
-  debugTagComment(src, span, true);
+  traceTagComment(src, span, true);
 
   // Copy most attributes. 
   // Special-cased ones are harmless - no meaning in generic spans
@@ -173,7 +184,7 @@ export function startInputArea(src:HTMLElement):Node[] {
       const keys = Object.keys(conversion.spanClass);
       for (let i = 0; i < keys.length; i++) {
         if (src.getAttributeNS('', keys[i]) !== null) {
-          toggleClass(span, conversion.spanClass[keys[i]]);
+          applyAllClasses(span, conversion.spanClass[keys[i]]);
         }
       }
     }
@@ -250,7 +261,7 @@ export function startInputArea(src:HTMLElement):Node[] {
  */
 export function startInputArea1(src:HTMLElement):Node[] {
   const span = document.createElement('span');
-  debugTagComment(src, span, true);
+  traceTagComment(src, span, true);
 
   // Copy most attributes. 
   // Special-cased ones are harmless - no meaning in generic spans
