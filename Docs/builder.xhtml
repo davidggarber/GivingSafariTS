@@ -1,21 +1,23 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
 "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
     <script src="../js/kit24.js"></script>
     <script>
+      //<![CDATA[
+
       const boiler = {
         'safari': 'Docs',
         'title': 'Builder',
-        'paperSize': 'ledger',
-        'orientation': 'landscape',
-        'textInput': true,
-        'abilities': {
+        paperSize: 'ledger',
+        orientation: 'landscape',
+        textInput: true,
+        abilities: {
         },
-        'reactiveBuilder': true,
-        'lookup': {
+        reactiveBuilder: true,
+        lookup: {
           size: 20,
           color: 'red',
           voted: true,
@@ -42,7 +44,7 @@
       function onthrow(err, elmt) {
         alert(err);
       }
-
+      //]]>
     </script>
     <script src="docs.js"></script>
     <link href="docs.css" rel="Stylesheet" type="text/css"></link>
@@ -99,6 +101,7 @@
           To enable all of these features, set <span class="bigbold">reactiveBuilder:true</span>
           in the <a href="boiler.html">boiler</a> script.
         </p>
+        <p>
         move all of the puzzle elements into one element
           If you specify <b>reactiveBuilder</b> in the boiler, 
           you can define ranges of the page that will be parsed and rebuilt based 
@@ -190,7 +193,7 @@
         </p>
         <p>That includes exploring and manipulating those values, such as 
           <code style="width:initial">{pt.x}</code> or even <code style="width:initial">{pt.x + 2}</code>.
-          <br>See <a href="formulas.html">formulas</a> for in-depth documentation.
+          <br />See <a href="formulas.html">formulas</a> for in-depth documentation.
         </p>
         
         <h3>Local Scope Variables</h3>
@@ -202,7 +205,7 @@
             </th>
             <td class="tight">
               <p>Creates iterating variables that are available to the contents. 
-                <br>The name is declared in the element, such as 
+                <br />The name is declared in the element, such as 
                 <code style="width:initial">&lt;for <span class="bigbold">each='duck'</span> in='{ducks}'&gt;</code>
               </p>
               <ul>
@@ -227,7 +230,7 @@
             </th>
             <td class="tight">
               <p>Creates arguments, which can be employed in the &lt;template&gt;s they call. 
-                <br>Any number of arguments can be declared in the &lt;use&gt; tag, such as 
+                <br />Any number of arguments can be declared in the &lt;use&gt; tag, such as 
                 <code style="width:initial">&lt;use template="review" <span class="bigbold">name='Bob' vote='{voted}'</span>&gt;</code>
                 Within the template&hellip;
               </p>
@@ -242,12 +245,6 @@
           </tr>
         </table>
         
-
-            <br>
-          </li>
-        </p>
-
-
       </div>
     </div>
 

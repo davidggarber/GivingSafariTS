@@ -42,6 +42,11 @@
   <body id="Index">
     <div id="pageBody">
       <img id="big-logo" src="Images/logo.jpg">
+
+      <h2>Input Elements</h2>
+      <li><use template="link" tag="letter" /></li>
+
+
       <for each="group" in="{groups}" nothrow>
         <if exists="group.pages">
           <use template="pageGroup" title="{group.heading}" pages="{group.pages}"></use>
@@ -68,6 +73,15 @@
           <li><a href="{page}.html"><code>&lt;{page}&gt;</code></a></li>
         </for>
       </ul>
+    </template>
+
+    <template id="link">
+      <if exists="{tag?}">
+        <a href="{tag}.xhtml">&lt;{tag}&gt;</a>
+      </if>
+      <else>
+        <a href="{page}.xhtml">{page}</a>
+      </else>
     </template>
   </body>
 </html>

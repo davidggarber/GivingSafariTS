@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      //<![CDATA[
+      const boiler = {
+        'safari': 'Docs',
+        'title': 'Puzzyl Utility Documentation',
+        // 'paperSize': 'minimalist',
+        'abilities': {
+        },
+        'reactiveBuilder': true,
+        'lookup': {
+          groups: [
+            { heading: 'Getting started',
+              pages: ['boilerplate'] },
+            { heading: 'Injecting Data',
+              pages: ['builder', 'formulas'] },
+            { heading: 'Control Flow',
+              tags: ['for', 'if', 'use'] },
+            { heading: 'Text Input',
+              tags: ['letter', 'letters', 'pattern', 'word'] },
+            { heading: 'Pre-made template',
+              pages: ['Paint-by-numbers'] },
+              { heading: 'Sample page HTML',
+              pages: ['1-Blank', '2-PageLayout'] },
+          ],
+        },        
+      };
+      //]]>
+    </script>
+    <style>
+      #big-logo {
+        position: absolute;
+        top: 0px;
+        left: 3.5in;
+        width: 4in;
+      }
+      .wip {
+        height: 13pt;
+      }
+      #inputs li {
+        margin-top: 4px;
+        font-size: 12pt;
+        line-height: 13pt;
+      }
+    </style>
+  </head>
+  <body id="Index">
+    <div id="pageBody">
+      <img id="big-logo" src="Images/logo.jpg" />
+
+      <h2>Getting Started</h2>
+      <ul>
+        <li><use template="link" page="boilerplate" wip="true" /></li>
+      </ul>
+
+      <h2>Input Elements</h2>
+      <ul id="inputs">
+        <li><use template="link" tag="letter" /></li>
+        <li><use template="link" tag="letters" wip="true" /></li>
+        <li><use template="link" tag="number" wip="true" /></li>
+        <li><use template="link" tag="numbers" wip="true" /></li>
+        <li><use template="link" tag="word" /></li>
+        <li><use template="link" tag="pattern" /></li>
+        <li><use template="link" tag="extract" wip="true" /></li>
+      </ul>
+
+      <h2>Builder Elements</h2>
+      <ul id="builder">
+        <li><use template="link" page="builder" /></li>
+        <li><use template="link" page="context" wip="true" /></li>
+        <li><use template="link" page="formulas" /></li>
+        <li><use template="link" tag="for" /></li>
+        <li><use template="link" tag="if" /></li>
+        <li><use template="link" tag="use" /></li>
+      </ul>
+
+      <h2>Abilities</h2>
+      <ul id="abilities">
+        <li><use template="link" page="stamps" wip="true" /></li>
+        <li><use template="link" page="checks" wip="true" /></li>
+        <li><use template="link" page="highlight" wip="true" /></li>
+        <li><use template="link" page="straight-edge" wip="true" /></li>
+        <li><use template="link" page="word-search" wip="true" /></li>
+        <li><use template="link" page="hashi" wip="true" /></li>
+        <li><use template="link" page="subway" wip="true" /></li>
+        <li><use template="link" page="drag-drop" wip="true" /></li>
+        <li><use template="link" page="decoder" wip="true" /></li>
+        <li><use template="link" page="audio" wip="true" /></li>
+      </ul>
+
+      <h2>Events</h2>
+      <ul>
+        <li><use template="link" page="puzzle list" wip="true" /></li>
+        <li><use template="link" page="index" wip="true" /></li>
+        <li><use template="link" page="metas" wip="true" /></li>
+        <li><use template="link" page="puzzle types" wip="true" /></li>
+        <li><use template="link" page="printing" wip="true" /></li>
+        <li><use template="link" page="solutions" wip="true" /></li>
+      </ul>
+
+    </div>
+
+    <template id="pageGroup">
+      <h2>{title}</h2>
+      <ul>
+        <for each="page" in="{pages!}">
+          <li><a href="{page}.html"><code>{page}</code></a></li>
+        </for>
+      </ul>
+    </template>
+
+    <template id="tagGroup">
+      <h2>{title}</h2>
+      <ul>
+        <for each="page" in="{pages!}">
+          <li><a href="{page}.html"><code>&lt;{page}&gt;</code></a></li>
+        </for>
+      </ul>
+    </template>
+
+    <template id="link">
+      <if exists="{tag?}">
+        <a href="{tag}.xhtml">&lt;{tag}&gt;</a>        
+      </if>
+      <else>
+        <a href="{page}.xhtml">{page}</a>
+      </else>
+      <if test="{wip?}"><img class="wip" src="Images/wip2.png" title="Work in progress" alt="Work in progress" /></if>
+    </template>
+  </body>
+</html>

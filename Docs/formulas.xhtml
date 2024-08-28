@@ -1,21 +1,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
 "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
     <script src="../js/kit24.js"></script>
     <script>
+      //<![CDATA[
       const boiler = {
         'safari': 'Docs',
         'title': 'Formulas',
-        'paperSize': 'ledger',
-        'orientation': 'landscape',
-        'textInput': true,
-        'abilities': {
+        paperSize: 'ledger',
+        orientation: 'landscape',
+        textInput: true,
+        abilities: {
         },
-        'reactiveBuilder': true,
-        'lookup': {
+        reactiveBuilder: true,
+        lookup: {
           code: 1234,
           third: 2,  // lists are 0-indexed
           name: 'Fred',
@@ -29,7 +30,7 @@
       function onthrow(err, elmt) {
         alert(err);
       }
-
+      //]]>
     </script>
     <script src="docs.js"></script>
     <link href="docs.css" rel="Stylesheet" type="text/css"></link>
@@ -80,20 +81,20 @@
               <tth>Evaluated</tth>
               <tth>Comments</tth>
             </ttr>
-            <use template="echo" eval="plaintext" expected="plaintext" comment="plain text can be passed as an argument"></use>
-            <use template="echo" eval="sentence" expected="sentence" comment="arguments that happen to look like variable names can still be plain text"></use>
-            <use template="echo" eval="{sentence}" expected="For those about to rock, we salute you!" comment="use `{curly braces`} to lookup values in the 'lookup' data"></use>
-            <use template="echo" eval="hello, {name}" expected="hello, Fred" comment="Mix plaintext and lookups in `{curly braces`}."></use>
-            <use template="echo" eval="hello `{name`}" expected="hello `{name`}" comment="Use ` to escape operators and brackets"></use>
-            <use template="echo" eval="{code}" expected="1234" comment="Values can be many data types. Strings, numeric, boolean, ..."></use>
-            <use template="echo" eval="{code + 2}" expected="1236" comment="Lookups can also employ formulas"></use>
-            <use template="echo" eval="{obj.inner.value}" expected="nested" comment="Dot notation to step into objects"></use>
-            <use template="echo" eval="{team.0}" expected="Velma" comment="Values can also be lists. Dot notation is also the index. Not [brackets]"></use>
-            <use template="echo" eval="{team.:third}" expected="Shaggy" comment=": prefix clarifies that 'third' is its own variable, rather than a named key within 'team'"></use>
-            <use template="echo" eval="{name.3}" expected="d" comment="Dot lookup on a string is a character index"></use>
-            <use template="echo" eval="{team.(third-1)}" expected="Daphne" comment="Parentheses needed, because . has higher precedence than -"></use>
-            <use template="echo" eval="{obj.inner}" expected="[object Object]" comment="Passing objects is legal, but in this case the callee is expecting text"></use>
-            <use template="echo" eval="{obj.inner.[name]}" expected="Flintstone" comment="'name' is a variable, so this becomes obj.inner.Fred"></use>
+            <use template="echo" eval="plaintext" expected="plaintext" comment="plain text can be passed as an argument" />
+            <use template="echo" eval="sentence" expected="sentence" comment="arguments that happen to look like variable names can still be plain text" />
+            <use template="echo" eval="{sentence}" expected="For those about to rock, we salute you!" comment="use `{curly braces`} to lookup values in the 'lookup' data" />
+            <use template="echo" eval="hello, {name}" expected="hello, Fred" comment="Mix plaintext and lookups in `{curly braces`}." />
+            <use template="echo" eval="hello `{name`}" expected="hello `{name`}" comment="Use ` to escape operators and brackets" />
+            <use template="echo" eval="{code}" expected="1234" comment="Values can be many data types. Strings, numeric, boolean, ..." />
+            <use template="echo" eval="{code + 2}" expected="1236" comment="Lookups can also employ formulas" />
+            <use template="echo" eval="{obj.inner.value}" expected="nested" comment="Dot notation to step into objects" />
+            <use template="echo" eval="{team.0}" expected="Velma" comment="Values can also be lists. Dot notation is also the index. Not [brackets]" />
+            <use template="echo" eval="{team.:third}" expected="Shaggy" comment=": prefix clarifies that 'third' is its own variable, rather than a named key within 'team'" />
+            <use template="echo" eval="{name.3}" expected="d" comment="Dot lookup on a string is a character index" />
+            <use template="echo" eval="{team.(third-1)}" expected="Daphne" comment="Parentheses needed, because . has higher precedence than -" />
+            <use template="echo" eval="{obj.inner}" expected="[object Object]" comment="Passing objects is legal, but in this case the callee is expecting text" />
+            <use template="echo" eval="{obj.inner.[name]}" expected="Flintstone" comment="'name' is a variable, so this becomes obj.inner.Fred" />
           </ttable>
         </build>
 
@@ -123,51 +124,51 @@
           </tr>
           <tr>
             <td class="big">`</td> <td>Escapes the next character, if operator or bracket</td>
-            <td><use template="code" value="```{name```}"></use></td> <td>{name}</td>
+            <td><use template="code" value="```{name```}" /></td> <td>{name}</td>
           </tr>
           <tr>
             <td class="big">{&nbsp;}</td> <td>Indicates a formula or lookup within plaintext</td>
-            <td><use template="code" value="hello `{name`}!"></use></td> <td><nobr>hello Fred!</nobr></td>
+            <td><use template="code" value="hello `{name`}!" /></td> <td><nobr>hello Fred!</nobr></td>
           </tr>
           <tr>
             <td class="big">&quot;&thinsp;&quot;&nbsp;&nbsp;&apos;&thinsp;&apos;</td> <td>Text literals</td>
-            <td><use template="code" value='"code" & @apos;name@apos;'></use></td> <td><build>{"code" & 'name'}</build></td>
+            <td><use template="code" value='"code" ~ @apos;name@apos;' /></td> <td><build>{"code" ~ 'name'}</build></td>
           </tr>
           <tr>
             <td class="big">(&nbsp;)</td> <td>Parentheses</td>
-            <td><use template="code" value="2*(3+4)"></use></td> <td>14</td>
+            <td><use template="code" value="2*(3+4)" /></td> <td>14</td>
           </tr>
           <tr>
             <td class="big">[&nbsp;]</td> <td>Alternate parentheses. Forces root-level lookup</td>
-            <td><use template="code" value="name.[third]"></use></td> <td>r</td>
+            <td><use template="code" value="name.[third]" /></td> <td>r</td>
           </tr>
           <tr>
             <td class="big">:</td> <td>Lookup, in situations where that could be ambiguous</td>
-            <td><use template="code" value="obj.inner.:name"></use></td> <td>Flintstone</td>
+            <td><use template="code" value="obj.inner.:name" /></td> <td>Flintstone</td>
           </tr>
           <tr>
             <td class="big">.</td> <td>Named field of an object. Or indexed item of a list. Or indexed character in a string.</td>
-            <td><use template="code" value="name.1 & team.1 & pt.x"></use></td> <td><build>{name.1 & team.1 & pt.x}</build></td>
+            <td><use template="code" value="name.1 ~ team.1 ~ pt.x" /></td> <td><build>{name.1 ~ team.1 ~ pt.x}</build></td>
           </tr>
           <tr>
             <td class="big">-</td> <td>Negative, if used as a unary operator before a number</td>
-            <td><use template="code" value="-code"></use></td> <td><build>{-code}</build></td>
+            <td><use template="code" value="-code" /></td> <td><build>{-code}</build></td>
           </tr>
           <tr>
             <td class="big">* / \ %</td> <td>Multiplication, division, integer division, modulo</td>
-            <td><use template="code" value="10 % 7 * 5 \ 2 / 2"></use></td> <td><build>{10 % 7 * 5 \ 2 / 2}</build></td>
+            <td><use template="code" value="10 % 7 * 5 \ 2 / 2" /></td> <td><build>{10 % 7 * 5 \ 2 / 2}</build></td>
           </tr>
           <tr>
             <td class="big">+ -</td> <td>Addition, subtraction (when used between numbers)</td>
-            <td><use template="code" value="10 - 5 + -2"></use></td> <td><build>{10 - 5 + -2}</build></td>
+            <td><use template="code" value="10 - 5 + -2" /></td> <td><build>{10 - 5 + -2}</build></td>
           </tr>
           <tr>
             <td class="big">@</td> <td>Character entities, usable within string literals or in formulas</td>
-            <td><use template="code" value="'@at;quot;hi' & @(code%100)"></use></td> <td><build>{'@quot;hi' & @(code % 100)}</build></td>
+            <td><use template="code" value="'@at;quot;hi' ~ @(code%100)" /></td> <td><build>{'@quot;hi' ~ @(code % 100)}</build></td>
           </tr>
           <tr>
-            <td class="big">&amp;</td> <td>String concatenation</td>
-            <td><use template="code" value="code & code"></use></td> <td><build>{code & code}</build></td>
+            <td class="big">~</td> <td>String concatenation</td>
+            <td><use template="code" value="code ~ code" /></td> <td><build>{code ~ code}</build></td>
           </tr>
         </table>
         <p>Note that within formulas, whitespace is ignored, unless in text literals</p>
@@ -182,16 +183,20 @@
         <h3>Implicit and explicit {lookups/formulas}</h3>
         <p>
           In order for lookups and formulas to work at all,
-          they must appear within the new Builder tags. 
+          they must appear within the new Builder tags. Or in the boilerplate, set 
           Either as attributes of those tags, or anywhere (attribute or plain text) in those tags' contents.
         </p>
         <p>The Builder tags are:</p>
         <ul>
-          <li><use template="taglink" value="build"></use> &mdash; no meaning, but causes all contents to follow Builder rules</li>
-          <li><use template="taglink" value="for" dest="for.html"></use> &mdash; for loops</li>
-          <li><use template="taglink" value="if" dest="if.html"></use>, <use template="taglink" value="elseif"></use>, <use template="taglink" value="else"></use> &mdash; conditional blocks</li>
-          <li><use template="taglink" value="use" dest="use.html"></use> &mdash; inject templates</li>
-          <li><use template="taglink" value="letter" dest="letter.html"></use>, <use template="taglink" value="word"></use>, <use template="taglink" value="pattern"></use>, etc. &mdash; input areas</li>
+          <li><use template="taglink" value="build" /> &mdash; no meaning, but causes all contents to follow Builder rules</li>
+          <li><use template="taglink" value="for" dest="for.xhtml" /> &mdash; for loops</li>
+          <li><use template="taglink" value="if" dest="if.xhtml" />, 
+            <use template="taglink" value="elseif" dest="if.xhtml" />, 
+            <use template="taglink" value="else" dest="if.xhtml" /> &mdash; conditional blocks</li>
+          <li><use template="taglink" value="use" dest="use.xhtml" /> &mdash; inject templates</li>
+          <li><use template="taglink" value="letter" dest="letter.xhtml" />, 
+            <use template="taglink" value="word" dest="word.xhtml" />, 
+            <use template="taglink" value="pattern" dest="pattern.xhtml" />, etc. &mdash; input areas</li>
         </ul>
 
       </div>

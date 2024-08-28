@@ -6,16 +6,17 @@
     <script> var exports = {}; </script>
     <script src="../js/kit24.js"></script>
     <script>
+      //<![CDATA[
       const boiler = {
         'safari': 'Docs',
         'title': '<for>',
-        'paperSize': 'ledger',
-        'orientation': 'landscape',
-        'textInput': true,
-        'abilities': {
+        paperSize: 'ledger',
+        orientation: 'landscape',
+        textInput: true,
+        abilities: {
         },
-        'reactiveBuilder': true,
-        'lookup': {
+        reactiveBuilder: true,
+        lookup: {
           types: [
             { type: 'each', var: 'item', in: 'in', src: '{list}' }, 
             { type: 'key', var: 'k', in: 'in', src: '{obj}' }, 
@@ -44,7 +45,7 @@
           ],
         } 
       };
-
+      //]]>
     </script>
     <script src="docs.js"></script>
     <link href="docs.css" rel="Stylesheet" type="text/css"></link>
@@ -189,7 +190,7 @@ const boiler = {
                 {pt}: 
                 <for key="axis" in="{pt!}">
                   {axis}={axis!}
-                </for><br>
+                </for><br />
               </for>
             </td>
             <td>
@@ -228,7 +229,7 @@ const boiler = {
               <for char="ch" in="{fonts.0}">{ch} </for>
             </td>
             <td>
-              <code class="inline">{ch}</code> is the character<br>
+              <code class="inline">{ch}</code> is the character<br />
               <code class="inline">{ch#}</code> is the index
             </td>
           </tr>
@@ -255,11 +256,11 @@ const boiler = {
 &lt;/for&gt;</pre></code>
             </td>
             <td>
-              <for word="w" in="Hello, goodbye!">{w}-{w}<br></for>
+              <for word="w" in="Hello, goodbye!">{w}-{w}<br /></for>
             </td>
             <td>
-              <code class="inline">{w}</code> is the word<br>
-              <code class="inline">{w#}</code> is the word index<br>
+              <code class="inline">{w}</code> is the word<br />
+              <code class="inline">{w#}</code> is the word index<br />
               Note that a word is anything delimited by spaces.
             </td>
           </tr>
@@ -316,7 +317,7 @@ const boiler = {
               </for>
             </td>
             <td>
-              <b>step</b> can be any non-zero integer.<br>
+              <b>step</b> can be any non-zero integer.<br />
               <code class="inline">{i#}</code> is still the index within the sequence
             </td>
           </tr>
@@ -331,9 +332,9 @@ const boiler = {
               <for int="i" len="{sentence}">{sentence.[i]} </for>
             </td>
             <td>
-              <b>from</b> is omitted, so is implicitly 0.<br>
-              <b>len</b> calculates the length of a string or list as the exclusive <b>until</b>.<br>
-              <code class="inline">{i}</code> is still an integer, not a character, so<br>
+              <b>from</b> is omitted, so is implicitly 0.<br />
+              <b>len</b> calculates the length of a string or list as the exclusive <b>until</b>.<br />
+              <code class="inline">{i}</code> is still an integer, not a character, so<br />
               <code class="inline">{sentence.[i]}</code> gets the i<sup>th</sup> character.
             </td>
           </tr>
@@ -414,25 +415,25 @@ const boiler = {
 
     <template id="simple">
       <span data-input-style="{dis?}">
-        &ldquo;<letter></letter><letter></letter> 
-        <letter></letter><letter></letter>-<letter></letter><letter></letter>&rdquo;
+        &ldquo;<letter /><letter /> 
+        <letter /><letter />-<letter /><letter />&rdquo;
       </span>
     </template>
 
     <template id="lit">
       <span data-input-style="{dis?}" data-literal-style="{dls?}">
-        <letter></letter><letter literal="-"></letter><letter></letter><letter literal="&rsquo;"></letter><letter></letter><letter literal="!"></letter>
+        <letter /><letter literal="-" /><letter /><letter literal="&rsquo;" /><letter /><letter literal="!" />
       </span>
     </template>
     <template id="gridblocks">
       <div data-input-style="grid" data-literal-style="{dls?}">
-        <div class="letter-cell-block"><letter literal="¤"></letter><letter></letter><letter></letter><letter literal=" "></letter><letter></letter><letter literal="$"></letter></div>
+        <div class="letter-cell-block"><letter literal="¤" /><letter /><letter /><letter literal=" " /><letter /><letter literal="$" /></div>
       </div>
     </template>
 
     <template id="extr">
       <span data-input-style="{dis?}" data-extract-style="{des?}">
-        <letter></letter><letter extract></letter><letter></letter> <letter></letter><letter extract></letter><letter></letter>
+        <letter /><letter extract="" /><letter /> <letter /><letter extract="" /><letter />
       </span>
     </template>
 
