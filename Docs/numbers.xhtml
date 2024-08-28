@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script src="docs.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        paperSize: 'ledger',
+        orientation: 'portrait',
+        title: '&lt;numbers/&gt;',
+        reactiveBuilder: true
+      };
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      code b, .code b {
+        font-size: 11pt;
+        background-color: #c3e5f0;
+      }
+      th {
+        text-align: left;
+      }
+      td.code {
+        font-family: 'Courier New', Courier, monospace;
+        background-color: lightblue;
+        border: blue solid 1px;
+        white-space: nowrap;
+      } 
+      td.rendered {
+        text-align: center;
+        white-space: nowrap;
+      }
+      td.comment {
+        font-style: italic;
+      }
+      td.comment code {
+        font-style: normal;
+      }
+      td.override {
+        font-family: 'Courier New', Courier, monospace;
+        white-space: nowrap;
+        vertical-align: bottom;
+      }
+      td.style {
+        font-family: 'Courier New', Courier, monospace;
+        white-space: nowrap;
+      }
+      tr.alt:nth-child(odd) td {
+        background-color: #ffffdd;
+      }
+      tr.alt:nth-child(odd) td.code {
+        background-color: lightblue;
+      }
+      td li {
+        text-indent: -20px;
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+
+  <body id="numbers">
+    <div id="pageBody">
+      <p style="font-weight:bold">Creates a small input field, sized for a few digits.</p>
+      <li>Like <use template="link" elmt="number" />, on devices with a virtual keyboard, it should default to numeric input.</li>
+      <li>Like <use template="link" elmt="letters" />, multiple digits can be entered together, and their spacing will compress to accomodate.</li>
+      <li>Otherwise, these fields are identical to a <use template="link" elmt="letter" />.</li>
+
+      <h2>Attribute-driven variations:</h2>
+      <p>This list only describes differences from <use template="link" elmt="letter" />.</p>
+      <build>
+        <table class="alternating-rows" style="width:100%; border-spacing: 2px;">
+          <tr>
+            <th>HTML</th>
+            <th>Rendered</th>
+            <th></th>
+          </tr>
+          <tr class="alt">
+            <td class="code" onclick="selectCodeBlock(this, event)">
+              &lt;numbers/&gt;
+            </td>
+            <td class="rendered"><numbers /></td>
+            <td class="comment">Input for single digit.
+            </td>
+          </tr>
+
+          <tr class="alt">
+            <td class="code" onclick="selectCodeBlock(this, event)">
+              &lt;numbers/&gt;<br />
+              &lt;numbers <b>extract=''</b>/&gt;
+            </td>
+            <td class="rendered" trim="all">
+              <numbers />
+              <numbers extract='true' />
+            </td>
+            <td class="comment">Extracted numbers behave the same as the &lt;letter&gt; equivalent.
+            </td>
+          </tr>
+
+          <tr class="alt">
+            <td class="code" onclick="selectCodeBlock(this, event)">
+              &lt;numbers/&gt;<br />
+              &lt;numbers <b>literal="+"</b>/&gt;<br />
+              &lt;numbers/&gt;
+            </td>
+            <td class="rendered" trim="all">
+              <numbers /><numbers literal="+" /><numbers />
+            </td>
+            <td class="comment">Literal numbers are indistinguishable from the &lt;letter&gt; equivalent.<br />
+            </td>
+          </tr>
+
+        </table>  
+      </build>      
+
+      <h2>Generated HTML</h2>
+      <p>&lt;numbers&gt;s, receive the combined attributes and classes of &lt;number&gt; and &lt;letters&gt;.
+      </p>
+      <code style="margin-left:20px;">
+        &lt;span class="letter-cell <b>numeric multiple-letters</b>"&gt;<br />
+             &lt;input type="text" class="letter-input" pattern="<b>[0-9]*</b>" inputmode="<b>numeric</b>" /&gt; <br />
+        &lt;/span&gt;
+      </code>
+
+      <h2>Regional overrides</h2>
+      <p>Exactly the same optional styles are available. They will each be slightly wider, but otherwise equivalent.
+      </p>
+        
+      <h2>CSS overrides</h2>
+      <p>The guidelines for overriding CSS styles for &lt;numbers&gt; are exactly the same as 
+        <use template="link" elmt="letter" />.
+      </p>
+
+    </div>
+
+    <template id="link" trim="all">
+      <if exists="{elmt?}"><a href="{elmt}.xhtml">&lt;{elmt}/&gt;</a></if>
+      <else><a href="{page}.xhtml">{page}</a></else>
+    </template>
+
+  </body>
+        
+</html>

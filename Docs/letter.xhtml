@@ -56,9 +56,13 @@
       tr.alt:nth-child(odd) td.code {
         background-color: lightblue;
       }
-      td li {
+      li {
         text-indent: -20px;
         padding-left: 20px;
+        line-height: 14pt;
+      }
+      #page {
+        height:24in;
       }
     </style>
   </head>
@@ -168,11 +172,66 @@
         </table>  
       </build>      
 
+      <h2>Generated HTML</h2>
+      <p>Every &lt;letter&gt; becomes a &lt;span&gt; wrapping a text &lt;input&gt;.</p>
+      <li>The span is called the <i>letter cell</i>.</li>
+      <li>The input is called the <i>letter input</i>.</li>
+      <li>If no additional attributes or styles are applied, the generated HTML is:</li>
+      <code style="margin-left:20px;">
+        &lt;span class="<b>letter-cell</b>"&gt;<br />
+             &lt;input type="text" class="<b>letter-input</b>" /&gt; <br />
+        &lt;/span&gt;
+      </code>
 
+      <p>&lt;letter <i>literals</i>&gt; get an inner span, to hold the plain text, called the <i>letter literal</i>.</p>
+      <li>They still have an input, which aids in sizing. But it is disabled.</li>
+      <li>If no additional attributes or styles are applied, the generated HTML from &lt;letter literal="X"/> is:</li>
+      <code style="margin-left: 20px;">&lt;span class="letter-cell"&gt;<br />
+             &lt;span class="letter-literal"&gt; <b>X</b>" &lt;/span&gt; <br />
+             &lt;input type="text" class="<b>letter-non-input</b> letter-input" <b>disabled</b> /&gt; <br />
+        &lt;/span&gt;
+      </code>
 
-      <h2>Page-wide overrides</h2>
-      <p>Letter styles are implemented through CSS. Each letter becomes an &lt;span&gt;&lt;input&gt;&lt;/span&gt;
-        <br />where the span is assigned a style based on the variant and any style overrides.
+      <p>&lt;letter <i>extracts</i>&gt; are not normally any different than normal letters, but get extra classes.</p>
+      <li>If no additional attributes or styles are applied, the generated HTML from &lt;letter extract=""/> is:</li>
+      <code style="margin-left: 20px;">&lt;span class="<b>extract</b> letter-cell"&gt;<br />
+             &lt;input type="text" class="<b>extract-input</b> letter-input" /&gt; <br />
+        &lt;/span&gt;
+      </code>
+      <li>However, if the extraction is numbered, even more classes apply, and an extra span is added after the input.<br />
+        for &lt;letter extract="2"/&gt;, the generated HTML is:</li>
+      <code style="margin-left: 20px;">&lt;span class="extract <b>numbered extract-numbered</b> letter-cell"&gt;<br />
+             &lt;input type="text" class="letter-input" <b>data-number="2"</b> /&gt;<br />
+             &lt;span class="under-number"&gt; <b>2</b> &lt;/span&gt; <br />
+        &lt;/span&gt;
+      </code>
+
+      <h2>Regional overrides</h2>
+      <p>Several standard puzzle styles are supported as regional overrides.<br />
+        Add these attributes on any element, and they will be applied to all matching letter-cells within.<br />
+        This is implemented through CSS classes. The name is a concatenation of the override rule and its value.
+      </p>
+      <p style="margin-bottom:0px;">For example, the default data-letter-style is "underline". If not overridden, every &lt;letter&gt; will become:</p>
+      <code style="margin-left:20px;">
+        &lt;span class="letter-cell <b>letter-underline</b>"&gt;<br />
+             &lt;input ... /&gt; <br />
+        &lt;/span&gt;
+      </code>
+
+      <p style="margin-bottom:0px;">The default data-literal-style is "none". If not overridden, &lt;letter literal="X" /> becomes</p>
+      <code style="margin-left: 20px;">&lt;span class="letter-cell literal <b>literal-none</b>"&gt;<br />
+             &lt;span class="letter-literal"&gt; X" &lt;/span&gt; &lt;input ... /&gt; <br />
+        &lt;/span&gt;
+      </code>
+
+      <p style="margin-bottom:0px;">The default data-extract-style is "box". If not overridden, &lt;letter extract="" /> becomes</p>
+      <code style="margin-left: 20px;">&lt;span class="letter-cell extract <b>extract-box</b>"&gt;<br />
+             &lt;input ... /&gt; <br />
+        &lt;/span&gt;
+      </code>
+
+      <p>The following table lists styles that have been pre-created.<br />
+        However, if needed, custom styles can be created the same way, with styles defined locally to the puzzle.
       </p>
       <table class="alternating-rows" style="width:100%;">
         <tr>
@@ -207,23 +266,22 @@
       </table>
         
       <h2>CSS overrides</h2>
-      <p>Letter tags generate &lt;span&gt; and &lt;input&gt; elements, with styles that can be overridden.</p>
+      <p>While the pre-created styles work for many cases, there are a variety of reasons to override them.<br />
+        Following is a relatively exhaustive list...
+      </p>
       <table class="alternating-rows" style="width:100%;">
         <tr>
           <th>Style</th>
-          <th>Found on</th>
           <th>Good place to override</th>
         </tr>
         <tr class="alt">
           <td class="style">.letter-cell</td>
-          <td>The &lt;span&gt; around each &lt;input&gt;, regardless of display style</td>
           <td>
             <li>Font (family, size, color)</li>
           </td>
         </tr>
         <tr class="alt">
           <td class="style">.letter-input</td>
-          <td>The &lt;input&gt; itself</td>
           <td>
             <li><b>Rarely!</b> The intent is that inputs inherit formatting from their span.letter-cell</li>
           </td>
@@ -234,14 +292,12 @@
         </tr>
         <tr class="alt">
           <td class="style">.letter-underline</td>
-          <td>The span.letter-cell, when data-letter-style=<b>underline</b></td>
           <td>
             <li>Any change in spacing (margin) between underlines</li>
           </td>
         </tr>
         <tr class="alt">
           <td class="style">.letter-box</td>
-          <td>The span.letter-cell, when data-letter-style=<b>box</b></td>
           <td>
             <li>Any change in spacing (margin) between boxes</li>
             <li>Rounded corners on boxes</li>
@@ -249,14 +305,12 @@
         </tr>
         <tr class="alt">
           <td class="style">.letter-grid</td>
-          <td>The span.letter-cell, when data-letter-style=<b>grid</b></td>
           <td>
             <li>tbd</li>
           </td>
         </tr>
         <tr class="alt">
           <td class="style">.letter-hover:hover</td>
-          <td>The span.letter-cell, when data-letter-style=<b>hover</b></td>
           <td>
             <li>Any change in hover effect</li>
           </td>
@@ -267,7 +321,6 @@
         </tr>
         <tr class="alt">
           <td class="style">.letter-cell<b>.literal</b></td>
-          <td>The span.letter-cell when input is a literal</td>
           <td>
             <li>Literal text's font</li>
             <li>Literal text's vertical alignment, relative to input text</li>
@@ -275,22 +328,20 @@
         </tr>
         <tr class="alt">
           <td class="style">.literal-underline</td>
-          <td>The span.letter-cell.literal, when data-literal-style=<b>underline</b></td>
           <td>
             <li>Mirror any changes to .letter-underline</li>
           </td>
         </tr>
         <tr class="alt">
           <td class="style">.literal-box</td>
-          <td>The span.letter-cell.literal, when data-literal-style=<b>box</b></td>
           <td>
             <li>Mirror any changes to .letter-box</li>
           </td>
         </tr>
         <tr class="alt">
           <td class="style">.block</td>
-          <td>The span.letter-cell.literal, when <b>block=''</b></td>
           <td>
+            (Accompanies span.letter-cell.literal, when <b>block=''</b>)
             <li>Change the block color</li>
           </td>
         </tr>
@@ -300,14 +351,12 @@
         </tr>
         <tr class="alt">
           <td class="style">.letter-cell<b>.extract</b></td>
-          <td>The span.letter-cell, when input an extracter</td>
           <td>
             <li>TBD</li>
           </td>
         </tr>
         <tr class="alt">
           <td class="style">.extract-highlight</td>
-          <td>The span.letter-cell.extract, when data-extract-style=<b>highlight</b></td>
           <td>
             <li>The font (size, color, &hellip;) of letters in extraction cells.</li>
             <li>Change the highlight color</li>
@@ -316,7 +365,6 @@
 
         <tr class="alt">
           <td class="style">.under-number</td>
-          <td>A second span, inside the span.letter-cell, which contains the extraction number</td>
           <td>
             <li>The font (face, size, &hellip;) of numbers under extractions, indicating mirrored cell.</li>
           </td>

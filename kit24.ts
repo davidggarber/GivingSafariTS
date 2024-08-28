@@ -6379,6 +6379,7 @@ export type PuzzleEventDetails = {
   icon?: string;  // The favicon for all puzzles of this event
   iconRoot?: string  // Folder for other icons - notably puzzle types, feeders, etc.
   puzzleList?: string;  // The URL of the index page for this event. A back-pointer from each puzzle
+  puzzleListName?: string;
   cssRoot: string;  // Folder for CSS files for generic puzzle layout. Often shared across events.
   fontCss?: string;  // Specific font stylesheet for this event
   googleFonts?: string;  // comma-delimeted list of font names to load with Google APIs
@@ -6397,7 +6398,8 @@ const safariDocsDetails:PuzzleEventDetails = {
   'logo': '../Docs/Images/logo.jpg',
   'icon': '../Docs/Images/monster-book-icon.png',
   'iconRoot': '../24/Icons/',
-  'puzzleList': '../Docs/index.html',
+  'puzzleList': '../Docs/index.xhtml',
+  'puzzleListName': 'Documentation',
   'cssRoot': '../Css/',
   'fontCss': '../Docs/Css/Fonts.css',
   'googleFonts': 'Caveat',
@@ -6995,7 +6997,8 @@ function boilerplate(bp: BoilerPlateData) {
         margins.appendChild(createSimpleDiv({id:'copyright', text:'© ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
     }
     if (safariDetails.puzzleList) {
-        margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:'Puzzle list'}));
+        const listName = safariDetails.puzzleListName || 'Puzzle list';
+        margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:listName}));
     }
     if (bp.printAsColor !== undefined) {
         margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));

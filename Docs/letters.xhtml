@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script src="docs.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        paperSize: 'ledger',
+        orientation: 'portrait',
+        title: '&lt;letters/&gt;',
+        reactiveBuilder: true
+      };
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      code b, .code b {
+        font-size: 11pt;
+        background-color: #c3e5f0;
+      }
+      th {
+        text-align: left;
+      }
+      td.code {
+        font-family: 'Courier New', Courier, monospace;
+        background-color: lightblue;
+        border: blue solid 1px;
+        white-space: nowrap;
+      } 
+      td.rendered {
+        text-align: center;
+        white-space: nowrap;
+      }
+      td.comment {
+        font-style: italic;
+      }
+      td.comment code {
+        font-style: normal;
+      }
+      td.override {
+        font-family: 'Courier New', Courier, monospace;
+        white-space: nowrap;
+        vertical-align: bottom;
+      }
+      td.style {
+        font-family: 'Courier New', Courier, monospace;
+        white-space: nowrap;
+      }
+      tr.alt:nth-child(odd) td {
+        background-color: #ffffdd;
+      }
+      tr.alt:nth-child(odd) td.code {
+        background-color: lightblue;
+      }
+      td li {
+        text-indent: -20px;
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+
+  <body id="letters">
+    <div id="pageBody">
+      <p style="font-weight:bold">Creates a small input field, sized for a few letters.</p>
+      <p>Serves as a cross between <use template="link" elmt="letter" /> and <use template="link" elmt="word" />.</p>
+      <li>Like <use template="link" elmt="letter" />, the inputs are small. A string of them will still read easily as a single word.</li>
+      <li>All of the attributes and styles that work for &lt;letter&gt; will also work for &lt;letters&gt;.<br />&nbsp;</li>
+      <li>Like <use template="link" elmt="word" />, the actual capacity is open-ended, with the benefits and headaches that go with that.</li>
+      <li>As more letters are added, the spacing between them is squeezed, in an effort to not overflow.</li>
+      <li>Since typing stays in the same field, users must tab or arrow to move on.</li>
+      <li>Backspace deletes within the field. Once empty, backspace moves focus back to previous field.</li>
+      <li>Left/right arrow keys work, first within the field, then between them.</li>
+
+      <h2>Attribute-driven variations:</h2>
+      <p>This list only describes differences from <use template="link" elmt="letter" />.</p>
+      <build>
+        <table class="alternating-rows" style="width:100%; border-spacing: 2px;">
+          <tr>
+            <th>HTML</th>
+            <th>Rendered</th>
+            <th></th>
+          </tr>
+          <tr class="alt">
+            <td class="code" onclick="selectCodeBlock(this, event)">
+              &lt;letters/&gt;
+            </td>
+            <td class="rendered"><letters /></td>
+            <td class="comment">Input for a few letters - such as a syllabel.
+            </td>
+          </tr>
+
+          <tr class="alt">
+            <td class="code" onclick="selectCodeBlock(this, event)">
+              &lt;letters/&gt;<br />
+              &lt;letters <b>extract=''</b>/&gt;
+            </td>
+            <td class="rendered" trim="all">
+              <letters />
+              <letters extract='true' />
+            </td>
+            <td class="comment">
+              <code>extract=''</code> (implicitly <code>extract='true'</code>)
+              marks these letters for extraction.<br />
+              Extraction is always all the letters in the input. <br />
+              To extract just one from several, use <use template="link" elmt="word" /><br />
+            </td>
+          </tr>
+
+          <tr class="alt">
+            <td class="code" onclick="selectCodeBlock(this, event)">
+              &lt;letters/&gt;<br />
+              &lt;letters <b>literal="+"</b>/&gt;<br />
+              &lt;letters/&gt;
+            </td>
+            <td class="rendered" trim="all">
+              <letters /><letters literal="+" /><letters />
+            </td>
+            <td class="comment">
+              <code>literal="[char]"</code> will probably feel excessively wide, unless tabular alignment is important.<br />
+              I recommend using a singular &lt;letter&gt; for literals.
+            </td>
+          </tr>
+
+        </table>  
+      </build>      
+
+      <h2>Generated HTML</h2>
+      <p>Like &lt;letter&gt;, each &lt;letters&gt; becomes a &lt;span&gt;&lt;input&gt;&lt;/span&gt;<br />
+        To trigger the different behavior, the letter-cell is also tagged <i>multiple-letter</i>.
+      </p>
+      <code style="margin-left:20px;">
+        &lt;span class="letter-cell <b>multiple-letter</b>"&gt;<br />
+             &lt;input type="text" class="letter-input" /&gt; <br />
+        &lt;/span&gt;
+      </code>
+
+      <h2>Regional overrides</h2>
+      <p>Exactly the same optional styles are available. They will each be slightly wider, but otherwise equivalent.
+      </p>
+      <table class="alternating-rows" style="width:100%;">
+        <tr>
+          <th>Override attribute</th>
+          <th>Default, if unset</th>
+          <th>Other Suggestions</th>
+        </tr>
+        <tr class="alt">
+          <td class="override">data-letter-style</td>
+          <td>underline: <letters /><letters /></td>
+          <td>box: <span data-letter-style="box"><letters /><letters /></span> 
+            , grid: <span data-letter-style="grid"><letters /><letters /></span> 
+            , hover: <span data-letter-style="hover"><letters /><letters /></span> <i>(inputs are invisible, except on hover)</i>
+          </td>
+        </tr>
+        <tr class="alt">
+          <td class="override">data-literal-style</td>
+          <td>none: <letters /><letters literal="+" /><letters /></td>
+          <td>underline: <span data-literal-style="underline"><letters /><letters literal="+" /><letters /></span> 
+            , box: <span data-letter-style="box" data-literal-style="box"><letters /><letters literal="+" /><letters /></span> 
+            , grid: <span data-letter-style="grid"><letters /><letters literal="+" /><letters /></span> 
+          </td>
+        </tr>            
+        <tr class="alt">
+          <td class="override">data-extract-style</td>
+          <td>box: <letters /><letters extract='true' /><letters /></td>
+          <td>highlight: <span data-extract-style="highlight"><letters /><letters extract='true' /><letters /></span> 
+            , box: <span data-letter-style="box" data-literal-style="highlight"><letters /><letters extract='true' /><letters /></span> 
+            , grid: <span data-letter-style="grid"><letters /><letters extract='true' /><letters /></span> 
+          </td>
+        </tr>            
+      </table>
+        
+      <h2>CSS overrides</h2>
+      <p>The guidelines for overriding CSS styles for &lt;letters&gt; are exactly the same as 
+        <use template="link" elmt="letter" />.
+      </p>
+
+    </div>
+
+    <template id="link" trim="all">
+      <if exists="{elmt?}"><a href="{elmt}.xhtml">&lt;{elmt}/&gt;</a></if>
+      <else><a href="{page}.xhtml">{page}</a></else>
+    </template>
+
+  </body>
+        
+</html>

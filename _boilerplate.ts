@@ -460,7 +460,8 @@ function boilerplate(bp: BoilerPlateData) {
         margins.appendChild(createSimpleDiv({id:'copyright', text:'© ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
     }
     if (safariDetails.puzzleList) {
-        margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:'Puzzle list'}));
+        const listName = safariDetails.puzzleListName || 'Puzzle list';
+        margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:listName}));
     }
     if (bp.printAsColor !== undefined) {
         margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));
