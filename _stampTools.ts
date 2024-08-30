@@ -1,6 +1,6 @@
 import { theBoiler } from "./_boilerplate";
 import { useTemplate } from "./_builderUse";
-import { findFirstChildOfClass, findNthChildOfClass, findParentOfClass, getOptionalStyle, hasClass, siblingIndexOfClass, toggleClass } from "./_classUtil";
+import { applyAllClasses, clearAllClasses, findFirstChildOfClass, findNthChildOfClass, findParentOfClass, getOptionalStyle, hasClass, siblingIndexOfClass, toggleClass } from "./_classUtil";
 import { saveStampingLocally } from "./_storage";
 
 // VOCABULARY
@@ -398,8 +398,8 @@ export function doStamp(target:HTMLElement, tool:HTMLElement) {
     // Template can be null if tool removes drawn objects
     const tmpltId = tool.getAttributeNS('', 'data-template-id');
     const useId = tool.getAttributeNS('', 'data-use-template-id');
-    const styles = tool.getAttributeNS('', 'data-style');
-    const unstyles = tool.getAttributeNS('', 'data-unstyle');
+    const styles = getOptionalStyle(tool, 'data-style');
+    const unstyles = getOptionalStyle(tool, 'data-unstyle');
     const erase = tool.getAttributeNS('', 'data-erase');
     if (tmpltId) {
         let template = document.getElementById(tmpltId) as HTMLTemplateElement;
@@ -426,24 +426,21 @@ export function doStamp(target:HTMLElement, tool:HTMLElement) {
         toggleClass(target, 'stampedObject', true);
         target.setAttributeNS('', 'data-stamp-id', tool.id);
         
+        // Remove styles first. That way, the top-level palette can un-style ALL styles,
+        // and they will all get removed, prior to re-adding the desired one.
+        // That also makes an erase tool cheap or even free (if you don't want an explicit UI).
+        if (unstyles) {
+            // Remove one or more styles (delimited by spaces)
+            // from the target itself. NOT to some parent stampable object.
+            // No parent needed if we're not injecting anything.
+            clearAllClasses(target, unstyles);
+        }    
         if (styles) {
             // Apply one or more styles (delimited by spaces)
             // to the target itself. NOT to some parent stampable object.
             // No parent needed if we're not injecting anything.
-            const split = styles.split(' ');
-            for (let i = 0; i < split.length; i++) {
-                toggleClass(target, split[i], true);
-            }
+            applyAllClasses(target, styles);
         }
-        if (unstyles) {
-            // Apply one or more styles (delimited by spaces)
-            // to the target itself. NOT to some parent stampable object.
-            // No parent needed if we're not injecting anything.
-            const split = unstyles.split(' ');
-            for (let i = 0; i < split.length; i++) {
-                toggleClass(target, split[i], false);
-            }
-        }    
     }
 
     updateStampExtraction();

@@ -1,5 +1,6 @@
 import { theBoiler } from "./_boilerplate";
 import { getTrimMode, normalizeName, TrimMode } from "./_builder";
+import { isTag } from "./_classUtil";
 import { SourceOffset, ContextError, wrapContextError, CodeError, elementSourceOffset, SourceOffsetable } from "./_contextError";
 
 /**
@@ -124,11 +125,35 @@ export function cloneAttributes(src:Element, dest:Element) {
  */
 export function cloneTextNode(text:Text):Node[] {
   const str = text.textContent || '';
-  const cloned = complexAttribute(str, getTrimMode());
+  const trimMode = getTrimMode();
+
+  if (trimMode === TrimMode.pre) {
+    const cloned = complexAttribute(str, TrimMode.off);
+    
+    // Trim each line. Use 0xA0 to lock in intended line starts
+    let lines = (''+cloned).split('\n').map(l => simpleTrim(l));
+    
+    if (isTag(text.parentElement, 'pre')) {
+      // The <pre> and </pre> tags often have their own boundary line breaks.
+      // Trim a first blank link, after the opening <pre>
+      if ((text.parentNode?.childNodes[0] === text) && lines[0] === '') {
+        lines.splice(0, 1);
+      }
+      // Trim a final blank link, before the closing </pre>
+      if ((text.parentNode?.childNodes[text.parentNode?.childNodes.length - 1] === text)
+          && lines.length > 0 && lines[lines.length - 1] === '') {
+        lines.splice(lines.length - 1, 1);
+      }
+    }
+    const joined = lines.join('\n');
+    return [document.createTextNode(joined)];
+  }
+  
+  const cloned = complexAttribute(str, trimMode);
   if (cloned === '') {
     return [];
   }
-  
+
   const node = document.createTextNode(cloned);
   return [node];
 }

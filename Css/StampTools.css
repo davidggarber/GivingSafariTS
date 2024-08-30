@@ -152,3 +152,10 @@
 #stampPaint-label {
   color: #aaa;
 }
+
+img.stampTool {
+  border: solid 2px transparent;
+}
+img.stampTool.selected {
+  border: solid 2px black;
+}

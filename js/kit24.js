@@ -231,6 +231,9 @@ exports.findEndInContainer = findEndInContainer;
  * @param tag a tag name, or array of names
  */
 function isTag(elmt, tag) {
+    if (!elmt) {
+        return false;
+    }
     const tagName = elmt.tagName.toUpperCase();
     if (typeof (tag) == 'string') {
         return tagName == tag.toUpperCase();
@@ -1132,6 +1135,9 @@ function cancelLocalReload(hide) {
     checkStorage = null;
     localStorage.removeItem(storageKey());
 }
+//////////////////////////////////////////////////////////
+// Utilities for managing multiple save-points
+//
 //////////////////////////////////////////////////////////
 // Utilities for saving to local cache
 //
@@ -4795,8 +4801,8 @@ function doStamp(target, tool) {
     // Template can be null if tool removes drawn objects
     const tmpltId = tool.getAttributeNS('', 'data-template-id');
     const useId = tool.getAttributeNS('', 'data-use-template-id');
-    const styles = tool.getAttributeNS('', 'data-style');
-    const unstyles = tool.getAttributeNS('', 'data-unstyle');
+    const styles = getOptionalStyle(tool, 'data-style');
+    const unstyles = getOptionalStyle(tool, 'data-unstyle');
     const erase = tool.getAttributeNS('', 'data-erase');
     if (tmpltId) {
         let template = document.getElementById(tmpltId);
@@ -4821,23 +4827,20 @@ function doStamp(target, tool) {
     if (styles || unstyles) {
         toggleClass(target, 'stampedObject', true);
         target.setAttributeNS('', 'data-stamp-id', tool.id);
+        // Remove styles first. That way, the top-level palette can un-style ALL styles,
+        // and they will all get removed, prior to re-adding the desired one.
+        // That also makes an erase tool cheap or even free (if you don't want an explicit UI).
+        if (unstyles) {
+            // Remove one or more styles (delimited by spaces)
+            // from the target itself. NOT to some parent stampable object.
+            // No parent needed if we're not injecting anything.
+            clearAllClasses(target, unstyles);
+        }
         if (styles) {
             // Apply one or more styles (delimited by spaces)
             // to the target itself. NOT to some parent stampable object.
             // No parent needed if we're not injecting anything.
-            const split = styles.split(' ');
-            for (let i = 0; i < split.length; i++) {
-                toggleClass(target, split[i], true);
-            }
-        }
-        if (unstyles) {
-            // Apply one or more styles (delimited by spaces)
-            // to the target itself. NOT to some parent stampable object.
-            // No parent needed if we're not injecting anything.
-            const split = unstyles.split(' ');
-            for (let i = 0; i < split.length; i++) {
-                toggleClass(target, split[i], false);
-            }
+            applyAllClasses(target, styles);
         }
     }
     updateStampExtraction();
@@ -7478,7 +7481,8 @@ var TrimMode;
 (function (TrimMode) {
     TrimMode[TrimMode["off"] = 0] = "off";
     TrimMode[TrimMode["on"] = 1] = "on";
-    TrimMode[TrimMode["all"] = 2] = "all";
+    TrimMode[TrimMode["pre"] = 2] = "pre";
+    TrimMode[TrimMode["all"] = 3] = "all";
 })(TrimMode || (exports.TrimMode = TrimMode = {}));
 /**
  * When in trim mode, cloning text between elements will omit any sections that are pure whitespace.
@@ -7495,6 +7499,9 @@ function getTrimMode() {
         trim = trim == null ? null : trim.toLowerCase();
         if (trim === 'all') {
             return TrimMode.all;
+        }
+        if (trim === 'pre') {
+            return TrimMode.pre;
         }
         if (trim != null) {
             return (trim !== 'false' && trim !== 'off') ? TrimMode.on : TrimMode.off;
@@ -7972,7 +7979,27 @@ exports.cloneAttributes = cloneAttributes;
  */
 function cloneTextNode(text) {
     const str = text.textContent || '';
-    const cloned = complexAttribute(str, getTrimMode());
+    const trimMode = getTrimMode();
+    if (trimMode === TrimMode.pre) {
+        const cloned = complexAttribute(str, TrimMode.off);
+        // Trim each line. Use 0xA0 to lock in intended line starts
+        let lines = ('' + cloned).split('\n').map(l => simpleTrim(l));
+        if (isTag(text.parentElement, 'pre')) {
+            // The <pre> and </pre> tags often have their own boundary line breaks.
+            // Trim a first blank link, after the opening <pre>
+            if ((text.parentNode?.childNodes[0] === text) && lines[0] === '') {
+                lines.splice(0, 1);
+            }
+            // Trim a final blank link, before the closing </pre>
+            if ((text.parentNode?.childNodes[text.parentNode?.childNodes.length - 1] === text)
+                && lines.length > 0 && lines[lines.length - 1] === '') {
+                lines.splice(lines.length - 1, 1);
+            }
+        }
+        const joined = lines.join('\n');
+        return [document.createTextNode(joined)];
+    }
+    const cloned = complexAttribute(str, trimMode);
     if (cloned === '') {
         return [];
     }

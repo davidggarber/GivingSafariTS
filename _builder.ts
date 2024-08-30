@@ -228,6 +228,7 @@ function popDestElement() {
 export enum TrimMode {
   off = 0,  // no trimming (default)
   on,       // trim text regions that are only whitespace
+  pre,      // trim each line, so that <pre> tags don't need to be artificially outdented
   all,      // trim all text regions
 }
 
@@ -246,6 +247,9 @@ export function getTrimMode():TrimMode {
     trim = trim == null ? null : trim.toLowerCase();
     if (trim === 'all') {
       return TrimMode.all;
+    }
+    if (trim === 'pre') {
+      return TrimMode.pre;
     }
     if (trim != null) {
       return (trim !== 'false' && trim !== 'off') ? TrimMode.on : TrimMode.off;

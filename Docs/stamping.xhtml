@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        title: 'Stamping',
+        paperSize: 'ledger',
+        orientation: 'portrait',
+        textInput: true,
+        abilities: {
+          stamping: true,
+        },
+        reactiveBuilder: 'pageBody'
+      };
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      code b, .code b {
+        font-size: 11pt;
+        background-color: #c3e5f0;
+      }
+      .cols4 {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .cols4 td, .cols4 th {
+        width: 25%;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .grid_3x3 {
+        display: grid;
+        grid-template-columns: repeat(3,40px);
+      }
+      .grid_3x3 div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 30px;
+        width: 40px;
+        border: solid 1px gray;
+        user-select: none;
+      }
+      #Stamping .stampTool {
+        width: 28px;
+        height: 32px;
+      }
+      .red {
+        background-color: #f99;
+      }
+      .blue {
+        background-color: #9cf;
+      }
+    </style>
+  </head>
+  <body id="Stamping">
+    <div id="pageBody">
+      <p>There are three components to set up.</p>
+      <ol>
+        <li>The <i>stampable</i> elements. Perhaps a container like a div or table cell. Or just an item that gets modified.</li>
+        <li>A stamp palette, listing all of the possible stamps. This doesn't have to be visible, but does have to exist.</li>
+        <li>The stamping effects. These can be CSS classes or template contents that get added to containers.</li>
+      </ol>
+
+      <div id="left">
+        <h2>Style-based stamps</h2>
+        <p>For example, a table whose cells rotate through colors when stamped.</p>
+        <table class="cols4">
+          <tr>
+            <th>Stampable elements</th>
+            <th>Stamp effects</th>
+            <th>Stamp Palette</th>
+            <th>Rendereded</th>
+          </tr>
+          <tr>
+            <td>
+              <code><pre trim="pre">
+                &lt;div class='grid_3x3'&gt;
+                  &lt;for int='i' until='9'&gt;
+                    &lt;div <b>class='stampable'</b>&gt;
+                      `{i`}
+                    &lt;/div&gt;
+                  &lt;/for&gt;
+                &lt;/div&gt;
+              </pre></code>
+            </td>
+            <td>
+              <code><pre trim="pre">
+                .red `{
+                  background-color: #f99;
+                `}
+                .blue `{
+                  background-color: #9cf;
+                `}
+              </pre></code>
+            </td>
+            <td>
+              <code><pre trim="pre">
+                &lt;div <b>id="stampPalette"</b> data-unstyle="red blue"&gt;
+                  &lt;img src="Images/red.png" <b>class="stampTool"</b>
+                       id="red" data-style="red" /&gt;
+                  &lt;img src="Images/blue.png" class="stampTool" 
+                       id="blue" data-style="blue" /&gt;
+                  &lt;img src="Images/white.png" class="stampTool" 
+                       id="erase" /&gt;
+                &lt;/div&gt;
+              </pre></code>
+            </td>
+            <td>
+              <div class='grid_3x3'>
+                <for int='i' until='9'>
+                  <div class="stampable">
+                    {i}
+                  </div>
+                </for>
+              </div>
+              <div id="stampPalette" data-unstyle="red blue" trim="all">
+                <img src="Images/red.png" class="stampTool" id="red" data-style="red" />
+                <img src="Images/blue.png" class="stampTool" id="blue" data-style="blue" />
+                <img src="Images/white.png" class="stampTool" id="erase" />
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>Tag each grid cell "stampable".</p>
+              <p>Skip any that should be locked.</p>
+            </td>
+            <td>
+              <p>Create styles for each tool.<br />
+                Tools can specify multiple, separated by spaces.
+              </p>
+              <p>These classes will be applied to the 'stampable' elements.
+              </p>
+            </td>
+            <td>
+              <p>There can only be one palette per page.<br />
+                It must have <b>id='stampPalette'</b>.
+              </p>
+              <p>Each tool must have <b>class='stampTool'</b></p>
+              <p>Each tool must have a unique ID.<br />
+                These are used by the stamping code to rotate
+                or toggle through stamps.
+              </p>
+              <p><b>data-style</b> is a list of classes to apply.
+              </p>
+              <p><b>data-unstyle</b> is a list of classes to remove.<br />
+                If set on the palette, it is invoked each time, prior to applying a new style.<br />
+              </p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+
+
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)">{value}</code>
+    </template>
+    <template id="tag">
+      <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+
+  </body>
+</html>

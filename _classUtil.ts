@@ -246,7 +246,11 @@ export function findEndInContainer( current: Element,
  * @param elmt An HTML element
  * @param tag a tag name, or array of names
  */
-export function isTag(elmt: Element, tag: string|string[]) {
+export function isTag(elmt: Element|null, tag: string|string[]) {
+    if (!elmt) { 
+        return false;
+    }
+    
     const tagName = elmt.tagName.toUpperCase();
     if (typeof(tag) == 'string') {
         return tagName == tag.toUpperCase();
