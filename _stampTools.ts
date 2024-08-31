@@ -120,10 +120,32 @@ export function preprocessStampObjects() {
 
     const palette = findStampPalette();
     if (palette != null) {
+        // Extractor tool can overlap with other tools
         let id = palette.getAttributeNS('', 'data-tool-extractor');
         _extractorTool = id != null ? document.getElementById(id) : null;
+
+        // Two kinds of erase tools. Explicit and implicit.
         id = palette.getAttributeNS('', 'data-tool-erase');
-        _eraseTool = id != null ? document.getElementById(id) : null;
+        if (id != null) {
+            // Explicit: one of the stampTools is the eraser.
+            _eraseTool = id != null ? document.getElementById(id) : null;
+        }
+        else {
+            const unstyle = palette.getAttributeNS('', 'data-unstyle');
+            const restyle = palette.getAttributeNS('', 'data-style');
+            if (unstyle || restyle) {
+                // Implicit: the palette itself knows how to erase
+                _eraseTool = document.createElement('span');
+                // Don't need to actually add this element to the page. It's just a placeholder.
+                if (unstyle) {
+                    _eraseTool.setAttributeNS('', 'data-unstyle', unstyle);
+                }
+                if (restyle) {
+                    _eraseTool.setAttributeNS('', 'data-style', restyle);
+                }
+            }
+        }
+
         id = palette.getAttributeNS('', 'data-tool-first');
         _firstTool = id != null ? document.getElementById(id) : null;
     }
@@ -408,14 +430,18 @@ export function doStamp(target:HTMLElement, tool:HTMLElement) {
             const clone = template.content.cloneNode(true);
             parent.appendChild(clone);
         }
-        parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        if (tool.id) {
+            parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        }
     }
     else if (useId) {
         const nodes = useTemplate(tool, useId);
         for (let i = 0; i < nodes.length; i++) {
             parent.appendChild(nodes[i]);
         }
-        parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        if (tool.id) {
+            parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        }
     }
     else if (erase != null) {
         // Do nothing. The caller should already have removed any existing contents
@@ -423,8 +449,10 @@ export function doStamp(target:HTMLElement, tool:HTMLElement) {
 
     // Styles can coexist with templates
     if (styles || unstyles) {
-        toggleClass(target, 'stampedObject', true);
-        target.setAttributeNS('', 'data-stamp-id', tool.id);
+        if (tool.id) {
+            toggleClass(target, 'stampedObject', true);
+            target.setAttributeNS('', 'data-stamp-id', tool.id);
+        }
         
         // Remove styles first. That way, the top-level palette can un-style ALL styles,
         // and they will all get removed, prior to re-adding the desired one.

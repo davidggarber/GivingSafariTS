@@ -77,8 +77,8 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
       const inner_context = pushBuilderContext();
       for (let i = 0; i < passed_args.length; i++) {
         const arg = passed_args[i];
-        inner_context[arg.attr] = arg.text;
-        inner_context[arg.attr + '!'] = arg.any;
+        inner_context[arg.attr] = arg.any;
+        inner_context[arg.attr + '!'] = arg.text;
         inner_context[arg.attr + '$'] = arg.raw;
       }
 

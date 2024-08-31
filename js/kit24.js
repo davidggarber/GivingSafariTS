@@ -3,7 +3,7 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalContext = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = void 0;
 exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = void 0;
 exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = void 0;
@@ -382,17 +382,17 @@ exports.getOptionalStyle = getOptionalStyle;
  * Look for any attribute in the current tag, and all parents (up to, but not including, body)
  * @param elmt - A page element
  * @param attrName - An attribute name
- * @returns The found data, looked up in context
+ * @returns The found data, parsed as a complext attribute
  */
-function getOptionalContext(elmt, attrName) {
+function getOptionalComplex(elmt, attrName) {
     if (!elmt) {
         return null;
     }
-    const e = getParentIf(elmt, (e) => e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
+    const e = getParentIf(elmt, (e) => e.getAttribute(attrName) !== null);
     const val = e ? e.getAttribute(attrName) : null;
-    return val !== null ? evaluateFormula(val) : null;
+    return val !== null ? complexAttribute(val) : null;
 }
-exports.getOptionalContext = getOptionalContext;
+exports.getOptionalComplex = getOptionalComplex;
 /**
  * Loop through all elements in a DOM sub-tree, looking for any elements with an optional tag.
  * Recurse as needed. But once found, don't recurse within the find.
@@ -4542,10 +4542,30 @@ function preprocessStampObjects() {
     }
     const palette = findStampPalette();
     if (palette != null) {
+        // Extractor tool can overlap with other tools
         let id = palette.getAttributeNS('', 'data-tool-extractor');
         _extractorTool = id != null ? document.getElementById(id) : null;
+        // Two kinds of erase tools. Explicit and implicit.
         id = palette.getAttributeNS('', 'data-tool-erase');
-        _eraseTool = id != null ? document.getElementById(id) : null;
+        if (id != null) {
+            // Explicit: one of the stampTools is the eraser.
+            _eraseTool = id != null ? document.getElementById(id) : null;
+        }
+        else {
+            const unstyle = palette.getAttributeNS('', 'data-unstyle');
+            const restyle = palette.getAttributeNS('', 'data-style');
+            if (unstyle || restyle) {
+                // Implicit: the palette itself knows how to erase
+                _eraseTool = document.createElement('span');
+                // Don't need to actually add this element to the page. It's just a placeholder.
+                if (unstyle) {
+                    _eraseTool.setAttributeNS('', 'data-unstyle', unstyle);
+                }
+                if (restyle) {
+                    _eraseTool.setAttributeNS('', 'data-style', restyle);
+                }
+            }
+        }
         id = palette.getAttributeNS('', 'data-tool-first');
         _firstTool = id != null ? document.getElementById(id) : null;
     }
@@ -4811,22 +4831,28 @@ function doStamp(target, tool) {
             const clone = template.content.cloneNode(true);
             parent.appendChild(clone);
         }
-        parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        if (tool.id) {
+            parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        }
     }
     else if (useId) {
         const nodes = useTemplate(tool, useId);
         for (let i = 0; i < nodes.length; i++) {
             parent.appendChild(nodes[i]);
         }
-        parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        if (tool.id) {
+            parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        }
     }
     else if (erase != null) {
         // Do nothing. The caller should already have removed any existing contents
     }
     // Styles can coexist with templates
     if (styles || unstyles) {
-        toggleClass(target, 'stampedObject', true);
-        target.setAttributeNS('', 'data-stamp-id', tool.id);
+        if (tool.id) {
+            toggleClass(target, 'stampedObject', true);
+            target.setAttributeNS('', 'data-stamp-id', tool.id);
+        }
         // Remove styles first. That way, the top-level palette can un-style ALL styles,
         // and they will all get removed, prior to re-adding the desired one.
         // That also makes an erase tool cheap or even free (if you don't want an explicit UI).
@@ -8349,7 +8375,9 @@ class FormulaNode {
             const maybe = result && trimmed[trimmed.length - 1] == '?';
             if (maybe) {
                 trimmed = trimmed.substring(0, trimmed.length - 1);
-                evalText = true;
+                if (evalText === undefined) {
+                    evalText = true;
+                }
             }
             // Could be plain text (or a number) or a name in context
             if (evalText === true) {
@@ -9097,7 +9125,11 @@ function getKeyedChild(parent, key, kTok, maybe) {
         return parent[index];
     }
     // Named members of objects
-    const trimmed = simpleTrim(key);
+    let trimmed = simpleTrim(key);
+    if (trimmed[trimmed.length - 1] == '?') {
+        trimmed = trimmed.substring(0, trimmed.length - 1);
+        maybe = true;
+    }
     if (!(trimmed in parent)) {
         if (maybe) {
             return '';
@@ -9172,6 +9204,8 @@ function startForLoop(src) {
         inner_context[iter_index] = i;
         inner_context[iter] = list[i];
         if (vals.length > 0) {
+            // Used only for iterating over dictionaries.
+            // {iter} is each key, so {iter!} is the matching value
             inner_context[iter + '!'] = vals[i];
         }
         pushRange(dest, expandContents(src));
@@ -9209,6 +9243,7 @@ function parseForEach(src) {
     if (Array.isArray(obj)) {
         return obj;
     }
+    evaluateAttribute(src, 'in', true); // Retry for debugging
     throw new ContextError("For each's in attribute must indicate a list", elementSourceOffseter(src, 'in'));
 }
 function parseForText(src, delim) {
@@ -9886,8 +9921,8 @@ function useTemplate(node, tempId) {
             const inner_context = pushBuilderContext();
             for (let i = 0; i < passed_args.length; i++) {
                 const arg = passed_args[i];
-                inner_context[arg.attr] = arg.text;
-                inner_context[arg.attr + '!'] = arg.any;
+                inner_context[arg.attr] = arg.any;
+                inner_context[arg.attr + '!'] = arg.text;
                 inner_context[arg.attr + '$'] = arg.raw;
             }
             if (!tempId) {
@@ -10007,20 +10042,20 @@ function paintByNumbersTemplate() {
             </a>
           </span>
         </th_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ id="colHeader-{col#}" class="pbn-col-header">
-            <for each="group" in="col"><span class="pbn-col-group" onclick="togglePbnClue(this)">{.group}</span></for>
+            <for each="group" in="{col}"><span class="pbn-col-group" onclick="togglePbnClue(this)">{group}</span></for>
           </td_>
         </for>
         <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
       </tr_>
     </thead_>
-    <for each="row" in="rowGroups">
+    <for each="row" in="{rowGroups}">
       <tr_ class="pbn-row">
         <td_ id="rowHeader-{row#}" class="pbn-row-header">
-          &hairsp; <for each="group" in="row"><span class="pbn-row-group" onclick="togglePbnClue(this)">{.group}</span> </for>&hairsp;
+          &hairsp; <for each="group" in="{row}"><span class="pbn-row-group" onclick="togglePbnClue(this)">{group}</span> </for>&hairsp;
         </td_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>
         </for>
         <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
@@ -10029,7 +10064,7 @@ function paintByNumbersTemplate() {
     <tfoot_>
       <tr_ class="pbn-col-footer">
         <th_ class="pbn-corner">&nbsp;</th_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
         </for>
         <th_ class="pbn-corner-validation">
@@ -10050,7 +10085,7 @@ function paintByColorNumbersTemplate() {
     const temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
+        `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist}">
     <thead_>
       <tr_ class="pbn-col-headers">
         <th_ class="pbn-corner">
@@ -10063,9 +10098,9 @@ function paintByColorNumbersTemplate() {
             </a>
           </span>
         </th_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ id="colHeader-{col#}" class="pbn-col-header">
-            <for each="colorGroup" in="col"><for key="color" in="colorGroup"><for each="group" in="color!"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span></for></for></for>
+            <for each="colorGroup" in="{col}"><for key="color" in="{colorGroup}"><for each="group" in="{color!}"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{group}</span></for></for></for>
           </td_>
         </for>
         <if test="validate?" ne="false">
@@ -10073,15 +10108,15 @@ function paintByColorNumbersTemplate() {
         </if>
       </tr_>
     </thead_>
-      <for each="row" in="rowGroups">
+      <for each="row" in="{rowGroups}">
         <tr_ class="pbn-row">
           <td_ id="rowHeader-{row#}" class="pbn-row-header">
             &hairsp; 
-            <for each="colorGroup" in="row"><for key="color" in="colorGroup">
-              <for each="group" in="color!"><span class="pbn-row-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span> </for>
+            <for each="colorGroup" in="{row}"><for key="color" in="{colorGroup}">
+              <for each="group" in="{color!}"><span class="pbn-row-group pbn-color-{color}" onclick="togglePbnClue(this)">{group}</span> </for>
             &hairsp;</for></for>
           </td_>
-          <for each="col" in="colGroups">
+          <for each="col" in="{colGroups}">
           <td_ id="{row#}_{col#}" class="pbn-cell stampable">{blank?}</td_>
         </for>
         <if test="validate?" ne="false">
@@ -10093,7 +10128,7 @@ function paintByColorNumbersTemplate() {
       <tfoot_>
         <tr_ class="pbn-col-footer">
           <th_ class="pbn-corner">&nbsp;</th_>
-          <for each="col" in="colGroups">
+          <for each="col" in="{colGroups}">
             <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
           </for>
           <th_ class="pbn-corner-validation">
@@ -10132,7 +10167,7 @@ function classStampPaletteTemplate() {
     temp.id = 'classStampPalette';
     temp.innerHTML =
         `<div id="stampPalette" data-tool-count="3" data-tool-erase="{erase}">
-    <for each="tool" in="tools">
+    <for each="tool" in="{tools}">
       <div id={tool.id} class="stampTool {size?}" data-stamp-id="{tool.id}" data-style="{tool.id}" data-click-modifier="{tool.modifier?}" title="{tool.modifier?} + draw" data-next-stamp-id="{tool.next}">
         <div class="roundTool {tool.id}-button">
           <span id="{tool.id}-icon" class="stampIcon"><img src_="{tool.img}"></span>
@@ -10150,7 +10185,7 @@ function classStampNoToolsTemplate() {
     temp.id = 'classStampPalette';
     temp.innerHTML =
         `<div id="stampPalette" class="hidden" data-tool-erase="{erase}">
-    <for each="tool" in="tools">
+    <for each="tool" in="{tools}">
       <div class="stampTool" data-stamp-id="{tool.id}" data-next-stamp-id="{tool.next}">
       </div>
     </for>
@@ -10525,14 +10560,11 @@ function dataFromTool(cell, stampTools) {
  * Look up a value, according to the context path cached in an attribute
  * @param elmt Any element
  * @param attr An attribute name, which should exist in elmt or any parent
- * @returns Any JSON object
+ * @returns Any JSON object, or undefined if not found (or found an empty string)
  */
 function contextDataFromRef(elmt, attr) {
-    const path = getOptionalStyle(elmt, attr);
-    if (path) {
-        return evaluateFormula(path);
-    }
-    return undefined;
+    const data = getOptionalComplex(elmt, attr);
+    return data ? data : undefined;
 }
 /**
  * Read the user's actual painting within the PBN grid as a list of group sizes.

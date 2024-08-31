@@ -1,5 +1,5 @@
 import { getParentIf } from "./_builder";
-import { cloneText, evaluateFormula, textFromContext } from "./_builderContext";
+import { cloneText, complexAttribute } from "./_builderContext";
 
 /**
  * Add or remove a class from a classlist, based on a boolean test.
@@ -250,7 +250,7 @@ export function isTag(elmt: Element|null, tag: string|string[]) {
     if (!elmt) { 
         return false;
     }
-    
+
     const tagName = elmt.tagName.toUpperCase();
     if (typeof(tag) == 'string') {
         return tagName == tag.toUpperCase();
@@ -413,17 +413,17 @@ export function getOptionalStyle(   elmt: Element|null,
  * Look for any attribute in the current tag, and all parents (up to, but not including, body)
  * @param elmt - A page element
  * @param attrName - An attribute name
- * @returns The found data, looked up in context
+ * @returns The found data, parsed as a complext attribute
  */
-export function getOptionalContext( elmt: Element|null, 
+export function getOptionalComplex( elmt: Element|null, 
                                     attrName: string)
                                     : any {
     if (!elmt) {
         return null;
     }
-    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null);
     const val = e ? e.getAttribute(attrName) : null;
-    return val !== null ? evaluateFormula(val) : null;
+    return val !== null ? complexAttribute(val) : null;
 }
 
 /**

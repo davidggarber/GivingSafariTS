@@ -1,5 +1,5 @@
 import { evaluateFormula, valueFromGlobalContext, theBoilerContext } from "./_builderContext";
-import { findParentOfClass, getOptionalStyle, hasClass, toggleClass } from "./_classUtil";
+import { findParentOfClass, getOptionalComplex, getOptionalStyle, hasClass, toggleClass } from "./_classUtil";
 import { StampToolDetails } from "./_stampTools";
 
 /**
@@ -108,14 +108,11 @@ function dataFromTool(cell:HTMLElement, stampTools: StampToolDetails[]): string|
  * Look up a value, according to the context path cached in an attribute
  * @param elmt Any element
  * @param attr An attribute name, which should exist in elmt or any parent
- * @returns Any JSON object
+ * @returns Any JSON object, or undefined if not found (or found an empty string)
  */
 function contextDataFromRef(elmt:Element, attr:string):any {
-  const path = getOptionalStyle(elmt, attr);
-  if (path) {
-    return evaluateFormula(path);
-  }
-  return undefined;
+  const data = getOptionalComplex(elmt, attr);
+  return data ? data : undefined;
 }
 
 /**

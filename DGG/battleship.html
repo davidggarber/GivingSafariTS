@@ -29,7 +29,7 @@
         'preSetup': setupValidation,
         'onStamp': doValidation,
         'reactiveBuilder': true,
-        'builderLookup': {
+        'lookup': {
         },
       };
 
@@ -101,7 +101,7 @@
         {id:'stampErase', modifier:'alt', label:'Erase', img:'Battleship/Eraser.png', next:'stampLand', data:''},
       ];
 
-      boiler['builderLookup'] =
+      boiler['lookup'] =
       {
         colGroups: cols,
         rowGroups: rows,
@@ -187,7 +187,8 @@
   <body id="Battleship">
     <div id="pageBody">
       <div id="pbn-pos">
-        <use template="paintByColorNumbers" cols="colGroups" rows="rowGroups" blank="~" stamplist="stampTools" validating="validate"></use>
+        <use template="paintByColorNumbers" cols="{colGroups}" rows="{rowGroups}" blank="~" stamplist="stampTools" 
+          validating="{validate}" colGroups="colGroups" rowGroups="rowGroups" ></use>
       </div>
 
       <div style="position: absolute; top: -1in; right: 1in;">

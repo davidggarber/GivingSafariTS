@@ -26,12 +26,11 @@
         font-size: 11pt;
         background-color: #c3e5f0;
       }
-      .cols4 {
+      .cols3 {
         width: 100%;
         border-collapse: collapse;
       }
-      .cols4 td, .cols4 th {
-        width: 25%;
+      .cols3 td, .cols3 th {
         text-align: left;
         vertical-align: top;
       }
@@ -59,6 +58,10 @@
       .blue {
         background-color: #9cf;
       }
+      #Stamping img.stampTool.selected {
+        background-color: aquamarine;
+        border-color: transparent;
+      }
     </style>
   </head>
   <body id="Stamping">
@@ -73,17 +76,16 @@
       <div id="left">
         <h2>Style-based stamps</h2>
         <p>For example, a table whose cells rotate through colors when stamped.</p>
-        <table class="cols4">
+        <table class="cols3">
           <tr>
             <th>Stampable elements</th>
             <th>Stamp effects</th>
             <th>Stamp Palette</th>
-            <th>Rendereded</th>
           </tr>
           <tr>
             <td>
               <code><pre trim="pre">
-                &lt;div class='grid_3x3'&gt;
+                &lt;div class='grid <b>stampable-container</b> <b>stamp-drag</b>'&gt;
                   &lt;for int='i' until='9'&gt;
                     &lt;div <b>class='stampable'</b>&gt;
                       `{i`}
@@ -106,7 +108,7 @@
               <code><pre trim="pre">
                 &lt;div <b>id="stampPalette"</b> data-unstyle="red blue"&gt;
                   &lt;img src="Images/red.png" <b>class="stampTool"</b>
-                       id="red" data-style="red" /&gt;
+                       <b>id="red"</b> data-style="red" /&gt;
                   &lt;img src="Images/blue.png" class="stampTool" 
                        id="blue" data-style="blue" /&gt;
                   &lt;img src="Images/white.png" class="stampTool" 
@@ -114,25 +116,18 @@
                 &lt;/div&gt;
               </pre></code>
             </td>
-            <td>
-              <div class='grid_3x3'>
-                <for int='i' until='9'>
-                  <div class="stampable">
-                    {i}
-                  </div>
-                </for>
-              </div>
-              <div id="stampPalette" data-unstyle="red blue" trim="all">
-                <img src="Images/red.png" class="stampTool" id="red" data-style="red" />
-                <img src="Images/blue.png" class="stampTool" id="blue" data-style="blue" />
-                <img src="Images/white.png" class="stampTool" id="erase" />
-              </div>
-            </td>
           </tr>
           <tr>
             <td>
-              <p>Tag each grid cell "stampable".</p>
-              <p>Skip any that should be locked.</p>
+              <p><b>stampable</b> Tag item that can be stamped.<br />
+                Skip any that should be locked.
+              </p>
+              <p><b>stamp-drag</b> class, if present on the container, turns stamping into a form of paining.
+                Whatever stamp is applied on pointer-down can be applied to others by dragging.
+              </p>
+              <p><b>stampable-container</b> is not a required class.<br />
+                However, it is, to access container-level features like <i>stamp-drag</i>.
+              </p>
             </td>
             <td>
               <p>Create styles for each tool.<br />
@@ -141,20 +136,57 @@
               <p>These classes will be applied to the 'stampable' elements.
               </p>
             </td>
-            <td>
+            <td rowspan="3">
               <p>There can only be one palette per page.<br />
                 It must have <b>id='stampPalette'</b>.
               </p>
               <p>Each tool must have <b>class='stampTool'</b></p>
-              <p>Each tool must have a unique ID.<br />
-                These are used by the stamping code to rotate
-                or toggle through stamps.
+              <p><b>id</b> must be set on each tool (other than the eraser). 
+                The id is both how stamping is saved, and how successive stamping
+                is able to cycle or toggle states.
               </p>
               <p><b>data-style</b> is a list of classes to apply.
               </p>
               <p><b>data-unstyle</b> is a list of classes to remove.<br />
-                If set on the palette, it is invoked each time, prior to applying a new style.<br />
+                <i>Option:</i> This can be set on the palette, so every tool invokes it, prior to applying their new styles.<br />
               </p>
+              <p>In this example, the <i>erase</i> tool is mostly decorative.<br />
+                The palette is doing the actual erasing, and id='erase' is not saved on empty cells.<br />
+                But this way, an eraser is one of the selectable tools.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <table>
+                <tr>
+                  <th colspan="2">Rendereded</th>
+                </tr>
+                <tr>
+                  <td style="width: 140px">
+                    <div class='grid_3x3 stampable-container stamp-drag'>
+                      <for int='i' until='9'>
+                        <div class="stampable">
+                          {i}
+                        </div>
+                      </for>
+                    </div>
+                    <div id="stampPalette" data-unstyle="red blue" trim="all">
+                      <img src="Images/red.png" class="stampTool" id="red" data-style="red" />
+                      <img src="Images/blue.png" class="stampTool" id="blue" data-style="blue" />
+                      <img src="Images/white.png" class="stampTool" xid="erase" />
+                    </div>
+                  </td>
+                  <td style="width: 6in;">
+                    <p><u>No tool selected:</u><br />
+                      Clicking on <i>stampable</i> cells will cycle through all states.
+                    </p>
+                    <p><u>Tool selected:</u><br />
+                      Clicking on <i>stampable</i> cells will toggle that state on and off.
+                    </p>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
         </table>

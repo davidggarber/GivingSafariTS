@@ -524,7 +524,9 @@ export class FormulaNode {
       const maybe = result && trimmed[trimmed.length - 1] == '?';
       if (maybe) {
         trimmed = trimmed.substring(0, trimmed.length - 1);
-        evalText = true;
+        if (evalText === undefined) {
+          evalText = true;
+        }
       }
 
       // Could be plain text (or a number) or a name in context
@@ -1341,7 +1343,11 @@ function getKeyedChild(parent:any, key:any, kTok?:SourceOffsetable, maybe?:boole
   }
 
   // Named members of objects
-  const trimmed = simpleTrim(key);
+  let trimmed = simpleTrim(key);
+  if (trimmed[trimmed.length - 1] == '?') {
+    trimmed = trimmed.substring(0, trimmed.length - 1);
+    maybe = true;
+  }
   if (!(trimmed in parent)) {
     if (maybe) {
       return '';

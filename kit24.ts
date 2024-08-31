@@ -257,7 +257,7 @@ export function isTag(elmt: Element|null, tag: string|string[]) {
     if (!elmt) { 
         return false;
     }
-    
+
     const tagName = elmt.tagName.toUpperCase();
     if (typeof(tag) == 'string') {
         return tagName == tag.toUpperCase();
@@ -420,17 +420,17 @@ export function getOptionalStyle(   elmt: Element|null,
  * Look for any attribute in the current tag, and all parents (up to, but not including, body)
  * @param elmt - A page element
  * @param attrName - An attribute name
- * @returns The found data, looked up in context
+ * @returns The found data, parsed as a complext attribute
  */
-export function getOptionalContext( elmt: Element|null, 
+export function getOptionalComplex( elmt: Element|null, 
                                     attrName: string)
                                     : any {
     if (!elmt) {
         return null;
     }
-    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && textFromContext(e.getAttribute(attrName)) !== '');
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null);
     const val = e ? e.getAttribute(attrName) : null;
-    return val !== null ? evaluateFormula(val) : null;
+    return val !== null ? complexAttribute(val) : null;
 }
 
 /**
@@ -4988,10 +4988,32 @@ export function preprocessStampObjects() {
 
     const palette = findStampPalette();
     if (palette != null) {
+        // Extractor tool can overlap with other tools
         let id = palette.getAttributeNS('', 'data-tool-extractor');
         _extractorTool = id != null ? document.getElementById(id) : null;
+
+        // Two kinds of erase tools. Explicit and implicit.
         id = palette.getAttributeNS('', 'data-tool-erase');
-        _eraseTool = id != null ? document.getElementById(id) : null;
+        if (id != null) {
+            // Explicit: one of the stampTools is the eraser.
+            _eraseTool = id != null ? document.getElementById(id) : null;
+        }
+        else {
+            const unstyle = palette.getAttributeNS('', 'data-unstyle');
+            const restyle = palette.getAttributeNS('', 'data-style');
+            if (unstyle || restyle) {
+                // Implicit: the palette itself knows how to erase
+                _eraseTool = document.createElement('span');
+                // Don't need to actually add this element to the page. It's just a placeholder.
+                if (unstyle) {
+                    _eraseTool.setAttributeNS('', 'data-unstyle', unstyle);
+                }
+                if (restyle) {
+                    _eraseTool.setAttributeNS('', 'data-style', restyle);
+                }
+            }
+        }
+
         id = palette.getAttributeNS('', 'data-tool-first');
         _firstTool = id != null ? document.getElementById(id) : null;
     }
@@ -5276,14 +5298,18 @@ export function doStamp(target:HTMLElement, tool:HTMLElement) {
             const clone = template.content.cloneNode(true);
             parent.appendChild(clone);
         }
-        parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        if (tool.id) {
+            parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        }
     }
     else if (useId) {
         const nodes = useTemplate(tool, useId);
         for (let i = 0; i < nodes.length; i++) {
             parent.appendChild(nodes[i]);
         }
-        parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        if (tool.id) {
+            parent.setAttributeNS('', 'data-stamp-id', tool.id);
+        }
     }
     else if (erase != null) {
         // Do nothing. The caller should already have removed any existing contents
@@ -5291,8 +5317,10 @@ export function doStamp(target:HTMLElement, tool:HTMLElement) {
 
     // Styles can coexist with templates
     if (styles || unstyles) {
-        toggleClass(target, 'stampedObject', true);
-        target.setAttributeNS('', 'data-stamp-id', tool.id);
+        if (tool.id) {
+            toggleClass(target, 'stampedObject', true);
+            target.setAttributeNS('', 'data-stamp-id', tool.id);
+        }
         
         // Remove styles first. That way, the top-level palette can un-style ALL styles,
         // and they will all get removed, prior to re-adding the desired one.
@@ -9267,7 +9295,9 @@ export class FormulaNode {
       const maybe = result && trimmed[trimmed.length - 1] == '?';
       if (maybe) {
         trimmed = trimmed.substring(0, trimmed.length - 1);
-        evalText = true;
+        if (evalText === undefined) {
+          evalText = true;
+        }
       }
 
       // Could be plain text (or a number) or a name in context
@@ -10084,7 +10114,11 @@ function getKeyedChild(parent:any, key:any, kTok?:SourceOffsetable, maybe?:boole
   }
 
   // Named members of objects
-  const trimmed = simpleTrim(key);
+  let trimmed = simpleTrim(key);
+  if (trimmed[trimmed.length - 1] == '?') {
+    trimmed = trimmed.substring(0, trimmed.length - 1);
+    maybe = true;
+  }
   if (!(trimmed in parent)) {
     if (maybe) {
       return '';
@@ -10168,7 +10202,9 @@ export function startForLoop(src:HTMLElement):Node[] {
     inner_context[iter_index] = i;
     inner_context[iter] = list[i];
     if (vals.length > 0) {
-      inner_context[iter + '!'] = vals[i];
+      // Used only for iterating over dictionaries.
+      // {iter} is each key, so {iter!} is the matching value
+      inner_context[iter + '!'] = vals[i];  
     }
     pushRange(dest, expandContents(src));
   }
@@ -10207,6 +10243,7 @@ function parseForEach(src:HTMLElement):any[] {
   if (Array.isArray(obj)) {
     return obj as any[];
   }
+  evaluateAttribute(src, 'in', true);  // Retry for debugging
   throw new ContextError("For each's in attribute must indicate a list", elementSourceOffseter(src, 'in'));
 }
 
@@ -10963,8 +11000,8 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
       const inner_context = pushBuilderContext();
       for (let i = 0; i < passed_args.length; i++) {
         const arg = passed_args[i];
-        inner_context[arg.attr] = arg.text;
-        inner_context[arg.attr + '!'] = arg.any;
+        inner_context[arg.attr] = arg.any;
+        inner_context[arg.attr + '!'] = arg.text;
         inner_context[arg.attr + '$'] = arg.raw;
       }
 
@@ -11089,20 +11126,20 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
             </a>
           </span>
         </th_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ id="colHeader-{col#}" class="pbn-col-header">
-            <for each="group" in="col"><span class="pbn-col-group" onclick="togglePbnClue(this)">{.group}</span></for>
+            <for each="group" in="{col}"><span class="pbn-col-group" onclick="togglePbnClue(this)">{group}</span></for>
           </td_>
         </for>
         <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
       </tr_>
     </thead_>
-    <for each="row" in="rowGroups">
+    <for each="row" in="{rowGroups}">
       <tr_ class="pbn-row">
         <td_ id="rowHeader-{row#}" class="pbn-row-header">
-          &hairsp; <for each="group" in="row"><span class="pbn-row-group" onclick="togglePbnClue(this)">{.group}</span> </for>&hairsp;
+          &hairsp; <for each="group" in="{row}"><span class="pbn-row-group" onclick="togglePbnClue(this)">{group}</span> </for>&hairsp;
         </td_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>
         </for>
         <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
@@ -11111,7 +11148,7 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
     <tfoot_>
       <tr_ class="pbn-col-footer">
         <th_ class="pbn-corner">&nbsp;</th_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
         </for>
         <th_ class="pbn-corner-validation">
@@ -11134,7 +11171,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
   temp.innerHTML = 
-  `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
+  `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist}">
     <thead_>
       <tr_ class="pbn-col-headers">
         <th_ class="pbn-corner">
@@ -11147,9 +11184,9 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
             </a>
           </span>
         </th_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ id="colHeader-{col#}" class="pbn-col-header">
-            <for each="colorGroup" in="col"><for key="color" in="colorGroup"><for each="group" in="color!"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span></for></for></for>
+            <for each="colorGroup" in="{col}"><for key="color" in="{colorGroup}"><for each="group" in="{color!}"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{group}</span></for></for></for>
           </td_>
         </for>
         <if test="validate?" ne="false">
@@ -11157,15 +11194,15 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
         </if>
       </tr_>
     </thead_>
-      <for each="row" in="rowGroups">
+      <for each="row" in="{rowGroups}">
         <tr_ class="pbn-row">
           <td_ id="rowHeader-{row#}" class="pbn-row-header">
             &hairsp; 
-            <for each="colorGroup" in="row"><for key="color" in="colorGroup">
-              <for each="group" in="color!"><span class="pbn-row-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span> </for>
+            <for each="colorGroup" in="{row}"><for key="color" in="{colorGroup}">
+              <for each="group" in="{color!}"><span class="pbn-row-group pbn-color-{color}" onclick="togglePbnClue(this)">{group}</span> </for>
             &hairsp;</for></for>
           </td_>
-          <for each="col" in="colGroups">
+          <for each="col" in="{colGroups}">
           <td_ id="{row#}_{col#}" class="pbn-cell stampable">{blank?}</td_>
         </for>
         <if test="validate?" ne="false">
@@ -11177,7 +11214,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
       <tfoot_>
         <tr_ class="pbn-col-footer">
           <th_ class="pbn-corner">&nbsp;</th_>
-          <for each="col" in="colGroups">
+          <for each="col" in="{colGroups}">
             <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
           </for>
           <th_ class="pbn-corner-validation">
@@ -11218,7 +11255,7 @@ function classStampPaletteTemplate() :HTMLTemplateElement {
   temp.id = 'classStampPalette';
   temp.innerHTML = 
   `<div id="stampPalette" data-tool-count="3" data-tool-erase="{erase}">
-    <for each="tool" in="tools">
+    <for each="tool" in="{tools}">
       <div id={tool.id} class="stampTool {size?}" data-stamp-id="{tool.id}" data-style="{tool.id}" data-click-modifier="{tool.modifier?}" title="{tool.modifier?} + draw" data-next-stamp-id="{tool.next}">
         <div class="roundTool {tool.id}-button">
           <span id="{tool.id}-icon" class="stampIcon"><img src_="{tool.img}"></span>
@@ -11238,7 +11275,7 @@ function classStampNoToolsTemplate() :HTMLTemplateElement {
   temp.id = 'classStampPalette';
   temp.innerHTML = 
   `<div id="stampPalette" class="hidden" data-tool-erase="{erase}">
-    <for each="tool" in="tools">
+    <for each="tool" in="{tools}">
       <div class="stampTool" data-stamp-id="{tool.id}" data-next-stamp-id="{tool.next}">
       </div>
     </for>
@@ -11667,14 +11704,11 @@ function dataFromTool(cell:HTMLElement, stampTools: StampToolDetails[]): string|
  * Look up a value, according to the context path cached in an attribute
  * @param elmt Any element
  * @param attr An attribute name, which should exist in elmt or any parent
- * @returns Any JSON object
+ * @returns Any JSON object, or undefined if not found (or found an empty string)
  */
 function contextDataFromRef(elmt:Element, attr:string):any {
-  const path = getOptionalStyle(elmt, attr);
-  if (path) {
-    return evaluateFormula(path);
-  }
-  return undefined;
+  const data = getOptionalComplex(elmt, attr);
+  return data ? data : undefined;
 }
 
 /**

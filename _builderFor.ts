@@ -70,7 +70,9 @@ export function startForLoop(src:HTMLElement):Node[] {
     inner_context[iter_index] = i;
     inner_context[iter] = list[i];
     if (vals.length > 0) {
-      inner_context[iter + '!'] = vals[i];
+      // Used only for iterating over dictionaries.
+      // {iter} is each key, so {iter!} is the matching value
+      inner_context[iter + '!'] = vals[i];  
     }
     pushRange(dest, expandContents(src));
   }
@@ -109,6 +111,7 @@ function parseForEach(src:HTMLElement):any[] {
   if (Array.isArray(obj)) {
     return obj as any[];
   }
+  evaluateAttribute(src, 'in', true);  // Retry for debugging
   throw new ContextError("For each's in attribute must indicate a list", elementSourceOffseter(src, 'in'));
 }
 

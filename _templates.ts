@@ -64,20 +64,20 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
             </a>
           </span>
         </th_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ id="colHeader-{col#}" class="pbn-col-header">
-            <for each="group" in="col"><span class="pbn-col-group" onclick="togglePbnClue(this)">{.group}</span></for>
+            <for each="group" in="{col}"><span class="pbn-col-group" onclick="togglePbnClue(this)">{group}</span></for>
           </td_>
         </for>
         <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
       </tr_>
     </thead_>
-    <for each="row" in="rowGroups">
+    <for each="row" in="{rowGroups}">
       <tr_ class="pbn-row">
         <td_ id="rowHeader-{row#}" class="pbn-row-header">
-          &hairsp; <for each="group" in="row"><span class="pbn-row-group" onclick="togglePbnClue(this)">{.group}</span> </for>&hairsp;
+          &hairsp; <for each="group" in="{row}"><span class="pbn-row-group" onclick="togglePbnClue(this)">{group}</span> </for>&hairsp;
         </td_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>
         </for>
         <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
@@ -86,7 +86,7 @@ function paintByNumbersTemplate() :HTMLTemplateElement {
     <tfoot_>
       <tr_ class="pbn-col-footer">
         <th_ class="pbn-corner">&nbsp;</th_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
         </for>
         <th_ class="pbn-corner-validation">
@@ -109,7 +109,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
   const temp = document.createElement('template');
   temp.id = 'paintByNumbers';
   temp.innerHTML = 
-  `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist$}">
+  `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist}">
     <thead_>
       <tr_ class="pbn-col-headers">
         <th_ class="pbn-corner">
@@ -122,9 +122,9 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
             </a>
           </span>
         </th_>
-        <for each="col" in="colGroups">
+        <for each="col" in="{colGroups}">
           <td_ id="colHeader-{col#}" class="pbn-col-header">
-            <for each="colorGroup" in="col"><for key="color" in="colorGroup"><for each="group" in="color!"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span></for></for></for>
+            <for each="colorGroup" in="{col}"><for key="color" in="{colorGroup}"><for each="group" in="{color!}"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{group}</span></for></for></for>
           </td_>
         </for>
         <if test="validate?" ne="false">
@@ -132,15 +132,15 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
         </if>
       </tr_>
     </thead_>
-      <for each="row" in="rowGroups">
+      <for each="row" in="{rowGroups}">
         <tr_ class="pbn-row">
           <td_ id="rowHeader-{row#}" class="pbn-row-header">
             &hairsp; 
-            <for each="colorGroup" in="row"><for key="color" in="colorGroup">
-              <for each="group" in="color!"><span class="pbn-row-group pbn-color-{color}" onclick="togglePbnClue(this)">{.group}</span> </for>
+            <for each="colorGroup" in="{row}"><for key="color" in="{colorGroup}">
+              <for each="group" in="{color!}"><span class="pbn-row-group pbn-color-{color}" onclick="togglePbnClue(this)">{group}</span> </for>
             &hairsp;</for></for>
           </td_>
-          <for each="col" in="colGroups">
+          <for each="col" in="{colGroups}">
           <td_ id="{row#}_{col#}" class="pbn-cell stampable">{blank?}</td_>
         </for>
         <if test="validate?" ne="false">
@@ -152,7 +152,7 @@ function paintByColorNumbersTemplate() :HTMLTemplateElement {
       <tfoot_>
         <tr_ class="pbn-col-footer">
           <th_ class="pbn-corner">&nbsp;</th_>
-          <for each="col" in="colGroups">
+          <for each="col" in="{colGroups}">
             <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
           </for>
           <th_ class="pbn-corner-validation">
@@ -193,7 +193,7 @@ function classStampPaletteTemplate() :HTMLTemplateElement {
   temp.id = 'classStampPalette';
   temp.innerHTML = 
   `<div id="stampPalette" data-tool-count="3" data-tool-erase="{erase}">
-    <for each="tool" in="tools">
+    <for each="tool" in="{tools}">
       <div id={tool.id} class="stampTool {size?}" data-stamp-id="{tool.id}" data-style="{tool.id}" data-click-modifier="{tool.modifier?}" title="{tool.modifier?} + draw" data-next-stamp-id="{tool.next}">
         <div class="roundTool {tool.id}-button">
           <span id="{tool.id}-icon" class="stampIcon"><img src_="{tool.img}"></span>
@@ -213,7 +213,7 @@ function classStampNoToolsTemplate() :HTMLTemplateElement {
   temp.id = 'classStampPalette';
   temp.innerHTML = 
   `<div id="stampPalette" class="hidden" data-tool-erase="{erase}">
-    <for each="tool" in="tools">
+    <for each="tool" in="{tools}">
       <div class="stampTool" data-stamp-id="{tool.id}" data-next-stamp-id="{tool.next}">
       </div>
     </for>
