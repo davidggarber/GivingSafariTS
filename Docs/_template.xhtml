@@ -7,14 +7,14 @@
     <script src="../js/kit24.js"></script>
     <script>
       const boiler = {
-        'safari': 'Docs',
-        'title': '___',
-        'paperSize': 'ledger',
-        'orientation': 'landscape',
-        'textInput': true,
-        'abilities': {
+        safari: 'Docs',
+        title: '___',
+        paperSize: 'ledger',
+        orientation: 'landscape',
+        textInput: true,
+        abilities: {
         },
-        'reactiveBuilder': true
+        reactiveBuilder: 'pageBody'
       };
 
     </script>
@@ -36,29 +36,15 @@
       <use template="code" value="&lt;{value}&gt;"></use>
     </template>
 
-    <template id="simple">
-      <span data-input-style="{dis?}">
-        &ldquo;<letter></letter><letter></letter> 
-        <letter></letter><letter></letter>-<letter></letter><letter></letter>&rdquo;
-      </span>
+    <template id="link">
+      <if exists="{tag?}">
+        <a href="{tag}.xhtml">&lt;{tag}&gt;</a>        
+      </if>
+      <else>
+        <a href="{page}.xhtml">{page}</a>
+      </else>
+      <if test="{wip?}"><img class="wip" src="Images/wip2.png" title="Work in progress" alt="Work in progress" /></if>
     </template>
-
-    <template id="lit">
-      <span data-input-style="{dis?}" data-literal-style="{dls?}">
-        <letter></letter><letter literal="-"></letter><letter></letter><letter literal="&rsquo;"></letter><letter></letter><letter literal="!"></letter>
-      </span>
-    </template>
-    <template id="gridblocks">
-      <div data-input-style="grid" data-literal-style="{dls?}">
-        <div class="letter-cell-block"><letter literal="¤"></letter><letter></letter><letter></letter><letter literal=" "></letter><letter></letter><letter literal="$"></letter></div>
-      </div>
-    </template>
-
-    <template id="extr">
-      <span data-input-style="{dis?}" data-extract-style="{des?}">
-        <letter></letter><letter extract></letter><letter></letter> <letter></letter><letter extract></letter><letter></letter>
-      </span>
-    </template>
-
+  
   </body>
 </html>

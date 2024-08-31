@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        title: 'Debugging',
+        paperSize: 'ledger',
+        orientation: 'landscape',
+        textInput: true,
+        abilities: {
+        },
+        reactiveBuilder: 'pageBody'
+      };
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      th {
+        padding-right: 10px;
+        vertical-align: top;
+      }
+      td {
+        vertical-align: top;
+      }
+    </style>
+  </head>
+  <body id="Debugging">
+    <div id="pageBody">
+      <h2>URL Arguments</h2>
+      <table class="alternating-rows">
+        <tr>
+          <th>trace</th>
+          <td>Lightweight debugging. <br />
+            Causes builder elements like &lt;for&gt; and the input tags to mirror the half-built states to the console.</td>
+        </tr>
+        <tr>
+          <th>debug</th>
+          <td>Heavyweight debugging. <br />
+            Features can pop up alerts, or color elements.</td>
+        </tr>
+        <tr>
+          <th>body-debug</th>
+          <td>Layout debugging. <br />
+            Causes page layout elements to be rendered with background colors.</td>
+        </tr>
+        <tr>
+          <th>iframe</th>
+          <td>Alerts page layout that it is inside an iframe - usually for printing. <br />
+            Should suppress floating page visual.</td>
+        </tr>
+        <tr>
+          <th>print</th>
+          <td>Alerts page layout that it is about to be printed. <br />
+            Any landscape pages will rotate 90&deg; so that all pages have portrait rotation. <br />
+            Should also have the same effect as CSS' <i>@media print { }</i> when actually in the printing view.</td>
+        </tr>
+        <tr>
+          <th>icon</th>
+          <td>Alerts page layout that we are about to capture a screenshot for purposes of creating icons.<br />
+            Very similar to <i>print</i> above, with small adjustments for the intended purposes.</td>
+        </tr>
+        <tr>
+          <th>restart</th>
+          <td>Overrides any saved page state, and skips the "Reload" vs. "Start over" dialog. <br />
+            Equivalent to always picking "start over".</td>
+        </tr>
+        <tr>
+          <th>restart</th>
+          <td>Always loads any saved page state, skipping the "Reload" vs. "Start over" dialog. <br />
+            Equivalent to always picking "reload".</td>
+        </tr>
+      </table>
+
+      <h2>On-element debug attributes</h2>
+      <table>
+        <tr>
+          <th>&lt;body class='<b>debug</b>'&gt;</th>
+          <td>Layout debugging. <br />
+            Causes page layout elements to be rendered with background colors.</td>
+        </tr>
+        <tr>
+          <th>&lt;anytag &hellip; nothrow=''&gt;</th>
+          <td>Suppresses <i>Puzzyl Builder</i> exceptions while constructing this element and its contents. <br />
+            If an exception happens, the builder will continue to construct what it can. <br />
+            It will still log any errors to the console. </td>
+        </tr>
+      </table>
+
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)">{value}</code>
+    </template>
+    <template id="tag">
+      <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+
+    <template id="link">
+      <if exists="{tag?}">
+        <a href="{tag}.xhtml">&lt;{tag}&gt;</a>        
+      </if>
+      <else>
+        <a href="{page}.xhtml">{page}</a>
+      </else>
+      <if test="{wip?}"><img class="wip" src="Images/wip2.png" title="Work in progress" alt="Work in progress" /></if>
+    </template>
+  
+  </body>
+</html>
