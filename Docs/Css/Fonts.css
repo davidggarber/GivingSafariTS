@@ -52,6 +52,10 @@
   color: #ff0099;
 }
 
+code {
+  font-family: 'Inconsolata', monospace,
+}
+
 @media print {
   .screen-only {
     display: none;

@@ -42,7 +42,7 @@ td {
 
 code {
   display: inline-block;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Inconsolata', monospace;
   background-color: lightblue;
   border: blue solid 1px;
 }

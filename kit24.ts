@@ -6545,7 +6545,7 @@ const safariDocsDetails:PuzzleEventDetails = {
   'puzzleListName': 'Documentation',
   'cssRoot': '../Css/',
   'fontCss': '../Docs/Css/Fonts.css',
-  'googleFonts': 'Caveat',
+  'googleFonts': 'Caveat Inconsolata',
   'links': []
 };
 

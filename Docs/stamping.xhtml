@@ -74,12 +74,20 @@
         background-color: aqua;
       }
       #page {
-        height:21in;
+        height:22in;
       }
     </style>
   </head>
   <body id="Stamping">
     <div id="pageBody">
+      <p>To enable stamping, the boilerplate must contain:</p>
+      <code><pre trim="pre">
+        const boiler = `{
+          abilities: `{
+            <b>stamping: true,</b>
+         `},
+        `}          
+      </pre></code>
       <p>There are three components to set up.</p>
       <ol>
         <li>The <i>stampable</i> elements. Perhaps a container like a div or table cell. Or just an item that gets modified.</li>

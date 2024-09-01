@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        title: 'Checkmarks',
+        paperSize: 'ledger',
+        orientation: 'portrait',
+        textInput: true,
+        abilities: {
+          checkMarks: true,
+        },
+        reactiveBuilder: 'pageBody'
+      };
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      h2 {
+        margin-top: 0.5in;
+      }
+      code b, .code b {
+        font-size: 11pt;
+        background-color: #c3e5f0;
+      }
+      .cols3 {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .cols3 td, .cols3 th {
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .grid_3x3 {
+        display: grid;
+        grid-template-columns: repeat(3,40px);
+      }
+      .grid_3x3 div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        width: 40px;
+        border: solid 1px gray;
+        user-select: none;
+      }
+      #Checkmarks .stampTool {
+        width: 28px;
+        height: 32px;
+      }
+      .red {
+        background-color: #f99;
+      }
+      .blue {
+        background-color: #9cf;
+      }
+      .stampable {
+        position: relative;
+      }
+      .stampable .extract {
+        position: absolute;
+        left: 0px;
+        width: 100%;
+        text-align: center;
+      }
+      #Checkmarks img.stampTool.selected {
+        background-color: aqua;
+      }
+      /* #page {
+        height:22in;
+      } */
+    </style>
+  </head>
+  <body id="Checkmarks">
+    <div id="pageBody">
+      <p>To enable check marks, the boilerplate must contain:</p>
+      <code><pre trim="pre">
+        const boiler = `{
+          abilities: `{
+            <b>checkMarks: true,</b>
+         `},
+        `}          
+      </pre></code>
+      <p>Mark any item for cross-off by <code>class='cross-off'</code>.</p>
+      <p>The item must be a container type. The check itself is achieved by inserting <code>&lt;span class='check' /&gt;</code><br />
+        <b>.check</b> is a class with a default background-image: ✔️. These can be overridden as a puzzle's needs demand.
+      </p>
+
+      <h3>Overrides</h3>
+      <p>To override which image represents a check or its size:</p>
+      <code><pre trim="pre">
+        #YourPuzzle .check::before `{
+            background-image: url('../Icons/Check.png');
+            background-size: 30px 27px;
+            width: 30px; 
+            height: 27px;
+        `}
+      </pre></code>
+      <p>To override its position on the container that was checked:</p>
+      <code><pre trim="pre">
+        #YourPuzzle .check `{
+          position: absolute;
+          font-size: 16pt;
+          left: -0.6em;
+          top:-0.5em;
+          width: 1em;
+        `}
+      </pre></code>
+
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)">{value}</code>
+    </template>
+    <template id="tag">
+      <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+
+  </body>
+</html>
