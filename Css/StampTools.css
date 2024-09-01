@@ -33,6 +33,10 @@
   cursor: pointer;
 }
 
+.stampTool.hidden {
+  display: none;
+}
+
 .stampTool div {
   position: relative;
   width: 72px;

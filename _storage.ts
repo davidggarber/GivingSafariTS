@@ -32,6 +32,10 @@ type LocalCacheStruct = {
     time: Date|null;
 }
 
+type LocalSavePoint = {
+    savePoints: LocalCacheStruct[];    
+}
+
 var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, controls: {}, scratch: {}, edges: [], guesses: [], time: null };
 
 ////////////////////////////////////////////////////////////////////////
@@ -215,6 +219,11 @@ function cancelLocalReload(hide:boolean) {
     checkStorage = null;
     localStorage.removeItem(storageKey());
 }
+
+//////////////////////////////////////////////////////////
+// Utilities for managing multiple save-points
+//
+
 
 //////////////////////////////////////////////////////////
 // Utilities for saving to local cache
@@ -767,7 +776,7 @@ function restoreStamps(drawings:object) {
         if (tool != undefined) {
             const stamp = document.getElementById(tool);
             if (stamp) {
-                doStamp(targets[i] as HTMLElement, stamp);
+                doStamp(undefined, targets[i] as HTMLElement, stamp);
             }
         }
     }

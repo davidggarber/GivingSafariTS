@@ -1,6 +1,7 @@
 import { theBoiler } from "./_boilerplate";
 import { useTemplate } from "./_builderUse";
-import { applyAllClasses, clearAllClasses, findFirstChildOfClass, findNthChildOfClass, findParentOfClass, getOptionalStyle, hasClass, siblingIndexOfClass, toggleClass } from "./_classUtil";
+import { applyAllClasses, clearAllClasses, findFirstChildOfClass, findNthChildOfClass, findParentOfClass, getElementsByClassOrId, getOptionalStyle, hasClass, siblingIndexOfClass, toggleClass } from "./_classUtil";
+import { ContextError, elementSourceOffset } from "./_contextError";
 import { saveStampingLocally } from "./_storage";
 
 // VOCABULARY
@@ -10,27 +11,6 @@ import { saveStampingLocally } from "./_storage";
 // selected: when a stampTool is primary, and will draw when clicking in an active area
 // stampToolTemplates: a hidden container of objects that are cloned when drawn
 // stampedObject: templates for cloning when drawn
-
-/**
- * The tools in the palette.
- */
-const _stampTools:Array<HTMLElement> = [];
-/**
- * The currently selected tool from the palette.
- */
-let _selectedTool:HTMLElement|null = null;
-/**
- * The tool name to cycle to first.
- */
-let _firstTool:HTMLElement|null = null;
-/**
- * A tool name which, as a side effect, extract an answer from the content under it.
- */
-let _extractorTool:HTMLElement|null = null;
-/**
- * The tool name that would erase things.
- */
-let _eraseTool:HTMLElement|null = null;
 
 /**
  * Type structure of a stamp tool, as provided to a classStampPalette template
@@ -44,15 +24,52 @@ export type StampToolDetails = {
     data?: string,  // extra data, depending on context
 };
 
-let stamps_can_drag = false;
+/**
+ * Map a stampable area to a palette of stamps.
+ */
+type stampSet = {
+    name: string;
+    container: HTMLElement|null;  // can be null, in which case stampables stand alone
+    palette: HTMLElement|null;  // The container of stamp tools
+    stampTools: HTMLElement[];  // The tools in the palette
+    selectedTool: HTMLElement|null;  // The currently selected tool from the palette
+    firstTool: HTMLElement|null;  // The tool name to cycle to first
+    eraseTool: HTMLElement|null;  // The tool name that would erase things
+    extractorTool: HTMLElement|null;  // A tool which, as a side effect, extracts an answer from the content under it
+    extractedId?: string;
+    canDrag: boolean;  // These stamps can be used like paint brushes
+    prevStampablePointer:HTMLElement|null;
+    dragDrawTool: HTMLElement|null;
+    lastDrawTool: HTMLElement|null;
+}
 
 /**
- * A document can only support a single stamp palette.
- * @returns The palette container, if one exists, else null
+ * Initialize a stampSet object with nulls
+ * @param container The container may already be known
+ * @returns A new, blank object
  */
-function findStampPalette():HTMLElement|null {
-    return document.getElementById('stampPalette');
+function makeStampSet(container?:HTMLElement) {
+    const ss:stampSet = {
+        name: '',
+        container: container || null,
+        palette: null,
+        stampTools: [],
+        selectedTool: null,
+        firstTool: null,
+        eraseTool: null,
+        extractorTool: null,
+        canDrag: false,
+        prevStampablePointer: null,
+        dragDrawTool: null,
+        lastDrawTool: null,
+    }
+    return ss;
 }
+
+/**
+ * Look up a stamp set by name
+ */
+const _stampSets = {};
 
 /**
  * Scan the page for anything marked stampable or a draw tool
@@ -61,112 +78,162 @@ export function preprocessStampObjects() {
     const containers = document.getElementsByClassName('stampable-container');
     for (let i = 0; i < containers.length; i++) {
         const container = containers[i] as HTMLElement;
-        const rules = getOptionalStyle(container, 'data-stampable-rules');
-        if (rules) {
-            const list = rules.split(' ');
-            for (let r = 0; r < list.length; r++) {
-                const rule = list[r];
-                if (rule[0] == '.') {
-                    const children = container.getElementsByClassName(rule.substring(1));
-                    for (let i = 0; i < children.length; i++) {
-                        toggleClass(children[i], 'stampable', true);
-                    }
-                }
-                else if (rule[0] == '#') {
-                    const child = document.getElementById(rule.substring(1));
-                    toggleClass(child, 'stampable', true);
-                }
-                else {
-                    const children = container.getElementsByTagName(rule.toLowerCase());
-                    for (let i = 0; i < children.length; i++) {
-                        toggleClass(children[i], 'stampable', true);
-                    }
-                }
-            }
-        }
         container.addEventListener('pointerdown', pointerDownInContainer);
+        const setInfo:stampSet = makeStampSet(container);
+        
+        // TODO: Deprecate rules
+        preprocessStampRules(container, setInfo);
+        
         if (hasClass(container, 'stamp-drag')) {
-            stamps_can_drag = true;
+            setInfo.canDrag = true;
             container.addEventListener('pointerup', pointerUpInContainer);
             container.addEventListener('pointermove', pointerMoveInContainer);
             container.addEventListener('pointerleave', pointerLeaveContainer);    
         }
+        else {
+            setInfo.canDrag = false;
+        }
+
+        // If a page has multiple containers, they must be named
+        setInfo.name = container.getAttributeNS('', 'data-stamp-set') || '';
+        if (setInfo.name in _stampSets) {
+            throw new ContextError('Different stampable-containers must have unique names: ' + setInfo.name, 
+                elementSourceOffset(container, 'data-stamp-set'));
+        }
+        _stampSets[setInfo.name] = setInfo;
     }
 
     let elems = document.getElementsByClassName('stampable');
     if (containers.length == 0 && elems.length > 0) {
+        _stampSets[''] = makeStampSet();
         const container = document.getElementById('pageBody');
         if (container) {
             container.addEventListener('pointerdown', pointerDownInContainer);
-            // container.addEventListener('pointerup', pointerUpInContainer);
-            // container.addEventListener('pointermove', pointerMoveInContainer);
-            // container.addEventListener('pointerleave', pointerLeaveContainer);
         }
-        // for (let i = 0; i < elems.length; i++) {
-        //     const elmt = elems[i] as HTMLElement;
-        //     elmt.onpointerdown=function(e){onClickStamp(e, findStampableAtPointer(e))};
-        //     //elmt.ondrag=function(e){onMoveStamp(e)};
-        //     elmt.onpointerenter=function(e){onMoveStamp(e)}; 
-        //     elmt.onpointerleave=function(e){preMoveStamp(e)};
-        // }
     }
 
-    elems = document.getElementsByClassName('stampTool');
-    for (let i = 0; i < elems.length; i++) {
-        const elmt = elems[i] as HTMLElement;
-        _stampTools.push(elmt);
-        elmt.onclick=function(e){onSelectStampTool(e)};
-    }
+    const palettes = getElementsByClassOrId('stampPalette', 'stampPalette');
+    for (let p = 0; p < palettes.length; p++) {
+        const palette = palettes[p];
 
-    const palette = findStampPalette();
-    if (palette != null) {
+        const setName = palette.getAttributeNS('', 'data-stamp-set') || '';
+        if (!(setName in _stampSets)) {
+            throw new ContextError('Palette does not connect to a known stampSet: ' + setName,
+                elementSourceOffset(palette, 'data-stamp-set'));
+        }
+        const setInfo = _stampSets[setName] as stampSet;
+
+        elems = palette.getElementsByClassName('stampTool');
+        for (let i = 0; i < elems.length; i++) {
+            const elmt = elems[i] as HTMLElement;
+            setInfo.stampTools.push(elmt);
+            elmt.onclick=function(e){onSelectStampTool(e)};
+        }
+    
         // Extractor tool can overlap with other tools
         let id = palette.getAttributeNS('', 'data-tool-extractor');
-        _extractorTool = id != null ? document.getElementById(id) : null;
+        if (id != null) {
+            setInfo.extractorTool = document.getElementById(id);
+            // If we're extracting, an optional extracted-id could be set on either the tool/palette or the container
+            setInfo.extractedId = getOptionalStyle(setInfo.extractorTool, 'data-extracted-id', undefined, 'extracted-') 
+                || getOptionalStyle(setInfo.container, 'data-extracted-id', undefined, 'extracted-') 
+                || 'extracted';
+        }
 
         // Two kinds of erase tools. Explicit and implicit.
         id = palette.getAttributeNS('', 'data-tool-erase');
         if (id != null) {
             // Explicit: one of the stampTools is the eraser.
-            _eraseTool = id != null ? document.getElementById(id) : null;
+            setInfo.eraseTool = id != null ? document.getElementById(id) : null;
         }
         else {
             const unstyle = palette.getAttributeNS('', 'data-unstyle');
             const restyle = palette.getAttributeNS('', 'data-style');
             if (unstyle || restyle) {
                 // Implicit: the palette itself knows how to erase
-                _eraseTool = document.createElement('span');
+                setInfo.eraseTool = document.createElement('span');
                 // Don't need to actually add this element to the page. It's just a placeholder.
                 if (unstyle) {
-                    _eraseTool.setAttributeNS('', 'data-unstyle', unstyle);
+                    setInfo.eraseTool.setAttributeNS('', 'data-unstyle', unstyle);
                 }
                 if (restyle) {
-                    _eraseTool.setAttributeNS('', 'data-style', restyle);
+                    setInfo.eraseTool.setAttributeNS('', 'data-style', restyle);
                 }
             }
         }
 
         id = palette.getAttributeNS('', 'data-tool-first');
-        _firstTool = id != null ? document.getElementById(id) : null;
-    }
+        setInfo.firstTool = id != null ? document.getElementById(id) : null;
 
-    if (!_firstTool) {
-        _firstTool = _stampTools[0];
+        if (!setInfo.firstTool) {
+            setInfo.firstTool = setInfo.stampTools[0];
+        }
     }
 }
 
-let prevStampablePointer:HTMLElement|null = null;
+function preprocessStampRules(container:HTMLElement, setInfo:stampSet) {
+    const rules = getOptionalStyle(container, 'data-stampable-rules');
+    if (rules) {
+        const list = rules.split(' ');
+        for (let r = 0; r < list.length; r++) {
+            const rule = list[r];
+            if (rule[0] == '.') {
+                const children = container.getElementsByClassName(rule.substring(1));
+                for (let i = 0; i < children.length; i++) {
+                    toggleClass(children[i], 'stampable', true);
+                }
+            }
+            else if (rule[0] == '#') {
+                const child = document.getElementById(rule.substring(1));
+                toggleClass(child, 'stampable', true);
+            }
+            else {
+                const children = container.getElementsByTagName(rule.toLowerCase());
+                for (let i = 0; i < children.length; i++) {
+                    toggleClass(children[i], 'stampable', true);
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Find the stamp set that should be associated with clicks on either 
+ * stampable or stampTool elements.
+ * @param event A mouse event.
+ * @returns A stamp set
+ */
+function stampSetFromEvent(event:UIEvent):stampSet {
+    return stampSetFromElement(event.target as Element);
+}
+
+/**
+ * Find the stamp set that should be associated with either 
+ * stampable or stampTool elements. When in doubt, return the
+ * default stamp set ('')
+ * @param elmt An element
+ * @returns A stamp set
+ */
+function stampSetFromElement(elmt:Element):stampSet {
+    const name = getOptionalStyle(elmt, 'data-stamp-set') || '';
+    if (!(name in _stampSets)) {
+        throw Error('Cannot find stamp set matching target: ' + elmt);
+    }
+    return _stampSets[name];
+}
+
 function pointerDownInContainer(event:PointerEvent) {
     if (!isPrimaryButton(event)) {
         return;
     }
-    if (event.pointerType != 'mouse' && stamps_can_drag) {
+    const stampSet = stampSetFromEvent(event);
+    if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
     const elmt = findStampableAtPointer(event);
     if (elmt) {
-        prevStampablePointer = elmt;
-        onClickStamp(event, elmt);
+        stampSet.prevStampablePointer = elmt;
+        onClickStamp(stampSet, event, elmt);
     }
 }
 
@@ -174,28 +241,30 @@ function pointerUpInContainer(event:PointerEvent) {
     if (!isPrimaryButton(event)) {
         return;
     }
-    if (event.pointerType != 'mouse' && stamps_can_drag) {
+    const stampSet = stampSetFromEvent(event);
+    if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
-    prevStampablePointer = null;
+    stampSet.prevStampablePointer = null;
 }
 
 function pointerMoveInContainer(event:PointerEvent) {
     if (!isPrimaryButton(event)) {
         return;
     }
-    if (event.pointerType != 'mouse' && stamps_can_drag) {
+    const stampSet = stampSetFromEvent(event);
+    if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
     const elmt = findStampableAtPointer(event);
-    if (elmt !== prevStampablePointer) {
-        if (prevStampablePointer) {
-            preMoveStamp(event, prevStampablePointer);
+    if (elmt !== stampSet.prevStampablePointer) {
+        if (stampSet.prevStampablePointer) {
+            preMoveStamp(stampSet, event, stampSet.prevStampablePointer);
         }
         if (elmt) {
-            onMoveStamp(event, elmt);
+            onMoveStamp(stampSet, event, elmt);
         }
-        prevStampablePointer = elmt;
+        stampSet.prevStampablePointer = elmt;
     }
 }
 
@@ -203,13 +272,14 @@ function pointerLeaveContainer(event:PointerEvent) {
     if (!isPrimaryButton(event)) {
         return;
     }
-    if (event.pointerType != 'mouse' && stamps_can_drag) {
+    const stampSet = stampSetFromEvent(event);
+    if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
-    if (prevStampablePointer) {
-        preMoveStamp(event, prevStampablePointer);
+    if (stampSet.prevStampablePointer) {
+        preMoveStamp(stampSet, event, stampSet.prevStampablePointer);
     }
-    prevStampablePointer = null;
+    stampSet.prevStampablePointer = null;
 }
 
 function findStampableAtPointer(event:PointerEvent):HTMLElement|null {
@@ -230,23 +300,24 @@ function findStampableAtPointer(event:PointerEvent):HTMLElement|null {
  */
 function onSelectStampTool(event:MouseEvent) {
     const tool = findParentOfClass(event.target as HTMLElement, 'stampTool') as HTMLElement;
-    const prevToolId = getCurrentStampToolId();
+    const stampSet = stampSetFromEvent(event);
+    const prevToolId = getCurrentStampToolId(stampSet);
     if (tool != null) {
-        for (let i = 0; i < _stampTools.length; i++) {
-            toggleClass(_stampTools[i], 'selected', false);
+        for (let i = 0; i < stampSet.stampTools.length; i++) {
+            toggleClass(stampSet.stampTools[i], 'selected', false);
         }
-        if (tool != _selectedTool) {
+        if (tool != stampSet.selectedTool) {
             toggleClass(tool, 'selected', true);
-            _selectedTool = tool;
+            stampSet.selectedTool = tool;
         }
         else {
-            _selectedTool = null;
+            stampSet.selectedTool = null;
         }
     }
 
     const fn = theBoiler().onStampChange;
     if (fn) {
-        fn(getCurrentStampToolId(), prevToolId);
+        fn(getCurrentStampToolId(stampSet), prevToolId);
     }
 }
 
@@ -259,16 +330,16 @@ function onSelectStampTool(event:MouseEvent) {
  * @param toolFromErase An override because we're erasing/rotating
  * @returns the name of a draw tool
  */
-function getStampTool(event:PointerEvent, toolFromErase:HTMLElement|null):HTMLElement|null {
+function getStampTool(stampSet:stampSet, event:PointerEvent, toolFromErase:HTMLElement|null):HTMLElement|null {
     // Shift keys always win
     if (event.shiftKey || event.altKey || event.ctrlKey) {
-        for (let i = 0; i < _stampTools.length; i++) {
-            const mods = _stampTools[i].getAttributeNS('', 'data-click-modifier');
+        for (let i = 0; i < stampSet.stampTools.length; i++) {
+            const mods = stampSet.stampTools[i].getAttributeNS('', 'data-click-modifier');
             if (mods != null
                     && event.shiftKey == (mods.indexOf('shift') >= 0)
                     && event.ctrlKey == (mods.indexOf('ctrl') >= 0)
                     && event.altKey == (mods.indexOf('alt') >= 0)) {
-                return _stampTools[i];
+                return stampSet.stampTools[i];
             }
         }
     }
@@ -281,12 +352,12 @@ function getStampTool(event:PointerEvent, toolFromErase:HTMLElement|null):HTMLEl
     }
 
     // Lacking other inputs, use the selected tool.
-    if (_selectedTool != null) {
-        return _selectedTool;
+    if (stampSet.selectedTool != null) {
+        return stampSet.selectedTool;
     }
 
     // If no selection, the first tool is the default
-    return _firstTool;
+    return stampSet.firstTool;
 }
 
 /**
@@ -301,32 +372,34 @@ function getStampToolById(id:string|null):HTMLElement|null {
 
 /**
  * Given one tool, currently applied to a target, what is the next stamp in rotation?
+ * @package stampSet The set we're part of
  * @param tool The current tool's HTMLElement, or null if none.
  * @returns The next tool's HTMLElement, or else the _firstTool
  */
-function getNextStampTool(tool:HTMLElement|null):HTMLElement|null {
+function getNextStampTool(stampSet:stampSet, tool:HTMLElement|null):HTMLElement|null {
     if (tool) {
         const nextId = tool.getAttributeNS('', 'data-next-stamp-id');
         if (nextId) {
             return document.getElementById(nextId);
         }
-        const palette = findStampPalette();
-        if (palette) {
-            const curIndex = siblingIndexOfClass(palette, tool, 'stampTool');
-            return findNthChildOfClass(palette, 'stampTool', curIndex + 1) as HTMLElement|null;
-        }
+        const curIndex = stampSet.stampTools.findIndex((elmt,index) => { return (elmt === tool) });
+        // const curIndex = siblingIndexOfClass(stampSet.palette, tool, 'stampTool');
+        const nextIndex = (curIndex + 1) % stampSet.stampTools.length;
+        return stampSet.stampTools[nextIndex];
     }
-    return _firstTool;
+    return stampSet.firstTool;
 } 
 
 /**
  * Expose current stamp tool, in case other features want to react
+ * @package stampSet The set we're part of
+ * @returns The ID of a stamp tool, or '' if none selected
  */
-export function getCurrentStampToolId() {
-    if (_selectedTool == null) {
+export function getCurrentStampToolId(stampSet:stampSet) {
+    if (stampSet.selectedTool == null) {
         return '';
     }
-    var id = _selectedTool.id;
+    var id = stampSet.selectedTool.id;
     return id || '';
 }
 
@@ -354,7 +427,7 @@ export function getStampParent(target:HTMLElement) {
  * @param target a click event on a stampable object
  * @returns The name of a draw tool (overriding the default), or null
  */
-function eraseStamp(target:HTMLElement):HTMLElement|null {
+function eraseStamp(stampSet:stampSet, target:HTMLElement):HTMLElement|null {
     if (target == null) {
         return null;
     }
@@ -369,7 +442,7 @@ function eraseStamp(target:HTMLElement):HTMLElement|null {
         toggleClass(target, curId, false);
         parent.removeChild(cur);
         parent.removeAttributeNS('', 'data-stamp-id');
-        updateStampExtraction();
+        updateStampExtraction(stampSet);
     }
     else if (hasClass(target, 'stampedObject')) {
         // Template is a class on the container itself
@@ -377,21 +450,21 @@ function eraseStamp(target:HTMLElement):HTMLElement|null {
         toggleClass(target, 'stampedObject', false);
         toggleClass(target, curId, false);
         target.removeAttributeNS('', 'data-stamp-id');
-        updateStampExtraction();
+        updateStampExtraction(stampSet);
     }
     else {
         return null;  // This cell is currently blank
     }
 
-    if (_selectedTool && _selectedTool.id == curId) {
+    if (stampSet.selectedTool && stampSet.selectedTool.id == curId) {
         // When a tool is explicitly selected, clicking on that type toggles it back off
-        return _eraseTool;
+        return stampSet.eraseTool;
     }
-    if (_selectedTool == null) {
+    if (stampSet.selectedTool == null) {
         // If no tool is selected, clicking on anything rotates it to the next tool in the cycle
         if (curId) {
             const curTool = getStampToolById(curId);
-            const nextTool = getNextStampTool(curTool);
+            const nextTool = getNextStampTool(stampSet, curTool);
             return nextTool;
         }
     }
@@ -414,7 +487,8 @@ function eraseStamp(target:HTMLElement):HTMLElement|null {
  *  - data-next-id           id of another stampTool
  *                           otherwise it will rotate through stampTools in visual order
  */
-export function doStamp(target:HTMLElement, tool:HTMLElement) {
+export function doStamp(stampSet:stampSet|undefined, target:HTMLElement, tool:HTMLElement) {
+    stampSet = stampSet || stampSetFromElement(target);
     const parent = getStampParent(target);
     
     // Template can be null if tool removes drawn objects
@@ -425,6 +499,9 @@ export function doStamp(target:HTMLElement, tool:HTMLElement) {
     const erase = tool.getAttributeNS('', 'data-erase');
     if (tmpltId) {
         let template = document.getElementById(tmpltId) as HTMLTemplateElement;
+        if (template === null) {
+            throw new Error('Cannot find template "' + tmpltId +'" for stamp ' + tool.id);
+        }
         if (template != null) {
             // Inject the template into the stampable container
             const clone = template.content.cloneNode(true);
@@ -471,7 +548,7 @@ export function doStamp(target:HTMLElement, tool:HTMLElement) {
         }
     }
 
-    updateStampExtraction();
+    updateStampExtraction(stampSet);
     saveStampingLocally(target);
 
     const fn = theBoiler().onStamp;
@@ -488,11 +565,11 @@ let _lastDrawTool:HTMLElement|null = null;
  * Which tool is taken from selected state, click modifiers, and current target state.
  * @param event The mouse click
  */
-function onClickStamp(event:PointerEvent, target:HTMLElement) {
-    let nextTool = eraseStamp(target);
-    nextTool = getStampTool(event, nextTool);
+function onClickStamp(stampSet:stampSet, event:PointerEvent, target:HTMLElement) {
+    let nextTool = eraseStamp(stampSet, target);
+    nextTool = getStampTool(stampSet, event, nextTool);
     if (nextTool) {
-        doStamp(target, nextTool);   
+        doStamp(stampSet, target, nextTool);   
     }
     _lastDrawTool = nextTool;
     _dragDrawTool = null;
@@ -506,10 +583,10 @@ function isPrimaryButton(event:PointerEvent) {
  * Continue drawing when the mouse is dragged, using the same tool as in the cell we just left.
  * @param event The mouse enter event
  */
-function onMoveStamp(event:PointerEvent, target:HTMLElement) {
+function onMoveStamp(stampSet:stampSet, event:PointerEvent, target:HTMLElement) {
     if (_dragDrawTool != null) {
-        eraseStamp(target);
-        doStamp(target, _dragDrawTool);
+        eraseStamp(stampSet, target);
+        doStamp(stampSet, target, _dragDrawTool);
         _dragDrawTool = null;
     }
 }
@@ -520,7 +597,7 @@ function onMoveStamp(event:PointerEvent, target:HTMLElement) {
  * If dragging unrelated to drawing, flag the coming onMoveStamp to do nothing.
  * @param event The mouse leave event
  */
-function preMoveStamp(event:PointerEvent, target:HTMLElement) {
+function preMoveStamp(stampSet:stampSet, event:PointerEvent, target:HTMLElement) {
     if (target != null) {
         const cur = findFirstChildOfClass(target, 'stampedObject');
         if (cur != null) {
@@ -539,19 +616,21 @@ function preMoveStamp(event:PointerEvent, target:HTMLElement) {
 /**
  * Drawing tools can be flagged to do extraction.
  */
-function updateStampExtraction() {
-    if (!_extractorTool) {
+function updateStampExtraction(stampSet:stampSet) {
+    if (!stampSet.extractorTool) {
         return;
     }
-    const extracted = document.getElementById('extracted');
+    const extracted = document.getElementById(stampSet.extractedId || 'extracted');
     if (extracted != null) {
-        const drawnObjects = document.getElementsByClassName('stampedObject');
+        const stampable = stampSet.container 
+            ? stampSet.container.getElementsByClassName('stampable')
+            : document.getElementsByClassName('stampable');
         let extraction = '';
-        for (let i = 0; i < drawnObjects.length; i++) {
-            const tool = getOptionalStyle(drawnObjects[i], 'data-stamp-id');
-            if (tool == _extractorTool.id) {
-                const drawn = drawnObjects[i] as HTMLElement;
-                const extract = findFirstChildOfClass(drawn, 'extract') as HTMLElement;
+        for (let i = 0; i < stampable.length; i++) {
+            const stamp = stampable[i] as HTMLElement;
+            const tool = getOptionalStyle(stamp, 'data-stamp-id');
+            if (tool == stampSet.extractorTool.id) {
+                const extract = findFirstChildOfClass(stamp, 'extract') as HTMLElement;
                 if (extract) {
                     extraction += extract.innerText;
                 }

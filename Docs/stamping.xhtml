@@ -22,6 +22,9 @@
     <script src="docs.js"></script>
     <link href="docs.css" rel="Stylesheet" type="text/css"></link>
     <style>
+      h2 {
+        margin-top: 0.5in;
+      }
       code b, .code b {
         font-size: 11pt;
         background-color: #c3e5f0;
@@ -43,7 +46,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 30px;
+        height: 40px;
         width: 40px;
         border: solid 1px gray;
         user-select: none;
@@ -58,9 +61,20 @@
       .blue {
         background-color: #9cf;
       }
+      .stampable {
+        position: relative;
+      }
+      .stampable .extract {
+        position: absolute;
+        left: 0px;
+        width: 100%;
+        text-align: center;
+      }
       #Stamping img.stampTool.selected {
-        background-color: aquamarine;
-        border-color: transparent;
+        background-color: aqua;
+      }
+      #page {
+        height:21in;
       }
     </style>
   </head>
@@ -69,129 +83,321 @@
       <p>There are three components to set up.</p>
       <ol>
         <li>The <i>stampable</i> elements. Perhaps a container like a div or table cell. Or just an item that gets modified.</li>
-        <li>A stamp palette, listing all of the possible stamps. This doesn't have to be visible, but does have to exist.</li>
         <li>The stamping effects. These can be CSS classes or template contents that get added to containers.</li>
+        <li>A stamp palette, listing all of the possible stamps. This doesn't have to be visible, but does have to exist.</li>
       </ol>
 
-      <div id="left">
-        <h2>Style-based stamps</h2>
-        <p>For example, a table whose cells rotate through colors when stamped.</p>
-        <table class="cols3">
-          <tr>
-            <th>Stampable elements</th>
-            <th>Stamp effects</th>
-            <th>Stamp Palette</th>
-          </tr>
-          <tr>
-            <td>
-              <code><pre trim="pre">
-                &lt;div class='grid <b>stampable-container</b> <b>stamp-drag</b>'&gt;
-                  &lt;for int='i' until='9'&gt;
-                    &lt;div <b>class='stampable'</b>&gt;
-                      `{i`}
-                    &lt;/div&gt;
-                  &lt;/for&gt;
-                &lt;/div&gt;
-              </pre></code>
-            </td>
-            <td>
-              <code><pre trim="pre">
-                .red `{
-                  background-color: #f99;
-                `}
-                .blue `{
-                  background-color: #9cf;
-                `}
-              </pre></code>
-            </td>
-            <td>
-              <code><pre trim="pre">
-                &lt;div <b>id="stampPalette"</b> data-unstyle="red blue"&gt;
-                  &lt;img src="Images/red.png" <b>class="stampTool"</b>
-                       <b>id="red"</b> data-style="red" /&gt;
-                  &lt;img src="Images/blue.png" class="stampTool" 
-                       id="blue" data-style="blue" /&gt;
-                  &lt;img src="Images/white.png" class="stampTool" 
-                       id="erase" /&gt;
-                &lt;/div&gt;
-              </pre></code>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <p><b>stampable</b> Tag item that can be stamped.<br />
-                Skip any that should be locked.
-              </p>
-              <p><b>stamp-drag</b> class, if present on the container, turns stamping into a form of paining.
-                Whatever stamp is applied on pointer-down can be applied to others by dragging.
-              </p>
-              <p><b>stampable-container</b> is not a required class.<br />
-                However, it is, to access container-level features like <i>stamp-drag</i>.
-              </p>
-            </td>
-            <td>
-              <p>Create styles for each tool.<br />
-                Tools can specify multiple, separated by spaces.
-              </p>
-              <p>These classes will be applied to the 'stampable' elements.
-              </p>
-            </td>
-            <td rowspan="3">
-              <p>There can only be one palette per page.<br />
-                It must have <b>id='stampPalette'</b>.
-              </p>
-              <p>Each tool must have <b>class='stampTool'</b></p>
-              <p><b>id</b> must be set on each tool (other than the eraser). 
-                The id is both how stamping is saved, and how successive stamping
-                is able to cycle or toggle states.
-              </p>
-              <p><b>data-style</b> is a list of classes to apply.
-              </p>
-              <p><b>data-unstyle</b> is a list of classes to remove.<br />
-                <i>Option:</i> This can be set on the palette, so every tool invokes it, prior to applying their new styles.<br />
-              </p>
-              <p>In this example, the <i>erase</i> tool is mostly decorative.<br />
-                The palette is doing the actual erasing, and id='erase' is not saved on empty cells.<br />
-                But this way, an eraser is one of the selectable tools.
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <table>
-                <tr>
-                  <th colspan="2">Rendereded</th>
-                </tr>
-                <tr>
-                  <td style="width: 140px">
-                    <div class='grid_3x3 stampable-container stamp-drag'>
-                      <for int='i' until='9'>
-                        <div class="stampable">
-                          {i}
-                        </div>
-                      </for>
-                    </div>
-                    <div id="stampPalette" data-unstyle="red blue" trim="all">
-                      <img src="Images/red.png" class="stampTool" id="red" data-style="red" />
-                      <img src="Images/blue.png" class="stampTool" id="blue" data-style="blue" />
-                      <img src="Images/white.png" class="stampTool" xid="erase" />
-                    </div>
-                  </td>
-                  <td style="width: 6in;">
-                    <p><u>No tool selected:</u><br />
-                      Clicking on <i>stampable</i> cells will cycle through all states.
-                    </p>
-                    <p><u>Tool selected:</u><br />
-                      Clicking on <i>stampable</i> cells will toggle that state on and off.
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </div>
+      <h2>Style-class stamps</h2>
+      <p>When stamped elements achieve their effect entirely through the presence or absence of CSS classes.</p>
+      <table class="cols3">
+        <tr>
+          <th>Stampable elements</th>
+          <th>Stamp effects</th>
+          <th>Stamp Palette</th>
+        </tr>
+        <tr>
+          <td>
+            <code><pre trim="pre">
+              &lt;div class='grid <b>stampable-container</b> <b>stamp-drag</b>'&gt;
+                &lt;for int='i' until='9'&gt;
+                  &lt;div <b>class='stampable'</b>&gt;
+                    `{i`}
+                  &lt;/div&gt;
+                &lt;/for&gt;
+              &lt;/div&gt;
+            </pre></code>
+          </td>
+          <td>
+            <code><pre trim="pre">
+              .red `{
+                background-color: #f99;
+              `}
+              .blue `{
+                background-color: #9cf;
+              `}
+              img.stampTool.selected `{
+                background-color: aqua;
+              `}
+            </pre></code>
+          </td>
+          <td>
+            <code><pre trim="pre">
+              &lt;div <b>id="stampPalette"</b> data-unstyle="red blue"&gt;
+                &lt;img src="Images/red.png" <b>class="stampTool"</b>
+                     <b>id="red"</b> data-style="red" /&gt;
+                &lt;img src="Images/blue.png" class="stampTool" 
+                     id="blue" <b>data-style="blue"</b> /&gt;
+                &lt;img src="Images/white.png" class="stampTool" 
+                     id="erase" /&gt;
+              &lt;/div&gt;
+            </pre></code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p><b>stampable</b> Tag item that can be stamped.<br />
+              Skip any that should be locked.
+            </p>
+            <p><b>stamp-drag</b> class, if present on the container, turns stamping into a form of paining.
+              Whatever stamp is applied on pointer-down can be applied to others by dragging.
+            </p>
+            <p><b>stampable-container</b> is not a required class.<br />
+              However, it is, to access container-level features like <i>stamp-drag</i>
+              or stamp-set naming.
+            </p>
+          </td>
+          <td>
+            <p>Style classes for each tool.<br />
+              Tools can specify multiple class names, separated by spaces.
+            </p>
+            <p>These classes will be applied to the 'stampable' elements.
+            </p>
+            <p>The third effect is to highlight a selected tool.<br />
+              There is a default, but can usually be improved upon.
+            </p>
+          </td>
+          <td rowspan="3">
+            <p>The palette is the container of tools that are available for stamping.
+              The palette does not need to be visible, but it does need to exist.</p>
+            <p><b>id='stampPalette'</b> identifies the palette (assuming there's only one)
+            </p>
+            <p>Each tool must have <b>class='stampTool'</b><br />
+              The visuals for the tools can be anything. <br />
+              Here, they are &lt;img&gt;s.
+            </p>
+            <p><b>id</b> must be set on each tool (optional on the eraser). 
+              The id is both how stamping is saved, and how successive stamping
+              is able to cycle or toggle states.
+            </p>
+            <p><b>data-style</b> is a list of classes to apply.
+            </p>
+            <p><b>data-unstyle</b> is a list of classes to remove.<br />
+              <i>Option:</i> This can be set on the palette, so every tool invokes it, prior to applying their new styles.<br />
+            </p>
+            <p>In this example, the <i>erase</i> tool is mostly decorative.<br />
+              The palette is doing the actual erasing, and id='erase' is not saved on empty cells.<br />
+              But this way, an eraser is one of the selectable tools.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <table>
+              <tr>
+                <th colspan="2">Rendereded</th>
+              </tr>
+              <tr>
+                <td style="width: 140px">
+                  <div class='grid_3x3 stampable-container stamp-drag' data-stamp-set="styling">
+                    <for int='i' until='9'>
+                      <div class="stampable">
+                        {i}
+                      </div>
+                    </for>
+                  </div>
+                  <div class="stampPalette" data-stamp-set="styling" data-unstyle="red blue" trim="all">
+                    <img src="Images/red.png" class="stampTool" id="red" data-style="red" />
+                    <img src="Images/blue.png" class="stampTool" id="blue" data-style="blue" />
+                    <img src="Images/white.png" class="stampTool" xid="erase" />
+                  </div>
+                </td>
+                <td style="width: 6in;">
+                  <p style="margin-top: 0px;"><u>No tool selected:</u><br />
+                    Clicking on <i>stampable</i> cells will cycle through all states.
+                  </p>
+                  <p><u>Tool selected:</u><br />
+                    Clicking on <i>stampable</i> cells will toggle that state on and off.
+                  </p>
+                  <p>Note that if the palette were invisible (display:none),
+                    clicking would still work.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
 
+
+      <h2>Content template stamps</h2>
+      <p>An alternative to class styles is injecting actual content. For these, we use templates to define what to inject.</p>
+      <table class="cols3">
+        <tr>
+          <th>Stampable elements</th>
+          <th>Stamp effects</th>
+          <th>Stamp Palette</th>
+        </tr>
+        <tr>
+          <td>
+            <code><pre trim="pre">
+              &lt;div <b>data-stamp-set='ttt'</b>
+                   class='tictactoe stampable-container'&gt;
+                &lt;for int='i' until='9'&gt;
+                  &lt;div <b>class='stampable'</b>&gt;
+                  &lt;/div&gt;
+                &lt;/for&gt;
+              &lt;/div&gt;
+            </pre></code>
+          </td>
+          <td>
+            <code><pre trim="pre">
+              &lt;template id='X'&gt;
+                &lt;img src='X.png'
+                     <b>class='stampedObject'</b>/&gt;
+              &lt;/template&gt;
+
+              &lt;template id='O'&gt;
+                &lt;img src='O.png'
+                     <b>class='stampedObject'</b>/&gt;
+              &lt;/template&gt;
+            </pre></code>
+          </td>
+          <td>
+            <code><pre trim="pre">
+              &lt;div <b>class="stampPalette"</b> <b>data-stamp-set='ttt'</b>
+                    <b>data-tool-erase="erase"</b>&gt;
+                &lt;img src="Images/red.png" <b>class="stampTool"</b>
+                     id="red" <b>data-template-id="X"</b> /&gt;
+                &lt;img src="Images/blue.png" class="stampTool" 
+                     id="blue" data-template-id="O" /&gt;
+                &lt;img src="Images/white.png" id="erase" 
+                     class="stampTool <b>hidden</b>" /&gt;
+              &lt;/div&gt;
+            </pre></code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p><b>data-stamp-set='ttt'</b> 
+              If there is more than once stamp set on a page, they must be named.</p>
+            <p><b>stampable</b> Tag item that can be stamped.<br />
+              Skip any that should be locked.
+            </p>
+            <p><b>stamp-drag</b> class is absent in this example, because players won't paint multiple Xs or Os all at once.
+            </p>
+          </td>
+          <td>
+            <p>Templates for each tool.
+            </p>
+            <p>These templates will be injected inside 'stampable' elements.
+            </p>
+            <p><b>stampedObject</b> This class is required to idenitify what has been added, 
+              so it can be removed if the stamp is changed.</p>
+          </td>
+          <td rowspan="3">
+            <p><b>class='stampPalette'</b> Palettes can be tagged with either ID or class.
+              Use classes if there is more than one.</p>
+            <p><b>data-stamp-set='ttt'</b> 
+              If there is more than once stamp set on a page, they must be named.<br />
+              The stampable-container and the stampPalette must have matching names.</p>
+            <p><b>data-tool-erase</b> specifies the ID of the <i>stampTool</i> that represents un-stamped.
+              <br />
+              Most commonly, the matching tool is actually a no-op.
+            </p>
+            <p><b>class='stampTool'</b> Required on every tool.
+            </p>
+            <p><b>data-template-id</b> specifies the ID of a template, defined elsewhere in the document.
+            </p>
+            <p><b>hidden</b> is an optional class to complement <i>stampTool</i>.<br />
+              Hidden stamp tools will not appear on the palette UI. But they are still part of the rotation.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <table>
+              <tr>
+                <th colspan="2">Rendereded</th>
+              </tr>
+              <tr>
+                <td style="width: 140px">
+                  <div class='grid_3x3 stampable-container' data-stamp-set="ttt">
+                    <for int='i' until='9'>
+                      <div class="stampable">
+                      </div>
+                    </for>
+                  </div>
+                  <div class="stampPalette" data-tool-erase="clear" trim="all" data-stamp-set="ttt">
+                    <img src="Images/red-X.png" class="stampTool" id="redX" data-template-id="X" />
+                    <img src="Images/blue-O.png" class="stampTool" id="blueO" data-template-id="O" />
+                    <img src="Images/white.png" class="stampTool hidden" id="clear" />
+                  </div>
+                </td>
+                <td style="width: 6in;">
+                  <p style="margin-top: 0px;"><u>No tool selected:</u><br />
+                    Clicking on <i>stampable</i> cells will cycle through all states.
+                  </p>
+                  <p><u>Tool selected:</u><br />
+                    Clicking on <i>stampable</i> cells will toggle that state on and off.
+                  </p>
+                  <p>Note that if the palette were invisible (display:none),
+                    clicking would still work.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+      <h2>Extractor stamps</h2>
+      <p>A stamp palette may identify one of its stamp tools as an extractor: <code>data-tool-extractor='<i>id-of-tool</i>'</code></p>
+      <p>If such a tag exists, then anything it stamps is mirrored to the <i>extracted</i> element. By default, the element with <b>id=extracted</b>. 
+        But that can be overridden by specifying <code>data-extracted-id='<i>suffix</i>'</code> on either the tool, the palette, or the stamp-container, 
+        in which case the mirror target is <b>extracted<i>-suffix</i></b>.
+      </p>
+      <p>The extracted text comes from an element in the <i>stampable</i> that is tagged <code>class='extract'</code>.</p>
+      <p>Here is the tic-tac-toe example, where O's are an extractor.</p>
+      <table>
+        <tr>
+          <th>Stampable elements</th>
+          <th>Stamp palette</th>
+          <th colspan="2">Rendered</th>
+        </tr>
+        <tr>
+          <td>
+            <code><pre trim="pre">
+              &lt;div class='grid_3x3 stampable-container'
+                   data-stamp-set="ttt2"&gt;
+                &lt;for int='i' until='9'&gt;
+                  &lt;div class="stampable"&gt;
+                    &lt;span class="extract"&gt;`{@[65+i]`}&lt;/span&gt;
+                  &lt;/div&gt;
+                &lt;/for&gt;
+              &lt;/div&gt;
+            </pre></code>
+          </td>
+          <td style="vertical-align: top;">
+            <code><pre trim="pre">
+              &lt;div class="stampPalette" 
+                   data-tool-extractor="O2"
+                   data-stamp-set="ttt2"&gt;
+                &lt;img src="Images/red-X.png" class="stampTool"
+                     id="X2" data-template-id="X" /&gt;&lt;br /&gt;
+                &lt;img src="Images/blue-O.png" class="stampTool"
+                     id="O2" data-template-id="O" /&gt;
+              &lt;/div&gt;
+              &lt;p id="extracted" /&gt;
+            </pre></code>
+          </td>
+          <td>
+            <div class='grid_3x3 stampable-container' data-stamp-set="ttt2">
+              <for int='i' until='9'>
+                <div class="stampable">
+                  <span class="extract">{@[65+i]}</span>
+                </div>
+              </for>
+            </div>
+          </td>
+          <td style="vertical-align: top;">
+            <div class="stampPalette" data-tool-extractor="O2" trim="all" data-stamp-set="ttt2">
+              <img src="Images/red-X.png" class="stampTool" id="X2" data-template-id="X" /><br />
+              <img src="Images/blue-O.png" class="stampTool" id="O2" data-template-id="O" />
+            </div>
+            <p id="extracted" style="margin:0px" />
+          </td>
+        </tr>
+      </table>
 
 
     </div>
@@ -201,6 +407,13 @@
     </template>
     <template id="tag">
       <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+
+    <template id="X">
+      <img class="stampedObject" src="Images/red-X.png" style="height:36px;" />
+    </template>
+    <template id="O">
+      <img class="stampedObject" src="Images/blue-O.png" style="height:32px;" />
     </template>
 
   </body>

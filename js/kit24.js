@@ -3,10 +3,10 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports._rawHtmlSource = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = void 0;
-exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = void 0;
+exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = void 0;
+exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports._rawHtmlSource = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -483,6 +483,33 @@ function SortElements(src, sort_attr = 'data-extract-order') {
     return sorted;
 }
 exports.SortElements = SortElements;
+/**
+ * Some abilities are hooked to either a single element with a predefined ID,
+ * or a set of elements with a prefined class.
+ * Usually, this is a v1 and v2, where the ID is supported as backwards compat.
+ * @param id An element ID, unique in the document
+ * @param cls An element class
+ * @param parent If present, constrain class search to that parent,
+ * else look document-wide. The ID is always documet-wide.
+ * @returns A list of matching elements. The ID, if found, is first.
+ */
+function getElementsByClassOrId(id, cls, parent) {
+    const list = [];
+    const byId = document.getElementById(id);
+    if (byId) {
+        list.push(byId);
+    }
+    const byClass = parent ? parent.getElementsByClassName(cls)
+        : document.getElementsByClassName(cls);
+    for (let i = 0; i < byClass.length; i++) {
+        const elmt = byClass[i];
+        if (elmt != byId) {
+            list.push(elmt);
+        }
+    }
+    return list;
+}
+exports.getElementsByClassOrId = getElementsByClassOrId;
 /**
  * Create a generic TR tag for each row in a table.
  * Available for TableDetails.onRow where that is all that's needed
@@ -1672,7 +1699,7 @@ function restoreStamps(drawings) {
         if (tool != undefined) {
             const stamp = document.getElementById(tool);
             if (stamp) {
-                doStamp(targets[i], stamp);
+                doStamp(undefined, targets[i], stamp);
             }
         }
     }
@@ -4441,44 +4468,32 @@ function quickFreeMove(moveable, position) {
     }
 }
 exports.quickFreeMove = quickFreeMove;
-/*-----------------------------------------------------------
- * _stampTools.ts
- *-----------------------------------------------------------*/
-// VOCABULARY
-// stampable: any object which can be clicked on to draw an icon
-// stampPalette: the toolbar from which a user can see and select the draw tools
-// stampTool: a UI control to make one or another draw mode the default
-// selected: when a stampTool is primary, and will draw when clicking in an active area
-// stampToolTemplates: a hidden container of objects that are cloned when drawn
-// stampedObject: templates for cloning when drawn
 /**
- * The tools in the palette.
+ * Initialize a stampSet object with nulls
+ * @param container The container may already be known
+ * @returns A new, blank object
  */
-const _stampTools = [];
-/**
- * The currently selected tool from the palette.
- */
-let _selectedTool = null;
-/**
- * The tool name to cycle to first.
- */
-let _firstTool = null;
-/**
- * A tool name which, as a side effect, extract an answer from the content under it.
- */
-let _extractorTool = null;
-/**
- * The tool name that would erase things.
- */
-let _eraseTool = null;
-let stamps_can_drag = false;
-/**
- * A document can only support a single stamp palette.
- * @returns The palette container, if one exists, else null
- */
-function findStampPalette() {
-    return document.getElementById('stampPalette');
+function makeStampSet(container) {
+    const ss = {
+        name: '',
+        container: container || null,
+        palette: null,
+        stampTools: [],
+        selectedTool: null,
+        firstTool: null,
+        eraseTool: null,
+        extractorTool: null,
+        canDrag: false,
+        prevStampablePointer: null,
+        dragDrawTool: null,
+        lastDrawTool: null,
+    };
+    return ss;
 }
+/**
+ * Look up a stamp set by name
+ */
+const _stampSets = {};
 /**
  * Scan the page for anything marked stampable or a draw tool
  */
@@ -4486,146 +4501,189 @@ function preprocessStampObjects() {
     const containers = document.getElementsByClassName('stampable-container');
     for (let i = 0; i < containers.length; i++) {
         const container = containers[i];
-        const rules = getOptionalStyle(container, 'data-stampable-rules');
-        if (rules) {
-            const list = rules.split(' ');
-            for (let r = 0; r < list.length; r++) {
-                const rule = list[r];
-                if (rule[0] == '.') {
-                    const children = container.getElementsByClassName(rule.substring(1));
-                    for (let i = 0; i < children.length; i++) {
-                        toggleClass(children[i], 'stampable', true);
-                    }
-                }
-                else if (rule[0] == '#') {
-                    const child = document.getElementById(rule.substring(1));
-                    toggleClass(child, 'stampable', true);
-                }
-                else {
-                    const children = container.getElementsByTagName(rule.toLowerCase());
-                    for (let i = 0; i < children.length; i++) {
-                        toggleClass(children[i], 'stampable', true);
-                    }
-                }
-            }
-        }
         container.addEventListener('pointerdown', pointerDownInContainer);
+        const setInfo = makeStampSet(container);
+        // TODO: Deprecate rules
+        preprocessStampRules(container, setInfo);
         if (hasClass(container, 'stamp-drag')) {
-            stamps_can_drag = true;
+            setInfo.canDrag = true;
             container.addEventListener('pointerup', pointerUpInContainer);
             container.addEventListener('pointermove', pointerMoveInContainer);
             container.addEventListener('pointerleave', pointerLeaveContainer);
         }
+        else {
+            setInfo.canDrag = false;
+        }
+        // If a page has multiple containers, they must be named
+        setInfo.name = container.getAttributeNS('', 'data-stamp-set') || '';
+        if (setInfo.name in _stampSets) {
+            throw new ContextError('Different stampable-containers must have unique names: ' + setInfo.name, elementSourceOffset(container, 'data-stamp-set'));
+        }
+        _stampSets[setInfo.name] = setInfo;
     }
     let elems = document.getElementsByClassName('stampable');
     if (containers.length == 0 && elems.length > 0) {
+        _stampSets[''] = makeStampSet();
         const container = document.getElementById('pageBody');
         if (container) {
             container.addEventListener('pointerdown', pointerDownInContainer);
-            // container.addEventListener('pointerup', pointerUpInContainer);
-            // container.addEventListener('pointermove', pointerMoveInContainer);
-            // container.addEventListener('pointerleave', pointerLeaveContainer);
         }
-        // for (let i = 0; i < elems.length; i++) {
-        //     const elmt = elems[i] as HTMLElement;
-        //     elmt.onpointerdown=function(e){onClickStamp(e, findStampableAtPointer(e))};
-        //     //elmt.ondrag=function(e){onMoveStamp(e)};
-        //     elmt.onpointerenter=function(e){onMoveStamp(e)}; 
-        //     elmt.onpointerleave=function(e){preMoveStamp(e)};
-        // }
     }
-    elems = document.getElementsByClassName('stampTool');
-    for (let i = 0; i < elems.length; i++) {
-        const elmt = elems[i];
-        _stampTools.push(elmt);
-        elmt.onclick = function (e) { onSelectStampTool(e); };
-    }
-    const palette = findStampPalette();
-    if (palette != null) {
+    const palettes = getElementsByClassOrId('stampPalette', 'stampPalette');
+    for (let p = 0; p < palettes.length; p++) {
+        const palette = palettes[p];
+        const setName = palette.getAttributeNS('', 'data-stamp-set') || '';
+        if (!(setName in _stampSets)) {
+            throw new ContextError('Palette does not connect to a known stampSet: ' + setName, elementSourceOffset(palette, 'data-stamp-set'));
+        }
+        const setInfo = _stampSets[setName];
+        elems = palette.getElementsByClassName('stampTool');
+        for (let i = 0; i < elems.length; i++) {
+            const elmt = elems[i];
+            setInfo.stampTools.push(elmt);
+            elmt.onclick = function (e) { onSelectStampTool(e); };
+        }
         // Extractor tool can overlap with other tools
         let id = palette.getAttributeNS('', 'data-tool-extractor');
-        _extractorTool = id != null ? document.getElementById(id) : null;
+        if (id != null) {
+            setInfo.extractorTool = document.getElementById(id);
+            // If we're extracting, an optional extracted-id could be set on either the tool/palette or the container
+            setInfo.extractedId = getOptionalStyle(setInfo.extractorTool, 'data-extracted-id', undefined, 'extracted-')
+                || getOptionalStyle(setInfo.container, 'data-extracted-id', undefined, 'extracted-')
+                || 'extracted';
+        }
         // Two kinds of erase tools. Explicit and implicit.
         id = palette.getAttributeNS('', 'data-tool-erase');
         if (id != null) {
             // Explicit: one of the stampTools is the eraser.
-            _eraseTool = id != null ? document.getElementById(id) : null;
+            setInfo.eraseTool = id != null ? document.getElementById(id) : null;
         }
         else {
             const unstyle = palette.getAttributeNS('', 'data-unstyle');
             const restyle = palette.getAttributeNS('', 'data-style');
             if (unstyle || restyle) {
                 // Implicit: the palette itself knows how to erase
-                _eraseTool = document.createElement('span');
+                setInfo.eraseTool = document.createElement('span');
                 // Don't need to actually add this element to the page. It's just a placeholder.
                 if (unstyle) {
-                    _eraseTool.setAttributeNS('', 'data-unstyle', unstyle);
+                    setInfo.eraseTool.setAttributeNS('', 'data-unstyle', unstyle);
                 }
                 if (restyle) {
-                    _eraseTool.setAttributeNS('', 'data-style', restyle);
+                    setInfo.eraseTool.setAttributeNS('', 'data-style', restyle);
                 }
             }
         }
         id = palette.getAttributeNS('', 'data-tool-first');
-        _firstTool = id != null ? document.getElementById(id) : null;
-    }
-    if (!_firstTool) {
-        _firstTool = _stampTools[0];
+        setInfo.firstTool = id != null ? document.getElementById(id) : null;
+        if (!setInfo.firstTool) {
+            setInfo.firstTool = setInfo.stampTools[0];
+        }
     }
 }
 exports.preprocessStampObjects = preprocessStampObjects;
-let prevStampablePointer = null;
+function preprocessStampRules(container, setInfo) {
+    const rules = getOptionalStyle(container, 'data-stampable-rules');
+    if (rules) {
+        const list = rules.split(' ');
+        for (let r = 0; r < list.length; r++) {
+            const rule = list[r];
+            if (rule[0] == '.') {
+                const children = container.getElementsByClassName(rule.substring(1));
+                for (let i = 0; i < children.length; i++) {
+                    toggleClass(children[i], 'stampable', true);
+                }
+            }
+            else if (rule[0] == '#') {
+                const child = document.getElementById(rule.substring(1));
+                toggleClass(child, 'stampable', true);
+            }
+            else {
+                const children = container.getElementsByTagName(rule.toLowerCase());
+                for (let i = 0; i < children.length; i++) {
+                    toggleClass(children[i], 'stampable', true);
+                }
+            }
+        }
+    }
+}
+/**
+ * Find the stamp set that should be associated with clicks on either
+ * stampable or stampTool elements.
+ * @param event A mouse event.
+ * @returns A stamp set
+ */
+function stampSetFromEvent(event) {
+    return stampSetFromElement(event.target);
+}
+/**
+ * Find the stamp set that should be associated with either
+ * stampable or stampTool elements. When in doubt, return the
+ * default stamp set ('')
+ * @param elmt An element
+ * @returns A stamp set
+ */
+function stampSetFromElement(elmt) {
+    const name = getOptionalStyle(elmt, 'data-stamp-set') || '';
+    if (!(name in _stampSets)) {
+        throw Error('Cannot find stamp set matching target: ' + elmt);
+    }
+    return _stampSets[name];
+}
 function pointerDownInContainer(event) {
     if (!isPrimaryButton(event)) {
         return;
     }
-    if (event.pointerType != 'mouse' && stamps_can_drag) {
+    const stampSet = stampSetFromEvent(event);
+    if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
     const elmt = findStampableAtPointer(event);
     if (elmt) {
-        prevStampablePointer = elmt;
-        onClickStamp(event, elmt);
+        stampSet.prevStampablePointer = elmt;
+        onClickStamp(stampSet, event, elmt);
     }
 }
 function pointerUpInContainer(event) {
     if (!isPrimaryButton(event)) {
         return;
     }
-    if (event.pointerType != 'mouse' && stamps_can_drag) {
+    const stampSet = stampSetFromEvent(event);
+    if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
-    prevStampablePointer = null;
+    stampSet.prevStampablePointer = null;
 }
 function pointerMoveInContainer(event) {
     if (!isPrimaryButton(event)) {
         return;
     }
-    if (event.pointerType != 'mouse' && stamps_can_drag) {
+    const stampSet = stampSetFromEvent(event);
+    if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
     const elmt = findStampableAtPointer(event);
-    if (elmt !== prevStampablePointer) {
-        if (prevStampablePointer) {
-            preMoveStamp(event, prevStampablePointer);
+    if (elmt !== stampSet.prevStampablePointer) {
+        if (stampSet.prevStampablePointer) {
+            preMoveStamp(stampSet, event, stampSet.prevStampablePointer);
         }
         if (elmt) {
-            onMoveStamp(event, elmt);
+            onMoveStamp(stampSet, event, elmt);
         }
-        prevStampablePointer = elmt;
+        stampSet.prevStampablePointer = elmt;
     }
 }
 function pointerLeaveContainer(event) {
     if (!isPrimaryButton(event)) {
         return;
     }
-    if (event.pointerType != 'mouse' && stamps_can_drag) {
+    const stampSet = stampSetFromEvent(event);
+    if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
-    if (prevStampablePointer) {
-        preMoveStamp(event, prevStampablePointer);
+    if (stampSet.prevStampablePointer) {
+        preMoveStamp(stampSet, event, stampSet.prevStampablePointer);
     }
-    prevStampablePointer = null;
+    stampSet.prevStampablePointer = null;
 }
 function findStampableAtPointer(event) {
     const stampable = document.getElementsByClassName('stampable');
@@ -4644,22 +4702,23 @@ function findStampableAtPointer(event) {
  */
 function onSelectStampTool(event) {
     const tool = findParentOfClass(event.target, 'stampTool');
-    const prevToolId = getCurrentStampToolId();
+    const stampSet = stampSetFromEvent(event);
+    const prevToolId = getCurrentStampToolId(stampSet);
     if (tool != null) {
-        for (let i = 0; i < _stampTools.length; i++) {
-            toggleClass(_stampTools[i], 'selected', false);
+        for (let i = 0; i < stampSet.stampTools.length; i++) {
+            toggleClass(stampSet.stampTools[i], 'selected', false);
         }
-        if (tool != _selectedTool) {
+        if (tool != stampSet.selectedTool) {
             toggleClass(tool, 'selected', true);
-            _selectedTool = tool;
+            stampSet.selectedTool = tool;
         }
         else {
-            _selectedTool = null;
+            stampSet.selectedTool = null;
         }
     }
     const fn = theBoiler().onStampChange;
     if (fn) {
-        fn(getCurrentStampToolId(), prevToolId);
+        fn(getCurrentStampToolId(stampSet), prevToolId);
     }
 }
 /**
@@ -4671,16 +4730,16 @@ function onSelectStampTool(event) {
  * @param toolFromErase An override because we're erasing/rotating
  * @returns the name of a draw tool
  */
-function getStampTool(event, toolFromErase) {
+function getStampTool(stampSet, event, toolFromErase) {
     // Shift keys always win
     if (event.shiftKey || event.altKey || event.ctrlKey) {
-        for (let i = 0; i < _stampTools.length; i++) {
-            const mods = _stampTools[i].getAttributeNS('', 'data-click-modifier');
+        for (let i = 0; i < stampSet.stampTools.length; i++) {
+            const mods = stampSet.stampTools[i].getAttributeNS('', 'data-click-modifier');
             if (mods != null
                 && event.shiftKey == (mods.indexOf('shift') >= 0)
                 && event.ctrlKey == (mods.indexOf('ctrl') >= 0)
                 && event.altKey == (mods.indexOf('alt') >= 0)) {
-                return _stampTools[i];
+                return stampSet.stampTools[i];
             }
         }
     }
@@ -4691,11 +4750,11 @@ function getStampTool(event, toolFromErase) {
         return toolFromErase;
     }
     // Lacking other inputs, use the selected tool.
-    if (_selectedTool != null) {
-        return _selectedTool;
+    if (stampSet.selectedTool != null) {
+        return stampSet.selectedTool;
     }
     // If no selection, the first tool is the default
-    return _firstTool;
+    return stampSet.firstTool;
 }
 /**
  * A stamp is referenced by the object it was stamped upon.
@@ -4708,31 +4767,33 @@ function getStampToolById(id) {
 }
 /**
  * Given one tool, currently applied to a target, what is the next stamp in rotation?
+ * @package stampSet The set we're part of
  * @param tool The current tool's HTMLElement, or null if none.
  * @returns The next tool's HTMLElement, or else the _firstTool
  */
-function getNextStampTool(tool) {
+function getNextStampTool(stampSet, tool) {
     if (tool) {
         const nextId = tool.getAttributeNS('', 'data-next-stamp-id');
         if (nextId) {
             return document.getElementById(nextId);
         }
-        const palette = findStampPalette();
-        if (palette) {
-            const curIndex = siblingIndexOfClass(palette, tool, 'stampTool');
-            return findNthChildOfClass(palette, 'stampTool', curIndex + 1);
-        }
+        const curIndex = stampSet.stampTools.findIndex((elmt, index) => { return (elmt === tool); });
+        // const curIndex = siblingIndexOfClass(stampSet.palette, tool, 'stampTool');
+        const nextIndex = (curIndex + 1) % stampSet.stampTools.length;
+        return stampSet.stampTools[nextIndex];
     }
-    return _firstTool;
+    return stampSet.firstTool;
 }
 /**
  * Expose current stamp tool, in case other features want to react
+ * @package stampSet The set we're part of
+ * @returns The ID of a stamp tool, or '' if none selected
  */
-function getCurrentStampToolId() {
-    if (_selectedTool == null) {
+function getCurrentStampToolId(stampSet) {
+    if (stampSet.selectedTool == null) {
         return '';
     }
-    var id = _selectedTool.id;
+    var id = stampSet.selectedTool.id;
     return id || '';
 }
 exports.getCurrentStampToolId = getCurrentStampToolId;
@@ -4760,7 +4821,7 @@ exports.getStampParent = getStampParent;
  * @param target a click event on a stampable object
  * @returns The name of a draw tool (overriding the default), or null
  */
-function eraseStamp(target) {
+function eraseStamp(stampSet, target) {
     if (target == null) {
         return null;
     }
@@ -4774,7 +4835,7 @@ function eraseStamp(target) {
         toggleClass(target, curId, false);
         parent.removeChild(cur);
         parent.removeAttributeNS('', 'data-stamp-id');
-        updateStampExtraction();
+        updateStampExtraction(stampSet);
     }
     else if (hasClass(target, 'stampedObject')) {
         // Template is a class on the container itself
@@ -4782,20 +4843,20 @@ function eraseStamp(target) {
         toggleClass(target, 'stampedObject', false);
         toggleClass(target, curId, false);
         target.removeAttributeNS('', 'data-stamp-id');
-        updateStampExtraction();
+        updateStampExtraction(stampSet);
     }
     else {
         return null; // This cell is currently blank
     }
-    if (_selectedTool && _selectedTool.id == curId) {
+    if (stampSet.selectedTool && stampSet.selectedTool.id == curId) {
         // When a tool is explicitly selected, clicking on that type toggles it back off
-        return _eraseTool;
+        return stampSet.eraseTool;
     }
-    if (_selectedTool == null) {
+    if (stampSet.selectedTool == null) {
         // If no tool is selected, clicking on anything rotates it to the next tool in the cycle
         if (curId) {
             const curTool = getStampToolById(curId);
-            const nextTool = getNextStampTool(curTool);
+            const nextTool = getNextStampTool(stampSet, curTool);
             return nextTool;
         }
     }
@@ -4816,7 +4877,8 @@ function eraseStamp(target) {
  *  - data-next-id           id of another stampTool
  *                           otherwise it will rotate through stampTools in visual order
  */
-function doStamp(target, tool) {
+function doStamp(stampSet, target, tool) {
+    stampSet = stampSet || stampSetFromElement(target);
     const parent = getStampParent(target);
     // Template can be null if tool removes drawn objects
     const tmpltId = tool.getAttributeNS('', 'data-template-id');
@@ -4826,6 +4888,9 @@ function doStamp(target, tool) {
     const erase = tool.getAttributeNS('', 'data-erase');
     if (tmpltId) {
         let template = document.getElementById(tmpltId);
+        if (template === null) {
+            throw new Error('Cannot find template "' + tmpltId + '" for stamp ' + tool.id);
+        }
         if (template != null) {
             // Inject the template into the stampable container
             const clone = template.content.cloneNode(true);
@@ -4869,7 +4934,7 @@ function doStamp(target, tool) {
             applyAllClasses(target, styles);
         }
     }
-    updateStampExtraction();
+    updateStampExtraction(stampSet);
     saveStampingLocally(target);
     const fn = theBoiler().onStamp;
     if (fn) {
@@ -4884,11 +4949,11 @@ let _lastDrawTool = null;
  * Which tool is taken from selected state, click modifiers, and current target state.
  * @param event The mouse click
  */
-function onClickStamp(event, target) {
-    let nextTool = eraseStamp(target);
-    nextTool = getStampTool(event, nextTool);
+function onClickStamp(stampSet, event, target) {
+    let nextTool = eraseStamp(stampSet, target);
+    nextTool = getStampTool(stampSet, event, nextTool);
     if (nextTool) {
-        doStamp(target, nextTool);
+        doStamp(stampSet, target, nextTool);
     }
     _lastDrawTool = nextTool;
     _dragDrawTool = null;
@@ -4900,10 +4965,10 @@ function isPrimaryButton(event) {
  * Continue drawing when the mouse is dragged, using the same tool as in the cell we just left.
  * @param event The mouse enter event
  */
-function onMoveStamp(event, target) {
+function onMoveStamp(stampSet, event, target) {
     if (_dragDrawTool != null) {
-        eraseStamp(target);
-        doStamp(target, _dragDrawTool);
+        eraseStamp(stampSet, target);
+        doStamp(stampSet, target, _dragDrawTool);
         _dragDrawTool = null;
     }
 }
@@ -4913,7 +4978,7 @@ function onMoveStamp(event, target) {
  * If dragging unrelated to drawing, flag the coming onMoveStamp to do nothing.
  * @param event The mouse leave event
  */
-function preMoveStamp(event, target) {
+function preMoveStamp(stampSet, event, target) {
     if (target != null) {
         const cur = findFirstChildOfClass(target, 'stampedObject');
         if (cur != null) {
@@ -4931,19 +4996,21 @@ function preMoveStamp(event, target) {
 /**
  * Drawing tools can be flagged to do extraction.
  */
-function updateStampExtraction() {
-    if (!_extractorTool) {
+function updateStampExtraction(stampSet) {
+    if (!stampSet.extractorTool) {
         return;
     }
-    const extracted = document.getElementById('extracted');
+    const extracted = document.getElementById(stampSet.extractedId || 'extracted');
     if (extracted != null) {
-        const drawnObjects = document.getElementsByClassName('stampedObject');
+        const stampable = stampSet.container
+            ? stampSet.container.getElementsByClassName('stampable')
+            : document.getElementsByClassName('stampable');
         let extraction = '';
-        for (let i = 0; i < drawnObjects.length; i++) {
-            const tool = getOptionalStyle(drawnObjects[i], 'data-stamp-id');
-            if (tool == _extractorTool.id) {
-                const drawn = drawnObjects[i];
-                const extract = findFirstChildOfClass(drawn, 'extract');
+        for (let i = 0; i < stampable.length; i++) {
+            const stamp = stampable[i];
+            const tool = getOptionalStyle(stamp, 'data-stamp-id');
+            if (tool == stampSet.extractorTool.id) {
+                const extract = findFirstChildOfClass(stamp, 'extract');
                 if (extract) {
                     extraction += extract.innerText;
                 }
