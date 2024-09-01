@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Iron Chef',
+        author: 'Rorke Haining',
+        copyright: '2021',
+        type: 'meta',
+        abilities: {
+          reactiveBuilder: 'pageBody',
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          teams: [
+            {
+              title: 'Team 1: RASPBERRY!',
+              rows: [
+                [7,5,14],  // [length, index to extract, extract dest]
+                [8,5,10],
+                [7,7,7],
+                [8,3,4],
+                [6,6,16]
+              ]
+            },
+            {
+              title: 'Team 2: NUTMEG!',
+              rows: [
+                [9,5,17],
+                [8,6,8],
+                [5,3,2],
+                [7,1,9],
+                [8,3,19]
+              ]
+            },
+            {
+              title: 'Team 3: MADEIRA!',
+              rows: [
+                [6,1,6],
+                [7,6,11],
+                [4,3,20],
+                [5,2,5],
+                [8,1,13]
+              ]
+            },
+            {
+              title: 'Team 4: BACON!',
+              rows: [
+                [5,2,3],
+                [7,2,1],
+                [3,3,18],
+                [6,1,12],
+                [8,7,15]
+              ]
+            },
+          ]
+        },
+      };
+    </script>
+    <style>
+      #grid {
+        display: grid;
+        margin: 0.25in;
+        grid-template-columns: repeat(2,3.5in);
+      }
+      .team-box {
+        width: 2.5in;
+        padding: 10px 20px;
+        margin: 10px;
+        border: solid 1px black;
+      }
+      .team-box h3 {
+        text-align: center;
+        margin: 0px 0px 24px;
+      }
+      #below {
+        text-align: center;
+      }
+
+      #save-menu {
+        position: absolute;
+        top: -10px;
+        left: 0px;
+        z-index: 10000;
+        cursor: pointer;
+      }
+      #save-menu span {
+        position: relative;
+        display: inline-block;
+        height: 30px;
+        padding-top: 12px;
+        background-color:aqua;
+      }
+      .menu-stretch {
+        width: 2px;
+      }
+      .menu-title {
+        z-index: 10002;
+      }
+      .menu-thumb {
+        width: 20px;
+        left: -10px;
+        border: transparent 0px solid;
+        border-radius: 10px;
+        z-index: 10001;
+      }
+      #save-menu:hover .menu-stretch {
+        animation-name: fly-out;
+        animation-duration: 300ms;
+        width: 60px;
+      }
+      @keyframes fly-out {
+        from { width: 2px; }
+        to { width: 60px; }
+      }
+
+    </style>
+  </head>
+  <body id="IronChef">
+    <div id="save-menu">
+      <p>
+        <span class="menu-stretch">&nbsp;</span><span class="menu-title">Reload</span><span class="menu-thumb">&nbsp;</span>
+      </p>
+    </div>
+
+
+    <div id="pageBody">
+      <p class="flavor">
+        Congratulations.  You 20 chefs have done extremely well to make it this far, stunning the judges with your 
+        innovative use of the surprise mystery ingredients, and vanquishing many excellent opponents in 
+        preliminary rounds (which were:  <b>Beef</b>, <b>Chicken</b>, <b>Egg</b>, and <b>Wine</b>).  
+        Now it is time for the final round, and we have a surprise twist in store for you:  we are shuffling up 
+        the teams, with each new team themed around a common element!  Fill out your team rosters in alphabetical 
+        order, then prepare to wow the judges with your new teammates one last time to be crowned <b>IRON CHEF</b>!
+      </p>
+
+      <div id="grid">
+        <for each="team" in="teams">
+          <div id="team_{team#}" class="team-box">
+            <h3>{team.title}</h3>
+            <for each="row" in="{team.rows}">
+              <p><pattern pattern="{row.0}" numbers="{row.1}={row.2}" /></p>
+            </for>
+          </div>
+        </for>
+      </div>
+
+      <div id="below">
+        <p><pattern id="extracted" extract-numbered="20" /></p>
+        <p>Whose cuisine reigns supreme? <pattern id="final" pattern="4" /></p>
+      </div>
+
+    </div>
+  </body>
+</html>
