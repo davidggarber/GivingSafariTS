@@ -36,7 +36,18 @@
       td p:first-child {
         margin-top: 0px;
       }
-      
+      #building-mod .straight-edge.building {
+        stroke: #ffcccc99;
+        stroke-width: 15px;
+      }
+      #line-mod .straight-edge {
+        stroke: #ffd70099;
+        stroke-width: 10px;
+      }
+      #used-mod .vertex.has-line {
+        fill: white;
+        stroke:black;
+      }
       /* #page {
         height:22in;
       } */
@@ -48,7 +59,7 @@
       <ul>
         <li>Connect-the-dots style straight-edges</li>
         <li><a href="wordSearch.xhtml">Word search</a> - highlighting straight-lines of letters</li>
-        <li><a href="hashi.xhtml">Hashi</a> - bridge building</li>
+        <li><a href="hashiBridge.xhtml">Hashi</a> - bridge building</li>
       </ul>
       <p>Each uses similar underlying settings, but they require different setup, and should be able to run in parallel.</p>
       <p>The lines are rendered on an SVG canvas. Presumably, the items that the lines connect or overlay are too, but not necessarily.</p>
@@ -83,7 +94,7 @@
             </pre></code>
           </td>
           <td style="width:120px;">
-            <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-hover-range="10">
+            <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-hover-range="10">
               <for int="y" until="3">
                 <for int="x" until="3">
                   <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
@@ -109,7 +120,7 @@
         <tr>
           <td>
             <p><code>&lt;svg ... <b>data-max-points="4"</b>&gt;</code></p>
-            <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-hover-range="10" data-max-points="4">
+            <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-hover-range="10" data-max-points="4">
               <for int="y" until="3">
                 <for int="x" until="3">
                   <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
@@ -121,7 +132,7 @@
           </td>
           <td>
             <p><code>&lt;svg ... <b>data-show-open-drag="false"</b>&gt;</code></p>
-            <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-show-open-drag="false">
+            <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-show-open-drag="false">
               <for int="y" until="3">
                 <for int="x" until="3">
                   <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
@@ -133,7 +144,7 @@
           </td>
           <td>
             <code>&lt;svg ... <b>data-can-share-vertex="true"</b>&gt;</code>
-            <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-can-share-vertices="true">
+            <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-can-share-vertices="true">
               <for int="y" until="3">
                 <for int="x" until="3">
                   <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
@@ -160,25 +171,55 @@
       <h2>Overriding styles</h2>
       <table>
         <tr>
-          <th>Completed lines</th>
           <th>Lines in progress</th>
+          <th>All lines</th>
+          <th>A vertex, once used</th>
         </tr>
         <tr>
           <td>
             <code><pre trim="pre">
-              #YourPuzzle <b>.straight-edge</b> `{
-                  stroke: gold;       &lt;--default: #b00 --&gt;
-                  stroke-width: 10px; &lt;-- default: 2.5px --&gt;
+              #YourPuzzle .straight-edge<b>.building</b> `{
+                  stroke: #ffcccc99;  &lt;--default: red --&gt;
+                  stroke-width: 15px; &lt;--default: 4px --&gt;
               `}
             </pre></code>      
+            <svg id="building-mod" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area">
+              <for int="y" until="3">
+                <for int="x" until="3">
+                  <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
+                </for>
+              </for>
+            </svg>
           </td>
           <td>
             <code><pre trim="pre">
-              #YourPuzzle .straight-edge<b>.building</b> `{
-                  stroke: yellow;     &lt;--default: red --&gt;
-                  stroke-width: 20px; &lt;--default: 4px --&gt;
+              #YourPuzzle <b>.straight-edge</b> `{
+                  stroke: #ffd70099;  &lt;--default: #b00 --&gt;
+                  stroke-width: 10px; &lt;-- default: 2.5px --&gt;
+              `}
+            </pre></code>
+            <svg id="line-mod" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area">
+              <for int="y" until="3">
+                <for int="x" until="3">
+                  <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
+                </for>
+              </for>
+            </svg>
+          </td>
+          <td>
+            <code><pre trim="pre">
+              #YourPuzzle .vertex<b>.has-line</b> `{
+                  fill: white;
+                  stroke: black;
               `}
             </pre></code>      
+            <svg id="used-mod" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area">
+              <for int="y" until="3">
+                <for int="x" until="3">
+                  <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
+                </for>
+              </for>
+            </svg>
           </td>
         </tr>
       </table>
@@ -205,7 +246,7 @@
             </pre></code>
           </td>
           <td style="width:120px;">
-            <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area no-user-select" data-hover-range="10">
+            <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area no-user-select" data-hover-range="10">
               <for int="y" until="3">
                 <for int="x" until="3">
                   <g class="vertex-g" ttransform="translate({15 + x*30 + (y%2)*(x-1)*10}, {25 + y*30 + (x%2)*(y-1)*10})">

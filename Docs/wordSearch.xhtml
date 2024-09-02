@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        title: 'Word Search',
+        paperSize: 'ledger',
+        orientation: 'portrait',
+        textInput: true,
+        abilities: {
+          wordSearch: true,
+        },
+        reactiveBuilder: 'pageBody'
+      };
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      h2 {
+        margin-top: 0.5in;
+      }
+      code b, .code b {
+        font-size: 11pt;
+        background-color: #c3e5f0;
+        white-space: nowrap;
+      }
+      td {
+        vertical-align: top;
+      }
+      td p:first-child {
+        margin-top: 0px;
+      }
+      
+      #WordSearch rect.vertex.building {
+        stroke: none;
+      }
+      #WordSearch .word-select {
+        stroke-width: 20px;
+      }
+
+      #vg-mod .vertex-g:hover text {
+        font-weight: bold;
+      }
+      #container-mod .word-select {
+        stroke: #ff0000;
+        stroke-width: 20px;
+      }
+      #building-mod .word-select.building {
+        stroke: #ff66ff99;
+        stroke-width: 20px;
+      }
+      #lines-mod .word-select {
+        stroke: #00ff0055;
+        stroke-width: 15px;
+      }
+      #outline-mod .word-select {
+        stroke: #00ff0055;
+        stroke-width: 18px;
+      }
+      #outline-mod .word-select-fill {
+        stroke: white;
+        stroke-width: 15px;
+      }
+
+      /* #page {
+        height:22in;
+      } */
+    </style>
+  </head>
+  <body id="WordSearch">
+    <div id="pageBody">
+      <p>There are several variants of a tool to draw straight lines.</p>
+      <ul>
+        <li>Connect-the-dots style <a href="straightEdge.xhtml">straight-edges</a></li>
+        <li>Word search - highlighting straight-lines of letters</li>
+        <li><a href="hashiBridge.xhtml">Hashi</a> - bridge building</li>
+      </ul>
+      <p>Each uses similar underlying settings, but they require different setup, and should be able to run in parallel.</p>
+      <p>The lines are rendered on an SVG canvas.<br />
+        Similarly, the underlying elements that the lines anchor to are expected to be in the SVG, but don't technically have to be.</p>
+      
+      <h2>Word Search</h2>
+      <code><pre trim="pre">
+        const boiler = `{
+          abilities: `{
+            <b>wordSearch: true,</b>
+         `},
+        `}          
+      </pre></code>
+      <table>
+        <tr>
+          <th>SVG example</th>
+          <th>Rendered</th>
+          <th>Details</th>
+        </tr>
+        <tr>
+          <td>
+            <code><pre trim="pre">
+              &lt;svg class="<b>word-select-area</b> <b>no-user-select</b>"
+                   <b>data-angle-constraints="45"</b>&gt;
+                &lt;for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY"&gt;
+                  &lt;g transform="translate(`{18+(ch# % 5)*25`},
+                                          `{27+(ch#\5)*25`})"&gt;
+                    &lt;rect class="<b>vertex</b>" 
+                          width="25" height="25" /&gt;
+                    &lt;text x="8" y="17"&gt;`{ch`}&lt;/text&gt;
+                  &lt;/g&gt;
+                &lt;/for&gt;
+              &lt;/svg&gt;  
+            </pre></code>
+            <p>It may be tempting to assign <b>class="vertex"</b> to the<br />
+              &lt;text&gt; elements. However, this will lead to bugs.
+            </p>
+            <p>The anchor points of the lines are the centerpoints <br />
+              of the vertex elements. &lt;text&gt; elements can be <br />
+              variably sized. For consistency, add a &lt;rect&gt; behind <br />
+              the text, and make that the vertex.
+            </p>
+          </td>
+          <td style="width:120px;">
+            <svg width="150" height="150" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
+              <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
+                <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
+                  <rect class="vertex" width="25" height="25" />
+                  <text x="8" y="17">{ch}</text>
+                </g>
+              </for>
+            </svg>
+            <p>Draw word-selection loops around lines of letters.</p>
+          </td>
+          <td>
+            <p><b>class="word-select-area"</b> identifies a container of anchor vertices.
+            </p>
+            <p><b>class="no-user-select"</b> prevents the drag behavior from selecting text in the &lt;text&gt; nodes.
+            </p>
+            <p><b>data-angle-constraint="45"</b> restricts the angles that the lines must lie in.<br />
+              If not set, any line anchored by vertices is legal.<br />
+              If diagonals are not allowed, set constraint to <b>90</b>.
+            </p>
+            <p>The constraint can also have an offset. <br />
+              A grid that <i>only</i> allows diagonals would set the constraint to 
+              <b>90+45</b>, meaning 90 degree increments, offset by 45 degrees.<br />
+              A hexagonal grid would set the constraint to either <b>60</b> or <b>60+30</b>,
+              depending on whether it has a pure horizontal or pure vertical axis.
+            </p>
+          </td>
+        </tr>
+      </table>
+
+      <h3>Options</h3>
+      <table>
+        <tr>
+          <td>
+            <p><code>&lt;svg ... <b>data-max-points="25"</b>&gt;</code></p>
+            <p>2 is the default.<br />
+              A high number allows boggle-style trails</p>
+            <svg width="150" height="150" xmlns="http://www.w3.org/2000/svg" 
+                class="word-select-area no-user-select" data-angle-constraints="45" data-max-points="25">
+              <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
+                <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
+                  <rect class="vertex" width="25" height="25" />
+                  <text x="8" y="17">{ch}</text>
+                </g>
+              </for>
+            </svg>
+          </td>
+          <td>
+            <p><code><pre trim="pre">
+              &lt;g <b>class="vertex-g"</b>&gt;
+                &lt;rect class="vertex" ... /&gt;
+                &lt;text&gt;...&lt;text&gt;
+              &lt;/g&gt;
+            </pre></code></p>
+            <p>When the &lt;g&gt; container around the vertex element is tagged <b>vertex-g</b>,
+              it enables effects on other members of the group, during hover for example.
+            </p>
+            <svg id="vg-mod" width="150" height="150" xmlns="http://www.w3.org/2000/svg" 
+                class="word-select-area no-user-select" data-angle-constraints="45">
+              <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
+                <g class="vertex-g" ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
+                  <rect class="vertex" width="25" height="25" />
+                  <text x="8" y="17">{ch}</text>
+                </g>
+              </for>
+            </svg>
+          </td>
+          <td>
+            <p><code><pre trim="pre">
+              &lt;svg class="word-select-area"&gt;
+                &lt;g <b>class="word-select-container"</b>/&gt;
+                &lt;g&gt;&lt;!-- content --&gt;&lt;/g&gt;
+              &lt;/svg&gt;  
+            </pre></code></p>
+            <p>If a <b>class="word-select-container"</b> is present,
+              all word-selections are drawn there. That allows control over z-order,
+              allowing for example, non-transparent coloring.
+            </p>
+            <svg id="container-mod" width="150" height="150" xmlns="http://www.w3.org/2000/svg" 
+                class="word-select-area no-user-select" data-angle-constraints="45">
+              <g class="word-select-container"/>
+              <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
+                <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
+                  <rect class="vertex" width="25" height="25" />
+                  <text x="8" y="17">{ch}</text>
+                </g>
+              </for>
+            </svg>
+          </td>
+        </tr>
+      </table>
+
+      <h2>Overriding styles</h2>
+      <table>
+        <tr>
+          <th>Selections in progress</th>
+          <th>All lines</th>
+          <th>Circle outlines only</th>
+        </tr>
+        <tr>
+          <td>
+            <p><code><pre trim="pre">
+              #YourPuzzle .word-select<b>.building</b> `{
+                  stroke: #ff66ff99;
+                  stroke-width: 20px;
+              `}
+            </pre></code><br />
+            
+            </p>
+            <svg id="building-mod" width="150" height="150" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
+              <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
+                <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
+                  <rect class="vertex" width="25" height="25" />
+                  <text x="8" y="17">{ch}</text>
+                </g>
+              </for>
+            </svg>
+          </td>
+          <td>
+            <p><code><pre trim="pre">
+              #YourPuzzle <b>.word-select</b> `{
+                  stroke: #00ff0055;
+                  stroke-width: 15px;
+              `}
+            </pre></code></p>
+            <svg id="lines-mod" width="150" height="150" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
+              <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
+                <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
+                  <rect class="vertex" width="25" height="25" />
+                  <text x="8" y="17">{ch}</text>
+                </g>
+              </for>
+            </svg>
+          </td>
+          <td>
+            <p><code><pre trim="pre">
+                #YourPuzzle .word-select `{
+                  stroke: #00ff0055;
+                  <b>stroke-width: 18px;</b>
+                `}
+                #YourPuzzle .word-select<b>-fill</b> `{
+                  &lt;!--clears the interior --&gt;
+                  stroke: white;
+                  stroke-width: 15px;
+                `}
+              </pre></code><br />
+              (requires <i>word-select-container</i>)
+            </p>
+            <svg id="outline-mod" width="150" height="150" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
+              <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
+                <g class="word-select-container"/>
+                <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
+                  <rect class="vertex" width="25" height="25" />
+                  <text x="8" y="17">{ch}</text>
+                </g>
+              </for>
+            </svg>
+          </td>
+        </tr>
+      </table>
+
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)">{value}</code>
+    </template>
+    <template id="tag">
+      <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+
+  </body>
+</html>
