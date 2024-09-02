@@ -85,7 +85,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\Docs\\wordSearch.xhtml?trace&restart",
+      "url": "${workspaceFolder}\\Docs\\hashiBridge.xhtml?trace&restart",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"

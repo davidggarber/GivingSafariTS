@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        title: 'Hashi Bridge',
+        paperSize: 'ledger',
+        orientation: 'portrait',
+        textInput: true,
+        abilities: {
+          hashiBridge: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          islands: [
+            {x:20, y:20, num:3},
+            {x:90, y:20, num:1},
+            {x:20, y:90, num:2},
+          ]
+        }
+      };
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      h2 {
+        margin-top: 0.5in;
+      }
+      code b, .code b {
+        font-size: 11pt;
+        background-color: #c3e5f0;
+        white-space: nowrap;
+      }
+      td {
+        vertical-align: top;
+      }
+      td p:first-child {
+        margin-top: 0px;
+      }
+      #Hashi ellipse.vertex {
+        fill: white;
+        stroke: black;
+        stroke-width: 1px;
+      }
+      text {
+        text-anchor: middle;
+      }
+      #build-mod .hashi-bridge.building {
+        stroke: green;
+        stroke-width: 20px;
+      }
+      #done-mod .hashi-bridge {
+        stroke: blue;
+      }
+      #done-mod .hashi-bridge-fill {
+        stroke: yellow;
+        stroke-dasharray: 6 6;
+        stroke-linecap: butt;
+        stroke-width: 3px;
+      }
+
+      /* #page {
+        height:22in;
+      } */
+    </style>
+  </head>
+  <body id="Hashi">
+    <div id="pageBody">
+      <p>There are several variants of a tool to draw straight lines.</p>
+      <ul>
+        <li>Connect-the-dots style <a href="straightEdge.xhtml">straight-edges</a></li>
+        <li><a href="wordSearch.xhtml">Word search</a> - highlighting straight-lines of letters</li>
+        <li>Hashi - bridge building, where parallel bridges are common</li>
+      </ul>
+      <p>Currently, all 3 use shared setup support, and so will conflict with each other.</p>
+      <p>The lines are rendered on an SVG canvas.<br />
+        Similarly, the underlying elements that the lines anchor to are expected to be in the SVG, but don't technically have to be.</p>
+      
+      <h2>Hashi Bridges</h2>
+      <code><pre trim="pre">
+        const boiler = `{
+          abilities: `{
+            <b>hashiBridge: true,</b>
+         `},
+        `}          
+      </pre></code>
+      <table>
+        <tr>
+          <th>SVG example</th>
+          <th>Rendered</th>
+          <th>Details</th>
+        </tr>
+        <tr>
+          <td>
+            <code><pre trim="pre">
+              &lt;svg class="<b>hashi-bridge-area</b> <b>no-user-select</b>"&gt;
+                &lt;g class="<b>hashi-bridge-container</b>" /&gt;
+                &lt;for each="isl" in="`{islands`}"&gt;
+                  &lt;g class="<b>vertex-g</b>" 
+                     transform="translate(`{isl.x`},`{isl.y`})"&gt;
+                    &lt;ellipse class="<b>vertex</b>" rx="14" ry="14" /&gt;
+                    &lt;text x="0" y="4pt"&gt;`{isl.num`}&lt;/text&gt;
+                  &lt;/g&gt;
+                &lt;/for&gt;
+              &lt;/svg&gt;  
+            </pre></code>
+            <p>Note: this example employs ellipse and text styles:</p>
+            <code><pre trim="pre">
+              ellipse.vertex `{
+                fill: white;
+                stroke: black;
+                stroke-width: 1px;
+              `}
+              text `{
+                text-anchor: middle;
+              `}
+            </pre></code>
+          </td>
+          <td style="width:120px;">
+            <svg width="120" height="110" xmlns="http://www.w3.org/2000/svg" class="hashi-bridge-area no-user-select">
+              <g class="hashi-bridge-container" />
+              <for each="isl" in="{islands}">
+                <g class="vertex-g" 
+                   ttransform="translate({isl.x},{isl.y})">
+                  <ellipse class="vertex" rx="14" ry="14" />
+                  <text x="0" y="4pt">{isl.num}</text>
+                </g>        
+              </for>
+            </svg>
+            <p>Draw horizontal and vertical bridges between islands.</p>
+          </td>
+          <td>
+            <p><b>class="hashi-bridge-area"</b> identifies a container of anchor vertices.
+            </p>
+            <p><b>class="no-user-select"</b> prevents the drag behavior from selecting text in the &lt;text&gt; nodes.
+            </p>
+            <p><b>class="hashi-bridge-container"</b> creates a separate layer for the drawn bridges to render.
+              This ensures that they stay under the circles and text in z-order.
+            </p>
+            <p><b>class="vertex-g"</b> on the group &lt;g&gt; tag allows the text associated with the vertex to respond on hover.</p>
+            <p><b>class="vertex"</b> specifies the elements whose center-points anchor the hashi bridges.<br />
+              Note that because Hashi restricts bridges to horizontal and vertical, these ellipses must all be the same size and perfectly aligned.
+            </p>
+          </td>
+        </tr>
+      </table>
+
+      <h3>Options</h3>
+      <table>
+        <tr>
+          <td>
+            <p><code>&lt;svg ... <b>data-bridge-gap="10"</b>&gt;</code></p>
+            <p>When 2+ bridges are in parallel, <br />
+              how many pixels should separate <br />
+              their anchors? <br />
+              Default is 8 pixels.
+            </p>
+            <svg width="120" height="110" xmlns="http://www.w3.org/2000/svg" class="hashi-bridge-area no-user-select" data-bridge-gap="10">
+              <g class="hashi-bridge-container" />
+              <for each="isl" in="{islands}">
+                <g class="vertex-g" 
+                   ttransform="translate({isl.x},{isl.y})">
+                  <ellipse class="vertex" rx="14" ry="14" />
+                  <text x="0" y="4pt">{isl.num}</text>
+                </g>        
+              </for>
+            </svg>
+          </td>
+
+          <td>
+            <p><code>&lt;svg ... <b>data-max-bridges="4"</b>&gt;</code></p>
+            <p>Default is 2 (standard Hashi).<br />
+              Higher numbers could support <br />
+              odd hashi variants.<br />
+              Make sure islands are big enough.
+            </p>
+            <svg width="120" height="110" xmlns="http://www.w3.org/2000/svg" class="hashi-bridge-area no-user-select" data-max-bridges="4">
+              <g class="hashi-bridge-container" />
+              <for each="isl" in="{islands}">
+                <g class="vertex-g" 
+                   ttransform="translate({isl.x},{isl.y})">
+                  <ellipse class="vertex" rx="14" ry="14" />
+                  <text x="0" y="4pt">{isl.num*2}</text>
+                </g>        
+              </for>
+            </svg>
+          </td>
+
+          <td>
+            <p><code>&lt;svg ... <b>data-hover-range="20"</b>&gt;</code></p>
+            <p>Default is 30px.<br />
+              Seek a distance that naturaly snaps<br />
+              lines to vertices.<br />
+              However, deleting requires clicking <br />
+              a bridge beyond the hover distance <br />
+              from either endpoint.
+            </p>
+            <svg width="120" height="110" xmlns="http://www.w3.org/2000/svg" class="hashi-bridge-area no-user-select" data-hover-range="20">
+              <g class="hashi-bridge-container" />
+              <for each="isl" in="{islands}">
+                <g class="vertex-g" 
+                   ttransform="translate({isl.x},{isl.y})">
+                  <ellipse class="vertex" rx="14" ry="14" />
+                  <text x="0" y="4pt">{isl.num}</text>
+                </g>        
+              </for>
+            </svg>
+          </td>
+
+        </tr>
+      </table>
+
+      <h2>Overriding styles</h2>
+      <table>
+        <tr>
+          <th>Selections in progress</th>
+          <th>All lines, with fill effects</th>
+        </tr>
+        <tr>
+          <td>
+            <p><code><pre trim="pre">
+                #YourPuzzle .hashi-bridge<b>.building</b> `{
+                    stroke: green;
+                    stroke-width: 20px;
+                `}
+              </pre></code><br />
+              <i>Default is 4px bridge while building,<br />
+                6px when done.</i>
+            </p>
+            <svg id="build-mod" width="120" height="110" xmlns="http://www.w3.org/2000/svg" class="hashi-bridge-area no-user-select">
+              <g class="hashi-bridge-container" />
+              <for each="isl" in="{islands}">
+                <g class="vertex-g" 
+                   ttransform="translate({isl.x},{isl.y})">
+                  <ellipse class="vertex" rx="14" ry="14" />
+                  <text x="0" y="4pt">{isl.num}</text>
+                </g>        
+              </for>
+            </svg>
+          </td>
+          <td>
+            <p><code><pre trim="pre">
+              #YourPuzzle <b>.hashi-bridge</b> `{
+                  stroke: blue;
+              `}
+              #YourPuzzle <b>.hashi-bridge-fill</b> `{
+                    stroke: yellow;
+                    stroke-dasharray: 6 6;
+                    stroke-linecap: butt;
+                    stroke-width: 3px;
+                `}
+              </pre></code><br />
+              <i>Default is 6px bridge, with 5px fill.</i>
+            </p>
+            <svg id="done-mod" width="120" height="110" xmlns="http://www.w3.org/2000/svg" class="hashi-bridge-area no-user-select">
+              <g class="hashi-bridge-container" />
+              <for each="isl" in="{islands}">
+                <g class="vertex-g" 
+                   ttransform="translate({isl.x},{isl.y})">
+                  <ellipse class="vertex" rx="14" ry="14" />
+                  <text x="0" y="4pt">{isl.num}</text>
+                </g>        
+              </for>
+            </svg>
+          </td>
+        </tr>
+      </table>
+
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)">{value}</code>
+    </template>
+    <template id="tag">
+      <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+
+  </body>
+</html>

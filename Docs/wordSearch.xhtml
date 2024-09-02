@@ -79,9 +79,9 @@
       <ul>
         <li>Connect-the-dots style <a href="straightEdge.xhtml">straight-edges</a></li>
         <li>Word search - highlighting straight-lines of letters</li>
-        <li><a href="hashiBridge.xhtml">Hashi</a> - bridge building</li>
+        <li><a href="hashiBridge.xhtml">Hashi</a> - bridge building, where parallel bridges are common</li>
       </ul>
-      <p>Each uses similar underlying settings, but they require different setup, and should be able to run in parallel.</p>
+      <p>Currently, all 3 use shared setup support, and so will conflict with each other.</p>
       <p>The lines are rendered on an SVG canvas.<br />
         Similarly, the underlying elements that the lines anchor to are expected to be in the SVG, but don't technically have to be.</p>
       
@@ -124,7 +124,7 @@
             </p>
           </td>
           <td style="width:120px;">
-            <svg width="150" height="150" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
+            <svg width="150" height="135" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
               <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
                 <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
                   <rect class="vertex" width="25" height="25" />
@@ -160,7 +160,7 @@
             <p><code>&lt;svg ... <b>data-max-points="25"</b>&gt;</code></p>
             <p>2 is the default.<br />
               A high number allows boggle-style trails</p>
-            <svg width="150" height="150" xmlns="http://www.w3.org/2000/svg" 
+            <svg width="150" height="135" xmlns="http://www.w3.org/2000/svg" 
                 class="word-select-area no-user-select" data-angle-constraints="45" data-max-points="25">
               <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
                 <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
@@ -180,7 +180,7 @@
             <p>When the &lt;g&gt; container around the vertex element is tagged <b>vertex-g</b>,
               it enables effects on other members of the group, during hover for example.
             </p>
-            <svg id="vg-mod" width="150" height="150" xmlns="http://www.w3.org/2000/svg" 
+            <svg id="vg-mod" width="150" height="135" xmlns="http://www.w3.org/2000/svg" 
                 class="word-select-area no-user-select" data-angle-constraints="45">
               <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
                 <g class="vertex-g" ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
@@ -201,7 +201,7 @@
               all word-selections are drawn there. That allows control over z-order,
               allowing for example, non-transparent coloring.
             </p>
-            <svg id="container-mod" width="150" height="150" xmlns="http://www.w3.org/2000/svg" 
+            <svg id="container-mod" width="150" height="135" xmlns="http://www.w3.org/2000/svg" 
                 class="word-select-area no-user-select" data-angle-constraints="45">
               <g class="word-select-container"/>
               <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
@@ -232,7 +232,7 @@
             </pre></code><br />
             
             </p>
-            <svg id="building-mod" width="150" height="150" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
+            <svg id="building-mod" width="150" height="135" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
               <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
                 <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
                   <rect class="vertex" width="25" height="25" />
@@ -248,7 +248,7 @@
                   stroke-width: 15px;
               `}
             </pre></code></p>
-            <svg id="lines-mod" width="150" height="150" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
+            <svg id="lines-mod" width="150" height="135" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
               <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
                 <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
                   <rect class="vertex" width="25" height="25" />
@@ -271,7 +271,7 @@
               </pre></code><br />
               (requires <i>word-select-container</i>)
             </p>
-            <svg id="outline-mod" width="150" height="150" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
+            <svg id="outline-mod" width="150" height="135" xmlns="http://www.w3.org/2000/svg" class="word-select-area no-user-select" data-angle-constraints="45">
               <for char="ch" in="ABCDEFGHIJKLMNOPQRSTUVWXY">
                 <g class="word-select-container"/>
                 <g ttransform="translate({10+(ch# % 5)*25},{10+(ch#\5)*25})">
