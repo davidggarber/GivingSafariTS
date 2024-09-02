@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        title: 'Straight Edges',
+        paperSize: 'ledger',
+        orientation: 'portrait',
+        textInput: true,
+        abilities: {
+          straightEdge: true,
+        },
+        reactiveBuilder: 'pageBody'
+      };
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      h2 {
+        margin-top: 0.5in;
+      }
+      code b, .code b {
+        font-size: 11pt;
+        background-color: #c3e5f0;
+        white-space: nowrap;
+      }
+      td {
+        vertical-align: top;
+      }
+      td p:first-child {
+        margin-top: 0px;
+      }
+      
+      /* #page {
+        height:22in;
+      } */
+    </style>
+  </head>
+  <body id="StraightEdge">
+    <div id="pageBody">
+      <p>There are several variants of a tool to draw straight lines.</p>
+      <ul>
+        <li>Connect-the-dots style straight-edges</li>
+        <li><a href="wordSearch.xhtml">Word search</a> - highlighting straight-lines of letters</li>
+        <li><a href="hashi.xhtml">Hashi</a> - bridge building</li>
+      </ul>
+      <p>Each uses similar underlying settings, but they require different setup, and should be able to run in parallel.</p>
+      <p>The lines are rendered on an SVG canvas. Presumably, the items that the lines connect or overlay are too, but not necessarily.</p>
+      
+      <h2>Straight Edge</h2>
+      <code><pre trim="pre">
+        const boiler = `{
+          abilities: `{
+            <b>straightEdge: true,</b>
+         `},
+        `}          
+      </pre></code>
+      <table>
+        <tr>
+          <th>SVG example</th>
+          <th>Rendered</th>
+          <th>Details</th>
+        </tr>
+        <tr>
+          <td>
+            <code><pre trim="pre">
+              &lt;svg <b>class="straight-edge-area"</b>
+                   <b>data-hover-range="10"</b>&gt;
+                &lt;for int="y" until="3"&gt;
+                  &lt;for int="x" until="3"&gt;
+                    &lt;circle cx="`{20 + x*30 + (y%2)*(x-1)*10`}" 
+                            cy="`{20 + y*30 + (x%2)*(y-1)*10`}"
+                            r="4" <b>class="vertex"</b>/&gt;
+                  &lt;/for&gt;
+                &lt;/for&gt;
+              &lt;/svg&gt;  
+            </pre></code>
+          </td>
+          <td style="width:120px;">
+            <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-hover-range="10">
+              <for int="y" until="3">
+                <for int="x" until="3">
+                  <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
+                </for>
+              </for>
+            </svg>
+            <p>Connect pairs of<br />dots by dragging<br />lines.</p>
+          </td>
+          <td>
+            <p><b>class="straight-edge-area"</b> identifies a container of anchor vertices.
+            </p>
+            <p><b>data-hover-range="10"</b> clarifies how close a pointer needs to be to snap a line to the nearest vertex.<br />
+              If not set, it can be hard to see open-ended lines while dragging. They will tend to snap to vertices.
+            </p>
+            <p><b>class="vertex"</b> Each item that a line should anchor to must have this class.
+              The actual anchor point will be the centerpoint of that element.
+            </p>
+          </td>
+        </tr>
+      </table>
+      <h3>Options</h3>
+      <table>
+        <tr>
+          <td>
+            <p><code>&lt;svg ... <b>data-max-points="4"</b>&gt;</code></p>
+            <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-hover-range="10" data-max-points="4">
+              <for int="y" until="3">
+                <for int="x" until="3">
+                  <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
+                </for>
+              </for>
+            </svg>
+            <p>2 is the default.<br />
+              No upper bound.</p>
+          </td>
+          <td>
+            <p><code>&lt;svg ... <b>data-show-open-drag="false"</b>&gt;</code></p>
+            <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-show-open-drag="false">
+              <for int="y" until="3">
+                <for int="x" until="3">
+                  <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
+                </for>
+              </for>
+            </svg>
+            <p>A similar effect happens if:<br />
+              <code>data-hover-range="1000"&gt;</code>.</p>
+          </td>
+          <td>
+            <code>&lt;svg ... <b>data-can-share-vertex="true"</b>&gt;</code>
+            <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-can-share-vertices="true">
+              <for int="y" until="3">
+                <for int="x" until="3">
+                  <circle ccx="{20 + x*30 + (y%2)*(x-1)*10}" ccy="{20 + y*30 + (x%2)*(y-1)*10}" r="4" class="anchor vertex" />
+                </for>
+              </for>
+            </svg>
+          </td>
+          <td>
+            <code><pre trim="pre">
+              &lt;svg class="straight-edge-area"&gt;
+                &lt;g <b>class="straight-edge-container"</b>/&gt;
+                &lt;g&gt;&lt;!-- content --&gt;&lt;/g&gt;
+              &lt;/svg&gt;  
+            </pre></code>
+            <p>If a <b>g</b> container with class <b>straight-edge-container</b> exists,
+              all generated edges will be placed inside it.<br />
+              This can be useful for controlling z-order, grouping effects, etc.
+            </p>
+            <p>Not demonstrated here, as the SVG content isn't complex enough to detect a difference.</p>
+          </td>
+        </tr>
+      </table>
+
+      <h2>Overriding styles</h2>
+      <table>
+        <tr>
+          <th>Completed lines</th>
+          <th>Lines in progress</th>
+        </tr>
+        <tr>
+          <td>
+            <code><pre trim="pre">
+              #YourPuzzle <b>.straight-edge</b> `{
+                  stroke: gold;       &lt;--default: #b00 --&gt;
+                  stroke-width: 10px; &lt;-- default: 2.5px --&gt;
+              `}
+            </pre></code>      
+          </td>
+          <td>
+            <code><pre trim="pre">
+              #YourPuzzle .straight-edge<b>.building</b> `{
+                  stroke: yellow;     &lt;--default: red --&gt;
+                  stroke-width: 20px; &lt;--default: 4px --&gt;
+              `}
+            </pre></code>      
+          </td>
+        </tr>
+      </table>
+
+      <h2>Hover effects</h2>
+      <p>Sometimes, it is important to clarify the associates for a vertex. Generally, a label.<br />
+        To do that, embed the vertex, and any associates, in a <code>&lt;g <b>class ="vertex-g"</b>&gt;</code></p>
+      <table>
+        <tr>
+          <td>
+            <code><pre trim="pre">
+              &lt;svg class="straight-edge-area"&gt;
+                &lt;for int="y" until="3"&gt;
+                  &lt;for int="x" until="3"&gt;
+                    &lt;g <b>class="vertex-g"</b>
+                        transform="translate(`{15 + x*30 + (y%2)*(x-1)*10`}, 
+                                             `{25 + y*30 + (x%2)*(y-1)*10`})"&gt;
+                      &lt;circle cx="0" cy="0" r="4" class="vertex" /&gt;
+                      &lt;text x="3" y="-3"&gt;`{y*3 + x + 1`}&lt;/text&gt;
+                    &lt;/g&gt;
+                  &lt;/for&gt;
+                &lt;/for&gt;
+              &lt;/svg&gt;  
+            </pre></code>
+          </td>
+          <td style="width:120px;">
+            <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area no-user-select" data-hover-range="10">
+              <for int="y" until="3">
+                <for int="x" until="3">
+                  <g class="vertex-g" ttransform="translate({15 + x*30 + (y%2)*(x-1)*10}, {25 + y*30 + (x%2)*(y-1)*10})">
+                    <circle cx="0" cy="0" r="4" class="vertex" />
+                    <text x="3" y="-3">{y*3 + x + 1}</text>
+                  </g>
+                </for>
+              </for>
+            </svg>
+            <p>Connect pairs of<br />dots by dragging<br />lines.</p>
+          </td>
+        </tr>
+
+      </table>
+
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)">{value}</code>
+    </template>
+    <template id="tag">
+      <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+
+  </body>
+</html>

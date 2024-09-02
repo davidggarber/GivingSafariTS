@@ -89,11 +89,11 @@
           <li><use template="link" page="stamping" /></li>
           <li><use template="link" page="checkmarks" /></li>
           <li><use template="link" page="highlight" wip="true" /></li>
-          <li><use template="link" page="straight-edge" wip="true" /></li>
-          <li><use template="link" page="word-search" wip="true" /></li>
-          <li><use template="link" page="hashi" wip="true" /></li>
+          <li><use template="link" page="straightEdge" /></li>
+          <li><use template="link" friendly="wordSearch" href="straightEdge" /></li>
+          <li><use template="link" friendly="hashiBridge" href="straightEdge" /></li>
           <li><use template="link" page="subway" wip="true" /></li>
-          <li><use template="link" page="drag-drop" wip="true" /></li>
+          <li><use template="link" page="dragDrop" wip="true" /></li>
           <li><use template="link" page="decoder" wip="true" /></li>
           <li><use template="link" page="audio" wip="true" /></li>
         </ul>
@@ -137,6 +137,9 @@
       <if exists="{tag?}">
         <a href="{tag}.xhtml">&lt;{tag}&gt;</a>        
       </if>
+      <elseif exists="{href?}">
+        <a href="{href}.xhtml">{friendly}</a>        
+      </elseif>
       <else>
         <a href="{page}.xhtml">{page}</a>
       </else>

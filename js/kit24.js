@@ -6296,6 +6296,9 @@ function boilerplate(bp) {
         catch (ex) {
             const ctx = wrapContextError(ex);
             console.error(ctx.stack); // Log, but then continue with the rest of the page
+            if (isTrace() || isDebug()) {
+                toggleClass(document.getElementsByTagName('body')[0], 'build-error', true);
+            }
         }
     }
     else if (hasBuilderElements(document)) {

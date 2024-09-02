@@ -29,50 +29,6 @@
         font-size: 11pt;
         background-color: #c3e5f0;
       }
-      .cols3 {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      .cols3 td, .cols3 th {
-        text-align: left;
-        vertical-align: top;
-      }
-
-      .grid_3x3 {
-        display: grid;
-        grid-template-columns: repeat(3,40px);
-      }
-      .grid_3x3 div {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 40px;
-        width: 40px;
-        border: solid 1px gray;
-        user-select: none;
-      }
-      #Checkmarks .stampTool {
-        width: 28px;
-        height: 32px;
-      }
-      .red {
-        background-color: #f99;
-      }
-      .blue {
-        background-color: #9cf;
-      }
-      .stampable {
-        position: relative;
-      }
-      .stampable .extract {
-        position: absolute;
-        left: 0px;
-        width: 100%;
-        text-align: center;
-      }
-      #Checkmarks img.stampTool.selected {
-        background-color: aqua;
-      }
       /* #page {
         height:22in;
       } */
@@ -93,7 +49,7 @@
         <b>.check</b> is a class with a default background-image: ✔️. These can be overridden as a puzzle's needs demand.
       </p>
 
-      <h3>Overrides</h3>
+      <h3>Overriding styles</h3>
       <p>To override which image represents a check or its size:</p>
       <code><pre trim="pre">
         #YourPuzzle .check::before `{

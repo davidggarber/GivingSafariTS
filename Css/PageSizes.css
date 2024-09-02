@@ -262,6 +262,10 @@ body, p, td, th {
   box-shadow:0px 0px 15px #009999; 
 }
 
+body.build-error {
+  background-color: red;
+}
+
 #backlink {
   position: absolute;
   display: block;
