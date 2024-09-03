@@ -115,7 +115,7 @@ test('evaluate', () => {
   expect(catchEvaluate('1+3*pt')?.offset).toEqual(4);
 
   // Not a string
-  expect(catchEvaluate("'fonts:'&fonts&'more'")?.offset).toEqual(9);
+  expect(catchEvaluate("'fonts:'~fonts~'more'")?.offset).toEqual(9);
 
   // Bogus entity
   expect(catchEvaluate('@z;')?.offset).toEqual(1);

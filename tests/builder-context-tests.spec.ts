@@ -129,22 +129,22 @@ test('tokenizeFormula', () => {
   testTokenizeFormula('(aa+[bb-3]*(cc/4))', '(,aa,+,[,bb,−,3,],*,(,cc,/,4,),)', '[t.[t.#].[t.#]]');
 
   // quotes
-  testTokenizeFormula('"abc"&\'def\'', '",abc,",&,\',def,\'', '[t].[t]');
+  testTokenizeFormula('"abc"~\'def\'', '",abc,",~,\',def,\'', '[t].[t]');
 
   // escaped quotes
-  testTokenizeFormula('`"abc`"&`\'def`\'', '"abc",&,\'def\'', 't.t');
+  testTokenizeFormula('`"abc`"~`\'def`\'', '"abc",~,\'def\'', 't.t');
 
   // escaped brackets
-  testTokenizeFormula('"`(abc`)"&\'`[def`]\'', '",(abc),",&,\',[def],\'', '[t].[t]');
+  testTokenizeFormula('"`(abc`)"~\'`[def`]\'', '",(abc),",~,\',[def],\'', '[t].[t]');
 
   // entities in formulas and in literals
-  testTokenizeFormula('"test@at;"&@at;', '",test@at;,",&,@,at;', '[t].!t');
+  testTokenizeFormula('"test@at;"~@at;', '",test@at;,",~,@,at;', '[t].!t');
 
   // brackets and operators in quotes
-  testTokenizeFormula('"(abc)"&\'[d"e+f]\'', '",(abc),",&,\',[d"e+f],\'', '[t].[t]');
+  testTokenizeFormula('"(abc)"~\'[d"e+f]\'', '",(abc),",~,\',[d"e+f],\'', '[t].[t]');
 
   // whitespace, both in words and numbers, and alone
-  testTokenizeFormula('"word " &  (num + 2)', '",word ,", ,&,  ,(,num ,+, 2,)', '[t] . [t.#]');
+  testTokenizeFormula('"word " ~  (num + 2)', '",word ,", ,~,  ,(,num ,+, 2,)', '[t] . [t.#]');
 
   // maybe?
   testTokenizeFormula('maybe?', 'maybe?', 't');
@@ -220,11 +220,11 @@ test('treeifyFormula', () => {
   expect(testTreeifyFormula("sentence.[2*(3+4)]", '.,sentence,*,2,+,3,4')).toBeTruthy();
 
   // Quotes
-  // Note: 1st & in prefix is 2nd in infix
-  expect(testTreeifyFormula("'My '&sentence&\"!!\"", '&,&,My ,sentence,!!')).toBeTruthy();
+  // Note: 1st ~ in prefix is 2nd in infix
+  expect(testTreeifyFormula("'My '~sentence~\"!!\"", '~,~,My ,sentence,!!')).toBeTruthy();
 
   // entities in formulas and in literals
-  expect(testTreeifyFormula('"test@at;"&@at;', '&,test@at;,@,at;')).toBeTruthy();
+  expect(testTreeifyFormula('"test@at;"~@at;', '~,test@at;,@,at;')).toBeTruthy();
 
   // maybe?
   expect(testTreeifyFormula('maybe?', 'maybe?')).toBeTruthy();
@@ -275,16 +275,16 @@ test('evaluateFormulaTree', () => {
   testEvaluateFormulaTree("fonts.0", 'bold');
 
   // Quotes
-  testEvaluateFormulaTree("'My '&sentence&\"!!\"", 'My Unit tests are the best!!!');
+  testEvaluateFormulaTree("'My '~sentence~\"!!\"", 'My Unit tests are the best!!!');
 
   // Entities in formulas
-  testEvaluateFormulaTree("'@' & @quot;", '@"');
+  testEvaluateFormulaTree("'@' ~ @quot;", '@"');
 
   // Entities in text literals
   testEvaluateFormulaTree("'@at;@quot;'", '@"');
 
   // Numeric entities
-  testEvaluateFormulaTree("@33;&@x33;&@#33;&@#x33;", '!3!3');
+  testEvaluateFormulaTree("@33;~@x33;~@#33;~@#x33;", '!3!3');
 
   // maybe?
   testEvaluateFormulaTree("maybe?", '');
@@ -325,17 +325,17 @@ test('evaluateFormulaAny', () => {
   testEvaluateFormulaAny(":sentence.(:num%10-1)", 't');
 
   // Quotes
-  testEvaluateFormulaAny("'My '&sentence&\"!!\"", 'My Unit tests are the best!!!');
+  testEvaluateFormulaAny("'My '~sentence~\"!!\"", 'My Unit tests are the best!!!');
 
   // Entities
-  testEvaluateFormulaAny('"code" & @quot; & ' + "'name'", 'code"name');
+  testEvaluateFormulaAny('"code" ~ @quot; ~ ' + "'name'", 'code"name');
 
   // NCRs in text and formulas
-  testEvaluateFormulaAny('"@#33;" & @(5*7)', '!#');
+  testEvaluateFormulaAny('"@#33;" ~ @(5*7)', '!#');
 
   // Concatenate text with numbers
-  testEvaluateFormulaAny("'three' & pt.x", 'three3');
-  testEvaluateFormulaAny("pt.y&'five'", '5five');
+  testEvaluateFormulaAny("'three' ~ pt.x", 'three3');
+  testEvaluateFormulaAny("pt.y~'five'", '5five');
 
   // One root variable as index into another
   testEvaluateFormulaAny("fonts.:zeroth", 'bold');
@@ -381,5 +381,5 @@ test('complexAttribute', () => {
   testComplexAttribute("pt: (x={pt.x},y={pt.y})", "pt: (x=3,y=5)");
 
   // maybe?
-  testComplexAttribute("{num? & maybe?}", '1234');
+  testComplexAttribute("{num? ~ maybe?}", '1234');
 });
