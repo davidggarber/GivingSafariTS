@@ -239,7 +239,12 @@ export function debugTagAttrs(elmt:Element, expandFormulas:boolean=false): strin
   for (let i = 0; i < elmt.attributes.length; i++) {
     let val = elmt.attributes[i].value;
     if (expandFormulas) {
-      val = makeString(complexAttribute(val));
+      try {
+        val = makeString(complexAttribute(val));
+      }
+      catch {
+        val = "#ERROR#";  // 
+      }
     }
     str += ' ' + elmt.attributes[i].name + '="' + val + '"';
   }
@@ -255,17 +260,30 @@ export function debugTagAttrs(elmt:Element, expandFormulas:boolean=false): strin
  * Show attributes in their raw version, potentially with formulas,
  * and again with resolved values, if different.
  * @param src The original builder element
- * @param dest The new element that replaces it
+ * @param dest The new element that replaces it, or else a list of elements
  * @param expandFormulas If true, try expanding formulas.
  * Don't use if the resolved formulas are at risk of being large (i.e. objects or lists)
  */
-export function traceTagComment(src:Element, dest:Element, expandFormulas:boolean) {
+export function traceTagComment(src:Element, dest:Element|Node[], expandFormulas:boolean) {
   const dbg1 = debugTagAttrs(src);
-  dest.appendChild(consoleComment(dbg1));
+  const cmt1 = consoleComment(dbg1);
+  if (Array.isArray(dest)) {
+    dest.push(cmt1);
+  }
+  else {
+    (dest as Element).appendChild(cmt1);
+  }
+
   if (expandFormulas) {
     const dbg2 = debugTagAttrs(src,true);
     if (dbg2 !== dbg1) {
-      dest.appendChild(consoleComment(dbg2));
+      const cmt2 = consoleComment(dbg2);
+      if (Array.isArray(dest)) {
+        dest.push(cmt2);
+      }
+      else {
+        (dest as Element).appendChild(cmt2);
+      }
     }  
   }
 }

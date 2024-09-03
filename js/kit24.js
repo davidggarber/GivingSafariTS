@@ -4,9 +4,9 @@
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = void 0;
-exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports._rawHtmlSource = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = void 0;
+exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = void 0;
+exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -1934,6 +1934,7 @@ function loadMetaMaterials(puzzle, up, page) {
     }
     return undefined;
 }
+exports.loadMetaMaterials = loadMetaMaterials;
 /**
  * Get the last level of the URL's pathname
  */
@@ -5904,6 +5905,7 @@ exports.clearAllStraightEdges = clearAllStraightEdges;
 function onClickInArea(evt) {
     const ruler = getRulerData(evt);
     if (!ruler.nearest) {
+        // Don't delete an edge if the user is more likely click on the vertex
         const edge = findEdgeUnder(ruler);
         if (edge) {
             deleteStraightEdge(edge);
@@ -6647,7 +6649,7 @@ function setupAbilities(head, margins, data) {
     }
     if (data.stamping) {
         // Review: ability icon
-        fancy += '<span id="stamp-ability" style="text-shadow: 0 0 10px black;"><img src="../Images/Stamps/stamp-glow.png" style="height:22px;" /></span>';
+        fancy += '<span id="stamp-ability" title="Click on objects to interact"><img id="stamp-ability-icon" src="../Images/Stamps/stamp-glow.png" style="height:22px;" /></span>';
         preprocessStampObjects();
         indexAllDrawableFields();
         linkCss(safariDetails.cssRoot + 'StampTools.css');
@@ -6707,6 +6709,10 @@ function setupAfterCss(bp) {
     // If the puzzle has a post-setup method they'd like to run after all abilities and contents are processed, do so now
     if (bp.postSetup) {
         bp.postSetup();
+    }
+    if (bp.metaParams) {
+        // Process metas after page is otherwise fully setup
+        setupMetaSync(bp.metaParams);
     }
     debugPostSetup();
 }
@@ -7373,7 +7379,12 @@ function debugTagAttrs(elmt, expandFormulas = false) {
     for (let i = 0; i < elmt.attributes.length; i++) {
         let val = elmt.attributes[i].value;
         if (expandFormulas) {
-            val = makeString(complexAttribute(val));
+            try {
+                val = makeString(complexAttribute(val));
+            }
+            catch {
+                val = "#ERROR#"; // 
+            }
         }
         str += ' ' + elmt.attributes[i].name + '="' + val + '"';
     }
@@ -7389,17 +7400,29 @@ exports.debugTagAttrs = debugTagAttrs;
  * Show attributes in their raw version, potentially with formulas,
  * and again with resolved values, if different.
  * @param src The original builder element
- * @param dest The new element that replaces it
+ * @param dest The new element that replaces it, or else a list of elements
  * @param expandFormulas If true, try expanding formulas.
  * Don't use if the resolved formulas are at risk of being large (i.e. objects or lists)
  */
 function traceTagComment(src, dest, expandFormulas) {
     const dbg1 = debugTagAttrs(src);
-    dest.appendChild(consoleComment(dbg1));
+    const cmt1 = consoleComment(dbg1);
+    if (Array.isArray(dest)) {
+        dest.push(cmt1);
+    }
+    else {
+        dest.appendChild(cmt1);
+    }
     if (expandFormulas) {
         const dbg2 = debugTagAttrs(src, true);
         if (dbg2 !== dbg1) {
-            dest.appendChild(consoleComment(dbg2));
+            const cmt2 = consoleComment(dbg2);
+            if (Array.isArray(dest)) {
+                dest.push(cmt2);
+            }
+            else {
+                dest.appendChild(cmt2);
+            }
         }
     }
 }
@@ -9482,7 +9505,9 @@ function parseForKey(src) {
  * @returns a list of nodes, which will replace this <if> element
  */
 function startIfBlock(src, result) {
+    const dest = [];
     try {
+        traceTagComment(src, dest, true);
         if (isTag(src, 'if')) {
             result.index = 1;
             // Each <if> tag resets the group's passed state
@@ -9510,14 +9535,18 @@ function startIfBlock(src, result) {
         if (isTag(src, 'else')) {
             result.passed = true;
         }
-        else if (exists !== undefined || notex !== undefined) {
+        else if (src.hasAttributeNS('', 'exists') || src.hasAttributeNS('', 'notex')) {
             if (exists === false || notex === true) {
                 // Special case: calling one of these threw an exception, which is still informative
                 result.passed = notex ? true : exists;
             }
+            else if (src.hasAttributeNS('', 'exists')) {
+                // Does this attribute exist at all?
+                result.passed = exists;
+            }
             else {
                 // Does this attribute exist at all?
-                result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
+                result.passed = !notex;
             }
         }
         else if (not !== undefined) {
@@ -9577,7 +9606,7 @@ function startIfBlock(src, result) {
                 result.passed = re.test(test);
             }
             else { // simple boolean
-                result.passed = test === 'true';
+                result.passed = test === true || test === 'true';
             }
         }
         else {
@@ -9591,9 +9620,9 @@ function startIfBlock(src, result) {
         }
     }
     if (result.passed) {
-        return expandContents(src);
+        pushRange(dest, expandContents(src));
     }
-    return [];
+    return dest;
 }
 exports.startIfBlock = startIfBlock;
 /*-----------------------------------------------------------
@@ -10000,44 +10029,9 @@ function useTemplate(node, tempId) {
         template = null;
     }
     if (template) {
-        // We need to build the values to push onto the context, without changing the current context.
-        // Do all the evaluations first, and cache them.
-        const passed_args = [];
-        for (let i = 0; i < node.attributes.length; i++) {
-            const attr = node.attributes[i].name;
-            const val = node.attributes[i].value;
-            const attri = attr.toLowerCase();
-            try {
-                if (attri != 'template' && attri != 'class') {
-                    const arg = {
-                        attr: attr,
-                        raw: val,
-                        text: cloneText(val),
-                        any: complexAttribute(val),
-                    };
-                    passed_args.push(arg);
-                }
-            }
-            catch (ex) {
-                const ctxerr = wrapContextError(ex, 'useTemplate', elementSourceOffset(node, attr));
-                if (shouldThrow(ctxerr, node, template)) {
-                    throw ctxerr;
-                }
-            }
-        }
+        const passed_args = parseUseNodeArgs(node, template);
         try {
-            // Push a new context for inside the <use>.
-            // Each passed arg generates 3 usable context entries:
-            //  arg = 'text'          the attribute, evaluated as text
-            //  arg! = *any*          the attribute, evaluated as any
-            //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
-            const inner_context = pushBuilderContext();
-            for (let i = 0; i < passed_args.length; i++) {
-                const arg = passed_args[i];
-                inner_context[arg.attr] = arg.any;
-                inner_context[arg.attr + '!'] = arg.text;
-                inner_context[arg.attr + '$'] = arg.raw;
-            }
+            const inner_context = pushTemplateContext(passed_args);
             if (!tempId) {
                 tempId = node.getAttribute('template');
             }
@@ -10069,12 +10063,99 @@ function useTemplate(node, tempId) {
 }
 exports.useTemplate = useTemplate;
 /**
+ * Parse a <use> node to get the template arguments
+ * @param node The <use> node
+ * @param template The targeted <template> node
+ */
+function parseUseNodeArgs(node, template) {
+    // We need to build the values to push onto the context, without changing the current context.
+    // Do all the evaluations first, and cache them.
+    const passed_args = [];
+    for (let i = 0; i < node.attributes.length; i++) {
+        const attr = node.attributes[i].name;
+        const val = node.attributes[i].value;
+        const attri = attr.toLowerCase();
+        try {
+            if (attri != 'template' && attri != 'class') {
+                const arg = {
+                    attr: attr,
+                    raw: val,
+                    text: cloneText(val),
+                    any: complexAttribute(val),
+                };
+                passed_args.push(arg);
+            }
+        }
+        catch (ex) {
+            const ctxerr = wrapContextError(ex, 'parseUseNodeArgs', elementSourceOffset(node, attr));
+            if (shouldThrow(ctxerr, node, template)) {
+                throw ctxerr;
+            }
+        }
+    }
+    return passed_args;
+}
+/**
+ * Parse an object's top-level keys as if they were the attributes of a <use> node
+ * @param arg A dictionary of keys (attribute names) to values (attribute contents)
+ * @returns A list of template arguments.
+ */
+function parseObjectAsUseArgs(args) {
+    if (!args) {
+        return [];
+    }
+    const passed_args = [];
+    const keys = Object.keys(args);
+    for (let i = 0; i < keys.length; i++) {
+        const attr = keys[i];
+        const val = args[attr];
+        const attri = attr.toLowerCase();
+        try {
+            // Names that are invalid on a <use> node are invalid here too
+            if (attri != 'template' && attri != 'class') {
+                const arg = {
+                    attr: attr,
+                    raw: '',
+                    text: JSON.stringify(val),
+                    any: val,
+                };
+                passed_args.push(arg);
+            }
+        }
+        catch (ex) {
+            throw wrapContextError(ex, 'parseObjectAsUseArgs');
+        }
+    }
+    return passed_args;
+}
+/**
+ * Build a template-ready context from a set of template arguments
+ * @param passed_args Arguments, as created from a <use> node
+ * @returns The inner context. Caller MUST POP CONTEXT AFTERWARDS.
+ */
+function pushTemplateContext(passed_args) {
+    // Push a new context for inside the <use>.
+    // Each passed arg generates 3 usable context entries:
+    //  arg = 'text'          the attribute, evaluated as text
+    //  arg! = *any*          the attribute, evaluated as any
+    //  arg$ = unevaluated    the raw contents of the argument attribute, unevaluated.
+    const inner_context = pushBuilderContext();
+    for (let i = 0; i < passed_args.length; i++) {
+        const arg = passed_args[i];
+        inner_context[arg.attr] = arg.any;
+        inner_context[arg.attr + '!'] = arg.text;
+        inner_context[arg.attr + '$'] = arg.raw;
+    }
+    return inner_context;
+}
+/**
  * Replace the current contents of a parent element with
  * the contents of a template.
- * @param parent Parent element
+ * @param parent Parent element to refill. Existing contents will be cleared.
  * @param tempId ID of a <template> element
+ * @param arg an object whose keys and values will become the arguments to the template.
  */
-function refillFromTemplate(parent, tempId) {
+function refillFromTemplate(parent, tempId, args) {
     if (!tempId) {
         throw new ContextError('Template ID not specified');
     }
@@ -10085,11 +10166,38 @@ function refillFromTemplate(parent, tempId) {
     if (!template.content) {
         throw new ContextError('Invalid template (no content): ' + tempId);
     }
-    const clone = template.content.cloneNode(true);
+    let inner_context = null;
+    try {
+        const passed_args = parseObjectAsUseArgs(args);
+        inner_context = pushTemplateContext(passed_args);
+        // The template doesn't have any child nodes. Its content must first be cloned.
+        const clone = template.content.cloneNode(true);
+        const dest = expandContents(clone);
+        refillFromNodes(parent, dest);
+    }
+    catch (ex) {
+        const ctxerr = wrapContextError(ex, 'refillFromTemplate', elementSourceOffset(template));
+        if (inner_context) {
+            popBuilderContext();
+        }
+        if (shouldThrow(ctxerr, template)) {
+            throw ctxerr;
+        }
+    }
+}
+exports.refillFromTemplate = refillFromTemplate;
+/**
+ * Wipe the current contents of a container element, and replace with a new list of nodes.
+ * @param parent The container
+ * @param dest The new list of contents
+ */
+function refillFromNodes(parent, dest) {
     while (parent.childNodes.length > 0) {
         parent.removeChild(parent.childNodes[0]);
     }
-    parent.appendChild(clone);
+    for (let i = 0; i < dest.length; i++) {
+        parent.appendChild(dest[i]);
+    }
 }
 /*-----------------------------------------------------------
  * _templates.ts
@@ -10337,7 +10445,7 @@ function setupScratch() {
     scratchPad.addEventListener('click', function (e) { scratchPadClick(e); });
     page.addEventListener('click', function (e) { scratchPageClick(e); });
     window.addEventListener('blur', function (e) { scratchFlatten(); });
-    page.appendChild(scratchPad);
+    page.insertAdjacentElement('afterbegin', scratchPad);
     if (getSafariDetails()) {
         linkCss(getSafariDetails()?.cssRoot + 'ScratchPad.css');
     }
@@ -10572,6 +10680,100 @@ function scratchCreate(x, y, width, height, text) {
     }
 }
 exports.scratchCreate = scratchCreate;
+let _metaInfo;
+/**
+ * Setup meta sync on the named materials object
+ * @param id The name of a materials object, shared between pages
+ * @param count How many separate meta materials are possible. They will always be numbered [0..count)
+ * @param callback The method on the page that will process the materials, whenever they update.
+ */
+function setupMetaSync(param) {
+    if (!param || isIFrame()) {
+        return; // Do nothing
+    }
+    const body = document.getElementsByTagName('body')[0];
+    if (!body) {
+        throw new Error('Seting up meta sync requires a <body> tag');
+    }
+    _metaInfo = {
+        id: param.id,
+        count: param.count,
+        onSync: param.onSync,
+        refillClass: param.refillClass,
+        refillTemplate: param.refillTemplate,
+        materials: new Array(param.count).fill(null),
+    };
+    // Validate fields
+    if (param.refillClass) {
+        const test = document.getElementsByClassName(param.refillClass);
+        if (test.length != param.count) {
+            throw new ContextError('Refill class (' + param.refillClass + ') has ' + test.length + ' instances, whereas ' + param.count + ' meta materials are expected.');
+        }
+        if (!param.refillTemplate) {
+            throw new ContextError('MetaParam specified refillClass (' + param.refillClass + ') without also specifying refillTemplate.');
+        }
+    }
+    else if (param.refillTemplate && !param.refillClass) {
+        throw new ContextError('MetaParam specified refillTemplate (' + param.refillTemplate + ') without also specifying refillClass.');
+    }
+    else if (!param.onSync) {
+        throw new ContextError('MetaParam expects either an onSync callback, or else both refill fields.');
+    }
+    // Refresh materials every time the user switches back to this page
+    document.addEventListener('visibilitychange', function (event) {
+        if (!document.hidden) {
+            scanMetaMaterials();
+        }
+    });
+    body.onfocus = function (e) { scanMetaMaterials(); };
+    // Then run it now.
+    scanMetaMaterials(true);
+}
+exports.setupMetaSync = setupMetaSync;
+/**
+ * Check for any updates to cached meta materials (from other pages).
+ * If any changes, invoke the on-page callback.
+ * @param force If set, always calls the onSync callback
+ */
+function scanMetaMaterials(force) {
+    let changed = force || false;
+    for (var i = 0; i < _metaInfo.count; i++) {
+        if (_metaInfo.materials[i]) {
+            continue; // materials should never change. Either we have them or we don't.
+        }
+        var materials = loadMetaMaterials(_metaInfo.id, _metaInfo.up || 0, i);
+        if (materials) {
+            _metaInfo.materials[i] = materials;
+            changed = true;
+        }
+    }
+    if (loadMetaMaterials(_metaInfo.id, _metaInfo.up || 0, _metaInfo.count)) {
+        throw new ContextError('WARNING: Meta materials may be misnumbered. Expected #0 - #' + (_metaInfo.count - 1) + ' but found #' + _metaInfo.count);
+    }
+    if (changed) {
+        if (_metaInfo.onSync) {
+            _metaInfo.onSync(_metaInfo.materials);
+        }
+        if (_metaInfo.refillClass) {
+            refillFromMeta(_metaInfo.materials);
+        }
+    }
+}
+exports.scanMetaMaterials = scanMetaMaterials;
+/**
+ * Refill a collection of containers on the page with the latest meta materials.
+ * The data is formatted using a named template.
+ * @param materials The latest meta materials
+ */
+function refillFromMeta(materials) {
+    const containers = document.getElementsByClassName(_metaInfo.refillClass);
+    for (var i = 0; i < containers.length; i++) {
+        if (materials[i]) {
+            var container = containers[i];
+            refillFromTemplate(container, _metaInfo.refillTemplate, materials[i]);
+        }
+    }
+}
 /*-----------------------------------------------------------
  * _validatePBN.ts
  *-----------------------------------------------------------*/

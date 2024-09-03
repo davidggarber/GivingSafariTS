@@ -59,9 +59,21 @@
                 [8,7,15]
               ]
             },
-          ]
+          ],
+          test: {
+            from: 'Beef',
+            which: '1st',
+            chefs: ['Desiree', 'Seacrest', 'Alpbakh', 'Christmas', 'Rachel'],
+          }
+        },
+        metaParams: {
+          id: 'IronChefMeta',
+          count: 4,
+          refillClass: 'meta-clue',
+          refillTemplate: 'material-fill'
         },
       };
+
     </script>
     <style>
       #grid {
@@ -81,6 +93,27 @@
       }
       #below {
         text-align: center;
+      }
+      #all-materials {
+        position: absolute;
+        left: 8.1in;
+        top: -0.9in;
+      }
+      #all-materials .card {
+        position: relative;
+        height: 2.75in;
+      }
+      #all-materials .card img {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        height: 2.5in;
+      }
+      .meta-clue {
+        position: absolute;
+        top: 0.25in;
+        left: 0.75in;
+        width: 3in;
       }
 
       #save-menu {
@@ -156,6 +189,24 @@
         <p>Whose cuisine reigns supreme? <pattern id="final" pattern="4" /></p>
       </div>
 
+      <div id="all-materials">
+        <for int="i" until="4">
+          <div class="card">
+            <img src="IronChef/card.png" class="material-card" />
+            <div class="meta-clue">
+            </div>          
+          </div>
+        </for>
+      </div>
     </div>
+
+    <template id="material-fill">
+      <h3>Clue from solving {from}</h3>
+      <p>The {which} set of Iron Chef contestants are:</p>
+      <for each="name" in="{chefs}">
+        <li>{name}</li>
+      </for>
+    </template>
+
   </body>
 </html>

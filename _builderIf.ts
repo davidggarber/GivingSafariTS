@@ -1,7 +1,7 @@
-import { expandContents, shouldThrow } from "./_builder";
+import { consoleComment, expandContents, pushRange, shouldThrow } from "./_builder";
 import { evaluateAttribute, keyExistsInContext, makeFloat } from "./_builderContext";
 import { isTag } from "./_classUtil";
-import { ContextError, elementSourceOffset, elementSourceOffseter, wrapContextError } from "./_contextError";
+import { ContextError, debugTagAttrs, elementSourceOffset, elementSourceOffseter, traceTagComment, wrapContextError } from "./_contextError";
 
 export type ifResult = {
   passed:boolean;
@@ -24,8 +24,10 @@ export type ifResult = {
  * @returns a list of nodes, which will replace this <if> element
  */
 export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
+  const dest:Node[] = [];
   try {
-    
+    traceTagComment(src, dest, true);
+  
     if (isTag(src, 'if')) {
       result.index = 1;
       // Each <if> tag resets the group's passed state
@@ -55,14 +57,18 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
     if (isTag(src, 'else')) {
       result.passed = true;
     }
-    else if (exists !== undefined || notex !== undefined) {
+    else if (src.hasAttributeNS('', 'exists') || src.hasAttributeNS('', 'notex')) {
       if (exists === false || notex === true) {
         // Special case: calling one of these threw an exception, which is still informative
         result.passed = notex ? true : exists;
       }
+      else if (src.hasAttributeNS('', 'exists')) {
+        // Does this attribute exist at all?
+        result.passed = exists;
+      }
       else {
         // Does this attribute exist at all?
-        result.passed = (exists != null && keyExistsInContext(exists)) || (notex != null && !keyExistsInContext(notex));
+        result.passed = !notex;
       }
     }
     else if (not !== undefined) {
@@ -123,7 +129,7 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
         result.passed = re.test(test);
       }
       else {  // simple boolean
-        result.passed = test === 'true';
+        result.passed = test === true || test === 'true';
       }
     }
     else {
@@ -136,9 +142,9 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
   }
 
   if (result.passed) {
-    return expandContents(src);
+    pushRange(dest, expandContents(src));
   }
   
-  return [];
+  return dest;
 }
 

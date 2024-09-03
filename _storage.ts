@@ -1014,7 +1014,7 @@ function saveMetaMaterials(puzzle:string, up:number, page:string, obj:object) {
  * @param page The meta-clue label (i.e. part 1 or B)
  * @returns An object - can be different for each meta type
  */
-function loadMetaMaterials(puzzle, up, page): object|undefined {
+export function loadMetaMaterials(puzzle:string, up:number, page:number): object|undefined {
     var key = getOtherFileHref(puzzle, up) + "-" + page;
     if (key in localStorage) {
         const item = localStorage.getItem(key);

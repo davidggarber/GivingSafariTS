@@ -14,6 +14,7 @@ import { LinkDetails, getSafariDetails, initSafariDetails } from "./_events";
 import { diffSummarys, LayoutSummary, renderDiffs, summarizePageLayout } from "./_testUtils";
 import { wrapContextError } from "./_contextError";
 import { setupScratch } from "./_scratch";
+import { MetaParams, setupMetaSync } from "./_meta";
 
 
 /**
@@ -164,6 +165,7 @@ export type BoilerPlateData = {
     postBuild?: () => void;  // invoked after the builder is done
     preSetup?: () => void;
     postSetup?: () => void;
+    metaParams?: MetaParams;
     googleFonts?: string;  // A list of fonts, separated by commas
     onNoteChange?: (inp:HTMLInputElement) => void;
     onInputChange?: (inp:HTMLInputElement) => void;
@@ -710,7 +712,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
     }
     if (data.stamping) {
         // Review: ability icon
-        fancy += '<span id="stamp-ability" style="text-shadow: 0 0 10px black;"><img src="../Images/Stamps/stamp-glow.png" style="height:22px;" /></span>';
+        fancy += '<span id="stamp-ability" title="Click on objects to interact"><img id="stamp-ability-icon" src="../Images/Stamps/stamp-glow.png" style="height:22px;" /></span>';
         preprocessStampObjects();
         indexAllDrawableFields();
         linkCss(safariDetails.cssRoot + 'StampTools.css');
@@ -773,6 +775,10 @@ function setupAfterCss(bp: BoilerPlateData) {
     // If the puzzle has a post-setup method they'd like to run after all abilities and contents are processed, do so now
     if (bp.postSetup) {
         bp.postSetup();
+    }
+    if (bp.metaParams) {
+        // Process metas after page is otherwise fully setup
+        setupMetaSync(bp.metaParams);
     }
 
     debugPostSetup();

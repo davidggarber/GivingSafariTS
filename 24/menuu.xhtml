@@ -22,6 +22,13 @@
           feeders: false,
           submitable: false,
           table_cols: 4,
+
+          metas: [
+            { title: 'Iron Chef', href: 'IronChef.xhtml', author: 'Rorke Haining',  thumb: '',
+              icon: 'Icons/ironChef.png', template: 'ironChef', forget: 'IC_Forget.xhtml',
+              feeders: ['CobaltVirejas', 'NickelAsci', 'TinCocinera', 'ZincSzakacs']
+            }
+          ]
         },
       };
     </script>
@@ -43,11 +50,11 @@
             <ttr id="sortHeader">
               <tth class="icons" onclick="sortTable(this)">Type</tth>
               <tth class="html" onclick="sortTable(this)">Puzzle</tth>
-              <if test="feeders">
+              <if test="{feeders}">
                 <tth class="feeders" onclick="sortTable(this)">Feeder</tth>
               </if>
               <tth class="author" onclick="sortTable(this)">Author</tth>
-              <if test="submitable">
+              <if test="{submitable}">
                 <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
               </if>
             </ttr>    
@@ -57,10 +64,10 @@
             <for each="puz" in="puzzles">
               <ttr class="sortable">
                 <ttd class="icons">
-                  <if exists="puz.icon">
+                  <if exists="{puz.icon}">
                     <img ssrc="Icons/{puz.icon}.png" />
                   </if>
-                  <if notex="puz.icon">
+                  <if notex="{puz.icon}">
                     <img ssrc="Icons/{puz.type.icon}.png" title="{puz.type.alt}" />
                   </if>
                 </ttd>
@@ -72,13 +79,13 @@
                     </if>
                   </a>
                 </ttd>
-                <if test="feeders">
+                <if test="{feeders}">
                   <ttd class="feeders"></ttd>
                 </if>
                 <ttd class="authors">
                   {puz.author}
                 </ttd>
-                <if test="submitable">
+                <if test="{submitable}">
                   <ttd class="submital"></ttd>
                 </if>
               </ttr>
@@ -86,20 +93,67 @@
           </ttbody>
 
           <ttfoot id="meta_list">
+            <ttr>
+                <tth colspan="{table_cols}" style="background-color: #D1D6D7">&nbsp;</tth>
+            </ttr>
+            <ttr>
+              <tth>&nbsp;</tth>
+              <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
+              <if test="{feeders}">
+                <tth>Unlocked</tth>
+              </if>
+              <tth class="author" style="text-align: left;">Author</tth>
+              <if test="{submitable}">
+                <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
+              </if>
+            </ttr>    
+            <for each="meta" in="{metas}">
               <ttr>
-                  <tth colspan="{table_cols}" style="background-color: #D1D6D7">&nbsp;</tth>
+                <ttd class="icons">
+                  <img ssrc="{meta.icon}"/>
+                </ttd>
+                <ttd class="html">
+                  <a class="hover" href="{meta.href}" target="_blank">
+                    {meta.title}
+                    <if exists="{meta.thumb}">
+                      <img class="thumb" ssrc="Thumbs/{meta.thumb}.png" />
+                    </if>
+                  </a>
+                </ttd>
+                <if test="{feeders}">
+                  <ttd class="feeders"></ttd>
+                </if>
+                <ttd class="authors">
+                  {meta.author}
+                </ttd>
+                <if test="{submitable}">
+                  <ttd class="submital"></ttd>
+                </if>
               </ttr>
               <ttr>
-                  <tth>&nbsp;</tth>
-                  <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
-                  <if test="feeders">
-                    <tth>Unlocked</tth>
+                <ttd>&nbsp;</ttd>
+                <if test="{feeders}">
+                  <ttd class="feeders" colspan="2">
+                    <for each="feed" in="{meta.feeders}">
+                      <use template="{meta.template}" name="{feed}" index="{feed# + 1}" />
+                    </for>
+                  </ttd>
+                </if>
+                <else>
+                  <ttd class="feeders">
+                    <for each="feed" in="{meta.feeders}">
+                      <use template="{meta.template}" name="{feed}" index="{feed# + 1}" />
+                    </for>
+                  </ttd>
+                </else>
+                <td>
+                  <if exists="{meta.forget?}">
+                    <a href="{meta.forget}" target="_blank" style="font-size: smaller;">Forget materials</a>
                   </if>
-                  <tth class="author" style="text-align: left;">Author</tth>
-                  <if test="submitable">
-                    <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
-                  </if>
-              </ttr>    
+                </td>
+              </ttr>
+              
+            </for>
           </ttfoot>
         </ttable>
       </build>
@@ -156,5 +210,12 @@
       </table>
 
     </div>
+
+    <template id="ironChef">
+      <a class="ic-hat" href="IC_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
+        <img src="Icons/ironChef.png" /><sub>{index}</sub>
+      </a>
+    </template>
+
   </body>
 </html>

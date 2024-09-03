@@ -201,6 +201,7 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
   font-family: 'Verdana';
   font-size: 10pt;
   color: #666;
+  z-index: 60;
 }
 
 #title { 
@@ -243,7 +244,7 @@ body, p, td, th {
 
 #icons img {
   height:0.3in;
-  box-shadow:0px 0px 10px black; 
+  filter: drop-shadow(0px 0px 10px #00000080);
 }
 
 #body {
@@ -269,6 +270,7 @@ body.build-error {
 #backlink {
   position: absolute;
   display: block;
+  z-index: 60;
 }
 
 @media screen {

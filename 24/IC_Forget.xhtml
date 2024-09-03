@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Iron Check -- Forget',
+        author: 'Rorke Haining',
+        copyright: '2021',
+        type: '',  // TODO: icon?
+        abilities: {
+          scratchPad: true,
+        },
+        postSetup: forgetFeeders
+      };
+
+      //<![CDATA[
+      function forgetFeeders() {
+        for (var page = 0; page < 4; page++) {
+          saveMetaMaterials('IronChefMeta', 0, page, null);
+        }
+      }
+      //]]>
+    </script>
+    <style>
+      .clue, li {
+        margin: 10px;
+        font-size: 20pt;
+      }
+    </style>
+  </head>
+  <body id="Feeder">
+    <div id="pageBody">
+      <p class="clue" style="margin-top: 1in;">
+        The 1st set of <a href="IronChef.xhtml">Iron Chef</a> contestants are:
+      </p>
+      <ul>
+        <li>Desiree</li>
+        <li>Seacrest</li>
+        <li>Alpbakh</li>
+        <li>Christmas</li>
+        <li>Rachel</li>
+      </ul>
+    </div>
+  </body>
+</html>

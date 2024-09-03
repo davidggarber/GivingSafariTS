@@ -23,7 +23,7 @@ export function setupScratch() {
     page.addEventListener('click', function (e) { scratchPageClick(e); } );
     window.addEventListener('blur', function (e) { scratchFlatten(); } );
 
-    page.appendChild(scratchPad);
+    page.insertAdjacentElement('afterbegin', scratchPad);
 
     if (getSafariDetails()) {
         linkCss(getSafariDetails()?.cssRoot + 'ScratchPad.css');
