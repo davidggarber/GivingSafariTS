@@ -15,6 +15,7 @@
         abilities: {
           reactiveBuilder: 'pageBody',
           scratchPad: true,
+          stamping: true,
         },
         reactiveBuilder: true,
         lookup: {
@@ -35,7 +36,13 @@
             ['3 4 5',11,16],
             ['9',9,8],
             ['4 2 3 4',3,15],
-          ]
+          ],
+        },
+        metaParams: {
+          id: 'SmorgasbordMeta',
+          count: 4,
+          refillClass: 'clue-row',
+          refillTemplate: 'material-fill'
         },
       };
     </script>
@@ -52,6 +59,34 @@
       p {
         margin-top: 25px;
       }
+
+      #all-materials {
+        position: absolute;
+        left: 8.2in;
+        top: -0.9in;
+      }
+
+      .clue-title {
+        font-size: 20pt;
+      }
+
+      .clue-box rect {
+        fill: none;
+        stroke: #00000044;
+        stroke-width: 1;
+      }
+      .clue-box image {
+        width: 169px;
+      }
+      .clue-box path {
+        stroke: none;
+        fill: none;
+      }
+      .clue-box.cross-off path {
+        stroke: #99000099;
+        stroke-width: 20px;
+      }
+
     </style>
   </head>
   <body id="Smorgasbord">
@@ -71,9 +106,33 @@
       <div id="final" style="position:absolute; right: 0px; top: 8in;" data-input-style="box">
         The final clue is:<br />
         <pattern id="extracted" extract-numbered="16" />
-        
-        </div>
+      </div>
+
+      <svg id="all-materials" width="750" height="960" xmlns="http://www.w3.org/2000/svg" class="stampable-container no-user-select">
+        <for int="i" until="4">
+          <g class="clue-row" ttransform="translate(20, {50 + i * 240})">
+          </g>
+        </for>
+      </svg>
+
+      <div id="stampPalette" data-unstyle="cross-off" style="display:none">
+        <span class="stampTool" id="cross-off-tool" data-style="cross-off" />
+        <span class="stampTool"/>
+      </div>
 
     </div>
+
+
+    <template id="material-fill">
+      <text class="clue-title" x="-20" y="-10">Materials #{index}</text>
+      <for each="pic" in="{pics}">
+        <g class="clue-box stampable" ttransform="translate({pic# * 183}, 0)">
+          <image yy="{pic.y}" hhref="Smorgasbord/{pic.img}.png" />
+          <rect x="0" y="0" width="170" height="185" />
+          <path d="M-1,186 L171,-1" />
+        </g>
+      </for>
+    </template>
+
   </body>
 </html>

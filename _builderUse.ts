@@ -1,4 +1,5 @@
-import { expandContents, shouldThrow } from "./_builder";
+import { isTrace } from "./_boilerplate";
+import { expandContents, initElementStack, shouldThrow } from "./_builder";
 import { cloneText, complexAttribute, popBuilderContext, pushBuilderContext } from "./_builderContext";
 import { ContextError, elementSourceOffset, wrapContextError } from "./_contextError";
 import { getTemplate } from "./_templates";
@@ -161,6 +162,12 @@ function pushTemplateContext(passed_args:TemplateArg[]):object {
     inner_context[arg.attr] = arg.any;
     inner_context[arg.attr + '!'] = arg.text;
     inner_context[arg.attr + '$'] = arg.raw;
+
+    if (isTrace()) {
+      console.log('Use template arg #' + i + ': ' + arg.attr + ' = ' + JSON.stringify(arg.any));
+      console.log('Use template arg #' + i + ': ' + arg.attr + '! = ' + arg.text);
+      console.log('Use template arg #' + i + ': ' + arg.attr + '$ = ' + arg.raw);
+    }
   }  
   return inner_context;
 }
@@ -183,6 +190,9 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
   if (!template.content) {
     throw new ContextError('Invalid template (no content): ' + tempId);
   }
+
+  // Make sure we know the stack of our destination
+  initElementStack(parent);
 
   let inner_context:any = null;
   try {

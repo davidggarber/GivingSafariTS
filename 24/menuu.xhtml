@@ -27,7 +27,12 @@
             { title: 'Iron Chef', href: 'IronChef.xhtml', author: 'Rorke Haining',  thumb: '',
               icon: 'Icons/ironChef.png', template: 'ironChef', forget: 'IC_Forget.xhtml',
               feeders: ['CobaltVirejas', 'NickelAsci', 'TinCocinera', 'ZincSzakacs']
-            }
+            },
+            { title: 'Smorgasbord', href: 'Smorgasbord.xhtml', author: 'Rorke Haining',  thumb: '',
+              icon: 'Icons/smorgasbord.png', template: 'smorgasbord', forget: 'SB_Forget.xhtml',
+              feeders: ['Giorti', 'Janchi', 'Oturuntza', 'Veitsla']
+            },
+
           ]
         },
       };
@@ -214,6 +219,12 @@
     <template id="ironChef">
       <a class="ic-hat" href="IC_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
         <img src="Icons/ironChef.png" /><sub>{index}</sub>
+      </a>
+    </template>
+
+    <template id="smorgasbord">
+      <a class="sb-plate" href="SB_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
+        <img src="Icons/smorgasbord.png" /><sub>{index}</sub>
       </a>
     </template>
 

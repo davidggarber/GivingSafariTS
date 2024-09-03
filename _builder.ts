@@ -203,7 +203,7 @@ export function hasBuilderElements(doc:Document) {
 let src_element_stack:Element[] = [];
 let dest_element_stack:Element[] = [];
 
-function initElementStack(elmt:Element|null) {
+export function initElementStack(elmt:Element|null) {
   dest_element_stack = [];
   src_element_stack = [];
   const parent_stack:Element[] = [];

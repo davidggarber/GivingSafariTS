@@ -5,8 +5,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = void 0;
-exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = void 0;
+exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -4535,7 +4535,8 @@ function preprocessStampObjects() {
         const palette = palettes[p];
         const setName = palette.getAttributeNS('', 'data-stamp-set') || '';
         if (!(setName in _stampSets)) {
-            throw new ContextError('Palette does not connect to a known stampSet: ' + setName, elementSourceOffset(palette, 'data-stamp-set'));
+            // A palette can be known before the container, if the container is built dynamically
+            _stampSets[setName] = makeStampSet();
         }
         const setInfo = _stampSets[setName];
         elems = palette.getElementsByClassName('stampTool');
@@ -7633,6 +7634,7 @@ function initElementStack(elmt) {
         src_element_stack.push(parent_stack.pop());
     }
 }
+exports.initElementStack = initElementStack;
 function pushDestElement(elmt) {
     dest_element_stack.push(elmt);
 }
@@ -10145,6 +10147,11 @@ function pushTemplateContext(passed_args) {
         inner_context[arg.attr] = arg.any;
         inner_context[arg.attr + '!'] = arg.text;
         inner_context[arg.attr + '$'] = arg.raw;
+        if (isTrace()) {
+            console.log('Use template arg #' + i + ': ' + arg.attr + ' = ' + JSON.stringify(arg.any));
+            console.log('Use template arg #' + i + ': ' + arg.attr + '! = ' + arg.text);
+            console.log('Use template arg #' + i + ': ' + arg.attr + '$ = ' + arg.raw);
+        }
     }
     return inner_context;
 }
@@ -10166,6 +10173,8 @@ function refillFromTemplate(parent, tempId, args) {
     if (!template.content) {
         throw new ContextError('Invalid template (no content): ' + tempId);
     }
+    // Make sure we know the stack of our destination
+    initElementStack(parent);
     let inner_context = null;
     try {
         const passed_args = parseObjectAsUseArgs(args);

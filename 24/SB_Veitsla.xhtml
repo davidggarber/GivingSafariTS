@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Smorgasbord - materials #4',
+        author: 'Rorke Haining',
+        copyright: '2021',
+        feeder: 'smorgasbord',
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          index: 4,
+          pics: [ {img:'merlot', y:0}, {img:'namdokmai', y:0}, {img:'okra', y:0}, {img:'pluot', y:0} ]
+        },
+        postSetup: unlockFeeder
+      };
+
+      //<![CDATA[
+      function unlockFeeder() {
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials('SmorgasbordMeta', 0, 3, {
+            index: boiler.lookup.index, 
+            pics: boiler.lookup.pics,
+            src: window.location.href });
+          updatePuzzleList('SmorgasbordMeta-4', 'loaded');
+        }
+      }
+      //]]>
+    </script>
+    <style>
+      .clue-box rect {
+        fill: none;
+        stroke: #00000044;
+        stroke-width: 1;
+      }
+      .clue-box image {
+        width: 169px;
+      }
+
+      
+    </style>
+  </head>
+  <body id="Feeder">
+    <div id="pageBody">
+      <p class="clue" style="margin-top: 1in;">
+        Four "Wacky Word" clues are available to solve the <a href="Smorgasbord.xhtml">Smorgasbord</a> meta puzzle:
+      </p>
+
+      <svg id="all-materials" width="400" height="500" xmlns="http://www.w3.org/2000/svg">
+        <for each="pic" in="{pics}">
+          <g class="clue-box stampable" ttransform="translate({10 + (pic# % 2) *183}, {30 + (pic# \ 2) * 240})">
+            <image yy="{pic.y}" hhref="Smorgasbord/{pic.img}.png" />
+            <rect x="0" y="0" width="170" height="185" />
+          </g>
+        </for>
+      </svg>
+
+    </div>
+  </body>
+</html>

@@ -118,8 +118,8 @@ export function preprocessStampObjects() {
 
         const setName = palette.getAttributeNS('', 'data-stamp-set') || '';
         if (!(setName in _stampSets)) {
-            throw new ContextError('Palette does not connect to a known stampSet: ' + setName,
-                elementSourceOffset(palette, 'data-stamp-set'));
+            // A palette can be known before the container, if the container is built dynamically
+            _stampSets[setName] = makeStampSet();
         }
         const setInfo = _stampSets[setName] as stampSet;
 

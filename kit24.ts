@@ -5011,8 +5011,8 @@ export function preprocessStampObjects() {
 
         const setName = palette.getAttributeNS('', 'data-stamp-set') || '';
         if (!(setName in _stampSets)) {
-            throw new ContextError('Palette does not connect to a known stampSet: ' + setName,
-                elementSourceOffset(palette, 'data-stamp-set'));
+            // A palette can be known before the container, if the container is built dynamically
+            _stampSets[setName] = makeStampSet();
         }
         const setInfo = _stampSets[setName] as stampSet;
 
@@ -8531,7 +8531,7 @@ export function hasBuilderElements(doc:Document) {
 let src_element_stack:Element[] = [];
 let dest_element_stack:Element[] = [];
 
-function initElementStack(elmt:Element|null) {
+export function initElementStack(elmt:Element|null) {
   dest_element_stack = [];
   src_element_stack = [];
   const parent_stack:Element[] = [];
@@ -11263,6 +11263,12 @@ function pushTemplateContext(passed_args:TemplateArg[]):object {
     inner_context[arg.attr] = arg.any;
     inner_context[arg.attr + '!'] = arg.text;
     inner_context[arg.attr + '$'] = arg.raw;
+
+    if (isTrace()) {
+      console.log('Use template arg #' + i + ': ' + arg.attr + ' = ' + JSON.stringify(arg.any));
+      console.log('Use template arg #' + i + ': ' + arg.attr + '! = ' + arg.text);
+      console.log('Use template arg #' + i + ': ' + arg.attr + '$ = ' + arg.raw);
+    }
   }  
   return inner_context;
 }
@@ -11285,6 +11291,9 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
   if (!template.content) {
     throw new ContextError('Invalid template (no content): ' + tempId);
   }
+
+  // Make sure we know the stack of our destination
+  initElementStack(parent);
 
   let inner_context:any = null;
   try {
