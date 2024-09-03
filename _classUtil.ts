@@ -508,7 +508,7 @@ export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = '
     }
 
     // Sort indeces, then build array from them
-    indeces.sort();
+    indeces.sort((a,b) => a < b ? -1 : 1);
     for (let i = 0; i < indeces.length; i++) {
         const order = '' + indeces[i];
         const peers = lookup[order];

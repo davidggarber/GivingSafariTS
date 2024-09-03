@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Smorgasbord',
+        author: 'Rorke Haining',
+        copyright: '2021',
+        type: 'meta',
+        abilities: {
+          reactiveBuilder: 'pageBody',
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          clues: [
+            ['4 4',8,7],  // pattern, index to extract, under-number
+            ['3 7',2,14],
+            ['9 2 3',12,9],
+            ['5 3',6,13],
+            ['7 5',3,10],
+            ['11 2 3 4',2,6],
+            ['6 4 4',7,5],
+            ['10 4',6,2],
+            ['5 4 2 4 3 4',20,3],
+            ['7 4',11,12],
+            ['9 2 6',4,11],
+            ['5 2 4',8,4],
+            ['5 6 5',6,1],
+            ['3 4 5',11,16],
+            ['9',9,8],
+            ['4 2 3 4',3,15],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Smorgasbord .letter-box {
+        background-color: #ddd;
+      }
+      #Smorgasbord .extract-yellow {
+        background-color: yellow;
+      }
+      #Smorgasbord #final .letter-box {
+        background-color: yellow;
+      }
+      p {
+        margin-top: 25px;
+      }
+    </style>
+  </head>
+  <body id="Smorgasbord">
+    <div id="pageBody">
+      <p class="flavor">
+        Fill in the answers to the food-themed "Wacky Wordies" here in alphabetical order.  
+        Leading articles (a, an, the) have been omitted.  
+        Then copy the selected letters to complete a final clue. 
+      </p>
+      
+      <div data-input-style="box" data-extract-style="yellow">
+        <for each="clue" in="clues">
+          <p><pattern pattern="{clue.0}" numbers="{clue.1}={clue.2}" /></p>
+        </for>
+      </div>
+
+      <div id="final" style="position:absolute; right: 0px; top: 8in;" data-input-style="box">
+        The final clue is:<br />
+        <pattern id="extracted" extract-numbered="16" />
+        
+        </div>
+
+    </div>
+  </body>
+</html>
