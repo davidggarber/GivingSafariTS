@@ -32,6 +32,14 @@
               icon: 'Icons/smorgasbord.png', template: 'smorgasbord', forget: 'SB_Forget.xhtml',
               feeders: ['Giorti', 'Janchi', 'Oturuntza', 'Veitsla']
             },
+            { title: 'Fridge Raider 3', href: 'FridgeRaider3.xhtml', author: 'Jeffrey Lin',  thumb: '',
+              icon: 'Icons/fridge.png', template: 'fridge', forget: 'FR_Forget.xhtml',
+              feeders: ['Butter', 'Eggs', 'Mayo', 'Pickles']
+            },
+            { title: 'Tmmmm Moasty', href: 'TmmmmMoasty.xhtml', author: 'David Garber',  thumb: '',
+              icon: 'Icons/toaster.png', template: 'toaster', forget: 'TM_Forget.xhtml',
+              feeders: ['AAA', 'BBB', 'CCC', 'DDD']
+            },
 
           ]
         },
@@ -225,6 +233,18 @@
     <template id="smorgasbord">
       <a class="sb-plate" href="SB_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
         <img src="Icons/smorgasbord.png" /><sub>{index}</sub>
+      </a>
+    </template>
+
+    <template id="fridge">
+      <a class="fr-fridge" href="FR_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
+        <img src="Icons/fridge.png" /><sub>{index}</sub>
+      </a>
+    </template>
+
+    <template id="toaster">
+      <a class="MT-toaster" href="MT_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
+        <img src="Icons/toaster.png" /><sub>{index}</sub>
       </a>
     </template>
 

@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Fridge Raider 3',
+        author: 'Jeffrey Lin',
+        copyright: '2021',
+        type: 'rebus',
+        abilities: {
+          reactiveBuilder: 'pageBody',
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+      #below {
+        position: absolute;
+        bottom: 0px;
+        left: 1.25in;
+      }
+      #below td {
+        text-align: center;
+        vertical-align: bottom;
+        padding: 2px;
+      }
+      #below p {
+        margin: 0px;
+        font-size: 20pt;
+        line-height: 18pt;
+      }
+      #below .arrows {
+        width: 0.2in;
+      }
+      #FridgeRaider3 .letter-cell {
+        font-size: 20pt;
+      }
+    </style>
+  </head>
+  <body id="FridgeRaider3">
+    <div id="pageBody">
+      <p class="flavor">
+        Looking through the fridge, things seem to pair up nicely. I do need some idea for what I can turn these water and chips into though. 
+      </p>
+
+
+
+
+      <ttable id="below" data-letter-style="grid">
+        <ttr>
+          <for char="ch" in="WATERCHIPS">
+            <ttd>
+              <p>{ch}<br />
+                <img class="arrows" src="FridgeRaider3/arrows.svg" /><br />
+                <letter />
+              </p>
+            </ttd>
+          </for>
+          
+        </ttr>
+      </ttable>
+
+    </div>
+  </body>
+</html>
