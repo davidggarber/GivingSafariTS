@@ -73,9 +73,15 @@ function puzzleHref(puz) {
     return puzzleFile(puz) + '.xhtml';
 }
 
+// Pass any url arguments on to the puzzles, plus the event identifier
+var _urlEventArguments = window.location.search.indexOf('gs24') > 0 
+    ? window.location.search  // no change
+    : window.location.search === '' ? '?gs24' 
+    : (window.location.search + '&gs24');
+
 // Fill in the puzzle hrefs
 for (var puz of puzzles) {
-    puz['href'] = puzzleHref(puz);
+    puz['href'] = puzzleHref(puz) + _urlEventArguments;
 }
 
 var first_puzzle_solve_id_ = 500;

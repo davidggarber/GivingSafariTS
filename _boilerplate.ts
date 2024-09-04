@@ -10,7 +10,7 @@ import { TableDetails, constructTable } from "./_tableBuilder";
 import { setupSubways } from "./_subway";
 import { setupValidation } from "./_confirmation";
 import { expandControlTags, hasBuilderElements } from "./_builder";
-import { LinkDetails, getSafariDetails, initSafariDetails } from "./_events";
+import { LinkDetails, backlinkFromUrl, getSafariDetails, initSafariDetails } from "./_events";
 import { diffSummarys, LayoutSummary, renderDiffs, summarizePageLayout } from "./_testUtils";
 import { wrapContextError } from "./_contextError";
 import { setupScratch } from "./_scratch";
@@ -52,6 +52,16 @@ function debugSetup() {
     if (urlArgs['compare-layout'] != undefined) {
         linkCss('../Css/TestLayoutDiffs.css');  // TODO: path
     }
+}
+
+/**
+ * Check the URL to see if a given argument has been set.
+ * Doesn't matter what it's set to, if anything.
+ * @param arg The name of an arg (lower-case)
+ * @returns true if present in URL.
+ */
+export function urlArgExists(arg:string):boolean {
+    return urlArgs[arg] !== undefined;
 }
 
 /**
@@ -464,9 +474,9 @@ function boilerplate(bp: BoilerPlateData) {
     if (bp.copyright || bp.author) {
         margins.appendChild(createSimpleDiv({id:'copyright', text:'© ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
     }
-    if (safariDetails.puzzleList) {
-        const listName = safariDetails.puzzleListName || 'Puzzle list';
-        margins.appendChild(createSimpleA({id:'backlink', href:safariDetails.puzzleList, friendly:listName}));
+    const backlink = backlinkFromUrl();
+    if (backlink) {
+        margins.appendChild(backlink);
     }
     if (bp.printAsColor !== undefined) {
         margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));

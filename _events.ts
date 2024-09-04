@@ -1,3 +1,5 @@
+import { urlArgExists } from "./_boilerplate";
+
 export type LinkDetails = {
   rel: string;  // 'preconnect', 'stylesheet', ...
   href: string;
@@ -19,7 +21,14 @@ export type PuzzleEventDetails = {
   links: LinkDetails[];  // A list of additional link tags to add to every puzzle
   qr_folders?: {};  // Folder for any QR codes
   solverSite?: string;  // URL to a separate solver website, where players can enter answers
+  backLinks?: object;  // key: URL trigger -> puzzleListBackLink
 }
+
+type puzzleListBackLink = {
+  href: string;  // relative path
+  friendly?: string;
+}
+
 
 const noEventDetails:PuzzleEventDetails = {
   'cssRoot': '../Css/',
@@ -31,12 +40,11 @@ const safariDocsDetails:PuzzleEventDetails = {
   'logo': '../Docs/Images/logo.jpg',
   'icon': '../Docs/Images/monster-book-icon.png',
   'iconRoot': '../24/Icons/',
-  'puzzleList': '../Docs/index.xhtml',
-  'puzzleListName': 'Documentation',
   'cssRoot': '../Css/',
   'fontCss': '../Docs/Css/Fonts.css',
   'googleFonts': 'Caveat Inconsolata',
-  'links': []
+  'links': [],
+  'backLinks': { '': { href:'../Docs/index.xhtml', friendly:'Documentation'}},
 };
 
 const safariSingleDetails:PuzzleEventDetails = {
@@ -44,7 +52,6 @@ const safariSingleDetails:PuzzleEventDetails = {
   'logo': './Images/Sample_Logo.png',
   'icon': './Images/Sample_Icon.png',
   'iconRoot': './Icons/',
-  'puzzleList': '',
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts.css',
   'googleFonts': 'Caveat',
@@ -59,11 +66,11 @@ const safariSampleDetails:PuzzleEventDetails = {
   'logo': './Images/Sample_Logo.png',
   'icon': './Images/Sample_Icon.png',
   'iconRoot': './Icons/',
-  'puzzleList': './index.html',
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts.css',
   'googleFonts': 'Caveat',
-  'links': []
+  'links': [],
+  'backLinks': { '': { href:'./index.html'}},
 }
 
 const safari20Details:PuzzleEventDetails = {
@@ -71,7 +78,6 @@ const safari20Details:PuzzleEventDetails = {
   'logo': './Images/PS20 logo.png',
   'icon': './Images/Beaker_icon.png',
   'iconRoot': './Icons/',
-  'puzzleList': './safari.html',
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts20.css',
   'googleFonts': 'Architects+Daughter,Caveat',  // no whitespace
@@ -79,6 +85,7 @@ const safari20Details:PuzzleEventDetails = {
   'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
   // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+  'backLinks': { 'gs23': { href:'./safari.html'}},
 }
 
 const safari21Details:PuzzleEventDetails = {
@@ -86,7 +93,6 @@ const safari21Details:PuzzleEventDetails = {
   'logo': './Images/GS24_banner.png',  // PS21 logo.png',
   'icon': './Images/Plate_icon.png',
   'iconRoot': './Icons/',
-  'puzzleList': './menuu.xhtml',
   'cssRoot': '../Css/',
   'fontCss': '../24/Css/Fonts21.css',
   'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',  // no whitespace
@@ -94,6 +100,7 @@ const safari21Details:PuzzleEventDetails = {
   'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
   // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+  'backLinks': { 'gs24': { href:'./menuu.xhtml'}, 'ps21': { href:'./menuu.xhtml'}},
 }
 
 const safari24Details:PuzzleEventDetails = {
@@ -101,7 +108,6 @@ const safari24Details:PuzzleEventDetails = {
   // 'logo': '../24/Images/PS24 logo.png',
   'icon': '../24/Images/Sample_Icon.png',
   'iconRoot': '../24/Icons/',
-  // 'puzzleList': './safari.html',
   'cssRoot': '../Css/',
   'fontCss': '../24/Css/Fonts24.css',
   'googleFonts': 'Goblin+One,Caveat',  // no whitespace
@@ -109,6 +115,7 @@ const safari24Details:PuzzleEventDetails = {
   // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
               //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
   // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+  'backLinks': { 'ps24':{ href:'./indexx.html'}, 'gs27':{ href:'./safari.html'} },
 }
 
 const safariDggDetails:PuzzleEventDetails = {
@@ -116,7 +123,6 @@ const safariDggDetails:PuzzleEventDetails = {
   'logo': './Images/octopus_watermark.png',
   'icon': './Images/octopus_icon.png',
   'iconRoot': './Icons/',
-  'puzzleList': './indexx.html',
   'cssRoot': '../Css/',
   'fontCss': './Css/Fonts.css',
   'googleFonts': 'Caveat,Righteous,Cormorant+Upright',  // no whitespace
@@ -124,6 +130,7 @@ const safariDggDetails:PuzzleEventDetails = {
   'qr_folders': {'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/'},
   // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+  'backLinks': { '':{ href:'./indexx.html'} },
 }
 
 // Event for the PuzzylSafariTeam branch
@@ -132,7 +139,6 @@ const puzzylSafariTeamDetails:PuzzleEventDetails = {
   // 'logo': './Images/Sample_Logo.png',
   'icon': '24/favicon.png',
   'iconRoot': './Icons/',
-  'puzzleList': '',
   'cssRoot': 'Css/',
   'fontCss': '24/Fonts24.css',
   'googleFonts': 'Goblin+One,Caveat',
@@ -177,4 +183,43 @@ export function initSafariDetails(safariId?:string): PuzzleEventDetails {
 */
 export function getSafariDetails(): PuzzleEventDetails {
   return safariDetails;
+}
+
+/**
+ * Create a backlink to the puzzle list.
+ * Might be subject to prerequisites
+ * @returns 
+ */
+export function backlinkFromUrl(): HTMLElement|undefined {
+  if (!safariDetails || !safariDetails.backLinks) {
+    return undefined;
+  }
+  // Check if any of the prerequisite triggers are present
+  const keys = Object.keys(safariDetails.backLinks);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    if (key && urlArgExists(key)) {
+      return createBacklink(safariDetails.backLinks[key]);
+    }
+  }
+  if ('' in safariDetails.backLinks) {
+    // Some events don't need a trigger
+    return createBacklink(safariDetails.backLinks[''] as puzzleListBackLink);
+  }
+  return undefined;
+}
+
+/**
+ * Create an <a href> to the backlink puzzle list.
+ * @param backlink object with an href, and optionally also friendly text
+ * @returns An anchor element
+ */
+function createBacklink(backlink:puzzleListBackLink): HTMLAnchorElement {
+  let a: HTMLAnchorElement = document.createElement('a') as HTMLAnchorElement;
+  a.id = 'backlink';
+  const text = backlink['friendly'] || 'Puzzle list';
+  a.innerText = text;
+  a.href = backlink.href + window.location.search;
+  a.target = '_blank';
+  return a;
 }

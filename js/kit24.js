@@ -5,8 +5,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = void 0;
-exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports._rawHtmlSource = exports.getSafariDetails = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = void 0;
+exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.backlinkFromUrl = exports.getSafariDetails = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -5922,19 +5922,17 @@ const safariDocsDetails = {
     'logo': '../Docs/Images/logo.jpg',
     'icon': '../Docs/Images/monster-book-icon.png',
     'iconRoot': '../24/Icons/',
-    'puzzleList': '../Docs/index.xhtml',
-    'puzzleListName': 'Documentation',
     'cssRoot': '../Css/',
     'fontCss': '../Docs/Css/Fonts.css',
     'googleFonts': 'Caveat Inconsolata',
-    'links': []
+    'links': [],
+    'backLinks': { '': { href: '../Docs/index.xhtml', friendly: 'Documentation' } },
 };
 const safariSingleDetails = {
     'title': 'Puzzle',
     'logo': './Images/Sample_Logo.png',
     'icon': './Images/Sample_Icon.png',
     'iconRoot': './Icons/',
-    'puzzleList': '',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
     'googleFonts': 'Caveat',
@@ -5948,18 +5946,17 @@ const safariSampleDetails = {
     'logo': './Images/Sample_Logo.png',
     'icon': './Images/Sample_Icon.png',
     'iconRoot': './Icons/',
-    'puzzleList': './index.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
     'googleFonts': 'Caveat',
-    'links': []
+    'links': [],
+    'backLinks': { '': { href: './index.html' } },
 };
 const safari20Details = {
     'title': 'Safari Labs',
     'logo': './Images/PS20 logo.png',
     'icon': './Images/Beaker_icon.png',
     'iconRoot': './Icons/',
-    'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts20.css',
     'googleFonts': 'Architects+Daughter,Caveat',
@@ -5967,13 +5964,13 @@ const safari20Details = {
     'qr_folders': { 'https://www.puzzyl.net/23/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/' },
     // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+    'backLinks': { 'gs23': { href: './safari.html' } },
 };
 const safari21Details = {
     'title': 'Safari Labs',
     'logo': './Images/GS24_banner.png',
     'icon': './Images/Plate_icon.png',
     'iconRoot': './Icons/',
-    'puzzleList': './menuu.xhtml',
     'cssRoot': '../Css/',
     'fontCss': '../24/Css/Fonts21.css',
     'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',
@@ -5981,13 +5978,13 @@ const safari21Details = {
     'qr_folders': { 'https://www.puzzyl.net/24/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/' },
     // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+    'backLinks': { 'gs24': { href: './menuu.xhtml' }, 'ps21': { href: './menuu.xhtml' } },
 };
 const safari24Details = {
     'title': 'Game Night',
     // 'logo': '../24/Images/PS24 logo.png',
     'icon': '../24/Images/Sample_Icon.png',
     'iconRoot': '../24/Icons/',
-    // 'puzzleList': './safari.html',
     'cssRoot': '../Css/',
     'fontCss': '../24/Css/Fonts24.css',
     'googleFonts': 'Goblin+One,Caveat',
@@ -5995,13 +5992,13 @@ const safari24Details = {
     // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
     //    'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
     // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+    'backLinks': { 'ps24': { href: './indexx.html' }, 'gs27': { href: './safari.html' } },
 };
 const safariDggDetails = {
     'title': 'David’s Puzzles',
     'logo': './Images/octopus_watermark.png',
     'icon': './Images/octopus_icon.png',
     'iconRoot': './Icons/',
-    'puzzleList': './indexx.html',
     'cssRoot': '../Css/',
     'fontCss': './Css/Fonts.css',
     'googleFonts': 'Caveat,Righteous,Cormorant+Upright',
@@ -6009,6 +6006,7 @@ const safariDggDetails = {
     'qr_folders': { 'https://www.puzzyl.net/Dgg/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/Dgg/': './Qr/puzzyl/' },
     // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+    'backLinks': { '': { href: './indexx.html' } },
 };
 // Event for the PuzzylSafariTeam branch
 const puzzylSafariTeamDetails = {
@@ -6016,7 +6014,6 @@ const puzzylSafariTeamDetails = {
     // 'logo': './Images/Sample_Logo.png',
     'icon': '24/favicon.png',
     'iconRoot': './Icons/',
-    'puzzleList': '',
     'cssRoot': 'Css/',
     'fontCss': '24/Fonts24.css',
     'googleFonts': 'Goblin+One,Caveat',
@@ -6060,6 +6057,44 @@ function getSafariDetails() {
     return safariDetails;
 }
 exports.getSafariDetails = getSafariDetails;
+/**
+ * Create a backlink to the puzzle list.
+ * Might be subject to prerequisites
+ * @returns
+ */
+function backlinkFromUrl() {
+    if (!safariDetails || !safariDetails.backLinks) {
+        return undefined;
+    }
+    // Check if any of the prerequisite triggers are present
+    const keys = Object.keys(safariDetails.backLinks);
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        if (key && urlArgExists(key)) {
+            return createBacklink(safariDetails.backLinks[key]);
+        }
+    }
+    if ('' in safariDetails.backLinks) {
+        // Some events don't need a trigger
+        return createBacklink(safariDetails.backLinks['']);
+    }
+    return undefined;
+}
+exports.backlinkFromUrl = backlinkFromUrl;
+/**
+ * Create an <a href> to the backlink puzzle list.
+ * @param backlink object with an href, and optionally also friendly text
+ * @returns An anchor element
+ */
+function createBacklink(backlink) {
+    let a = document.createElement('a');
+    a.id = 'backlink';
+    const text = backlink['friendly'] || 'Puzzle list';
+    a.innerText = text;
+    a.href = backlink.href + window.location.search;
+    a.target = '_blank';
+    return a;
+}
 /*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
@@ -6093,6 +6128,16 @@ function debugSetup() {
         linkCss('../Css/TestLayoutDiffs.css'); // TODO: path
     }
 }
+/**
+ * Check the URL to see if a given argument has been set.
+ * Doesn't matter what it's set to, if anything.
+ * @param arg The name of an arg (lower-case)
+ * @returns true if present in URL.
+ */
+function urlArgExists(arg) {
+    return urlArgs[arg] !== undefined;
+}
+exports.urlArgExists = urlArgExists;
 /**
  * Determines if the caller has specified <i>debug</i> in the URL
  * NOTE: Debug features can be intrusive. Rendering artifacts and alerts.
@@ -6422,9 +6467,9 @@ function boilerplate(bp) {
     if (bp.copyright || bp.author) {
         margins.appendChild(createSimpleDiv({ id: 'copyright', text: '© ' + (bp.copyright || '') + ' ' + (bp.author || '') }));
     }
-    if (safariDetails.puzzleList) {
-        const listName = safariDetails.puzzleListName || 'Puzzle list';
-        margins.appendChild(createSimpleA({ id: 'backlink', href: safariDetails.puzzleList, friendly: listName }));
+    const backlink = backlinkFromUrl();
+    if (backlink) {
+        margins.appendChild(backlink);
     }
     if (bp.printAsColor !== undefined) {
         margins.appendChild(createSimpleDiv(bp.printAsColor ? print_as_color : print_as_grayscale));
