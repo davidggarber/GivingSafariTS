@@ -5,9 +5,10 @@
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
     <script src="../js/kit24.js"></script>
+    <script src="V/edm.js" />
     <script>
       const boiler = {
-        'safari': '24',
+        'safari': 'gs24',
         'title': '🍽️🎥',
         'author': 'Morgan Grobin',
         'copyright': '2021',
@@ -204,7 +205,10 @@
       </div>
       </build>
 
-      <div id="extracted" style="width:100%; text-align:center;"></div>
+      <div id="extract-and-submit" style="width:100%; text-align:center;">
+        <div id="extracted" data-show-ready="submit-extracted"/>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
     </div>
 
     <template id="idea">

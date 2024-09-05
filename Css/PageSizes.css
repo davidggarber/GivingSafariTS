@@ -496,3 +496,10 @@ body.build-error {
   position: relative;
   top: 4px; 
 }
+
+.validate-block {
+  display: none;
+}
+.validater {
+  display: none;
+}

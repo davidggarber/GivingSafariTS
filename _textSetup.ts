@@ -645,7 +645,7 @@ function focusNearestInput(evt:MouseEvent) {
         for (let i = 0; i < targets.length; i++) {
             const target = targets[i] as HTMLElement;
             if ((target.getAttribute('disabled') === null) &&
-                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a'))) {
+                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a') || isTag(target, 'button'))) {
                 return;  // Shouldn't need my help
             }
             if (hasClass(target, 'stampTool') || hasClass(target, 'stampable') || hasClass(target, 'stampLock')) {

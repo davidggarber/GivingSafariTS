@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <script> var exports = {}; </script>
     <script src="../js/kit24.js" />
+    <script src="V/tnq.js" />
     <script>
       const boiler = {
         safari: 'gs24',
@@ -98,7 +99,10 @@
           </for>
         </ttable>
 
-        <div id="extracted" style="position:absolute; left: 0px; top: 8in;"></div>
+        <div class="no-print validate-block" style="position:absolute; left: 0px; top: 8in;">
+          <div id="extracted" data-show-ready="submit-extracted"/>
+          <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+        </div>
       </build>
     </div>
   </body>

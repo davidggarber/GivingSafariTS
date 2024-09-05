@@ -5,8 +5,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = void 0;
-exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.backlinkFromUrl = exports.getSafariDetails = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = void 0;
+exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -2247,6 +2247,7 @@ function onLetterKey(event) {
         var multiLetter = hasClass(input.parentNode, 'multiple-letter');
         // Don't move focus if nothing was typed
         if (!multiLetter) {
+            afterInputUpdate(input, event.key);
             return true;
         }
     }
@@ -2490,6 +2491,7 @@ function ExtractionIsInteresting(text) {
  * Update an extraction area with new text
  * @param text The current extraction
  * @param dest The container for the extraction. Can be a div or an input
+ * @param ready True if all contributing inputs have contributed
  */
 function ApplyExtraction(text, dest, ready) {
     if (hasClass(dest, 'lower-case')) {
@@ -2500,6 +2502,7 @@ function ApplyExtraction(text, dest, ready) {
     }
     const destInp = isTag(dest, 'INPUT') ? dest : null;
     const destText = isTag(dest, 'TEXT') ? dest : null;
+    const destFwd = hasClass(dest, 'extract-literal') ? dest : null;
     var current = (destInp !== null) ? destInp.value : (destText !== null) ? destText.innerHTML : dest.innerText;
     if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
         return;
@@ -2507,7 +2510,10 @@ function ApplyExtraction(text, dest, ready) {
     if (!ExtractionIsInteresting(text) && ExtractionIsInteresting(current)) {
         text = '';
     }
-    if (destInp) {
+    if (destFwd) {
+        destFwd.setAttributeNS('', 'value', text);
+    }
+    else if (destInp) {
         destInp.value = text;
     }
     else if (destText) {
@@ -2521,6 +2527,11 @@ function ApplyExtraction(text, dest, ready) {
     if (isTag(dest, 'input')) {
         // It's possible that the destination is itself an extract source
         ExtractFromInput(dest);
+    }
+    else if (destFwd) {
+        // Or a hidden extract source
+        var extractedId = getOptionalStyle(destFwd, 'data-extracted-id', undefined, 'extracted-');
+        UpdateExtraction(extractedId);
     }
 }
 /**
@@ -2613,6 +2624,9 @@ function updateExtractionData(extracted, value, ready) {
                 validateInputReady(btn, value);
             }
         }
+        if (btnId && isTrace()) {
+            console.log('Extraction is ' + (ready ? 'ready:' : 'NOT ready:') + value);
+        }
     }
 }
 /**
@@ -2681,7 +2695,8 @@ function updateWordExtraction(extractedId) {
             const inp = input;
             const letter = extractWordIndex(inp.value, indeces[j]);
             if (letter) {
-                letters += letter;
+                letters += letter.toUpperCase();
+                ;
                 partial = partial || (letter != '_');
                 ready = ready && (letter != '_');
             }
@@ -2703,7 +2718,7 @@ function updateWordExtraction(extractedId) {
     }
     let extraction = parts.join('');
     if (hasWordExtraction) {
-        ApplyExtraction(extraction, extracted, !partial);
+        ApplyExtraction(extraction, extracted, ready);
     }
 }
 exports.updateWordExtraction = updateWordExtraction;
@@ -2713,6 +2728,9 @@ exports.updateWordExtraction = updateWordExtraction;
  * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
  */
 function extractWordIndex(input, index) {
+    if (index === '*') {
+        return input || '_';
+    }
     const dot = index.split('.');
     let letter_index;
     if (dot.length == 2) {
@@ -3712,7 +3730,7 @@ function focusNearestInput(evt) {
         for (let i = 0; i < targets.length; i++) {
             const target = targets[i];
             if ((target.getAttribute('disabled') === null) &&
-                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a'))) {
+                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a') || isTag(target, 'button'))) {
                 return; // Shouldn't need my help
             }
             if (hasClass(target, 'stampTool') || hasClass(target, 'stampable') || hasClass(target, 'stampLock')) {
@@ -5979,6 +5997,7 @@ const safari21Details = {
         'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/' },
     // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
     'backLinks': { 'gs24': { href: './menuu.xhtml' }, 'ps21': { href: './menuu.xhtml' } },
+    'validation': true,
 };
 const safari24Details = {
     'title': 'Game Night',
@@ -6095,6 +6114,20 @@ function createBacklink(backlink) {
     a.target = '_blank';
     return a;
 }
+/**
+ * According to event rules, should we enable local validation
+ * @returns
+ */
+function enableValidation() {
+    if (safariDetails.validation === true) {
+        return true;
+    }
+    else if (safariDetails.validation === false || safariDetails.validation === undefined) {
+        return false;
+    }
+    return urlArgExists(safariDetails.validation);
+}
+exports.enableValidation = enableValidation;
 /*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
@@ -6502,7 +6535,7 @@ function boilerplate(bp) {
         bp.preSetup();
     }
     setupAbilities(head, margins, bp.abilities || {});
-    if (bp.validation) {
+    if (enableValidation() && theValidation()) {
         linkCss(safariDetails.cssRoot + 'Guesses.css');
         setupValidation();
     }
@@ -6848,6 +6881,10 @@ let guess_history = [];
  * player to propose an answer, or an automatic extraction for other elements.
  */
 function setupValidation() {
+    const body = document.getElementsByTagName('body')[0];
+    if (body) {
+        toggleClass(body, 'show-validater', true);
+    }
     const buttons = document.getElementsByClassName('validater');
     if (buttons.length > 0) {
         let hist = getHistoryDiv('');
@@ -6963,8 +7000,8 @@ function calcTransform(elmt, prop, index, defValue) {
     return defValue;
 }
 /**
- * When typing in an input connect to a validate button,
- * Any non-empty string indicates ready (TODO: add other rules)
+ * When typing in an input connected to a validate button,
+ * any non-empty string indicates ready (TODO: add other rules)
  * and ENTER triggers a button click
  * @param btn The button to enable/disable as ready
  * @param key What key was just typed, if any
@@ -6977,6 +7014,9 @@ function validateInputReady(btn, key) {
     }
     const value = getValueToValidate(ext);
     const ready = isValueReady(btn, value);
+    if (isTrace()) {
+        console.log('Value ' + value + ready ? ' is ready' : ' is NOT ready');
+    }
     toggleClass(btn, 'ready', ready);
     if (ready && key == 'Enter') {
         clickValidationButton(btn);
@@ -7010,7 +7050,10 @@ function getValueToValidate(container) {
     if (inputs.length > 0) {
         let value = '';
         for (let i = 0; i < inputs.length; i++) {
-            value += inputs[i].value;
+            if (!hasClass(inputs[i], 'letter-non-input')) {
+                const ch = inputs[i].value;
+                value += ch || '_';
+            }
         }
         return value;
     }
@@ -7080,13 +7123,17 @@ function clickValidationButton(btn) {
  * @param gl the guess information, but not the response
  */
 function decodeAndValidate(gl) {
-    const validation = theBoiler().validation;
+    if (isTrace()) {
+        console.log('Guess ' + gl.guess);
+    }
+    const validation = theValidation();
     if (validation && gl.field in validation) {
         const obj = validation[gl.field];
         // Normalize guesses
         // TODO: make this optional, in theBoiler, if a puzzle needs
         gl.guess = gl.guess.toUpperCase(); // All caps (permanent)
         let guess = gl.guess.replace(/ /g, ''); // Remove spaces for hashing - keep in UI
+        guess = guess.replace(/ /g, ''); // Remove non-breaking spaces too
         // Keep all other punctuation
         const hash = rot13(guess); // TODO: more complicated hashing
         const block = appendGuess(gl);
@@ -7231,6 +7278,27 @@ function rot13(source) {
     }
     return rot;
 }
+/**
+ * We forward-declare boiler, which we expect calling pages to define.
+ * @returns The page's boiler, if any. Else undefined.
+ */
+function pageValidation() {
+    if (typeof validation !== 'undefined') {
+        return validation;
+    }
+    return undefined;
+}
+let _validation;
+/**
+ * Expose the boilerplate as an export
+ * Only called by code which is triggered by a boilerplate, so safely not null
+ */
+function theValidation() {
+    if (!_validation)
+        _validation = pageValidation();
+    return _validation;
+}
+exports.theValidation = theValidation;
 /**
  * Custom error which identify which parts of the source document are malformed.
  * It can leverage nested try/catch blocks to add additional context.

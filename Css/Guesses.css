@@ -152,10 +152,12 @@ body.solved {
   display: none;
 }
 
-.validater {
-  display: none;
-}
-
 .validater.ready {
   display: inline-block;
+}
+.validater.inline.ready {
+  display: inline;
+}
+body.show-validater .validate-block {
+  display: block;
 }

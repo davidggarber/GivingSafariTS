@@ -3,7 +3,7 @@ import { isTag, hasClass, getOptionalStyle,
     findInNextContainer, findEndInContainer,
     indexInContainer, childAtIndex, moveFocus, toggleClass, SortElements } from "./_classUtil";
 import { toggleHighlight } from "./_notes";
-import { isDebug, theBoiler } from "./_boilerplate";
+import { isDebug, isTrace, theBoiler } from "./_boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./_storage";
 import { validateInputReady } from "./_confirmation";
 import { read } from "fs";
@@ -271,6 +271,7 @@ export function onLetterKey(event:KeyboardEvent): boolean {
         var multiLetter = hasClass(input.parentNode, 'multiple-letter');
         // Don't move focus if nothing was typed
         if (!multiLetter) {
+            afterInputUpdate(input, event.key);
             return true;
         }
     }
@@ -529,6 +530,7 @@ function ExtractionIsInteresting(text:string): boolean {
  * Update an extraction area with new text
  * @param text The current extraction
  * @param dest The container for the extraction. Can be a div or an input
+ * @param ready True if all contributing inputs have contributed
  */
 function ApplyExtraction(   text:string, 
                             dest:HTMLElement,
@@ -542,6 +544,7 @@ function ApplyExtraction(   text:string,
 
     const destInp:HTMLInputElement|null = isTag(dest, 'INPUT') ? dest as HTMLInputElement : null;
     const destText:HTMLElement|null = isTag(dest, 'TEXT') ? dest as HTMLElement : null;
+    const destFwd:HTMLElement|null = hasClass(dest, 'extract-literal') ? dest as HTMLElement : null;
     var current = (destInp !== null) ? destInp.value : (destText !== null) ? destText.innerHTML : dest.innerText;
     if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
         return;
@@ -549,7 +552,10 @@ function ApplyExtraction(   text:string,
     if (!ExtractionIsInteresting(text) && ExtractionIsInteresting(current)) {
         text = '';
     }
-    if (destInp) {
+    if (destFwd) {
+        destFwd.setAttributeNS('', 'value', text);
+    }
+    else if (destInp) {
         destInp.value = text;    
     }
     else if (destText) {
@@ -565,6 +571,11 @@ function ApplyExtraction(   text:string,
     if (isTag(dest, 'input')) {
         // It's possible that the destination is itself an extract source
         ExtractFromInput(dest as HTMLInputElement);
+    }
+    else if (destFwd) {
+        // Or a hidden extract source
+        var extractedId = getOptionalStyle(destFwd, 'data-extracted-id', undefined, 'extracted-');
+        UpdateExtraction(extractedId);
     }
 }
 
@@ -665,6 +676,9 @@ function updateExtractionData(extracted:string|HTMLElement, value:string, ready:
                 validateInputReady(btn as HTMLButtonElement, value);
             }
         }
+        if (btnId && isTrace()) {
+            console.log('Extraction is ' + (ready ? 'ready:' : 'NOT ready:') + value);
+        }
     }
 
 }
@@ -739,9 +753,9 @@ export function updateWordExtraction(extractedId:string|null) {
         let letters = '';
         for (let j = 0; j < indeces.length; j++) {
             const inp = input as HTMLInputElement;  
-            const letter = extractWordIndex(inp.value, indeces[j]);
+            const letter = extractWordIndex(inp.value, indeces[j])
             if (letter) {
-                letters += letter;
+                letters += letter.toUpperCase();;
                 partial = partial || (letter != '_');
                 ready = ready && (letter != '_');
             }
@@ -764,7 +778,7 @@ export function updateWordExtraction(extractedId:string|null) {
     let extraction = parts.join('');
 
     if (hasWordExtraction) {
-        ApplyExtraction(extraction, extracted, !partial);
+        ApplyExtraction(extraction, extracted, ready);
     }
 }
 
@@ -774,6 +788,9 @@ export function updateWordExtraction(extractedId:string|null) {
  * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
  */
 export function extractWordIndex(input:string, index:string) {
+    if (index === '*') {
+        return input || '_';
+    }
     const dot = index.split('.');
     let letter_index:number;
     if (dot.length == 2) {

@@ -2442,6 +2442,7 @@ export function onLetterKey(event:KeyboardEvent): boolean {
         var multiLetter = hasClass(input.parentNode, 'multiple-letter');
         // Don't move focus if nothing was typed
         if (!multiLetter) {
+            afterInputUpdate(input, event.key);
             return true;
         }
     }
@@ -2700,6 +2701,7 @@ function ExtractionIsInteresting(text:string): boolean {
  * Update an extraction area with new text
  * @param text The current extraction
  * @param dest The container for the extraction. Can be a div or an input
+ * @param ready True if all contributing inputs have contributed
  */
 function ApplyExtraction(   text:string, 
                             dest:HTMLElement,
@@ -2713,6 +2715,7 @@ function ApplyExtraction(   text:string,
 
     const destInp:HTMLInputElement|null = isTag(dest, 'INPUT') ? dest as HTMLInputElement : null;
     const destText:HTMLElement|null = isTag(dest, 'TEXT') ? dest as HTMLElement : null;
+    const destFwd:HTMLElement|null = hasClass(dest, 'extract-literal') ? dest as HTMLElement : null;
     var current = (destInp !== null) ? destInp.value : (destText !== null) ? destText.innerHTML : dest.innerText;
     if (!ExtractionIsInteresting(text) && !ExtractionIsInteresting(current)) {
         return;
@@ -2720,7 +2723,10 @@ function ApplyExtraction(   text:string,
     if (!ExtractionIsInteresting(text) && ExtractionIsInteresting(current)) {
         text = '';
     }
-    if (destInp) {
+    if (destFwd) {
+        destFwd.setAttributeNS('', 'value', text);
+    }
+    else if (destInp) {
         destInp.value = text;    
     }
     else if (destText) {
@@ -2736,6 +2742,11 @@ function ApplyExtraction(   text:string,
     if (isTag(dest, 'input')) {
         // It's possible that the destination is itself an extract source
         ExtractFromInput(dest as HTMLInputElement);
+    }
+    else if (destFwd) {
+        // Or a hidden extract source
+        var extractedId = getOptionalStyle(destFwd, 'data-extracted-id', undefined, 'extracted-');
+        UpdateExtraction(extractedId);
     }
 }
 
@@ -2836,6 +2847,9 @@ function updateExtractionData(extracted:string|HTMLElement, value:string, ready:
                 validateInputReady(btn as HTMLButtonElement, value);
             }
         }
+        if (btnId && isTrace()) {
+            console.log('Extraction is ' + (ready ? 'ready:' : 'NOT ready:') + value);
+        }
     }
 
 }
@@ -2910,9 +2924,9 @@ export function updateWordExtraction(extractedId:string|null) {
         let letters = '';
         for (let j = 0; j < indeces.length; j++) {
             const inp = input as HTMLInputElement;  
-            const letter = extractWordIndex(inp.value, indeces[j]);
+            const letter = extractWordIndex(inp.value, indeces[j])
             if (letter) {
-                letters += letter;
+                letters += letter.toUpperCase();;
                 partial = partial || (letter != '_');
                 ready = ready && (letter != '_');
             }
@@ -2935,7 +2949,7 @@ export function updateWordExtraction(extractedId:string|null) {
     let extraction = parts.join('');
 
     if (hasWordExtraction) {
-        ApplyExtraction(extraction, extracted, !partial);
+        ApplyExtraction(extraction, extracted, ready);
     }
 }
 
@@ -2945,6 +2959,9 @@ export function updateWordExtraction(extractedId:string|null) {
  * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
  */
 export function extractWordIndex(input:string, index:string) {
+    if (index === '*') {
+        return input || '_';
+    }
     const dot = index.split('.');
     let letter_index:number;
     if (dot.length == 2) {
@@ -4054,7 +4071,7 @@ function focusNearestInput(evt:MouseEvent) {
         for (let i = 0; i < targets.length; i++) {
             const target = targets[i] as HTMLElement;
             if ((target.getAttribute('disabled') === null) &&
-                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a'))) {
+                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a') || isTag(target, 'button'))) {
                 return;  // Shouldn't need my help
             }
             if (hasClass(target, 'stampTool') || hasClass(target, 'stampable') || hasClass(target, 'stampLock')) {
@@ -6574,6 +6591,7 @@ export type PuzzleEventDetails = {
   qr_folders?: {};  // Folder for any QR codes
   solverSite?: string;  // URL to a separate solver website, where players can enter answers
   backLinks?: object;  // key: URL trigger -> puzzleListBackLink
+  validation?: boolean|string;  // whether to allow local validation
 }
 
 type puzzleListBackLink = {
@@ -6653,6 +6671,7 @@ const safari21Details:PuzzleEventDetails = {
                  'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
   // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
   'backLinks': { 'gs24': { href:'./menuu.xhtml'}, 'ps21': { href:'./menuu.xhtml'}},
+  'validation': true,
 }
 
 const safari24Details:PuzzleEventDetails = {
@@ -6774,6 +6793,20 @@ function createBacklink(backlink:puzzleListBackLink): HTMLAnchorElement {
   a.href = backlink.href + window.location.search;
   a.target = '_blank';
   return a;
+}
+
+/**
+ * According to event rules, should we enable local validation
+ * @returns 
+ */
+export function enableValidation():boolean {
+  if (safariDetails.validation === true) {
+    return true;
+  }
+  else if (safariDetails.validation === false || safariDetails.validation === undefined) {
+    return false;
+  }
+  return urlArgExists(safariDetails.validation);
 }
 
 /*-----------------------------------------------------------
@@ -6933,7 +6966,6 @@ export type BoilerPlateData = {
     printAsColor?: boolean;  // true=color, false=grayscale, unset=unmentioned
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
-    validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
     reactiveBuilder?: boolean|string;  // invoke the new reactive builder
     lookup?: object;  // a dictionary of json data available to builder code
@@ -7280,7 +7312,7 @@ function boilerplate(bp: BoilerPlateData) {
 
     setupAbilities(head, margins, bp.abilities || {});
 
-    if (bp.validation) {
+    if (enableValidation() && theValidation()) {
         linkCss(safariDetails.cssRoot + 'Guesses.css');
         setupValidation();
     }
@@ -7669,6 +7701,10 @@ let guess_history:GuessLog[] = [];
  * player to propose an answer, or an automatic extraction for other elements.
  */
 export function setupValidation() {
+    const body = document.getElementsByTagName('body')[0];
+    if (body) {
+        toggleClass(body, 'show-validater', true);
+    }
     const buttons = document.getElementsByClassName('validater');
     if (buttons.length > 0) {
         let hist = getHistoryDiv('');
@@ -7791,8 +7827,8 @@ function calcTransform(elmt:HTMLElement, prop:string, index:number, defValue:num
 
 
 /**
- * When typing in an input connect to a validate button,
- * Any non-empty string indicates ready (TODO: add other rules)
+ * When typing in an input connected to a validate button,
+ * any non-empty string indicates ready (TODO: add other rules)
  * and ENTER triggers a button click
  * @param btn The button to enable/disable as ready
  * @param key What key was just typed, if any
@@ -7805,6 +7841,9 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
     }
     const value = getValueToValidate(ext);
     const ready = isValueReady(btn, value);
+    if (isTrace()) {
+        console.log('Value ' + value + ready ? ' is ready' : ' is NOT ready');
+    }
 
     toggleClass(btn, 'ready', ready);
     if (ready && key == 'Enter') {
@@ -7839,7 +7878,10 @@ function getValueToValidate(container:HTMLElement):string {
     if (inputs.length > 0) {
         let value = '';
         for (let i = 0; i < inputs.length; i++) {
-            value += (inputs[i] as HTMLInputElement).value;
+            if (!hasClass(inputs[i], 'letter-non-input')) {
+                const ch = (inputs[i] as HTMLInputElement).value;
+                value += ch || '_';
+            }
         }
         return value;
     }
@@ -7915,7 +7957,10 @@ function clickValidationButton(btn:HTMLButtonElement) {
  * @param gl the guess information, but not the response
  */
 export function decodeAndValidate(gl:GuessLog) {
-    const validation = theBoiler().validation;
+    if (isTrace()) {
+        console.log('Guess ' + gl.guess);
+    }
+    const validation = theValidation();
     if (validation && gl.field in validation) {
         const obj = validation[gl.field];
 
@@ -7923,6 +7968,7 @@ export function decodeAndValidate(gl:GuessLog) {
         // TODO: make this optional, in theBoiler, if a puzzle needs
         gl.guess = gl.guess.toUpperCase();  // All caps (permanent)
         let guess = gl.guess.replace(/ /g, '');  // Remove spaces for hashing - keep in UI
+        guess = guess.replace(/ /g, '');  // Remove non-breaking spaces too
         // Keep all other punctuation
 
         const hash = rot13(guess);  // TODO: more complicated hashing
@@ -8092,6 +8138,32 @@ function rot13(source:string) {
 //     const resultBytes = [...new Uint8Array(digest)];
 //     return resultBytes.map(x => x.toString(16).padStart(2, '0')).join("");
 // }
+
+
+declare let validation: object | undefined;
+
+/**
+ * We forward-declare boiler, which we expect calling pages to define.
+ * @returns The page's boiler, if any. Else undefined.
+ */
+function pageValidation():object | undefined {
+    if (typeof validation !== 'undefined') {
+        return validation as object;
+    }
+    return undefined;
+}
+
+let _validation: object|undefined;
+
+/**
+ * Expose the boilerplate as an export
+ * Only called by code which is triggered by a boilerplate, so safely not null
+ */
+export function theValidation():object|undefined {
+    if (!_validation)
+        _validation = pageValidation();
+    return _validation;
+}
 
 
 /*-----------------------------------------------------------

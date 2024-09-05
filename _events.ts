@@ -22,6 +22,7 @@ export type PuzzleEventDetails = {
   qr_folders?: {};  // Folder for any QR codes
   solverSite?: string;  // URL to a separate solver website, where players can enter answers
   backLinks?: object;  // key: URL trigger -> puzzleListBackLink
+  validation?: boolean|string;  // whether to allow local validation
 }
 
 type puzzleListBackLink = {
@@ -101,6 +102,7 @@ const safari21Details:PuzzleEventDetails = {
                  'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
   // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
   'backLinks': { 'gs24': { href:'./menuu.xhtml'}, 'ps21': { href:'./menuu.xhtml'}},
+  'validation': true,
 }
 
 const safari24Details:PuzzleEventDetails = {
@@ -222,4 +224,18 @@ function createBacklink(backlink:puzzleListBackLink): HTMLAnchorElement {
   a.href = backlink.href + window.location.search;
   a.target = '_blank';
   return a;
+}
+
+/**
+ * According to event rules, should we enable local validation
+ * @returns 
+ */
+export function enableValidation():boolean {
+  if (safariDetails.validation === true) {
+    return true;
+  }
+  else if (safariDetails.validation === false || safariDetails.validation === undefined) {
+    return false;
+  }
+  return urlArgExists(safariDetails.validation);
 }

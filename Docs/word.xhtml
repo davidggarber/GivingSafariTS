@@ -124,6 +124,18 @@
 
         <tr class="alt">
           <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;word extract<b>="*"</b>/&gt;
+          </td>
+          <td class="rendered">
+            <word extract="*" />
+          </td>
+          <td class="comment">
+            <code>extract='*'</code> marks the full word for extraction.
+          </td>
+        </tr>
+
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
             &lt;word extract="1" <br />
                   <b>extracted-id="alt"</b>/&gt;
           </td>
@@ -153,7 +165,7 @@
       <div>
         All &lt;word extract='...'/&gt; examples on this page will mirror extractions to here:
         <span id="extracted" />
-        (unless the extracted-id points elsewhere).
+        <br />(unless the extracted-id points elsewhere).
       </div>
       
 

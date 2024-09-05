@@ -190,6 +190,7 @@
           multi[dest] = obj;
         }
         document.getElementById('containerHTML').innerText = '"validation":' + JSON.stringify(multi);
+        document.getElementById('containerHTML2').innerText = 'validation=' + JSON.stringify(multi) + ';';
         theBoiler().validation = multi;
         document.getElementById('body').classList.remove('solved');
       }
@@ -215,16 +216,31 @@
           return rot;
       }
 
+      function trimFromStart(txt, start) {
+        if (txt.substring(0, start.length) == start) {
+          return txt.substring(start.length).trim();
+        }
+        return txt;
+      }
+      function trimStarts(txt, starts) {
+        for (let i = 0; i < starts.length; i++) {
+          txt = trimFromStart(txt, starts[i]);
+        }
+        return txt;
+      }
+      function trimEnds(txt, ends) {
+        if (ends.indexOf(txt.substring(txt.length - 1)) >= 0) {
+          return txt.substring(0, txt.length - 1).trim();
+        }
+        return txt;
+      }
+
       function importJson() {
         // Parse
         var txt = document.getElementById('importJSON').value.trim();
         txt = txt.replaceAll("'", '\"');
-        if (txt.substring(0, 13) == '"validation":') {
-          txt = txt.substring(13).trim();
-        }
-        if (txt.substring(txt.length - 1) == ',') {
-          txt = txt.substring(0, txt.length - 1).trim();
-        }
+        txt = trimStarts(txt, ['"validation":', 'validation=', 'validation:']);
+        txt = trimEnds(txt, ',;');
         if (txt[0] != '{') {
           txt = '{' + txt + '}';
         }
@@ -350,8 +366,10 @@
         </tfoot>
       </table>
 
-      <div style="position: absolute; top:7.5in;">
-        Copy this into your boilerplate:
+      <div style="position: absolute; top:7in;">
+        Copy this into your js:
+        <div id="containerHTML2" style="border: solid 2px blue; padding:0.1in; max-width: 5.5in;"></div>  
+        Or this into your boilerplate:
         <div id="containerHTML" style="border: solid 2px blue; padding:0.1in; max-width: 5.5in;"></div>  
       </div>
       <div style="position: absolute; top:7.5in; right: 0px; text-align: right;">

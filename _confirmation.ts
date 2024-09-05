@@ -1,5 +1,5 @@
-import { theBoiler } from "./_boilerplate";
-import { getAllElementsWithAttribute, getOptionalStyle, isTag, toggleClass } from "./_classUtil";
+import { isTrace, theBoiler } from "./_boilerplate";
+import { getAllElementsWithAttribute, getOptionalStyle, hasClass, isTag, toggleClass } from "./_classUtil";
 import { PuzzleStatus, getCurFileName, saveGuessHistory, updatePuzzleList } from "./_storage";
 
 /**
@@ -74,6 +74,10 @@ let guess_history:GuessLog[] = [];
  * player to propose an answer, or an automatic extraction for other elements.
  */
 export function setupValidation() {
+    const body = document.getElementsByTagName('body')[0];
+    if (body) {
+        toggleClass(body, 'show-validater', true);
+    }
     const buttons = document.getElementsByClassName('validater');
     if (buttons.length > 0) {
         let hist = getHistoryDiv('');
@@ -196,8 +200,8 @@ function calcTransform(elmt:HTMLElement, prop:string, index:number, defValue:num
 
 
 /**
- * When typing in an input connect to a validate button,
- * Any non-empty string indicates ready (TODO: add other rules)
+ * When typing in an input connected to a validate button,
+ * any non-empty string indicates ready (TODO: add other rules)
  * and ENTER triggers a button click
  * @param btn The button to enable/disable as ready
  * @param key What key was just typed, if any
@@ -210,6 +214,9 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
     }
     const value = getValueToValidate(ext);
     const ready = isValueReady(btn, value);
+    if (isTrace()) {
+        console.log('Value ' + value + ready ? ' is ready' : ' is NOT ready');
+    }
 
     toggleClass(btn, 'ready', ready);
     if (ready && key == 'Enter') {
@@ -244,7 +251,10 @@ function getValueToValidate(container:HTMLElement):string {
     if (inputs.length > 0) {
         let value = '';
         for (let i = 0; i < inputs.length; i++) {
-            value += (inputs[i] as HTMLInputElement).value;
+            if (!hasClass(inputs[i], 'letter-non-input')) {
+                const ch = (inputs[i] as HTMLInputElement).value;
+                value += ch || '_';
+            }
         }
         return value;
     }
@@ -320,7 +330,10 @@ function clickValidationButton(btn:HTMLButtonElement) {
  * @param gl the guess information, but not the response
  */
 export function decodeAndValidate(gl:GuessLog) {
-    const validation = theBoiler().validation;
+    if (isTrace()) {
+        console.log('Guess ' + gl.guess);
+    }
+    const validation = theValidation();
     if (validation && gl.field in validation) {
         const obj = validation[gl.field];
 
@@ -328,6 +341,7 @@ export function decodeAndValidate(gl:GuessLog) {
         // TODO: make this optional, in theBoiler, if a puzzle needs
         gl.guess = gl.guess.toUpperCase();  // All caps (permanent)
         let guess = gl.guess.replace(/ /g, '');  // Remove spaces for hashing - keep in UI
+        guess = guess.replace(/ /g, '');  // Remove non-breaking spaces too
         // Keep all other punctuation
 
         const hash = rot13(guess);  // TODO: more complicated hashing
@@ -497,3 +511,29 @@ function rot13(source:string) {
 //     const resultBytes = [...new Uint8Array(digest)];
 //     return resultBytes.map(x => x.toString(16).padStart(2, '0')).join("");
 // }
+
+
+declare let validation: object | undefined;
+
+/**
+ * We forward-declare boiler, which we expect calling pages to define.
+ * @returns The page's boiler, if any. Else undefined.
+ */
+function pageValidation():object | undefined {
+    if (typeof validation !== 'undefined') {
+        return validation as object;
+    }
+    return undefined;
+}
+
+let _validation: object|undefined;
+
+/**
+ * Expose the boilerplate as an export
+ * Only called by code which is triggered by a boilerplate, so safely not null
+ */
+export function theValidation():object|undefined {
+    if (!_validation)
+        _validation = pageValidation();
+    return _validation;
+}

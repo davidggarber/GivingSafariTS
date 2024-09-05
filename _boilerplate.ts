@@ -8,9 +8,9 @@ import { preprocessDragFunctions } from "./_dragDrop";
 import { EdgeTypes, preprocessRulerFunctions } from "./_straightEdge";
 import { TableDetails, constructTable } from "./_tableBuilder";
 import { setupSubways } from "./_subway";
-import { setupValidation } from "./_confirmation";
+import { setupValidation, theValidation } from "./_confirmation";
 import { expandControlTags, hasBuilderElements } from "./_builder";
-import { LinkDetails, backlinkFromUrl, getSafariDetails, initSafariDetails } from "./_events";
+import { LinkDetails, backlinkFromUrl, enableValidation, getSafariDetails, initSafariDetails } from "./_events";
 import { diffSummarys, LayoutSummary, renderDiffs, summarizePageLayout } from "./_testUtils";
 import { wrapContextError } from "./_contextError";
 import { setupScratch } from "./_scratch";
@@ -168,7 +168,6 @@ export type BoilerPlateData = {
     printAsColor?: boolean;  // true=color, false=grayscale, unset=unmentioned
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
-    validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content
     reactiveBuilder?: boolean|string;  // invoke the new reactive builder
     lookup?: object;  // a dictionary of json data available to builder code
@@ -515,7 +514,7 @@ function boilerplate(bp: BoilerPlateData) {
 
     setupAbilities(head, margins, bp.abilities || {});
 
-    if (bp.validation) {
+    if (enableValidation() && theValidation()) {
         linkCss(safariDetails.cssRoot + 'Guesses.css');
         setupValidation();
     }
