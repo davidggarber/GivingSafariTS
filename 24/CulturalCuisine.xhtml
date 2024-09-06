@@ -54,6 +54,9 @@
       td p {
         margin-top: 0px;
       }
+      p.tight {
+        margin-bottom: 0px;
+      }
     </style>
   </head>
   <body id="CulturalCuisine">
@@ -96,7 +99,7 @@
                   <img src="Cultural/d2.png" />
                   <img src="Cultural/d3.jpg" />
                 </div>
-                <p><img class="flag border" src="Cultural/Russia.png" /><pattern pattern="8" extract="3"></pattern></p>
+                <p class="tight"><img class="flag border" src="Cultural/Russia.png" /><pattern pattern="8" extract="3"></pattern></p>
               </div>
             </td>
 
@@ -131,7 +134,7 @@
                   <img src="Cultural/h3.jpg" />
                   <img src="Cultural/h2.jpg" />
                 </div>
-                <p><img class="flag border" src="Cultural/Japan.png" /><pattern pattern="8" extract="4"></pattern></p>
+                <p class="tight"><img class="flag border" src="Cultural/Japan.png" /><pattern pattern="8" extract="4"></pattern></p>
               </div>
             </td>
 
@@ -166,14 +169,15 @@
                   <img src="Cultural/l1.png" />
                   <img src="Cultural/l2.png" />+O
                 </div>
-                <p><img class="flag" src="Cultural/Spain.png" /><pattern pattern="8" extract="1"></pattern></p>
+                <p class="tight"><img class="flag" src="Cultural/Spain.png" /><pattern pattern="8" extract="1"></pattern></p>
               </div>
             </td>
           </tr>
         </table>
 
-        <div>
-          <pattern id="extracted" extracted="12"></pattern>
+        <div style="margin-top: 0px;">
+          <pattern id="extracted" extracted="12" data-show-ready="submit-extracted" />
+          <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
         </div>
 
       </build>

@@ -2344,6 +2344,16 @@ function ExtractFromInput(input) {
     else if (findParentOfClass(input, 'numbered')) {
         UpdateNumbered(extractedId);
     }
+    else {
+        const btnId = getOptionalStyle(input, 'data-show-ready');
+        if (btnId) {
+            // This is not a named extract field, but it still has a button
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                validateInputReady(btn, input.value);
+            }
+        }
+    }
 }
 /**
  * Ensure that two extraction sources are pointing at the same target.
@@ -2604,6 +2614,13 @@ function UpdateExtractionSource(input) {
     const extractionText = extraction.join('');
     updateExtractionData(extractId, extractionText, extractionText.length == sources.length);
 }
+/**
+ * An extraction field has been updated.
+ * See if there are further side-effects.
+ * @param extracted The extracted field, or the ID of one.
+ * @param value The value that has been extracted.
+ * @param ready True if all contributors appear to be used (i.e. no blanks)
+ */
 function updateExtractionData(extracted, value, ready) {
     const container = !extracted
         ? document.getElementById('extracted')
@@ -2612,17 +2629,10 @@ function updateExtractionData(extracted, value, ready) {
             : extracted;
     if (container) {
         container.setAttribute('data-extraction', value);
-        let btnId = container.getAttribute('data-show-ready');
+        const btnId = getOptionalStyle(container, 'data-show-ready');
         if (btnId) {
             const btn = document.getElementById(btnId);
-            toggleClass(btn, 'ready', ready);
-        }
-        else {
-            btnId = getOptionalStyle(container, 'data-show-ready');
-            if (btnId) {
-                const btn = document.getElementById(btnId);
-                validateInputReady(btn, value);
-            }
+            validateInputReady(btn, value);
         }
         if (btnId && isTrace()) {
             console.log('Extraction is ' + (ready ? 'ready:' : 'NOT ready:') + value);
@@ -6962,6 +6972,11 @@ function horzScaleToFit(input, value) {
         }
         const test = calculateTextExtents(input, value);
     }
+    else if (input.style.transform.indexOf('scale') == 0 && needPx < widthPx) {
+        input.style.transformOrigin = 'left';
+        input.style.transform = 'initial';
+        input.style.width = widthPx + 'px';
+    }
 }
 function calcPxStyle(elmt, prop) {
     const val = window.getComputedStyle(elmt, null).getPropertyValue(prop);
@@ -7010,6 +7025,7 @@ function validateInputReady(btn, key) {
     const id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
     const ext = id ? document.getElementById(id) : null;
     if (!ext) {
+        console.error('Button ' + btn.id + ' missing a valid "data-extracted-id" linking to its source: ' + id);
         return;
     }
     const value = getValueToValidate(ext);
@@ -7034,10 +7050,6 @@ exports.validateInputReady = validateInputReady;
  */
 function getValueToValidate(container) {
     // If the extraction has alredy been cached, use it
-    const cached = container.getAttribute('data-extraction');
-    if (cached) {
-        return cached;
-    }
     // If container is an input, get its value
     if (isTag(container, 'input')) {
         return container.value;
@@ -7046,7 +7058,10 @@ function getValueToValidate(container) {
         return container.value;
     }
     // If we contain multiple inputs, concat them
-    const inputs = container.getElementsByClassName('letter-input');
+    let inputs = container.getElementsByClassName('letter-input');
+    if (inputs.length == 0) {
+        inputs = container.getElementsByClassName('word-input');
+    }
     if (inputs.length > 0) {
         let value = '';
         for (let i = 0; i < inputs.length; i++) {
@@ -7065,6 +7080,11 @@ function getValueToValidate(container) {
             value += datas[i].getAttribute('data-extraction');
         }
         return value;
+    }
+    // If we are just a destination div, the value will be cached
+    const cached = container.getAttribute('data-extraction');
+    if (cached) {
+        return cached;
     }
     // No recognized combo
     console.error('Unrecognized value container: ' + container);

@@ -8,7 +8,7 @@
     <script src="V/frr.js" />
     <script>
       const boiler = {
-        'safari': '24',
+        'safari': 'gs24',
         'title': 'Fridge Raider',
         'author': 'Jeffrey Lin',
         'copyright': '2021',
@@ -52,6 +52,9 @@
       #FridgeRaider .letter-cell {
         font-size: 72pt;
       }
+      #FridgeRaider #extracted .letter-cell {
+        font-size: 16pt;
+      }
       .left .letter-cell {
         position: absolute;
         left: 1in;
@@ -59,6 +62,10 @@
       .right .letter-cell {
         position: absolute;
         right: 1in;
+      }
+      .right .extracted .letter-cell {
+        position: initial;
+        right: initial;
       }
     </style>
   </head>
@@ -71,7 +78,7 @@
       <table data-input-style="hover">
         <tr>
           <td class="left" rowspan="2">
-            <letter></letter>
+            <letter extract='' />
             <img src="FridgeRaider/a.svg" class="svg" style="margin-right:-20px" />
             <img src="FridgeRaider/1.svg" class="num" />
           </td>
@@ -81,12 +88,12 @@
           <td class="right" rowspan="2">
             <img src="FridgeRaider/g.svg" class="svg" style="margin-right:-20px" />
             <img src="FridgeRaider/2.svg" class="num" />
-            <letter></letter>
+            <letter extract='' />
           </td>
         </tr>
         <tr>
           <td class="left" rowspan="2">
-            <letter></letter>
+            <letter extract='' />
             <img src="FridgeRaider/b.svg" class="svg" style="margin-right:-33px" />
             <img src="FridgeRaider/2.svg" class="num" />
           </td>
@@ -96,12 +103,12 @@
             <img src="FridgeRaider/h.svg" class="svg" style="margin-right:-20px" />
             <img src="FridgeRaider/1.svg" class="num" />
             <img src="FridgeRaider/rarrow.svg" class="arrow" style="position:absolute; top:4px; left: 98px;" />
-            <letter></letter>
+            <letter extract='' />
           </td>
         </tr>
         <tr>
           <td class="left" rowspan="2">
-            <letter></letter>
+            <letter extract='' />
             <img src="FridgeRaider/c.svg" class="svg" style="margin-right:-20px" />
             <img src="FridgeRaider/3.svg" class="num" />
           </td>
@@ -110,12 +117,12 @@
           <td class="right" rowspan="2">
             <img src="FridgeRaider/i.svg" class="svg" style="margin-right:-20px" />
             <img src="FridgeRaider/4.svg" class="num" />
-            <letter></letter>
+            <letter extract='' />
           </td>
         </tr>
         <tr>
           <td class="left" rowspan="2">
-            <letter></letter>
+            <letter extract='' />
             <img src="FridgeRaider/d.svg" class="svg" style="margin-right:-26px" />
             <img src="FridgeRaider/5.svg" class="num" />
           </td>
@@ -125,12 +132,12 @@
             <img src="FridgeRaider/j.svg" class="svg" style="margin-right:-20px" />
             <img src="FridgeRaider/1.svg" class="num" />
             <img src="FridgeRaider/j2.svg" style="margin-left:-75px; margin-bottom: 20px" />
-            <letter></letter>
+            <letter extract='' />
           </td>
         </tr>
         <tr>
           <td class="left" rowspan="2">
-            <letter></letter>
+            <letter extract='' />
             <img src="FridgeRaider/arrow.svg" class="arrow" style="position:absolute; top:16px; right:142px;" />
             <img src="FridgeRaider/e.svg" class="svg" style="margin-right:-20px;" />
             <img src="FridgeRaider/6.svg" class="num" />
@@ -141,15 +148,21 @@
             <img src="FridgeRaider/k.svg" class="svg" style="margin-right:-20px" />
             <img src="FridgeRaider/3.svg" class="num" />
             <img src="FridgeRaider/rarrow.svg" class="arrow" style="position:absolute; top:12px; left: 98px;" />
-            <letter></letter>
+            <letter extract='' />
           </td>
         </tr>
         <tr>
           <td class="left" rowspan="2">
-            <letter></letter>
+            <letter extract='' />
             <img src="FridgeRaider/f.png" class="svg" style="margin-right:-28px" />
             <img src="FridgeRaider/5.svg" class="num" />
           </td>
+        </tr>
+        <tr>
+          <td rowspan="2" style="text-align: right; vertical-align: top; padding-top: 40px;">
+              <pattern id="extracted" extracted="11" data-input-style="underline" data-show-ready="submit-extracted" />
+              <br /><button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+            </td>
         </tr>
         <tr>
           <td class="half">&nbsp;</td>

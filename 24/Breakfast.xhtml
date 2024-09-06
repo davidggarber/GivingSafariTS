@@ -101,8 +101,9 @@
       }
       #extracts {
         position: absolute;
-        top: 6.5in;
+        top: 6.4in;
         left: 2.35in;
+        text-align: center;
       }
     </style>
   </head>
@@ -131,8 +132,13 @@
         <div class="hint cross-off" sstyle="left:{hint.1/100}in; top:{hint.2/100}in; max-width:{hint.3/100}in">{hint.0}</div>
       </for>
 
-      <div id="extracts" class="extracted"><span id="extracted-0" /><span id="extracted-1" /></div>
+      <div id="extracts" class="extracted"><span id="extracted-0" />&nbsp;<span id="extracted-1" /></div>
 
+      <div class="no-print validate-block" style="position:absolute; top:9.1in; left:3in;">
+        Final answer: <word id="final-answer" class="extracted" data-show-ready="submit-extracted" style="width:1.5in;" />
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+            
     </div>
   </body>
 </html>

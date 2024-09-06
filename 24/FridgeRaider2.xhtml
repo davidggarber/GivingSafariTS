@@ -8,7 +8,7 @@
     <script src="V/fr2.js" />
     <script>
       const boiler = {
-        'safari': '24',
+        'safari': 'gs24',
         'title': 'Fridge Raider 2',
         'author': 'Jeffrey Lin',
         'copyright': '2021',
@@ -270,8 +270,9 @@
 
       </build>
 
-      <div id="bottom" style="position:absolute; left:0.25in; top: 8.8in;">
-        <pattern pattern="13" data-input-style="underline"></pattern>
+      <div id="bottom" style="position:absolute; left:0.25in; top: 8.8in; text-align: right;">
+        <pattern id="final-answer" pattern="13" data-input-style="underline" data-show-ready="submit-extracted" />
+        <br /><button class="validater" id="submit-extracted" data-extracted-id="final-answer">Submit</button>
       </div>
 
       <div id="stampPalette" data-tool-count="2" data-tool-erase="pm-tool" style="display:none">

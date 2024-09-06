@@ -1,1 +1,1 @@
-validation={"extracted":{"GENAFSBEZNOYR":"1"}};
+validation={"final-answer":{"GENAFSBEZNOYR":"1"}};

@@ -112,6 +112,12 @@
         margin-left: -1px;
         height: 2.5ex;
       }
+      .extract-rbox {
+        border: solid 1px black;
+        border-radius: 7px;
+        margin-left: -1px;
+        height: 2.5ex;
+      }
 
       .stampTool.selected img {
         background-color: #bff;
@@ -207,11 +213,17 @@
         <use template="truck-group" t1="Dan's BBQ" t2="$12"></use>
       </div>
 
+      <div id="extract-and-submit" style="position:absolute; top:9in; left: 4in;">
+        <div id="extracted" data-show-ready="submit-extracted" />
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
+
+
     </div>
 
 
     <template id="truck-group">
-      <div class="truck-group" data-input-style="rbox">
+      <div class="truck-group" data-input-style="rbox" data-extract-style="rbox">
         <svg width="250" height="120" class="truck">
           <path d="M0,0 h165 v92 h-165 Z"></path>
           <path d="M165,0 h22 l8,39 h-30 Z"></path>
@@ -223,9 +235,9 @@
           <text x="76" y="44">{t2}</text>
         </svg>
         <p style="margin-left:20px; margin-top:-20px">BLOCK 
-          <letter></letter>
+          <letter />
           <img src="FoodTrucks/right-arrow.png" style="height:0.29in;" />
-          <letter></letter>
+          <letter extract="" />
         </p>
       </div>
     </template>

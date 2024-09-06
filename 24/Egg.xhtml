@@ -99,9 +99,8 @@
         text-align: center;
       }
 
-      #extracted {
-        width: 100%;
-        text-align: center;
+      #extracted-div {
+        padding-left: 3in;
       }
 
     </style>
@@ -146,7 +145,10 @@
           What do we call our arch-rival?
         </div>
 
-        <div id="extracted"></div>
+        <div style="padding-left: 3in;">
+          <span id="extracted" data-show-ready="submit-extracted" /> &nbsp;
+          <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+        </div>
 
       </build>
 

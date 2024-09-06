@@ -109,6 +109,12 @@
         <pattern id="extracted" extract-numbered="16" />
       </div>
 
+      <div class="no-print validate-block" style="position:absolute; top:8.7in; right:0px; width:3.5in;">
+        Final answer:<br />
+        <input id="final-answer" class="extracted" type="text" style="width:3.5in; text-transform: uppercase;" />
+        <br /><button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+
       <svg id="all-materials" width="750" height="960" xmlns="http://www.w3.org/2000/svg" class="stampable-container no-user-select">
         <for int="i" until="4">
           <g class="clue-row" ttransform="translate(20, {50 + i * 240})">

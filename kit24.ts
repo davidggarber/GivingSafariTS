@@ -2543,6 +2543,16 @@ function ExtractFromInput(input:HTMLInputElement) {
     else if (findParentOfClass(input, 'numbered')) {
         UpdateNumbered(extractedId);
     }
+    else {
+        const btnId = getOptionalStyle(input, 'data-show-ready');
+        if (btnId) {
+            // This is not a named extract field, but it still has a button
+            const btn = document.getElementById(btnId) as HTMLButtonElement;
+            if (btn) {
+                validateInputReady(btn as HTMLButtonElement, input.value);
+            }
+        }
+    }
 }
 
 /**
@@ -2827,6 +2837,13 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     updateExtractionData(extractId, extractionText, extractionText.length == sources.length);
 }
 
+/**
+ * An extraction field has been updated.
+ * See if there are further side-effects.
+ * @param extracted The extracted field, or the ID of one.
+ * @param value The value that has been extracted.
+ * @param ready True if all contributors appear to be used (i.e. no blanks)
+ */
 function updateExtractionData(extracted:string|HTMLElement, value:string, ready:boolean) {
     const container = !extracted
         ? document.getElementById('extracted')
@@ -2835,17 +2852,10 @@ function updateExtractionData(extracted:string|HTMLElement, value:string, ready:
             : extracted;
     if (container) {
         container.setAttribute('data-extraction', value);
-        let btnId = container.getAttribute('data-show-ready');
+        const btnId = getOptionalStyle(container, 'data-show-ready');
         if (btnId) {
-            const btn = document.getElementById(btnId);
-            toggleClass(btn, 'ready', ready);
-        }
-        else {
-            btnId = getOptionalStyle(container, 'data-show-ready');
-            if (btnId) {
-                const btn = document.getElementById(btnId);
-                validateInputReady(btn as HTMLButtonElement, value);
-            }
+            const btn = document.getElementById(btnId) as HTMLButtonElement;
+            validateInputReady(btn as HTMLButtonElement, value);
         }
         if (btnId && isTrace()) {
             console.log('Extraction is ' + (ready ? 'ready:' : 'NOT ready:') + value);
@@ -7784,6 +7794,11 @@ function horzScaleToFit(input:HTMLElement, value:string) {
         }
         const test = calculateTextExtents(input, value);
     }
+    else if (input.style.transform.indexOf('scale') == 0 && needPx < widthPx) {
+        input.style.transformOrigin = 'left';
+        input.style.transform = 'initial';
+        input.style.width = widthPx + 'px';
+    }
 }
 
 function calcPxStyle(elmt:HTMLElement, prop:string):number {
@@ -7837,6 +7852,7 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
     const id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
     const ext = id ? document.getElementById(id) : null;
     if (!ext) {
+        console.error('Button ' + btn.id + ' missing a valid "data-extracted-id" linking to its source: ' + id);
         return;
     }
     const value = getValueToValidate(ext);
@@ -7862,10 +7878,6 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
  */
 function getValueToValidate(container:HTMLElement):string {
     // If the extraction has alredy been cached, use it
-    const cached = container.getAttribute('data-extraction');
-    if (cached) {
-        return cached;
-    }
     // If container is an input, get its value
     if (isTag(container, 'input')) {
         return (container as HTMLInputElement).value;
@@ -7874,7 +7886,10 @@ function getValueToValidate(container:HTMLElement):string {
         return (container as HTMLTextAreaElement).value;
     }
     // If we contain multiple inputs, concat them
-    const inputs = container.getElementsByClassName('letter-input');
+    let inputs = container.getElementsByClassName('letter-input');
+    if (inputs.length == 0) {
+        inputs = container.getElementsByClassName('word-input');
+    }
     if (inputs.length > 0) {
         let value = '';
         for (let i = 0; i < inputs.length; i++) {
@@ -7893,6 +7908,11 @@ function getValueToValidate(container:HTMLElement):string {
             value += datas[i].getAttribute('data-extraction');
         }
         return value;
+    }
+    // If we are just a destination div, the value will be cached
+    const cached = container.getAttribute('data-extraction');
+    if (cached) {
+        return cached;
     }
     // No recognized combo
     console.error('Unrecognized value container: ' + container);

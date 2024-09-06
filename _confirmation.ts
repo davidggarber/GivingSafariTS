@@ -157,6 +157,11 @@ function horzScaleToFit(input:HTMLElement, value:string) {
         }
         const test = calculateTextExtents(input, value);
     }
+    else if (input.style.transform.indexOf('scale') == 0 && needPx < widthPx) {
+        input.style.transformOrigin = 'left';
+        input.style.transform = 'initial';
+        input.style.width = widthPx + 'px';
+    }
 }
 
 function calcPxStyle(elmt:HTMLElement, prop:string):number {
@@ -210,6 +215,7 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
     const id = getOptionalStyle(btn, 'data-extracted-id', 'extracted');
     const ext = id ? document.getElementById(id) : null;
     if (!ext) {
+        console.error('Button ' + btn.id + ' missing a valid "data-extracted-id" linking to its source: ' + id);
         return;
     }
     const value = getValueToValidate(ext);
@@ -235,10 +241,6 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
  */
 function getValueToValidate(container:HTMLElement):string {
     // If the extraction has alredy been cached, use it
-    const cached = container.getAttribute('data-extraction');
-    if (cached) {
-        return cached;
-    }
     // If container is an input, get its value
     if (isTag(container, 'input')) {
         return (container as HTMLInputElement).value;
@@ -247,7 +249,10 @@ function getValueToValidate(container:HTMLElement):string {
         return (container as HTMLTextAreaElement).value;
     }
     // If we contain multiple inputs, concat them
-    const inputs = container.getElementsByClassName('letter-input');
+    let inputs = container.getElementsByClassName('letter-input');
+    if (inputs.length == 0) {
+        inputs = container.getElementsByClassName('word-input');
+    }
     if (inputs.length > 0) {
         let value = '';
         for (let i = 0; i < inputs.length; i++) {
@@ -266,6 +271,11 @@ function getValueToValidate(container:HTMLElement):string {
             value += datas[i].getAttribute('data-extraction');
         }
         return value;
+    }
+    // If we are just a destination div, the value will be cached
+    const cached = container.getAttribute('data-extraction');
+    if (cached) {
+        return cached;
     }
     // No recognized combo
     console.error('Unrecognized value container: ' + container);

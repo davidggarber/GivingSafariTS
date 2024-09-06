@@ -6,7 +6,6 @@ import { toggleHighlight } from "./_notes";
 import { isDebug, isTrace, theBoiler } from "./_boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./_storage";
 import { validateInputReady } from "./_confirmation";
-import { read } from "fs";
 
 /**
  * Any event stemming from key in this list should be ignored
@@ -372,6 +371,16 @@ function ExtractFromInput(input:HTMLInputElement) {
     else if (findParentOfClass(input, 'numbered')) {
         UpdateNumbered(extractedId);
     }
+    else {
+        const btnId = getOptionalStyle(input, 'data-show-ready');
+        if (btnId) {
+            // This is not a named extract field, but it still has a button
+            const btn = document.getElementById(btnId) as HTMLButtonElement;
+            if (btn) {
+                validateInputReady(btn as HTMLButtonElement, input.value);
+            }
+        }
+    }
 }
 
 /**
@@ -656,6 +665,13 @@ function UpdateExtractionSource(input:HTMLInputElement) {
     updateExtractionData(extractId, extractionText, extractionText.length == sources.length);
 }
 
+/**
+ * An extraction field has been updated.
+ * See if there are further side-effects.
+ * @param extracted The extracted field, or the ID of one.
+ * @param value The value that has been extracted.
+ * @param ready True if all contributors appear to be used (i.e. no blanks)
+ */
 function updateExtractionData(extracted:string|HTMLElement, value:string, ready:boolean) {
     const container = !extracted
         ? document.getElementById('extracted')
@@ -664,17 +680,10 @@ function updateExtractionData(extracted:string|HTMLElement, value:string, ready:
             : extracted;
     if (container) {
         container.setAttribute('data-extraction', value);
-        let btnId = container.getAttribute('data-show-ready');
+        const btnId = getOptionalStyle(container, 'data-show-ready');
         if (btnId) {
-            const btn = document.getElementById(btnId);
-            toggleClass(btn, 'ready', ready);
-        }
-        else {
-            btnId = getOptionalStyle(container, 'data-show-ready');
-            if (btnId) {
-                const btn = document.getElementById(btnId);
-                validateInputReady(btn as HTMLButtonElement, value);
-            }
+            const btn = document.getElementById(btnId) as HTMLButtonElement;
+            validateInputReady(btn as HTMLButtonElement, value);
         }
         if (btnId && isTrace()) {
             console.log('Extraction is ' + (ready ? 'ready:' : 'NOT ready:') + value);
