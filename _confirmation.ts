@@ -274,7 +274,7 @@ function getValueToValidate(container:HTMLElement):string {
     }
     // If we are just a destination div, the value will be cached
     const cached = container.getAttribute('data-extraction');
-    if (cached) {
+    if (cached != null) {
         return cached;
     }
     // No recognized combo
