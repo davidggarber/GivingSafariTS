@@ -12,7 +12,7 @@
         title: 'Iron Chef',
         author: 'Rorke Haining',
         copyright: '2021',
-        type: 'meta',
+        feeder: 'ironChef',
         abilities: {
           reactiveBuilder: 'pageBody',
           scratchPad: true,
@@ -95,6 +95,11 @@
         left: 8.1in;
         top: -0.9in;
       }
+      @media print {
+        #all-materials {
+          display: none;
+        }
+      }
       #all-materials .card {
         position: relative;
         height: 2.75in;
@@ -110,6 +115,25 @@
         top: 0.25in;
         left: 0.75in;
         width: 3in;
+      }
+      .meta-clue.unlocked {
+        animation-name: fade-in;
+        animation-duration: 1000ms;
+      }
+      @keyframes fade-in {
+        0% { opacity: 0%; transform: scale(0.5); }
+        100% { opacity: 100%; transform: scale(1); }
+      }
+      .meta-clue.locked::after {
+        background-image: url('Images/locked.png');
+        background-size: 32px 48px;
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 32px;
+        height: 48px;
+        top: 50px;
+        left: 120px;
       }
 
       #save-menu {
@@ -164,7 +188,11 @@
       <p class="flavor">
         Congratulations.  You 20 chefs have done extremely well to make it this far, stunning the judges with your 
         innovative use of the surprise mystery ingredients, and vanquishing many excellent opponents in 
-        preliminary rounds (which were:  <b>Beef</b>, <b>Chicken</b>, <b>Egg</b>, and <b>Wine</b>).  
+        preliminary rounds (which were: <span trim="all">
+          <use template="link" puz="Beef" />,
+          <use template="link" puz="Chicken" />,
+          <use template="link" puz="Egg" />, and
+          <use template="link" puz="Wine" />.</span>
         Now it is time for the final round, and we have a surprise twist in store for you:  we are shuffling up 
         the teams, with each new team themed around a common element!  Fill out your team rosters in alphabetical 
         order, then prepare to wow the judges with your new teammates one last time to be crowned <b>IRON CHEF</b>!
@@ -206,6 +234,10 @@
       <for each="name" in="{chefs}">
         <li>{name}</li>
       </for>
+    </template>
+
+    <template id="link">
+      <b><a hhref='{puz}.xhtml'>{puz}</a></b>
     </template>
 
   </body>

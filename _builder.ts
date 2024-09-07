@@ -607,9 +607,17 @@ function cloneNode(node:Node):Node {
   return node;  // STUB: keep original node
 }
 
-export function consoleComment(str:string):Comment {
+/**
+ * Write a comment to the console.
+ * Only applies if in trace mode. Otherwise, a no-op.
+ * @param str What to write
+ */
+export function consoleTrace(str:string) {
   if (isTrace()) {
     console.log(str);
   }
+} 
+export function consoleComment(str:string):Comment {
+  consoleTrace(str);
   return document.createComment(str);
 } 

@@ -1,5 +1,6 @@
 import { isIFrame } from "./_boilerplate";
 import { refillFromTemplate } from "./_builderUse";
+import { toggleClass } from "./_classUtil";
 import { ContextError } from "./_contextError";
 import { loadMetaMaterials } from "./_storage";
 
@@ -50,12 +51,18 @@ export function setupMetaSync(param:MetaParams) {
 
   // Validate fields
   if (param.refillClass) {
-    const test = document.getElementsByClassName(param.refillClass);
-    if (test.length != param.count) {
-      throw new ContextError('Refill class (' + param.refillClass + ') has ' + test.length + ' instances, whereas ' + param.count + ' meta materials are expected.');
+    const refills = document.getElementsByClassName(param.refillClass);
+    if (refills.length != param.count) {
+      throw new ContextError('Refill class (' + param.refillClass + ') has ' + refills.length + ' instances, whereas ' + param.count + ' meta materials are expected.');
     }
     if (!param.refillTemplate) {
       throw new ContextError('MetaParam specified refillClass (' + param.refillClass + ') without also specifying refillTemplate.');
+    }
+
+    // All refill points start out as locked
+    for (let i = 0; i < refills.length; i++) {
+      toggleClass(refills[i], 'locked', true);
+      toggleClass(refills[i], 'unlocked', false);
     }
   }
   else if (param.refillTemplate && !param.refillClass) {
@@ -118,6 +125,8 @@ function refillFromMeta(materials:object[]) {
     if (materials[i]) {
       var container = containers[i];
       refillFromTemplate(container, _metaInfo.refillTemplate as string, materials[i]);
+      toggleClass(container, 'locked', false);
+      toggleClass(container, 'unlocked', true);
     }
   }
 }

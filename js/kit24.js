@@ -5,8 +5,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = void 0;
-exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = void 0;
+exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -7030,9 +7030,7 @@ function validateInputReady(btn, key) {
     }
     const value = getValueToValidate(ext);
     const ready = isValueReady(btn, value);
-    if (isTrace()) {
-        console.log('Value ' + value + ready ? ' is ready' : ' is NOT ready');
-    }
+    consoleTrace(`Value ${value} is ${ready ? "" : "NOT "} ready`);
     toggleClass(btn, 'ready', ready);
     if (ready && key == 'Enter') {
         clickValidationButton(btn);
@@ -7143,9 +7141,7 @@ function clickValidationButton(btn) {
  * @param gl the guess information, but not the response
  */
 function decodeAndValidate(gl) {
-    if (isTrace()) {
-        console.log('Guess ' + gl.guess);
-    }
+    consoleTrace(`Guess ${gl.guess}`);
     const validation = theValidation();
     if (validation && gl.field in validation) {
         const obj = validation[gl.field];
@@ -7233,7 +7229,7 @@ function appendResponse(block, response) {
         if (caret >= 0) {
             response = response.substring(0, caret);
         }
-        const parts = response.split('^'); // caret not allowed in a URL
+        consoleTrace(`Unlocking ${response}` + (caret >= 0 ? `(aka ${friendly})` : ''));
         div.appendChild(document.createTextNode('You have unlocked '));
         const link = document.createElement('a');
         link.href = response;
@@ -7242,11 +7238,15 @@ function appendResponse(block, response) {
         div.appendChild(link);
     }
     else if (type == ResponseType.Load) {
+        consoleTrace(`Loading ${response}`);
         // Use an iframe to navigate immediately to the response URL.
         // The iframe will be hidden, but any scripts will run immediately.
         const iframe = document.createElement('iframe');
         iframe.src = response;
         div.appendChild(iframe);
+        if (theBoiler().metaParams) {
+            setTimeout(() => { scanMetaMaterials(); }, 1000);
+        }
     }
     else if (type == ResponseType.Show) {
         const parts = response.split('^'); // caret not allowed in a URL
@@ -7259,8 +7259,12 @@ function appendResponse(block, response) {
                 elmt.style.display = 'block';
             }
         }
+        else {
+            console.error('Cannot show id=' + parts[0]);
+        }
     }
     else {
+        consoleTrace(`Validation response (type ${type}) : ${response}`);
         // The response (which may be canned) is displayed verbatim.
         div.appendChild(document.createTextNode(response));
     }
@@ -7271,6 +7275,7 @@ function appendResponse(block, response) {
         div.appendChild(img);
     }
     block.appendChild(div);
+    setTimeout(() => { div.scrollIntoView({ behavior: "smooth", block: "end" }); }, 100);
     if (type == ResponseType.Correct) {
         // Tag this puzzle as solved
         toggleClass(document.getElementsByTagName('body')[0], 'solved', true);
@@ -8145,10 +8150,19 @@ function cloneWithContext(elmt) {
 function cloneNode(node) {
     return node; // STUB: keep original node
 }
-function consoleComment(str) {
+/**
+ * Write a comment to the console.
+ * Only applies if in trace mode. Otherwise, a no-op.
+ * @param str What to write
+ */
+function consoleTrace(str) {
     if (isTrace()) {
         console.log(str);
     }
+}
+exports.consoleTrace = consoleTrace;
+function consoleComment(str) {
+    consoleTrace(str);
     return document.createComment(str);
 }
 exports.consoleComment = consoleComment;
@@ -10847,12 +10861,17 @@ function setupMetaSync(param) {
     };
     // Validate fields
     if (param.refillClass) {
-        const test = document.getElementsByClassName(param.refillClass);
-        if (test.length != param.count) {
-            throw new ContextError('Refill class (' + param.refillClass + ') has ' + test.length + ' instances, whereas ' + param.count + ' meta materials are expected.');
+        const refills = document.getElementsByClassName(param.refillClass);
+        if (refills.length != param.count) {
+            throw new ContextError('Refill class (' + param.refillClass + ') has ' + refills.length + ' instances, whereas ' + param.count + ' meta materials are expected.');
         }
         if (!param.refillTemplate) {
             throw new ContextError('MetaParam specified refillClass (' + param.refillClass + ') without also specifying refillTemplate.');
+        }
+        // All refill points start out as locked
+        for (let i = 0; i < refills.length; i++) {
+            toggleClass(refills[i], 'locked', true);
+            toggleClass(refills[i], 'unlocked', false);
         }
     }
     else if (param.refillTemplate && !param.refillClass) {
@@ -10913,6 +10932,8 @@ function refillFromMeta(materials) {
         if (materials[i]) {
             var container = containers[i];
             refillFromTemplate(container, _metaInfo.refillTemplate, materials[i]);
+            toggleClass(container, 'locked', false);
+            toggleClass(container, 'unlocked', true);
         }
     }
 }

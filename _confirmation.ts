@@ -1,5 +1,7 @@
-import { isTrace, theBoiler } from "./_boilerplate";
+import { theBoiler } from "./_boilerplate";
+import { consoleTrace } from "./_builder";
 import { getAllElementsWithAttribute, getOptionalStyle, hasClass, isTag, toggleClass } from "./_classUtil";
+import { scanMetaMaterials } from "./_meta";
 import { PuzzleStatus, getCurFileName, saveGuessHistory, updatePuzzleList } from "./_storage";
 
 /**
@@ -220,9 +222,7 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
     }
     const value = getValueToValidate(ext);
     const ready = isValueReady(btn, value);
-    if (isTrace()) {
-        console.log('Value ' + value + ready ? ' is ready' : ' is NOT ready');
-    }
+    consoleTrace(`Value ${value} is ${ready ? "" : "NOT "} ready`);
 
     toggleClass(btn, 'ready', ready);
     if (ready && key == 'Enter') {
@@ -340,9 +340,7 @@ function clickValidationButton(btn:HTMLButtonElement) {
  * @param gl the guess information, but not the response
  */
 export function decodeAndValidate(gl:GuessLog) {
-    if (isTrace()) {
-        console.log('Guess ' + gl.guess);
-    }
+    consoleTrace(`Guess ${gl.guess}`);
     const validation = theValidation();
     if (validation && gl.field in validation) {
         const obj = validation[gl.field];
@@ -440,7 +438,9 @@ function appendResponse(block:HTMLDivElement, response:string) {
         if (caret >= 0) {
             response = response.substring(0, caret);
         }
-        const parts = response.split('^');  // caret not allowed in a URL
+
+        consoleTrace(`Unlocking ${response}` + (caret >= 0 ? `(aka ${friendly})` : ''));
+
         div.appendChild(document.createTextNode('You have unlocked '));
         const link = document.createElement('a');
         link.href = response;
@@ -449,11 +449,18 @@ function appendResponse(block:HTMLDivElement, response:string) {
         div.appendChild(link);
     }
     else if (type == ResponseType.Load) {
+        consoleTrace(`Loading ${response}`);
+        
         // Use an iframe to navigate immediately to the response URL.
         // The iframe will be hidden, but any scripts will run immediately.
         const iframe = document.createElement('iframe');
         iframe.src = response;
         div.appendChild(iframe);
+
+        if (theBoiler().metaParams) {
+            setTimeout(() => { scanMetaMaterials() }, 1000);
+        }
+
     }
     else if (type == ResponseType.Show) {
         const parts = response.split('^');  // caret not allowed in a URL
@@ -464,10 +471,15 @@ function appendResponse(block:HTMLDivElement, response:string) {
             }
             else {
                 elmt.style.display = 'block';
-            }    
+            }
+        }
+        else {
+            console.error('Cannot show id=' + parts[0]);
         }
     }
     else {
+        consoleTrace(`Validation response (type ${type}) : ${response}`);
+
         // The response (which may be canned) is displayed verbatim.
         div.appendChild(document.createTextNode(response));
     }
@@ -480,6 +492,7 @@ function appendResponse(block:HTMLDivElement, response:string) {
     }
 
     block.appendChild(div);
+    setTimeout(() => { div.scrollIntoView({behavior:"smooth", block:"end"}) }, 100);
 
     if (type == ResponseType.Correct) {
         // Tag this puzzle as solved

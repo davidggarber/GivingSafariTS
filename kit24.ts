@@ -7857,9 +7857,7 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
     }
     const value = getValueToValidate(ext);
     const ready = isValueReady(btn, value);
-    if (isTrace()) {
-        console.log('Value ' + value + ready ? ' is ready' : ' is NOT ready');
-    }
+    consoleTrace(`Value ${value} is ${ready ? "" : "NOT "} ready`);
 
     toggleClass(btn, 'ready', ready);
     if (ready && key == 'Enter') {
@@ -7977,9 +7975,7 @@ function clickValidationButton(btn:HTMLButtonElement) {
  * @param gl the guess information, but not the response
  */
 export function decodeAndValidate(gl:GuessLog) {
-    if (isTrace()) {
-        console.log('Guess ' + gl.guess);
-    }
+    consoleTrace(`Guess ${gl.guess}`);
     const validation = theValidation();
     if (validation && gl.field in validation) {
         const obj = validation[gl.field];
@@ -8077,7 +8073,9 @@ function appendResponse(block:HTMLDivElement, response:string) {
         if (caret >= 0) {
             response = response.substring(0, caret);
         }
-        const parts = response.split('^');  // caret not allowed in a URL
+
+        consoleTrace(`Unlocking ${response}` + (caret >= 0 ? `(aka ${friendly})` : ''));
+
         div.appendChild(document.createTextNode('You have unlocked '));
         const link = document.createElement('a');
         link.href = response;
@@ -8086,11 +8084,18 @@ function appendResponse(block:HTMLDivElement, response:string) {
         div.appendChild(link);
     }
     else if (type == ResponseType.Load) {
+        consoleTrace(`Loading ${response}`);
+        
         // Use an iframe to navigate immediately to the response URL.
         // The iframe will be hidden, but any scripts will run immediately.
         const iframe = document.createElement('iframe');
         iframe.src = response;
         div.appendChild(iframe);
+
+        if (theBoiler().metaParams) {
+            setTimeout(() => { scanMetaMaterials() }, 1000);
+        }
+
     }
     else if (type == ResponseType.Show) {
         const parts = response.split('^');  // caret not allowed in a URL
@@ -8101,10 +8106,15 @@ function appendResponse(block:HTMLDivElement, response:string) {
             }
             else {
                 elmt.style.display = 'block';
-            }    
+            }
+        }
+        else {
+            console.error('Cannot show id=' + parts[0]);
         }
     }
     else {
+        consoleTrace(`Validation response (type ${type}) : ${response}`);
+
         // The response (which may be canned) is displayed verbatim.
         div.appendChild(document.createTextNode(response));
     }
@@ -8117,6 +8127,7 @@ function appendResponse(block:HTMLDivElement, response:string) {
     }
 
     block.appendChild(div);
+    setTimeout(() => { div.scrollIntoView({behavior:"smooth", block:"end"}) }, 100);
 
     if (type == ResponseType.Correct) {
         // Tag this puzzle as solved
@@ -9080,10 +9091,18 @@ function cloneNode(node:Node):Node {
   return node;  // STUB: keep original node
 }
 
-export function consoleComment(str:string):Comment {
+/**
+ * Write a comment to the console.
+ * Only applies if in trace mode. Otherwise, a no-op.
+ * @param str What to write
+ */
+export function consoleTrace(str:string) {
   if (isTrace()) {
     console.log(str);
   }
+} 
+export function consoleComment(str:string):Comment {
+  consoleTrace(str);
   return document.createComment(str);
 } 
 
@@ -12060,12 +12079,18 @@ export function setupMetaSync(param:MetaParams) {
 
   // Validate fields
   if (param.refillClass) {
-    const test = document.getElementsByClassName(param.refillClass);
-    if (test.length != param.count) {
-      throw new ContextError('Refill class (' + param.refillClass + ') has ' + test.length + ' instances, whereas ' + param.count + ' meta materials are expected.');
+    const refills = document.getElementsByClassName(param.refillClass);
+    if (refills.length != param.count) {
+      throw new ContextError('Refill class (' + param.refillClass + ') has ' + refills.length + ' instances, whereas ' + param.count + ' meta materials are expected.');
     }
     if (!param.refillTemplate) {
       throw new ContextError('MetaParam specified refillClass (' + param.refillClass + ') without also specifying refillTemplate.');
+    }
+
+    // All refill points start out as locked
+    for (let i = 0; i < refills.length; i++) {
+      toggleClass(refills[i], 'locked', true);
+      toggleClass(refills[i], 'unlocked', false);
     }
   }
   else if (param.refillTemplate && !param.refillClass) {
@@ -12128,6 +12153,8 @@ function refillFromMeta(materials:object[]) {
     if (materials[i]) {
       var container = containers[i];
       refillFromTemplate(container, _metaInfo.refillTemplate as string, materials[i]);
+      toggleClass(container, 'locked', false);
+      toggleClass(container, 'unlocked', true);
     }
   }
 }

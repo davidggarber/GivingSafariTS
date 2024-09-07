@@ -152,6 +152,9 @@ body.solved {
   display: none;
 }
 
+.rt-block .response {
+  scroll-margin-bottom: 0.75in;
+}
 .validater.ready {
   display: inline-block;
 }
