@@ -100,6 +100,15 @@
         user-select: none;
         -webkit-user-select: none;
       }
+      .empty {
+        display: none;
+      }
+      .crossed-off .full {
+        display: none;
+      }
+      .crossed-off .empty {
+        display: inline;
+      }
     </style>
   </head>
   <body id="Wine">
@@ -121,7 +130,8 @@
       <div id="bottles">
         <for each="bottle" in="bottles">
           <div class="bottle-row" class_="cross-off">
-            <img src="Wine/bottle.png" />
+            <img class="full" src="Wine/bottle.png" />
+            <img class="empty" src="Wine/empty.png" />
             <span class="label">{bottle}</span>
           </div>
         </for>  
