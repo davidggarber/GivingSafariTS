@@ -5211,6 +5211,16 @@ function findStampableAtPointer(event:PointerEvent):HTMLElement|null {
             return stampable[i] as HTMLElement;
         }
     }
+
+    // The stampable elements themselves can be size 0, due to absolute positioning.
+    // So look for a child.
+    if (event.target) {
+        const parent = findParentOfClass(event.target as Element, 'stampable');
+        if (parent) {
+            return parent as HTMLElement
+        }
+    }
+
     return null;
 }
 
@@ -9551,13 +9561,13 @@ export class FormulaNode {
   toString(): string {
     const rbrace = this.bracket === '' ? '' : bracketPairs[this.bracket];
     if (this.left) {
-      return this.bracket + this.left.toString() + ' ' + this.value + ' ' + this.right?.toString() + rbrace;
+      return this.bracket + this.left.toString() + ' ' + this.value.text! + ' ' + this.right?.toString() + rbrace;
     }
     else if (this.right) {
-      return this.bracket + this.value + ' ' + this.right?.toString() + rbrace;
+      return this.bracket + this.value.text! + ' ' + this.right?.toString() + rbrace;
     }
     else {
-      return this.bracket + this.value + rbrace;
+      return this.bracket + this.value.text! + rbrace;
     }
   }
 
@@ -9596,6 +9606,9 @@ export class FormulaNode {
           throw new ContextError('Unrecognize binary operator', this.value);
         }
         result = bop(lValue, rValue, this.left?.span, this.right?.span);
+        if (isTrace() && isDebug()) {
+          console.log(this.toString() + ' => ' + result);
+        }
         if (result === undefined || Number.isNaN(result)) {
           throw new ContextError('Operation ' + op?.raw + ' resulted in ' + result + ' : ' + lValue + op?.raw + rValue, this.value);
         }
@@ -9613,6 +9626,9 @@ export class FormulaNode {
           throw new ContextError('Unrecognize unary operator', this.value);
         }
         result = uop(rValue, this.right?.span);
+        if (isTrace() && isDebug()) {
+          console.log(this.toString() + ' => ' + result);
+        }
         if (result === undefined || Number.isNaN(result)) {
           throw new ContextError('Operation ' + op?.raw + ' resulted in ' + result + ' : ' + op?.raw + rValue, this.value);
         }
@@ -9654,6 +9670,9 @@ export class FormulaNode {
           throw new ContextError('Name lookup failed', this.span);
         }
       }
+    }
+    if (isTrace() && isDebug()) {
+      console.log(this.value + ' => ' + result);
     }
     return result;
   }

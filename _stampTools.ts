@@ -1,3 +1,4 @@
+import { findAncestor } from "typescript";
 import { theBoiler } from "./_boilerplate";
 import { useTemplate } from "./_builderUse";
 import { applyAllClasses, clearAllClasses, findFirstChildOfClass, findNthChildOfClass, findParentOfClass, getElementsByClassOrId, getOptionalStyle, hasClass, siblingIndexOfClass, toggleClass } from "./_classUtil";
@@ -291,6 +292,16 @@ function findStampableAtPointer(event:PointerEvent):HTMLElement|null {
             return stampable[i] as HTMLElement;
         }
     }
+
+    // The stampable elements themselves can be size 0, due to absolute positioning.
+    // So look for a child.
+    if (event.target) {
+        const parent = findParentOfClass(event.target as Element, 'stampable');
+        if (parent) {
+            return parent as HTMLElement
+        }
+    }
+
     return null;
 }
 

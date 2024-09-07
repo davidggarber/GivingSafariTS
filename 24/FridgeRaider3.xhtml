@@ -16,6 +16,7 @@
         abilities: {
           reactiveBuilder: 'pageBody',
           scratchPad: true,
+          stamping: true,
         },
         reactiveBuilder: true,
         lookup: {
@@ -68,49 +69,6 @@
               pics: [[],[],[],[],[]],
             }
           ],
-
-          feeds: [
-            {
-              index: 0,
-              pics:[
-                [['a1.svg',94,94,0,0], ['a2.svg',40,40,59,55]],
-                [['b1.svg',87,87,0,49], ['b2.svg',44,44,6,1], ['b2.svg',52,52,46,0], ['b2.svg',44,44,81,37]],
-                [['c1.svg',142,142,0,0], ['c2.svg',71,71,98,84]],
-                [['d.svg',146,146,0,0]],
-                [['e1.svg',77,77,0,0], ['e2.svg',111,111,39,29]],
-              ]
-            },
-            {
-              index: 1,
-              pics: [
-                [['f.svg',172,172,0,0]],
-                [['g.svg',163,163,0,0]],
-                [['h.svg',105,105,0,0]],
-                [['i.svg',165,165,0,0]],
-                [['j.png',208,87,0,0]],
-                ]
-            },
-            {
-              index: 2,
-              pics: [
-                [['k.svg',133,133,0,0]],
-                [['l.svg',210,210,0,0]],
-                [['m.svg',293,293,0,0]],
-                [['n.svg',191,203,0,0]],
-                [['o.png',124,215,0,0]],
-                ]
-            },
-            {
-              index: 3,
-              pics: [
-                [['p.svg',136,139,0,0], ['p.svg',136,139,87,0]],
-                [['q.svg',226,192,0,0]],
-                [['r.svg',129,129,0,0]],
-                [['s.svg',117,117,0,0]],
-                [['t1.svg',185,185,0,0], ['t2.png',60,60,143,129]],
-              ]
-            }
-          ],
         },
         metaParams: {
           id: 'FridgeRaiderMeta',
@@ -124,7 +82,7 @@
       .meta-group {
         position: absolute;
         left: 0px;
-        top: 0px;
+        top: 10px;
       }
       .place {
         position: absolute;
@@ -142,6 +100,23 @@
       }
       .place img {
         position: absolute;
+      }
+      .unlocked .pic {
+        animation-name: fade-in;
+        animation-duration: 1000ms;
+      }
+      @keyframes fade-in {
+        0% { opacity: 0%; transform: scale(0.5); }
+        100% { opacity: 100%; transform: scale(1); }
+      }
+      .check {
+        display: none;
+      }
+      .cross-off .check {
+        display: inline;
+        position: absolute;
+        left: 0px;
+        width: 40px;
       }
 
       #below {
@@ -170,14 +145,18 @@
   <body id="FridgeRaider3">
     <div id="pageBody">
       <p class="flavor">
-        Looking through the fridge, things seem to pair up nicely. I do need some idea for what I can turn these water and chips into though. 
+        Looking through the fridge, things seem to pair up nicely. I do need some idea for what I can turn these water and chips into though.
+        This is a <b>meta-puzzle</b>. Solve feeder puzzles to populate this page.
       </p>
 
-      <for each="stub" in="{stubs}">
-        <div class="meta-group">
-          <use template="group-fill" index="{stub.index}" pics="{stub.pics}" />
-        </div>
-      </for>
+      <div class="stampable-container">
+        <for each="stub" in="{stubs}">
+          <div class="meta-group">
+            <use template="group-fill" index="{stub.index}" pics="{stub.pics}" unlocked="false" />
+          </div>
+        </for>
+      </div>
+      
       <ttable id="below" data-letter-style="grid">
         <ttr>
           <for char="ch" in="WATERCHIPS">
@@ -197,14 +176,22 @@
         <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
       </div>
 
+      <div id="stampPalette" data-unstyle="cross-off" style="display:none">
+        <span class="stampTool" id="cross-off-tool" data-style="cross-off" />
+        <span class="stampTool"/>
+      </div>
+
     </div>
 
     <template id="group-fill">
       <for each="place" in="{groups.[index]}">
-        <div class="place" sstyle="left:{(place.0-50)/100}in; top:{(place.1-100)/100}in;">
+        <div class="place stampable" sstyle="left:{(place.0-50)/100}in; top:{(place.1-100)/100}in;">
           <for each="pic" in="{pics.[place#]}">
-              <img ssrc="FridgeRaider3/{pic.0}" sstyle="width:{pic.1/100}in; height:{pic.2/100}in; left:{pic.3/100}in; top:{pic.4/100}in;" />
+            <img class="pic" ssrc="FridgeRaider3/{pic.0}" sstyle="width:{pic.1/100}in; height:{pic.2/100}in; left:{pic.3/100}in; top:{pic.4/100}in;" />
           </for>
+          <if test="{unlocked}">
+            <img src="../Icons/Check.png" class="check" sstyle="top:{pics.[place#].0.2/220}in" />
+          </if>
         </div>
       </for>
     </template>

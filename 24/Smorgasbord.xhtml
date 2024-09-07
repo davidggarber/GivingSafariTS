@@ -87,15 +87,32 @@
         stroke: #99000099;
         stroke-width: 20px;
       }
+      .clue-row.unlocked image {
+        animation-name: fade-in;
+        animation-duration: 1000ms;
+      }
+      .clue-row.unlocked rect {
+        animation-name: fade-in;
+        animation-duration: 1000ms;
+      }
+      @keyframes fade-in {
+        0% { opacity: 0%; transform: scale(0.5); }
+        100% { opacity: 100%; transform: scale(1); }
+      }
+      .lock {
+        width: 32px;
+        height: 48px;
+      }
 
     </style>
   </head>
   <body id="Smorgasbord">
     <div id="pageBody">
       <p class="flavor">
-        Fill in the answers to the food-themed "Wacky Wordies" here in alphabetical order.  
-        Leading articles (a, an, the) have been omitted.  
-        Then copy the selected letters to complete a final clue. 
+        This is a <b>meta-puzzle</b>. 
+        Solve feeder puzzles to unlock food-themed "Wacky Wordies".<br />
+        Fill in the answers in alphabetical order.  
+        Leading articles (a, an, the) have been omitted.
       </p>
       
       <div data-input-style="box" data-extract-style="yellow">
@@ -118,6 +135,7 @@
       <svg id="all-materials" width="750" height="960" xmlns="http://www.w3.org/2000/svg" class="stampable-container no-user-select">
         <for int="i" until="4">
           <g class="clue-row" ttransform="translate(20, {50 + i * 240})">
+            <image class="lock" href="Images/locked.png"></image>
           </g>
         </for>
       </svg>
