@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Fridge Raider 3 - materials #3',
+        author: 'Jeffrey Lin',
+        copyright: '2021',
+        feeder: 'fridge',
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          index: 2,
+          places: [
+            [100, 100, 1.3],
+            [440, 100, 1],
+            [210,230, .7],
+            [100,400, 1],
+            [400,400, 1],
+          ],
+          feeds: [
+            [['k.svg',133,133,0,0]],
+            [['l.svg',210,210,0,0]],
+            [['m.svg',293,293,0,0]],
+            [['n.svg',191,203,0,0]],
+            [['o.png',124,215,0,0]],
+          ],
+        },
+        postSetup: unlockFeeder
+      };
+
+      //<![CDATA[
+      function unlockFeeder() {
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials('FridgeRaiderMeta', 0, 2, {
+            index: boiler.lookup.index, 
+            pics: boiler.lookup.feeds,
+            src: window.location.href });
+          updatePuzzleList('FridgeRaiderMeta-3', 'loaded');
+        }
+      }
+      //]]>
+    </script>
+    <style>
+      .pic {
+        position: absolute;
+      }
+      .pic img {
+        position: absolute;
+      }
+      
+    </style>
+  </head>
+  <body id="Feeder">
+    <div id="pageBody">
+      <p class="clue" style="margin-top: 1in;">
+        Five images are available to solve the <a href="FridgeRaider3.xhtml">Fridge Raider 3</a> meta-puzzle:
+      </p>
+
+      <div style="position: relative; margin-top: 1in;">
+        <for each="place" in="{places}">
+          <div class="pic" sstyle="left:{(place.0-50)/100}in; top:{(place.1-100)/100}in;">
+            <for each="pic" in="{feeds.[place#]}">
+              <img class="" ssrc="FridgeRaider3/{pic.0}" sstyle="width:{place.2* pic.1/100}in; height:{place.2* pic.2/100}in; left:{place.2* pic.3/100}in; top:{place.2* pic.4/100}in;" />            
+            </for>
+          </div>
+        </for>
+      </div>
+
+    </div>
+  </body>
+</html>
