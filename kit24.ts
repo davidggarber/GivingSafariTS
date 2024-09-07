@@ -7531,7 +7531,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         count++;
     }
     if (data.dragDrop) {
-        fancy += '<span id="drag-ability" title="Drag & drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
+        fancy += '<span id="drag-ability" title="Drag &amp; drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         preprocessDragFunctions();
         indexAllDragDropFields();
         linkCss(safariDetails.cssRoot + 'DragDrop.css');
@@ -8477,10 +8477,10 @@ export function traceTagComment(src:Element, dest:Element|Node[], expandFormulas
   const dbg1 = debugTagAttrs(src);
   const cmt1 = consoleComment(dbg1);
   if (Array.isArray(dest)) {
-    dest.push(cmt1);
+    pushRange(dest, cmt1);
   }
-  else {
-    (dest as Element).appendChild(cmt1);
+  else if (cmt1.length > 0) {
+    (dest as Element).appendChild(cmt1[0]);
   }
 
   if (expandFormulas) {
@@ -8488,10 +8488,10 @@ export function traceTagComment(src:Element, dest:Element|Node[], expandFormulas
     if (dbg2 !== dbg1) {
       const cmt2 = consoleComment(dbg2);
       if (Array.isArray(dest)) {
-        dest.push(cmt2);
+        pushRange(dest, cmt1);
       }
-      else {
-        (dest as Element).appendChild(cmt2);
+      else if (cmt2.length > 0) {
+        (dest as Element).appendChild(cmt2[0]);
       }
     }  
   }
@@ -9111,9 +9111,12 @@ export function consoleTrace(str:string) {
     console.log(str);
   }
 } 
-export function consoleComment(str:string):Comment {
+export function consoleComment(str:string):Node[] {
   consoleTrace(str);
-  return document.createComment(str);
+  if (isTrace()) {
+    return [document.createComment(str)];
+  }
+  return [];
 } 
 
 /*-----------------------------------------------------------
@@ -10503,7 +10506,7 @@ function getKeyedChild(parent:any, key:any, kTok?:SourceOffsetable, maybe?:boole
  */
 export function startForLoop(src:HTMLElement):Node[] {
   const dest:Node[] = [];
-  dest.push(consoleComment(debugTagAttrs(src)));
+  pushRange(dest, consoleComment(debugTagAttrs(src)));
 
   let iter:string|null = null;
   let list:any[] = [];
@@ -10549,12 +10552,12 @@ export function startForLoop(src:HTMLElement):Node[] {
     throw new ContextError('Unable to determine loop', elementSourceOffset(src));
   }
 
-  dest.push(consoleComment('Iterating ' + iter + ' over ' + list.length + ' items...'));
+  pushRange(dest, consoleComment('Iterating ' + iter + ' over ' + list.length + ' items...'));
 
   const inner_context = pushBuilderContext();
   const iter_index = iter + '#';
   for (let i = 0; i < list.length; i++) {
-    dest.push(consoleComment(iter + ' #' + i + ' == ' + JSON.stringify(list[i])));
+    pushRange(dest, consoleComment(iter + ' #' + i + ' == ' + JSON.stringify(list[i])));
     inner_context[iter_index] = i;
     inner_context[iter] = list[i];
     if (vals.length > 0) {

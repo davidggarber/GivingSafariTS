@@ -1,7 +1,7 @@
 import { off } from "process";
 import { _rawHtmlSource } from "./_boilerplate";
 import { complexAttribute, makeString } from "./_builderContext";
-import { consoleComment } from "./_builder";
+import { consoleComment, pushRange } from "./_builder";
 
 export type SourceOffset = {
   source:string;
@@ -268,10 +268,10 @@ export function traceTagComment(src:Element, dest:Element|Node[], expandFormulas
   const dbg1 = debugTagAttrs(src);
   const cmt1 = consoleComment(dbg1);
   if (Array.isArray(dest)) {
-    dest.push(cmt1);
+    pushRange(dest, cmt1);
   }
-  else {
-    (dest as Element).appendChild(cmt1);
+  else if (cmt1.length > 0) {
+    (dest as Element).appendChild(cmt1[0]);
   }
 
   if (expandFormulas) {
@@ -279,10 +279,10 @@ export function traceTagComment(src:Element, dest:Element|Node[], expandFormulas
     if (dbg2 !== dbg1) {
       const cmt2 = consoleComment(dbg2);
       if (Array.isArray(dest)) {
-        dest.push(cmt2);
+        pushRange(dest, cmt1);
       }
-      else {
-        (dest as Element).appendChild(cmt2);
+      else if (cmt2.length > 0) {
+        (dest as Element).appendChild(cmt2[0]);
       }
     }  
   }

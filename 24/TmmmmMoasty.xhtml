@@ -12,26 +12,169 @@
         title: 'Tmmmm Moasty',
         author: 'David Garber',
         copyright: '2021',
-        type: 'meta',
+        feeder: 'toaster',
         abilities: {
           reactiveBuilder: 'pageBody',
           scratchPad: true,
+          dragDrop: true,
         },
         reactiveBuilder: true,
         lookup: {
+          lefts: [
+            { width:490, text:[['bold','R'],['normal','america uns']] },
+            { width:480, text:[['bold','H'],['normal','ome '],['bold','L'],['normal','ungry']] },
+            { width:300, text:[['bold','FR'],['normal','eat']] },
+            { width:280, text:[['bold','M'],['normal','eat']] },
+            { width:330, text:[['bold','L'],['normal','inger']] },
+            { width:450, text:[['bold','TH'],['normal','et '],['bold','D'],['normal','e oor']] },
+            { width:340, text:[['normal','ave '],['bold','Y'],['normal','it']] },
+            { width:360, text:[['normal','ot '],['bold','C'],['normal','eats']] },
+            { width:380, text:[['bold','W'],['normal','i '],['bold','M'],['normal','ant']] },
+            { width:410, text:[['bold','GL'],['normal','original']] },
+            { width:500, text:[['normal','ink '],['bold','TH'],['normal','outside']] },
+            { width:430, text:[['normal','is '],['bold','H'],['normal','is '],['bold','Y'],['normal','ow']] },
+            { width:370, text:[['bold','TH'],['normal','ere’s']] },
+            { width:400, text:[['bold','H'],['normal','ou '],['bold','T'],['normal','ave']] },
+          ],
+          rights: [
+            { width:550, big:['white','e'], text:[['bold','W'],['normal','our '],['bold','H'],['normal','ay']] },
+            { width:550, big:['white','a'], text:[['bold','G'],['normal','ickin’ '],['bold','F'],['normal','ood']] },
+            { width:550, big:['white','e'], text:[['bold','B'],['normal','y '],['bold','B'],['normal','aby ack']] },
+            { width:550, big:['white','e'], text:[['bold','B'],['normal','e '],['bold','TH'],['normal','un']] },
+            { width:550, big:['white','t'], text:[['bold','B'],['normal','e '],['bold','WH'],['normal','eef']] },
+            { width:600, big:['gray','M'], text:[['bold','TR'],['normal','ool '],['bold','H'],['normal','eats']] },
+            { width:550, big:['white','e'], text:[['bold','H'],['normal','eave '],['bold','C'],['normal','appy']] },
+            { width:600, big:['gray','W'], text:[['bold','D'],['normal','azed oughnuts ']] },
+            { width:600, big:['gray','H'], text:[['bold','CH'],['normal','or ikin ']] },
+            { width:600, big:['gray','H'], text:[['bold','D'],['normal','on unkin ']] },
+            { width:550, big:['white','a'], text:[['bold','S'],['normal','ou '],['bold','TH'],['normal','onic']] },
+            { width:600, big:['gray','T'], text:[['normal','esh']] },
+            { width:550, big:['white','s'], text:[['bold','B'],['normal','o '],['bold','H'],['normal','e '],['bold','Y'],['normal','ere']] },
+            { width:550, big:['white','v'], text:[['bold','D'],['normal','it’s '],['bold','G'],['normal','ominos']] },
+          ]
         },
       };
     </script>
     <style>
+      path {
+        stroke: black;
+        fill: none;
+      }
+      path.shade {
+        fill: #ddd;
+      }
+      text.r-align {
+        text-anchor: end;
+        font-size: 48px;
+      }
+      text.l-align {
+        text-anchor: start;
+        font-size: 48px;
+      }
+      text.big {
+        text-anchor: end;
+        font-size: 72px;
+        paint-order: stroke;
+        fill: white;
+        stroke: #000000;
+        stroke-width: 2px;
+        font-weight: 800;
+        text-shadow: 0 0 4px black;
+      }
+      text.big.gray {
+        fill: #888;
+        text-shadow: none;
+      }
+      tspan.bold {
+        font-weight: bold;
+      }
+      .fix {
+        height: 60px;
+        width: 216px;
+        position: relative;
+      }
+      .fix.drop-target {
+        width: 240px;
+      }
+      .fix svg {
+        position: absolute;
+      }
+      #lefts .fix svg {
+        top: 0px;
+        right: 0px;
+      }
+      #drops {
+        position: absolute;
+        top: 0px;
+        left: 216px;
+      }
+      #start {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+      }
+      #Moasty .word-input {
+        width: 2in;
+      }
     </style>
   </head>
   <body id="Moasty">
     <div id="pageBody">
-      <p class="flavor">
-        Hello!
-      </p>
 
+      <div id="lefts">
+        <for each="left" in="lefts">
+          <div class="fix">
+            <use template="left-scroll" width="{left.width}" text="{left.text}" />
+          </div>
+        </for>
+      </div>
+
+      <div id="drops">
+        <for each="left" in="lefts">
+          <div class="fix drop-target">
+          </div>
+        </for>
+      </div>
+
+      <div id="start">
+        <for each="right" in="rights">
+          <div class="fix drop-target">
+            <use template="right-scroll" width="{right.width}" text="{right.text}" big="{right.big}" />
+          </div>
+        </for>        
+      </div>
+
+      <div class="no-print validate-block" style="position:absolute; top:9.1in; left:2.5in;">
+        Final answer: <word id="final-answer" data-show-ready="submit-answer" />
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
 
     </div>
+
+    <template id="left-scroll">
+      <svg width="224" height="70" viewBox="0 0 560 175" xmlns="http://www.w3.org/2000/svg">
+        <path class="line" d="M560,50 h-{width} a20,20,0,0,0,-20,20 a20,20,0,0,0,20,20 m-20,-20 v80 a20,20,0,0,0,40,0 v-80 m0,60 h{width-20}" />
+        <path class="shade" d="M{560-width},90 a20,20,0,0,0,20,-20 a10,10,0,1,0,-20,0 Z" />
+        <text class="r-align trim" x="540" y="110">
+          <for each="ts" in="text" trim="all">
+            <tspan class="{ts.0}">{ts.1}</tspan>
+          </for>
+        </text>
+      </svg>
+    </template>
+
+    <template id="right-scroll">
+      <svg width="280" height="70" viewBox="0 0 700 175" class="moveable no-user-select" xmlns="http://www.w3.org/2000/svg">
+        <path class="line" d="M0,50 h{width} m-20,0 v-20 m40,0 v80 a20,20,0,0,1,-20,20 h-{width}" />
+        <path class="shade" d="M{width},50 a20,20,0,1,0,-20,-20 a10,10,0,0,0,20,0 Z" />
+        <text class="l-align trim" x="10" y="110">
+          <for each="ts" in="text" trim="all">
+            <tspan class="{ts.0}">{ts.1}</tspan>
+          </for>
+        </text>
+        <text class="big {big.0}" x="{width-20}" y="115">{big.1}</text>
+      </svg>
+    </template>
+
   </body>
 </html>

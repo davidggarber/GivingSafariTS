@@ -617,7 +617,10 @@ export function consoleTrace(str:string) {
     console.log(str);
   }
 } 
-export function consoleComment(str:string):Comment {
+export function consoleComment(str:string):Node[] {
   consoleTrace(str);
-  return document.createComment(str);
+  if (isTrace()) {
+    return [document.createComment(str)];
+  }
+  return [];
 } 

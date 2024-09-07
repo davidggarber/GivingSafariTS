@@ -15,7 +15,7 @@ import { ContextError, debugTagAttrs, elementSourceOffset, elementSourceOffseter
  */
 export function startForLoop(src:HTMLElement):Node[] {
   const dest:Node[] = [];
-  dest.push(consoleComment(debugTagAttrs(src)));
+  pushRange(dest, consoleComment(debugTagAttrs(src)));
 
   let iter:string|null = null;
   let list:any[] = [];
@@ -61,12 +61,12 @@ export function startForLoop(src:HTMLElement):Node[] {
     throw new ContextError('Unable to determine loop', elementSourceOffset(src));
   }
 
-  dest.push(consoleComment('Iterating ' + iter + ' over ' + list.length + ' items...'));
+  pushRange(dest, consoleComment('Iterating ' + iter + ' over ' + list.length + ' items...'));
 
   const inner_context = pushBuilderContext();
   const iter_index = iter + '#';
   for (let i = 0; i < list.length; i++) {
-    dest.push(consoleComment(iter + ' #' + i + ' == ' + JSON.stringify(list[i])));
+    pushRange(dest, consoleComment(iter + ' #' + i + ' == ' + JSON.stringify(list[i])));
     inner_context[iter_index] = i;
     inner_context[iter] = list[i];
     if (vals.length > 0) {
