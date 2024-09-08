@@ -136,55 +136,9 @@
         top: 50px;
         left: 120px;
       }
-
-      #save-menu {
-        display: none;
-        position: absolute;
-        top: -10px;
-        left: 0px;
-        z-index: 10000;
-        cursor: pointer;
-      }
-      #save-menu span {
-        position: relative;
-        display: inline-block;
-        height: 30px;
-        padding-top: 12px;
-        background-color:aqua;
-      }
-      .menu-stretch {
-        width: 2px;
-      }
-      .menu-title {
-        z-index: 10002;
-      }
-      .menu-thumb {
-        width: 20px;
-        left: -10px;
-        border: transparent 0px solid;
-        border-radius: 10px;
-        z-index: 10001;
-      }
-      #save-menu:hover .menu-stretch {
-        animation-name: fly-out;
-        animation-duration: 300ms;
-        width: 60px;
-      }
-      @keyframes fly-out {
-        from { width: 2px; }
-        to { width: 60px; }
-      }
-
     </style>
   </head>
   <body id="IronChef">
-    <div id="save-menu">
-      <p>
-        <span class="menu-stretch">&nbsp;</span><span class="menu-title">Reload</span><span class="menu-thumb">&nbsp;</span>
-      </p>
-    </div>
-
-
     <div id="pageBody">
       <p class="flavor">
         Congratulations.  You 20 chefs have done extremely well to make it this far, stunning the judges with your 
