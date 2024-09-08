@@ -2239,11 +2239,11 @@ function onLetterKey(event) {
         return true;
     }
     else if (code == 'Home') {
-        moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', 1));
+        moveFocus(findRowEndInput(input, -1, event.ctrlKey));
         return true;
     }
     else if (code == 'End') {
-        moveFocus(findEndInContainer(input, 'letter-input', 'letter-non-input', 'letter-cell-block', -1));
+        moveFocus(findRowEndInput(input, 1, event.ctrlKey));
         return true;
     }
     else if (code == 'Backquote') {
@@ -2876,6 +2876,27 @@ function findNextInput(start, dx, dy, cls, clsSkip) {
     return next;
 }
 /**
+ * Helper for home/end movement
+ * @param start The current input
+ * @param dx Home=-1, End=1
+ * @param global true for ctrl+home/end, going to begining or end of whole range
+ * @returns An element on this row
+ */
+function findRowEndInput(start, dx, global) {
+    const root2d = findParentOfClass(start, 'letter-grid-2d');
+    if (root2d) {
+        let row;
+        if (global) {
+            row = findRowOfInputs(root2d, undefined, -dx, 'letter-input', 'letter-non-input');
+        }
+        else {
+            row = findRowOfInputs(root2d, start, 0, 'letter-input', 'letter-non-input');
+        }
+        return (dx > 0 ? row[row.length - 1] : row[0]);
+    }
+    return findEndInContainer(start, 'letter-input', 'letter-non-input', 'letter-cell-block', -dx);
+}
+/**
  * Find the next element with a desired class, within a parent defined by its class.
  * @param start - The current element
  * @param cls - The class of siblings
@@ -2893,6 +2914,95 @@ function findNextOfClassGroup(start, cls, clsSkip, clsGroup, dir = 1) {
     return next;
 }
 /**
+ * Compare the two elements' vertical rectangles.
+ * @param cur The reference element
+ * @param test An element that is even with, above, or below.
+ * @returns 0 if they appear to be on the same row;
+ * -1 if cur is higher; 1 if cur is lower.
+ */
+function compareVertical(cur, test) {
+    const rcCur = cur.getBoundingClientRect();
+    const rcTest = test.getBoundingClientRect();
+    if (rcCur.top >= rcTest.bottom) {
+        return 1;
+    }
+    if (rcCur.bottom <= rcTest.top) {
+        return -1;
+    }
+    return 0; // Some amount of vertical overlap
+}
+/**
+ * Compare the two elements' horizontal rectangles.
+ * @param cur The reference element
+ * @param test An element that is even with, left, or right.
+ * @returns 0 if they appear to be on the same column;
+ * -1 if cur is more left; 1 if cur is more right.
+ */
+function compareHorizontal(cur, test) {
+    const rcCur = cur.getBoundingClientRect();
+    const rcTest = test.getBoundingClientRect();
+    if (rcCur.left >= rcTest.right) {
+        return 1;
+    }
+    if (rcCur.right <= rcTest.left) {
+        return -1;
+    }
+    return 0; // Some amount of horizontal overlap
+}
+/**
+ * Find a row's worth of elements. This assumes rigid row-wise layout.
+ * @param container The container to stay within
+ * @param current The current element, or undefined to find the first/last row
+ * @param dy 0 to find the rest of the current row;
+ * -1 to find the row prior to current; 1 to find the next row.
+ * When current is omitted, dy<0 means find the last overall row; dy>0 means find the first.
+ * @param cls The class of elements to consider
+ * @param clsSkip A sub-class of elements to leave out
+ * @returns A list of elements, all of whom are on one vertical row.
+ * The list will be sorted.
+ */
+function findRowOfInputs(container, current, dy, cls, clsSkip) {
+    const all = container.getElementsByClassName(cls);
+    let ref = dy == 0 ? current : undefined;
+    if (!current && dy == 0) {
+        throw new Error("Can't search for the current row, without a current reference");
+    }
+    let row = [];
+    for (let i = 0; i < all.length; i++) {
+        const elmt = all[i];
+        if (clsSkip && hasClass(elmt, clsSkip)) {
+            continue;
+        }
+        let rel = dy;
+        if (current) {
+            rel = compareVertical(elmt, current);
+            if (rel == 0 && dy == 0) {
+                row.push(elmt);
+            }
+        }
+        if (rel * dy > 0) {
+            // Correct direction, relative to current
+            if (!ref) {
+                ref = elmt; // This is the first element we've found in the desired direction
+                row = [elmt];
+            }
+            else {
+                const rel2 = compareVertical(elmt, ref);
+                if (rel2 == 0) {
+                    row.push(elmt);
+                }
+                else if (rel2 * dy < 0) {
+                    ref = elmt; // Found a better reference, nearer in the desired direction
+                    row = [elmt];
+                }
+            }
+        }
+    }
+    // Sort the row from left to right
+    row.sort((a, b) => compareHorizontal(a, b));
+    return row;
+}
+/**
  * Find the input that the user likely means when navigating through a well-formed 2d grid
  * @param root - The root ancestor of the entire grid
  * @param start - The current input
@@ -2903,26 +3013,58 @@ function findNextOfClassGroup(start, cls, clsSkip, clsGroup, dir = 1) {
  * @returns Another input within the grid
  */
 function findNext2dInput(root, start, dx, dy, cls, clsSkip) {
-    // TODO: root
-    if (dy != 0) {
-        // In a 2D grid, up/down keep their relative horizontal positions
-        var parent = findParentOfClass(start, 'letter-cell-block');
-        if (!parent) {
-            throw new Error("letter-grid-2d navigation requires all inputs to be grouped in " +
-                "'letter-cell-block' ranges. For example, provided by <pattern>s");
+    // Find one row of elements
+    let row = findRowOfInputs(root, start, dy, cls, clsSkip);
+    if (row.length == 0) {
+        if (dy == 0) {
+            return start; // Very confusing
         }
-        var index = indexInContainer(start, parent, cls);
-        var nextParent = findNextOfClass(parent, 'letter-cell-block', 'letter-grid-2d', dy);
-        while (nextParent != null) {
-            var dest = childAtIndex(nextParent, cls, index);
-            if (dest != null && !hasClass(dest, clsSkip)) {
-                return dest;
-            }
-            nextParent = findNextOfClass(nextParent, 'letter-cell-block', 'letter-grid-2d', dy);
-        }
-        dx = dy;
+        // Wrap around
+        row = findRowOfInputs(root, undefined, dy, cls, clsSkip);
     }
-    return findNextOfClass(start, cls, clsSkip, dx);
+    if (!start || (dy != 0 && dx != 0)) {
+        // When changing rows, we want the first or last
+        if (dx >= 0) {
+            return row[0];
+        }
+        return row[row.length - 1];
+    }
+    let last;
+    for (let i = 0; i < row.length; i++) {
+        const elmt = row[i];
+        const relX = compareHorizontal(elmt, start);
+        if ((dx == 0 && relX == 0) || (dx >= 0 && relX > 0)) {
+            return elmt; // The first item that matches the qualification
+        }
+        else if (dx <= 0 && relX < 0) {
+            last = elmt; // A candidate. Let's see if we find a closer one.
+        }
+    }
+    if (!last && dy == 0) {
+        // Wrap to next/previous line
+        return findNext2dInput(root, start, dx, dx, cls, clsSkip);
+    }
+    return last || null;
+    // TODO: root
+    // if (dy != 0) {
+    //     // In a 2D grid, up/down keep their relative horizontal positions
+    //     var parent = findParentOfClass(start, 'letter-cell-block');
+    //     if (!parent) {
+    //         throw new Error("letter-grid-2d navigation requires all inputs to be grouped in " +
+    //             "'letter-cell-block' ranges. For example, provided by <pattern>s");
+    //     }
+    //     var index = indexInContainer(start, parent as Element, cls);
+    //     var nextParent = findNextOfClass(parent as Element, 'letter-cell-block', 'letter-grid-2d', dy);
+    //     while (nextParent != null) {
+    //         var dest:HTMLInputElement = childAtIndex(nextParent, cls, index) as HTMLInputElement;
+    //         if (dest != null && !hasClass(dest, clsSkip)) {
+    //             return dest;
+    //         }
+    //         nextParent = findNextOfClass(nextParent, 'letter-cell-block', 'letter-grid-2d', dy);
+    //     }
+    //     dx = dy;
+    // }        
+    // return findNextOfClass(start, cls, clsSkip, dx) as HTMLInputElement;
 }
 /**
  * Find the input that the user likely means when navigating through a jumbled 2d grid

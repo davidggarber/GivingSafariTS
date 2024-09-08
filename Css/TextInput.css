@@ -56,12 +56,17 @@
 
 .letter-hover {
   border: solid 1px transparent;
+  background-color: #ffffcc33;
 }
 
 .letter-hover:hover {
   background-color: #80808010;
 }
 
+.extract-hover:hover {
+  border: dotted 1px #999;
+  background-color: #ffffcc33;
+}
 
 .letter-grid, .literal-grid, .extract-grid, .extract-grid-highlight {
   width: 4ex;
