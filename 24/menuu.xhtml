@@ -19,7 +19,7 @@
         'reactiveBuilder': true,
         'lookup': {
           puzzles: puzzles,
-          feeders: false,
+          feeders: true,
           submitable: false,
           table_cols: 4,
 
@@ -48,7 +48,7 @@
     <style>
       #meta-table {
         position: absolute;
-        left: 5in;
+        left: 6.5in;
         top: 4in;
       }
     </style>
@@ -98,7 +98,11 @@
                   </a>
                 </ttd>
                 <if test="{feeders}">
-                  <ttd class="feeders"></ttd>
+                  <ttd class="feeders">
+                    <for each="feed" in="{puz.feeder}">
+                      <use template="{feed.meta}Icon" index="{feed.number}" />
+                    </for>  
+                  </ttd>
                 </if>
                 <ttd class="authors">
                   {puz.author}
@@ -116,9 +120,6 @@
             <ttr>
               <tth>&nbsp;</tth>
               <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
-              <if test="{feeders}">
-                <tth>Unlocked</tth>
-              </if>
               <tth class="author" style="text-align: left;">Author</tth>
               <if test="{submitable}">
                 <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
@@ -137,9 +138,6 @@
                     </if>
                   </a>
                 </ttd>
-                <if test="{feeders}">
-                  <ttd class="feeders"></ttd>
-                </if>
                 <ttd class="authors">
                   {meta.author}
                 </ttd>
@@ -149,25 +147,16 @@
               </ttr>
               <ttr>
                 <ttd>&nbsp;</ttd>
-                <if test="{feeders}">
-                  <ttd class="feeders" colspan="2">
-                    <for each="feed" in="{meta.feeders}">
-                      <use template="{meta.template}" name="{feed}" index="{feed# + 1}" />
-                    </for>
-                  </ttd>
-                </if>
-                <else>
-                  <ttd class="feeders">
-                    <for each="feed" in="{meta.feeders}">
-                      <use template="{meta.template}" name="{feed}" index="{feed# + 1}" />
-                    </for>
-                  </ttd>
-                </else>
-                <td>
+                <ttd class="feeders">
+                  <for each="feed" in="{meta.feeders}">
+                    <use template="{meta.template}" name="{feed}" index="{feed# + 1}" />
+                  </for>
+                </ttd>
+                <ttd>
                   <if exists="{meta.forget?}">
                     <a href="{meta.forget}" target="_blank" style="font-size: smaller;">Forget materials</a>
                   </if>
-                </td>
+                </ttd>
               </ttr>
               
             </for>
@@ -230,27 +219,44 @@
 
     <template id="ironChef">
       <a class="ic-hat" href="IC_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
-        <img src="Icons/ironChef.png" /><sub>{index}</sub>
+        <use template="ironChefIcon" index="{index}" />
       </a>
+    </template>
+
+    <template id="ironChefIcon">
+      <img src="Icons/ironChef.png" /><sub>{index}</sub>
     </template>
 
     <template id="smorgasbord">
       <a class="sb-plate" href="SB_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
-        <img src="Icons/smorgasbord.png" /><sub>{index}</sub>
+        <use template="smorgasbordIcon" index="{index}" />
       </a>
+    </template>
+
+    <template id="smorgasbordIcon">
+      <img src="Icons/smorgasbord.png" /><sub>{index}</sub>
     </template>
 
     <template id="fridge">
       <a class="fr-fridge" href="FR_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
-        <img src="Icons/fridge.png" /><sub>{index}</sub>
+        <use template="fridgeIcon" index="{index}" />
       </a>
+    </template>
+
+    <template id="fridgeIcon">
+      <img src="Icons/fridge.png" /><sub>{index}</sub>
     </template>
 
     <template id="toaster">
       <a class="TM-toaster" href="TM_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
-        <img src="Icons/toaster.png" /><sub>{index}</sub>
+        <use template="toasterIcon" index="{index}" />
       </a>
     </template>
+
+    <template id="toasterIcon">
+      <img src="Icons/toaster.png" /><sub>{index}</sub>
+    </template>
+
 
   </body>
 </html>
