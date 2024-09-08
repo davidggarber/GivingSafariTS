@@ -990,7 +990,22 @@ function toggleDecoder() {
     setupDecoderToggle(null);
 }
 exports.toggleDecoder = toggleDecoder;
-var localCache = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, controls: {}, scratch: {}, edges: [], guesses: [], time: null };
+var localCache = {
+    letters: {},
+    words: {},
+    notes: {}, checks: {},
+    containers: {},
+    positions: {},
+    stamps: {},
+    highlights: {},
+    controls: {},
+    scratch: {},
+    edges: [],
+    guesses: [],
+    // started: null, 
+    // latest: null ,
+    time: null,
+};
 ////////////////////////////////////////////////////////////////////////
 // User interface
 //

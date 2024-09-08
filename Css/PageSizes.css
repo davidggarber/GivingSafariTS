@@ -13,6 +13,9 @@ body.debug {
   height: 0px;
 }
 
+.printedPage {
+  z-index: 100;
+}
 
 /*
 Use class="letter portrait"       for 8½  x 11
@@ -135,6 +138,7 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
   width: 100%;
   height: 100%;
   position: relative;
+  z-index: 100;
 }
 .debug .pageWithinMargins {
   box-shadow:0px 0px 15px #999966; 

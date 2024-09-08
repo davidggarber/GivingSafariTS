@@ -1102,10 +1102,15 @@ export function toggleDecoder() {
 // Types
 //
 
+type CacheProgress = {
+    id: number;
+    time: Date;
+    fraction: number;
+}
+
 /**
  * Cache structure for of all collections that persist on page refresh
  */
-
 type LocalCacheStruct = {
     letters: object;    // number => string
     words: object;      // number => string
@@ -1119,6 +1124,8 @@ type LocalCacheStruct = {
     scratch: object;    // (x,y) => string
     edges: string[];    // strings
     guesses: GuessLog[];
+    // started: Date|null;
+    // latest: Date|null;
     time: Date|null;
 }
 
@@ -1126,7 +1133,22 @@ type LocalSavePoint = {
     savePoints: LocalCacheStruct[];    
 }
 
-var localCache:LocalCacheStruct = { letters: {}, words: {}, notes: {}, checks: {}, containers: {}, positions: {}, stamps: {}, highlights: {}, controls: {}, scratch: {}, edges: [], guesses: [], time: null };
+var localCache:LocalCacheStruct = { 
+    letters: {}, 
+    words: {}, 
+    notes: {}, checks: {},
+    containers: {}, 
+    positions: {}, 
+    stamps: {}, 
+    highlights: {}, 
+    controls: {}, 
+    scratch: {}, 
+    edges: [], 
+    guesses: [], 
+    // started: null, 
+    // latest: null ,
+    time: null,
+};
 
 ////////////////////////////////////////////////////////////////////////
 // User interface
