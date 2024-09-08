@@ -48,7 +48,7 @@ var puzzles = [
     { title: 'Greens', thumb: '', author: 'Margaret Shaver', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'I Need A Gyro', thumb: '', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'LasagneDoku', thumb: '', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
-    // { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', thumb: '', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [] },
+    { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', thumb: '', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Overeating', thumb: '', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Plexiglass Dividers', thumb: '', author: 'Peter Golde', type: types.logic, group: group.puzzle, orientation: orient.portrait, feeder: [] },
     { title: 'Snack Time', thumb: '', author: 'Marni Hager', type: types.word, group: group.puzzle, orientation: orient.portrait, feeder: [] },

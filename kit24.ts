@@ -3312,29 +3312,6 @@ function findNext2dInput(   root: Element,
         return findNext2dInput(root, start, dx, dx, cls, clsSkip);
     }
     return last || null;
-
-
-
-                                // TODO: root
-    // if (dy != 0) {
-    //     // In a 2D grid, up/down keep their relative horizontal positions
-    //     var parent = findParentOfClass(start, 'letter-cell-block');
-    //     if (!parent) {
-    //         throw new Error("letter-grid-2d navigation requires all inputs to be grouped in " +
-    //             "'letter-cell-block' ranges. For example, provided by <pattern>s");
-    //     }
-    //     var index = indexInContainer(start, parent as Element, cls);
-    //     var nextParent = findNextOfClass(parent as Element, 'letter-cell-block', 'letter-grid-2d', dy);
-    //     while (nextParent != null) {
-    //         var dest:HTMLInputElement = childAtIndex(nextParent, cls, index) as HTMLInputElement;
-    //         if (dest != null && !hasClass(dest, clsSkip)) {
-    //             return dest;
-    //         }
-    //         nextParent = findNextOfClass(nextParent, 'letter-cell-block', 'letter-grid-2d', dy);
-    //     }
-    //     dx = dy;
-    // }        
-    // return findNextOfClass(start, cls, clsSkip, dx) as HTMLInputElement;
 }
 
 /**
@@ -12087,10 +12064,10 @@ function scratchPageClick(evt:MouseEvent) {
  * @param elmt A newly created TextArea
  */
 function disableSpellcheck(elmt:Element) {
-    elmt.setAttribute('spellCheck', 'false');
-    elmt.setAttribute('autoComplete', 'false');
-    elmt.setAttribute('autoCorrect', 'false');
-    elmt.setAttribute('autoCapitalize', 'false');
+    elmt.setAttribute('spellcheck', 'false');
+    elmt.setAttribute('autocomplete', 'off');
+    elmt.setAttribute('autocorrect', 'off');
+    elmt.setAttribute('autocapitalize', 'off');
 }
 
 /**

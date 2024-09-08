@@ -130,10 +130,10 @@ function scratchPageClick(evt:MouseEvent) {
  * @param elmt A newly created TextArea
  */
 function disableSpellcheck(elmt:Element) {
-    elmt.setAttribute('spellCheck', 'false');
-    elmt.setAttribute('autoComplete', 'false');
-    elmt.setAttribute('autoCorrect', 'false');
-    elmt.setAttribute('autoCapitalize', 'false');
+    elmt.setAttribute('spellcheck', 'false');
+    elmt.setAttribute('autocomplete', 'off');
+    elmt.setAttribute('autocorrect', 'off');
+    elmt.setAttribute('autocapitalize', 'off');
 }
 
 /**

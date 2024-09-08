@@ -48,46 +48,50 @@
           ],
           questions: [
             [
-              'Dancer Gene (4)',
-              'Prime provider (5)',
-              'Odor-producing food, for some (7)',
-              'Mythical warrior (5)',
+              [ 'Dancer Gene', 4 ],
+              [ 'Prime provider', 5 ],
+              [ 'Odor-producing food, for some', 7 ],
+              [ 'Mythical warrior', 5 ],
             ],
             [
-              'Chevy Hybrid (2)',
-              'Found on floor of the right (1)',
-              'Endor moon terrain (6)',
-              'Muppet prof (1)',
+              [ 'Chevy Hybrid', 2 ],
+              [ 'Found on floor of the right', 1 ],
+              [ 'Endor moon terrain', 6 ],
+              [ 'Muppet prof', 1 ],
             ],
             [
-              '"Praying" insect (5)',
-              'Popular pie filler (7)',
-              'Kids playground (with "gym") (1)',
-              'Trophy collector? (2)',
+              [ '"Praying" insect', 5 ],
+              [ 'Popular pie filler', 7 ],
+              [ 'Kids playground, (with "gym")', 1 ],
+              [ 'Trophy collector?', 2 ],
             ],
             [
-              'Guardian of the Galaxy (6)',
-              'Coining location (4)',
-              'Tonic mate (2)',
-              'Guac requisite (4)',
+              [ 'Guardian of the Galaxy', 6 ],
+              [ 'Coining location', 4 ],
+              [ 'Tonic mate', 2 ],
+              [ 'Guac requisite', 4 ],
             ],
             [
-              'Drink with jam and bread (2)',
-              'Talkshow host Ripa (3)',
-              'Actor Whitaker (4)',
-              'Shadow Run immortal elf (2)',
+              [ 'Drink with jam and bread', 2 ],
+              [ 'Talkshow host Ripa', 3 ],
+              [ 'Actor Whitaker', 4 ],
+              [ 'Shadow Run immortal elf', 2 ],
             ],
             [
-              'Spear vegetable (7)',
-              'Orion alias (2)',
-              'Tahoe National, for one (4)',
-              'Bathroom moaner (3)',	
+              [ 'Spear vegetable', 7 ],
+              [ 'Orion alias', 2 ],
+              [ 'Tahoe National, for one', 4 ],
+              [ 'Bathroom moaner', 3 ],	
             ]
           ],
         },
       };
 
-      function onCombo(select) {
+      // <![CDATA[
+
+      var letters = Array(24);
+
+      function onCombo(select, index, ext) {
         select.style.backgroundColor = select.value;
         var td = select.parentNode;
         td.style.backgroundColor = select.value;
@@ -95,19 +99,41 @@
         td.style.color = fg;
         select.style.color = fg;
         
+        ext--;
+        var word = select.selectedOptions[0].label.replace(' ', '').toUpperCase();
+        var letter = (select.selectedIndex > 0 && ext < word.length) ? word[ext] : '';
+        letters[index] = letter;
+        // var square = findParentOfClass(select, 'square');
+        // var extract = findFirstChildOfClass(square, 'extracted', undefined);
+        // if (extract) {
+        //   extract.innerText = letter;
+        // }
+        document.getElementById('intermediate').innerText = letters.join('');
+
         saveStates();
       }
+      // ]]>
     </script>
     <style>
       .square {
         width: 180px;
         height: 90px;
         vertical-align: bottom;
-        padding: 10px 10px 40px;
+        padding: 10px 10px 35px;
+      }
+      .hint {
+        padding: 0px 10px;
+        text-align: center;
+      }
+      #Greens #intermediate {
+        margin: 0px;
+        height: 20pt;
+        padding-bottom: 4px;
+        text-align: center;
       }
     </style>
   </head>
-  <body id="__puzzle_name">
+  <body id="Greens">
     <div id="pageBody">
       <p class="flavor">
         Note: Each answer may appear multiple times or never at all
@@ -118,8 +144,8 @@
             <ttr>
               <for each="q" in="{row}">
                 <ttd class="square">
-                  <p>{q}</p>
-                  <use template="colors" qid="sel_{row#}_{q#}"></use>
+                  <p class="hint">{q.0} ({q.1})</p>
+                  <use template="colors" qid="sel_{row#}_{q#}" index="{row#*4+q#}" ext="{q.1}"></use>
                 </ttd>
               </for>
             </ttr>
@@ -127,7 +153,8 @@
         </ttable>
       </build>
 
-      <div class="no-print validate-block" style="position:absolute; top:9.1in; left: 2.5in;">
+      <div class="no-print validate-block" style="position:absolute; top:9in; left: 2.5in;">
+        <p id="intermediate" class="extracted"></p>
         Final answer: <input id="final-answer" class="extracted" type="text" style="width:2.5in; text-transform: uppercase;"></input>
         <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
       </div>
@@ -135,7 +162,7 @@
     </div>
 
     <template id="colors">
-      <sselect id="{qid}" onchange="onCombo(this)" class="save-state" onload="onCombo(this)">
+      <sselect id="{qid}" onchange="onCombo(this, {index}, {ext})" class="save-state" onload="onCombo(this, {index}, {ext})">
         <for each="col" in="{colors}">
           <ooption value="{col.value}">{col.name}</ooption>
         </for>
