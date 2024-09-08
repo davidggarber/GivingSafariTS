@@ -1,4 +1,4 @@
-import { findFirstChildOfClass, findParentOfClass, hasClass, isSelfOrParent, toggleClass } from "./_classUtil";
+import { findFirstChildOfClass, findParentOfClass, getElementsByClassOrId, hasClass, isSelfOrParent, toggleClass } from "./_classUtil";
 import { saveContainerLocally, savePositionLocally } from "./_storage";
 
 export type Position = {
@@ -36,6 +36,39 @@ export function preprocessDragFunctions() {
     }
 
     elems = document.getElementsByClassName('free-drop');
+    for (let i = 0; i < elems.length; i++) {
+        const elem = elems[i] as HTMLElement;
+        preprocessFreeDrop(elem);
+
+        // backward-compatible
+        if (hasClass(elem, 'z-grow-up')) {
+            elem.setAttributeNS('', 'data-z-grow', 'up');
+        }
+        else if (hasClass(elem, 'z-grow-down')) {
+            elem.setAttributeNS('', 'data-z-grow', 'down');
+        }
+        initFreeDropZorder(elem);
+    }
+}
+
+/**
+ * Similar to pre-process, but a special case when the draggable
+ * elements show up after the initial page setup.
+ * @param container An element which is or contains 'moveable', 
+ * and other drag-drop artifacts.
+ */
+export function postprocessDragFunctions(container:HTMLElement) {
+    let elems = getElementsByClassOrId('moveable', undefined, container);
+    for (let i = 0; i < elems.length; i++) {
+        preprocessMoveable(elems[i] as HTMLElement);
+    }
+
+    elems = getElementsByClassOrId('drop-target', undefined, container);
+    for (let i = 0; i < elems.length; i++) {
+        preprocessDropTarget(elems[i] as HTMLElement);
+    }
+
+    elems = getElementsByClassOrId('free-drop', undefined, container);
     for (let i = 0; i < elems.length; i++) {
         const elem = elems[i] as HTMLElement;
         preprocessFreeDrop(elem);

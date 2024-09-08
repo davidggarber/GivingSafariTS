@@ -1,4 +1,4 @@
-#table .title-font {
+.table .title-font {
   font-size: 24pt;
   font-weight: normal;
 }
@@ -10,17 +10,17 @@ th {
   cursor: s-resize;
 }
 
-#table tr:nth-child(odd) {
+.table tr:nth-child(odd) {
   background-color: #f5f5f5;
 }
-#table tr:nth-child(even) {
+.table tr:nth-child(even) {
   background-color: #ECEEEE;
 }
 
-#table tr.solved:nth-child(odd) {
+.table tr.solved:nth-child(odd) {
   background-color: #afa;
 }
-#table tr.solved:nth-child(even) {
+.table tr.solved:nth-child(even) {
   background-color: #8d8;
 }
 
@@ -144,7 +144,7 @@ img.thumb {
   transform-origin: bottom;
   border: solid 0.5px #ddd;
 }
-#table tr.big td,th {
+.table tr.big td,th {
   background-color: #4472C4;
   color: white;
 }

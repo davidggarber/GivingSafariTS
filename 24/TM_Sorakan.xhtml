@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        title: 'Tmmmm Moasty - materials #2',
+        author: 'David Garber',
+        copyright: '2021',
+        feeder: 'toaster',
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          pad: 50,
+          index: 1,
+          phrases: [
+            { index:3, width:550, big:['white','e'], text:[['bold','B'],['normal','e '],['bold','TH'],['normal','un']] },
+            { index:4, width:550, big:['white','t'], text:[['bold','B'],['normal','e '],['bold','WH'],['normal','eef']] },
+            { index:5, width:600, big:['gray','M'], text:[['bold','TR'],['normal','ool '],['bold','H'],['normal','eats']] },
+            { index:6, width:550, big:['white','e'], text:[['bold','H'],['normal','eave '],['bold','C'],['normal','appy']] },
+          ],
+        },
+        postSetup: unlockFeeder
+      };
+
+      //<![CDATA[
+      function unlockFeeder() {
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials('TmmmmMoastyMeta', 0, boiler.lookup.index, {
+            phrases: boiler.lookup.phrases,
+            src: window.location.href });
+          updatePuzzleList('TmmmmMoastyMeta-2', 'loaded');
+        }
+      }
+      //]]>
+    </script>
+    <style>
+      path {
+        stroke: black;
+        fill: none;
+      }
+      path.shade {
+        fill: #ddd;
+      }
+      text.r-align {
+        text-anchor: end;
+        font-size: 48px;
+      }
+      text.l-align {
+        text-anchor: start;
+        font-size: 48px;
+      }
+      text.big {
+        text-anchor: end;
+        font-size: 72px;
+        paint-order: stroke;
+        fill: white;
+        stroke: #000000;
+        stroke-width: 2px;
+        font-weight: 800;
+        text-shadow: 0 0 4px black;
+      }
+      text.big.gray {
+        fill: #888;
+        text-shadow: none;
+      }
+      tspan.bold {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body id="Feeder">
+    <div id="pageBody">
+      <p class="clue" style="margin-top: 1in;">
+        The following partial phrases are now available to solve the <a href="TmmmmMoasty.xhtml">Tmmmm Moasty</a> meta puzzle:
+      </p>
+
+      <div style="position: absolute;">
+        <for each="phrase" in="{phrases}">
+          <div sstyle="position: absolute; left:{pad + phrase# * 100}px; top:{pad + phrase# * 100}px">
+            <use template="right-scroll" width="{phrase.width}" text="{phrase.text}" big="{phrase.big}" />
+          </div>
+        </for>
+      </div>
+
+    </div>
+
+    <template id="right-scroll">
+      <svg width="280" height="70" viewBox="0 0 700 175" class="moveable no-user-select" xmlns="http://www.w3.org/2000/svg">
+        <path class="line" d="M0,50 h{width} m-20,0 v-20 m40,0 v80 a20,20,0,0,1,-20,20 h-{width}" />
+        <path class="shade" d="M{width},50 a20,20,0,1,0,-20,-20 a10,10,0,0,0,20,0 Z" />
+        <text class="l-align trim" x="10" y="110">
+          <for each="ts" in="text" trim="all">
+            <tspan class="{ts.0}">{ts.1}</tspan>
+          </for>
+        </text>
+        <text class="big {big.0}" x="{width-20}" y="115">{big.1}</text>
+      </svg>
+    </template>
+
+  </body>
+</html>

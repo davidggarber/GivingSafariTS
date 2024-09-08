@@ -38,7 +38,7 @@
             },
             { title: 'Tmmmm Moasty', href: 'TmmmmMoasty.xhtml', author: 'David Garber',  thumb: '',
               icon: 'Icons/toaster.png', template: 'toaster', forget: 'TM_Forget.xhtml',
-              feeders: ['Dolli', 'Piritos', 'Tobas', 'Zdravica']
+              feeders: ['Piritos', 'Sorakan', 'Tobas', 'Zdravica']
             },
 
           ]
@@ -46,13 +46,18 @@
       };
     </script>
     <style>
+      #meta-table {
+        position: absolute;
+        left: 5in;
+        top: 4in;
+      }
     </style>
   </head>
   <body id="Menu">
     <div id="pageBody">
 
       <build>
-        <ttable id="table" style="border-collapse: collapse">
+        <ttable id="puz-table" class="table" style="border-collapse: collapse">
           <tthead>
             <ttr style="text-align: center;">
               <tth colspan="{table_cols}" class="title-font" style="text-align: center; position: relative;">
@@ -104,11 +109,10 @@
               </ttr>
             </for>
           </ttbody>
+        </ttable>
 
+        <ttable id="meta-table" class="table" style="border-collapse: collapse">
           <ttfoot id="meta_list">
-            <ttr>
-                <tth colspan="{table_cols}" style="background-color: #D1D6D7">&nbsp;</tth>
-            </ttr>
             <ttr>
               <tth>&nbsp;</tth>
               <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
@@ -243,7 +247,7 @@
     </template>
 
     <template id="toaster">
-      <a class="MT-toaster" href="MT_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
+      <a class="TM-toaster" href="TM_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
         <img src="Icons/toaster.png" /><sub>{index}</sub>
       </a>
     </template>

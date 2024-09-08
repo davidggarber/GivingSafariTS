@@ -531,18 +531,27 @@ export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = '
  * Some abilities are hooked to either a single element with a predefined ID,
  * or a set of elements with a prefined class.
  * Usually, this is a v1 and v2, where the ID is supported as backwards compat.
- * @param id An element ID, unique in the document
  * @param cls An element class
+ * @param id An element ID, unique in the document
  * @param parent If present, constrain class search to that parent, 
  * else look document-wide. The ID is always documet-wide.
  * @returns A list of matching elements. The ID, if found, is first.
  */
-export function getElementsByClassOrId(id:string, cls:string, parent?:Element):Element[] {
+export function getElementsByClassOrId(cls:string, id?:string, parent?:Element):Element[] {
     const list:Element[] = [];
-    const byId = document.getElementById(id);
-    if (byId) {
-        list.push(byId);
+    
+    let byId:HTMLElement|null = null;
+    if (id) {
+        byId = document.getElementById(id);
+        if (byId) {
+            list.push(byId);
+        }
     }
+
+    if (parent && hasClass(parent, cls)) {
+        list.push(parent);
+    }
+    
     const byClass = parent ? parent.getElementsByClassName(cls)
         : document.getElementsByClassName(cls);
     for (let i = 0; i < byClass.length; i++) {
@@ -553,6 +562,7 @@ export function getElementsByClassOrId(id:string, cls:string, parent?:Element):E
     }
     return list;
 }
+
 
 /*-----------------------------------------------------------
  * _tableBuilder.ts
@@ -4541,6 +4551,39 @@ export function preprocessDragFunctions() {
     }
 
     elems = document.getElementsByClassName('free-drop');
+    for (let i = 0; i < elems.length; i++) {
+        const elem = elems[i] as HTMLElement;
+        preprocessFreeDrop(elem);
+
+        // backward-compatible
+        if (hasClass(elem, 'z-grow-up')) {
+            elem.setAttributeNS('', 'data-z-grow', 'up');
+        }
+        else if (hasClass(elem, 'z-grow-down')) {
+            elem.setAttributeNS('', 'data-z-grow', 'down');
+        }
+        initFreeDropZorder(elem);
+    }
+}
+
+/**
+ * Similar to pre-process, but a special case when the draggable
+ * elements show up after the initial page setup.
+ * @param container An element which is or contains 'moveable', 
+ * and other drag-drop artifacts.
+ */
+export function postprocessDragFunctions(container:HTMLElement) {
+    let elems = getElementsByClassOrId('moveable', undefined, container);
+    for (let i = 0; i < elems.length; i++) {
+        preprocessMoveable(elems[i] as HTMLElement);
+    }
+
+    elems = getElementsByClassOrId('drop-target', undefined, container);
+    for (let i = 0; i < elems.length; i++) {
+        preprocessDropTarget(elems[i] as HTMLElement);
+    }
+
+    elems = getElementsByClassOrId('free-drop', undefined, container);
     for (let i = 0; i < elems.length; i++) {
         const elem = elems[i] as HTMLElement;
         preprocessFreeDrop(elem);

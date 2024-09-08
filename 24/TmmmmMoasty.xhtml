@@ -36,24 +36,50 @@
             { width:370, text:[['bold','TH'],['normal','ere’s']] },
             { width:400, text:[['bold','H'],['normal','ou '],['bold','T'],['normal','ave']] },
           ],
-          rights: [
-            { width:550, big:['white','e'], text:[['bold','W'],['normal','our '],['bold','H'],['normal','ay']] },
-            { width:550, big:['white','a'], text:[['bold','G'],['normal','ickin’ '],['bold','F'],['normal','ood']] },
-            { width:550, big:['white','e'], text:[['bold','B'],['normal','y '],['bold','B'],['normal','aby ack']] },
-            { width:550, big:['white','e'], text:[['bold','B'],['normal','e '],['bold','TH'],['normal','un']] },
-            { width:550, big:['white','t'], text:[['bold','B'],['normal','e '],['bold','WH'],['normal','eef']] },
-            { width:600, big:['gray','M'], text:[['bold','TR'],['normal','ool '],['bold','H'],['normal','eats']] },
-            { width:550, big:['white','e'], text:[['bold','H'],['normal','eave '],['bold','C'],['normal','appy']] },
-            { width:600, big:['gray','W'], text:[['bold','D'],['normal','azed oughnuts ']] },
-            { width:600, big:['gray','H'], text:[['bold','CH'],['normal','or ikin ']] },
-            { width:600, big:['gray','H'], text:[['bold','D'],['normal','on unkin ']] },
-            { width:550, big:['white','a'], text:[['bold','S'],['normal','ou '],['bold','TH'],['normal','onic']] },
-            { width:600, big:['gray','T'], text:[['normal','esh']] },
-            { width:550, big:['white','s'], text:[['bold','B'],['normal','o '],['bold','H'],['normal','e '],['bold','Y'],['normal','ere']] },
-            { width:550, big:['white','v'], text:[['bold','D'],['normal','it’s '],['bold','G'],['normal','ominos']] },
-          ]
+        },
+        metaParams: {
+          id: 'TmmmmMoastyMeta',
+          count: 4,
+          onSync: syncMeta,
         },
       };
+
+      //<![CDATA[
+
+
+      var known = {};
+
+      function syncMeta(data) {
+        for (var d = 0; d < data.length; d++) {
+          var phrases = (data[d] && 'phrases' in data[d]) ? data[d]['phrases'] : null;
+          if (phrases) {
+            for (var p = 0; p < phrases.length; p++) {
+              var item = phrases[p];
+              if (item) {
+                var index = item['index'];
+                if (index in known) {
+                  continue;  // Already loaded, and presumably in play
+                }
+                // Find a starting point
+                for (let i = 0; i < 14; i++) {
+                  var div = document.getElementById('start-' + i);
+                  if (div.getElementsByClassName('moveable').length > 0) {
+                    continue;  // this starting point is occupied
+                  }
+                  refillFromTemplate(div, 'right-scroll', item);
+                  toggleClass(div, 'drop-target', true);
+                  postprocessDragFunctions(div);
+                  known[index] = true;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      //]]>
+
     </script>
     <style>
       path {
@@ -114,38 +140,49 @@
         right: 0px;
       }
       #Moasty .word-input {
-        width: 2in;
+        width: 2.5in;
+      }
+      img.padlock {
+        width: 32px;
+        height: 48px;
       }
     </style>
   </head>
   <body id="Moasty">
     <div id="pageBody">
 
-      <div id="lefts">
-        <for each="left" in="lefts">
-          <div class="fix">
-            <use template="left-scroll" width="{left.width}" text="{left.text}" />
-          </div>
-        </for>
+      <p style="padding:0px; margin:0px;">
+        This is a <b>meta-puzzle</b>. Solve feeder puzzles to populate this page.
+      </p>
+
+      <div style="position: relative;">
+        <div id="lefts">
+          <for each="left" in="lefts">
+            <div class="fix">
+              <use template="left-scroll" width="{left.width}" text="{left.text}" />
+            </div>
+          </for>
+        </div>
+
+        <div id="drops">
+          <for each="left" in="lefts">
+            <div class="fix drop-target">
+            </div>
+          </for>
+        </div>
+
+        <div id="start">
+          <for each="item" in="lefts">
+            <div id="start-{item#}" class="fix">
+              <img class="padlock" src="Images/locked.png" />
+            </div>
+          </for>        
+        </div>
+
       </div>
 
-      <div id="drops">
-        <for each="left" in="lefts">
-          <div class="fix drop-target">
-          </div>
-        </for>
-      </div>
-
-      <div id="start">
-        <for each="right" in="rights">
-          <div class="fix drop-target">
-            <use template="right-scroll" width="{right.width}" text="{right.text}" big="{right.big}" />
-          </div>
-        </for>        
-      </div>
-
-      <div class="no-print validate-block" style="position:absolute; top:9.1in; left:2.5in;">
-        Final answer: <word id="final-answer" data-show-ready="submit-answer" />
+      <div class="no-print validate-block" style="position:absolute; top:9.1in; left:2in;">
+        Final answer: <word id="final-answer" class="extracted" data-show-ready="submit-answer" />
         <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
       </div>
 
@@ -164,7 +201,7 @@
     </template>
 
     <template id="right-scroll">
-      <svg width="280" height="70" viewBox="0 0 700 175" class="moveable no-user-select" xmlns="http://www.w3.org/2000/svg">
+      <svg id="move-{index}" width="280" height="70" viewBox="0 0 700 175" class="moveable no-user-select" xmlns="http://www.w3.org/2000/svg">
         <path class="line" d="M0,50 h{width} m-20,0 v-20 m40,0 v80 a20,20,0,0,1,-20,20 h-{width}" />
         <path class="shade" d="M{width},50 a20,20,0,1,0,-20,-20 a10,10,0,0,0,20,0 Z" />
         <text class="l-align trim" x="10" y="110">

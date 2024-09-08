@@ -524,18 +524,27 @@ export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = '
  * Some abilities are hooked to either a single element with a predefined ID,
  * or a set of elements with a prefined class.
  * Usually, this is a v1 and v2, where the ID is supported as backwards compat.
- * @param id An element ID, unique in the document
  * @param cls An element class
+ * @param id An element ID, unique in the document
  * @param parent If present, constrain class search to that parent, 
  * else look document-wide. The ID is always documet-wide.
  * @returns A list of matching elements. The ID, if found, is first.
  */
-export function getElementsByClassOrId(id:string, cls:string, parent?:Element):Element[] {
+export function getElementsByClassOrId(cls:string, id?:string, parent?:Element):Element[] {
     const list:Element[] = [];
-    const byId = document.getElementById(id);
-    if (byId) {
-        list.push(byId);
+    
+    let byId:HTMLElement|null = null;
+    if (id) {
+        byId = document.getElementById(id);
+        if (byId) {
+            list.push(byId);
+        }
     }
+
+    if (parent && hasClass(parent, cls)) {
+        list.push(parent);
+    }
+    
     const byClass = parent ? parent.getElementsByClassName(cls)
         : document.getElementsByClassName(cls);
     for (let i = 0; i < byClass.length; i++) {
