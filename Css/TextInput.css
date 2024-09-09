@@ -157,9 +157,13 @@
 
 .extract-underline {
   border-bottom: solid 2.5px black;
+  margin-left: 0.025in;
+  margin-right: 0.025in;
 }
 .extract-thin-underline {
   border-bottom: solid 1px black;
+  margin-left: 0.025in;
+  margin-right: 0.025in;
 }
 .letter-input {
   position: absolute;

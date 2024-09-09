@@ -17,7 +17,7 @@
           textInput: 'nearest',
           scratchPad: true,
         },
-        reactiveBuilder: true,
+        reactiveBuilder: 'pageBody',
         lookup: {
           left: [
             { before: 1, after: 2 },
@@ -58,52 +58,88 @@
       td.before {
         text-align: right;
         padding-left: 10px;
+        padding-right: 0px;
       }
       td.gray {
         background-color: #E7E6E6;
+        padding-left: 0px;
+        padding-right: 0px;
       }
       td.after {
         text-align: left;
+        padding-left: 0px;
         padding-right: 10px;
       }
       td.image img {
         height: 1in;
         margin: 10px;
       }
+
+
+
+      #save-menu {
+        position: absolute;
+        top: 10px;
+        left: 0px;
+        z-index: 11;
+        cursor: pointer;
+      }
+      #save-menu span {
+        position: relative;
+        display: inline-block;
+        height: 30px;
+        padding-top: 12px;
+        background-color:aqua;
+      }
+      .file-menu {
+        position: relative;
+        left: 4px;
+        width: 24px;
+      }
+
+      #save-menu:hover {
+        z-index: 10011;
+      }
     </style>
   </head>
   <body id="Techniques">
+<!--
+    <div id="save-menu">
+      <img class="file-menu" id="file-restart" src="Icons/restart.png" onclick="saveAndRestart()" /><br />
+      <img class="file-menu" id="file-restore" src="Icons/disk.png" onclick="restore" /><br />
+    </div>
+-->
     <div id="pageBody">
-      <build>
-        <ttable id="left" trim="all" data-extract-style="underline">
-          <for each="row" in="{left}">
-            <ttr>
-              <ttd class="before"><pattern pattern="{row.before}" /></ttd>
-              <ttd class="gray"><letter extract='true' /></ttd>
-              <ttd class="after"><pattern pattern="{row.after}" /></ttd>
-              <ttd class="image"><img ssrc="Techniques/l{row#+1}.jpg" /></ttd>
-            </ttr>
-          </for>
-        </ttable>
 
-        <extract letter="&nbsp;" />
+      <ttable id="left" trim="all" data-extract-style="underline" class="letter-grid-2d">
+        <for each="row" in="{left}">
+          <ttr>
+            <ttd class="before"><pattern pattern="{row.before}" /></ttd>
+            <ttd class="gray"><letter extract='true' /></ttd>
+            <ttd class="after"><pattern pattern="{row.after}" /></ttd>
+            <ttd class="image"><img ssrc="Techniques/l{row#+1}.jpg" /></ttd>
+          </ttr>
+        </for>
+      </ttable>
 
-        <ttable id="right" trim="all" data-extract-style="underline">
-          <for each="row" in="{right}">
-            <ttr>
-              <ttd class="before"><pattern pattern="{row.before}" /></ttd>
-              <ttd class="gray"><letter extract='true' /></ttd>
-              <ttd class="after"><pattern pattern="{row.after}" /></ttd>
-              <ttd class="image"><img ssrc="Techniques/r{row#+1}.jpg" /></ttd>
-            </ttr>
-          </for>
-        </ttable>
+      <extract letter="&nbsp;" />
 
-        <div class="no-print validate-block" style="position:absolute; left: 0px; top: 8in;">
-          <div id="extracted" data-show-ready="submit-extracted"/>
-          <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
-        </div>
-      </build>
+      <ttable id="right" trim="all" data-extract-style="underline" class="letter-grid-2d">
+        <for each="row" in="{right}">
+          <ttr>
+            <ttd class="before"><pattern pattern="{row.before}" /></ttd>
+            <ttd class="gray"><letter extract='true' /></ttd>
+            <ttd class="after"><pattern pattern="{row.after}" /></ttd>
+            <ttd class="image"><img ssrc="Techniques/r{row#+1}.jpg" /></ttd>
+          </ttr>
+        </for>
+      </ttable>
+
+      <div class="no-print validate-block" style="position:absolute; left: 0px; top: 8in;">
+        <div id="extracted" data-show-ready="submit-extracted"/>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
+
     </div>
   </body>
 </html>

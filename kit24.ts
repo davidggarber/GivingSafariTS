@@ -462,23 +462,26 @@ export function getAllElementsWithAttribute(root: Node, attr:string):HTMLElement
 }
 
 /**
- * Move focus to the given input (if not null), and select the entire contents.
- * If input is of type number, do nothing.
- * @param input - A text input element
+ * Move focus to the given field (if not null), and select the entire contents.
+ * If field is of type number, do nothing.
+ * @param field - A form field element
  * @param caret - The character index where the caret should go
- * @returns true if the input element and caret position are valid, else false
+ * @returns true if the field element and caret position are valid, else false
  */
-export function moveFocus(input: HTMLInputElement, 
+export function moveFocus(field: HTMLElement, 
                           caret?: number)
                           : boolean {
-    if (input !== null) {
-        input.focus();
-        if (input.type !== 'number') {
-            if (caret === undefined) {
-                input.setSelectionRange(0, input.value.length);
-            }
-            else {
-                input.setSelectionRange(caret, caret);
+    if (field !== null) {
+        field.focus();
+        if (isTag(field, 'input') || isTag(field, 'textarea')) {
+            const input = field as HTMLInputElement|HTMLTextAreaElement;
+            if (input.type !== 'number') {
+                if (caret === undefined) {
+                    input.setSelectionRange(0, input.value.length);
+                }
+                else {
+                    input.setSelectionRange(caret, caret);
+                }
             }
         }
         return true;
@@ -561,6 +564,20 @@ export function getElementsByClassOrId(cls:string, id?:string, parent?:Element):
         }
     }
     return list;
+}
+
+export type TextInputElement = HTMLInputElement | HTMLTextAreaElement;
+export type ArrowKeyElement = TextInputElement | HTMLSelectElement;
+export type KeyboardFocusElement = ArrowKeyElement | HTMLButtonElement;
+
+export function isTextInputElement(elmt:Element|undefined|null):boolean {
+    return elmt ? (isTag(elmt, 'input') || isTag(elmt, 'textarea')) : false;
+}
+export function isArrowKeyElement(elmt:Element|undefined|null):boolean {
+    return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select')) : false;
+}
+export function isKeyboardFocusElement(elmt:Element|undefined|null):boolean {
+    return elmt ? (isArrowKeyElement(elmt) || isTag(elmt, 'button')) : false;
 }
 
 
@@ -2238,14 +2255,14 @@ var priorInputValue = '';
 /**
  * The input 
  */
-let keyDownTarget:HTMLInputElement|null = null;
+let keyDownTarget:TextInputElement|null = null;
 
 /**
  * Callback when a user pressed a keyboard key from any letter-input or word-input text field
  * @param event - A keyboard event
  */
 export function onLetterKeyDown(event: KeyboardEvent) {
-    var input = event.currentTarget as HTMLInputElement;
+    var input = event.currentTarget as TextInputElement;
     keyDownTarget = input;
     priorInputValue = input.value;
 
@@ -2260,7 +2277,7 @@ export function onLetterKeyDown(event: KeyboardEvent) {
         skipClass = hasClass(input, 'word-input') ? 'word-non-input' : 'letter-non-input';
     }
 
-    let prior:HTMLInputElement|null = null;
+    let prior:TextInputElement|null = null;
 
     if (hasClass(input.parentNode as Element, 'multiple-letter') || hasClass(input, 'word-input')) {
         // Multi-character fields still want the ability to arrow between cells.
@@ -2281,7 +2298,7 @@ export function onLetterKeyDown(event: KeyboardEvent) {
             var s = input.selectionStart;
             var e = input.selectionEnd;
             if (s == e && e == 0) {
-                const prior:HTMLInputElement = findNextInput(input, -plusX, 0, inpClass, skipClass);
+                const prior:ArrowKeyElement = findNextInput(input, -plusX, 0, inpClass, skipClass);
                 if (prior != null) {
                     moveFocus(prior, prior.value.length);
                 }
@@ -2316,8 +2333,8 @@ export function onLetterKeyDown(event: KeyboardEvent) {
                 var discoverRoot = findParentOfClass(input, 'letter-grid-discover');
                 if (discoverRoot != null) {
                     prior = findParentOfClass(input, 'vertical')
-                        ? findNextByPosition(discoverRoot, input, 0, dyDel, 'letter-input', 'letter-non-input')
-                        : findNextByPosition(discoverRoot, input, dxDel, 0, 'letter-input', 'letter-non-input');
+                        ? findNextByPosition(discoverRoot, input, 0, dyDel, 'letter-input', 'letter-non-input') as TextInputElement
+                        : findNextByPosition(discoverRoot, input, dxDel, 0, 'letter-input', 'letter-non-input') as TextInputElement;
                 }
                 else {
                     prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel) as HTMLInputElement;
@@ -2369,11 +2386,15 @@ export function onLetterKeyDown(event: KeyboardEvent) {
 
         // Single-character fields always go to the next field
         if (code == ArrowNext) {
-            moveFocus(findNextInput(input, plusX, 0, inpClass, skipClass));
+            const next = event.ctrlKey ? findNextWordGroup2d(input, plusX)
+                : findNextInput(input, plusX, 0, inpClass, skipClass);
+            moveFocus(next);
             event.preventDefault();
         }
         else if (code == ArrowPrior) {
-            moveFocus(findNextInput(input, -plusX, 0, inpClass, skipClass));
+            const prior = event.ctrlKey ? findNextWordGroup2d(input, -plusX)
+                : findNextInput(input, -plusX, 0, inpClass, skipClass);
+            moveFocus(prior);
             event.preventDefault();
         }
     }
@@ -2403,7 +2424,7 @@ export function onLetterKeyDown(event: KeyboardEvent) {
  * @param evt 
  * @returns 
  */
-function matchInputRules(input:HTMLInputElement, evt:KeyboardEvent) {
+function matchInputRules(input:TextInputElement, evt:KeyboardEvent) {
     if (input.readOnly) {
         return false;
     }
@@ -2498,7 +2519,7 @@ export function onLetterKey(event:KeyboardEvent): boolean {
  * @param input The input which just changed
  * @param key The key from the event that led here
  */
-export function afterInputUpdate(input:HTMLInputElement, key:string) {
+export function afterInputUpdate(input:TextInputElement, key:string) {
     var text = input.value;
     if (hasClass(input.parentNode, 'lower-case')) {
         text = text.toLocaleLowerCase();
@@ -2530,13 +2551,13 @@ export function afterInputUpdate(input:HTMLInputElement, key:string) {
     }
 
     if (!multiLetter) {
-        if (nextInput != null) {
+        if (isTextInputElement(nextInput)) {
             if (overflow.length > 0 && nextInput.value.length == 0) {
                 // Insert our overflow into the next cell
                 nextInput.value = overflow;
                 moveFocus(nextInput);
                 // Then do the same post-processing as this cell
-                afterInputUpdate(nextInput, key);
+                afterInputUpdate(nextInput as TextInputElement, key);
             }
             else if (text.length > 0) {
                 // Just move the focus
@@ -2552,19 +2573,21 @@ export function afterInputUpdate(input:HTMLInputElement, key:string) {
         //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
     if (word) {
-        saveWordLocally(input);
+        saveWordLocally(input as HTMLInputElement);
     }
     else {
-        saveLetterLocally(input);
+        saveLetterLocally(input as HTMLInputElement);
     }
-    inputChangeCallback(input, key);
+    if (isTag(input, 'input')) {
+        inputChangeCallback(input as HTMLInputElement, key);
+    }
 }
 
 /**
  * Extract contents of an extract-flagged input
  * @param input an input field
  */
-function ExtractFromInput(input:HTMLInputElement) {
+function ExtractFromInput(input:TextInputElement) {
     var extractedId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
     if (findParentOfClass(input, 'extract')) {
         UpdateExtraction(extractedId);
@@ -2828,7 +2851,7 @@ function UpdateNumbered(extractedId:string|null) {
  * @param input 
  * @returns 
  */
-function UpdateExtractionSource(input:HTMLInputElement) {
+function UpdateExtractionSource(input:TextInputElement) {
     var extractedId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
 
     var extractors = document.getElementsByClassName('extractor-input');
@@ -3089,51 +3112,52 @@ function inputChangeCallback(inp: HTMLInputElement, key:string) {
  * @param clsSkip - a class to skip
  * @returns 
  */
-function findNextInput( start: Element, 
+function findNextInput( start: ArrowKeyElement, 
                         dx: number, 
                         dy: number, 
                         cls: string, 
                         clsSkip: string|undefined)
-                        : HTMLInputElement {
+                        : ArrowKeyElement {
     const root2d = findParentOfClass(start, 'letter-grid-2d');
     const loop = findParentOfClass(start, 'loop-navigation');
-    let find:HTMLInputElement|null = null;
+    let find:ArrowKeyElement|null = null;
     if (root2d != null) {
-        find = findNext2dInput(root2d, start, dx, dy, cls, clsSkip);
+        // Ignore the class constraint for 2d and discover
+        find = findNext2dInput(root2d, start, dx, dy, undefined, clsSkip);
         if (find != null) {
             return find;
         }
     }
     const discoverRoot = findParentOfClass(start, 'letter-grid-discover');
     if (discoverRoot != null) {
-        find = findNextDiscover(discoverRoot, start, dx, dy, cls, clsSkip) as HTMLInputElement|null;
+        find = findNextDiscover(discoverRoot, start, dx, dy, undefined, clsSkip);
         if (find != null) {
             return find;
         }
-        find = findNextByPosition(discoverRoot, start, dx, dy, cls, clsSkip);
+        find = findNextByPosition(discoverRoot, start, dx, dy, undefined, clsSkip);
         if (find != null) {
             return find;
         }
     }
     if (dy < 0) {
-        find = findInNextContainer(start, cls, clsSkip, 'letter-cell-block', -1) as HTMLInputElement;
+        find = findInNextContainer(start, cls, clsSkip, 'letter-cell-block', -1) as ArrowKeyElement;
         if (find != null) {
             return find;
         }
     }
     if (dy > 0) {
-        find = findInNextContainer(start, cls, clsSkip, 'letter-cell-block') as HTMLInputElement;
+        find = findInNextContainer(start, cls, clsSkip, 'letter-cell-block') as ArrowKeyElement;
         if (find != null) {
             return find;
         }
     }
     const back = dx == -plusX || dy < 0;
-    let next = findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1) as HTMLInputElement;
+    let next = findNextOfClassGroup(start, cls, clsSkip, 'text-input-group', back ? -1 : 1) as ArrowKeyElement;
     while (next != null && next.disabled) {
-        next = findNextOfClassGroup(next, cls, clsSkip, 'text-input-group', back ? -1 : 1) as HTMLInputElement;
+        next = findNextOfClassGroup(next, cls, clsSkip, 'text-input-group', back ? -1 : 1) as ArrowKeyElement;
     }
     if (loop != null && findParentOfClass(next, 'loop-navigation') != loop) {
-        find = findFirstChildOfClass(loop, cls, clsSkip, back ? -1 : 1) as HTMLInputElement;
+        find = findFirstChildOfClass(loop, cls, clsSkip, back ? -1 : 1) as ArrowKeyElement;
         if (find) {
             return find;
         }
@@ -3148,21 +3172,73 @@ function findNextInput( start: Element,
  * @param global true for ctrl+home/end, going to begining or end of whole range
  * @returns An element on this row
  */
-function findRowEndInput(start: Element, dx: number, global:boolean)
-                            : HTMLInputElement {
+function findRowEndInput(start: ArrowKeyElement, dx: number, global:boolean)
+                            : ArrowKeyElement {
     const root2d = findParentOfClass(start, 'letter-grid-2d');
     if (root2d) {
-        let row:Element[];
+        let row:ArrowKeyElement[];
         if (global) {
-            row = findRowOfInputs(root2d, undefined, -dx, 'letter-input', 'letter-non-input');
+            row = findRowOfInputs(root2d, undefined, -dx, undefined, 'letter-non-input');
         }
         else {
-            row = findRowOfInputs(root2d, start, 0, 'letter-input', 'letter-non-input');
+            row = findRowOfInputs(root2d, start, 0, undefined, 'letter-non-input');
         }
         
-        return (dx > 0 ? row[row.length - 1] : row[0]) as HTMLInputElement;
+        return (dx > 0 ? row[row.length - 1] : row[0]);
     }
-    return findEndInContainer(start, 'letter-input', 'letter-non-input', 'letter-cell-block', -dx) as HTMLInputElement;
+    return findEndInContainer(start, 'letter-input', 'letter-non-input', 'letter-cell-block', -dx) as ArrowKeyElement;
+}
+
+/**
+ * Achieve ctrl+left/right functionality, attempting to jump past any inputs left in the current group.
+ * 
+ * @param start 
+ * @param dx 
+ */
+function findNextWordGroup2d(start: ArrowKeyElement, dx: number):ArrowKeyElement {
+    let root2d = findParentOfClass(start, 'letter-grid-2d');
+    const row = findRowOfInputs(root2d || undefined, start, 0, undefined, 'letter-non-input');
+    if (row.length == 1) {
+        // If we're alone in the current row, the ctrl+arrow is the same as arrow
+        return findNextInput(start, dx, 0, 'letter-input', 'letter-non-input');
+    }
+
+    // Measure the average distance between elements;
+    let avgGap = 0;
+    const rects:DOMRect[] = [row[0].getBoundingClientRect()];
+    let iCur = 0;
+    for (let i = 1; i < row.length; i++) {
+        if (row[i] === start) {
+            iCur = i;
+        }
+        const rc = row[i].getBoundingClientRect();
+        avgGap += rc.left - rects[i - 1].right;
+        rects.push(rc);
+    }
+    avgGap /= row.length - 1;
+    avgGap *= 1.01;  // Don't let tiny margins of error confuse us
+
+    // Move forward/back past any consecutive cells whose gap <= the average
+    if (dx > 0) {
+        for (let i = iCur + 1; i < row.length; i++) {
+            const gap = rects[i].left - rects[i - 1].right;
+            if (gap > avgGap) {
+                return row[i];
+            }
+        }    
+        // None found. Move to first item on the next line
+        return findNextInput(row[row.length - 1], 1, 0, 'letter-input', 'letter-non-input');
+    }
+    else {
+        for (let i = iCur - 1; i >= 0; i--) {
+            const gap = rects[i + 1].left - rects[i].right;
+            if (gap > avgGap) {
+                return row[i];
+            }
+        }    
+        // None found. Move to first item on the next line
+        return findNextInput(row[0], -1, 0, 'letter-input', 'letter-non-input');
+    }
 }
 
 /**
@@ -3227,6 +3303,57 @@ function compareHorizontal(cur:Element, test:Element) {
 }
 
 /**
+ * Get all of the input-type fields that can hold text focus.
+ * These include <input>, <textarea>, <select>
+ * @param container The container to search. If unset, use the document.
+ * @param cls A list of classes to filter for. If unset/blank, don't filter. 
+ * If multiple classes (separated by spaces), use OR logic (REVIEW).
+ * @param clsSkip A list of classes to filter out. 
+ * If a list, presence of any will cause it to be skipped.
+ */
+function getAllFormFields(  container?:Element|Document, 
+                            cls?: string, 
+                            clsSkip?: string):ArrowKeyElement[] {
+    const all:ArrowKeyElement[] = [];
+    const tags = ['input', 'textarea', 'select'];
+
+    const classes = cls ? cls.split(' ') : undefined;
+    const skips = clsSkip ? clsSkip.split(' ') : undefined;
+
+    if (!container) {
+        container = document;
+    }
+    for (let t = 0; t < tags.length; t++) {
+        const list = container.getElementsByTagName(tags[t]);
+        for (let i = 0; i < list.length; i++) {
+            const elmt = list[i] as ArrowKeyElement;
+            let match = !classes;
+            if (classes) {
+                for (let c = 0; c < classes.length; c++) {
+                    if (hasClass(elmt, classes[c])) {
+                        match = true;
+                        break;  // any class is enough
+                    }
+                }
+            }
+            if (match && skips) {
+                for (let c = 0; c < skips.length; c++) {
+                    if (hasClass(elmt, skips[c])) {
+                        match = false;
+                        break;  // any class is enough
+                    }
+                }
+            }
+            if (match) {
+                all.push(elmt);
+            }
+        }
+    }
+
+    return all;
+}
+
+/**
  * Find a row's worth of elements. This assumes rigid row-wise layout.
  * @param container The container to stay within
  * @param current The current element, or undefined to find the first/last row
@@ -3238,22 +3365,19 @@ function compareHorizontal(cur:Element, test:Element) {
  * @returns A list of elements, all of whom are on one vertical row. 
  * The list will be sorted.
  */
-function findRowOfInputs(   container:Element, 
-                            current:Element|undefined, 
+function findRowOfInputs(   container:Element|undefined, 
+                            current:ArrowKeyElement|undefined, 
                             dy:number,
-                            cls: string, 
-                            clsSkip: string|undefined):Element[] {
-    const all = container.getElementsByClassName(cls);
+                            cls?: string, 
+                            clsSkip?: string):ArrowKeyElement[] {
+    const all = getAllFormFields(container, cls, clsSkip);
     let ref = dy == 0 ? current : undefined;
     if (!current && dy == 0) {
         throw new Error("Can't search for the current row, without a current reference");
     }
-    let row:Element[] = [];
+    let row:ArrowKeyElement[] = [];
     for (let i = 0; i < all.length; i++) {
         const elmt = all[i];
-        if (clsSkip && hasClass(elmt, clsSkip)) {
-            continue;
-        }
         let rel = dy;
         if (current) {
             rel = compareVertical(elmt, current);
@@ -3295,21 +3419,21 @@ function findRowOfInputs(   container:Element,
  * @returns Another input within the grid
  */
 function findNext2dInput(   root: Element, 
-                            start: Element|undefined, 
+                            start: ArrowKeyElement|undefined, 
                             dx: number, 
                             dy: number, 
-                            cls: string, 
+                            cls: string|undefined, 
                             clsSkip: string|undefined)
-                            : HTMLInputElement|null {
+                            : ArrowKeyElement|null {
 
     // Find one row of elements
-    let row = findRowOfInputs(root, start, dy, cls, clsSkip) as HTMLInputElement[];
+    let row = findRowOfInputs(root, start, dy, cls, clsSkip);
     if (row.length == 0) {
         if (dy == 0) {
-            return start as HTMLInputElement; // Very confusing
+            return start || null; // Very confusing
         }
         // Wrap around
-        row = findRowOfInputs(root, undefined, dy, cls, clsSkip) as HTMLInputElement[];
+        row = findRowOfInputs(root, undefined, dy, cls, clsSkip);
     }
     if (!start || (dy != 0 && dx != 0)) {
         // When changing rows, we want the first or last
@@ -3318,7 +3442,7 @@ function findNext2dInput(   root: Element,
         }
         return row[row.length - 1];
     }
-    let last:HTMLInputElement|undefined;
+    let last:ArrowKeyElement|undefined;
     for (let i = 0; i < row.length; i++) {
         const elmt = row[i];
         const relX = compareHorizontal(elmt, start);
@@ -3347,17 +3471,17 @@ function findNext2dInput(   root: Element,
  * @returns Another input within the grid
  */
 function findNextByPosition(root: Element,
-                            start: Element, 
+                            start: ArrowKeyElement, 
                             dx: number, 
                             dy: number, 
-                            cls: string, 
+                            cls: string|undefined, 
                             clsSkip: string|undefined)
-                            : HTMLInputElement|null {
+                            : ArrowKeyElement|null {
     let rect = start.getBoundingClientRect();
     let pos = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
-    const elements = document.getElementsByClassName(cls);
+    const elements = getAllFormFields(document, cls);
     let distance = 0;
-    let nearest:HTMLInputElement|null = null;
+    let nearest:ArrowKeyElement|null = null;
     for (let i = 0; i < elements.length; i++) {
         const elmt = elements[i];
         if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
@@ -3375,7 +3499,7 @@ function findNextByPosition(root: Element,
                 // Keep the nearest
                 if (d > 0 && (nearest == null || d < distance)) {
                     distance = d;
-                    nearest = elmt as HTMLInputElement;
+                    nearest = elmt;
                 }
             }
         }
@@ -3387,7 +3511,7 @@ function findNextByPosition(root: Element,
                 if (d > 0 && (nearest == null || d < distance)) {
                     // Keep the nearest
                     distance = d;
-                    nearest = elmt as HTMLInputElement;
+                    nearest = elmt;
                 }
             }
         }
@@ -3401,7 +3525,7 @@ function findNextByPosition(root: Element,
     pos = plusX > 0 ? { x: rect.x + (dy > 0 ? rect.width - 1 : 1), y: rect.y + (dx > 0 ? rect.height - 1 : 1) }
                     : { x: rect.x + (dy < 0 ? rect.width - 1 : 1), y: rect.y + (dx < 0 ? rect.height - 1 : 1) }
     let distance2 = 0;
-    let wrap:HTMLInputElement|null = null;
+    let wrap:ArrowKeyElement|null = null;
     for (let i = 0; i < elements.length; i++) {
         const elmt = elements[i];
         if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
@@ -3412,7 +3536,7 @@ function findNextByPosition(root: Element,
         }
         // Remember the first element (if dx/dy is positive), or else the last
         if (wrap == null || (dx < 0 || dy < 0)) {
-            wrap = elmt as HTMLInputElement;
+            wrap = elmt;
         }
         rect = elmt.getBoundingClientRect();
         // d measures direction in continuing perpendicular direction
@@ -3432,7 +3556,7 @@ function findNextByPosition(root: Element,
         if (d > 0 && (nearest == null || d < distance || (d == distance && d2 < distance2))) {
             distance = d;
             distance2 = d2;
-            nearest = elmt as HTMLInputElement;
+            nearest = elmt;
         }
     }
     return nearest != null ? nearest : wrap;
@@ -3523,17 +3647,17 @@ function findNextDiscover(root: Element,
                             start: Element, 
                             dx: number, 
                             dy: number, 
-                            cls: string, 
+                            cls: string|undefined, 
                             clsSkip: string|undefined)
-                            : HTMLElement|null {
+                            : ArrowKeyElement|null {
     let rect = start.getBoundingClientRect();
     let bounds = rect;
     let pos = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
-    const elements = document.getElementsByClassName(cls);
+    const elements = getAllFormFields(document, cls);
     let distance = -1;
-    let nearest:HTMLElement|null = null;
+    let nearest:ArrowKeyElement|null = null;
     for (let i = 0; i < elements.length; i++) {
-        const elmt = elements[i] as HTMLElement;
+        const elmt = elements[i];
         if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
             continue;
         }
@@ -3553,7 +3677,7 @@ function findNextDiscover(root: Element,
         // Wrap around
         pos = wrapAround(bounds, pos, dx, dy);
         for (let i = 0; i < elements.length; i++) {
-            const elmt = elements[i] as HTMLElement;
+            const elmt = elements[i];
             if (clsSkip != undefined && hasClass(elmt, clsSkip)) {
                 continue;
             }

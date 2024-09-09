@@ -3,10 +3,10 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = void 0;
-exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = void 0;
+exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.isKeyboardFocusElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.getCurFileName = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = void 0;
+exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -422,21 +422,24 @@ function getAllElementsWithAttribute(root, attr) {
 }
 exports.getAllElementsWithAttribute = getAllElementsWithAttribute;
 /**
- * Move focus to the given input (if not null), and select the entire contents.
- * If input is of type number, do nothing.
- * @param input - A text input element
+ * Move focus to the given field (if not null), and select the entire contents.
+ * If field is of type number, do nothing.
+ * @param field - A form field element
  * @param caret - The character index where the caret should go
- * @returns true if the input element and caret position are valid, else false
+ * @returns true if the field element and caret position are valid, else false
  */
-function moveFocus(input, caret) {
-    if (input !== null) {
-        input.focus();
-        if (input.type !== 'number') {
-            if (caret === undefined) {
-                input.setSelectionRange(0, input.value.length);
-            }
-            else {
-                input.setSelectionRange(caret, caret);
+function moveFocus(field, caret) {
+    if (field !== null) {
+        field.focus();
+        if (isTag(field, 'input') || isTag(field, 'textarea')) {
+            const input = field;
+            if (input.type !== 'number') {
+                if (caret === undefined) {
+                    input.setSelectionRange(0, input.value.length);
+                }
+                else {
+                    input.setSelectionRange(caret, caret);
+                }
             }
         }
         return true;
@@ -516,6 +519,18 @@ function getElementsByClassOrId(cls, id, parent) {
     return list;
 }
 exports.getElementsByClassOrId = getElementsByClassOrId;
+function isTextInputElement(elmt) {
+    return elmt ? (isTag(elmt, 'input') || isTag(elmt, 'textarea')) : false;
+}
+exports.isTextInputElement = isTextInputElement;
+function isArrowKeyElement(elmt) {
+    return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select')) : false;
+}
+exports.isArrowKeyElement = isArrowKeyElement;
+function isKeyboardFocusElement(elmt) {
+    return elmt ? (isArrowKeyElement(elmt) || isTag(elmt, 'button')) : false;
+}
+exports.isKeyboardFocusElement = isKeyboardFocusElement;
 /**
  * Create a generic TR tag for each row in a table.
  * Available for TableDetails.onRow where that is all that's needed
@@ -2168,11 +2183,15 @@ function onLetterKeyDown(event) {
         }
         // Single-character fields always go to the next field
         if (code == ArrowNext) {
-            moveFocus(findNextInput(input, plusX, 0, inpClass, skipClass));
+            const next = event.ctrlKey ? findNextWordGroup2d(input, plusX)
+                : findNextInput(input, plusX, 0, inpClass, skipClass);
+            moveFocus(next);
             event.preventDefault();
         }
         else if (code == ArrowPrior) {
-            moveFocus(findNextInput(input, -plusX, 0, inpClass, skipClass));
+            const prior = event.ctrlKey ? findNextWordGroup2d(input, -plusX)
+                : findNextInput(input, -plusX, 0, inpClass, skipClass);
+            moveFocus(prior);
             event.preventDefault();
         }
     }
@@ -2320,7 +2339,7 @@ function afterInputUpdate(input, key) {
         }
     }
     if (!multiLetter) {
-        if (nextInput != null) {
+        if (isTextInputElement(nextInput)) {
             if (overflow.length > 0 && nextInput.value.length == 0) {
                 // Insert our overflow into the next cell
                 nextInput.value = overflow;
@@ -2347,7 +2366,9 @@ function afterInputUpdate(input, key) {
     else {
         saveLetterLocally(input);
     }
-    inputChangeCallback(input, key);
+    if (isTag(input, 'input')) {
+        inputChangeCallback(input, key);
+    }
 }
 exports.afterInputUpdate = afterInputUpdate;
 /**
@@ -2849,18 +2870,19 @@ function findNextInput(start, dx, dy, cls, clsSkip) {
     const loop = findParentOfClass(start, 'loop-navigation');
     let find = null;
     if (root2d != null) {
-        find = findNext2dInput(root2d, start, dx, dy, cls, clsSkip);
+        // Ignore the class constraint for 2d and discover
+        find = findNext2dInput(root2d, start, dx, dy, undefined, clsSkip);
         if (find != null) {
             return find;
         }
     }
     const discoverRoot = findParentOfClass(start, 'letter-grid-discover');
     if (discoverRoot != null) {
-        find = findNextDiscover(discoverRoot, start, dx, dy, cls, clsSkip);
+        find = findNextDiscover(discoverRoot, start, dx, dy, undefined, clsSkip);
         if (find != null) {
             return find;
         }
-        find = findNextByPosition(discoverRoot, start, dx, dy, cls, clsSkip);
+        find = findNextByPosition(discoverRoot, start, dx, dy, undefined, clsSkip);
         if (find != null) {
             return find;
         }
@@ -2902,14 +2924,63 @@ function findRowEndInput(start, dx, global) {
     if (root2d) {
         let row;
         if (global) {
-            row = findRowOfInputs(root2d, undefined, -dx, 'letter-input', 'letter-non-input');
+            row = findRowOfInputs(root2d, undefined, -dx, undefined, 'letter-non-input');
         }
         else {
-            row = findRowOfInputs(root2d, start, 0, 'letter-input', 'letter-non-input');
+            row = findRowOfInputs(root2d, start, 0, undefined, 'letter-non-input');
         }
         return (dx > 0 ? row[row.length - 1] : row[0]);
     }
     return findEndInContainer(start, 'letter-input', 'letter-non-input', 'letter-cell-block', -dx);
+}
+/**
+ * Achieve ctrl+left/right functionality, attempting to jump past any inputs left in the current group.
+ *
+ * @param start
+ * @param dx
+ */
+function findNextWordGroup2d(start, dx) {
+    let root2d = findParentOfClass(start, 'letter-grid-2d');
+    const row = findRowOfInputs(root2d || undefined, start, 0, undefined, 'letter-non-input');
+    if (row.length == 1) {
+        // If we're alone in the current row, the ctrl+arrow is the same as arrow
+        return findNextInput(start, dx, 0, 'letter-input', 'letter-non-input');
+    }
+    // Measure the average distance between elements;
+    let avgGap = 0;
+    const rects = [row[0].getBoundingClientRect()];
+    let iCur = 0;
+    for (let i = 1; i < row.length; i++) {
+        if (row[i] === start) {
+            iCur = i;
+        }
+        const rc = row[i].getBoundingClientRect();
+        avgGap += rc.left - rects[i - 1].right;
+        rects.push(rc);
+    }
+    avgGap /= row.length - 1;
+    avgGap *= 1.01; // Don't let tiny margins of error confuse us
+    // Move forward/back past any consecutive cells whose gap <= the average
+    if (dx > 0) {
+        for (let i = iCur + 1; i < row.length; i++) {
+            const gap = rects[i].left - rects[i - 1].right;
+            if (gap > avgGap) {
+                return row[i];
+            }
+        }
+        // None found. Move to first item on the next line
+        return findNextInput(row[row.length - 1], 1, 0, 'letter-input', 'letter-non-input');
+    }
+    else {
+        for (let i = iCur - 1; i >= 0; i--) {
+            const gap = rects[i + 1].left - rects[i].right;
+            if (gap > avgGap) {
+                return row[i];
+            }
+        }
+        // None found. Move to first item on the next line
+        return findNextInput(row[0], -1, 0, 'letter-input', 'letter-non-input');
+    }
 }
 /**
  * Find the next element with a desired class, within a parent defined by its class.
@@ -2965,6 +3036,51 @@ function compareHorizontal(cur, test) {
     return 0; // Some amount of horizontal overlap
 }
 /**
+ * Get all of the input-type fields that can hold text focus.
+ * These include <input>, <textarea>, <select>
+ * @param container The container to search. If unset, use the document.
+ * @param cls A list of classes to filter for. If unset/blank, don't filter.
+ * If multiple classes (separated by spaces), use OR logic (REVIEW).
+ * @param clsSkip A list of classes to filter out.
+ * If a list, presence of any will cause it to be skipped.
+ */
+function getAllFormFields(container, cls, clsSkip) {
+    const all = [];
+    const tags = ['input', 'textarea', 'select'];
+    const classes = cls ? cls.split(' ') : undefined;
+    const skips = clsSkip ? clsSkip.split(' ') : undefined;
+    if (!container) {
+        container = document;
+    }
+    for (let t = 0; t < tags.length; t++) {
+        const list = container.getElementsByTagName(tags[t]);
+        for (let i = 0; i < list.length; i++) {
+            const elmt = list[i];
+            let match = !classes;
+            if (classes) {
+                for (let c = 0; c < classes.length; c++) {
+                    if (hasClass(elmt, classes[c])) {
+                        match = true;
+                        break; // any class is enough
+                    }
+                }
+            }
+            if (match && skips) {
+                for (let c = 0; c < skips.length; c++) {
+                    if (hasClass(elmt, skips[c])) {
+                        match = false;
+                        break; // any class is enough
+                    }
+                }
+            }
+            if (match) {
+                all.push(elmt);
+            }
+        }
+    }
+    return all;
+}
+/**
  * Find a row's worth of elements. This assumes rigid row-wise layout.
  * @param container The container to stay within
  * @param current The current element, or undefined to find the first/last row
@@ -2977,7 +3093,7 @@ function compareHorizontal(cur, test) {
  * The list will be sorted.
  */
 function findRowOfInputs(container, current, dy, cls, clsSkip) {
-    const all = container.getElementsByClassName(cls);
+    const all = getAllFormFields(container, cls, clsSkip);
     let ref = dy == 0 ? current : undefined;
     if (!current && dy == 0) {
         throw new Error("Can't search for the current row, without a current reference");
@@ -2985,9 +3101,6 @@ function findRowOfInputs(container, current, dy, cls, clsSkip) {
     let row = [];
     for (let i = 0; i < all.length; i++) {
         const elmt = all[i];
-        if (clsSkip && hasClass(elmt, clsSkip)) {
-            continue;
-        }
         let rel = dy;
         if (current) {
             rel = compareVertical(elmt, current);
@@ -3032,7 +3145,7 @@ function findNext2dInput(root, start, dx, dy, cls, clsSkip) {
     let row = findRowOfInputs(root, start, dy, cls, clsSkip);
     if (row.length == 0) {
         if (dy == 0) {
-            return start; // Very confusing
+            return start || null; // Very confusing
         }
         // Wrap around
         row = findRowOfInputs(root, undefined, dy, cls, clsSkip);
@@ -3074,7 +3187,7 @@ function findNext2dInput(root, start, dx, dy, cls, clsSkip) {
 function findNextByPosition(root, start, dx, dy, cls, clsSkip) {
     let rect = start.getBoundingClientRect();
     let pos = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
-    const elements = document.getElementsByClassName(cls);
+    const elements = getAllFormFields(document, cls);
     let distance = 0;
     let nearest = null;
     for (let i = 0; i < elements.length; i++) {
@@ -3236,7 +3349,7 @@ function findNextDiscover(root, start, dx, dy, cls, clsSkip) {
     let rect = start.getBoundingClientRect();
     let bounds = rect;
     let pos = new DOMPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
-    const elements = document.getElementsByClassName(cls);
+    const elements = getAllFormFields(document, cls);
     let distance = -1;
     let nearest = null;
     for (let i = 0; i < elements.length; i++) {

@@ -455,23 +455,26 @@ export function getAllElementsWithAttribute(root: Node, attr:string):HTMLElement
 }
 
 /**
- * Move focus to the given input (if not null), and select the entire contents.
- * If input is of type number, do nothing.
- * @param input - A text input element
+ * Move focus to the given field (if not null), and select the entire contents.
+ * If field is of type number, do nothing.
+ * @param field - A form field element
  * @param caret - The character index where the caret should go
- * @returns true if the input element and caret position are valid, else false
+ * @returns true if the field element and caret position are valid, else false
  */
-export function moveFocus(input: HTMLInputElement, 
+export function moveFocus(field: HTMLElement, 
                           caret?: number)
                           : boolean {
-    if (input !== null) {
-        input.focus();
-        if (input.type !== 'number') {
-            if (caret === undefined) {
-                input.setSelectionRange(0, input.value.length);
-            }
-            else {
-                input.setSelectionRange(caret, caret);
+    if (field !== null) {
+        field.focus();
+        if (isTag(field, 'input') || isTag(field, 'textarea')) {
+            const input = field as HTMLInputElement|HTMLTextAreaElement;
+            if (input.type !== 'number') {
+                if (caret === undefined) {
+                    input.setSelectionRange(0, input.value.length);
+                }
+                else {
+                    input.setSelectionRange(caret, caret);
+                }
             }
         }
         return true;
@@ -554,4 +557,18 @@ export function getElementsByClassOrId(cls:string, id?:string, parent?:Element):
         }
     }
     return list;
+}
+
+export type TextInputElement = HTMLInputElement | HTMLTextAreaElement;
+export type ArrowKeyElement = TextInputElement | HTMLSelectElement;
+export type KeyboardFocusElement = ArrowKeyElement | HTMLButtonElement;
+
+export function isTextInputElement(elmt:Element|undefined|null):boolean {
+    return elmt ? (isTag(elmt, 'input') || isTag(elmt, 'textarea')) : false;
+}
+export function isArrowKeyElement(elmt:Element|undefined|null):boolean {
+    return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select')) : false;
+}
+export function isKeyboardFocusElement(elmt:Element|undefined|null):boolean {
+    return elmt ? (isArrowKeyElement(elmt) || isTag(elmt, 'button')) : false;
 }
