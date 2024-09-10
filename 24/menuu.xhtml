@@ -24,21 +24,21 @@
           table_cols: 4,
 
           metas: [
-            { title: 'Iron Chef', href: 'IronChef.xhtml', author: 'Rorke Haining',  thumb: '',
+            { title: 'Iron Chef', href: 'IronChef.xhtml', author: 'Rorke Haining',  thumb: 'iro',
               icon: 'Icons/ironChef.png', template: 'ironChef', forget: 'IC_Forget.xhtml',
-              feeders: ['CobaltVirejas', 'NickelAsci', 'TinCocinera', 'ZincSzakacs']
+              // feeders: ['CobaltVirejas', 'NickelAsci', 'TinCocinera', 'ZincSzakacs']
             },
-            { title: 'Smorgasbord', href: 'Smorgasbord.xhtml', author: 'Rorke Haining',  thumb: '',
+            { title: 'Smorgasbord', href: 'Smorgasbord.xhtml', author: 'Rorke Haining',  thumb: 'smo',
               icon: 'Icons/smorgasbord.png', template: 'smorgasbord', forget: 'SB_Forget.xhtml',
-              feeders: ['Giorti', 'Janchi', 'Oturuntza', 'Veitsla']
+              // feeders: ['Giorti', 'Janchi', 'Oturuntza', 'Veitsla']
             },
-            { title: 'Fridge Raider 3', href: 'FridgeRaider3.xhtml', author: 'Jeffrey Lin',  thumb: '',
+            { title: 'Fridge Raider 3', href: 'FridgeRaider3.xhtml', author: 'Jeffrey Lin',  thumb: 'fr3',
               icon: 'Icons/fridge.png', template: 'fridge', forget: 'FR_Forget.xhtml',
-              feeders: ['Gladan', 'Himojii', 'Jaie', 'Llwglyd']
+              // feeders: ['Gladan', 'Himojii', 'Jaie', 'Llwglyd']
             },
-            { title: 'Tmmmm Moasty', href: 'TmmmmMoasty.xhtml', author: 'David Garber',  thumb: '',
+            { title: 'Tmmmm Moasty', href: 'TmmmmMoasty.xhtml', author: 'David Garber',  thumb: 'tmm',
               icon: 'Icons/toaster.png', template: 'toaster', forget: 'TM_Forget.xhtml',
-              feeders: ['Piritos', 'Sorakan', 'Tobas', 'Zdravica']
+              // feeders: ['Piritos', 'Sorakan', 'Tobas', 'Zdravica']
             },
 
           ]
@@ -48,10 +48,48 @@
     <style>
       #meta-table {
         position: absolute;
-        left: 6.5in;
+        left: 7in;
         top: 4in;
       }
-    </style>
+      .icons {
+        width: 1in; 
+        text-align: center;
+        }
+      .html {
+        width: 2.75in; 
+        text-align: left;
+      }
+      #meta-table .html {
+        width: 2in;
+      }
+      .author {
+        width: 1.5in; 
+        position: relative;
+        text-align: left; 
+      }
+      img.thumb {
+        vertical-align: middle;
+        margin-left: 0.35in;
+        max-height: 0.25in;
+        max-width: 0.25in;
+        border: solid 1px #ccc;
+        }
+      .html:hover img.thumb {
+        transform: scale(4) rotate(5deg);
+        transform-origin: bottom;
+        border: solid 0.5px #ddd;
+        animation-name: grow-big;
+        animation-duration: 300ms;
+      }
+      @keyframes grow-big {
+        from { transform: scale(1) translate(0px,0px) rotate(0deg); }
+        to { transform: scale(4) translate(1px,0px) rotate(5deg); }
+      }
+      @keyframes shrink-little {
+        from { transform: scale(4) rotate(5deg); }
+        to { transform: scale(1) translate(0px,0px) rotate(0deg); }
+      }
+      </style>
   </head>
   <body id="Menu">
     <div id="pageBody">
@@ -80,37 +118,39 @@
 
           <ttbody id="puzzle_list">
             <for each="puz" in="puzzles">
-              <ttr class="sortable">
-                <ttd class="icons">
-                  <if exists="{puz.icon}">
-                    <img ssrc="Icons/{puz.icon}.png" />
-                  </if>
-                  <if notex="{puz.icon}">
-                    <img ssrc="Icons/{puz.type.icon}.png" title="{puz.type.alt}" />
-                  </if>
-                </ttd>
-                <ttd class="html">
-                  <a class="hover" href="{puz.href}" target="_blank">
-                    {puz.title}
-                    <if exists="{puz.thumb}">
-                      <img class="thumb" ssrc="Thumbs/{puz.thumb}.png" />
+              <if test="puz.group" ne="meta">
+                <ttr class="sortable">
+                  <ttd class="icons">
+                    <if exists="{puz.icon}">
+                      <img ssrc="Icons/{puz.icon}.png" />
                     </if>
-                  </a>
-                </ttd>
-                <if test="{feeders}">
-                  <ttd class="feeders">
-                    <for each="feed" in="{puz.feeder}">
-                      <use template="{feed.meta}Icon" index="{feed.number}" />
-                    </for>  
+                    <if notex="{puz.icon}">
+                      <img ssrc="Icons/{puz.type.icon}.png" title="{puz.type.alt}" />
+                    </if>
                   </ttd>
-                </if>
-                <ttd class="authors">
-                  {puz.author}
-                </ttd>
-                <if test="{submitable}">
-                  <ttd class="submital"></ttd>
-                </if>
-              </ttr>
+                  <ttd class="html">
+                    <a class="hover" href="{puz.href}" target="_blank">
+                      {puz.title}
+                      <if exists="{puz.thumb}">
+                        <img class="thumb" ssrc="Thumbs/{puz.thumb}.png" />
+                      </if>
+                    </a>
+                  </ttd>
+                  <if test="{feeders}">
+                    <ttd class="feeders">
+                      <for each="feed" in="{puz.feeder}">
+                        <use template="{feed.meta}Icon" index="{feed.number}" />
+                      </for>  
+                    </ttd>
+                  </if>
+                  <ttd class="authors">
+                    {puz.author}
+                  </ttd>
+                  <if test="{submitable}">
+                    <ttd class="submital"></ttd>
+                  </if>
+                </ttr>
+              </if>
             </for>
           </ttbody>
         </ttable>
@@ -148,14 +188,18 @@
               <ttr>
                 <ttd>&nbsp;</ttd>
                 <ttd class="feeders">
+<!--
                   <for each="feed" in="{meta.feeders}">
                     <use template="{meta.template}" name="{feed}" index="{feed# + 1}" />
                   </for>
+-->
                 </ttd>
                 <ttd>
+<!--
                   <if exists="{meta.forget?}">
                     <a href="{meta.forget}" target="_blank" style="font-size: smaller;">Forget materials</a>
                   </if>
+-->
                 </ttd>
               </ttr>
               

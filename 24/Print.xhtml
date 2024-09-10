@@ -2,17 +2,19 @@
 "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Printable packet of all puzzles">
-    <meta name="author" content="David Garber">
-    <link href="../Css/Print.css" rel="Stylesheet" type="text/css"></link>
-    <link rel="shortcut icon" type="image/png" href="Images/Beaker_icon.png" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Printable packet of all puzzles" />
+    <meta name="author" content="David Garber" />
+    <link href="../Css/Print.css" rel="Stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/png" href="./Images/Plate_icon.png" />
+    
+    <title>Giving Safari 2024 - All Puzzles</title>
 
-    <title>Giving Safari 2023 - All Portrait Puzzles</title>
-
-    <script src="puzzle_list.js"></script>
+    <script src="puzzle_list.js" />
     <script>
+      // <![CDATA[
+
       var icon_mode = false;
 
       function onLoad() {
@@ -70,7 +72,9 @@
 
           if (count == 0) {
             var btn = document.getElementById(ort+'s');
-            btn.style.display = 'none';
+            if (btn) {
+              btn.style.display = 'none';
+            }
           }
       }
 
@@ -96,10 +100,10 @@
 
       function reload(mode) {
         if (mode == 'icons') {
-          window.location.href = 'Print.html?icons';
+          window.location.href = 'Print.xhtml?icons';
         }
         else {
-          window.location.href = 'Print.html';
+          window.location.href = 'Print.xhtml';
         }
       }
 
@@ -117,11 +121,13 @@
         }
       }
 
+
+      // ]]>
     </script>
     <style>
       .reload-btn {
         display:inline-block;
-        transform: translate(0,-30px);
+        transform: translate(0,30px);
       }
       button img {
         height: 0.5in;
@@ -134,6 +140,7 @@
       .thumbnails .page.print-portrait {
         width:0.85in;
         height:1.1in;
+        margin: 1px;
       }
       .thumbnails .page.print-landscape {
         height:0.85in;

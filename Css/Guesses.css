@@ -155,12 +155,19 @@ body.solved {
 .rt-block .response {
   scroll-margin-bottom: 0.75in;
 }
-.validater.ready {
-  display: inline-block;
-}
-.validater.inline.ready {
-  display: inline;
-}
-body.show-validater .validate-block {
-  display: block;
+
+@media screen {
+
+  .validater.ready {
+    display: inline-block;
+  }
+  .validater.inline.ready {
+    display: inline;
+  }
+  body.show-validater .validate-block {
+    display: block;
+  }
+  body.show-validater.print .validate-block.no-print {
+    display: none;
+  }
 }
