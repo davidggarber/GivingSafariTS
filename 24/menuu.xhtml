@@ -11,32 +11,34 @@
     <script src="index_utils.js" />
     <script>
       const boiler = {
-        'safari': 'gs24',
+        safari: 'gs24',
         paperSize: 'minimalist',
         abilities: {
           textInput: 'nearest',
         },
-        'reactiveBuilder': true,
-        'lookup': {
+        postSetup: setupSolvables,
+        reactiveBuilder: true,
+        lookup: {
           puzzles: puzzles,
           feeders: true,
           submitable: false,
-          table_cols: 4,
+          solvable: true,
+          table_cols: 5,
 
           metas: [
-            { title: 'Iron Chef', href: 'IronChef.xhtml', author: 'Rorke Haining',  thumb: 'iro',
+            { title: 'Iron Chef', file: 'IronChef', href: 'IronChef.xhtml', author: 'Rorke Haining',  thumb: 'iro',
               icon: 'Icons/ironChef.png', template: 'ironChef', forget: 'IC_Forget.xhtml',
               // feeders: ['CobaltVirejas', 'NickelAsci', 'TinCocinera', 'ZincSzakacs']
             },
-            { title: 'Smorgasbord', href: 'Smorgasbord.xhtml', author: 'Rorke Haining',  thumb: 'smo',
+            { title: 'Smorgasbord', file: 'Smorgasbord', href: 'Smorgasbord.xhtml', author: 'Rorke Haining',  thumb: 'smo',
               icon: 'Icons/smorgasbord.png', template: 'smorgasbord', forget: 'SB_Forget.xhtml',
               // feeders: ['Giorti', 'Janchi', 'Oturuntza', 'Veitsla']
             },
-            { title: 'Fridge Raider 3', href: 'FridgeRaider3.xhtml', author: 'Jeffrey Lin',  thumb: 'fr3',
+            { title: 'Fridge Raider 3', file: 'FridgeRaider3', href: 'FridgeRaider3.xhtml', author: 'Jeffrey Lin',  thumb: 'fr3',
               icon: 'Icons/fridge.png', template: 'fridge', forget: 'FR_Forget.xhtml',
               // feeders: ['Gladan', 'Himojii', 'Jaie', 'Llwglyd']
             },
-            { title: 'Tmmmm Moasty', href: 'TmmmmMoasty.xhtml', author: 'David Garber',  thumb: 'tmm',
+            { title: 'Tmmmm Moasty', file: 'TmmmmMoasty', href: 'TmmmmMoasty.xhtml', author: 'David Garber',  thumb: 'tmm',
               icon: 'Icons/toaster.png', template: 'toaster', forget: 'TM_Forget.xhtml',
               // feeders: ['Piritos', 'Sorakan', 'Tobas', 'Zdravica']
             },
@@ -44,6 +46,36 @@
           ]
         },
       };
+
+      // <![CDATA[
+
+      function setupSolvables() {
+        document.addEventListener('visibilitychange', function (event) {
+          if (!document.hidden) {
+            syncProgress();
+          }
+        });
+        var body = document.getElementById('Menu');
+        body.onfocus = function(e){syncProgress()};
+        // Then run it now.
+        syncProgress();
+      }
+
+      function syncProgress() {
+        for (var i = 0; i < puzzles.length; i++) {
+          var puz = puzzles[i];
+          var pStatus = getPuzzleStatus(puz.file);
+          var tr = document.getElementById(puz.file);
+          if (tr) {
+            toggleClass(tr, 'solved', pStatus == 'solved');
+          }
+
+          // TODO: check feeders
+        }
+      }
+
+      // ]]>
+
     </script>
     <style>
       #meta-table {
@@ -51,45 +83,10 @@
         left: 7in;
         top: 4in;
       }
-      .icons {
-        width: 1in; 
-        text-align: center;
-        }
-      .html {
-        width: 2.75in; 
-        text-align: left;
-      }
       #meta-table .html {
         width: 2in;
       }
-      .author {
-        width: 1.5in; 
-        position: relative;
-        text-align: left; 
-      }
-      img.thumb {
-        vertical-align: middle;
-        margin-left: 0.35in;
-        max-height: 0.25in;
-        max-width: 0.25in;
-        border: solid 1px #ccc;
-        }
-      .html:hover img.thumb {
-        transform: scale(4) rotate(5deg);
-        transform-origin: bottom;
-        border: solid 0.5px #ddd;
-        animation-name: grow-big;
-        animation-duration: 300ms;
-      }
-      @keyframes grow-big {
-        from { transform: scale(1) translate(0px,0px) rotate(0deg); }
-        to { transform: scale(4) translate(1px,0px) rotate(5deg); }
-      }
-      @keyframes shrink-little {
-        from { transform: scale(4) rotate(5deg); }
-        to { transform: scale(1) translate(0px,0px) rotate(0deg); }
-      }
-      </style>
+    </style>
   </head>
   <body id="Menu">
     <div id="pageBody">
@@ -119,7 +116,7 @@
           <ttbody id="puzzle_list">
             <for each="puz" in="puzzles">
               <if test="puz.group" ne="meta">
-                <ttr class="sortable">
+                <ttr id="{puz.file}" class="sortable">
                   <ttd class="icons">
                     <if exists="{puz.icon}">
                       <img ssrc="Icons/{puz.icon}.png" />
@@ -145,6 +142,7 @@
                   </if>
                   <ttd class="authors">
                     {puz.author}
+                    <span class="checkmark" />
                   </ttd>
                   <if test="{submitable}">
                     <ttd class="submital"></ttd>
@@ -166,7 +164,7 @@
               </if>
             </ttr>    
             <for each="meta" in="{metas}">
-              <ttr>
+              <ttr id="{meta.file}">
                 <ttd class="icons">
                   <img ssrc="{meta.icon}"/>
                 </ttd>
@@ -180,6 +178,7 @@
                 </ttd>
                 <ttd class="authors">
                   {meta.author}
+                  <span class="checkmark" />
                 </ttd>
                 <if test="{submitable}">
                   <ttd class="submital"></ttd>
@@ -201,6 +200,9 @@
                   </if>
 -->
                 </ttd>
+                <if test="{submitable}">
+                  <ttd class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></ttd>
+                </if>
               </ttr>
               
             </for>

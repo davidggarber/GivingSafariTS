@@ -65,17 +65,6 @@ var puzzles = [
     { title: 'Tmmmm Moasty', thumb: 'tmm', author: 'David Garber', type: types.meta, group: group.meta, orientation: orient.portrait, ir:true, feeder: [] },
 ];
 
-function puzzleFile(puz) {
-    if (puz['file']) {
-        return puz['file'];
-    }
-    return puz.title.replaceAll(' ', '');
-}
-
-function puzzleHref(puz) {
-    return puzzleFile(puz) + '.xhtml';
-}
-
 // Pass any url arguments on to the puzzles, plus the event identifier
 var _urlEventArguments = window.location.search.indexOf('gs24') > 0 
     ? window.location.search  // no change
@@ -84,7 +73,10 @@ var _urlEventArguments = window.location.search.indexOf('gs24') > 0
 
 // Fill in the puzzle hrefs
 for (var puz of puzzles) {
-    puz['href'] = puzzleHref(puz) + _urlEventArguments;
+    if (!puz['file']) {
+        puz['file'] = puz.title.replaceAll(' ', '');
+    }
+    puz['href'] = puz['file'] + '.xhtml' + _urlEventArguments;
 }
 
 var first_puzzle_solve_id_ = 500;

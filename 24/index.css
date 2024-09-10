@@ -35,7 +35,7 @@ td {
   text-align: center;
 }
 .html {
-  width: 2.2in; 
+  width: 2.75in; 
   text-align: left;
 }
 .challenge {
@@ -46,6 +46,18 @@ td {
   width: 1.5in; 
   position: relative;
   text-align: left; 
+}
+
+tr.solved .checkmark {
+  background-image: url('../Icons/Check.png');
+  background-size: 30px 27px;
+  display: inline-block;
+  position: absolute;
+  width: 30px; 
+  height: 27px;
+  right: 2px;
+  top: 1px;
+  content:"";
 }
 
 .feeders {
@@ -138,6 +150,13 @@ img.thumb {
   max-height: 0.25in;
   max-width: 0.25in;
   border: solid 1px #ccc;
+}
+.html:hover img.thumb {
+  transform: scale(4) rotate(5deg);
+  transform-origin: bottom;
+  border: solid 0.5px #ddd;
+  animation-name: grow-big;
+  animation-duration: 300ms;
 }
 .big img.thumb {
   transform: scale(4);
