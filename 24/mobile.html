@@ -26,9 +26,11 @@
         var p = document.createElement('p');
         
         var value = evt.code ? `code: ${evt.code}`
-          : evt.key ? `key: ${evt.key}`
+          : (evt.key && evt.key != 'Unidentied') ? `key: ${evt.key}`
           : evt.data ? `data: ${evt.data}`
-          : `value: ${evt.target.value}`;
+          : evt.which ? `which: ${evt.which}`
+          : `charCode: ${String.fromCharCode(evt.charCode)}`;
+//          : `value: ${evt.target.value}`;
         p.innerText = `${++index}: ${value}`;
         div.appendChild(p);
       }
