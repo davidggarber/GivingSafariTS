@@ -9,14 +9,14 @@
         ];
         for (var inp of inputs) {
           inp.onkeydown=function(e){append('down',e)};
-          inp.onkeyup=function(e){append('up',e)};
-          inp.onkeypress=function(e){append('press',e)};
-          inp.onchange=function(e){append('change',e)};
-          inp.oninput=function(e){append('input',e)};
-          inp.onsubmit=function(e){append('submit',e)};
-          inp.onselectstart=function(e){append('sel-start',e)};
-          inp.onselect=function(e){append('sel',e)};
-          inp.onselectionchange=function(e){append('sel-change',e)};
+          // inp.onkeyup=function(e){append('up',e)};
+          // inp.onkeypress=function(e){append('press',e)};
+          // inp.onchange=function(e){append('change',e)};
+          // inp.oninput=function(e){append('input',e)};
+          // inp.onsubmit=function(e){append('submit',e)};
+          // inp.onselectstart=function(e){append('sel-start',e)};
+          // inp.onselect=function(e){append('sel',e)};
+          // inp.onselectionchange=function(e){append('sel-change',e)};
         }
       }
 
@@ -25,14 +25,21 @@
         var div = document.getElementById(id);
         var p = document.createElement('p');
         
-        var value = evt.code ? `code: ${evt.code}`
-          : (evt.key && evt.key != 'Unidentied') ? `key: ${evt.key}`
-          : evt.data ? `data: ${evt.data}`
-          : evt.which ? `which: ${evt.which}`
-          : `charCode: ${String.fromCharCode(evt.charCode)}`;
-//          : `value: ${evt.target.value}`;
-        p.innerText = `${++index}: ${value}`;
+        var info = [];
+        info.push(`key: ${evt.key}`);
+        info.push(`code: ${evt.code}`);
+        info.push(`data: ${evt.data}`);
+        info.push(`which: ${evt.which}`);
+        info.push(`charCode: ${evt.charCode} == ${String.fromCharCode(evt.charCode)}`);
+        p.innerHTML = `${++index}: ${info.join('<br>')}`;
         div.appendChild(p);
+
+        // var pre = '';
+        // var fields = Object.keys(evt);
+        // for (var i = 0; i < fields.length; i++) {
+        //   pre += fields[i] + ': ' + evt[fields[i]] + '\n';
+        // }
+        // document.getElementById('json').innerText = pre;
       }
 
     </script>
@@ -86,6 +93,8 @@
       </tr>
 
     </table>
+
+    <pre id="json"></pre>
 
 
   </body>
