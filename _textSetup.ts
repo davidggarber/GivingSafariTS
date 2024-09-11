@@ -1,5 +1,5 @@
 import { hasClass, toggleClass, applyAllClasses, getOptionalStyle, findParentOfClass, isTag } from "./_classUtil";
-import { onLetterKeyDown, onLetterKey, onLetterChange, onWordKey, onWordChange, onLetterKeyUp } from "./_textInput";
+import { onLetterKeyDown, onLetterChange, onWordKey, onWordChange, onLetterKeyUp, onWordInput, onLetterInput } from "./_textInput";
 import { indexAllInputFields } from "./_storage"
 import { ContextError } from "./_contextError";
 
@@ -453,6 +453,7 @@ function setupLetterInputs() {
         inp.onkeydown=function(e){onLetterKeyDown(e)};
         inp.onkeyup=function(e){onLetterKeyUp(e)};
         inp.onchange=function(e){onLetterChange(e as KeyboardEvent)};
+        inp.oninput=function(e){onLetterInput(e as InputEvent)};
     }
 }
 
@@ -492,6 +493,7 @@ function setupWordCells() {
             inp.onkeydown=function(e){onLetterKeyDown(e)};
             inp.onkeyup=function(e){onWordKey(e)};
             inp.onchange=function(e){onWordChange(e as KeyboardEvent)};
+            inp.oninput=function(e){onWordInput(e as InputEvent)};
         }
 
         if (inpStyle != null) {

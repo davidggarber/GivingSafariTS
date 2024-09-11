@@ -40,10 +40,20 @@ var priorInputValue = '';
 let keyDownTarget:TextInputElement|null = null;
 
 /**
+ * Workaround for keydown/up on mobile
+ */
+let keyDownUnidentified:boolean = true;
+
+export function onInputEvent(event) {
+    console.log(event);
+}
+
+/**
  * Callback when a user pressed a keyboard key from any letter-input or word-input text field
  * @param event - A keyboard event
  */
 export function onLetterKeyDown(event: KeyboardEvent) {
+    keyDownUnidentified = event.which == 229;
     var input = event.currentTarget as TextInputElement;
     keyDownTarget = input;
     priorInputValue = input.value;
@@ -229,6 +239,49 @@ export function onLetterKeyUp(event:KeyboardEvent) {
     if (post) {
         var input:HTMLInputElement = event.currentTarget as HTMLInputElement;
         inputChangeCallback(input, event.key);
+    }
+}
+
+const mapInputEventTypes = {
+    'deleteContentBackward': 'Backspace',
+    'deleteContentForward': 'Delete',
+    'insertParagraph': 'Enter'
+}
+
+/**
+ * Convert an event from onInput to an equivalent key event.
+ * Note: only happens when contents actually change, so no arrow keys,
+ * nor backspace in empty cell :(
+ * @param event event from OnImput
+ * @returns Stub Keyboard event with a few key fields
+ */
+function fakeKeyboardEvent(event:InputEvent):KeyboardEvent {
+    const fake = {
+        code: '',
+        shiftKey: false,
+        ctrlKey: false,
+        altKey: false,
+        key: event.data
+    };
+    if (event.inputType in mapInputEventTypes) {
+        fake.code = mapInputEventTypes[event.inputType];
+    }
+    return fake as KeyboardEvent
+}
+
+/**
+ * oninput callback, which is the only usable one we get on Android.
+ * It should ALWAYS follow the key-down event
+ * @param event - An input event, where .data holds the key
+ */
+export function onLetterInput(event:InputEvent) {
+    // REVIEW: ignoring isComposing, since it is often true
+    if (keyDownUnidentified) {
+        var post = onLetterKey(fakeKeyboardEvent(event));
+        if (post) {
+            var input:HTMLInputElement = event.currentTarget as HTMLInputElement;
+            inputChangeCallback(input, event.data || '');
+        }
     }
 }
 
@@ -702,6 +755,18 @@ function updateExtractionData(extracted:string|HTMLElement, value:string, ready:
 }
 
 /**
+ * oninput callback, which is the only usable one we get on Android.
+ * It should ALWAYS follow the key-down event
+ * @param event - An input event, where .data holds the key
+ */
+export function onWordInput(event:InputEvent) {
+    // REVIEW: ignoring isComposing, since it is often true
+    if (keyDownUnidentified) {
+        onWordKey(fakeKeyboardEvent(event));
+    }
+}
+
+/**
  * User has typed in a word-entry field
  * @param event A Keyboard event
  */
@@ -866,19 +931,21 @@ export function onWordChange(event:KeyboardEvent) {
     saveWordLocally(input);
 }
 
+type onChangeCallback = (inp:TextInputElement, key:string) => void;
+
 /**
  * Anytime any note changes, inform any custom callback
  * @param inp The affected input
  * @param key The key from the event that led here
  */
-function inputChangeCallback(inp: HTMLInputElement, key:string) {
+function inputChangeCallback(inp:TextInputElement, key:string) {
     const fn = theBoiler().onInputChange;
     if (fn) {
         fn(inp);
     }
     const doc = getOptionalStyle(inp, 'data-onchange');
     if (doc) {
-        const func = window[doc];
+        const func = window[doc] as onChangeCallback;
         if (func) {
             func(inp, key);
         }

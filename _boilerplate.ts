@@ -1,5 +1,5 @@
 import { clicksFindInputs, textSetup } from "./_textSetup"
-import { hasClass, toggleClass } from "./_classUtil"
+import { hasClass, TextInputElement, toggleClass } from "./_classUtil"
 import { setupNotes, setupCrossOffs, setupHighlights } from "./_notes"
 import { setupDecoderToggle } from "./_decoders"
 import { checkLocalStorage, indexAllDragDropFields, indexAllDrawableFields } from "./_storage";
@@ -177,7 +177,7 @@ export type BoilerPlateData = {
     metaParams?: MetaParams;
     googleFonts?: string;  // A list of fonts, separated by commas
     onNoteChange?: (inp:HTMLInputElement) => void;
-    onInputChange?: (inp:HTMLInputElement) => void;
+    onInputChange?: (inp:TextInputElement) => void;
     onStampChange?: (newTool:string, prevTool:string) => void;
     onStamp?: (stampTarget:HTMLElement) => void;
     onRestore?: () => void;
