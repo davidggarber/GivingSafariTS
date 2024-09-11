@@ -17,6 +17,7 @@
         },
         reactiveBuilder: true,
         lookup: {
+          meta: 'FridgeRaiderMeta',
           index: 1,
           places: [
             [100, 100, 1],
@@ -39,13 +40,13 @@
       //<![CDATA[
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('FridgeRaiderMeta', 0, 1, {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
             index: boiler.lookup.index, 
             pics: boiler.lookup.feeds,
             unlocked: true,
             src: window.location.href });
-          updatePuzzleList('FridgeRaiderMeta-2', 'loaded');
-        }
+            updatePuzzleList(boiler.lookup.meta + '-' + boiler.lookup.index, 'loaded');
+          }
       }
       //]]>
     </script>

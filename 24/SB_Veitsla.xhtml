@@ -17,7 +17,8 @@
         },
         reactiveBuilder: true,
         lookup: {
-          index: 4,
+          meta: 'SmorgasbordMeta',
+          index: 3,
           pics: [ {img:'merlot', y:0}, {img:'namdokmai', y:0}, {img:'okra', y:0}, {img:'pluot', y:0} ]
         },
         postSetup: unlockFeeder
@@ -26,12 +27,12 @@
       //<![CDATA[
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('SmorgasbordMeta', 0, 3, {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
             index: boiler.lookup.index, 
             pics: boiler.lookup.pics,
             src: window.location.href });
-          updatePuzzleList('SmorgasbordMeta-4', 'loaded');
-        }
+            updatePuzzleList(boiler.lookup.meta + '-' + boiler.lookup.index, 'loaded');
+          }
       }
       //]]>
     </script>

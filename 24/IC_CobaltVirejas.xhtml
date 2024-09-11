@@ -15,19 +15,23 @@
         abilities: {
           scratchPad: true,
         },
+        lookup: {
+          meta: 'IronChefMeta',
+          index: 0,
+        },
         postSetup: unlockFeeder
       };
 
       //<![CDATA[
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('IronChefMeta', 0, 0, {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
             from: 'Materials #1',
             which: '1st',
             chefs: [ 'Desiree', 'Seacrest', 'Alpbakh', 'Christmas', 'Rachel' ],
             src: window.location.href });
-          updatePuzzleList('IronChefMeta-1', 'loaded');
-        }
+            updatePuzzleList(boiler.lookup.meta + '-' + boiler.lookup.index, 'loaded');
+          }
       }
       //]]>
     </script>

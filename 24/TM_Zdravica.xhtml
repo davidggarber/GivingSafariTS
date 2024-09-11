@@ -17,8 +17,9 @@
         },
         reactiveBuilder: true,
         lookup: {
-          pad: 50,
+          meta: 'TmmmmMoastyMeta',
           index: 3,
+          pad: 50,
           phrases: [
             { index:10, width:550, big:['white','a'], text:[['bold','S'],['normal','ou '],['bold','TH'],['normal','onic']] },
             { index:11, width:600, big:['gray','T'], text:[['normal','esh']] },
@@ -32,10 +33,10 @@
       //<![CDATA[
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('TmmmmMoastyMeta', 0, boiler.lookup.index, {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
             phrases: boiler.lookup.phrases,
             src: window.location.href });
-          updatePuzzleList('TmmmmMoastyMeta-4', 'loaded');
+          updatePuzzleList(boiler.lookup.meta + '-' + boiler.lookup.index, 'loaded');
         }
       }
       //]]>

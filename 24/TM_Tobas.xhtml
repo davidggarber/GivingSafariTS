@@ -17,8 +17,9 @@
         },
         reactiveBuilder: true,
         lookup: {
-          pad: 100,
+          meta: 'TmmmmMoastyMeta',
           index: 2,
+          pad: 100,
           phrases: [
             { index:7, width:600, big:['gray','W'], text:[['bold','D'],['normal','azed oughnuts ']] },
             { index:8, width:600, big:['gray','H'], text:[['bold','CH'],['normal','or ikin ']] },
@@ -31,10 +32,10 @@
       //<![CDATA[
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('TmmmmMoastyMeta', 0, boiler.lookup.index, {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
             phrases: boiler.lookup.phrases,
             src: window.location.href });
-          updatePuzzleList('TmmmmMoastyMeta-3', 'loaded');
+          updatePuzzleList(boiler.lookup.meta + '-' + boiler.lookup.index, 'loaded');
         }
       }
       //]]>

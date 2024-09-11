@@ -1114,3 +1114,30 @@ function getOtherFileHref(file:string, up?:number, rel?:number):string {
 
     return parts.join(delim);
 }
+
+////////////////////////////////////////////////////////////////////////
+// Utils for forgetting
+//
+
+/**
+ * Utility for backdoor event reset pages
+ * @param path A prefix to search for across all stored keys.
+ * Because the storage pattern we use is to key off filenames,
+ * specifying a folder will clear one event without clearing a second.
+ */
+export function forgetChildrenOf(path:string):number {
+    if (!path) {
+        const count = localStorage.length;
+        localStorage.clear();
+        return count;
+    }
+    let count = 0;
+    const keys = Object.keys(localStorage);
+    for (let i = 0; i < keys.length; i++) {
+        if (keys[i].indexOf(path) == 0) {
+            localStorage.setItem(keys[i], '')
+            count++;
+        }
+    }
+    return count;
+}

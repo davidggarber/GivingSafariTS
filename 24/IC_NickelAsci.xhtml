@@ -15,19 +15,23 @@
         abilities: {
           scratchPad: true,
         },
+        lookup: {
+          meta: 'IronChefMeta',
+          index: 1,
+        },
         postSetup: unlockFeeder
       };
 
       //<![CDATA[
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('IronChefMeta', 0, 1, {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
             from: 'Materials #2',
             which: '2nd',
             chefs: [ 'Humpbert', 'Kirby', 'Claire', 'Mahatma', 'Campbell' ],
             src: window.location.href });
-          updatePuzzleList('IronChefMeta-2', 'loaded');
-        }
+            updatePuzzleList(boiler.lookup.meta + '-' + boiler.lookup.index, 'loaded');
+          }
       }
       //]]>
     </script>

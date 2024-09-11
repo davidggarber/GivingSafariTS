@@ -15,19 +15,23 @@
         abilities: {
           scratchPad: true,
         },
+        lookup: {
+          meta: 'IronChefMeta',
+          index: 2,
+        },
         postSetup: unlockFeeder
       };
 
       //<![CDATA[
       function unlockFeeder() {
         if (!isIFrame() && !isPrint()) {
-          saveMetaMaterials('IronChefMeta', 0, 2, {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
             from: 'Materials #3',
             which: '1st',
             chefs: [ 'Hepburn', 'Jacques', 'Dortmund', 'Sapphire', 'Whitmore' ],
             src: window.location.href });
-          updatePuzzleList('IronChefMeta-3', 'loaded');
-        }
+            updatePuzzleList(boiler.lookup.meta + '-' + boiler.lookup.index, 'loaded');
+          }
       }
       //]]>
     </script>

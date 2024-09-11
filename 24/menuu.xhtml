@@ -20,30 +20,11 @@
         reactiveBuilder: true,
         lookup: {
           puzzles: puzzles,
+          metas: metas,
           feeders: true,
           submitable: false,
           solvable: true,
           table_cols: 5,
-
-          metas: [
-            { title: 'Iron Chef', file: 'IronChef', href: 'IronChef.xhtml', author: 'Rorke Haining',  thumb: 'iro',
-              icon: 'Icons/ironChef.png', template: 'ironChef', forget: 'IC_Forget.xhtml',
-              // feeders: ['CobaltVirejas', 'NickelAsci', 'TinCocinera', 'ZincSzakacs']
-            },
-            { title: 'Smorgasbord', file: 'Smorgasbord', href: 'Smorgasbord.xhtml', author: 'Rorke Haining',  thumb: 'smo',
-              icon: 'Icons/smorgasbord.png', template: 'smorgasbord', forget: 'SB_Forget.xhtml',
-              // feeders: ['Giorti', 'Janchi', 'Oturuntza', 'Veitsla']
-            },
-            { title: 'Fridge Raider 3', file: 'FridgeRaider3', href: 'FridgeRaider3.xhtml', author: 'Jeffrey Lin',  thumb: 'fr3',
-              icon: 'Icons/fridge.png', template: 'fridge', forget: 'FR_Forget.xhtml',
-              // feeders: ['Gladan', 'Himojii', 'Jaie', 'Llwglyd']
-            },
-            { title: 'Tmmmm Moasty', file: 'TmmmmMoasty', href: 'TmmmmMoasty.xhtml', author: 'David Garber',  thumb: 'tmm',
-              icon: 'Icons/toaster.png', template: 'toaster', forget: 'TM_Forget.xhtml',
-              // feeders: ['Piritos', 'Sorakan', 'Tobas', 'Zdravica']
-            },
-
-          ]
         },
       };
 
@@ -61,16 +42,49 @@
         syncProgress();
       }
 
+      var unlocked_feeders = {};
+
       function syncProgress() {
         for (var i = 0; i < puzzles.length; i++) {
           var puz = puzzles[i];
-          var pStatus = getPuzzleStatus(puz.file);
-          var tr = document.getElementById(puz.file);
-          if (tr) {
-            toggleClass(tr, 'solved', pStatus == 'solved');
-          }
+          updateSolves(puz.file);
+        }
 
-          // TODO: check feeders
+        var metaKeys = Object.keys(metas);
+        for (var m = 0; m < metaKeys.length; m++) {
+          var metaInfo = metas[metaKeys[m]];
+          for (var i = 0; i <= metaInfo.count; i++) {
+            updateUnlocked(metaInfo.store, i);
+          }
+        }
+      }
+
+      function updateSolves(puzFile) {
+        var pStatus = getPuzzleStatus(puzFile);
+        var tr = document.getElementById(puzFile);
+        if (tr) {
+          toggleClass(tr, 'solved', pStatus == 'solved');
+        }
+      }
+
+      function updateUnlocked(meta, i) {
+        var puzFile = `${meta}-${i}`;
+        if (!(puzFile in unlocked_feeders)) {
+          var pStatus = getPuzzleStatus(puzFile);
+          if (pStatus) {
+            var mat = loadMetaMaterials(meta, 0, i);
+            if (mat) {
+              unlocked_feeders[puzFile] = true;
+              var links = document.getElementsByClassName(puzFile);
+              for (var a = 0; a < links.length; a++) {
+                toggleClass(links[a], 'unlocked', true);
+                links[a].href = mat.src;
+                if (links[a].title.endsWith(' (locked)')) {
+                  links[a].title = links[a].title.substring(0, links[a].title.length - 9);
+                }
+              }
+            }
+          }
         }
       }
 
@@ -136,7 +150,9 @@
                   <if test="{feeders}">
                     <ttd class="feeders">
                       <for each="feed" in="{puz.feeder}">
-                        <use template="{feed.meta}Icon" index="{feed.number}" />
+                        <a class="feedLink {metas.[feed.meta].store}-{feed.number}" target="_blank" title="{metas.[feed.meta].title} - Materials #{feed.number} (locked)" trim="all">
+                          <img ssrc="{metas.[feed.meta].icon}" /><sub>{feed.number + 1}</sub>
+                        </a>
                       </for>  
                     </ttd>
                   </if>
@@ -153,61 +169,68 @@
           </ttbody>
         </ttable>
 
-        <ttable id="meta-table" class="table" style="border-collapse: collapse">
-          <ttfoot id="meta_list">
-            <ttr>
-              <tth>&nbsp;</tth>
-              <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
-              <tth class="author" style="text-align: left;">Author</tth>
-              <if test="{submitable}">
-                <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
-              </if>
-            </ttr>    
-            <for each="meta" in="{metas}">
-              <ttr id="{meta.file}">
-                <ttd class="icons">
-                  <img ssrc="{meta.icon}"/>
-                </ttd>
-                <ttd class="html">
-                  <a class="hover" href="{meta.href}" target="_blank">
-                    {meta.title}
-                    <if exists="{meta.thumb}">
-                      <img class="thumb" ssrc="Thumbs/{meta.thumb}.png" />
-                    </if>
-                  </a>
-                </ttd>
-                <ttd class="authors">
-                  {meta.author}
-                  <span class="checkmark" />
-                </ttd>
-                <if test="{submitable}">
-                  <ttd class="submital"></ttd>
-                </if>
-              </ttr>
+        <div id="meta-table">
+          <ttable class="table" style="border-collapse: collapse">
+            <ttfoot id="meta_list">
               <ttr>
-                <ttd>&nbsp;</ttd>
-                <ttd class="feeders">
-<!--
-                  <for each="feed" in="{meta.feeders}">
-                    <use template="{meta.template}" name="{feed}" index="{feed# + 1}" />
-                  </for>
--->
-                </ttd>
-                <ttd>
-<!--
-                  <if exists="{meta.forget?}">
-                    <a href="{meta.forget}" target="_blank" style="font-size: smaller;">Forget materials</a>
-                  </if>
--->
-                </ttd>
+                <tth>&nbsp;</tth>
+                <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
+                <tth class="author" style="text-align: left;">Author</tth>
                 <if test="{submitable}">
-                  <ttd class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></ttd>
+                  <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
                 </if>
-              </ttr>
-              
-            </for>
-          </ttfoot>
-        </ttable>
+              </ttr>    
+              <for each="puz" in="{puzzles}">
+                <if test="puz.group" eq="meta">
+                  <ttr id="{puz.file}">
+                    <ttd class="icons">
+                      <img ssrc="{metas.[puz.metaInfo].icon}"/>
+                    </ttd>
+                    <ttd class="html">
+                      <a class="hover" href="{puz.href}" target="_blank">
+                        {puz.title}
+                        <if exists="{puz.thumb}">
+                          <img class="thumb" ssrc="Thumbs/{puz.thumb}.png" />
+                        </if>
+                      </a>
+                    </ttd>
+                    <ttd class="authors">
+                      {puz.author}
+                      <span class="checkmark" />
+                    </ttd>
+                    <if test="{submitable}">
+                      <ttd class="submital"></ttd>
+                    </if>
+                  </ttr>
+                  <ttr>
+                    <ttd>&nbsp;</ttd>
+                    <ttd class="feeders">
+                      <for int="num" until="4">
+                        <a class="feedLink {metas.[puz.metaInfo].store}-{num}" target="_blank" title="Materials #{num} (locked)" trim="all">
+                          <img ssrc="{metas.[puz.metaInfo].icon}" /><sub>{num+1}</sub>
+                        </a>
+                      </for>  
+                    </ttd>
+                    <ttd>
+    <!--
+                      <if exists="{puz.forget?}">
+                        <a href="{puz.forget}" target="_blank" style="font-size: smaller;">Forget materials</a>
+                      </if>
+    -->
+                    </ttd>
+                    <if test="{submitable}">
+                      <ttd class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></ttd>
+                    </if>
+                  </ttr>
+                </if>
+              </for>
+            </ttfoot>
+          </ttable>
+
+          <p>To reset local saved progress in this event, click <a href="Forget_all_progress.xhtml">HERE</a>.</p>
+
+        </div>
+
       </build>
 
       <table id="legend" style="margin-top: 0.5in; margin-left: 0.25in;">
@@ -262,47 +285,6 @@
       </table>
 
     </div>
-
-    <template id="ironChef">
-      <a class="ic-hat" href="IC_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
-        <use template="ironChefIcon" index="{index}" />
-      </a>
-    </template>
-
-    <template id="ironChefIcon">
-      <img src="Icons/ironChef.png" /><sub>{index}</sub>
-    </template>
-
-    <template id="smorgasbord">
-      <a class="sb-plate" href="SB_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
-        <use template="smorgasbordIcon" index="{index}" />
-      </a>
-    </template>
-
-    <template id="smorgasbordIcon">
-      <img src="Icons/smorgasbord.png" /><sub>{index}</sub>
-    </template>
-
-    <template id="fridge">
-      <a class="fr-fridge" href="FR_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
-        <use template="fridgeIcon" index="{index}" />
-      </a>
-    </template>
-
-    <template id="fridgeIcon">
-      <img src="Icons/fridge.png" /><sub>{index}</sub>
-    </template>
-
-    <template id="toaster">
-      <a class="TM-toaster" href="TM_{name}.xhtml" target="_blank" title="Materials #{index}" trim="all">
-        <use template="toasterIcon" index="{index}" />
-      </a>
-    </template>
-
-    <template id="toasterIcon">
-      <img src="Icons/toaster.png" /><sub>{index}</sub>
-    </template>
-
 
   </body>
 </html>

@@ -175,3 +175,22 @@ img.thumb {
   from { transform: scale(4) rotate(5deg); }
   to { transform: scale(1) translate(0px,0px) rotate(0deg); }
 }
+
+.feedLink img {
+  opacity: 50%;
+  filter: grayscale(100%);
+}
+.feedLink sub {
+  opacity: 50%;
+}
+.feedLink.unlocked img {
+  opacity: 100%;  
+  filter: drop-shadow(0px 0px 2px #00ffff)
+}
+.feedLink.unlocked sub {
+  opacity: 100%;
+}
+.solved .feedLink.unlocked img {
+  opacity: 100%;  
+  filter: initial;
+}
