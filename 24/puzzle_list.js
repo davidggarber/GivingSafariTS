@@ -28,7 +28,7 @@ var challenge = {
 }
 
 var puzzles = [
-    { title: 'A Hotdog is not a Sandwich', thumb: 'hot', author: 'Michael Cohen', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    { title: 'A Hotdog Is Not A Sandwich', thumb: 'hot', author: 'Michael Cohen', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Beef', thumb: 'bee', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'ironChef',number:0}] },
     { title: 'Beyond Seasonable Doubt', thumb: 'bey', author: 'Wendy Stidmon', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },
     { title: 'Boaty McBoatface', thumb: 'boa', author: 'Martyn Lovell', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },
