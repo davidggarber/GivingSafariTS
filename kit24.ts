@@ -2505,7 +2505,9 @@ function fakeKeyboardEvent(event:InputEvent):KeyboardEvent {
         shiftKey: false,
         ctrlKey: false,
         altKey: false,
-        key: event.data
+        key: event.data,
+        target: event.target,
+        currentTarget: event.currentTarget,
     };
     if (event.inputType in mapInputEventTypes) {
         fake.code = mapInputEventTypes[event.inputType];
@@ -2521,7 +2523,9 @@ function fakeKeyboardEvent(event:InputEvent):KeyboardEvent {
 export function onLetterInput(event:InputEvent) {
     // REVIEW: ignoring isComposing, since it is often true
     if (keyDownUnidentified) {
-        var post = onLetterKey(fakeKeyboardEvent(event));
+        const fake = fakeKeyboardEvent(event);
+        onLetterKeyDown(fake);
+        var post = onLetterKey(fake);
         if (post) {
             var input:HTMLInputElement = event.currentTarget as HTMLInputElement;
             inputChangeCallback(input, event.data || '');
