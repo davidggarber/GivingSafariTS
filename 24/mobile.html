@@ -9,10 +9,10 @@
         ];
         for (var inp of inputs) {
           inp.onkeydown=function(e){append('down',e)};
-          // inp.onkeyup=function(e){append('up',e)};
-          // inp.onkeypress=function(e){append('press',e)};
+          inp.onkeyup=function(e){append('up',e)};
+          inp.onkeypress=function(e){append('press',e)};
           // inp.onchange=function(e){append('change',e)};
-          // inp.oninput=function(e){append('input',e)};
+          inp.oninput=function(e){append('input',e)};
           // inp.onsubmit=function(e){append('submit',e)};
           // inp.onselectstart=function(e){append('sel-start',e)};
           // inp.onselect=function(e){append('sel',e)};
@@ -29,7 +29,7 @@
         info.push(`key: ${evt.key}`);
         info.push(`code: ${evt.code}`);
         info.push(`data: ${evt.data}`);
-        info.push(`which: ${evt.which}`);
+        info.push(`which: ${evt.which} == ${String.fromCharCode(evt.which)}`);
         info.push(`charCode: ${evt.charCode} == ${String.fromCharCode(evt.charCode)}`);
         p.innerHTML = `${++index}: ${info.join('<br>')}`;
         div.appendChild(p);
