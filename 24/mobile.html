@@ -8,10 +8,10 @@
           document.getElementById('a'), document.getElementById('b')
         ];
         for (var inp of inputs) {
-          // inp.onkeydown=function(e){append('down',e)};
-          // inp.onkeyup=function(e){append('up',e)};
-          // inp.onkeypress=function(e){append('press',e)};
-          // inp.onchange=function(e){append('change',e)};
+          inp.onkeydown=function(e){append('down',e)};
+          inp.onkeyup=function(e){append('up',e)};
+          inp.onkeypress=function(e){append('press',e)};
+          inp.onchange=function(e){append('change',e)};
           inp.oninput=function(e){append('input',e)};
           // inp.onsubmit=function(e){append('submit',e)};
           // inp.onselectstart=function(e){append('sel-start',e)};

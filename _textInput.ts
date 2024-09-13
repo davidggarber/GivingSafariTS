@@ -9,6 +9,7 @@ import { toggleHighlight } from "./_notes";
 import { isDebug, isTrace, theBoiler } from "./_boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./_storage";
 import { validateInputReady } from "./_confirmation";
+import { splitEmoji } from "./_builderFor";
 
 /**
  * Any event stemming from key in this list should be ignored
@@ -168,12 +169,12 @@ export function onLetterKeyDown(event: KeyboardEvent) {
             if (event.key == '`') {
                 toggleHighlight(input);
             }
-            if (matchInputRules(input, event)) {
+            else if (matchInputRules(input, event)) {
                 input.value = event.key;
                 afterInputUpdate(input, event.key);
+                event.preventDefault();
+                return;
             }
-            event.preventDefault();
-            return;
         }
 
         // Single-character fields always go to the next field
@@ -203,7 +204,8 @@ export function onLetterKeyDown(event: KeyboardEvent) {
     }
 
     if (findParentOfClass(input, 'digit-only')) {
-        if (event.key.length == 1 && (event.key >= 'A' && event.key < 'Z' || event.key > 'a' && event.key < 'z')) {
+        if (event.key.length == 1 && !event.ctrlKey && !event.altKey
+            && (event.key >= 'A' && event.key < 'Z' || event.key > 'a' && event.key < 'z')) {
             // Completely disallow (English) alpha characters. Punctuation still ok.
             event.preventDefault();
         }
@@ -374,8 +376,9 @@ export function afterInputUpdate(input:TextInputElement, key:string) {
     var multiLetter = hasClass(input.parentNode, 'multiple-letter');
     var word = multiLetter || hasClass(input.parentNode, 'word-cell') || hasClass(input, 'word-input');
     if (!word && text.length > 1) {
-        overflow = text.substring(1);
-        text = text.substring(0, 1);
+        const glyphs = splitEmoji(text);
+        text = glyphs.splice(0, 1)[0];
+        overflow = glyphs.join('');
     }
     input.value = text;
     

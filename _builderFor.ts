@@ -131,7 +131,7 @@ function parseForText(src:HTMLElement, delim:string):string[] {
  * @param str A plain text string
  * @returns An array of strings that represent individual visible glyphs.
  */
-function splitEmoji(str:string):string[] {
+export function splitEmoji(str:string):string[] {
   const glyphs:string[] = [];
   let joining = 0;
   let prev = 0;
