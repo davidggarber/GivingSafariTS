@@ -23,6 +23,7 @@ export type PuzzleEventDetails = {
   solverSite?: string;  // URL to a separate solver website, where players can enter answers
   backLinks?: object;  // key: URL trigger -> puzzleListBackLink
   validation?: boolean|string;  // whether to allow local validation
+  eventSync?: string;  // When present, this identifies the database event group
 }
 
 type puzzleListBackLink = {
@@ -103,6 +104,7 @@ const safari21Details:PuzzleEventDetails = {
   // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
   'backLinks': { 'gs24': { href:'./menuu.xhtml'}, 'ps21': { href:'./menuu.xhtml'}},
   'validation': true,
+  eventSync: 'GivingSafari24',
 }
 
 const safari24Details:PuzzleEventDetails = {

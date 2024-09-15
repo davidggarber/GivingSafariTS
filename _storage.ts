@@ -7,6 +7,7 @@ import { createFromVertexList } from "./_straightEdge";
 import { GuessLog, decodeAndValidate } from "./_confirmation";
 import { getSafariDetails } from "./_events";
 import { scratchClear, scratchCreate, textFromScratchDiv } from "./_scratch";
+import { LoginInfo } from "./_eventSync";
 
 ////////////////////////////////////////////////////////////////////////
 // Types
@@ -1140,4 +1141,40 @@ export function forgetChildrenOf(path:string):number {
         }
     }
     return count;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Utils for login
+//
+
+/**
+ * Read any cached login-info. Logins are per-event
+ * @param event The current event
+ * @returns A login info, or null if not logged in
+ */
+export function getLogin(event?:string):LoginInfo|null {
+    if (!event) {
+        return null;
+    }
+    const key = getOtherFileHref('login-' + event, 0);
+    const val = localStorage.getItem(key);
+    if (val != null) {
+        const login = (JSON.parse(val) as LoginInfo);
+        if (login && login.player) {  // Ensure valid
+            return login;
+        }
+    }
+    return null;
+}
+
+/**
+ * Save the login (or logged-out) info
+ * @param event The current event
+ * @param data What to save. Null means logged out.
+ */
+export function cacheLogin(event?:string, data?:LoginInfo) {
+    if (event) {
+        const key = getOtherFileHref('login-' + event, 0);
+        localStorage.setItem(key, JSON.stringify(data || null));
+    }
 }

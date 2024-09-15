@@ -78,7 +78,9 @@ export function setupMetaSync(param:MetaParams) {
       scanMetaMaterials();
     }
   });
-  body.onfocus = function(e){scanMetaMaterials()};
+  body.addEventListener('focus', function (event) {
+    scanMetaMaterials();
+  });
   // Then run it now.
   scanMetaMaterials(true);
 }

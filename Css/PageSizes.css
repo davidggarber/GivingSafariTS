@@ -507,3 +507,17 @@ body.build-error {
 .validater {
   display: none;
 }
+
+#Login-bar {
+  position: absolute;
+  top: -5px;
+  left: 24px;
+  cursor: pointer;
+  z-index: 110;
+}
+
+#Login-icon {
+  height: 24px;
+  position: relative; 
+  top:8px;
+}

@@ -31,13 +31,9 @@
       // <![CDATA[
 
       function setupSolvables() {
-        document.addEventListener('visibilitychange', function (event) {
-          if (!document.hidden) {
-            syncProgress();
-          }
-        });
+        document.addEventListener('visibilitychange', function (event) { syncProgress(); });
         var body = document.getElementById('Menu');
-        body.onfocus = function(e){syncProgress()};
+        body.addEventListener('focus', function (event) { syncProgress(); } );
         // Then run it now.
         syncProgress();
       }
@@ -45,6 +41,9 @@
       var unlocked_feeders = {};
 
       function syncProgress() {
+        if (document.hidden) {
+          return;
+        }
         for (var i = 0; i < puzzles.length; i++) {
           var puz = puzzles[i];
           updateSolves(puz.file);
@@ -92,10 +91,19 @@
 
     </script>
     <style>
+      #Menu #Login-bar {
+        left: 7in;
+        top: 3.75in;
+        font-size: 14pt;
+      }
+      #Menu #Login-icon {
+        height: 36px;
+      }
+
       #meta-table {
         position: absolute;
         left: 7in;
-        top: 4in;
+        top: 4.5in;
         width: 4.6in;
       }
       #meta-table .html {

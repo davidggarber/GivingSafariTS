@@ -14,6 +14,7 @@ kitFiles = [
     '_stampTools.ts',
     '_straightEdge.ts',
     '_events.ts',
+    '_eventSync.ts',
     '_boilerplate.ts',
     '_confirmation.ts',
     '_contextError.ts',

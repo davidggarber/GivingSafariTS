@@ -1,6 +1,7 @@
 import { theBoiler } from "./_boilerplate";
 import { consoleTrace } from "./_builder";
 import { getAllElementsWithAttribute, getOptionalStyle, hasClass, isTag, toggleClass } from "./_classUtil";
+import { EventSyncActivity, pingEventServer } from "./_eventSync";
 import { scanMetaMaterials } from "./_meta";
 import { PuzzleStatus, getCurFileName, saveGuessHistory, updatePuzzleList } from "./_storage";
 
@@ -354,19 +355,21 @@ export function decodeAndValidate(gl:GuessLog) {
 
         const hash = rot13(guess);  // TODO: more complicated hashing
         const block = appendGuess(gl);
+        let solved = false;
         if (hash in obj) {
             const encoded = obj[hash];
     
             // Guess was expected. It may have multiple responses.
             const multi = encoded.split('|');
             for (let i = 0; i < multi.length; i++) {
-                appendResponse(block, multi[i]);
+                solved = appendResponse(block, multi[i]) || solved;
             }
         }
         else {
             // Guess does not match any hashes
             appendResponse(block, no_match_response);
         }
+        pingEventServer(solved ? EventSyncActivity.Solve : EventSyncActivity.Attempt, guess);
     }
     else {
         console.error('Unrecognized validation field: ' + gl.field);
@@ -414,8 +417,9 @@ function appendGuess(gl:GuessLog): HTMLDivElement {
  * The type is pulled off, and dictates the formatting.
  * Some types have side-effects, in addition to text.
  * If the response is only the type, pre-canned text is used instead.
+ * @returns true if the response indicates the puzzle has been fully solved
  */
-function appendResponse(block:HTMLDivElement, response:string) {
+function appendResponse(block:HTMLDivElement, response:string):boolean {
     const type = parseInt(response[0]);
     response = response.substring(1);
     if (response.length == 0 && type < default_responses.length) {
@@ -499,7 +503,9 @@ function appendResponse(block:HTMLDivElement, response:string) {
         toggleClass(document.getElementsByTagName('body')[0], 'solved', true);
         // Cache that the puzzle is solved, to be indicated in tables of contents
         updatePuzzleList(getCurFileName(), PuzzleStatus.Solved);
+        return true;
     }
+    return false;
 }
 
 /**

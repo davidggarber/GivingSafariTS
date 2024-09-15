@@ -15,6 +15,7 @@ import { diffSummarys, LayoutSummary, renderDiffs, summarizePageLayout } from ".
 import { wrapContextError } from "./_contextError";
 import { setupScratch } from "./_scratch";
 import { MetaParams, setupMetaSync } from "./_meta";
+import { setupEventSync } from "./_eventSync";
 
 
 /**
@@ -463,6 +464,8 @@ function boilerplate(bp: BoilerPlateData) {
     toggleClass(body, bp.paperSize);
     toggleClass(body, bp.orientation);
     toggleClass(body, '_' + bp.safari);  // So event fonts can trump defaults
+
+    setupEventSync(safariDetails.eventSync);
 
     const page: HTMLDivElement = createSimpleDiv({id:'page', cls:'printedPage'});
     const margins: HTMLDivElement = createSimpleDiv({cls:'pageWithinMargins'});
