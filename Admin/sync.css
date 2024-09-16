@@ -1,0 +1,9 @@
+.alternate tr:nth-child(odd) td {
+  background-color: #eef;
+}
+.alternate tr:nth-child(even) td {
+  background-color: #ddf;
+}
+.missing td {
+  border: solid 1px red;
+}

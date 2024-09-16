@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="sync.js" />
+    <link href="sync.css" rel="Stylesheet" type="text/css"></link>
+    <script>
+      //<![CDATA[
+      const boiler = {
+        safari: '',
+        title: 'List Puzzles',
+      };
+
+      var eventName = 'gs24';
+
+      function queryPuzzleList() {
+        var data = {
+          eventName: eventName,
+        }
+        queryServer('PuzzleList', data, refreshPuzzleList)
+      }
+
+      function refreshPuzzleList(response) {
+        var list = JSON.parse(response);
+        var tbody = document.getElementById('list-tbody');
+        
+        // See what rows we already have
+        var existing = rowIdSet(tbody, false);
+
+        for (var row of list) {
+          var id = "puzzle-" + row;
+          if (document.getElementById(id)) {
+            // Already exists
+            toggleClass(tr, 'missing', false);
+            existing[id] = null;
+          }
+          else {
+            var tr = createRow1(id, row, 'puzzle-name');
+            tbody.appendChild(tr);
+          }
+        }
+
+        // If any pre-existing rows have gone missing, tag them
+        var missing = Object.keys(existing);
+        for (var id of missing) {
+          var tr = document.getElementById(id);
+          toggleClass(tr, 'missing', true);
+        }
+
+      }
+
+      // ]]>
+    </script>
+    <style>
+
+    </style>
+  </head>
+  <body id="ListPuzzles">
+    <div id="pageBody">
+      <button onclick="queryPuzzleList()">Refresh Puzzle List</button>
+      <table>
+        <thead>
+          <tr id="header-row">
+            <th>Puzzle Name</th>
+          </tr>
+        </thead>
+        <tbody id="list-tbody" class="alternate">
+          
+        </tbody>
+      </table>
+
+    </div>
+  </body>
+</html>
