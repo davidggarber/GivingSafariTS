@@ -1008,7 +1008,8 @@ exports.toggleDecoder = toggleDecoder;
 var localCache = {
     letters: {},
     words: {},
-    notes: {}, checks: {},
+    notes: {},
+    checks: {},
     containers: {},
     positions: {},
     stamps: {},
@@ -1207,11 +1208,38 @@ function cancelLocalReload(hide) {
 /**
  * Overwrite the localStorage with the current cache structure
  */
-function saveCache() {
+function saveCache(pingEdit) {
     if (!reloading) {
         localCache.time = new Date();
         localStorage.setItem(storageKey(), JSON.stringify(localCache));
+        if (pingEdit && !isEmptyCache()) {
+            pingEventServer(EventSyncActivity.Edit);
+        }
     }
+}
+function isEmptyCache() {
+    if (Object.values(localCache.letters).find(x => x != '') != null) {
+        return false;
+    }
+    if (Object.values(localCache.words).find(x => x != '') != null) {
+        return false;
+    }
+    if (Object.values(localCache.positions).find(x => x != '') != null) {
+        return false;
+    }
+    if (Object.keys(localCache.stamps).length > 0) {
+        return false;
+    }
+    if (localCache.edges.length > 0) {
+        return false;
+    }
+    if (Object.keys(localCache.scratch).length > 0) {
+        return false;
+    }
+    if (Object.values(localCache.checks).find(x => x === true)) {
+        return false;
+    }
+    return true;
 }
 /**
  * Update the saved letters object
@@ -1222,7 +1250,7 @@ function saveLetterLocally(input) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.letters[index] = input.value;
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -1236,7 +1264,7 @@ function saveWordLocally(input) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.words[index] = input.value;
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -1250,7 +1278,7 @@ function saveNoteLocally(input) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.notes[index] = input.value;
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -1264,7 +1292,7 @@ function saveCheckLocally(element, value) {
         var index = getGlobalIndex(element);
         if (index >= 0) {
             localCache.checks[index] = value;
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -1279,7 +1307,7 @@ function saveContainerLocally(element, container) {
         var destIndex = getGlobalIndex(container);
         if (elemIndex >= 0 && destIndex >= 0) {
             localCache.containers[elemIndex] = destIndex;
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -1294,7 +1322,7 @@ function savePositionLocally(element) {
         if (index >= 0) {
             var pos = positionFromStyle(element);
             localCache.positions[index] = pos;
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -1315,7 +1343,7 @@ function saveStampingLocally(element) {
             else {
                 delete localCache.stamps[index];
             }
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -1329,7 +1357,7 @@ function saveHighlightLocally(element) {
         var index = getGlobalIndex(element, 'ch');
         if (index >= 0) {
             localCache.highlights[index] = hasClass(element, 'highlighted');
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -1349,7 +1377,7 @@ function saveStraightEdge(vertexList, add) {
             localCache.edges.splice(i, 1);
         }
     }
-    saveCache();
+    saveCache(true);
 }
 exports.saveStraightEdge = saveStraightEdge;
 /**
@@ -1358,7 +1386,7 @@ exports.saveStraightEdge = saveStraightEdge;
  */
 function saveGuessHistory(guesses) {
     localCache.guesses = guesses;
-    saveCache();
+    saveCache(false); // Doesn't count as an edit
 }
 exports.saveGuessHistory = saveGuessHistory;
 /**
@@ -1381,9 +1409,9 @@ function saveScratches(scratchPad) {
         ].join(',');
         const text = textFromScratchDiv(div);
         map[pos] = text;
-        localCache.scratch = map;
-        saveCache();
     }
+    localCache.scratch = map;
+    saveCache(true);
 }
 exports.saveScratches = saveScratches;
 /**
@@ -1436,7 +1464,7 @@ function saveStates() {
     }
     if (Object.keys(map).length > 0) {
         localCache.controls = map;
-        saveCache();
+        saveCache(true);
     }
 }
 exports.saveStates = saveStates;

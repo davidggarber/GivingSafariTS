@@ -7,7 +7,8 @@ import { createFromVertexList } from "./_straightEdge";
 import { GuessLog, decodeAndValidate } from "./_confirmation";
 import { getSafariDetails } from "./_events";
 import { scratchClear, scratchCreate, textFromScratchDiv } from "./_scratch";
-import { LoginInfo } from "./_eventSync";
+import { EventSyncActivity, LoginInfo, pingEventServer } from "./_eventSync";
+import { consoleTrace } from "./_builder";
 
 ////////////////////////////////////////////////////////////////////////
 // Types
@@ -47,7 +48,8 @@ type LocalSavePoint = {
 var localCache:LocalCacheStruct = { 
     letters: {}, 
     words: {}, 
-    notes: {}, checks: {},
+    notes: {}, 
+    checks: {},
     containers: {}, 
     positions: {}, 
     stamps: {}, 
@@ -255,11 +257,40 @@ function cancelLocalReload(hide:boolean) {
 /**
  * Overwrite the localStorage with the current cache structure
  */
-function saveCache() {
+function saveCache(pingEdit:boolean) {
     if (!reloading) {
         localCache.time = new Date(); 
         localStorage.setItem(storageKey(), JSON.stringify(localCache));
+
+        if (pingEdit && !isEmptyCache()) {
+            pingEventServer(EventSyncActivity.Edit);
+        }
     }
+}
+
+function isEmptyCache():boolean {
+    if (Object.values(localCache.letters).find(x => x != '') != null) {
+        return false;
+    }
+    if (Object.values(localCache.words).find(x => x != '') != null) {
+        return false;
+    }
+    if (Object.values(localCache.positions).find(x => x != '') != null) {
+        return false;
+    }
+    if (Object.keys(localCache.stamps).length > 0) {
+        return false;
+    }
+    if (localCache.edges.length > 0) {
+        return false;
+    }
+    if (Object.keys(localCache.scratch).length > 0) {
+        return false;
+    }
+    if (Object.values(localCache.checks).find(x => x === true)) {
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -271,7 +302,7 @@ export function saveLetterLocally(input:HTMLInputElement) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.letters[index] = input.value;
-            saveCache();  
+            saveCache(true);  
         }  
     }
 }
@@ -285,7 +316,7 @@ export function saveWordLocally(input:HTMLInputElement) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.words[index] = input.value;
-            saveCache();  
+            saveCache(true);
         }  
     }
 }
@@ -299,7 +330,7 @@ export function saveNoteLocally(input:HTMLInputElement) {
         var index = getGlobalIndex(input);
         if (index >= 0) {
             localCache.notes[index] = input.value;
-            saveCache();  
+            saveCache(true);  
         }  
     }
 }
@@ -313,7 +344,7 @@ export function saveCheckLocally(element:HTMLElement, value:boolean) {
         var index = getGlobalIndex(element);
         if (index >= 0) {
             localCache.checks[index] = value;
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -328,7 +359,7 @@ export function saveContainerLocally(element:HTMLElement, container:HTMLElement)
         var destIndex = getGlobalIndex(container);
         if (elemIndex >= 0 && destIndex >= 0) {
             localCache.containers[elemIndex] = destIndex;
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -343,7 +374,7 @@ export function savePositionLocally(element:HTMLElement) {
         if (index >= 0) {
             var pos = positionFromStyle(element);
             localCache.positions[index] = pos;
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -364,7 +395,7 @@ export function saveStampingLocally(element:HTMLElement) {
             else {
                 delete localCache.stamps[index];
             }
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -378,7 +409,7 @@ export function saveHighlightLocally(element:HTMLElement) {
         var index = getGlobalIndex(element, 'ch');
         if (index >= 0) {
             localCache.highlights[index] = hasClass(element, 'highlighted');
-            saveCache();
+            saveCache(true);
         }
     }
 }
@@ -398,7 +429,7 @@ export function saveStraightEdge(vertexList: string, add:boolean) {
             localCache.edges.splice(i, 1);
         }
     }
-    saveCache();
+    saveCache(true);
 }
 
 /**
@@ -407,7 +438,7 @@ export function saveStraightEdge(vertexList: string, add:boolean) {
  */
 export function saveGuessHistory(guesses: GuessLog[]) {
     localCache.guesses = guesses;
-    saveCache();
+    saveCache(false);  // Doesn't count as an edit
 }
 
 /**
@@ -430,9 +461,9 @@ export function saveScratches(scratchPad:HTMLDivElement) {
         ].join(',');
         const text = textFromScratchDiv(div);
         map[pos] = text;
-        localCache.scratch = map;
-        saveCache();
     }
+    localCache.scratch = map;
+    saveCache(true);
 }
 
 type ValuableElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLButtonElement;
@@ -487,7 +518,7 @@ export function saveStates() {
     }
     if (Object.keys(map).length > 0) {
         localCache.controls = map;
-        saveCache();
+        saveCache(true);
     }
 }
 
