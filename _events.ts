@@ -49,6 +49,14 @@ const safariDocsDetails:PuzzleEventDetails = {
   'backLinks': { '': { href:'../Docs/index.xhtml', friendly:'Documentation'}},
 };
 
+const safariAdminDetails:PuzzleEventDetails = {
+  'title': 'Admin Tools',
+  'logo': '../DGG/Images/octopus_watermark.png',
+  'icon': '../DGG/Images/octopus_icon.png',
+  'cssRoot': '../Css/',
+  'links': [],
+}
+
 const safariSingleDetails:PuzzleEventDetails = {
   'title': 'Puzzle',
   'logo': './Images/Sample_Logo.png',
@@ -154,6 +162,7 @@ const puzzylSafariTeamDetails:PuzzleEventDetails = {
 
 const pastSafaris = {
   'Docs': safariDocsDetails,
+  'Admin': safariAdminDetails,
   'Sample': safariSampleDetails,
   'Single': safariSingleDetails,
   '20': safari20Details,

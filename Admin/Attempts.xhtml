@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="sync.js" />
+    <link href="sync.css" rel="Stylesheet" type="text/css"></link>
+    <script>
+      //<![CDATA[
+      const boiler = {
+        safari: 'Admin',
+        orientation: 'landscape',
+        title: 'Answer Attempts',
+        postSetup: doRefresh,
+        reactiveBuilder: 'pageBody',
+        lookup: {},
+      };
+
+      var eventName = 'gs24';
+      var firstLoad = true;
+
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      if (urlParams.has('e')) {
+        eventName =urlParams.get('e');
+        boiler.lookup['eventName'] = eventName;
+      }
+      var puzzleName = urlParams.get('z');
+      boiler.lookup['puzzleName'] = puzzleName;
+      boiler.title = 'Answer Attempts: ' + puzzleName;
+
+      function doRefresh() {
+        var data = {
+          eventName: eventName,
+          puzzle: puzzleName,
+        }
+        queryServer('PuzzleAttempts', data, refreshWithResponse);
+        data = {
+          eventName: eventName,
+        }
+        queryServer('PuzzleList', data, refreshPicker);
+      }
+
+      var colKeys = ['Team', 'Player', 'Guess', 'Timestamp']
+
+      function refreshWithResponse(response) {
+        var list = JSON.parse(response);
+        var tbody = document.getElementById('list-tbody');
+        
+        // See what rows we already have
+        var existing = rowIdSet(tbody, false);
+
+        for (var row of list) {
+          var id = `row-${row['Team']}-${row['Player']}-${row['Timestamp']}`;
+          var tr = document.getElementById(id);
+          if (tr) {
+            // Already exists
+            toggleClass(tr, 'missing', false);
+            existing[id] = null;
+          }
+          else {
+            tr = createRow(id, row, colKeys);
+            toggleClass(tr, 'new', !firstLoad);
+            if (row['Guess'] == row['Guess'].toUpperCase()) {
+              toggleClass(tr, 'correct', true);
+            }
+            tbody.appendChild(tr);
+          }
+        }
+
+        // If any pre-existing rows have gone missing, tag them
+        var missing = Object.entries(existing).filter(pair => pair[1]).map(pair => pair[0]);
+        markAsMissing(missing);
+
+        firstLoad = false;
+      }
+
+      function changePicker() {
+        var pick = document.getElementById('picker').value;
+        if (pick != puzzleName) {
+          window.location.href = 'Attempts.xhtml?z=' + encodeURIComponent(pick);
+        }
+      }
+
+      // ]]>
+    </script>
+    <style>
+      #picker {
+        font-size: 24pt;
+        font-weight: bold;
+      }
+      #picker * {
+        font-size: 12pt;
+      }
+      .correct td.Guess:after {
+        content: '✅';
+      }
+    </style>
+  </head>
+  <body id="ListPuzzles">
+    <div id="pageBody">
+      <p>
+        <select id="picker" value="{puzzleName}" onchange="changePicker()" />
+      </p>
+      <button onclick="doRefresh()">Refresh Puzzle List</button>
+      <table>
+        <thead>
+          <tr id="header-row">
+            <th style="min-width:2in;">Team</th>
+            <th style="min-width:2in;">Player</th>
+            <th style="min-width:1.5in;">Guess</th>
+            <th style="min-width:1.5in;">Timestamp</th>
+          </tr>
+        </thead>
+        <tbody id="list-tbody" class="alternate">
+          
+        </tbody>
+      </table>
+
+    </div>
+  </body>
+</html>

@@ -10,22 +10,23 @@
     <script>
       //<![CDATA[
       const boiler = {
-        safari: '',
-        title: 'List Players',
+        safari: 'Admin',
+        orientation: 'landscape',
+        title: 'List Puzzles',
+        postSetup: doRefresh,
       };
 
       var eventName = 'gs24';
+      var firstLoad = true;
 
-      function queryPlayerList() {
+      function doRefresh() {
         var data = {
           eventName: eventName,
         }
-        queryServer('PlayerList', data, refreshPlayerList)
+        queryServer('PuzzleList', data, refreshWithResponse)
       }
 
-      var colKeys = ['Player', 'Team']
-
-      function refreshPlayerList(response) {
+      function refreshWithResponse(response) {
         var list = JSON.parse(response);
         var tbody = document.getElementById('list-tbody');
         
@@ -33,26 +34,26 @@
         var existing = rowIdSet(tbody, true);
 
         for (var row of list) {
-          var id = "player-" + row['Player'];
-          var tr = document.getElementById(id);
-          if (tr) {
+          var id = "puzzle-" + row;
+          if (document.getElementById(id)) {
             // Already exists
-            toggleClass(tr, 'missing', false);
+            toggleClass(tr, 'missing', true);
             existing[id] = null;
           }
           else {
-            tr = createRow(id, row, colKeys);
+            var tr = createRow1(id, row, 'puzzle-name');
+            toggleClass(tr, 'new', !firstLoad);
+            tr.appendChild(createLinkCell('Submitted', 'Attempts.xhtml?z=' + encodeURIComponent(row)));
+            tr.appendChild(createLinkCell('Team progress', 'Completion.xhtml?z=' + encodeURIComponent(row)));
             tbody.appendChild(tr);
           }
         }
 
         // If any pre-existing rows have gone missing, tag them
         var missing = Object.entries(existing).filter(pair => pair[1]).map(pair => pair[0]);
-        for (var id of missing) {
-          var tr = document.getElementById(id);
-          toggleClass(tr, 'missing', true);
-        }
+        markAsMissing(missing);
 
+        firstLoad = false;
       }
 
       // ]]>
@@ -61,14 +62,15 @@
 
     </style>
   </head>
-  <body id="ListPlayers">
+  <body id="ListPuzzles">
     <div id="pageBody">
-      <button onclick="queryPlayerList()">Refresh Player List</button>
-      <table>
+      <button onclick="doRefresh()">Refresh Puzzle List</button>
+      <table style="width:100%;">
         <thead>
           <tr id="header-row">
-            <th>Player Name</th>
-            <th>Team Name</th>
+            <th style="min-width:2in;">Puzzle Name</th>
+            <th style="min-width:1.5in;">Attempts</th>
+            <th style="min-width:1.5in;">Team progress</th>
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">

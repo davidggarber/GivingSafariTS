@@ -1,9 +1,25 @@
+._Admin .title {
+  font-size: 32pt;
+  font-family: 'Algerian';
+  position: relative;
+  top: -0.25in;
+}
+
 .alternate tr:nth-child(odd) td {
   background-color: #eef;
 }
 .alternate tr:nth-child(even) td {
   background-color: #ddf;
 }
+
+._Admin th {
+  font-size: 14pt;
+  text-align: left;
+  padding-right: 20px;
+}
 .missing td {
   border: solid 1px red;
+}
+.new td, td.new {
+  font-weight: bold;
 }

@@ -10,20 +10,25 @@
     <script>
       //<![CDATA[
       const boiler = {
-        safari: '',
-        title: 'List Teams',
+        safari: 'Admin',
+        orientation: 'landscape',
+        title: 'List Players',
+        postSetup: doRefresh,
       };
 
       var eventName = 'gs24';
+      var firstLoad = true;
 
-      function queryTeamList() {
+      function doRefresh() {
         var data = {
           eventName: eventName,
         }
-        queryServer('TeamList', data, refreshTeamList)
+        queryServer('PlayerList', data, refreshWithResponse)
       }
 
-      function refreshTeamList(response) {
+      var colKeys = ['Player', 'Team']
+
+      function refreshWithResponse(response) {
         var list = JSON.parse(response);
         var tbody = document.getElementById('list-tbody');
         
@@ -31,26 +36,26 @@
         var existing = rowIdSet(tbody, true);
 
         for (var row of list) {
-          var id = "player-" + row['Team'];
+          var id = "row-" + row['Player'];
           var tr = document.getElementById(id);
           if (tr) {
             // Already exists
             toggleClass(tr, 'missing', false);
+            toggleClass(tr, 'new', false);
             existing[id] = null;
           }
           else {
-            var tr = createRow1(id, row, 'team-name');
+            tr = createRow(id, row, colKeys);
+            toggleClass(tr, 'new', !firstLoad);
             tbody.appendChild(tr);
           }
         }
 
         // If any pre-existing rows have gone missing, tag them
         var missing = Object.entries(existing).filter(pair => pair[1]).map(pair => pair[0]);
-        for (var id of missing) {
-          var tr = document.getElementById(id);
-          toggleClass(tr, 'missing', true);
-        }
+        markAsMissing(missing);
 
+        firstLoad = false;
       }
 
       // ]]>
@@ -59,13 +64,14 @@
 
     </style>
   </head>
-  <body id="ListTeams">
+  <body id="ListPlayers">
     <div id="pageBody">
-      <button onclick="queryTeamList()">Refresh Team List</button>
+      <button onclick="doRefresh()">Refresh Player List</button>
       <table>
         <thead>
           <tr id="header-row">
-            <th>Team Name</th>
+            <th style="min-width:3in;">Player Name</th>
+            <th style="min-width:3in;">Team Name</th>
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">
