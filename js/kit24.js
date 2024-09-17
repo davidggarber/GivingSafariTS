@@ -6455,7 +6455,21 @@ const safari20Details = {
     'backLinks': { 'gs23': { href: './safari.html' } },
 };
 const safari21Details = {
-    'title': 'Safari Labs',
+    'title': 'Epicurious Enigmas',
+    'logo': './Images/PS24_banner.png',
+    'icon': './Images/Plate_icon.png',
+    'iconRoot': './Icons/',
+    'cssRoot': '../Css/',
+    'fontCss': '../24/Css/Fonts21.css',
+    'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/' },
+    'backLinks': { 'ps21': { href: './menuu.xhtml' } },
+    'validation': true,
+};
+const giving24Details = {
+    'title': 'Epicurious Enigmas',
     'logo': './Images/GS24_banner.png',
     'icon': './Images/Plate_icon.png',
     'iconRoot': './Icons/',
@@ -6521,23 +6535,35 @@ const pastSafaris = {
     '21': safari21Details,
     'Dgg': safariDggDetails,
     '24': safari24Details,
-    'gs24': safari21Details,
+    'gs24': giving24Details,
     'team': puzzylSafariTeamDetails,
 };
+const givingSafari24 = ['gs24', '21'];
 let safariDetails;
 /**
-* Initialize a global reference to Safari event details
+* Initialize a global reference to Safari event details.
+* Pages can support multiple events, in which case the URL needs to have an arg picking one.
+* Finding a match in boiler.safaris takes precedence over boiler.safari, which is the backup.
+* If that a urlArg match is found, boiler.safari will be updated, to remove the ambiguity.
 */
-function initSafariDetails(safariId) {
-    if (!safariId) {
+function initSafariDetails(boiler) {
+    if (boiler?.safaris) {
+        for (var i = 0; i < boiler.safaris.length; i++) {
+            if (urlArgExists(boiler.safaris[i])) {
+                boiler.safari = boiler.safaris[i];
+                break;
+            }
+        }
+    }
+    if (!boiler?.safari) {
         return safariDetails = noEventDetails;
     }
-    if (!(safariId in pastSafaris)) {
-        const err = new Error('Unrecognized Safari Event ID: ' + safariId);
+    if (!(boiler.safari in pastSafaris)) {
+        const err = new Error('Unrecognized Safari Event ID: ' + boiler.safari);
         console.error(err);
         return safariDetails = noEventDetails;
     }
-    safariDetails = pastSafaris[safariId];
+    safariDetails = pastSafaris[boiler.safari];
     return safariDetails;
 }
 exports.initSafariDetails = initSafariDetails;
@@ -6886,8 +6912,8 @@ const print_as_grayscale = { id: 'printAs', text: "<div style='color:#666;'>Prin
  */
 function preSetup(bp) {
     exports._rawHtmlSource = document.documentElement.outerHTML;
-    const safariDetails = initSafariDetails(bp.safari);
     debugSetup();
+    const safariDetails = initSafariDetails(bp);
     var bodies = document.getElementsByTagName('body');
     if (isIFrame()) {
         bodies[0].classList.add('iframe');

@@ -156,6 +156,7 @@ type AbilityData = {
 
 export type BoilerPlateData = {
     safari?: string;  // key for Safari details
+    safaris?: string[];  // optional keys for Safari details, triggered by url arg
     title?: string;
     qr_base64?: string;
     print_qr?: boolean;
@@ -193,8 +194,8 @@ const print_as_grayscale = { id:'printAs', text: "<div style='color:#666;'>Print
  */
 function preSetup(bp:BoilerPlateData) {
     _rawHtmlSource = document.documentElement.outerHTML;
-    const safariDetails = initSafariDetails(bp.safari);
     debugSetup();
+    const safariDetails = initSafariDetails(bp);
     var bodies = document.getElementsByTagName('body');
     if (isIFrame()) {
         bodies[0].classList.add('iframe');
