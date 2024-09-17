@@ -67,6 +67,11 @@ var localCache:LocalCacheStruct = {
 // User interface
 //
 
+/**
+ * Set to false to disable saving (and restoring)
+ */
+let CacheChangesInLocalStorage = true;
+
 let checkStorage:any = null;
 
 /**
@@ -81,6 +86,10 @@ export function storageKey() {
  * If storage exists from a previous visit to this puzzle, offer to reload.
  */
 export function checkLocalStorage() {
+    if (!CacheChangesInLocalStorage) {
+        return;
+    }
+
     // Each puzzle is cached within localStorage by its URL
     const key = storageKey();
     if (!isIFrame() && !isRestart() && key in localStorage){
@@ -258,7 +267,7 @@ function cancelLocalReload(hide:boolean) {
  * Overwrite the localStorage with the current cache structure
  */
 function saveCache(pingEdit:boolean) {
-    if (!reloading) {
+    if (!reloading && CacheChangesInLocalStorage) {
         localCache.time = new Date(); 
         localStorage.setItem(storageKey(), JSON.stringify(localCache));
 

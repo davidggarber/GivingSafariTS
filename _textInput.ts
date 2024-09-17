@@ -9,7 +9,7 @@ import { toggleHighlight } from "./_notes";
 import { isDebug, isTrace, theBoiler } from "./_boilerplate";
 import { saveLetterLocally, saveWordLocally } from "./_storage";
 import { validateInputReady } from "./_confirmation";
-import { splitEmoji } from "./_builderFor";
+import { splitEmoji } from "./_builder";
 
 /**
  * Any event stemming from key in this list should be ignored

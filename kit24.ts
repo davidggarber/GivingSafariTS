@@ -1172,6 +1172,11 @@ var localCache:LocalCacheStruct = {
 // User interface
 //
 
+/**
+ * Set to false to disable saving (and restoring)
+ */
+let CacheChangesInLocalStorage = true;
+
 let checkStorage:any = null;
 
 /**
@@ -1186,6 +1191,10 @@ export function storageKey() {
  * If storage exists from a previous visit to this puzzle, offer to reload.
  */
 export function checkLocalStorage() {
+    if (!CacheChangesInLocalStorage) {
+        return;
+    }
+
     // Each puzzle is cached within localStorage by its URL
     const key = storageKey();
     if (!isIFrame() && !isRestart() && key in localStorage){
@@ -1363,7 +1372,7 @@ function cancelLocalReload(hide:boolean) {
  * Overwrite the localStorage with the current cache structure
  */
 function saveCache(pingEdit:boolean) {
-    if (!reloading) {
+    if (!reloading && CacheChangesInLocalStorage) {
         localCache.time = new Date(); 
         localStorage.setItem(storageKey(), JSON.stringify(localCache));
 
@@ -7376,6 +7385,7 @@ let canSyncEvents = false;
 let _eventName:string|undefined = undefined;
 let _playerName:string|undefined = undefined;
 let _teamName:string|undefined = undefined;
+let _emojiAvatar:string|undefined = undefined;
 
 export function setupEventSync(syncKey?:string) {
   canSyncEvents = !!syncKey;
@@ -7433,19 +7443,23 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
 export type LoginInfo = {
   team: string,
   player: string,
+  emoji: string,
 }
 
 /**
  * Log in to an event
  * @param player The name of the player (required)
  * @param team The player's team name (optional)
+ * @param team The player's emoji avatar (optional)
  */
-function doLogin(player:string, team?:string) {
+function doLogin(player:string, team?:string, emoji?:string) {
   _playerName = player;
   _teamName = team;
+  _emojiAvatar = emoji;
   const info:LoginInfo = {
       player: player,
-      team: team || ''
+      team: team || '',
+      emoji: emoji || '',  // IDEA: initials
   };
   cacheLogin(_eventName, info);
   pingEventServer(EventSyncActivity.Open);
@@ -7457,7 +7471,7 @@ function doLogin(player:string, team?:string) {
  */
 function doLogout() {
   cacheLogin(_eventName, undefined);
-  _playerName = _teamName = undefined;
+  _playerName = _teamName = _emojiAvatar = undefined;
   updateLoginUI();
 }
 
@@ -7473,10 +7487,11 @@ function autoLogin() {
   if (info && (_playerName != info.player || _teamName != info?.team)) {
     _playerName = info.player;
     _teamName = info.team || '';  // if missing, player is solo
+    _emojiAvatar = info.emoji || '';
     pingEventServer(EventSyncActivity.Open);
   }
   else if (!info || !info.player) {
-    _playerName = _teamName = undefined;
+    _playerName = _teamName = _emojiAvatar = undefined;
   }
   updateLoginUI();
 }
@@ -7485,15 +7500,42 @@ function autoLogin() {
  * Ask the user for their username, and optionally team name (via @ suffix)
  * If they provide them, log them in.
  */
-function promptLogin() {
-  var text = 'Welcome to ' + _eventName + '.\n'
-    + 'Enter your name to login.\n'
-    + 'If you are on a team, enter as <your-name>@<team-name>\n'
-    + 'If not on a team, please try to pick a unique name';
-  var login = prompt(text)?.trim();
-  if (login) {
-    var splt = login.split('@').map(s => s.trim());
-    doLogin(splt[0], splt[1]);
+function promptLogin(login:boolean) {
+  dismissLogin();
+  const modal = document.createElement('div');
+  const content = document.createElement('div');
+  const close = document.createElement('span');
+  const iframe = document.createElement('iframe');
+  modal.id = 'modal-login';
+  toggleClass(content, 'modal-content', true);
+  toggleClass(close, 'modal-close', true);
+  close.appendChild(document.createTextNode("×"));
+  close.title = 'Close';
+  close.onclick = function(e) {dismissLogin()};
+  iframe.src = login ? 'LoginUI.xhtml?iframe' : 'LogoutUI.xhtml?iframe';
+  content.appendChild(close);
+  content.appendChild(iframe);
+  modal.appendChild(content);
+
+  document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
+  document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin()});
+
+  // var text = 'Welcome to ' + _eventName + '.\n'
+  //   + 'Enter your name to login.\n'
+  //   + 'If you are on a team, enter as <your-name>@<team-name>\n'
+  //   + 'If not on a team, please try to pick a unique name';
+  // var login = prompt(text)?.trim();
+  // if (login) {
+  //   var splt = login.split('@').map(s => s.trim());
+  //   doLogin(splt[0], splt[1]);
+  // }
+}
+
+function dismissLogin() {
+  var modal = document.getElementById('modal-login');
+  if (modal) {
+    document.getElementById('pageBody')?.removeChild(modal);
+    autoLogin();
   }
 }
 
@@ -7520,6 +7562,12 @@ function updateLoginUI() {
     img.id = 'Login-icon';
     div.appendChild(img);
   }
+  let avatar = document.getElementById('Login-avatar');
+  if (!avatar) {
+    avatar = document.createElement('span');
+    avatar.id = 'Login-avatar';
+    div.appendChild(avatar);
+  }
   let span = document.getElementById('Login-player');
   if (!span) {
     span = document.createElement('span');
@@ -7528,18 +7576,26 @@ function updateLoginUI() {
   }
 
   toggleClass(div, 'logged-in', !!_playerName);
+  toggleClass(div, 'avatar', !!_emojiAvatar);
   if (_playerName) {
     // Logged in
-    img.src = _teamName ? '../Icons/logged-in-team.png' : '../Icons/logged-in.png';
+    if (_emojiAvatar) {
+      avatar.innerText = _emojiAvatar;
+    }
+    else {
+      img.src = _teamName ? '../Icons/logged-in-team.png' : '../Icons/logged-in.png';
+      avatar.innerHTML = '';
+    }
     span.innerText = _teamName ? (_playerName + ' @ ' + _teamName) : _playerName;
     div.onclick = function(e) { promptLogout();};
     div.title = "Log out?";
   }
   else {
-    // Logged pit
+    // Logged oit
     img.src = '../Icons/logged-out.png';
+    avatar.innerHTML = '';
     span.innerText = "Login?";
-    div.onclick = function(e) { promptLogin();};
+    div.onclick = function(e) { promptLogin(true);};
     div.title = "Log in?";
   }
 }
@@ -8005,7 +8061,12 @@ function boilerplate(bp: BoilerPlateData) {
     body.appendChild(page);
     page.appendChild(margins);
     margins.appendChild(pageBody);
-    margins.appendChild(createSimpleDiv({cls:'title', text:bp.title}));
+    if (bp.title) {
+        margins.appendChild(createSimpleDiv({cls:'title', text:bp.title}));
+    }
+    else {
+        toggleClass(body, 'no-title', true);
+    }
     if (bp.copyright || bp.author) {
         margins.appendChild(createSimpleDiv({id:'copyright', text:'© ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
     }
@@ -9816,6 +9877,73 @@ function cloneWithContext(elmt:HTMLElement):Element {
 }
 
 /**
+ * Splitting a text string by character is complicated when emoji are involved.
+ * There are multiple ways glyphs can be combined or extended.
+ * @param str A plain text string
+ * @returns An array of strings that represent individual visible glyphs.
+ */
+export function splitEmoji(str:string):string[] {
+  const glyphs:string[] = [];
+  let joining = 0;
+  let prev = 0;
+  let code = 0;
+  for (let ch of str) {
+    // Track the current and previous characters
+    prev = code;
+    code = ch.length == 1 ? ch.charCodeAt(0)
+      : ch.length == 2 ? (0x10000 + (((ch.charCodeAt(0) & 0x3ff) << 10)  | (ch.charCodeAt(1) & 0x3ff)))
+      : -1;  // error
+
+    if (code < 0) {
+      // Expecting loop to always feed 1 UCS-4 character at a time
+      throw new ContextError('Unexpected unicode combination: ' + ch + ' at byte ' + (glyphs.join('').length) + ' in ' + str);
+    }
+    else if (code >= 0xd800 && code <= 0xdf00) {
+      // Half of surrogate pair
+      throw new ContextError('Unexpected half of unicode surrogate: ' + code.toString(16) + ' at byte ' + (glyphs.join('').length) + ' in ' + str);
+    }
+    else if (code >= 0x1f3fb && code <= 0x1f3ff) {
+      joining += 1;  // Fitzpatrick skin-tone modifier
+    }
+    else if (code >= 0xfe00 && code <= 0xfe0f) {
+      joining += 1;  // Variation selectors
+    }
+    else if (code == 0x200d) {
+      joining += 2;  // this character plus next
+    }
+    else if (code >= 0x1f1e6 && code <= 0x1f1ff) {
+      // Regional indicator symbols
+      if (prev >= 0x1f1e6 && prev <= 0x1f1ff && glyphs[glyphs.length - 1].length == 2) {
+        // Always come in pairs, so only join if the previous code was also one
+        // and that hasn't already built a pair. Note, a pair of these is length==4
+        joining += 1;
+      }
+    }
+    else if (code >= 0xe0001 && code <= 0xe007f) {
+      // Tags block
+      if (prev != 0xe007f) {  // Don't concat past a cancel tag
+        joining += 1;
+      }
+    }
+
+    if (joining > 0) {
+      joining--;
+      if (glyphs.length == 0) {
+        throw new ContextError('Unexpected unicode join character ' + code.toString(16) + ' at byte 0 of ' + str);
+      }
+      const cur = glyphs.pop();
+      ch = cur + ch;
+    }
+
+    glyphs.push(ch);
+  }
+  if (joining > 0) {
+    throw new Error('The final emoji sequence expected ' + joining + ' additional characters')
+  }  
+  return glyphs;
+}
+
+/**
  * Clone other node types, besides HTML elements and Text
  * @param node Original node
  * @returns A node to use in the clone
@@ -11337,73 +11465,6 @@ function parseForText(src:HTMLElement, delim:string):string[] {
     return splitEmoji(str);
   }
   return str.split(delim);
-}
-
-/**
- * Splitting a text string by character is complicated when emoji are involved.
- * There are multiple ways glyphs can be combined or extended.
- * @param str A plain text string
- * @returns An array of strings that represent individual visible glyphs.
- */
-export function splitEmoji(str:string):string[] {
-  const glyphs:string[] = [];
-  let joining = 0;
-  let prev = 0;
-  let code = 0;
-  for (let ch of str) {
-    // Track the current and previous characters
-    prev = code;
-    code = ch.length == 1 ? ch.charCodeAt(0)
-      : ch.length == 2 ? (0x10000 + (((ch.charCodeAt(0) & 0x3ff) << 10)  | (ch.charCodeAt(1) & 0x3ff)))
-      : -1;  // error
-
-    if (code < 0) {
-      // Expecting loop to always feed 1 UCS-4 character at a time
-      throw new ContextError('Unexpected unicode combination: ' + ch + ' at byte ' + (glyphs.join('').length) + ' in ' + str);
-    }
-    else if (code >= 0xd800 && code <= 0xdf00) {
-      // Half of surrogate pair
-      throw new ContextError('Unexpected half of unicode surrogate: ' + code.toString(16) + ' at byte ' + (glyphs.join('').length) + ' in ' + str);
-    }
-    else if (code >= 0x1f3fb && code <= 0x1f3ff) {
-      joining += 1;  // Fitzpatrick skin-tone modifier
-    }
-    else if (code >= 0xfe00 && code <= 0xfe0f) {
-      joining += 1;  // Variation selectors
-    }
-    else if (code == 0x200d) {
-      joining += 2;  // this character plus next
-    }
-    else if (code >= 0x1f1e6 && code <= 0x1f1ff) {
-      // Regional indicator symbols
-      if (prev >= 0x1f1e6 && prev <= 0x1f1ff && glyphs[glyphs.length - 1].length == 2) {
-        // Always come in pairs, so only join if the previous code was also one
-        // and that hasn't already built a pair. Note, a pair of these is length==4
-        joining += 1;
-      }
-    }
-    else if (code >= 0xe0001 && code <= 0xe007f) {
-      // Tags block
-      if (prev != 0xe007f) {  // Don't concat past a cancel tag
-        joining += 1;
-      }
-    }
-
-    if (joining > 0) {
-      joining--;
-      if (glyphs.length == 0) {
-        throw new ContextError('Unexpected unicode join character ' + code.toString(16) + ' at byte 0 of ' + str);
-      }
-      const cur = glyphs.pop();
-      ch = cur + ch;
-    }
-
-    glyphs.push(ch);
-  }
-  if (joining > 0) {
-    throw new Error('The final emoji sequence expected ' + joining + ' additional characters')
-  }  
-  return glyphs;
 }
 
 function parseForRange(src:HTMLElement):any {

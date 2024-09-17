@@ -473,7 +473,12 @@ function boilerplate(bp: BoilerPlateData) {
     body.appendChild(page);
     page.appendChild(margins);
     margins.appendChild(pageBody);
-    margins.appendChild(createSimpleDiv({cls:'title', text:bp.title}));
+    if (bp.title) {
+        margins.appendChild(createSimpleDiv({cls:'title', text:bp.title}));
+    }
+    else {
+        toggleClass(body, 'no-title', true);
+    }
     if (bp.copyright || bp.author) {
         margins.appendChild(createSimpleDiv({id:'copyright', text:'© ' + (bp.copyright || '') + ' ' + (bp.author || '')}));
     }

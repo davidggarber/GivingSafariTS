@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: 'gs24',
+        reactiveBuilder: 'pageBody',
+        paperSize: 'postcard',
+        postSetup: randomEmoji,
+        lookup: {
+
+        }
+      };
+
+      function max1emoji() {
+        var avatar = document.getElementById('avatar');
+        var chars = splitEmoji(avatar.value);
+        if (chars.length > 1) {
+          avatar.value = chars[chars.length - 1];
+        }
+      }
+      var emoji = "🍇🍈🍉🍊🍋🍌🍍🥭🍎🍏🍐🍑🍒🍓🫐🥝🍅🫒🥥🥑🍆🥔🥕🌽🌶️🫑🥒🥬🥦🧄🧅🥜🫘🌰🫚🫛🍞🥐🥖🫓🥨🥯🥞🧇🧀🍖🍗🥩🥓🍔🍟🍕🌭🥪🌮🌯🫔🥙🧆🥚🍳🥘🍲🫕🥣🥗🍿🧈🧂🥫🍱🍘🍙🍚🍛🍜🍝🍠🍢🍣🍤🍥🥮🍡🥟🥠🥡🦀🦞🦐🦑🦪🍦🍧🍨🍩🍪🎂🍰🧁🥧🍫🍬🍭🍮🍯🍼🥛☕🫖🍵🍶🍾🍷🍸🍹🍺🍻🥂🥃🫗🥤🧋🧃🧉🧊🫙"
+        + "🎃🎄🎆🎇🧨✨🎈🎉🎊🎋🎍🎎🎏🎐🎑🧧🎀🎁🎗️🎟️🎫🎖️🏆🏅⚽⚾🥎🏀🏐🏈🏉🎾🥏🎳🏏🏑🏒🥍🏓🏸🥊🥋🥅⛳⛸️🎣🤿🎽🎿🛷🥌🎯🪀🪁🔫🎱🔮🪄🎮🕹️🎰🎲🧩🧸🪅🪩🪆♟️🃏🀄🎴🎭🖼️🎨🧵🪡🧶🪢"
+        + "🐵🐒🦍🦧🐶🐕🦮🐕‍🦺🐩🐺🦊🦝🐱🐈🐈‍⬛🦁🐯🐅🐆🐴🫎🫏🐎🦄🦓🦌🦬🐮🐂🐃🐄🐷🐖🐗🐽🐏🐑🐐🐪🐫🦙🦒🐘🦣🦏🦛🐭🐁🐀🐹🐰🐇🐿️🦫🦔🦇🐻🐻‍❄️🐨🐼🦥🦦🦨🦘🦡🐾🦃🐔🐓🐣🐤🐥🐦🐧🕊️🦅🦆🦢🦉🦤🪶🦩🦚🦜🪽🐦‍⬛🪿🐸🐊🐢🦎🐍🐲🐉🦕🦖🐳🐋🐬🦭🐟🐠🐡🦈🐙🐚🪸🪼🐌🦋🐛🐜🐝🪲🐞🦗🪳🕷️🕸️🦂🦟🪰🪱🦠💐🌸💮🪷🏵️🌹🥀🌺🌻🌼🌷🪻🌱🪴🌲🌳🌴🌵🌾🌿☘️🍀🍁🍂🍃🪹🪺🍄";
+      function randomEmoji() {
+        var chars = splitEmoji(emoji);
+        var rand = parseInt(Math.random() * chars.length);
+        document.getElementById('avatar').value = chars[rand];
+      }
+
+      function validateName() {
+        var pName = document.getElementById('playerName')?.value || '';
+        if (pName.trim().length > 0) {
+          document.getElementById('login-button').removeAttribute('disabled');
+        }
+        else {
+          document.getElementById('login-button').setAttribute('disabled', true);
+        }
+      }
+
+      function login() {
+        var pName = document.getElementById('playerName').value;
+        var tName = document.getElementById('teamName').value;
+        var emoji = document.getElementById('avatar').value;
+        doLogin(pName, tName, emoji);
+        parent.dismissLogin();
+      }
+
+      function cancel() {
+        parent.dismissLogin();
+      }
+
+    </script>
+    <style>
+      body {
+        background-color: white;
+        overflow: hidden;
+      }
+      #login #Login-bar {
+        display: none;
+      }
+      #logo {
+        height: 1.1in;
+      }
+      #table {
+        margin: 0.5in 0.25in 0px 0.25in;
+      }
+      input {
+        font-size: 16pt;
+        width: 95%;
+      }
+      #avatar {
+        width: 0.75in;
+        font-size: 24pt;
+        text-align: center;
+      }
+      .avatar-top {
+        position: relative;
+        top: -16px;
+        cursor: help;
+      }
+      .avatar-middle {
+        position: relative;
+        top: -8px;
+      }
+      #login #page {
+        height: 2in;
+      }
+      button {
+        font-size: 16pt;
+      }
+      #bar {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 5in;
+        height: 28px;
+        font-size: 14pt;
+        background-color: rgb(45, 85, 164);
+        color: white;
+        padding: 4px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body id="login" class="">
+    <div id='pageBody'>
+      <div id="bar">
+        Log in to Giving Safari 24
+      </div>
+      <table id="table">
+        <tr>
+          <th style="width:1in;">Your name</th>
+          <td><input id="playerName" type="text" oninput="validateName()" /></td>
+          <td rowspan="3" style="vertical-align: top;">
+            <img id="logo" src="Images/GS24_logo.png" />            
+          </td>
+        </tr>
+        <tr>
+          <th>Emoji avatar</th>
+          <td><input id="avatar" type="text" oninput="max1emoji()" />
+              <sup class="avatar-top" title="Will be used in some group UI">⭐</sup>
+              <a class="avatar-middle" href="javascript:randomEmoji()">randomize!</a>
+          </td>
+        </tr>
+        <tr>
+          <th>Team name</th>
+          <td><input id="teamName" type="text" /></td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td colspan="2">
+            <i>Leave the team blank if you are playing solo.</i>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td style="text-align: center;">
+            <button id="login-button" onclick="login()" disabled="true">Login</button>
+            <button id="cancel-button" onclick="cancel()">Cancel</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

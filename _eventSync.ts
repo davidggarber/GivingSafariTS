@@ -16,6 +16,7 @@ let canSyncEvents = false;
 let _eventName:string|undefined = undefined;
 let _playerName:string|undefined = undefined;
 let _teamName:string|undefined = undefined;
+let _emojiAvatar:string|undefined = undefined;
 
 export function setupEventSync(syncKey?:string) {
   canSyncEvents = !!syncKey;
@@ -73,19 +74,23 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
 export type LoginInfo = {
   team: string,
   player: string,
+  emoji: string,
 }
 
 /**
  * Log in to an event
  * @param player The name of the player (required)
  * @param team The player's team name (optional)
+ * @param team The player's emoji avatar (optional)
  */
-function doLogin(player:string, team?:string) {
+function doLogin(player:string, team?:string, emoji?:string) {
   _playerName = player;
   _teamName = team;
+  _emojiAvatar = emoji;
   const info:LoginInfo = {
       player: player,
-      team: team || ''
+      team: team || '',
+      emoji: emoji || '',  // IDEA: initials
   };
   cacheLogin(_eventName, info);
   pingEventServer(EventSyncActivity.Open);
@@ -97,7 +102,7 @@ function doLogin(player:string, team?:string) {
  */
 function doLogout() {
   cacheLogin(_eventName, undefined);
-  _playerName = _teamName = undefined;
+  _playerName = _teamName = _emojiAvatar = undefined;
   updateLoginUI();
 }
 
@@ -113,10 +118,11 @@ function autoLogin() {
   if (info && (_playerName != info.player || _teamName != info?.team)) {
     _playerName = info.player;
     _teamName = info.team || '';  // if missing, player is solo
+    _emojiAvatar = info.emoji || '';
     pingEventServer(EventSyncActivity.Open);
   }
   else if (!info || !info.player) {
-    _playerName = _teamName = undefined;
+    _playerName = _teamName = _emojiAvatar = undefined;
   }
   updateLoginUI();
 }
@@ -125,15 +131,42 @@ function autoLogin() {
  * Ask the user for their username, and optionally team name (via @ suffix)
  * If they provide them, log them in.
  */
-function promptLogin() {
-  var text = 'Welcome to ' + _eventName + '.\n'
-    + 'Enter your name to login.\n'
-    + 'If you are on a team, enter as <your-name>@<team-name>\n'
-    + 'If not on a team, please try to pick a unique name';
-  var login = prompt(text)?.trim();
-  if (login) {
-    var splt = login.split('@').map(s => s.trim());
-    doLogin(splt[0], splt[1]);
+function promptLogin(login:boolean) {
+  dismissLogin();
+  const modal = document.createElement('div');
+  const content = document.createElement('div');
+  const close = document.createElement('span');
+  const iframe = document.createElement('iframe');
+  modal.id = 'modal-login';
+  toggleClass(content, 'modal-content', true);
+  toggleClass(close, 'modal-close', true);
+  close.appendChild(document.createTextNode("×"));
+  close.title = 'Close';
+  close.onclick = function(e) {dismissLogin()};
+  iframe.src = login ? 'LoginUI.xhtml?iframe' : 'LogoutUI.xhtml?iframe';
+  content.appendChild(close);
+  content.appendChild(iframe);
+  modal.appendChild(content);
+
+  document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
+  document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin()});
+
+  // var text = 'Welcome to ' + _eventName + '.\n'
+  //   + 'Enter your name to login.\n'
+  //   + 'If you are on a team, enter as <your-name>@<team-name>\n'
+  //   + 'If not on a team, please try to pick a unique name';
+  // var login = prompt(text)?.trim();
+  // if (login) {
+  //   var splt = login.split('@').map(s => s.trim());
+  //   doLogin(splt[0], splt[1]);
+  // }
+}
+
+function dismissLogin() {
+  var modal = document.getElementById('modal-login');
+  if (modal) {
+    document.getElementById('pageBody')?.removeChild(modal);
+    autoLogin();
   }
 }
 
@@ -160,6 +193,12 @@ function updateLoginUI() {
     img.id = 'Login-icon';
     div.appendChild(img);
   }
+  let avatar = document.getElementById('Login-avatar');
+  if (!avatar) {
+    avatar = document.createElement('span');
+    avatar.id = 'Login-avatar';
+    div.appendChild(avatar);
+  }
   let span = document.getElementById('Login-player');
   if (!span) {
     span = document.createElement('span');
@@ -168,18 +207,26 @@ function updateLoginUI() {
   }
 
   toggleClass(div, 'logged-in', !!_playerName);
+  toggleClass(div, 'avatar', !!_emojiAvatar);
   if (_playerName) {
     // Logged in
-    img.src = _teamName ? '../Icons/logged-in-team.png' : '../Icons/logged-in.png';
+    if (_emojiAvatar) {
+      avatar.innerText = _emojiAvatar;
+    }
+    else {
+      img.src = _teamName ? '../Icons/logged-in-team.png' : '../Icons/logged-in.png';
+      avatar.innerHTML = '';
+    }
     span.innerText = _teamName ? (_playerName + ' @ ' + _teamName) : _playerName;
     div.onclick = function(e) { promptLogout();};
     div.title = "Log out?";
   }
   else {
-    // Logged pit
+    // Logged oit
     img.src = '../Icons/logged-out.png';
+    avatar.innerHTML = '';
     span.innerText = "Login?";
-    div.onclick = function(e) { promptLogin();};
+    div.onclick = function(e) { promptLogin(true);};
     div.title = "Log in?";
   }
 }
