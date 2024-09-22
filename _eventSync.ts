@@ -33,7 +33,7 @@ export function setupEventSync(syncKey?:string) {
 }
 
 export async function pingEventServer(activity:EventSyncActivity, guess?:string) {
-  if (!canSyncEvents && _playerName) {
+  if (!canSyncEvents || !_playerName) {
     return;
   }
 
@@ -57,8 +57,45 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
       if (xhr.readyState === 4 /*DONE*/) {
         consoleTrace('Response: ' + xhr.responseText);
       }
-      else {
-        consoleTrace(`readyState=${xhr.readyState}, status=${xhr.status}`);
+    };
+    xhr.send(data);
+  }
+  catch (ex) {
+    console.error(ex);
+  }
+}
+
+export async function getTeamStatus(activity:EventSyncActivity, guess?:string) {
+  if (!canSyncEvents && _playerName) {
+    return;
+  }
+
+  const data = JSON.stringify({
+    eventName: _eventName,
+    player: _playerName,
+    team: _teamName,
+    puzzle: theBoiler().title,
+    status: activity,
+    data: guess || ''
+  });
+
+  try {
+    const xhr = new XMLHttpRequest();
+    var url = localSync ? "http://localhost:7071/api/TeamStatus"
+      : "https://puzzyleventsync.azurewebsites.net/api/TeamStatus";
+
+    xhr.open("POST", url, true /*async*/);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 /*DONE*/) {
+        consoleTrace('Response: ' + xhr.responseText);
+        
+
+        
+        // TODO: update team UI
+
+
+
       }
     };
     xhr.send(data);
@@ -143,23 +180,13 @@ function promptLogin(login:boolean) {
   close.appendChild(document.createTextNode("×"));
   close.title = 'Close';
   close.onclick = function(e) {dismissLogin()};
-  iframe.src = login ? 'LoginUI.xhtml?iframe' : 'LogoutUI.xhtml?iframe';
+  iframe.src = login ? 'LoginUI.xhtml?iframe&modal' : 'LoginUI.xhtml?iframe&modal&logout';
   content.appendChild(close);
   content.appendChild(iframe);
   modal.appendChild(content);
 
   document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
   document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin()});
-
-  // var text = 'Welcome to ' + _eventName + '.\n'
-  //   + 'Enter your name to login.\n'
-  //   + 'If you are on a team, enter as <your-name>@<team-name>\n'
-  //   + 'If not on a team, please try to pick a unique name';
-  // var login = prompt(text)?.trim();
-  // if (login) {
-  //   var splt = login.split('@').map(s => s.trim());
-  //   doLogin(splt[0], splt[1]);
-  // }
 }
 
 function dismissLogin() {
@@ -177,6 +204,19 @@ function promptLogout() {
   var ask = confirm('Log out?')
   if (ask) {
     doLogout();
+  }
+}
+
+/**
+ * The caller has a generic function, not knowing if we're currently logged in our out.
+ * Whichever we are, this prompts with an invitation to switch modes.
+ */
+export function promptLogInOrOut() {
+  if (_playerName) {
+    promptLogout();
+  }
+  else {
+    promptLogin(true);
   }
 }
 

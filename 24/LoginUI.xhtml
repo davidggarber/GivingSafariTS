@@ -8,13 +8,36 @@
     <script>
       const boiler = {
         safari: 'gs24',
+        reloadOnRefresh: false,
         reactiveBuilder: 'pageBody',
         paperSize: 'postcard',
+        preSetup: toggleLogout,
         postSetup: randomEmoji,
         lookup: {
 
         }
       };
+
+      function toggleLogout(toggle) {
+        var body = document.getElementById('login');
+        if (toggle) {
+          toggleClass(body, 'logout');
+        }
+        else if (urlArgExists('logout')) {
+          toggleClass(body, 'logout', true);
+        }
+
+        if (hasClass(body, 'logout')) {
+          document.getElementById('logout-player').innerText = _playerName;
+          document.getElementById('as-avatar').innerText = _emojiAvatar;
+          if (_teamName) {
+            document.getElementById('on-team-name').innerText = `On team ${_teamName}.`;
+          }
+          else {
+            document.getElementById('on-team-name').innerText = 'Playing solo.';
+          }
+        }
+      }
 
       function max1emoji() {
         var avatar = document.getElementById('avatar');
@@ -47,11 +70,35 @@
         var tName = document.getElementById('teamName').value;
         var emoji = document.getElementById('avatar').value;
         doLogin(pName, tName, emoji);
-        parent.dismissLogin();
+        if (urlArgExists('modal')) {
+          parent.dismissLogin();
+        }
+        else {
+          // Pivot UI to LogOut
+          toggleLogout(true);
+          // parent.onLogin();
+        }
+      }
+
+      function logout() {
+        doLogout();
+        if (urlArgExists('modal')) {
+          parent.dismissLogin();
+        }
+        else {
+          // Pivot UI to LogIn
+          toggleLogout(true);
+          // parent.onLogin();
+        }
       }
 
       function cancel() {
-        parent.dismissLogin();
+        if (urlArgExists('modal')) {
+          parent.dismissLogin();
+        }
+        else {
+          // parent.onLogin();
+        }
       }
 
     </script>
@@ -66,9 +113,20 @@
       #logo {
         height: 1.1in;
       }
-      #table {
+      #login-table {
         margin: 0.5in 0.25in 0px 0.25in;
       }
+      #logout-table {
+        display: none;
+        margin: 0.5in 0.25in 0px 0.25in;
+      }
+      .logout #login-table {
+        display: none;
+      }
+      .logout #logout-table {
+        display: block;
+      }
+
       input {
         font-size: 16pt;
         width: 95%;
@@ -93,7 +151,8 @@
       button {
         font-size: 16pt;
       }
-      #bar {
+
+      .titlebar {
         position: absolute;
         top: 0px;
         left: 0px;
@@ -105,14 +164,25 @@
         padding: 4px;
         text-align: center;
       }
+      .logout #login-titlebar {
+        display:none;
+      }
+      #logout-titlebar {
+        display:none;
+        background-color: rgb(164, 45, 45);
+      }
+      .logout #logout-titlebar {
+        display:block;
+      }
+
     </style>
   </head>
   <body id="login" class="">
     <div id='pageBody'>
-      <div id="bar">
+      <div id="login-titlebar" class="titlebar">
         Log in to Giving Safari 24
       </div>
-      <table id="table">
+      <table id="login-table">
         <tr>
           <th style="width:1in;">Your name</th>
           <td><input id="playerName" type="text" oninput="validateName()" /></td>
@@ -141,10 +211,35 @@
           <td></td>
           <td style="text-align: center;">
             <button id="login-button" onclick="login()" disabled="true">Login</button>
-            <button id="cancel-button" onclick="cancel()">Cancel</button>
+            <button onclick="cancel()">Cancel</button>
           </td>
         </tr>
       </table>
+
+      <div id="logout-titlebar" class="titlebar">
+        Log out of Giving Safari 24 ?
+      </div>
+      <table id="logout-table">
+        <tr>
+          <th style="width:3.25in;">You are logged in as <u id="logout-player"></u></th>
+          <td rowspan="3" style="vertical-align: top;">
+            <img id="logo" src="Images/GS24_logo.png" />            
+          </td>
+        </tr>
+        <tr>
+          <th>With emoji avatar <span id="as-avatar"></span></th>
+        </tr>
+        <tr>
+          <th id="on-team-name">On team</th>
+        </tr>
+        <tr>
+          <td colspan="2" style="text-align: center;">
+            <button onclick="logout()">Confirm Logout</button>
+            <button onclick="cancel()">Cancel</button>
+          </td>
+        </tr>
+      </table>
+
     </div>
   </body>
 </html>

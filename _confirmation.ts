@@ -549,10 +549,12 @@ declare let validation: object | undefined;
  * @returns The page's boiler, if any. Else undefined.
  */
 function pageValidation():object | undefined {
+    // validation can be a standalone global variable, defined in another .js
     if (typeof validation !== 'undefined') {
         return validation as object;
     }
-    return undefined;
+    // Or it can be a member of the boilerplate
+    return theBoiler().validation;
 }
 
 let _validation: object|undefined;

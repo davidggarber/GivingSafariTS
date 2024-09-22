@@ -384,13 +384,7 @@ export function afterInputUpdate(input:TextInputElement, key:string) {
     
     ExtractFromInput(input);
     
-    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
-    if (showReady) {
-        const btn = document.getElementById(showReady) as HTMLButtonElement;
-        if (btn) {
-            validateInputReady(btn, key);
-        }    
-    }
+    CheckValidationReady(input, key);
 
     if (!multiLetter) {
         if (isTextInputElement(nextInput)) {
@@ -422,6 +416,21 @@ export function afterInputUpdate(input:TextInputElement, key:string) {
     }
     if (isTag(input, 'input')) {
         inputChangeCallback(input as HTMLInputElement, key);
+    }
+}
+
+/**
+ * If this input is hooked up to a validation button, see if it's now ready.
+ * @param input The input that just changed.
+ * @param key The most recent key that was typed
+ */
+function CheckValidationReady(input:TextInputElement, key:string) {
+    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
+    if (showReady) {
+        const btn = document.getElementById(showReady) as HTMLButtonElement;
+        if (btn) {
+            validateInputReady(btn, key);
+        }    
     }
 }
 
@@ -789,6 +798,7 @@ export function onWordKey(event:KeyboardEvent) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         updateWordExtraction(extractId);
     }
+    CheckValidationReady(input, event.key);
 
     var code = event.code;
     if (code == 'Enter') {

@@ -124,6 +124,11 @@ export function isIcon() {
  * @returns true if this page's URL contains a restart argument (other than =false)
  */
 export function isRestart() {
+    // An individual puzzle can set rules
+    if (theBoiler().reloadOnRefresh !== undefined) {
+        return !theBoiler().reloadOnRefresh;
+    }
+    // Otherwise, url args can skip the UI
     return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
 }
 
@@ -132,9 +137,15 @@ export function isRestart() {
  * @returns 
  */
 export function forceReload(): boolean|undefined {
+    // An individual puzzle can set rules
+    if (theBoiler().reloadOnRefresh !== undefined) {
+        return theBoiler().reloadOnRefresh;
+    }
+    // Otherwise, url args can skip the UI
     if (urlArgs['reload'] != undefined) {
         return urlArgs['reload'] !== false;
     }
+    // Undefined invites a popup UI
     return undefined;
 }
 
@@ -170,7 +181,8 @@ export type BoilerPlateData = {
     printAsColor?: boolean;  // true=color, false=grayscale, unset=unmentioned
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
-    tableBuilder?: TableDetails;  // Arguments to table-generate the page content
+    validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
+    tableBuilder?: TableDetails;  // Arguments to table-generate the page content (DEPRECATE)
     reactiveBuilder?: boolean|string;  // invoke the new reactive builder
     lookup?: object;  // a dictionary of json data available to builder code
     postBuild?: () => void;  // invoked after the builder is done
@@ -182,6 +194,7 @@ export type BoilerPlateData = {
     onInputChange?: (inp:TextInputElement) => void;
     onStampChange?: (newTool:string, prevTool:string) => void;
     onStamp?: (stampTarget:HTMLElement) => void;
+    reloadOnRefresh?: boolean;  // set to true to always reload, or false to always restart. undefined invites a UI.
     onRestore?: () => void;
 }
 

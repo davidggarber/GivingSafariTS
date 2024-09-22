@@ -110,7 +110,7 @@ export function checkLocalStorage() {
             }
             if (!empty) {
                 const force = forceReload();
-                if (force == undefined) {
+                if (force === undefined) {
                     createReloadUI(checkStorage.time);
                 }
                 else if (force) {

@@ -5,8 +5,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.isKeyboardFocusElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = void 0;
-exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = void 0;
+exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.promptLogInOrOut = exports.getTeamStatus = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = void 0;
+exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = void 0;
+exports.renderDiffs = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -1065,7 +1066,7 @@ function checkLocalStorage() {
             }
             if (!empty) {
                 const force = forceReload();
-                if (force == undefined) {
+                if (force === undefined) {
                     createReloadUI(checkStorage.time);
                 }
                 else if (force) {
@@ -2483,13 +2484,7 @@ function afterInputUpdate(input, key) {
     }
     input.value = text;
     ExtractFromInput(input);
-    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
-    if (showReady) {
-        const btn = document.getElementById(showReady);
-        if (btn) {
-            validateInputReady(btn, key);
-        }
-    }
+    CheckValidationReady(input, key);
     if (!multiLetter) {
         if (isTextInputElement(nextInput)) {
             if (overflow.length > 0 && nextInput.value.length == 0) {
@@ -2523,6 +2518,20 @@ function afterInputUpdate(input, key) {
     }
 }
 exports.afterInputUpdate = afterInputUpdate;
+/**
+ * If this input is hooked up to a validation button, see if it's now ready.
+ * @param input The input that just changed.
+ * @param key The most recent key that was typed
+ */
+function CheckValidationReady(input, key) {
+    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
+    if (showReady) {
+        const btn = document.getElementById(showReady);
+        if (btn) {
+            validateInputReady(btn, key);
+        }
+    }
+}
 /**
  * Extract contents of an extract-flagged input
  * @param input an input field
@@ -2859,6 +2868,7 @@ function onWordKey(event) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         updateWordExtraction(extractId);
     }
+    CheckValidationReady(input, event.key);
     var code = event.code;
     if (code == 'Enter') {
         code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
@@ -6662,7 +6672,7 @@ function setupEventSync(syncKey) {
 }
 exports.setupEventSync = setupEventSync;
 async function pingEventServer(activity, guess) {
-    if (!canSyncEvents && _playerName) {
+    if (!canSyncEvents || !_playerName) {
         return;
     }
     const data = JSON.stringify({
@@ -6694,6 +6704,39 @@ async function pingEventServer(activity, guess) {
     }
 }
 exports.pingEventServer = pingEventServer;
+async function getTeamStatus(activity, guess) {
+    if (!canSyncEvents && _playerName) {
+        return;
+    }
+    const data = JSON.stringify({
+        eventName: _eventName,
+        player: _playerName,
+        team: _teamName,
+        puzzle: theBoiler().title,
+        status: activity,
+        data: guess || ''
+    });
+    try {
+        const xhr = new XMLHttpRequest();
+        var url = localSync ? "http://localhost:7071/api/PuzzlePing"
+            : "https://puzzyleventsync.azurewebsites.net/api/PuzzlePing";
+        xhr.open("POST", url, true /*async*/);
+        xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 /*DONE*/) {
+                consoleTrace('Response: ' + xhr.responseText);
+            }
+            else {
+                consoleTrace(`readyState=${xhr.readyState}, status=${xhr.status}`);
+            }
+        };
+        xhr.send(data);
+    }
+    catch (ex) {
+        console.error(ex);
+    }
+}
+exports.getTeamStatus = getTeamStatus;
 /**
  * Log in to an event
  * @param player The name of the player (required)
@@ -6757,21 +6800,12 @@ function promptLogin(login) {
     close.appendChild(document.createTextNode("×"));
     close.title = 'Close';
     close.onclick = function (e) { dismissLogin(); };
-    iframe.src = login ? 'LoginUI.xhtml?iframe' : 'LogoutUI.xhtml?iframe';
+    iframe.src = login ? 'LoginUI.xhtml?iframe&modal' : 'LoginUI.xhtml?iframe&modal&logout';
     content.appendChild(close);
     content.appendChild(iframe);
     modal.appendChild(content);
     document.getElementById('pageBody')?.appendChild(modal); // first child of <body>
     document.getElementById('pageBody')?.addEventListener('click', function (event) { dismissLogin(); });
-    // var text = 'Welcome to ' + _eventName + '.\n'
-    //   + 'Enter your name to login.\n'
-    //   + 'If you are on a team, enter as <your-name>@<team-name>\n'
-    //   + 'If not on a team, please try to pick a unique name';
-    // var login = prompt(text)?.trim();
-    // if (login) {
-    //   var splt = login.split('@').map(s => s.trim());
-    //   doLogin(splt[0], splt[1]);
-    // }
 }
 function dismissLogin() {
     var modal = document.getElementById('modal-login');
@@ -6789,6 +6823,19 @@ function promptLogout() {
         doLogout();
     }
 }
+/**
+ * The caller has a generic function, not knowing if we're currently logged in our out.
+ * Whichever we are, this prompts with an invitation to switch modes.
+ */
+function promptLogInOrOut() {
+    if (_playerName) {
+        promptLogout();
+    }
+    else {
+        promptLogin(true);
+    }
+}
+exports.promptLogInOrOut = promptLogInOrOut;
 function updateLoginUI() {
     let div = document.getElementById('Login-bar');
     if (!div) {
@@ -6940,6 +6987,11 @@ exports.isIcon = isIcon;
  * @returns true if this page's URL contains a restart argument (other than =false)
  */
 function isRestart() {
+    // An individual puzzle can set rules
+    if (theBoiler().reloadOnRefresh !== undefined) {
+        return !theBoiler().reloadOnRefresh;
+    }
+    // Otherwise, url args can skip the UI
     return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
 }
 exports.isRestart = isRestart;
@@ -6948,9 +7000,15 @@ exports.isRestart = isRestart;
  * @returns
  */
 function forceReload() {
+    // An individual puzzle can set rules
+    if (theBoiler().reloadOnRefresh !== undefined) {
+        return theBoiler().reloadOnRefresh;
+    }
+    // Otherwise, url args can skip the UI
     if (urlArgs['reload'] != undefined) {
         return urlArgs['reload'] !== false;
     }
+    // Undefined invites a popup UI
     return undefined;
 }
 exports.forceReload = forceReload;
@@ -8019,10 +8077,12 @@ function rot13(source) {
  * @returns The page's boiler, if any. Else undefined.
  */
 function pageValidation() {
+    // validation can be a standalone global variable, defined in another .js
     if (typeof validation !== 'undefined') {
         return validation;
     }
-    return undefined;
+    // Or it can be a member of the boilerplate
+    return theBoiler().validation;
 }
 let _validation;
 /**

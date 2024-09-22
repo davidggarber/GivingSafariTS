@@ -1215,7 +1215,7 @@ export function checkLocalStorage() {
             }
             if (!empty) {
                 const force = forceReload();
-                if (force == undefined) {
+                if (force === undefined) {
                     createReloadUI(checkStorage.time);
                 }
                 else if (force) {
@@ -2702,13 +2702,7 @@ export function afterInputUpdate(input:TextInputElement, key:string) {
     
     ExtractFromInput(input);
     
-    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
-    if (showReady) {
-        const btn = document.getElementById(showReady) as HTMLButtonElement;
-        if (btn) {
-            validateInputReady(btn, key);
-        }    
-    }
+    CheckValidationReady(input, key);
 
     if (!multiLetter) {
         if (isTextInputElement(nextInput)) {
@@ -2740,6 +2734,21 @@ export function afterInputUpdate(input:TextInputElement, key:string) {
     }
     if (isTag(input, 'input')) {
         inputChangeCallback(input as HTMLInputElement, key);
+    }
+}
+
+/**
+ * If this input is hooked up to a validation button, see if it's now ready.
+ * @param input The input that just changed.
+ * @param key The most recent key that was typed
+ */
+function CheckValidationReady(input:TextInputElement, key:string) {
+    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
+    if (showReady) {
+        const btn = document.getElementById(showReady) as HTMLButtonElement;
+        if (btn) {
+            validateInputReady(btn, key);
+        }    
     }
 }
 
@@ -3107,6 +3116,7 @@ export function onWordKey(event:KeyboardEvent) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         updateWordExtraction(extractId);
     }
+    CheckValidationReady(input, event.key);
 
     var code = event.code;
     if (code == 'Enter') {
@@ -7402,6 +7412,42 @@ export function setupEventSync(syncKey?:string) {
 }
 
 export async function pingEventServer(activity:EventSyncActivity, guess?:string) {
+  if (!canSyncEvents || !_playerName) {
+    return;
+  }
+
+  const data = JSON.stringify({
+    eventName: _eventName,
+    player: _playerName,
+    team: _teamName,
+    puzzle: theBoiler().title,
+    status: activity,
+    data: guess || ''
+  });
+
+  try {
+    const xhr = new XMLHttpRequest();
+    var url = localSync ? "http://localhost:7071/api/PuzzlePing"
+      : "https://puzzyleventsync.azurewebsites.net/api/PuzzlePing";
+
+    xhr.open("POST", url, true /*async*/);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 /*DONE*/) {
+        consoleTrace('Response: ' + xhr.responseText);
+      }
+      else {
+        consoleTrace(`readyState=${xhr.readyState}, status=${xhr.status}`);
+      }
+    };
+    xhr.send(data);
+  }
+  catch (ex) {
+    console.error(ex);
+  }
+}
+
+export async function getTeamStatus(activity:EventSyncActivity, guess?:string) {
   if (!canSyncEvents && _playerName) {
     return;
   }
@@ -7512,23 +7558,13 @@ function promptLogin(login:boolean) {
   close.appendChild(document.createTextNode("×"));
   close.title = 'Close';
   close.onclick = function(e) {dismissLogin()};
-  iframe.src = login ? 'LoginUI.xhtml?iframe' : 'LogoutUI.xhtml?iframe';
+  iframe.src = login ? 'LoginUI.xhtml?iframe&modal' : 'LoginUI.xhtml?iframe&modal&logout';
   content.appendChild(close);
   content.appendChild(iframe);
   modal.appendChild(content);
 
   document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
   document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin()});
-
-  // var text = 'Welcome to ' + _eventName + '.\n'
-  //   + 'Enter your name to login.\n'
-  //   + 'If you are on a team, enter as <your-name>@<team-name>\n'
-  //   + 'If not on a team, please try to pick a unique name';
-  // var login = prompt(text)?.trim();
-  // if (login) {
-  //   var splt = login.split('@').map(s => s.trim());
-  //   doLogin(splt[0], splt[1]);
-  // }
 }
 
 function dismissLogin() {
@@ -7546,6 +7582,19 @@ function promptLogout() {
   var ask = confirm('Log out?')
   if (ask) {
     doLogout();
+  }
+}
+
+/**
+ * The caller has a generic function, not knowing if we're currently logged in our out.
+ * Whichever we are, this prompts with an invitation to switch modes.
+ */
+export function promptLogInOrOut() {
+  if (_playerName) {
+    promptLogout();
+  }
+  else {
+    promptLogin(true);
   }
 }
 
@@ -7712,6 +7761,11 @@ export function isIcon() {
  * @returns true if this page's URL contains a restart argument (other than =false)
  */
 export function isRestart() {
+    // An individual puzzle can set rules
+    if (theBoiler().reloadOnRefresh !== undefined) {
+        return !theBoiler().reloadOnRefresh;
+    }
+    // Otherwise, url args can skip the UI
     return urlArgs['restart'] != undefined && urlArgs['restart'] !== false;
 }
 
@@ -7720,9 +7774,15 @@ export function isRestart() {
  * @returns 
  */
 export function forceReload(): boolean|undefined {
+    // An individual puzzle can set rules
+    if (theBoiler().reloadOnRefresh !== undefined) {
+        return theBoiler().reloadOnRefresh;
+    }
+    // Otherwise, url args can skip the UI
     if (urlArgs['reload'] != undefined) {
         return urlArgs['reload'] !== false;
     }
+    // Undefined invites a popup UI
     return undefined;
 }
 
@@ -7758,7 +7818,8 @@ export type BoilerPlateData = {
     printAsColor?: boolean;  // true=color, false=grayscale, unset=unmentioned
     abilities?: AbilityData;  // booleans for various UI affordances
     pathToRoot?: string;  // By default, '.'
-    tableBuilder?: TableDetails;  // Arguments to table-generate the page content
+    validation?: object;  // a dictionary of input fields mapped to dictionaries of encoded inputs and encoded responses
+    tableBuilder?: TableDetails;  // Arguments to table-generate the page content (DEPRECATE)
     reactiveBuilder?: boolean|string;  // invoke the new reactive builder
     lookup?: object;  // a dictionary of json data available to builder code
     postBuild?: () => void;  // invoked after the builder is done
@@ -7770,6 +7831,7 @@ export type BoilerPlateData = {
     onInputChange?: (inp:TextInputElement) => void;
     onStampChange?: (newTool:string, prevTool:string) => void;
     onStamp?: (stampTarget:HTMLElement) => void;
+    reloadOnRefresh?: boolean;  // set to true to always reload, or false to always restart. undefined invites a UI.
     onRestore?: () => void;
 }
 
@@ -8972,10 +9034,12 @@ declare let validation: object | undefined;
  * @returns The page's boiler, if any. Else undefined.
  */
 function pageValidation():object | undefined {
+    // validation can be a standalone global variable, defined in another .js
     if (typeof validation !== 'undefined') {
         return validation as object;
     }
-    return undefined;
+    // Or it can be a member of the boilerplate
+    return theBoiler().validation;
 }
 
 let _validation: object|undefined;
