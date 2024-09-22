@@ -3,7 +3,7 @@
   font-weight: normal;
 }
 
-th {
+.table th {
   background-color: #4472C4;
 }
 #sortHeader th {
@@ -24,7 +24,7 @@ th {
   background-color: #8d8;
 }
 
-td {
+.table td {
   position: relative;
   line-height: 8pt;
   padding: 0px;
@@ -46,6 +46,14 @@ td {
   width: 1.5in; 
   position: relative;
   text-align: left; 
+}
+
+.completed {
+  padding-right: 30px;
+}
+.completed .teammate {
+  font-size: 16pt;
+  text-shadow: 0 0 2px white, 0 0 1px white, 0 0 6px lime;
 }
 
 tr.solved .checkmark {

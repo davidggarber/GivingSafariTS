@@ -168,8 +168,9 @@ function autoLogin() {
  * Ask the user for their username, and optionally team name (via @ suffix)
  * If they provide them, log them in.
  */
-function promptLogin(login:boolean) {
-  dismissLogin();
+function promptLogin(evt:MouseEvent, login:boolean) {
+  evt.stopPropagation();
+  dismissLogin(null);
   const modal = document.createElement('div');
   const content = document.createElement('div');
   const close = document.createElement('span');
@@ -179,28 +180,32 @@ function promptLogin(login:boolean) {
   toggleClass(close, 'modal-close', true);
   close.appendChild(document.createTextNode("×"));
   close.title = 'Close';
-  close.onclick = function(e) {dismissLogin()};
+  close.onclick = function(e) {dismissLogin(e)};
   iframe.src = login ? 'LoginUI.xhtml?iframe&modal' : 'LoginUI.xhtml?iframe&modal&logout';
   content.appendChild(close);
   content.appendChild(iframe);
   modal.appendChild(content);
 
   document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
-  document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin()});
+  document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin(event)});
 }
 
-function dismissLogin() {
+function dismissLogin(evt:MouseEvent|null) {
   var modal = document.getElementById('modal-login');
   if (modal) {
     document.getElementById('pageBody')?.removeChild(modal);
     autoLogin();
+  }
+  if (evt) {
+    evt.stopPropagation();
   }
 }
 
 /**
  * Ask the user if they want to log out. If they confirm, clear their cached login.
  */
-function promptLogout() {
+function promptLogout(evt:MouseEvent) {
+  evt.stopPropagation();
   var ask = confirm('Log out?')
   if (ask) {
     doLogout();
@@ -211,12 +216,12 @@ function promptLogout() {
  * The caller has a generic function, not knowing if we're currently logged in our out.
  * Whichever we are, this prompts with an invitation to switch modes.
  */
-export function promptLogInOrOut() {
+export function promptLogInOrOut(evt:MouseEvent) {
   if (_playerName) {
-    promptLogout();
+    promptLogout(evt);
   }
   else {
-    promptLogin(true);
+    promptLogin(evt, true);
   }
 }
 
@@ -258,7 +263,7 @@ function updateLoginUI() {
       avatar.innerHTML = '';
     }
     span.innerText = _teamName ? (_playerName + ' @ ' + _teamName) : _playerName;
-    div.onclick = function(e) { promptLogout();};
+    div.onclick = function(e) { promptLogout(e);};
     div.title = "Log out?";
   }
   else {
@@ -266,7 +271,7 @@ function updateLoginUI() {
     img.src = '../Icons/logged-out.png';
     avatar.innerHTML = '';
     span.innerText = "Login?";
-    div.onclick = function(e) { promptLogin(true);};
+    div.onclick = function(e) { promptLogin(e, true);};
     div.title = "Log in?";
   }
 }

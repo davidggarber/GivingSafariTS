@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <script> var exports = {}; </script>
     <script src="../js/kit24.js" />
-    <link href="index.css" rel="Stylesheet" type="text/css" />
+    <link href="menu.css" rel="Stylesheet" type="text/css" />
     <script src="puzzle_list.js" />
     <script src="index_utils.js" />
     <script>
@@ -18,7 +18,7 @@
           textInput: 'nearest',
         },
         postSetup: setupSolvables,
-        reactiveBuilder: true,
+        reactiveBuilder: 'pageBody',
         lookup: {
           puzzles: puzzles,
           metas: metas,
@@ -26,6 +26,7 @@
           submitable: false,
           solvable: true,
           table_cols: 5,
+          teammates: splitEmoji("❤️🦖🏎️🌵🤖"),
         },
       };
 
@@ -93,18 +94,15 @@
     </script>
     <style>
       #Menu #Login-bar {
-        left: 7in;
-        top: 3.75in;
+        position: relative;
         font-size: 14pt;
+        margin: 0.25in;
       }
       #Menu #Login-icon {
         height: 36px;
       }
 
       #meta-table {
-        position: absolute;
-        left: 7in;
-        top: 4.5in;
         width: 4.6in;
       }
       #meta-table .html {
@@ -115,133 +113,147 @@
   <body id="Menu">
     <div id="pageBody">
 
-      <build>
-        <ttable id="puz-table" class="table" style="border-collapse: collapse">
-          <tthead>
-            <ttr style="text-align: center;">
-              <tth colspan="{table_cols}" class="title-font" style="text-align: center; position: relative;">
-                Giving Safari 2024
-                <img src="Images/GS24_logo.png" style="position:absolute; right: -4in; width: 3.75in;" />
-              </tth>
-            </ttr>
-            <ttr id="sortHeader">
-              <tth class="icons" onclick="sortTable(this)">Type</tth>
-              <tth class="html" onclick="sortTable(this)">Puzzle</tth>
-              <if test="{feeders}">
-                <tth class="feeders" onclick="sortTable(this)">Feeder</tth>
-              </if>
-              <tth class="author" onclick="sortTable(this)">Author</tth>
-              <if test="{submitable}">
-                <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
-              </if>
-            </ttr>    
-          </tthead>
-
-          <ttbody id="puzzle_list">
-            <for each="puz" in="puzzles">
-              <if test="puz.group" ne="meta">
-                <ttr id="{puz.file}" class="sortable">
-                  <ttd class="icons">
-                    <if exists="{puz.icon}">
-                      <img ssrc="Icons/{puz.icon}.png" />
-                    </if>
-                    <if notex="{puz.icon}">
-                      <img ssrc="Icons/{puz.type.icon}.png" title="{puz.type.alt}" />
-                    </if>
-                  </ttd>
-                  <ttd class="html">
-                    <a class="hover" href="{puz.href}" target="_blank">
-                      {puz.title}
-                      <if exists="{puz.thumb}">
-                        <img class="thumb" ssrc="Thumbs/{puz.thumb}.png" />
-                      </if>
-                    </a>
-                  </ttd>
-                  <if test="{feeders}">
-                    <ttd class="feeders">
-                      <for each="feed" in="{puz.feeder}">
-                        <a class="feedLink {metas.[feed.meta].store}-{feed.number}" target="_blank" title="{metas.[feed.meta].title} - Materials #{feed.number} (locked)" trim="all">
-                          <img ssrc="{metas.[feed.meta].icon}" /><sub>{feed.number + 1}</sub>
-                        </a>
-                      </for>  
-                    </ttd>
-                  </if>
-                  <ttd class="authors">
-                    {puz.author}
-                    <span class="checkmark" />
-                  </ttd>
-                  <if test="{submitable}">
-                    <ttd class="submital"></ttd>
-                  </if>
+      <ttable id="side-by-side">
+        <tr>
+          <td>
+            <ttable id="puz-table" class="table" style="border-collapse: collapse">
+              <tthead>
+                <ttr style="text-align: center;">
+                  <tth colspan="{table_cols}" class="title-font" style="text-align: center; position: relative;">
+                    Giving Safari 2024
+                  </tth>
                 </ttr>
-              </if>
-            </for>
-          </ttbody>
-        </ttable>
+                <ttr id="sortHeader">
+                  <tth class="icons" onclick="sortTable(this)">Type</tth>
+                  <tth class="html" onclick="sortTable(this)">Puzzle</tth>
+                  <if test="{feeders}">
+                    <tth class="feeders" onclick="sortTable(this)">Feeder</tth>
+                  </if>
+                  <tth class="author" onclick="sortTable(this)">Author</tth>
+                  <tth class="completed" onclick="sortTable(this)">&nbsp;</tth>
+                  <if test="{submitable}">
+                    <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
+                  </if>
+                </ttr>    
+              </tthead>
 
-        <div id="meta-table">
-          <ttable class="table" style="border-collapse: collapse">
-            <ttfoot id="meta_list">
-              <ttr>
-                <tth>&nbsp;</tth>
-                <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
-                <tth class="author" style="text-align: left;">Author</tth>
-                <if test="{submitable}">
-                  <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
-                </if>
-              </ttr>    
-              <for each="puz" in="{puzzles}">
-                <if test="puz.group" eq="meta">
-                  <ttr id="{puz.file}">
-                    <ttd class="icons">
-                      <img ssrc="{metas.[puz.metaInfo].icon}"/>
-                    </ttd>
-                    <ttd class="html">
-                      <a class="hover" href="{puz.href}" target="_blank">
-                        {puz.title}
-                        <if exists="{puz.thumb}">
-                          <img class="thumb" ssrc="Thumbs/{puz.thumb}.png" />
+              <ttbody id="puzzle_list">
+                <for each="puz" in="puzzles">
+                  <if test="puz.group" ne="meta">
+                    <ttr id="{puz.file}" class="sortable">
+                      <ttd class="icons">
+                        <if exists="{puz.icon}">
+                          <img ssrc="Icons/{puz.icon}.png" />
                         </if>
-                      </a>
-                    </ttd>
-                    <ttd class="authors">
-                      {puz.author}
-                      <span class="checkmark" />
-                    </ttd>
-                    <if test="{submitable}">
-                      <ttd class="submital"></ttd>
-                    </if>
-                  </ttr>
-                  <ttr>
-                    <ttd>&nbsp;</ttd>
-                    <ttd class="feeders">
-                      <for int="num" until="4">
-                        <a class="feedLink {metas.[puz.metaInfo].store}-{num}" target="_blank" title="Materials #{num} (locked)" trim="all">
-                          <img ssrc="{metas.[puz.metaInfo].icon}" /><sub>{num+1}</sub>
+                        <if notex="{puz.icon}">
+                          <img ssrc="Icons/{puz.type.icon}.png" title="{puz.type.alt}" />
+                        </if>
+                      </ttd>
+                      <ttd class="html">
+                        <a class="hover" href="{puz.href}" target="_blank">
+                          {puz.title}
+                          <if exists="{puz.thumb}">
+                            <img class="thumb" ssrc="Thumbs/{puz.thumb}.png" />
+                          </if>
                         </a>
-                      </for>  
-                    </ttd>
-                    <ttd>
-    <!--
-                      <if exists="{puz.forget?}">
-                        <a href="{puz.forget}" target="_blank" style="font-size: smaller;">Forget materials</a>
+                      </ttd>
+                      <if test="{feeders}">
+                        <ttd class="feeders">
+                          <for each="feed" in="{puz.feeder}">
+                            <a class="feedLink {metas.[feed.meta].store}-{feed.number}" target="_blank" title="{metas.[feed.meta].title} - Materials #{feed.number} (locked)" trim="all">
+                              <img ssrc="{metas.[feed.meta].icon}" /><sub>{feed.number + 1}</sub>
+                            </a>
+                          </for>  
+                        </ttd>
                       </if>
-    -->
-                    </ttd>
-                    <if test="{submitable}">
-                      <ttd class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></ttd>
-                    </if>
-                  </ttr>
-                </if>
-              </for>
-            </ttfoot>
-          </ttable>
+                      <ttd class="authors">
+                        {puz.author}
+                      </ttd>
+                      <ttd class="completed">
+<!--
+  <span class="teammate" title="Bob">{teammates.[puz#%5]}</span>
+  -->                        
+                        <span class="checkmark" />
+                      </ttd>
+                      <if test="{submitable}">
+                        <ttd class="submital"></ttd>
+                      </if>
+                    </ttr>
+                  </if>
+                </for>
+              </ttbody>
+            </ttable>
+          </td>
+          <td style="width: 10px;">&nbsp;</td>
+          <td style="vertical-align: top;">
 
-          <p>To reset local saved progress in this event, click <a href="Forget_all_progress.xhtml">HERE</a>.</p>
+            <img src="Images/GS24_logo.png" style="width: 3.75in;" />
 
-        </div>
+            <div id="Login-bar"></div>
 
-      </build>
+
+            <ttable id="meta-table" class="table" style="border-collapse: collapse">
+              <ttfoot id="meta_list">
+                <ttr>
+                  <tth>&nbsp;</tth>
+                  <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
+                  <tth class="author" style="text-align: left;">Author</tth>
+                  <if test="{submitable}">
+                    <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
+                  </if>
+                </ttr>    
+                <for each="puz" in="{puzzles}">
+                  <if test="puz.group" eq="meta">
+                    <ttr id="{puz.file}">
+                      <ttd class="icons">
+                        <img ssrc="{metas.[puz.metaInfo].icon}"/>
+                      </ttd>
+                      <ttd class="html">
+                        <a class="hover" href="{puz.href}" target="_blank">
+                          {puz.title}
+                          <if exists="{puz.thumb}">
+                            <img class="thumb" ssrc="Thumbs/{puz.thumb}.png" />
+                          </if>
+                        </a>
+                      </ttd>
+                      <ttd class="authors">
+                        {puz.author}
+                        <span class="checkmark" />
+                      </ttd>
+                      <if test="{submitable}">
+                        <ttd class="submital"></ttd>
+                      </if>
+                    </ttr>
+                    <ttr>
+                      <ttd>&nbsp;</ttd>
+                      <ttd class="feeders">
+                        <for int="num" until="4">
+                          <a class="feedLink {metas.[puz.metaInfo].store}-{num}" target="_blank" title="Materials #{num} (locked)" trim="all">
+                            <img ssrc="{metas.[puz.metaInfo].icon}" /><sub>{num+1}</sub>
+                          </a>
+                        </for>  
+                      </ttd>
+                      <ttd>
+      <!--
+                        <if exists="{puz.forget?}">
+                          <a href="{puz.forget}" target="_blank" style="font-size: smaller;">Forget materials</a>
+                        </if>
+      -->
+                      </ttd>
+                      <if test="{submitable}">
+                        <ttd class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></ttd>
+                      </if>
+                    </ttr>
+                  </if>
+                </for>
+              </ttfoot>
+            </ttable>
+
+            <p>To reset local saved progress in this event, click <a href="Forget_all_progress.xhtml">HERE</a>.</p>
+
+            </td>
+        </tr>
+      </ttable>
 
       <table id="legend" style="margin-top: 0.5in; margin-left: 0.25in;">
         <tr>
