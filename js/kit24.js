@@ -6693,9 +6693,6 @@ async function pingEventServer(activity, guess) {
             if (xhr.readyState === 4 /*DONE*/) {
                 consoleTrace('Response: ' + xhr.responseText);
             }
-            else {
-                consoleTrace(`readyState=${xhr.readyState}, status=${xhr.status}`);
-            }
         };
         xhr.send(data);
     }
@@ -6718,16 +6715,14 @@ async function getTeamStatus(activity, guess) {
     });
     try {
         const xhr = new XMLHttpRequest();
-        var url = localSync ? "http://localhost:7071/api/PuzzlePing"
-            : "https://puzzyleventsync.azurewebsites.net/api/PuzzlePing";
+        var url = localSync ? "http://localhost:7071/api/TeamStatus"
+            : "https://puzzyleventsync.azurewebsites.net/api/TeamStatus";
         xhr.open("POST", url, true /*async*/);
         xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 /*DONE*/) {
                 consoleTrace('Response: ' + xhr.responseText);
-            }
-            else {
-                consoleTrace(`readyState=${xhr.readyState}, status=${xhr.status}`);
+                // TODO: update team UI
             }
         };
         xhr.send(data);
@@ -6788,8 +6783,9 @@ function autoLogin() {
  * Ask the user for their username, and optionally team name (via @ suffix)
  * If they provide them, log them in.
  */
-function promptLogin(login) {
-    dismissLogin();
+function promptLogin(evt, login) {
+    evt.stopPropagation();
+    dismissLogin(null);
     const modal = document.createElement('div');
     const content = document.createElement('div');
     const close = document.createElement('span');
@@ -6799,25 +6795,29 @@ function promptLogin(login) {
     toggleClass(close, 'modal-close', true);
     close.appendChild(document.createTextNode("×"));
     close.title = 'Close';
-    close.onclick = function (e) { dismissLogin(); };
+    close.onclick = function (e) { dismissLogin(e); };
     iframe.src = login ? 'LoginUI.xhtml?iframe&modal' : 'LoginUI.xhtml?iframe&modal&logout';
     content.appendChild(close);
     content.appendChild(iframe);
     modal.appendChild(content);
     document.getElementById('pageBody')?.appendChild(modal); // first child of <body>
-    document.getElementById('pageBody')?.addEventListener('click', function (event) { dismissLogin(); });
+    document.getElementById('pageBody')?.addEventListener('click', function (event) { dismissLogin(event); });
 }
-function dismissLogin() {
+function dismissLogin(evt) {
     var modal = document.getElementById('modal-login');
     if (modal) {
         document.getElementById('pageBody')?.removeChild(modal);
         autoLogin();
     }
+    if (evt) {
+        evt.stopPropagation();
+    }
 }
 /**
  * Ask the user if they want to log out. If they confirm, clear their cached login.
  */
-function promptLogout() {
+function promptLogout(evt) {
+    evt.stopPropagation();
     var ask = confirm('Log out?');
     if (ask) {
         doLogout();
@@ -6827,12 +6827,12 @@ function promptLogout() {
  * The caller has a generic function, not knowing if we're currently logged in our out.
  * Whichever we are, this prompts with an invitation to switch modes.
  */
-function promptLogInOrOut() {
+function promptLogInOrOut(evt) {
     if (_playerName) {
-        promptLogout();
+        promptLogout(evt);
     }
     else {
-        promptLogin(true);
+        promptLogin(evt, true);
     }
 }
 exports.promptLogInOrOut = promptLogInOrOut;
@@ -6873,7 +6873,7 @@ function updateLoginUI() {
             avatar.innerHTML = '';
         }
         span.innerText = _teamName ? (_playerName + ' @ ' + _teamName) : _playerName;
-        div.onclick = function (e) { promptLogout(); };
+        div.onclick = function (e) { promptLogout(e); };
         div.title = "Log out?";
     }
     else {
@@ -6881,7 +6881,7 @@ function updateLoginUI() {
         img.src = '../Icons/logged-out.png';
         avatar.innerHTML = '';
         span.innerText = "Login?";
-        div.onclick = function (e) { promptLogin(true); };
+        div.onclick = function (e) { promptLogin(e, true); };
         div.title = "Log in?";
     }
 }
