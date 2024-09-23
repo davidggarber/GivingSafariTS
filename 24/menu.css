@@ -35,7 +35,7 @@
   text-align: center;
 }
 .html {
-  width: 2.75in; 
+  min-width: 3in; 
   text-align: left;
   white-space: nowrap;
 }
@@ -47,6 +47,7 @@
   width: 1.5in; 
   position: relative;
   text-align: left; 
+  text-size-adjust: 9pt;
 }
 
 .completed {
@@ -160,6 +161,10 @@ img.thumb {
   max-height: 0.25in;
   max-width: 0.25in;
   border: solid 1px #ccc;
+}
+.html:hover {
+  font-size: 11pt;
+  font-weight: bold;
 }
 .html:hover img.thumb {
   transform: scale(4) rotate(5deg);

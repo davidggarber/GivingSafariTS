@@ -128,7 +128,7 @@
       }
 
       #meta-table {
-        width: 4.6in;
+        width: 5.5in;
       }
       #meta-table .html {
         width: 2in;
@@ -222,6 +222,7 @@
                   <tth>&nbsp;</tth>
                   <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
                   <tth class="author" style="text-align: left;">Author</tth>
+                  <tth class="completed">&nbsp;</tth>
                   <if test="{submitable}">
                     <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
                   </if>
@@ -244,6 +245,12 @@
                         {puz.author}
                         <span class="checkmark" />
                       </ttd>
+                      <ttd class="completed">
+                        <p class="teammate-solves" xtrim="all">
+                          <use template="teammate-solves" puz="{puz.title}" />
+                        </p>
+                        <span class="checkmark" />
+                      </ttd>
                       <if test="{submitable}">
                         <ttd class="submital"></ttd>
                       </if>
@@ -264,6 +271,7 @@
                         </if>
       -->
                       </ttd>
+                      <ttd class="completed" />
                       <if test="{submitable}">
                         <ttd class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></ttd>
                       </if>
