@@ -5,9 +5,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.isKeyboardFocusElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = void 0;
-exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.promptLogInOrOut = exports.getTeamStatus = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = void 0;
-exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = void 0;
-exports.renderDiffs = void 0;
+exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.refreshTeamHomePage = exports.promptLogInOrOut = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = void 0;
+exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -6675,63 +6675,18 @@ async function pingEventServer(activity, guess) {
     if (!canSyncEvents || !_playerName) {
         return;
     }
-    const data = JSON.stringify({
+    const data = {
         eventName: _eventName,
         player: _playerName,
+        avatar: _emojiAvatar,
         team: _teamName,
         puzzle: theBoiler().title,
-        status: activity,
+        activity: activity,
         data: guess || ''
-    });
-    try {
-        const xhr = new XMLHttpRequest();
-        var url = localSync ? "http://localhost:7071/api/PuzzlePing"
-            : "https://puzzyleventsync.azurewebsites.net/api/PuzzlePing";
-        xhr.open("POST", url, true /*async*/);
-        xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 /*DONE*/) {
-                consoleTrace('Response: ' + xhr.responseText);
-            }
-        };
-        xhr.send(data);
-    }
-    catch (ex) {
-        console.error(ex);
-    }
+    };
+    await callSyncApi("PuzzlePing", data);
 }
 exports.pingEventServer = pingEventServer;
-async function getTeamStatus(activity, guess) {
-    if (!canSyncEvents && _playerName) {
-        return;
-    }
-    const data = JSON.stringify({
-        eventName: _eventName,
-        player: _playerName,
-        team: _teamName,
-        puzzle: theBoiler().title,
-        status: activity,
-        data: guess || ''
-    });
-    try {
-        const xhr = new XMLHttpRequest();
-        var url = localSync ? "http://localhost:7071/api/TeamStatus"
-            : "https://puzzyleventsync.azurewebsites.net/api/TeamStatus";
-        xhr.open("POST", url, true /*async*/);
-        xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 /*DONE*/) {
-                consoleTrace('Response: ' + xhr.responseText);
-                // TODO: update team UI
-            }
-        };
-        xhr.send(data);
-    }
-    catch (ex) {
-        console.error(ex);
-    }
-}
-exports.getTeamStatus = getTeamStatus;
 /**
  * Log in to an event
  * @param player The name of the player (required)
@@ -6883,6 +6838,65 @@ function updateLoginUI() {
         span.innerText = "Login?";
         div.onclick = function (e) { promptLogin(e, true); };
         div.title = "Log in?";
+    }
+}
+async function callSyncApi(apiName, data, jsonCallback, textCallback) {
+    try {
+        var xhr = new XMLHttpRequest();
+        var url = (localSync ? "http://localhost:7071/api/"
+            : "https://puzzyleventsync.azurewebsites.net/api/")
+            + apiName;
+        xhr.open("POST", url, true /*async*/);
+        xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 /*DONE*/) {
+                consoleTrace(xhr.responseText);
+                try {
+                    var obj = JSON.parse(xhr.responseText);
+                    if (jsonCallback) {
+                        jsonCallback(obj);
+                    }
+                }
+                catch {
+                    // Most likely problem is that xhr.responseText isn't JSON
+                    if (textCallback) {
+                        textCallback(xhr.responseText || xhr.statusText);
+                    }
+                }
+            }
+        };
+        var strData = JSON.stringify(data);
+        consoleTrace(`Calling ${apiName} with data=${strData}`);
+        xhr.send(strData);
+    }
+    catch (ex) {
+        console.error(ex);
+    }
+}
+async function refreshTeamHomePage(callback) {
+    if (!canSyncEvents && _teamName) {
+        return;
+    }
+    const data = {
+        eventName: _eventName,
+        team: _teamName,
+    };
+    _onTeamHomePageRefresh = callback;
+    await callSyncApi('TeamHomePage', data, onRefreshTeamHomePage);
+}
+exports.refreshTeamHomePage = refreshTeamHomePage;
+let _teammates;
+let _teamSolves;
+let _onTeamHomePageRefresh = null;
+function onRefreshTeamHomePage(json) {
+    if ('teammates' in json) {
+        _teammates = json['teammates'];
+    }
+    if ('solves' in json) {
+        _teamSolves = json['solves'];
+    }
+    if (_onTeamHomePageRefresh) {
+        _onTeamHomePageRefresh();
     }
 }
 /*-----------------------------------------------------------
@@ -8530,9 +8544,11 @@ function hasBuilderElements(doc) {
 exports.hasBuilderElements = hasBuilderElements;
 let src_element_stack = [];
 let dest_element_stack = [];
+let builder_element_stack = [];
 function initElementStack(elmt) {
     dest_element_stack = [];
     src_element_stack = [];
+    builder_element_stack = [];
     const parent_stack = [];
     while (elmt !== null && elmt.nodeName != '#document-fragment' && elmt.tagName !== 'BODY') {
         parent_stack.push(elmt);
@@ -8550,6 +8566,14 @@ function pushDestElement(elmt) {
 function popDestElement() {
     dest_element_stack.pop();
 }
+function pushBuilderElement(elmt) {
+    builder_element_stack.push(elmt);
+}
+exports.pushBuilderElement = pushBuilderElement;
+function popBuilderElement() {
+    builder_element_stack.pop();
+}
+exports.popBuilderElement = popBuilderElement;
 var TrimMode;
 (function (TrimMode) {
     TrimMode[TrimMode["off"] = 0] = "off";
@@ -8630,6 +8654,11 @@ function getBuilderParentIf(fn) {
     for (let i = src_element_stack.length - 1; i >= 0; i--) {
         if (fn(src_element_stack[i])) {
             return src_element_stack[i];
+        }
+    }
+    for (let i = builder_element_stack.length - 1; i >= 0; i--) {
+        if (fn(builder_element_stack[i])) {
+            return builder_element_stack[i];
         }
     }
     return null; // no parent satisfied lambda
@@ -10329,6 +10358,7 @@ function startForLoop(src) {
         throw new ContextError('Unable to determine loop', elementSourceOffset(src));
     }
     pushRange(dest, consoleComment('Iterating ' + iter + ' over ' + list.length + ' items...'));
+    pushBuilderElement(src);
     const inner_context = pushBuilderContext();
     const iter_index = iter + '#';
     for (let i = 0; i < list.length; i++) {
@@ -10343,6 +10373,7 @@ function startForLoop(src) {
         pushRange(dest, expandContents(src));
     }
     popBuilderContext();
+    popBuilderElement();
     return dest;
 }
 exports.startForLoop = startForLoop;
@@ -10553,7 +10584,9 @@ function startIfBlock(src, result) {
         }
     }
     if (result.passed) {
+        pushBuilderElement(src);
         pushRange(dest, expandContents(src));
+        popBuilderElement();
     }
     return dest;
 }
@@ -10965,6 +10998,7 @@ function useTemplate(node, tempId) {
         const passed_args = parseUseNodeArgs(node, template);
         try {
             const inner_context = pushTemplateContext(passed_args);
+            pushBuilderElement(node); // the <use> node
             if (!tempId) {
                 tempId = node.getAttribute('template');
             }
@@ -10976,13 +11010,17 @@ function useTemplate(node, tempId) {
                 if (!template.content) {
                     throw new ContextError('Invalid template (no content): ' + tempId, elementSourceOffset(node, 'template'));
                 }
+                // Push both the <use> and <template> nodes
+                pushBuilderElement(template);
                 // The template doesn't have any child nodes. Its content must first be cloned.
                 const clone = template.content.cloneNode(true);
                 dest = expandContents(clone);
+                popBuilderElement();
             }
             else {
                 dest = expandContents(node);
             }
+            popBuilderElement();
         }
         catch (ex) {
             const ctxerr = wrapContextError(ex, 'useTemplate', elementSourceOffset(node));
@@ -11110,9 +11148,11 @@ function refillFromTemplate(parent, tempId, args) {
     try {
         const passed_args = parseObjectAsUseArgs(args);
         inner_context = pushTemplateContext(passed_args);
+        pushBuilderElement(template);
         // The template doesn't have any child nodes. Its content must first be cloned.
         const clone = template.content.cloneNode(true);
         const dest = expandContents(clone);
+        popBuilderElement();
         refillFromNodes(parent, dest);
     }
     catch (ex) {

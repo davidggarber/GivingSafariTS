@@ -1,5 +1,5 @@
 import { isTrace } from "./_boilerplate";
-import { expandContents, initElementStack, shouldThrow } from "./_builder";
+import { expandContents, initElementStack, popBuilderElement, pushBuilderElement, shouldThrow } from "./_builder";
 import { cloneText, complexAttribute, popBuilderContext, pushBuilderContext } from "./_builderContext";
 import { ContextError, elementSourceOffset, wrapContextError } from "./_contextError";
 import { getTemplate } from "./_templates";
@@ -49,6 +49,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
 
     try {
       const inner_context = pushTemplateContext(passed_args);
+      pushBuilderElement(node);  // the <use> node
 
       if (!tempId) {
         tempId = node.getAttribute('template');
@@ -61,13 +62,18 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
         if (!template.content) {
           throw new ContextError('Invalid template (no content): ' + tempId, elementSourceOffset(node, 'template'));
         }
+
+        // Push both the <use> and <template> nodes
+        pushBuilderElement(template);
         // The template doesn't have any child nodes. Its content must first be cloned.
         const clone = template.content.cloneNode(true) as HTMLElement;
         dest = expandContents(clone);
+        popBuilderElement();
       }
       else {
         dest = expandContents(node);
       }
+      popBuilderElement();
     }
     catch (ex) {
       const ctxerr = wrapContextError(ex, 'useTemplate', elementSourceOffset(node));
@@ -198,10 +204,13 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
   try {
     const passed_args = parseObjectAsUseArgs(args);
     inner_context = pushTemplateContext(passed_args);
+    pushBuilderElement(template);
 
     // The template doesn't have any child nodes. Its content must first be cloned.
     const clone = template.content.cloneNode(true) as HTMLElement;
     const dest = expandContents(clone);
+
+    popBuilderElement();
 
     refillFromNodes(parent, dest);
   }

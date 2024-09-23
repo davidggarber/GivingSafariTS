@@ -37,6 +37,7 @@
 .html {
   width: 2.75in; 
   text-align: left;
+  white-space: nowrap;
 }
 .challenge {
   width: 1in;
@@ -50,6 +51,7 @@
 
 .completed {
   padding-right: 30px;
+  white-space: nowrap;
 }
 .completed .teammate {
   font-size: 16pt;
@@ -201,4 +203,21 @@ img.thumb {
 .solved .feedLink.unlocked img {
   opacity: 100%;  
   filter: initial;
+}
+
+
+#team-roster p {
+  font-size: 14pt;
+}
+#team-roster .teamname {
+  font-weight: bold;
+}
+#team-roster .avatar {
+  font-size: 20pt;
+  width: 0.5in;
+  text-align: right;
+}
+#team-roster .playername {
+  font-size: 20pt;
+  padding-left: 5px;
 }

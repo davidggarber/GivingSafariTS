@@ -1,4 +1,4 @@
-import { consoleComment, expandContents, pushRange, shouldThrow } from "./_builder";
+import { consoleComment, expandContents, popBuilderElement, pushBuilderElement, pushRange, shouldThrow } from "./_builder";
 import { evaluateAttribute, keyExistsInContext, makeFloat } from "./_builderContext";
 import { isTag } from "./_classUtil";
 import { ContextError, debugTagAttrs, elementSourceOffset, elementSourceOffseter, traceTagComment, wrapContextError } from "./_contextError";
@@ -142,7 +142,9 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
   }
 
   if (result.passed) {
+    pushBuilderElement(src);
     pushRange(dest, expandContents(src));
+    popBuilderElement();
   }
   
   return dest;

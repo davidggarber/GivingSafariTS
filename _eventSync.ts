@@ -37,72 +37,17 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
     return;
   }
 
-  const data = JSON.stringify({
+  const data = {
     eventName: _eventName,
     player: _playerName,
+    avatar: _emojiAvatar,
     team: _teamName,
     puzzle: theBoiler().title,
-    status: activity,
+    activity: activity,
     data: guess || ''
-  });
+  };
 
-  try {
-    const xhr = new XMLHttpRequest();
-    var url = localSync ? "http://localhost:7071/api/PuzzlePing"
-      : "https://puzzyleventsync.azurewebsites.net/api/PuzzlePing";
-
-    xhr.open("POST", url, true /*async*/);
-    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4 /*DONE*/) {
-        consoleTrace('Response: ' + xhr.responseText);
-      }
-    };
-    xhr.send(data);
-  }
-  catch (ex) {
-    console.error(ex);
-  }
-}
-
-export async function getTeamStatus(activity:EventSyncActivity, guess?:string) {
-  if (!canSyncEvents && _playerName) {
-    return;
-  }
-
-  const data = JSON.stringify({
-    eventName: _eventName,
-    player: _playerName,
-    team: _teamName,
-    puzzle: theBoiler().title,
-    status: activity,
-    data: guess || ''
-  });
-
-  try {
-    const xhr = new XMLHttpRequest();
-    var url = localSync ? "http://localhost:7071/api/TeamStatus"
-      : "https://puzzyleventsync.azurewebsites.net/api/TeamStatus";
-
-    xhr.open("POST", url, true /*async*/);
-    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4 /*DONE*/) {
-        consoleTrace('Response: ' + xhr.responseText);
-        
-
-        
-        // TODO: update team UI
-
-
-
-      }
-    };
-    xhr.send(data);
-  }
-  catch (ex) {
-    console.error(ex);
-  }
+  await callSyncApi("PuzzlePing", data);
 }
 
 /**
@@ -275,3 +220,88 @@ function updateLoginUI() {
     div.title = "Log in?";
   }
 }
+
+type SyncCallback = (any) => void;
+
+async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallback, textCallback?:SyncCallback) {
+  try {
+      var xhr = new XMLHttpRequest();
+      var url = (localSync ? "http://localhost:7071/api/"
+          : "https://puzzyleventsync.azurewebsites.net/api/")
+          + apiName;
+
+      xhr.open("POST", url, true /*async*/);
+      xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 /*DONE*/) {
+          consoleTrace(xhr.responseText);
+          try {
+              var obj = JSON.parse(xhr.responseText);
+              if (jsonCallback) {
+                  jsonCallback(obj);
+              }
+          }
+          catch {
+            // Most likely problem is that xhr.responseText isn't JSON
+            if (textCallback) {
+              textCallback(xhr.responseText || xhr.statusText);
+            }
+          }
+        }
+      };
+      var strData = JSON.stringify(data);
+      consoleTrace(`Calling ${apiName} with data=${strData}`);
+      xhr.send(strData);
+  }
+  catch (ex) {
+    console.error(ex);
+  }
+}
+
+export async function refreshTeamHomePage(callback:SimpleCallback) {
+  if (!canSyncEvents && _teamName) {
+    return;
+  }
+
+  const data = {
+    eventName: _eventName,
+    team: _teamName,
+  };
+
+  _onTeamHomePageRefresh = callback;
+  await callSyncApi('TeamHomePage', data, onRefreshTeamHomePage);
+}
+
+export type PlayerInfo = {
+  Player: string;
+  Avatar: string;
+  Team?: string;
+}
+
+let _teammates:PlayerInfo[];
+
+export interface SolveSummary {
+  [key: string]: PlayerInfo[]
+}
+
+let _teamSolves:SolveSummary;
+
+type SimpleCallback = () => void;
+
+let _onTeamHomePageRefresh:SimpleCallback|null = null;
+
+
+function onRefreshTeamHomePage(json:object) {
+  if ('teammates' in json) {
+    _teammates = json['teammates'] as PlayerInfo[];
+  }
+
+  if ('solves' in json) {
+    _teamSolves = json['solves'] as SolveSummary;
+  }
+
+  if (_onTeamHomePageRefresh) {
+    _onTeamHomePageRefresh();
+  }
+}
+

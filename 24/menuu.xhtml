@@ -26,7 +26,9 @@
           submitable: false,
           solvable: true,
           table_cols: 5,
-          teammates: splitEmoji("❤️🦖🏎️🌵🤖"),
+          teammates: [],
+          teamname: null,
+          solves: {},
         },
       };
 
@@ -58,6 +60,8 @@
             updateUnlocked(metaInfo.store, i);
           }
         }
+
+        refreshTeamHomePage(refreshTeamProgress);
       }
 
       function updateSolves(puzFile) {
@@ -89,6 +93,27 @@
         }
       }
 
+      function refreshTeamProgress() {
+        if (JSON.stringify(_teammates) != JSON.stringify(boiler.lookup.teammates)) {
+          boiler.lookup.teammates = _teammates;
+          boiler.lookup.teamname = _teamName;
+          refillFromTemplate(document.getElementById('team-roster'), 'teammate-list');
+        }
+
+        if (JSON.stringify(_teamSolves) != JSON.stringify(boiler.lookup.solves)) {
+          boiler.lookup.solves = _teamSolves;
+          for (var puz of puzzles) {
+            var tr = document.getElementById(puz.file);
+            var span = tr.getElementsByClassName('teammate-solves')[0];
+            if (span) {
+              var args = {solves:_teamSolves, puz:puz.title};
+              refillFromTemplate(span, 'teammate-solves', args);
+            }
+          }
+        }
+
+      }
+
       // ]]>
 
     </script>
@@ -112,7 +137,6 @@
   </head>
   <body id="Menu">
     <div id="pageBody">
-
       <ttable id="side-by-side">
         <tr>
           <td>
@@ -170,9 +194,9 @@
                         {puz.author}
                       </ttd>
                       <ttd class="completed">
-<!--
-  <span class="teammate" title="Bob">{teammates.[puz#%5]}</span>
-  -->                        
+                        <p class="teammate-solves" xtrim="all">
+                          <use template="teammate-solves" puz="{puz.title}" />
+                        </p>
                         <span class="checkmark" />
                       </ttd>
                       <if test="{submitable}">
@@ -251,6 +275,10 @@
 
             <p>To reset local saved progress in this event, click <a href="Forget_all_progress.xhtml">HERE</a>.</p>
 
+            <div id="team-roster">
+              
+            </div>
+
             </td>
         </tr>
       </ttable>
@@ -303,6 +331,26 @@
       </table>
 
     </div>
+
+    <template id="teammate-list">
+      <p>The members of team <span class="teamname">{teamname}</span> include:</p>
+      <ttable id="teammates">
+        <for each="mate" in="teammates">
+          <ttr>
+            <td class="avatar">{mate.Avatar}</td>
+            <td class="playername">{mate.Player}</td>
+          </ttr>
+        </for>
+      </ttable>
+    </template>
+
+    <template id="teammate-solves" trim="all">
+      <if exists="{solves.[{puz}]}">
+        <for each="mate" in="{solves.[{puz}]}">
+          <span class="teammate" title="{mate.Player}">{mate.Avatar}</span>
+        </for>
+      </if>
+    </template>
 
   </body>
 </html>

@@ -1,4 +1,4 @@
-import { consoleComment, expandContents, pushRange, splitEmoji } from "./_builder";
+import { consoleComment, expandContents, popBuilderElement, pushBuilderElement, pushRange, splitEmoji } from "./_builder";
 import { cloneText, evaluateAttribute, makeInt, makeString, popBuilderContext, pushBuilderContext } from "./_builderContext";
 import { ContextError, debugTagAttrs, elementSourceOffset, elementSourceOffseter } from "./_contextError";
 
@@ -63,6 +63,7 @@ export function startForLoop(src:HTMLElement):Node[] {
 
   pushRange(dest, consoleComment('Iterating ' + iter + ' over ' + list.length + ' items...'));
 
+  pushBuilderElement(src);
   const inner_context = pushBuilderContext();
   const iter_index = iter + '#';
   for (let i = 0; i < list.length; i++) {
@@ -77,6 +78,7 @@ export function startForLoop(src:HTMLElement):Node[] {
     pushRange(dest, expandContents(src));
   }
   popBuilderContext();
+  popBuilderElement();
   
   return dest;
 }

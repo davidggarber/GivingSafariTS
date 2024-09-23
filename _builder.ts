@@ -202,10 +202,12 @@ export function hasBuilderElements(doc:Document) {
 
 let src_element_stack:Element[] = [];
 let dest_element_stack:Element[] = [];
+let builder_element_stack:Element[] = [];
 
 export function initElementStack(elmt:Element|null) {
   dest_element_stack = [];
   src_element_stack = [];
+  builder_element_stack = [];
   const parent_stack:Element[] = [];
   while (elmt !== null && elmt.nodeName != '#document-fragment' && elmt.tagName !== 'BODY') {
     parent_stack.push(elmt);
@@ -223,6 +225,14 @@ function pushDestElement(elmt:Element) {
 
 function popDestElement() {
   dest_element_stack.pop();
+}
+
+export function pushBuilderElement(elmt:Element) {
+  builder_element_stack.push(elmt);
+}
+
+export function popBuilderElement() {
+  builder_element_stack.pop();
 }
 
 export enum TrimMode {
@@ -307,6 +317,12 @@ export function getBuilderParentIf(fn:(e:Element) => boolean):Element|null {
   for (let i = src_element_stack.length - 1; i >= 0; i--) {
     if (fn(src_element_stack[i])) {
       return src_element_stack[i];
+    }
+  }
+
+  for (let i = builder_element_stack.length - 1; i >= 0; i--) {
+    if (fn(builder_element_stack[i])) {
+      return builder_element_stack[i];
     }
   }
 
