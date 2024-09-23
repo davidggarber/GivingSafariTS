@@ -7492,7 +7492,7 @@ function autoLogin() {
  * Ask the user for their username, and optionally team name (via @ suffix)
  * If they provide them, log them in.
  */
-function promptLogin(evt:MouseEvent, login:boolean) {
+function promptLogin(evt:MouseEvent) {
   evt.stopPropagation();
   dismissLogin(null);
   const modal = document.createElement('div');
@@ -7505,7 +7505,7 @@ function promptLogin(evt:MouseEvent, login:boolean) {
   close.appendChild(document.createTextNode("×"));
   close.title = 'Close';
   close.onclick = function(e) {dismissLogin(e)};
-  iframe.src = login ? 'LoginUI.xhtml?iframe&modal' : 'LoginUI.xhtml?iframe&modal&logout';
+  iframe.src = 'LoginUI.xhtml?iframe&modal';
   content.appendChild(close);
   content.appendChild(iframe);
   modal.appendChild(content);
@@ -7522,30 +7522,6 @@ function dismissLogin(evt:MouseEvent|null) {
   }
   if (evt) {
     evt.stopPropagation();
-  }
-}
-
-/**
- * Ask the user if they want to log out. If they confirm, clear their cached login.
- */
-function promptLogout(evt:MouseEvent) {
-  evt.stopPropagation();
-  var ask = confirm('Log out?')
-  if (ask) {
-    doLogout();
-  }
-}
-
-/**
- * The caller has a generic function, not knowing if we're currently logged in our out.
- * Whichever we are, this prompts with an invitation to switch modes.
- */
-export function promptLogInOrOut(evt:MouseEvent) {
-  if (_playerName) {
-    promptLogout(evt);
-  }
-  else {
-    promptLogin(evt, true);
   }
 }
 
@@ -7587,15 +7563,15 @@ function updateLoginUI() {
       avatar.innerHTML = '';
     }
     span.innerText = _teamName ? (_playerName + ' @ ' + _teamName) : _playerName;
-    div.onclick = function(e) { promptLogout(e);};
+    div.onclick = function(e) { promptLogin(e);};
     div.title = "Log out?";
   }
   else {
-    // Logged oit
+    // Logged out
     img.src = '../Icons/logged-out.png';
     avatar.innerHTML = '';
     span.innerText = "Login?";
-    div.onclick = function(e) { promptLogin(e, true);};
+    div.onclick = function(e) { promptLogin(e);};
     div.title = "Log in?";
   }
 }

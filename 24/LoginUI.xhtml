@@ -12,21 +12,28 @@
         reactiveBuilder: 'pageBody',
         paperSize: 'postcard',
         preSetup: toggleLogout,
-        postSetup: randomEmoji,
+        postSetup: postSetup,
         lookup: {
-
+          isModal: window.location.search.indexOf('modal') >= 0
         }
       };
+
+      function postSetup() {
+        var body = document.getElementById('login');
+        toggleClass(body, 'logout', !!_playerName);
+        initFields(false);
+      }
 
       function toggleLogout(toggle) {
         var body = document.getElementById('login');
         if (toggle) {
           toggleClass(body, 'logout');
         }
-        else if (urlArgExists('logout')) {
-          toggleClass(body, 'logout', true);
-        }
+        initFields(toggle);
+      }
 
+      function initFields(toggle) {
+        var body = document.getElementById('login');
         if (hasClass(body, 'logout')) {
           document.getElementById('logout-player').innerText = _playerName;
           document.getElementById('as-avatar').innerText = _emojiAvatar;
@@ -37,6 +44,9 @@
             document.getElementById('on-team-name').innerText = 'Playing solo.';
           }
         }
+        else if (!toggle) {
+          randomEmoji();        
+        }
       }
 
       function max1emoji() {
@@ -44,10 +54,16 @@
         var chars = splitEmoji(avatar.value);
         if (chars.length > 1) {
           avatar.value = chars[chars.length - 1];
+          avatar.select();
         }
       }
-      var emojiAnimals = "🦀🦞🦐🦑🐵🐒🦍🦧🐶🐕🦮🐕‍🦺🐩🐺🦊🦝🐱🐈🐈‍⬛🦁🐯🐅🐆🐴🫎🫏🐎🦄🦓🦌🦬🐮🐂🐃🐄🐷🐖🐗🐽🐏🐑🐐🐪🐫🦙🦒🐘🦣🦏🦛🐭🐁🐀🐹🐰🐇🐿️🦫🦔🦇🐻🐻‍❄️🐨🐼🦥🦦🦨🦘🦡🐾🦃🐔🐓🐣🐤🐥🐦🐧🕊️🦅🦆🦢🦉🦤🪶🦩🦚🦜🪽🐦‍⬛🪿🐸🐊🐢🦎🐍🐲🐉🦕🦖🐳🐋🐬🦭🐟🐠🐡🦈🐙🐚🪸🪼🐌🦋🐛🐜🐝🪲🐞🦗🪳🕷️🕸️🦂🦟🪰🪱🦠💐🌸💮🪷🏵️🌹🥀🌺🌻🌼🌷🪻🌱🪴🌲🌳🌴🌵🌾🌿☘️🍀🍁🍂🍃🪹🪺🍄";
-      var emojiMore = "🍇🍈🍉🍊🍋🍌🍍🥭🍎🍏🍐🍑🍒🍓🫐🥝🍅🫒🥥🥑🍆🥔🥕🌽🌶️🫑🥒🥬🥦🧄🧅🥜🫘🌰🫚🫛🍞🥐🥖🫓🥨🥯🥞🧇🧀🍖🍗🥩🥓🍔🍟🍕🌭🥪🌮🌯🫔🥙🧆🥚🍳🥘🍲🫕🥣🥗🍿🧈🧂🥫🍱🍘🍙🍚🍛🍜🍝🍠🍢🍣🍤🍥🥮🍡🥟🥠🥡🦪🍦🍧🍨🍩🍪🎂🍰🧁🥧🍫🍬🍭🍮🍯🍼🥛☕🫖🍵🍶🍾🍷🍸🍹🍺🍻🥂🥃🫗🥤🧋🧃🧉🧊🫙"
+
+      function selectAll(input) {
+        input.select();
+      }
+
+      var emojiAnimals = "🦀🦞🦐🦑🐵🐒🦍🦧🐶🐕🦮🐕‍🦺🐩🐺🦊🦝🐱🐈🐈‍⬛🦁🐯🐅🐆🐴🫎🫏🐎🦄🦓🦌🦬🐮🐂🐃🐄🐷🐖🐗🐽🐏🐑🐐🐪🐫🦙🦒🐘🦣🦏🦛🐭🐁🐀🐹🐰🐇🐿️🦫🦔🦇🐻🐻‍❄️🐨🐼🦥🦦🦨🦘🦡🐾🦃🐔🐓🐣🐤🐥🐦🐧🕊️🦅🦆🦢🦉🦤🪶🦩🦚🦜🪽🐦‍⬛🪿🐸🐊🐢🦎🐍🐲🐉🦕🦖🐳🐋🐬🦭🐟🐠🐡🦈🐙🐚🪸🪼🐌🦋🐛🐜🐝🪲🐞🦗🪳🕷️🕸️🦂🦟🪰🪱🦠";
+      var emojiMore = "💐🌸💮🪷🏵️🌹🥀🌺🌻🌼🌷🪻🌱🪴🌲🌳🌴🌵🌾🌿☘️🍀🍁🍂🍃🪹🪺🍄🍇🍈🍉🍊🍋🍌🍍🥭🍎🍏🍐🍑🍒🍓🫐🥝🍅🫒🥥🥑🍆🥔🥕🌽🌶️🫑🥒🥬🥦🧄🧅🥜🫘🌰🫚🫛🍞🥐🥖🫓🥨🥯🥞🧇🧀🍖🍗🥩🥓🍔🍟🍕🌭🥪🌮🌯🫔🥙🧆🥚🍳🥘🍲🫕🥣🥗🍿🧈🧂🥫🍱🍘🍙🍚🍛🍜🍝🍠🍢🍣🍤🍥🥮🍡🥟🥠🥡🦪🍦🍧🍨🍩🍪🎂🍰🧁🥧🍫🍬🍭🍮🍯🍼🥛☕🫖🍵🍶🍾🍷🍸🍹🍺🍻🥂🥃🫗🥤🧋🧃🧉🧊🫙"
         + "🎃🎄🎆🎇🧨✨🎈🎉🎊🎋🎍🎎🎏🎐🎑🧧🎀🎁🎗️🎟️🎫🎖️🏆🏅⚽⚾🥎🏀🏐🏈🏉🎾🥏🎳🏏🏑🏒🥍🏓🏸🥊🥋🥅⛳⛸️🎣🤿🎽🎿🛷🥌🎯🪀🪁🔫🎱🔮🪄🎮🕹️🎰🎲🧩🧸🪅🪩🪆♟️🃏🀄🎴🎭🖼️🎨🧵🪡🧶🪢"
         + emojiAnimals;
       function randomEmoji(wider) {
@@ -137,6 +153,9 @@
         font-size: 24pt;
         text-align: center;
       }
+      #as-avatar {
+        font-size: 16pt;
+      }
       .avatar-top {
         position: relative;
         top: -16px;
@@ -193,7 +212,7 @@
         </tr>
         <tr>
           <th>Emoji avatar</th>
-          <td><input id="avatar" type="text" oninput="max1emoji()" />
+          <td><input id="avatar" type="text" oninput="max1emoji()" onfocus="selectAll(this)" />
               <sup class="avatar-top" title="Will be used in some group UI">⭐</sup>
               <a class="avatar-middle" href="javascript:randomEmoji(true)">randomize!</a>
           </td>
@@ -212,7 +231,9 @@
           <td></td>
           <td style="text-align: center;">
             <button id="login-button" onclick="login()" disabled="true">Login</button>
-            <button onclick="cancel()">Cancel</button>
+            <if test="{isModal}">
+              <button onclick="cancel()">Cancel</button>
+            </if>
           </td>
         </tr>
       </table>
@@ -235,8 +256,13 @@
         </tr>
         <tr>
           <td colspan="2" style="text-align: center;">
-            <button onclick="logout()">Confirm Logout</button>
-            <button onclick="cancel()">Cancel</button>
+            <if test="{isModal}">
+              <button onclick="logout()">Confirm Logout</button>
+              <button onclick="cancel()">Cancel</button>
+            </if>
+            <else>
+              <button onclick="logout()">Logout</button>
+            </else>
           </td>
         </tr>
       </table>
