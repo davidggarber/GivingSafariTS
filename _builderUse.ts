@@ -200,10 +200,9 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
   // Make sure we know the stack of our destination
   initElementStack(parent);
 
-  let inner_context:any = null;
   try {
-    const passed_args = parseObjectAsUseArgs(args);
-    inner_context = pushTemplateContext(passed_args);
+    const passed_args = parseObjectAsUseArgs(args ?? {});
+    pushTemplateContext(passed_args);
     pushBuilderElement(template);
 
     // The template doesn't have any child nodes. Its content must first be cloned.
@@ -216,11 +215,9 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
   }
   catch (ex) {
     const ctxerr = wrapContextError(ex, 'refillFromTemplate', elementSourceOffset(template));
-    if (inner_context) {
-      popBuilderContext();
-    }
     if (shouldThrow(ctxerr, template)) { throw ctxerr; }
   }
+  popBuilderContext();
 }
 
 /**

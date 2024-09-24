@@ -45,9 +45,9 @@
       var unlocked_feeders = {};
 
       function syncProgress() {
-        if (document.hidden) {
-          return;
-        }
+        // if (document.hidden) {
+        //   return;
+        // }
         for (var i = 0; i < puzzles.length; i++) {
           var puz = puzzles[i];
           updateSolves(puz.file);
@@ -61,6 +61,17 @@
           }
         }
 
+        _stopRefreshing = new Date().getTime() + 60 * 60 * 1000;  // 1 hour of refreshes
+        timerRefreshTeamHomePage();
+      }
+
+      var _stopRefreshing = new Date().getTime();
+      var _refreshEvery = 15 * 1000;  // 15 seconds
+
+      function timerRefreshTeamHomePage() {
+        if (new Date().getTime() < _stopRefreshing) {
+          setTimeout(() => { timerRefreshTeamHomePage() }, _refreshEvery);
+        }
         refreshTeamHomePage(refreshTeamProgress);
       }
 
@@ -106,7 +117,7 @@
             var tr = document.getElementById(puz.file);
             var span = tr.getElementsByClassName('teammate-solves')[0];
             if (span) {
-              var args = {solves:_teamSolves, puz:puz.title};
+              var args = {puz:puz.title};  //solves:_teamSolves, 
               refillFromTemplate(span, 'teammate-solves', args);
             }
           }
