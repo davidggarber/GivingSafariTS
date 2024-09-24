@@ -6651,6 +6651,7 @@ var EventSyncActivity;
     EventSyncActivity["Open"] = "Open";
     EventSyncActivity["Edit"] = "Edit";
     EventSyncActivity["Attempt"] = "Attempt";
+    EventSyncActivity["Unlock"] = "Unlock";
     EventSyncActivity["Solve"] = "Solve";
 })(EventSyncActivity || (exports.EventSyncActivity = EventSyncActivity = {}));
 const localSync = window.location.href.substring(0, 5) == 'file:';
@@ -6709,7 +6710,16 @@ function doLogin(player, team, emoji) {
 /**
  * Clear any cached login info
  */
-function doLogout() {
+async function doLogout(deletePlayer) {
+    if (deletePlayer) {
+        const data = {
+            eventName: _eventName,
+            player: _playerName,
+            avatar: _emojiAvatar,
+            team: _teamName,
+        };
+        await callSyncApi("DeletePlayer", data);
+    }
     cacheLogin(_eventName, undefined);
     _playerName = _teamName = _emojiAvatar = undefined;
     updateLoginUI();

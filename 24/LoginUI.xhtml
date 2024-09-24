@@ -98,7 +98,7 @@
       }
 
       function logout() {
-        doLogout();
+        doLogout(document.getElementById('delete').checked);
         if (urlArgExists('modal')) {
           parent.dismissLogin();
         }
@@ -144,7 +144,7 @@
         display: block;
       }
 
-      input {
+      input.text {
         font-size: 16pt;
         width: 95%;
       }
@@ -205,21 +205,21 @@
       <table id="login-table">
         <tr>
           <th style="width:1in;">Your name</th>
-          <td><input id="playerName" type="text" oninput="validateName()" /></td>
+          <td><input id="playerName" type="text" class="text" oninput="validateName()" /></td>
           <td rowspan="3" style="vertical-align: top;">
             <img id="logo" src="Images/GS24_logo.png" />            
           </td>
         </tr>
         <tr>
           <th>Emoji avatar</th>
-          <td><input id="avatar" type="text" oninput="max1emoji()" onfocus="selectAll(this)" />
+          <td><input id="avatar" type="text" class="text" oninput="max1emoji()" onfocus="selectAll(this)" />
               <sup class="avatar-top" title="Will be used in some group UI">⭐</sup>
               <a class="avatar-middle" href="javascript:randomEmoji(true)">randomize!</a>
           </td>
         </tr>
         <tr>
           <th>Team name</th>
-          <td><input id="teamName" type="text" /></td>
+          <td><input id="teamName" type="text" class="text" /></td>
         </tr>
         <tr>
           <td>&nbsp;</td>
@@ -263,6 +263,11 @@
             <else>
               <button onclick="logout()">Logout</button>
             </else>
+            <br />
+            <span style="white-space: nowrap" trim="all">
+              <input type="checkbox" id="delete" /> 
+              <label for="delete">Delete data</label>
+            </span>
           </td>
         </tr>
       </table>

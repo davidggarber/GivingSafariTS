@@ -7,6 +7,7 @@ export enum EventSyncActivity {
   Open = "Open",
   Edit = "Edit",
   Attempt = "Attempt",
+  Unlock = "Unlock",
   Solve = "Solve",
 }
 
@@ -82,7 +83,17 @@ function doLogin(player:string, team?:string, emoji?:string) {
 /**
  * Clear any cached login info
  */
-function doLogout() {
+async function doLogout(deletePlayer?:boolean) {
+  if (deletePlayer) {
+    const data = {
+      eventName: _eventName,
+      player: _playerName,
+      avatar: _emojiAvatar,
+      team: _teamName,
+    };  
+    await callSyncApi("DeletePlayer", data);
+  }
+
   cacheLogin(_eventName, undefined);
   _playerName = _teamName = _emojiAvatar = undefined;
   updateLoginUI();
