@@ -74,9 +74,7 @@ export function setupMetaSync(param:MetaParams) {
 
   // Refresh materials every time the user switches back to this page
   document.addEventListener('visibilitychange', function (event) {
-    if (!document.hidden) {
-      scanMetaMaterials();
-    }
+    scanMetaMaterials();
   });
   body.addEventListener('focus', function (event) {
     scanMetaMaterials();

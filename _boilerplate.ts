@@ -2,7 +2,7 @@ import { clicksFindInputs, textSetup } from "./_textSetup"
 import { hasClass, TextInputElement, toggleClass } from "./_classUtil"
 import { setupNotes, setupCrossOffs, setupHighlights } from "./_notes"
 import { setupDecoderToggle } from "./_decoders"
-import { checkLocalStorage, indexAllDragDropFields, indexAllDrawableFields } from "./_storage";
+import { checkLocalStorage, indexAllDragDropFields, indexAllDrawableFields, TryParseJson } from "./_storage";
 import { preprocessStampObjects } from "./_stampTools";
 import { preprocessDragFunctions } from "./_dragDrop";
 import { EdgeTypes, preprocessRulerFunctions } from "./_straightEdge";
@@ -564,7 +564,7 @@ function debugPostSetup() {
                 if (commentJson) {
                     commentJson = commentJson.trim();
                     if (commentJson.substring(0, 7) == 'layout=') {
-                        const before = JSON.parse(commentJson.substring(7)) as LayoutSummary;
+                        const before = TryParseJson(commentJson.substring(7)) as LayoutSummary;
                         const diffs = diffSummarys(before, after);
                         if (diffs.length > 0) {
                             renderDiffs(diffs);                            

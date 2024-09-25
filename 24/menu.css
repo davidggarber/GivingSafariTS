@@ -226,3 +226,9 @@ img.thumb {
   font-size: 20pt;
   padding-left: 5px;
 }
+
+#iframe-loader {
+  width: 1px;
+  height: 1px;
+  border: none;
+}

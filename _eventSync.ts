@@ -1,7 +1,7 @@
 import { theBoiler } from "./_boilerplate";
 import { consoleTrace } from "./_builder";
 import { toggleClass } from "./_classUtil";
-import { cacheLogin, getLogin } from "./_storage";
+import { cacheLogin, getLogin, TryParseJson } from "./_storage";
 
 export enum EventSyncActivity {
   Open = "Open",
@@ -104,9 +104,6 @@ async function doLogout(deletePlayer?:boolean) {
  * @param event The current event
  */
 function autoLogin() {
-  if (document.hidden) {
-    return;
-  }
   const info = getLogin(_eventName);
   if (info && (_playerName != info.player || _teamName != info?.team)) {
     _playerName = info.player;
@@ -223,7 +220,7 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
         if (xhr.readyState === 4 /*DONE*/) {
           consoleTrace(xhr.responseText);
           try {
-              var obj = JSON.parse(xhr.responseText);
+              var obj = TryParseJson(xhr.responseText, false);
               if (jsonCallback) {
                   jsonCallback(obj);
               }
@@ -246,7 +243,7 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
 }
 
 export async function refreshTeamHomePage(callback:SimpleCallback) {
-  if (!canSyncEvents && _teamName) {
+  if (!canSyncEvents || !_teamName) {
     return;
   }
 
@@ -273,6 +270,14 @@ export interface SolveSummary {
 
 let _teamSolves:SolveSummary;
 
+export type UnlockedPiece = {
+  Piece: string;
+  Url: string;
+}
+
+let _remoteUnlocked: UnlockedPiece[] = [];
+
+
 type SimpleCallback = () => void;
 
 let _onTeamHomePageRefresh:SimpleCallback|null = null;
@@ -287,8 +292,28 @@ function onRefreshTeamHomePage(json:object) {
     _teamSolves = json['solves'] as SolveSummary;
   }
 
+  if ('unlocked' in json) {
+    _remoteUnlocked = json['unlocked'] as UnlockedPiece[];
+  }
+
   if (_onTeamHomePageRefresh) {
     _onTeamHomePageRefresh();
   }
 }
 
+async function syncUnlockedFile(metaFeeder:string, url:string) {
+  if (!canSyncEvents || !_teamName) {
+    return;
+  }
+  const data = {
+    eventName: _eventName,
+    player: _playerName,
+    avatar: _emojiAvatar,
+    team: _teamName,
+    puzzle: metaFeeder,
+    activity: EventSyncActivity.Unlock,
+    data: url
+  };
+
+  await callSyncApi("PuzzlePing", data);
+}

@@ -3,11 +3,11 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.isKeyboardFocusElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = void 0;
-exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = void 0;
-exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = void 0;
-exports.renderDiffs = exports.diffSummarys = void 0;
+exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.isKeyboardFocusElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = void 0;
+exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = void 0;
+exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -1052,7 +1052,7 @@ function checkLocalStorage() {
         const item = localStorage.getItem(key);
         if (item != null) {
             try {
-                checkStorage = JSON.parse(item);
+                checkStorage = TryParseJson(item);
             }
             catch {
                 checkStorage = {};
@@ -1080,6 +1080,26 @@ function checkLocalStorage() {
     }
 }
 exports.checkLocalStorage = checkLocalStorage;
+/**
+ * Strings we parse as JSON could come from anywhere.
+ * JSON.parse will throw if the JSON is not well-formed.
+ * Instead, return null.
+ * @param str A string we expect to be JSON
+ * @returns An object, or null
+ */
+function TryParseJson(str, errorIfNot = true) {
+    try {
+        var obj = JSON.parse(str);
+        return obj;
+    }
+    catch (ex) {
+        if (errorIfNot) {
+            console.error(ex);
+        }
+        return null;
+    }
+}
+exports.TryParseJson = TryParseJson;
 /**
  * Globals for reload UI elements
  */
@@ -1889,6 +1909,7 @@ exports.PuzzleStatus = {
  * Update the master list of puzzles for this event
  * @param puzzle The name of this puzzle (not the filename)
  * @param status One of the statuses in PuzzleStatus
+ * @returns true if the new status is different than the old
  */
 function updatePuzzleList(puzzle, status) {
     if (!puzzle) {
@@ -1899,14 +1920,16 @@ function updatePuzzleList(puzzle, status) {
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            pList = JSON.parse(item);
+            pList = TryParseJson(item);
         }
     }
     if (!pList) {
         pList = {};
     }
+    const prev = pList[puzzle];
     pList[puzzle] = status;
     localStorage.setItem(key, JSON.stringify(pList));
+    return status !== prev;
 }
 exports.updatePuzzleList = updatePuzzleList;
 /**
@@ -1924,7 +1947,7 @@ function getPuzzleStatus(puzzle, defaultStatus) {
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            pList = JSON.parse(item);
+            pList = TryParseJson(item);
             if (pList && puzzle in pList) {
                 return pList[puzzle];
             }
@@ -1943,7 +1966,7 @@ function listPuzzlesOfStatus(status) {
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            const pList = JSON.parse(item);
+            const pList = TryParseJson(item);
             if (pList) {
                 const names = Object.keys(pList);
                 for (let i = 0; i < names.length; i++) {
@@ -1994,19 +2017,28 @@ function saveMetaMaterials(puzzle, up, page, obj) {
  * @param puzzle The meta-puzzle name
  * @param up Steps up from current folder where meta puzzle is found
  * @param page The meta-clue label (i.e. part 1 or B)
- * @returns An object - can be different for each meta type
+ * @returns An object - can be different for each meta type, or undefined if not unlocked
  */
 function loadMetaMaterials(puzzle, up, page) {
     var key = getOtherFileHref(puzzle, up) + "-" + page;
+    return loadMetaPiece(key);
+}
+exports.loadMetaMaterials = loadMetaMaterials;
+/**
+ * Load cached meta materials, if they have been acquired.
+ * @param key The meta-piece name. Often a concatenation of the meta puzzle and a piece #
+ * @returns An object - can be different for each meta type, or undefined if not unlocked
+ */
+function loadMetaPiece(key) {
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            return JSON.parse(item);
+            return TryParseJson(item);
         }
     }
     return undefined;
 }
-exports.loadMetaMaterials = loadMetaMaterials;
+exports.loadMetaPiece = loadMetaPiece;
 /**
  * Get the last level of the URL's pathname
  */
@@ -2108,8 +2140,8 @@ function getLogin(event) {
     }
     const key = getOtherFileHref('login-' + event, 0);
     const val = localStorage.getItem(key);
-    if (val != null) {
-        const login = JSON.parse(val);
+    if (val) {
+        const login = TryParseJson(val);
         if (login && login.player) { // Ensure valid
             return login;
         }
@@ -6729,9 +6761,6 @@ async function doLogout(deletePlayer) {
  * @param event The current event
  */
 function autoLogin() {
-    if (document.hidden) {
-        return;
-    }
     const info = getLogin(_eventName);
     if (info && (_playerName != info.player || _teamName != info?.team)) {
         _playerName = info.player;
@@ -6839,7 +6868,7 @@ async function callSyncApi(apiName, data, jsonCallback, textCallback) {
             if (xhr.readyState === 4 /*DONE*/) {
                 consoleTrace(xhr.responseText);
                 try {
-                    var obj = JSON.parse(xhr.responseText);
+                    var obj = TryParseJson(xhr.responseText, false);
                     if (jsonCallback) {
                         jsonCallback(obj);
                     }
@@ -6861,7 +6890,7 @@ async function callSyncApi(apiName, data, jsonCallback, textCallback) {
     }
 }
 async function refreshTeamHomePage(callback) {
-    if (!canSyncEvents && _teamName) {
+    if (!canSyncEvents || !_teamName) {
         return;
     }
     const data = {
@@ -6874,6 +6903,7 @@ async function refreshTeamHomePage(callback) {
 exports.refreshTeamHomePage = refreshTeamHomePage;
 let _teammates;
 let _teamSolves;
+let _remoteUnlocked = [];
 let _onTeamHomePageRefresh = null;
 function onRefreshTeamHomePage(json) {
     if ('teammates' in json) {
@@ -6882,9 +6912,27 @@ function onRefreshTeamHomePage(json) {
     if ('solves' in json) {
         _teamSolves = json['solves'];
     }
+    if ('unlocked' in json) {
+        _remoteUnlocked = json['unlocked'];
+    }
     if (_onTeamHomePageRefresh) {
         _onTeamHomePageRefresh();
     }
+}
+async function syncUnlockedFile(metaFeeder, url) {
+    if (!canSyncEvents || !_teamName) {
+        return;
+    }
+    const data = {
+        eventName: _eventName,
+        player: _playerName,
+        avatar: _emojiAvatar,
+        team: _teamName,
+        puzzle: metaFeeder,
+        activity: EventSyncActivity.Unlock,
+        data: url
+    };
+    await callSyncApi("PuzzlePing", data);
 }
 /*-----------------------------------------------------------
  * _boilerplate.ts
@@ -7335,7 +7383,7 @@ function debugPostSetup() {
                 if (commentJson) {
                     commentJson = commentJson.trim();
                     if (commentJson.substring(0, 7) == 'layout=') {
-                        const before = JSON.parse(commentJson.substring(7));
+                        const before = TryParseJson(commentJson.substring(7));
                         const diffs = diffSummarys(before, after);
                         if (diffs.length > 0) {
                             renderDiffs(diffs);
@@ -8007,6 +8055,16 @@ function appendResponse(block, response) {
     }
     else if (type == ResponseType.Load) {
         consoleTrace(`Loading ${response}`);
+        // Keep any url args
+        var urlArgs = (window.location.search ?? "?").substring(1);
+        if (urlArgs) {
+            if (response.indexOf('?') >= 0) {
+                response += '&' + urlArgs;
+            }
+            else {
+                response += '?' + urlArgs;
+            }
+        }
         // Use an iframe to navigate immediately to the response URL.
         // The iframe will be hidden, but any scripts will run immediately.
         const iframe = document.createElement('iframe');
@@ -11690,9 +11748,7 @@ function setupMetaSync(param) {
     }
     // Refresh materials every time the user switches back to this page
     document.addEventListener('visibilitychange', function (event) {
-        if (!document.hidden) {
-            scanMetaMaterials();
-        }
+        scanMetaMaterials();
     });
     body.addEventListener('focus', function (event) {
         scanMetaMaterials();

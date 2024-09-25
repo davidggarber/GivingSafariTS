@@ -96,7 +96,7 @@ export function checkLocalStorage() {
         const item = localStorage.getItem(key);
         if (item != null) {
             try {
-                checkStorage = JSON.parse(item);
+                checkStorage = TryParseJson(item);
             }
             catch {
                 checkStorage = {};
@@ -121,6 +121,26 @@ export function checkLocalStorage() {
                 }
             }
         }
+    }
+}
+
+/**
+ * Strings we parse as JSON could come from anywhere.
+ * JSON.parse will throw if the JSON is not well-formed.
+ * Instead, return null.
+ * @param str A string we expect to be JSON
+ * @returns An object, or null
+ */
+export function TryParseJson(str:string, errorIfNot:boolean = true) {
+    try {
+        var obj = JSON.parse(str);
+        return obj;
+    }
+    catch (ex) {
+        if (errorIfNot) {
+            console.error(ex);
+        }
+        return null;
     }
 }
 
@@ -968,8 +988,9 @@ export const PuzzleStatus = {
  * Update the master list of puzzles for this event
  * @param puzzle The name of this puzzle (not the filename)
  * @param status One of the statuses in PuzzleStatus
+ * @returns true if the new status is different than the old
  */
-export function updatePuzzleList(puzzle:string|null, status:string) {
+export function updatePuzzleList(puzzle:string|null, status:string):boolean {
     if (!puzzle) {
         puzzle = getCurFileName();
     }
@@ -978,14 +999,16 @@ export function updatePuzzleList(puzzle:string|null, status:string) {
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            pList = JSON.parse(item);
+            pList = TryParseJson(item);
         }
     }
     if (!pList) {
         pList = {};
     }
+    const prev = pList[puzzle];
     pList[puzzle] = status;
     localStorage.setItem(key, JSON.stringify(pList));
+    return status !== prev;
 }
 
 /**
@@ -1003,7 +1026,7 @@ export function getPuzzleStatus(puzzle:string|null, defaultStatus?:string): stri
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            pList = JSON.parse(item);
+            pList = TryParseJson(item);
             if (pList && puzzle in pList) {
                 return pList[puzzle];
             }
@@ -1022,7 +1045,7 @@ export function listPuzzlesOfStatus(status:string): string[] {
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            const pList = JSON.parse(item);
+            const pList = TryParseJson(item);
             if (pList) {
                 const names = Object.keys(pList);
                 for (let i = 0; i < names.length; i++) {
@@ -1075,14 +1098,23 @@ function saveMetaMaterials(puzzle:string, up:number, page:string, obj:object) {
  * @param puzzle The meta-puzzle name
  * @param up Steps up from current folder where meta puzzle is found
  * @param page The meta-clue label (i.e. part 1 or B)
- * @returns An object - can be different for each meta type
+ * @returns An object - can be different for each meta type, or undefined if not unlocked
  */
 export function loadMetaMaterials(puzzle:string, up:number, page:number): object|undefined {
     var key = getOtherFileHref(puzzle, up) + "-" + page;
+    return loadMetaPiece(key);
+}
+
+/**
+ * Load cached meta materials, if they have been acquired.
+ * @param key The meta-piece name. Often a concatenation of the meta puzzle and a piece #
+ * @returns An object - can be different for each meta type, or undefined if not unlocked
+ */
+export function loadMetaPiece(key:string): object|undefined {
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            return JSON.parse(item);
+            return TryParseJson(item);
         }
     }
     return undefined;
@@ -1198,8 +1230,8 @@ export function getLogin(event?:string):LoginInfo|null {
     }
     const key = getOtherFileHref('login-' + event, 0);
     const val = localStorage.getItem(key);
-    if (val != null) {
-        const login = (JSON.parse(val) as LoginInfo);
+    if (val) {
+        const login = (TryParseJson(val) as LoginInfo);
         if (login && login.player) {  // Ensure valid
             return login;
         }

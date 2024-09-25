@@ -1201,7 +1201,7 @@ export function checkLocalStorage() {
         const item = localStorage.getItem(key);
         if (item != null) {
             try {
-                checkStorage = JSON.parse(item);
+                checkStorage = TryParseJson(item);
             }
             catch {
                 checkStorage = {};
@@ -1226,6 +1226,26 @@ export function checkLocalStorage() {
                 }
             }
         }
+    }
+}
+
+/**
+ * Strings we parse as JSON could come from anywhere.
+ * JSON.parse will throw if the JSON is not well-formed.
+ * Instead, return null.
+ * @param str A string we expect to be JSON
+ * @returns An object, or null
+ */
+export function TryParseJson(str:string, errorIfNot:boolean = true) {
+    try {
+        var obj = JSON.parse(str);
+        return obj;
+    }
+    catch (ex) {
+        if (errorIfNot) {
+            console.error(ex);
+        }
+        return null;
     }
 }
 
@@ -2073,8 +2093,9 @@ export const PuzzleStatus = {
  * Update the master list of puzzles for this event
  * @param puzzle The name of this puzzle (not the filename)
  * @param status One of the statuses in PuzzleStatus
+ * @returns true if the new status is different than the old
  */
-export function updatePuzzleList(puzzle:string|null, status:string) {
+export function updatePuzzleList(puzzle:string|null, status:string):boolean {
     if (!puzzle) {
         puzzle = getCurFileName();
     }
@@ -2083,14 +2104,16 @@ export function updatePuzzleList(puzzle:string|null, status:string) {
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            pList = JSON.parse(item);
+            pList = TryParseJson(item);
         }
     }
     if (!pList) {
         pList = {};
     }
+    const prev = pList[puzzle];
     pList[puzzle] = status;
     localStorage.setItem(key, JSON.stringify(pList));
+    return status !== prev;
 }
 
 /**
@@ -2108,7 +2131,7 @@ export function getPuzzleStatus(puzzle:string|null, defaultStatus?:string): stri
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            pList = JSON.parse(item);
+            pList = TryParseJson(item);
             if (pList && puzzle in pList) {
                 return pList[puzzle];
             }
@@ -2127,7 +2150,7 @@ export function listPuzzlesOfStatus(status:string): string[] {
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            const pList = JSON.parse(item);
+            const pList = TryParseJson(item);
             if (pList) {
                 const names = Object.keys(pList);
                 for (let i = 0; i < names.length; i++) {
@@ -2180,14 +2203,23 @@ function saveMetaMaterials(puzzle:string, up:number, page:string, obj:object) {
  * @param puzzle The meta-puzzle name
  * @param up Steps up from current folder where meta puzzle is found
  * @param page The meta-clue label (i.e. part 1 or B)
- * @returns An object - can be different for each meta type
+ * @returns An object - can be different for each meta type, or undefined if not unlocked
  */
 export function loadMetaMaterials(puzzle:string, up:number, page:number): object|undefined {
     var key = getOtherFileHref(puzzle, up) + "-" + page;
+    return loadMetaPiece(key);
+}
+
+/**
+ * Load cached meta materials, if they have been acquired.
+ * @param key The meta-piece name. Often a concatenation of the meta puzzle and a piece #
+ * @returns An object - can be different for each meta type, or undefined if not unlocked
+ */
+export function loadMetaPiece(key:string): object|undefined {
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
-            return JSON.parse(item);
+            return TryParseJson(item);
         }
     }
     return undefined;
@@ -2303,8 +2335,8 @@ export function getLogin(event?:string):LoginInfo|null {
     }
     const key = getOtherFileHref('login-' + event, 0);
     const val = localStorage.getItem(key);
-    if (val != null) {
-        const login = (JSON.parse(val) as LoginInfo);
+    if (val) {
+        const login = (TryParseJson(val) as LoginInfo);
         if (login && login.player) {  // Ensure valid
             return login;
         }
@@ -7483,9 +7515,6 @@ async function doLogout(deletePlayer?:boolean) {
  * @param event The current event
  */
 function autoLogin() {
-  if (document.hidden) {
-    return;
-  }
   const info = getLogin(_eventName);
   if (info && (_playerName != info.player || _teamName != info?.team)) {
     _playerName = info.player;
@@ -7602,7 +7631,7 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
         if (xhr.readyState === 4 /*DONE*/) {
           consoleTrace(xhr.responseText);
           try {
-              var obj = JSON.parse(xhr.responseText);
+              var obj = TryParseJson(xhr.responseText, false);
               if (jsonCallback) {
                   jsonCallback(obj);
               }
@@ -7625,7 +7654,7 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
 }
 
 export async function refreshTeamHomePage(callback:SimpleCallback) {
-  if (!canSyncEvents && _teamName) {
+  if (!canSyncEvents || !_teamName) {
     return;
   }
 
@@ -7652,6 +7681,14 @@ export interface SolveSummary {
 
 let _teamSolves:SolveSummary;
 
+export type UnlockedPiece = {
+  Piece: string;
+  Url: string;
+}
+
+let _remoteUnlocked: UnlockedPiece[] = [];
+
+
 type SimpleCallback = () => void;
 
 let _onTeamHomePageRefresh:SimpleCallback|null = null;
@@ -7666,12 +7703,31 @@ function onRefreshTeamHomePage(json:object) {
     _teamSolves = json['solves'] as SolveSummary;
   }
 
+  if ('unlocked' in json) {
+    _remoteUnlocked = json['unlocked'] as UnlockedPiece[];
+  }
+
   if (_onTeamHomePageRefresh) {
     _onTeamHomePageRefresh();
   }
 }
 
+async function syncUnlockedFile(metaFeeder:string, url:string) {
+  if (!canSyncEvents || !_teamName) {
+    return;
+  }
+  const data = {
+    eventName: _eventName,
+    player: _playerName,
+    avatar: _emojiAvatar,
+    team: _teamName,
+    puzzle: metaFeeder,
+    activity: EventSyncActivity.Unlock,
+    data: url
+  };
 
+  await callSyncApi("PuzzlePing", data);
+}
 
 /*-----------------------------------------------------------
  * _boilerplate.ts
@@ -8225,7 +8281,7 @@ function debugPostSetup() {
                 if (commentJson) {
                     commentJson = commentJson.trim();
                     if (commentJson.substring(0, 7) == 'layout=') {
-                        const before = JSON.parse(commentJson.substring(7)) as LayoutSummary;
+                        const before = TryParseJson(commentJson.substring(7)) as LayoutSummary;
                         const diffs = diffSummarys(before, after);
                         if (diffs.length > 0) {
                             renderDiffs(diffs);                            
@@ -8960,10 +9016,23 @@ function appendResponse(block:HTMLDivElement, response:string):boolean {
         link.target = '_blank';
         link.appendChild(document.createTextNode(friendly));
         div.appendChild(link);
+
+
     }
     else if (type == ResponseType.Load) {
         consoleTrace(`Loading ${response}`);
-        
+
+        // Keep any url args
+        var urlArgs = (window.location.search ?? "?").substring(1);
+        if (urlArgs) {
+            if (response.indexOf('?') >= 0) {
+                response += '&' + urlArgs;
+            }
+            else {
+                response += '?' + urlArgs;
+            }
+        }
+
         // Use an iframe to navigate immediately to the response URL.
         // The iframe will be hidden, but any scripts will run immediately.
         const iframe = document.createElement('iframe');
@@ -13022,9 +13091,7 @@ export function setupMetaSync(param:MetaParams) {
 
   // Refresh materials every time the user switches back to this page
   document.addEventListener('visibilitychange', function (event) {
-    if (!document.hidden) {
-      scanMetaMaterials();
-    }
+    scanMetaMaterials();
   });
   body.addEventListener('focus', function (event) {
     scanMetaMaterials();

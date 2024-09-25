@@ -21,6 +21,7 @@
         reactiveBuilder: 'pageBody',
         lookup: {
           puzzles: puzzles,
+          urlArgs: _urlEventArguments,
           metas: metas,
           feeders: true,
           submitable: false,
@@ -52,7 +53,14 @@
           var puz = puzzles[i];
           updateSolves(puz.file);
         }
+        
+        syncUnlockedMetas();
 
+        _stopRefreshing = new Date().getTime() + 60 * 60 * 1000;  // 1 hour of refreshes
+        timerRefreshTeamHomePage();
+      }
+
+      function syncUnlockedMetas() {
         var metaKeys = Object.keys(metas);
         for (var m = 0; m < metaKeys.length; m++) {
           var metaInfo = metas[metaKeys[m]];
@@ -60,9 +68,6 @@
             updateUnlocked(metaInfo.store, i);
           }
         }
-
-        _stopRefreshing = new Date().getTime() + 60 * 60 * 1000;  // 1 hour of refreshes
-        timerRefreshTeamHomePage();
       }
 
       var _stopRefreshing = new Date().getTime();
@@ -94,7 +99,7 @@
               var links = document.getElementsByClassName(puzFile);
               for (var a = 0; a < links.length; a++) {
                 toggleClass(links[a], 'unlocked', true);
-                links[a].href = mat.src;
+                links[a].href = mat.src + _urlEventArguments;
                 if (links[a].title.endsWith(' (locked)')) {
                   links[a].title = links[a].title.substring(0, links[a].title.length - 9);
                 }
@@ -117,12 +122,37 @@
             var tr = document.getElementById(puz.file);
             var span = tr.getElementsByClassName('teammate-solves')[0];
             if (span) {
-              var args = {puz:puz.title};  //solves:_teamSolves, 
+              var args = {puz:puz.title};
               refillFromTemplate(span, 'teammate-solves', args);
             }
           }
         }
 
+        if (_remoteUnlocked.length > 0) {
+          var foundNew = false;
+          var newlyUnlocked = [];
+          for (var ru of _remoteUnlocked) {
+            if (!(ru.Piece in unlocked_feeders)) {
+              newlyUnlocked.push(ru.Url);
+              foundNew = true;
+            }
+          }
+          if (foundNew) {
+            loadViaIframe(newlyUnlocked);
+          }
+        }
+      }
+
+      function loadViaIframe(urls) {
+        if (urls.length > 0) {
+          var url = urls.pop();
+          const iframe = document.getElementById('iframe-loader');
+          iframe.src = url;
+          setTimeout(() => { 
+            syncUnlockedMetas();
+            loadViaIframe(urls);
+          }, 5*1000);  // give the iframe a few seconds to work
+        }
       }
 
       // ]]>
@@ -270,7 +300,7 @@
                       <ttd>&nbsp;</ttd>
                       <ttd class="feeders">
                         <for int="num" until="4">
-                          <a class="feedLink {metas.[puz.metaInfo].store}-{num}" target="_blank" title="Materials #{num} (locked)" trim="all">
+                          <a class="feedLink {metas.[puz.metaInfo].store}-{num}" target="_blank" title="Materials #{num+1} (locked)" trim="all">
                             <img ssrc="{metas.[puz.metaInfo].icon}" /><sub>{num+1}</sub>
                           </a>
                         </for>  
@@ -348,6 +378,7 @@
             </td>
         </tr>
       </table>
+      <iframe id="iframe-loader" />
 
     </div>
 

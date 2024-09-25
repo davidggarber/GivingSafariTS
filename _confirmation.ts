@@ -451,10 +451,23 @@ function appendResponse(block:HTMLDivElement, response:string):boolean {
         link.target = '_blank';
         link.appendChild(document.createTextNode(friendly));
         div.appendChild(link);
+
+
     }
     else if (type == ResponseType.Load) {
         consoleTrace(`Loading ${response}`);
-        
+
+        // Keep any url args
+        var urlArgs = (window.location.search ?? "?").substring(1);
+        if (urlArgs) {
+            if (response.indexOf('?') >= 0) {
+                response += '&' + urlArgs;
+            }
+            else {
+                response += '?' + urlArgs;
+            }
+        }
+
         // Use an iframe to navigate immediately to the response URL.
         // The iframe will be hidden, but any scripts will run immediately.
         const iframe = document.createElement('iframe');

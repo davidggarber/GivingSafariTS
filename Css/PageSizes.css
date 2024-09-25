@@ -538,6 +538,7 @@ body.build-error {
 }
 #Login-avatar {
   font-size: 20pt;
+  text-shadow: 0 0 2px white;
 }
 #Login-bar.avatar #Login-player {
   position: relative;

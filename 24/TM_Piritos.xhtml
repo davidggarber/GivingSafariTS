@@ -36,8 +36,11 @@
           saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
             phrases: boiler.lookup.phrases,
             src: window.location.href });
-            updatePuzzleList(boiler.lookup.meta + '-' + boiler.lookup.index, 'loaded');
+
+          if (updatePuzzleList(`${boiler.lookup.meta}-${boiler.lookup.index}`, 'loaded')) {
+            syncUnlockedFile(`${boiler.lookup.meta}-${boiler.lookup.index}`, window.location.href);
           }
+        }
       }
       //]]>
     </script>
