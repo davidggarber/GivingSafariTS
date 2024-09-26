@@ -73,10 +73,13 @@
   border: 1px solid #888;
   box-shadow:0px 0px 10px black;
 }
+#modal-login.hidden {
+  display: none;
+}
 #modal-login .modal-content {
   margin: 0px;
 }
-#modal-login .modal-content iframe {
+#modal-iframe {
   position: absolute;
   top: 0px;
   left: 0px;

@@ -88,34 +88,37 @@
         var emoji = document.getElementById('avatar').value;
         doLogin(pName, tName, emoji);
         if (urlArgExists('modal')) {
-          parent.dismissLogin();
+          dismissModal();
         }
         else {
           // Pivot UI to LogOut
           toggleLogout(true);
-          // parent.onLogin();
         }
       }
 
       function logout() {
-        doLogout(document.getElementById('delete').checked);
-        if (urlArgExists('modal')) {
-          parent.dismissLogin();
+        const isModal = urlArgExists('modal');
+        doLogout(isModal, document.getElementById('delete').checked);
+        if (isModal) {
+          dismissModal();
         }
         else {
           // Pivot UI to LogIn
           toggleLogout(true);
-          // parent.onLogin();
         }
       }
 
-      function cancel() {
-        if (urlArgExists('modal')) {
+      function dismissModal() {
+        try {
           parent.dismissLogin();
         }
-        else {
-          // parent.onLogin();
-        }
+        catch {
+          // Will fail when running on local file: protocol
+        }        
+      }
+
+      function cancel() {
+        dismissModal();
       }
 
     </script>

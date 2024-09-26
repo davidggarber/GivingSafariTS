@@ -7494,15 +7494,24 @@ function doLogin(player:string, team?:string, emoji?:string) {
 /**
  * Clear any cached login info
  */
-async function doLogout(deletePlayer?:boolean) {
+async function doLogout(isModal:boolean, deletePlayer?:boolean) {
   if (deletePlayer) {
     const data = {
       eventName: _eventName,
       player: _playerName,
       avatar: _emojiAvatar,
       team: _teamName,
-    };  
-    await callSyncApi("DeletePlayer", data);
+    };
+    let callback:SyncCallback|undefined = undefined;
+    try {
+      callback = !isModal ? autoLogin
+        : 'autoLogin' in parent ? (parent['autoLogin'] as SyncCallback)
+        : undefined;
+    }
+    catch {
+      // Will fail when running on local file: protocol
+    }
+    await callSyncApi("DeletePlayer", data, undefined, callback);
   }
 
   cacheLogin(_eventName, undefined);
@@ -7535,29 +7544,39 @@ function autoLogin() {
 function promptLogin(evt:MouseEvent) {
   evt.stopPropagation();
   dismissLogin(null);
-  const modal = document.createElement('div');
-  const content = document.createElement('div');
-  const close = document.createElement('span');
-  const iframe = document.createElement('iframe');
-  modal.id = 'modal-login';
-  toggleClass(content, 'modal-content', true);
-  toggleClass(close, 'modal-close', true);
-  close.appendChild(document.createTextNode("×"));
-  close.title = 'Close';
-  close.onclick = function(e) {dismissLogin(e)};
-  iframe.src = 'LoginUI.xhtml?iframe&modal';
-  content.appendChild(close);
-  content.appendChild(iframe);
-  modal.appendChild(content);
-
-  document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
-  document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin(event)});
+  let modal = document.getElementById('modal-login') as HTMLDivElement;
+  let iframe = document.getElementById('modal-iframe') as HTMLIFrameElement;
+  if (modal && iframe) {
+    iframe.src = 'LoginUI.xhtml?iframe&modal';
+    toggleClass(modal, 'hidden', false);
+  }
+  else {
+    modal = document.createElement('div');
+    const content = document.createElement('div');
+    const close = document.createElement('span');
+    iframe = document.createElement('iframe');
+    modal.id = 'modal-login';
+    iframe.id = 'modal-iframe';
+    toggleClass(content, 'modal-content', true);
+    toggleClass(close, 'modal-close', true);
+    close.appendChild(document.createTextNode("×"));
+    close.title = 'Close';
+    close.onclick = function(e) {dismissLogin(e)};
+    iframe.src = 'LoginUI.xhtml?iframe&modal';
+    content.appendChild(close);
+    content.appendChild(iframe);
+    modal.appendChild(content);
+  
+    document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
+    document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin(event)});  
+  }
 }
 
 function dismissLogin(evt:MouseEvent|null) {
   var modal = document.getElementById('modal-login');
   if (modal) {
-    document.getElementById('pageBody')?.removeChild(modal);
+    toggleClass(modal, 'hidden', true);
+    // document.getElementById('pageBody')?.removeChild(modal);
     autoLogin();
   }
   if (evt) {
@@ -7630,19 +7649,23 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 /*DONE*/) {
           consoleTrace(xhr.responseText);
+          let response:any = xhr.responseText;
+          let isText = true;
           try {
-              var obj = TryParseJson(xhr.responseText, false);
+              var obj = TryParseJson(response, false);
+              isText = false;  // it's json
               if (jsonCallback) {
                   jsonCallback(obj);
               }
           }
           catch {
             // Most likely problem is that xhr.responseText isn't JSON
-            if (textCallback) {
-              textCallback(xhr.responseText || xhr.statusText);
-            }
+            response = xhr.responseText || xhr.statusText;
           }
-        }
+          if (isText && textCallback) {
+            textCallback(response);
+          }
+      }
       };
       var strData = JSON.stringify(data);
       consoleTrace(`Calling ${apiName} with data=${strData}`);
