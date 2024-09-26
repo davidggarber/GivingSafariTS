@@ -51,7 +51,7 @@
 }
 
 .completed {
-  padding-right: 30px;
+  padding-right: 40px;
   white-space: nowrap;
 }
 .completed .teammate {
@@ -227,7 +227,8 @@ img.thumb {
   padding-left: 5px;
 }
 
-#iframe-loader {
+#iframe-loader iframe {
+  display: inline;
   width: 1px;
   height: 1px;
   border: none;

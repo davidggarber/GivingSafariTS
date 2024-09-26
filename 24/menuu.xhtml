@@ -144,14 +144,14 @@
       }
 
       function loadViaIframe(urls) {
-        if (urls.length > 0) {
+        var div = document.getElementById('iframe-loader');
+        for (var url of urls) {
+          // Create a bunch of single-use iframes
           var url = urls.pop();
-          const iframe = document.getElementById('iframe-loader');
+          const iframe = document.createElement('iframe');
           iframe.src = url;
-          setTimeout(() => { 
-            syncUnlockedMetas();
-            loadViaIframe(urls);
-          }, 5*1000);  // give the iframe a few seconds to work
+          iframe.onload = function(){setTimeout(() => syncUnlockedMetas(), 500)};
+          div.appendChild(iframe);
         }
       }
 
@@ -195,7 +195,7 @@
                     <tth class="feeders" onclick="sortTable(this)">Feeder</tth>
                   </if>
                   <tth class="author" onclick="sortTable(this)">Author</tth>
-                  <tth class="completed" onclick="sortTable(this)">&nbsp;</tth>
+                  <tth class="completed" onclick="sortTable(this)">Solved</tth>
                   <if test="{submitable}">
                     <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
                   </if>
@@ -263,7 +263,7 @@
                   <tth>&nbsp;</tth>
                   <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
                   <tth class="author" style="text-align: left;">Author</tth>
-                  <tth class="completed">&nbsp;</tth>
+                  <tth class="completed">Solved</tth>
                   <if test="{submitable}">
                     <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
                   </if>
@@ -378,7 +378,7 @@
             </td>
         </tr>
       </table>
-      <iframe id="iframe-loader" />
+      <div id="iframe-loader" />
 
     </div>
 
