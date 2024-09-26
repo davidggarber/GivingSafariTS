@@ -1283,7 +1283,7 @@ function createReloadUI(time:string) {
     title.classList.add('title-font');
     title.innerText = document.title;
     const p1 = document.createElement('p');
-    p1.appendChild(document.createTextNode('Would you like to reload your progress on '));
+    p1.appendChild(document.createTextNode('Would you like to reload auto-saved progress on '));
     p1.appendChild(title);
     p1.appendChild(document.createTextNode(' from earlier?'));
     const now = new Date();
@@ -7678,6 +7678,10 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
 
 export async function refreshTeamHomePage(callback:SimpleCallback) {
   if (!canSyncEvents || !_teamName) {
+    _teammates = [];
+    _teamSolves = {};
+    _remoteUnlocked = [];
+    callback();
     return;
   }
 

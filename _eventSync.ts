@@ -267,6 +267,10 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
 
 export async function refreshTeamHomePage(callback:SimpleCallback) {
   if (!canSyncEvents || !_teamName) {
+    _teammates = [];
+    _teamSolves = {};
+    _remoteUnlocked = [];
+    callback();
     return;
   }
 

@@ -190,12 +190,12 @@
                 </ttr>
                 <ttr id="sortHeader">
                   <tth class="icons" onclick="sortTable(this)">Type</tth>
-                  <tth class="html" onclick="sortTable(this)">Puzzle</tth>
+                  <tth class="author" onclick="sortTable(this)">Puzzle</tth>
                   <if test="{feeders}">
                     <tth class="feeders" onclick="sortTable(this)">Feeder</tth>
                   </if>
                   <tth class="author" onclick="sortTable(this)">Author</tth>
-                  <tth class="completed" onclick="sortTable(this)">Solved</tth>
+                  <tth class="completed" onclick="sortTable(this)" style="text-align: right; padding-right:5px;">Solved</tth>
                   <if test="{submitable}">
                     <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
                   </if>
@@ -383,7 +383,9 @@
     </div>
 
     <template id="teammate-list">
-      <p>The members of team <span class="teamname">{teamname}</span> include:</p>
+      <if exists="{teamname}">
+        <p>The members of team <span class="teamname">{teamname}</span> include:</p>
+      </if>
       <ttable id="teammates">
         <for each="mate" in="teammates">
           <ttr>

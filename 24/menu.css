@@ -7,7 +7,7 @@
   background-color: #4472C4;
 }
 #sortHeader th {
-  cursor: s-resize;
+  cursor: pointer;
 }
 
 .table tr:nth-child(odd) {
