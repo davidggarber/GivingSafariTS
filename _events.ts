@@ -109,7 +109,7 @@ const safari21Details:PuzzleEventDetails = {
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
-  'backLinks': { 'ps21': { href:'./menuu.xhtml'}},
+  'backLinks': { 'ps21': { href:'./Menu.xhtml'}},
   'validation': true,
 }
 
@@ -125,7 +125,7 @@ const giving24Details:PuzzleEventDetails = {
   'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
   // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
-  'backLinks': { 'gs24': { href:'./menuu.xhtml'}, 'ps21': { href:'./menuu.xhtml'}},
+  'backLinks': { 'gs24': { href:'./Menu.xhtml'}, 'ps21': { href:'./Menu.xhtml'}},
   'validation': true,
   eventSync: 'GivingSafari24',
 }
