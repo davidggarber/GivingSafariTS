@@ -89,6 +89,11 @@ export function postprocessDragFunctions(container:HTMLElement) {
  * @param elem a moveable element
  */
 function preprocessMoveable(elem:HTMLElement) {
+    var xmlns = elem.namespaceURI;
+    if (xmlns != "http://www.w3.org/1999/xhtml") {  // This is both HTML and XHTML
+        console.error("WARNING: non-HTML elements are not draggable: " + elem.localName)
+    }
+
     elem.setAttribute('draggable', 'true');
     elem.onpointerdown=function(e){onClickDrag(e)};
     elem.ondrag=function(e){onDrag(e)};
