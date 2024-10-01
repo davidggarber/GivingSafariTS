@@ -54,6 +54,9 @@
   padding-right: 40px;
   white-space: nowrap;
 }
+.completed .teammate-solves {
+  position: relative;
+}
 .completed .teammate {
   font-size: 16pt;
   text-shadow: 0 0 2px white, 0 0 1px white, 0 0 6px lime;

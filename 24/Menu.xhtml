@@ -117,7 +117,7 @@
         }
 
         if (JSON.stringify(_teamSolves) != JSON.stringify(boiler.lookup.solves)) {
-          boiler.lookup.solves = _teamSolves;
+          mergeSolves();  // Merge new solve info with previous cache
           for (var puz of puzzles) {
             var tr = document.getElementById(puz.file);
             var span = tr.getElementsByClassName('teammate-solves')[0];
@@ -140,6 +140,23 @@
           if (foundNew) {
             loadViaIframe(newlyUnlocked);
           }
+        }
+      }
+
+      function mergeSolves()
+      {
+        var keys = Object.keys(_teamSolves);
+        for (var i = 0; i < keys.length; i++) {
+          var puz = keys[i];
+          var update = _teamSolves[puz];
+          var keep = boiler.lookup.solves[puz] || [];
+          for (var u = 0; u < update.length; u++) {
+            var plyr = update[u];
+            if (!keep.find(p => p.Player==plyr.Player && p.Avatar == plyr.Avatar)) {
+              keep.push(update[u]);
+            }
+          }
+          boiler.lookup.solves[puz] = keep;
         }
       }
 
@@ -235,9 +252,9 @@
                         {puz.author}
                       </ttd>
                       <ttd class="completed">
-                        <p class="teammate-solves" xtrim="all">
+                        <span class="teammate-solves" xtrim="all">
                           <use template="teammate-solves" puz="{puz.title}" />
-                        </p>
+                        </span>
                         <span class="checkmark" />
                       </ttd>
                       <if test="{submitable}">
@@ -287,9 +304,9 @@
                         <span class="checkmark" />
                       </ttd>
                       <ttd class="completed">
-                        <p class="teammate-solves" xtrim="all">
+                        <span class="teammate-solves" xtrim="all">
                           <use template="teammate-solves" puz="{puz.title}" />
-                        </p>
+                        </span>
                         <span class="checkmark" />
                       </ttd>
                       <if test="{submitable}">
