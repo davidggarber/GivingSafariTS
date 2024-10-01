@@ -24,7 +24,6 @@
           urlArgs: _urlEventArguments,
           metas: metas,
           feeders: true,
-          submitable: false,
           solvable: true,
           table_cols: 5,
           teammates: [],
@@ -206,16 +205,33 @@
                   </tth>
                 </ttr>
                 <ttr id="sortHeader">
-                  <tth class="icons" onclick="sortTable(this)">Type</tth>
-                  <tth class="author" onclick="sortTable(this)">Puzzle</tth>
+                  <tth class="icons" onclick="sortTable(this)" trim="all">
+                    Type
+                    <span class="ascArrow">↓</span>
+                    <span class="descArrow">↑</span>
+                  </tth>
+                  <tth class="author sortedAsc" onclick="sortTable(this)">
+                    Puzzle
+                    <span class="ascArrow">↓</span>
+                    <span class="descArrow">↑</span>
+                  </tth>
                   <if test="{feeders}">
-                    <tth class="feeders" onclick="sortTable(this)">Feeder</tth>
+                    <tth class="feeders" onclick="sortTable(this)">
+                      Feeder
+                      <span class="ascArrow">↓</span>
+                      <span class="descArrow">↑</span>
+                    </tth>
                   </if>
-                  <tth class="author" onclick="sortTable(this)">Author</tth>
-                  <tth class="completed" onclick="sortTable(this)" style="text-align: right; padding-right:5px;">Solved</tth>
-                  <if test="{submitable}">
-                    <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
-                  </if>
+                  <tth class="author" onclick="sortTable(this)">
+                    Author
+                    <span class="ascArrow">↓</span>
+                    <span class="descArrow">↑</span>
+                  </tth>
+                  <tth class="completed" onclick="sortTable(this)" style="text-align: right; padding-right:5px;">
+                    Solved
+                    <span class="ascArrow">↓</span>
+                    <span class="descArrow">↑</span>
+                  </tth>
                 </ttr>    
               </tthead>
 
@@ -257,9 +273,6 @@
                         </span>
                         <span class="checkmark" />
                       </ttd>
-                      <if test="{submitable}">
-                        <ttd class="submital"></ttd>
-                      </if>
                     </ttr>
                   </if>
                 </for>
@@ -281,9 +294,6 @@
                   <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
                   <tth class="author" style="text-align: left;">Author</tth>
                   <tth class="completed">Solved</tth>
-                  <if test="{submitable}">
-                    <tth class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></tth>
-                  </if>
                 </ttr>    
                 <for each="puz" in="{puzzles}">
                   <if test="puz.group" eq="meta">
@@ -309,9 +319,6 @@
                         </span>
                         <span class="checkmark" />
                       </ttd>
-                      <if test="{submitable}">
-                        <ttd class="submital"></ttd>
-                      </if>
                     </ttr>
                     <ttr>
                       <ttd>&nbsp;</ttd>
@@ -330,9 +337,6 @@
       -->
                       </ttd>
                       <ttd class="completed" />
-                      <if test="{submitable}">
-                        <ttd class="submital"><span class="if-solver">Submit</span><span class="if-no-solver"><img class="solve-check" src="../Icons/Check.png" /></span></ttd>
-                      </if>
                     </ttr>
                   </if>
                 </for>

@@ -50,6 +50,23 @@
   text-size-adjust: 9pt;
 }
 
+.ascArrow {
+  display: none;
+}
+.sortedAsc .ascArrow {
+  display: inline;
+  position: relative;
+  top: -2px;
+}
+.descArrow {
+  display: none;
+}
+.sortedDesc .descArrow {
+  display: inline;
+  position: relative;
+  top: -2px;
+}
+
 .completed {
   padding-right: 40px;
   white-space: nowrap;
@@ -95,28 +112,6 @@ tr.solved .checkmark {
   -webkit-user-select: none;
   -o-user-select: none;
   user-select: none;
-}
-.feeders .bus sub {
-  position: relative;
-  left: -16px;
-  top: -8px;
-  color: black;
-  text-shadow: 0 0 5px yellow;
-}
-.feeders .science sub {
-  position: relative;
-  left: -14px;
-  top: -6px;
-  color: black;
-}
-.feeders .radio sub {
-  position: relative;
-  left: -19px;
-  top: -8px;
-  color: white;
-}
-.feeders .science.unlocked sub {
-  color: white;
 }
 #logo-div {
   position: absolute;
