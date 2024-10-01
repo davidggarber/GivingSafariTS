@@ -36,6 +36,10 @@
         ]
 
         function onLoad() {
+            if (relativeIndex()) {
+                return;
+            }
+
             var art = arts[Math.floor(Math.random() * arts.length)];
             var font = fonts[Math.floor(Math.random() * fonts.length)];
             var color = colors[Math.floor(Math.random() * colors.length)];
@@ -47,6 +51,28 @@
             var image = document.getElementById('image');
             image.src = 'Art/' + art + '.png';
         }
+
+        function relativeIndex() {
+            var folders = window.location.pathname.toLowerCase().split('/');
+            if (folders[0].length > 0) {
+                return false;  // pre-root-level??? "X/Page" instead of "/X/Page"
+            }
+            if (folders.length <= 2) {
+                return false;  // root-level page "/Page"
+            }
+            if (folders[folders.length - 1] == "index.html") {
+                return false;  // that's where we already are
+            }
+
+            // Create a path to index.html in the same folder (except all lower-case)
+            folders[folders.length - 1] = "index.html";
+            var pathname = folders.join('/');
+
+            // Redirect to index.html in the same folder (in 1 second)
+            setTimeout(() => { window.location.href = `${window.location.protocol}//${window.location.host}${pathname}` }, 1000);
+            return true;
+        }
+
     </script>
     <style>
         #div {
