@@ -1,6 +1,6 @@
 import { theBoiler } from "./_boilerplate";
 import { consoleTrace } from "./_builder";
-import { toggleClass } from "./_classUtil";
+import { hasClass, toggleClass } from "./_classUtil";
 import { cacheLogin, getLogin, TryParseJson } from "./_storage";
 
 export enum EventSyncActivity {
@@ -164,9 +164,11 @@ function promptLogin(evt:MouseEvent) {
 function dismissLogin(evt:MouseEvent|null) {
   var modal = document.getElementById('modal-login');
   if (modal) {
-    toggleClass(modal, 'hidden', true);
-    // document.getElementById('pageBody')?.removeChild(modal);
-    autoLogin();
+    if (!hasClass(modal, 'hidden')) {
+      toggleClass(modal, 'hidden', true);
+      autoLogin();
+      refreshTeamHomePage();
+    }
   }
   if (evt) {
     evt.stopPropagation();
@@ -265,12 +267,17 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
   }
 }
 
-export async function refreshTeamHomePage(callback:SimpleCallback) {
+export async function refreshTeamHomePage(callback?:SimpleCallback) {
   if (!canSyncEvents || !_teamName) {
     _teammates = [];
     _teamSolves = {};
     _remoteUnlocked = [];
-    callback();
+    if (callback) {
+      callback();
+    }
+    else if (_onTeamHomePageRefresh) {
+      _onTeamHomePageRefresh();
+    }
     return;
   }
 
@@ -279,8 +286,15 @@ export async function refreshTeamHomePage(callback:SimpleCallback) {
     team: _teamName,
   };
 
-  _onTeamHomePageRefresh = callback;
-  await callSyncApi('TeamHomePage', data, onRefreshTeamHomePage);
+  if (callback) {
+    _onTeamHomePageRefresh = callback;
+  }
+  else {
+    callback = _onTeamHomePageRefresh;
+  }
+  if (_onTeamHomePageRefresh) {
+    await callSyncApi('TeamHomePage', data, onRefreshTeamHomePage);
+  }
 }
 
 export type PlayerInfo = {
@@ -307,7 +321,7 @@ let _remoteUnlocked: UnlockedPiece[] = [];
 
 type SimpleCallback = () => void;
 
-let _onTeamHomePageRefresh:SimpleCallback|null = null;
+let _onTeamHomePageRefresh:SimpleCallback|undefined = null;
 
 
 function onRefreshTeamHomePage(json:object) {
@@ -328,7 +342,13 @@ function onRefreshTeamHomePage(json:object) {
   }
 }
 
-async function syncUnlockedFile(metaFeeder:string, url:string) {
+/**
+ * Ping server when a meta feeder has been unlocked.
+ * Called directly by the file in question, when it is first loaded.
+ * @param metaFeeder "[meta]-[index]"
+ * @param url The file's actual window.location.href
+ */
+export async function syncUnlockedFile(metaFeeder:string, url:string) {
   if (!canSyncEvents || !_teamName) {
     return;
   }

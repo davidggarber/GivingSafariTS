@@ -43,6 +43,10 @@
       }
 
       var unlocked_feeders = {};
+      var _refresh_interval = undefined;
+      var _stopRefreshing = new Date().getTime();
+      var _refreshEvery = 15 * 1000;  // 15 seconds
+
 
       function syncProgress() {
         // if (document.hidden) {
@@ -55,8 +59,10 @@
         
         syncUnlockedMetas();
 
-        _stopRefreshing = new Date().getTime() + 60 * 60 * 1000;  // 1 hour of refreshes
-        timerRefreshTeamHomePage();
+        // Once we start syncing, check every 15 seconds for 3 hours
+        _stopRefreshing = new Date().getTime() + 3 * 60 * 60 * 1000;  // 1 hour of refreshes
+        _refresh_interval = setInterval(timeToRefreshTeam, _refreshEvery);
+        timeToRefreshTeam();  // With an initial call immediately
       }
 
       function syncUnlockedMetas() {
@@ -69,12 +75,9 @@
         }
       }
 
-      var _stopRefreshing = new Date().getTime();
-      var _refreshEvery = 15 * 1000;  // 15 seconds
-
-      function timerRefreshTeamHomePage() {
-        if (new Date().getTime() < _stopRefreshing) {
-          setTimeout(() => { timerRefreshTeamHomePage() }, _refreshEvery);
+      function timeToRefreshTeam() {
+        if (new Date().getTime() >= _stopRefreshing) {
+          clearInterval(_refresh_interval);
         }
         refreshTeamHomePage(refreshTeamProgress);
       }
@@ -131,6 +134,9 @@
           var foundNew = false;
           var newlyUnlocked = [];
           for (var ru of _remoteUnlocked) {
+            if (!ru.Piece) {
+              continue;  // bad data. Don't load, since we'll never be able to acknowledge the load
+            }
             if (!(ru.Piece in unlocked_feeders)) {
               newlyUnlocked.push(ru.Url);
               foundNew = true;
@@ -144,6 +150,11 @@
 
       function mergeSolves()
       {
+        if (Object.keys(_teamSolves).length == 0) {
+          boiler.lookup.solves = {};
+          return;  // Special case: clear all
+        }
+
         var keys = Object.keys(_teamSolves);
         for (var i = 0; i < keys.length; i++) {
           var puz = keys[i];

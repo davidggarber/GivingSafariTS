@@ -77,7 +77,6 @@
         var chars = splitEmoji(wider ? emojiMore : emojiAnimals);
         var rand = parseInt(Math.random() * chars.length);
         document.getElementById('avatar').value = chars[rand];
-        prevRandom.push(chars[rand]);
       }
       function prevEmoji() {
         var ch = undoEmoji.pop();
