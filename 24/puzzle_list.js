@@ -41,7 +41,7 @@ var puzzles = [
     { title: 'Egg', thumb: 'egg', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'ironChef',number:2}] },
     { title: 'Food Trucks', thumb: 'ftr', author: 'Jesse McGatha', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'smorgasbord',number:3}] },
     { title: 'Foodie Games', thumb: 'fga', author: 'Zhenya Ross', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'fridge',number:3}] },
-    { title: 'FOODoku', thumb: 'foo', author: 'Jeffrey Lin', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'fridge',number:2}] },
+    { title: 'FOODoku', file:'Foodoku', thumb: 'foo', author: 'Jeffrey Lin', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'fridge',number:2}] },
     { title: 'Fridge Raider', thumb: 'fr1', author: 'Jeffrey Lin', type: types.rebus, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'fridge',number:0}] },
     { title: 'Fridge Raider 2', thumb: 'fr2', author: 'Jeffrey Lin', type: types.rebus, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'fridge',number:1}] },
     { title: 'Grandma’s Secret Recipe',file:'GrandmasSecretRecipe', thumb: 'gra', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },
