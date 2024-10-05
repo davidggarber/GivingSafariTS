@@ -6949,7 +6949,7 @@ exports.refreshTeamHomePage = refreshTeamHomePage;
 let _teammates;
 let _teamSolves;
 let _remoteUnlocked = [];
-let _onTeamHomePageRefresh = null;
+let _onTeamHomePageRefresh = undefined;
 function onRefreshTeamHomePage(json) {
     if ('teammates' in json) {
         _teammates = json['teammates'];
@@ -7694,10 +7694,7 @@ function testBoilerplate(bp) {
 }
 exports.testBoilerplate = testBoilerplate;
 if (typeof window !== 'undefined') {
-    console.log("Loading " + window.location.href);
     window.addEventListener('load', function (e) { boilerplate(pageBoiler()); });
-    // window.onload = function(){boilerplate(pageBoiler()!)};  // error if boiler still undefined
-    // boilerplate(pageBoiler()!);  // error if boiler still undefined
 }
 /*-----------------------------------------------------------
  * _confirmation.ts

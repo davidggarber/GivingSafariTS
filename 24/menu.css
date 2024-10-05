@@ -30,8 +30,13 @@
   padding: 0px;
 }
 
+.presence {
+  width: 0.4in;
+  text-align: center;
+}
+
 .icons {
-  width: 1in; 
+  width: 0.5in; 
   text-align: center;
 }
 .html {

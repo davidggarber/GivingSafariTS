@@ -303,6 +303,13 @@ export type PlayerInfo = {
   Team?: string;
 }
 
+export type PlayerInfoPlus = {
+  Player: string;
+  Avatar: string;
+  Team?: string;
+  Presence?: string;
+}
+
 let _teammates:PlayerInfo[];
 
 export interface SolveSummary {
@@ -318,10 +325,9 @@ export type UnlockedPiece = {
 
 let _remoteUnlocked: UnlockedPiece[] = [];
 
-
 type SimpleCallback = () => void;
 
-let _onTeamHomePageRefresh:SimpleCallback|undefined = null;
+let _onTeamHomePageRefresh:SimpleCallback|undefined = undefined;
 
 
 function onRefreshTeamHomePage(json:object) {
