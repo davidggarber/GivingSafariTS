@@ -29,8 +29,13 @@
       boiler.lookup['eventName'] = eventName;
 
       var puzzleName = urlParams.get('z');
-      boiler.lookup['puzzleName'] = puzzleName;
-      boiler.title = 'Answer Attempts: ' + puzzleName;
+      if (puzzleName) {
+        boiler.lookup['puzzleName'] = puzzleName;
+        boiler.title = 'Answer Attempts: ' + puzzleName;
+      }
+      else {
+        window.location.href = 'Puzzles.xhtml?' + urlParams;
+      }
 
       function doRefresh() {
         var data = {
@@ -127,7 +132,10 @@
           <option id="{puzzleName}" value="{puzzleName}">{puzzleName}</option>
         </select>
       </p>
-      <button onclick="doRefresh()">Refresh Puzzle List</button>
+      <p>
+        <button onclick="doRefresh()">Refresh Puzzle List</button>
+        <a href="Puzzles.xhtml?e={eventName}">All puzzles</a>
+      </p>
       <table>
         <thead>
           <tr id="header-row">

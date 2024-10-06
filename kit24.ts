@@ -12490,9 +12490,10 @@ function pushTemplateContext(passed_args:TemplateArg[]):object {
  * @param parent Parent element to refill. Existing contents will be cleared.
  * @param tempId ID of a <template> element
  * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element
  */
-export function refillFromTemplate(parent:Element, tempId:string, args?:object) {
-  injectFromTemplate(parent, refillFromNodes, tempId, args);
+export function refillFromTemplate(parent:Element, tempId:string, args?:object):Node|undefined {
+  return injectFromTemplate(parent, refillFromNodes, tempId, args);
 }
 
 /**
@@ -12500,9 +12501,10 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
  * @param parent Parent element to append to.
  * @param tempId ID of a <template> element
  * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element
  */
-export function appendFromTemplate(parent:Element, tempId:string, args?:object) {
-  injectFromTemplate(parent, appendFromNodes, tempId, args);
+export function appendFromTemplate(parent:Element, tempId:string, args?:object):Node|undefined {
+  return injectFromTemplate(parent, appendFromNodes, tempId, args);
 }
 
 type InjectionFunc = (parent:Element, nodes:Node[]) => void;
@@ -12513,8 +12515,9 @@ type InjectionFunc = (parent:Element, nodes:Node[]) => void;
  * @param callback The method of injecting the template contents into the parent.
  * @param tempId ID of a <template> element
  * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element, if any (ignoring any prefing text). If no elements, can return text.
  */
-function injectFromTemplate(parent:Element, callback:InjectionFunc, tempId:string, args?:object) {
+function injectFromTemplate(parent:Element, callback:InjectionFunc, tempId:string, args?:object):Node|undefined {
   if (!tempId) {
     throw new ContextError('Template ID not specified');
   }
@@ -12528,6 +12531,7 @@ function injectFromTemplate(parent:Element, callback:InjectionFunc, tempId:strin
 
   // Make sure we know the stack of our destination
   initElementStack(parent);
+  let first:Node|undefined = undefined;
 
   try {
     const passed_args = parseObjectAsUseArgs(args ?? {});
@@ -12538,6 +12542,12 @@ function injectFromTemplate(parent:Element, callback:InjectionFunc, tempId:strin
     const clone = template.content.cloneNode(true) as HTMLElement;
     const dest = expandContents(clone);
 
+    // Identify the first interesting child of the template. Ideally, the first element.
+    first = dest.filter(d => d.nodeType == Node.ELEMENT_NODE)[0];
+    if (!first) {
+      first = dest[0];
+    }
+
     popBuilderElement();
 
     callback(parent, dest);
@@ -12547,6 +12557,7 @@ function injectFromTemplate(parent:Element, callback:InjectionFunc, tempId:strin
     if (shouldThrow(ctxerr, template)) { throw ctxerr; }
   }
   popBuilderContext();
+  return first;
 }
 
 /**

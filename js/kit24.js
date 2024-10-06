@@ -11227,9 +11227,10 @@ function pushTemplateContext(passed_args) {
  * @param parent Parent element to refill. Existing contents will be cleared.
  * @param tempId ID of a <template> element
  * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element
  */
 function refillFromTemplate(parent, tempId, args) {
-    injectFromTemplate(parent, refillFromNodes, tempId, args);
+    return injectFromTemplate(parent, refillFromNodes, tempId, args);
 }
 exports.refillFromTemplate = refillFromTemplate;
 /**
@@ -11237,9 +11238,10 @@ exports.refillFromTemplate = refillFromTemplate;
  * @param parent Parent element to append to.
  * @param tempId ID of a <template> element
  * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element
  */
 function appendFromTemplate(parent, tempId, args) {
-    injectFromTemplate(parent, appendFromNodes, tempId, args);
+    return injectFromTemplate(parent, appendFromNodes, tempId, args);
 }
 exports.appendFromTemplate = appendFromTemplate;
 /**
@@ -11248,6 +11250,7 @@ exports.appendFromTemplate = appendFromTemplate;
  * @param callback The method of injecting the template contents into the parent.
  * @param tempId ID of a <template> element
  * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element, if any (ignoring any prefing text). If no elements, can return text.
  */
 function injectFromTemplate(parent, callback, tempId, args) {
     if (!tempId) {
@@ -11262,6 +11265,7 @@ function injectFromTemplate(parent, callback, tempId, args) {
     }
     // Make sure we know the stack of our destination
     initElementStack(parent);
+    let first = undefined;
     try {
         const passed_args = parseObjectAsUseArgs(args ?? {});
         pushTemplateContext(passed_args);
@@ -11269,6 +11273,11 @@ function injectFromTemplate(parent, callback, tempId, args) {
         // The template doesn't have any child nodes. Its content must first be cloned.
         const clone = template.content.cloneNode(true);
         const dest = expandContents(clone);
+        // Identify the first interesting child of the template. Ideally, the first element.
+        first = dest.filter(d => d.nodeType == Node.ELEMENT_NODE)[0];
+        if (!first) {
+            first = dest[0];
+        }
         popBuilderElement();
         callback(parent, dest);
     }
@@ -11279,6 +11288,7 @@ function injectFromTemplate(parent, callback, tempId, args) {
         }
     }
     popBuilderContext();
+    return first;
 }
 /**
  * Wipe the current contents of a container element, and replace with a new list of nodes.

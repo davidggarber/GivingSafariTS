@@ -29,8 +29,13 @@
       boiler.lookup['eventName'] = eventName;
 
       var teamName = urlParams.get('t');
-      boiler.lookup['teamName'] = teamName;
-      boiler.title = 'Team Status: ' + teamName;
+      if (teamName) {
+        boiler.lookup['teamName'] = teamName;
+        boiler.title = 'Team Status: ' + teamName;
+      }
+      else {
+        window.location.href = 'Teams.xhtml?' + urlParams;
+      }
 
       function doRefresh() {
         var data = {
@@ -60,6 +65,9 @@
         }
 
         for (var row of list) {
+          if (row['puzzle'] == '') {
+            row['puzzle'] = '[Home page]';
+          }
           var id = `row-${row['puzzle']}`;
           var tr = document.getElementById(id);
           if (tr) {
@@ -143,7 +151,10 @@
       <p>
         <select id="picker" value="{teamName}" onchange="changePicker()" />
       </p>
-      <button onclick="doRefresh()">Refresh</button>
+      <p>
+        <button onclick="doRefresh()">Refresh</button>
+        <a href="Teams.xhtml?e={eventName}">All teams</a>
+      </p>
       <table>
         <thead>
           <tr id="header-row">
