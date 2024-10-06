@@ -18,7 +18,7 @@
         lookup: {},
       };
 
-      var eventName = 'gs24';
+      var eventName = 'GivingSafari24';  // TODO: get from URL
       var firstLoad = true;
 
       const queryString = window.location.search;
@@ -77,6 +77,22 @@
         firstLoad = false;
       }
 
+      function refreshPicker(response) {
+        var list = JSON.parse(response);
+        var select = document.getElementById('picker');
+        for (var row of list) {
+          var opt = document.getElementById(row.PuzzleName);
+          if (!opt) {
+            opt = document.createElement('option');
+            opt.id = row.PuzzleName;
+            opt.value = row.PuzzleName;
+            opt.innerText = row.PuzzleName;
+            opt.class = row.PuzzleType;
+            select.appendChild(opt);
+          }
+        }
+      }
+
       function changePicker() {
         var pick = document.getElementById('picker').value;
         if (pick != puzzleName) {
@@ -102,7 +118,9 @@
   <body id="ListPuzzles">
     <div id="pageBody">
       <p>
-        <select id="picker" value="{puzzleName}" onchange="changePicker()" />
+        <select id="picker" value="{puzzleName}" onchange="changePicker()">
+          <option id="{puzzleName}" value="{puzzleName}">{puzzleName}</option>
+        </select>
       </p>
       <button onclick="doRefresh()">Refresh Puzzle List</button>
       <table>
