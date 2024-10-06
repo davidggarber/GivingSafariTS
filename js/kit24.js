@@ -6690,7 +6690,9 @@ var EventSyncActivity;
     EventSyncActivity["Unlock"] = "Unlock";
     EventSyncActivity["Solve"] = "Solve";
 })(EventSyncActivity || (exports.EventSyncActivity = EventSyncActivity = {}));
-const localSync = window.location.href.substring(0, 5) == 'file:';
+// Support testing against a local Sync server.
+// Note: test environment does not define 'window'
+const localSync = (typeof window !== 'undefined') ? (window.location.href.substring(0, 5) == 'file:') : true;
 let canSyncEvents = false;
 let _eventName = undefined;
 let _playerName = undefined;

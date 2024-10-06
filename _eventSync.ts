@@ -11,7 +11,9 @@ export enum EventSyncActivity {
   Solve = "Solve",
 }
 
-const localSync = window.location.href.substring(0,5) == 'file:';
+// Support testing against a local Sync server.
+// Note: test environment does not define 'window'
+const localSync = (typeof window !== 'undefined') ? (window.location.href.substring(0,5) == 'file:') : true;
 let canSyncEvents = false;
 
 let _eventName:string|undefined = undefined;
