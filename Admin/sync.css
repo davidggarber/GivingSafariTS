@@ -24,3 +24,25 @@
 .new td, td.new {
   font-weight: bold;
 }
+
+
+.ascArrow {
+  display: none;
+}
+.sortedAsc .ascArrow {
+  display: inline;
+  position: relative;
+  top: -2px;
+}
+.descArrow {
+  display: none;
+}
+.sortedDesc .descArrow {
+  display: inline;
+  position: relative;
+  top: -2px;
+}
+
+.sortable th {
+  cursor: pointer;
+}
