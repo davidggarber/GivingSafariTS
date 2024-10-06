@@ -24,9 +24,10 @@
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
       if (urlParams.has('e')) {
-        eventName =urlParams.get('e');
-        boiler.lookup['eventName'] = eventName;
+        eventName = urlParams.get('e');
       }
+      boiler.lookup['eventName'] = eventName;
+
       var puzzleName = urlParams.get('z');
       boiler.lookup['puzzleName'] = puzzleName;
       boiler.title = 'Answer Attempts: ' + puzzleName;
@@ -116,6 +117,10 @@
     </style>
   </head>
   <body id="ListPuzzles">
+    <!--
+        A list of all submissions for this puzzle: both correct and incorrect.
+        Correct submissions are decorated with a checkmark.
+      -->
     <div id="pageBody">
       <p>
         <select id="picker" value="{puzzleName}" onchange="changePicker()">

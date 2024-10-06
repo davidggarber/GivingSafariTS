@@ -87,10 +87,14 @@ function createRow1(id, text, cls) {
 function createCell(text, cls) {
   var td = document.createElement('td');
   td.appendChild(document.createTextNode(text));
-  if (cls) {
-    toggleClass(td, cls, true);
+  if (safeClassName(cls)) {
+    toggleClass(td, safeClassName(cls), true);
   }
   return td;
+}
+
+function safeClassName(cls) {
+  return cls.replaceAll(' ', '');
 }
 
 function createLinkCell(text, url, cls) {

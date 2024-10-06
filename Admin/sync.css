@@ -1,6 +1,7 @@
 ._Admin .title {
   font-size: 32pt;
   font-family: 'Algerian';
+  font-variant-caps: small-caps;
   position: relative;
   top: -0.25in;
 }

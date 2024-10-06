@@ -12492,6 +12492,29 @@ function pushTemplateContext(passed_args:TemplateArg[]):object {
  * @param arg an object whose keys and values will become the arguments to the template.
  */
 export function refillFromTemplate(parent:Element, tempId:string, args?:object) {
+  injectFromTemplate(parent, refillFromNodes, tempId, args);
+}
+
+/**
+ * Appen the contents of a template after any existing children of a parent
+ * @param parent Parent element to append to.
+ * @param tempId ID of a <template> element
+ * @param arg an object whose keys and values will become the arguments to the template.
+ */
+export function appendFromTemplate(parent:Element, tempId:string, args?:object) {
+  injectFromTemplate(parent, appendFromNodes, tempId, args);
+}
+
+type InjectionFunc = (parent:Element, nodes:Node[]) => void;
+
+/**
+ * Expand a template, and then inject the contents into a parent, subject to an injection function.
+ * @param parent Parent element to refill. Existing contents will be cleared.
+ * @param callback The method of injecting the template contents into the parent.
+ * @param tempId ID of a <template> element
+ * @param arg an object whose keys and values will become the arguments to the template.
+ */
+function injectFromTemplate(parent:Element, callback:InjectionFunc, tempId:string, args?:object) {
   if (!tempId) {
     throw new ContextError('Template ID not specified');
   }
@@ -12517,10 +12540,10 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
 
     popBuilderElement();
 
-    refillFromNodes(parent, dest);
+    callback(parent, dest);
   }
   catch (ex) {
-    const ctxerr = wrapContextError(ex, 'refillFromTemplate', elementSourceOffset(template));
+    const ctxerr = wrapContextError(ex, 'injectFromTemplate', elementSourceOffset(template));
     if (shouldThrow(ctxerr, template)) { throw ctxerr; }
   }
   popBuilderContext();
@@ -12535,6 +12558,15 @@ function refillFromNodes(parent:Element, dest:Node[]) {
   while (parent.childNodes.length > 0) {
     parent.removeChild(parent.childNodes[0]);
   }
+  appendFromNodes(parent, dest);
+}
+
+/**
+ * Wipe the current contents of a container element, and replace with a new list of nodes.
+ * @param parent The container
+ * @param dest The new list of contents
+ */
+function appendFromNodes(parent:Element, dest:Node[]) {
   for (let i = 0; i < dest.length; i++) {
     parent.appendChild(dest[i]);
   }

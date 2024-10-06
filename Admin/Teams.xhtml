@@ -34,7 +34,7 @@
         var existing = rowIdSet(tbody, true);
 
         for (var row of list) {
-          var id = "player-" + row['Team'];
+          var id = "team-" + row;
           var tr = document.getElementById(id);
           if (tr) {
             // Already exists
@@ -64,6 +64,9 @@
     </style>
   </head>
   <body id="ListTeams">
+    <!--
+        A list of all known teams, with links to additional information.
+      -->
     <div id="pageBody">
       <button onclick="doRefresh()">Refresh Team List</button>
       <table>

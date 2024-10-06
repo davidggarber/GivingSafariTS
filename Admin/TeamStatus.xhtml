@@ -18,15 +18,16 @@
         lookup: {},
       };
 
-      var eventName = 'gs24';
+      var eventName = 'GivingSafari24';  // TODO: get from URL
       var firstLoad = true;
 
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
       if (urlParams.has('e')) {
         eventName =urlParams.get('e');
-        boiler.lookup['eventName'] = eventName;
       }
+      boiler.lookup['eventName'] = eventName;
+
       var teamName = urlParams.get('t');
       boiler.lookup['teamName'] = teamName;
       boiler.title = 'Team Status: ' + teamName;
@@ -55,7 +56,7 @@
 
         // Use the first row to fix the headers
         if (list.length > 0) {
-          colKeys = refreshColumns(list[0]);
+          colKeys = refreshColumns(Object.keys(list[0]));
         }
 
         for (var row of list) {
@@ -84,12 +85,11 @@
         firstLoad = false;
       }
 
-      function refreshColumns(row) {
-        var members = Object.keys(row);
+      function refreshColumns(colNames) {
         var tr = document.getElementById('header-row');
         var existing = childIdSet(tr, 'th', true);
 
-        for (var col of members) {
+        for (var col of colNames) {
           var id = `col-${col}`;
           var th = document.getElementById(id);
           if (th) {
@@ -98,19 +98,16 @@
             existing[id] = null;
           }
           else {
-            th = document.createElement('th');
-            th.appendChild(document.createTextNode(col));
-            th.id = id;
-            tr.appendChild(th);
+            appendFromTemplate(tr, 'playerInfo', {playerName:col});
           }
         }
 
-        // If any pre-existing rows have gone missing, tag them
+        // If any pre-existing cols have gone missing, tag them
         var missing = Object.entries(existing).filter(pair => pair[1]).map(pair => pair[0]);
         markAsMissing(missing);
 
         // List all of the columns as keys
-        var allCols = childIdSet(tr, 'th', true);
+        var allCols = childIdSet(tr, 'th', true);  // Regenerate, after refresh
         var keys = Object.entries(allCols).map(pair => pair[0].substring(4));  // strip 'col-' prefixes
         return keys;
       }
@@ -138,11 +135,15 @@
     </style>
   </head>
   <body id="ListPuzzles">
+    <!--
+      A table of all puzzles (rows) and all players (columns).
+      Each cell is how far the player has progressed on that puzzle.
+      -->
     <div id="pageBody">
       <p>
         <select id="picker" value="{teamName}" onchange="changePicker()" />
       </p>
-      <button onclick="doRefresh()">Refresh Puzzle List</button>
+      <button onclick="doRefresh()">Refresh</button>
       <table>
         <thead>
           <tr id="header-row">
@@ -155,5 +156,10 @@
       </table>
 
     </div>
+
+    <template id="playerInfo">
+      <th id="col-{playerName}">{playerName}</th>
+    </template>
+
   </body>
 </html>
