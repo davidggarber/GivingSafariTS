@@ -56,11 +56,13 @@ function scratchClick(evt:MouseEvent) {
 
     const spRect = scratchPad.getBoundingClientRect();
 
+    const div = document.createElement('div');
+    toggleClass(div, 'scratch-div', true);
     currentScratchInput = document.createElement('textarea');
 
     // Position the new textarea where its first character would be at the click point
-    currentScratchInput.style.left = (evt.clientX - spRect.left - 5) + 'px';  
-    currentScratchInput.style.top = (evt.clientY - spRect.top - 10) + 'px';  
+    div.style.left = (evt.clientX - spRect.left - 5) + 'px';  
+    div.style.top = (evt.clientY - spRect.top - 10) + 'px';  
     currentScratchInput.style.width = Math.min(spRect.right - evt.clientX, spRect.width / 3) + 'px';
     disableSpellcheck(currentScratchInput);
     currentScratchInput.title = 'Escape to exit note mode';
@@ -68,10 +70,16 @@ function scratchClick(evt:MouseEvent) {
     currentScratchInput.onkeyup = function(e) { scratchTyped(e); }
 
     toggleClass(scratchPad, 'topmost', true);
-    scratchPad.appendChild(currentScratchInput);
+    div.appendChild(currentScratchInput);
+    attachDragHandle(div);
+    scratchPad.appendChild(div);
     currentScratchInput.focus();
 }
 
+/**
+ * When the user clicks away, flatten
+ * @param evt 
+ */
 function scratchPadClick(evt:MouseEvent) {
     if (!evt.ctrlKey) {
         if (evt.target != currentScratchInput) {
@@ -90,11 +98,15 @@ function scratchPageClick(evt:MouseEvent) {
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
         let underScratch = false;
 
+        // If the user clicked on an existing scratch div, rehydrate
         for (let i = 0; i < targets.length; i++) {
             const target = targets[i] as HTMLElement;
             if (hasClass(target as Node, 'scratch-div')) {
                 scratchRehydrate(target as HTMLDivElement);
                 return;
+            }
+            if (hasClass(target, 'scratch-drag-handle')) {
+                return;  // Let dragging happen
             }
             if (target.id === 'scratch-pad') {
                 underScratch = true;
@@ -165,25 +177,39 @@ function scratchResize(ta: HTMLTextAreaElement) {
 
 /**
  * Convert the active textarea to a flattened div
- * The textarea will be removed, and the new div added to the scratchPad.
+ * The textarea will be removed, and the text added directly to the div.
  */
 function scratchFlatten() {
-    if (!scratchPad || !currentScratchInput) { return; }
+    if (!scratchPad || !currentScratchInput) { 
+      return; 
+    }
 
     toggleClass(scratchPad, 'topmost', false);
 
-    const text = currentScratchInput!.value.trimEnd();
-    if (text) {
-        const rect = currentScratchInput!.getBoundingClientRect();
-        scratchCreate(parseInt(currentScratchInput!.style.left), 
-            parseInt(currentScratchInput!.style.top),
-            parseInt(currentScratchInput!.style.width), 
-            rect.height,
-            text
-        );
-    }
-    currentScratchInput!.parentNode!.removeChild(currentScratchInput!);
+    // Avoid re-entrancy
+    const ta = currentScratchInput;
+    const div = ta.parentNode as HTMLDivElement;
+    const text = ta!.value.trimEnd();
     currentScratchInput = undefined;
+
+    const handle = div.getElementsByClassName('scratch-drag-handle')[0];
+    if (handle) {
+        div.removeChild(handle);
+    }
+
+    if (text) {
+        const rect = ta.getBoundingClientRect();
+
+        textIntoScratchDiv(text, div);
+        const width = parseInt(ta!.style.width);
+        div.style.maxWidth = width + 'px';
+        div.style.maxHeight = rect.height + 'px';
+        div.removeChild(ta!);
+    }
+    else {
+      // Remove the entire div
+      div.parentNode?.removeChild(div);
+    }
 
     saveScratches(scratchPad);
 }
@@ -226,8 +252,8 @@ function scratchRehydrate(div:HTMLDivElement) {
     const rcSP = scratchPad.getBoundingClientRect();
     const rcD = div.getBoundingClientRect();
 
-    ta.style.left = div.style.left;  
-    ta.style.top = div.style.top;  
+    // span.style.left = div.style.left;  
+    // span.style.top = div.style.top;  
     ta.style.width = Math.min(rcSP.width / 3, rcSP.right - rcD.left) + 'px';
     disableSpellcheck(ta);
     ta.title = 'Escape to exit note mode';
@@ -237,8 +263,13 @@ function scratchRehydrate(div:HTMLDivElement) {
 
     toggleClass(scratchPad, 'topmost', true);
 
-    div.parentNode!.append(ta);
-    div.parentNode!.removeChild(div);
+    while (div.childNodes.length > 0) {
+        div.removeChild(div.childNodes[0]);
+    }
+    div.appendChild(ta);
+    attachDragHandle(div);
+    // div.parentNode!.append(ta);
+    // div.parentNode!.removeChild(div);
     currentScratchInput = ta;
     ta.focus();
 }
@@ -274,13 +305,7 @@ export function scratchCreate(x:number, y:number, width:number, height:number, t
         const div = document.createElement('div');
         toggleClass(div, 'scratch-div', true);
 
-        const lines = text.split('\n');
-        for (let i = 0; i < lines.length; i++) {
-            if (i > 0) {
-                div.appendChild(document.createElement('br'));
-            }
-            div.appendChild(document.createTextNode(lines[i]));
-        }
+        textIntoScratchDiv(text, div);
 
         div.style.left = x + 'px';
         div.style.top = y + 'px';
@@ -288,5 +313,58 @@ export function scratchCreate(x:number, y:number, width:number, height:number, t
         div.style.maxHeight = height + 'px';
 
         scratchPad.append(div);
+    }
+}
+
+/**
+ * Convert a multi-line text string into a series of text nodes separated by <br>,
+ * and inject those into a div.
+ * @param text The raw text, with \n line breaks
+ * @param div The destination div
+ */
+function textIntoScratchDiv(text:string, div:HTMLDivElement) {
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        if (i > 0) {
+            div.appendChild(document.createElement('br'));
+        }
+        div.appendChild(document.createTextNode(lines[i]));
+        console.log('flatten: ' + lines[i]);
+    }
+}
+
+function attachDragHandle(div:HTMLDivElement) {
+    const handle = document.createElement('img');
+    handle.src = '../Icons/Clipboard.png';
+    toggleClass(handle, 'scratch-drag-handle', true);
+    div.appendChild(handle);
+
+    handle.setAttribute('draggable', 'true');
+    handle.ondrag = function(e) { dragScratchHandle(e); };
+    handle.ondragend = function(e) { dropScratchHandle(e) };
+}
+
+let dragScratchStart:DOMPoint|undefined = undefined;
+function dragScratchHandle(e:DragEvent) {
+    if (!dragScratchStart) {
+        dragScratchStart = new DOMPoint(e.clientX, e.clientY);
+        console.log(`Drag from x=${e.clientX},${e.clientY}`);
+    }
+}
+
+function dropScratchHandle(e:DragEvent) {
+    if (dragScratchStart) {
+        console.log(`Drop at x=${e.clientX},${e.clientY}`);
+        const dx = e.clientX - dragScratchStart.x;
+        const dy = e.clientY - dragScratchStart.y;
+        dragScratchStart = undefined;
+
+        const div = currentScratchInput?.parentNode as HTMLDivElement;
+        if (div) {
+            div.style.left = (parseInt(div.style.left) + dx) + 'px';
+            div.style.top = (parseInt(div.style.top) + dy) + 'px';
+            currentScratchInput?.focus();
+            saveScratches(scratchPad!);
+        }
     }
 }

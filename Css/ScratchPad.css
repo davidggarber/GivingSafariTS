@@ -19,6 +19,8 @@
 
 #scratch-pad textarea {
     position: absolute;
+    left: -1px;
+    top: -1px;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-style: italic;
     font-size: 10pt;
@@ -53,4 +55,12 @@
 
 .scratch-div.topmost {
     z-index: 10001;
+}
+
+.scratch-div .scratch-drag-handle {
+    position: absolute;
+    height: 20px;
+    left: -14px;
+    top: -14px;
+    cursor: grab;
 }
