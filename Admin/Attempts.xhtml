@@ -138,11 +138,27 @@
       </p>
       <table>
         <thead>
-          <tr id="header-row">
-            <th style="min-width:2in;">Team</th>
-            <th style="min-width:2in;">Player</th>
-            <th style="min-width:1.5in;">Guess</th>
-            <th style="min-width:1.5in;">Timestamp</th>
+          <tr id="header-row" class="sortable">
+            <th style="min-width:2in;" onclick="sortTable(this)" trim="all">
+              Team
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th style="min-width:2in;" onclick="sortTable(this)" trim="all">
+              Player
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th style="min-width:1.5in;" onclick="sortTable(this)" trim="all">
+              Guess
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th style="min-width:1.5in;" onclick="sortTable(this)" trim="all">
+              Timestamp
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">
