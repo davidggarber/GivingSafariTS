@@ -1,6 +1,7 @@
 ._Admin .title {
   font-size: 32pt;
   font-family: 'Algerian';
+  font-variant-caps: small-caps;
   position: relative;
   top: -0.25in;
 }
@@ -22,4 +23,26 @@
 }
 .new td, td.new {
   font-weight: bold;
+}
+
+
+.ascArrow {
+  display: none;
+}
+.sortedAsc .ascArrow {
+  display: inline;
+  position: relative;
+  top: -2px;
+}
+.descArrow {
+  display: none;
+}
+.sortedDesc .descArrow {
+  display: inline;
+  position: relative;
+  top: -2px;
+}
+
+.sortable th {
+  cursor: pointer;
 }

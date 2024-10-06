@@ -545,3 +545,9 @@ body.build-error {
   top: -2px;
 }
 
+.iframe #Login-bar {
+  display: none;
+}
+.print #Login-bar {
+  display: none;
+}

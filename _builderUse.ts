@@ -184,8 +184,34 @@ function pushTemplateContext(passed_args:TemplateArg[]):object {
  * @param parent Parent element to refill. Existing contents will be cleared.
  * @param tempId ID of a <template> element
  * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element
  */
-export function refillFromTemplate(parent:Element, tempId:string, args?:object) {
+export function refillFromTemplate(parent:Element, tempId:string, args?:object):Node|undefined {
+  return injectFromTemplate(parent, refillFromNodes, tempId, args);
+}
+
+/**
+ * Appen the contents of a template after any existing children of a parent
+ * @param parent Parent element to append to.
+ * @param tempId ID of a <template> element
+ * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element
+ */
+export function appendFromTemplate(parent:Element, tempId:string, args?:object):Node|undefined {
+  return injectFromTemplate(parent, appendFromNodes, tempId, args);
+}
+
+type InjectionFunc = (parent:Element, nodes:Node[]) => void;
+
+/**
+ * Expand a template, and then inject the contents into a parent, subject to an injection function.
+ * @param parent Parent element to refill. Existing contents will be cleared.
+ * @param callback The method of injecting the template contents into the parent.
+ * @param tempId ID of a <template> element
+ * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element, if any (ignoring any prefing text). If no elements, can return text.
+ */
+function injectFromTemplate(parent:Element, callback:InjectionFunc, tempId:string, args?:object):Node|undefined {
   if (!tempId) {
     throw new ContextError('Template ID not specified');
   }
@@ -199,6 +225,7 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
 
   // Make sure we know the stack of our destination
   initElementStack(parent);
+  let first:Node|undefined = undefined;
 
   try {
     const passed_args = parseObjectAsUseArgs(args ?? {});
@@ -209,15 +236,22 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
     const clone = template.content.cloneNode(true) as HTMLElement;
     const dest = expandContents(clone);
 
+    // Identify the first interesting child of the template. Ideally, the first element.
+    first = dest.filter(d => d.nodeType == Node.ELEMENT_NODE)[0];
+    if (!first) {
+      first = dest[0];
+    }
+
     popBuilderElement();
 
-    refillFromNodes(parent, dest);
+    callback(parent, dest);
   }
   catch (ex) {
-    const ctxerr = wrapContextError(ex, 'refillFromTemplate', elementSourceOffset(template));
+    const ctxerr = wrapContextError(ex, 'injectFromTemplate', elementSourceOffset(template));
     if (shouldThrow(ctxerr, template)) { throw ctxerr; }
   }
   popBuilderContext();
+  return first;
 }
 
 /**
@@ -229,6 +263,15 @@ function refillFromNodes(parent:Element, dest:Node[]) {
   while (parent.childNodes.length > 0) {
     parent.removeChild(parent.childNodes[0]);
   }
+  appendFromNodes(parent, dest);
+}
+
+/**
+ * Wipe the current contents of a container element, and replace with a new list of nodes.
+ * @param parent The container
+ * @param dest The new list of contents
+ */
+function appendFromNodes(parent:Element, dest:Node[]) {
   for (let i = 0; i < dest.length; i++) {
     parent.appendChild(dest[i]);
   }

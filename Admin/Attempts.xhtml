@@ -18,18 +18,24 @@
         lookup: {},
       };
 
-      var eventName = 'gs24';
+      var eventName = 'GivingSafari24';  // TODO: get from URL
       var firstLoad = true;
 
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
       if (urlParams.has('e')) {
-        eventName =urlParams.get('e');
-        boiler.lookup['eventName'] = eventName;
+        eventName = urlParams.get('e');
       }
+      boiler.lookup['eventName'] = eventName;
+
       var puzzleName = urlParams.get('z');
-      boiler.lookup['puzzleName'] = puzzleName;
-      boiler.title = 'Answer Attempts: ' + puzzleName;
+      if (puzzleName) {
+        boiler.lookup['puzzleName'] = puzzleName;
+        boiler.title = 'Answer Attempts: ' + puzzleName;
+      }
+      else {
+        window.location.href = 'Puzzles.xhtml?' + urlParams;
+      }
 
       function doRefresh() {
         var data = {
@@ -77,6 +83,22 @@
         firstLoad = false;
       }
 
+      function refreshPicker(response) {
+        var list = JSON.parse(response);
+        var select = document.getElementById('picker');
+        for (var row of list) {
+          var opt = document.getElementById(row.PuzzleName);
+          if (!opt) {
+            opt = document.createElement('option');
+            opt.id = row.PuzzleName;
+            opt.value = row.PuzzleName;
+            opt.innerText = row.PuzzleName;
+            opt.class = row.PuzzleType;
+            select.appendChild(opt);
+          }
+        }
+      }
+
       function changePicker() {
         var pick = document.getElementById('picker').value;
         if (pick != puzzleName) {
@@ -100,18 +122,43 @@
     </style>
   </head>
   <body id="ListPuzzles">
+    <!--
+        A list of all submissions for this puzzle: both correct and incorrect.
+        Correct submissions are decorated with a checkmark.
+      -->
     <div id="pageBody">
       <p>
-        <select id="picker" value="{puzzleName}" onchange="changePicker()" />
+        <select id="picker" value="{puzzleName}" onchange="changePicker()">
+          <option id="{puzzleName}" value="{puzzleName}">{puzzleName}</option>
+        </select>
       </p>
-      <button onclick="doRefresh()">Refresh Puzzle List</button>
+      <p>
+        <button onclick="doRefresh()">Refresh Puzzle List</button>
+        <a href="Puzzles.xhtml?e={eventName}">All puzzles</a>
+      </p>
       <table>
         <thead>
-          <tr id="header-row">
-            <th style="min-width:2in;">Team</th>
-            <th style="min-width:2in;">Player</th>
-            <th style="min-width:1.5in;">Guess</th>
-            <th style="min-width:1.5in;">Timestamp</th>
+          <tr id="header-row" class="sortable">
+            <th style="min-width:2in;" onclick="sortTable(this)" trim="all">
+              Team
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th style="min-width:2in;" onclick="sortTable(this)" trim="all">
+              Player
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th style="min-width:1.5in;" onclick="sortTable(this)" trim="all">
+              Guess
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th style="min-width:1.5in;" onclick="sortTable(this)" trim="all">
+              Timestamp
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">

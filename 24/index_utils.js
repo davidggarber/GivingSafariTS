@@ -183,7 +183,10 @@ function updateProgress() {
   }
 }
 
-var sortOrder = 3;
+// 1, 2, ... means that column index is sorted ascending
+// -1, -2, ... means that (abs) column index is sorted descenind
+var sortOrder = 2;  // Puzzle name
+
 function sortTable(th) {
   var tr = th.parentNode;
   var allThs = tr.getElementsByTagName('th');
@@ -221,7 +224,13 @@ function sortTable(th) {
       var row = lookup[order[i]];
       tbody.appendChild(row);
   }
-  // TODO: update header with arrow indicating sort order
+  // update header with arrow indicating sort order
+  for (var t of allThs) {  // Clear previous sort state from all columns
+    toggleClass(t, 'sortedAsc', false);
+    toggleClass(t, 'sortedDesc', false);
+  }
+  toggleClass(th, 'sortedAsc', sortOrder > 0);
+  toggleClass(th, 'sortedDesc', sortOrder < 0);
 }
 
 function bigThumb(evt) {

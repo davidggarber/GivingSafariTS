@@ -66,10 +66,31 @@
       var emojiMore = "💐🌸💮🪷🏵️🌹🥀🌺🌻🌼🌷🪻🌱🪴🌲🌳🌴🌵🌾🌿☘️🍀🍁🍂🍃🪹🪺🍄🍇🍈🍉🍊🍋🍌🍍🥭🍎🍏🍐🍑🍒🍓🫐🥝🍅🫒🥥🥑🍆🥔🥕🌽🌶️🫑🥒🥬🥦🧄🧅🥜🫘🌰🫚🫛🍞🥐🥖🫓🥨🥯🥞🧇🧀🍖🍗🥩🥓🍔🍟🍕🌭🥪🌮🌯🫔🥙🧆🥚🍳🥘🍲🫕🥣🥗🍿🧈🧂🥫🍱🍘🍙🍚🍛🍜🍝🍠🍢🍣🍤🍥🥮🍡🥟🥠🥡🦪🍦🍧🍨🍩🍪🎂🍰🧁🥧🍫🍬🍭🍮🍯🍼🥛☕🫖🍵🍶🍾🍷🍸🍹🍺🍻🥂🥃🫗🥤🧋🧃🧉🧊🫙"
         + "🎃🎄🎆🎇🧨✨🎈🎉🎊🎋🎍🎎🎏🎐🎑🧧🎀🎁🎗️🎟️🎫🎖️🏆🏅⚽⚾🥎🏀🏐🏈🏉🎾🥏🎳🏏🏑🏒🥍🏓🏸🥊🥋🥅⛳⛸️🎣🤿🎽🎿🛷🥌🎯🪀🪁🔫🎱🔮🪄🎮🕹️🎰🎲🧩🧸🪅🪩🪆♟️🃏🀄🎴🎭🖼️🎨🧵🪡🧶🪢"
         + emojiAnimals;
+      var undoEmoji = [];
+      var redoEmoji = [];
       function randomEmoji(wider) {
+        var cur = document.getElementById('avatar').value;
+        if (cur) {
+          undoEmoji.push(cur);
+        }
+        
         var chars = splitEmoji(wider ? emojiMore : emojiAnimals);
         var rand = parseInt(Math.random() * chars.length);
         document.getElementById('avatar').value = chars[rand];
+      }
+      function prevEmoji() {
+        var ch = undoEmoji.pop();
+        if (ch) {
+          redoEmoji.push(document.getElementById('avatar').value);
+          document.getElementById('avatar').value = ch;
+        }
+      }
+      function nextEmoji() {
+        var ch = redoEmoji.pop();
+        if (ch) {
+          undoEmoji.push(document.getElementById('avatar').value);
+          document.getElementById('avatar').value = ch;
+        }
       }
 
       function validateName() {
@@ -88,34 +109,37 @@
         var emoji = document.getElementById('avatar').value;
         doLogin(pName, tName, emoji);
         if (urlArgExists('modal')) {
-          parent.dismissLogin();
+          dismissModal();
         }
         else {
           // Pivot UI to LogOut
           toggleLogout(true);
-          // parent.onLogin();
         }
       }
 
       function logout() {
-        doLogout(document.getElementById('delete').checked);
-        if (urlArgExists('modal')) {
-          parent.dismissLogin();
+        const isModal = urlArgExists('modal');
+        doLogout(isModal, document.getElementById('delete').checked);
+        if (isModal) {
+          dismissModal();
         }
         else {
           // Pivot UI to LogIn
           toggleLogout(true);
-          // parent.onLogin();
         }
       }
 
-      function cancel() {
-        if (urlArgExists('modal')) {
+      function dismissModal() {
+        try {
           parent.dismissLogin();
         }
-        else {
-          // parent.onLogin();
-        }
+        catch {
+          // Will fail when running on local file: protocol
+        }        
+      }
+
+      function cancel() {
+        dismissModal();
       }
 
     </script>
@@ -149,7 +173,7 @@
         width: 95%;
       }
       #avatar {
-        width: 0.75in;
+        width: 0.65in;
         font-size: 24pt;
         text-align: center;
       }
@@ -159,11 +183,18 @@
       .avatar-top {
         position: relative;
         top: -16px;
+        left: -5px;
         cursor: help;
       }
       .avatar-middle {
         position: relative;
         top: -8px;
+        left: -8px;
+        white-space: nowrap;
+      }
+      .a-no-underline {
+        text-decoration: none;
+        font-size: 12pt;
       }
       #login #page {
         height: 2in;
@@ -212,9 +243,15 @@
         </tr>
         <tr>
           <th>Emoji avatar</th>
-          <td><input id="avatar" type="text" class="text" oninput="max1emoji()" onfocus="selectAll(this)" />
+          <td style="white-space: nowrap;"><input id="avatar" type="text" class="text" oninput="max1emoji()" onfocus="selectAll(this)" />
+            <div style="display:inline-block">
               <sup class="avatar-top" title="Will be used in some group UI">⭐</sup>
-              <a class="avatar-middle" href="javascript:randomEmoji(true)">randomize!</a>
+              <span class="avatar-middle" >
+                <a href="javascript:prevEmoji()" class="a-no-underline" title="undo">⤺</a>
+                <a href="javascript:randomEmoji(true)">randomize</a>
+                <a href="javascript:nextEmoji()" class="a-no-underline" title="redo">⤳</a>
+              </span>
+            </div>
           </td>
         </tr>
         <tr>

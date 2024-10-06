@@ -5,9 +5,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.isKeyboardFocusElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = void 0;
-exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = void 0;
-exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = void 0;
+exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = void 0;
+exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -1133,7 +1133,7 @@ function createReloadUI(time) {
     title.classList.add('title-font');
     title.innerText = document.title;
     const p1 = document.createElement('p');
-    p1.appendChild(document.createTextNode('Would you like to reload your progress on '));
+    p1.appendChild(document.createTextNode('Would you like to reload auto-saved progress on '));
     p1.appendChild(title);
     p1.appendChild(document.createTextNode(' from earlier?'));
     const now = new Date();
@@ -4656,6 +4656,10 @@ exports.postprocessDragFunctions = postprocessDragFunctions;
  * @param elem a moveable element
  */
 function preprocessMoveable(elem) {
+    var xmlns = elem.namespaceURI;
+    if (xmlns != "http://www.w3.org/1999/xhtml") { // This is both HTML and XHTML
+        console.error("WARNING: non-HTML elements are not draggable: " + elem.localName);
+    }
     elem.setAttribute('draggable', 'true');
     elem.onpointerdown = function (e) { onClickDrag(e); };
     elem.ondrag = function (e) { onDrag(e); };
@@ -6514,7 +6518,7 @@ const safari21Details = {
     'links': [],
     'qr_folders': { 'https://www.puzzyl.net/24/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/' },
-    'backLinks': { 'ps21': { href: './menuu.xhtml' } },
+    'backLinks': { 'ps21': { href: './Menu.xhtml' } },
     'validation': true,
 };
 const giving24Details = {
@@ -6529,7 +6533,7 @@ const giving24Details = {
     'qr_folders': { 'https://www.puzzyl.net/24/': './Qr/puzzyl/',
         'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/' },
     // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
-    'backLinks': { 'gs24': { href: './menuu.xhtml' }, 'ps21': { href: './menuu.xhtml' } },
+    'backLinks': { 'gs24': { href: './Menu.xhtml' }, 'ps21': { href: './Menu.xhtml' } },
     'validation': true,
     eventSync: 'GivingSafari24',
 };
@@ -6686,7 +6690,9 @@ var EventSyncActivity;
     EventSyncActivity["Unlock"] = "Unlock";
     EventSyncActivity["Solve"] = "Solve";
 })(EventSyncActivity || (exports.EventSyncActivity = EventSyncActivity = {}));
-const localSync = window.location.href.substring(0, 5) == 'file:';
+// Support testing against a local Sync server.
+// Note: test environment does not define 'window'
+const localSync = (typeof window !== 'undefined') ? (window.location.href.substring(0, 5) == 'file:') : true;
 let canSyncEvents = false;
 let _eventName = undefined;
 let _playerName = undefined;
@@ -6742,7 +6748,7 @@ function doLogin(player, team, emoji) {
 /**
  * Clear any cached login info
  */
-async function doLogout(deletePlayer) {
+async function doLogout(isModal, deletePlayer) {
     if (deletePlayer) {
         const data = {
             eventName: _eventName,
@@ -6750,7 +6756,16 @@ async function doLogout(deletePlayer) {
             avatar: _emojiAvatar,
             team: _teamName,
         };
-        await callSyncApi("DeletePlayer", data);
+        let callback = undefined;
+        try {
+            callback = !isModal ? autoLogin
+                : 'autoLogin' in parent ? parent['autoLogin']
+                    : undefined;
+        }
+        catch {
+            // Will fail when running on local file: protocol
+        }
+        await callSyncApi("DeletePlayer", data, undefined, callback);
     }
     cacheLogin(_eventName, undefined);
     _playerName = _teamName = _emojiAvatar = undefined;
@@ -6780,28 +6795,40 @@ function autoLogin() {
 function promptLogin(evt) {
     evt.stopPropagation();
     dismissLogin(null);
-    const modal = document.createElement('div');
-    const content = document.createElement('div');
-    const close = document.createElement('span');
-    const iframe = document.createElement('iframe');
-    modal.id = 'modal-login';
-    toggleClass(content, 'modal-content', true);
-    toggleClass(close, 'modal-close', true);
-    close.appendChild(document.createTextNode("×"));
-    close.title = 'Close';
-    close.onclick = function (e) { dismissLogin(e); };
-    iframe.src = 'LoginUI.xhtml?iframe&modal';
-    content.appendChild(close);
-    content.appendChild(iframe);
-    modal.appendChild(content);
-    document.getElementById('pageBody')?.appendChild(modal); // first child of <body>
-    document.getElementById('pageBody')?.addEventListener('click', function (event) { dismissLogin(event); });
+    let modal = document.getElementById('modal-login');
+    let iframe = document.getElementById('modal-iframe');
+    if (modal && iframe) {
+        iframe.src = 'LoginUI.xhtml?iframe&modal';
+        toggleClass(modal, 'hidden', false);
+    }
+    else {
+        modal = document.createElement('div');
+        const content = document.createElement('div');
+        const close = document.createElement('span');
+        iframe = document.createElement('iframe');
+        modal.id = 'modal-login';
+        iframe.id = 'modal-iframe';
+        toggleClass(content, 'modal-content', true);
+        toggleClass(close, 'modal-close', true);
+        close.appendChild(document.createTextNode("×"));
+        close.title = 'Close';
+        close.onclick = function (e) { dismissLogin(e); };
+        iframe.src = 'LoginUI.xhtml?iframe&modal';
+        content.appendChild(close);
+        content.appendChild(iframe);
+        modal.appendChild(content);
+        document.getElementById('pageBody')?.appendChild(modal); // first child of <body>
+        document.getElementById('pageBody')?.addEventListener('click', function (event) { dismissLogin(event); });
+    }
 }
 function dismissLogin(evt) {
     var modal = document.getElementById('modal-login');
     if (modal) {
-        document.getElementById('pageBody')?.removeChild(modal);
-        autoLogin();
+        if (!hasClass(modal, 'hidden')) {
+            toggleClass(modal, 'hidden', true);
+            autoLogin();
+            refreshTeamHomePage();
+        }
     }
     if (evt) {
         evt.stopPropagation();
@@ -6867,17 +6894,21 @@ async function callSyncApi(apiName, data, jsonCallback, textCallback) {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 /*DONE*/) {
                 consoleTrace(xhr.responseText);
+                let response = xhr.responseText;
+                let isText = true;
                 try {
-                    var obj = TryParseJson(xhr.responseText, false);
+                    var obj = TryParseJson(response, false);
+                    isText = false; // it's json
                     if (jsonCallback) {
                         jsonCallback(obj);
                     }
                 }
                 catch {
                     // Most likely problem is that xhr.responseText isn't JSON
-                    if (textCallback) {
-                        textCallback(xhr.responseText || xhr.statusText);
-                    }
+                    response = xhr.responseText || xhr.statusText;
+                }
+                if (isText && textCallback) {
+                    textCallback(response);
                 }
             }
         };
@@ -6891,20 +6922,36 @@ async function callSyncApi(apiName, data, jsonCallback, textCallback) {
 }
 async function refreshTeamHomePage(callback) {
     if (!canSyncEvents || !_teamName) {
+        _teammates = [];
+        _teamSolves = {};
+        _remoteUnlocked = [];
+        if (callback) {
+            callback();
+        }
+        else if (_onTeamHomePageRefresh) {
+            _onTeamHomePageRefresh();
+        }
         return;
     }
     const data = {
         eventName: _eventName,
         team: _teamName,
     };
-    _onTeamHomePageRefresh = callback;
-    await callSyncApi('TeamHomePage', data, onRefreshTeamHomePage);
+    if (callback) {
+        _onTeamHomePageRefresh = callback;
+    }
+    else {
+        callback = _onTeamHomePageRefresh;
+    }
+    if (_onTeamHomePageRefresh) {
+        await callSyncApi('TeamHomePage', data, onRefreshTeamHomePage);
+    }
 }
 exports.refreshTeamHomePage = refreshTeamHomePage;
 let _teammates;
 let _teamSolves;
 let _remoteUnlocked = [];
-let _onTeamHomePageRefresh = null;
+let _onTeamHomePageRefresh = undefined;
 function onRefreshTeamHomePage(json) {
     if ('teammates' in json) {
         _teammates = json['teammates'];
@@ -6919,6 +6966,12 @@ function onRefreshTeamHomePage(json) {
         _onTeamHomePageRefresh();
     }
 }
+/**
+ * Ping server when a meta feeder has been unlocked.
+ * Called directly by the file in question, when it is first loaded.
+ * @param metaFeeder "[meta]-[index]"
+ * @param url The file's actual window.location.href
+ */
 async function syncUnlockedFile(metaFeeder, url) {
     if (!canSyncEvents || !_teamName) {
         return;
@@ -6934,6 +6987,7 @@ async function syncUnlockedFile(metaFeeder, url) {
     };
     await callSyncApi("PuzzlePing", data);
 }
+exports.syncUnlockedFile = syncUnlockedFile;
 /*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
@@ -7642,7 +7696,7 @@ function testBoilerplate(bp) {
 }
 exports.testBoilerplate = testBoilerplate;
 if (typeof window !== 'undefined') {
-    window.onload = function () { boilerplate(pageBoiler()); }; // error if boiler still undefined
+    window.addEventListener('load', function (e) { boilerplate(pageBoiler()); });
 }
 /*-----------------------------------------------------------
  * _confirmation.ts
@@ -11175,8 +11229,32 @@ function pushTemplateContext(passed_args) {
  * @param parent Parent element to refill. Existing contents will be cleared.
  * @param tempId ID of a <template> element
  * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element
  */
 function refillFromTemplate(parent, tempId, args) {
+    return injectFromTemplate(parent, refillFromNodes, tempId, args);
+}
+exports.refillFromTemplate = refillFromTemplate;
+/**
+ * Appen the contents of a template after any existing children of a parent
+ * @param parent Parent element to append to.
+ * @param tempId ID of a <template> element
+ * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element
+ */
+function appendFromTemplate(parent, tempId, args) {
+    return injectFromTemplate(parent, appendFromNodes, tempId, args);
+}
+exports.appendFromTemplate = appendFromTemplate;
+/**
+ * Expand a template, and then inject the contents into a parent, subject to an injection function.
+ * @param parent Parent element to refill. Existing contents will be cleared.
+ * @param callback The method of injecting the template contents into the parent.
+ * @param tempId ID of a <template> element
+ * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element, if any (ignoring any prefing text). If no elements, can return text.
+ */
+function injectFromTemplate(parent, callback, tempId, args) {
     if (!tempId) {
         throw new ContextError('Template ID not specified');
     }
@@ -11189,6 +11267,7 @@ function refillFromTemplate(parent, tempId, args) {
     }
     // Make sure we know the stack of our destination
     initElementStack(parent);
+    let first = undefined;
     try {
         const passed_args = parseObjectAsUseArgs(args ?? {});
         pushTemplateContext(passed_args);
@@ -11196,18 +11275,23 @@ function refillFromTemplate(parent, tempId, args) {
         // The template doesn't have any child nodes. Its content must first be cloned.
         const clone = template.content.cloneNode(true);
         const dest = expandContents(clone);
+        // Identify the first interesting child of the template. Ideally, the first element.
+        first = dest.filter(d => d.nodeType == Node.ELEMENT_NODE)[0];
+        if (!first) {
+            first = dest[0];
+        }
         popBuilderElement();
-        refillFromNodes(parent, dest);
+        callback(parent, dest);
     }
     catch (ex) {
-        const ctxerr = wrapContextError(ex, 'refillFromTemplate', elementSourceOffset(template));
+        const ctxerr = wrapContextError(ex, 'injectFromTemplate', elementSourceOffset(template));
         if (shouldThrow(ctxerr, template)) {
             throw ctxerr;
         }
     }
     popBuilderContext();
+    return first;
 }
-exports.refillFromTemplate = refillFromTemplate;
 /**
  * Wipe the current contents of a container element, and replace with a new list of nodes.
  * @param parent The container
@@ -11217,6 +11301,14 @@ function refillFromNodes(parent, dest) {
     while (parent.childNodes.length > 0) {
         parent.removeChild(parent.childNodes[0]);
     }
+    appendFromNodes(parent, dest);
+}
+/**
+ * Wipe the current contents of a container element, and replace with a new list of nodes.
+ * @param parent The container
+ * @param dest The new list of contents
+ */
+function appendFromNodes(parent, dest) {
     for (let i = 0; i < dest.length; i++) {
         parent.appendChild(dest[i]);
     }

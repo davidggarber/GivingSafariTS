@@ -211,16 +211,18 @@
     </template>
 
     <template id="right-scroll">
-      <svg id="move-{index}" width="280" height="70" viewBox="0 0 700 175" class="moveable no-user-select" xmlns="http://www.w3.org/2000/svg">
-        <path class="line" d="M0,50 h{width} m-20,0 v-20 m40,0 v80 a20,20,0,0,1,-20,20 h-{width}" />
-        <path class="shade" d="M{width},50 a20,20,0,1,0,-20,-20 a10,10,0,0,0,20,0 Z" />
-        <text class="l-align trim" x="10" y="110">
-          <for each="ts" in="text" trim="all">
-            <tspan class="{ts.0}">{ts.1}</tspan>
-          </for>
-        </text>
-        <text class="big {big.0}" x="{width-20}" y="115">{big.1}</text>
-      </svg>
+      <div class="moveable">
+        <svg id="move-{index}" width="280" height="70" viewBox="0 0 700 175" class="no-user-select" xmlns="http://www.w3.org/2000/svg">
+          <path class="line" d="M0,50 h{width} m-20,0 v-20 m40,0 v80 a20,20,0,0,1,-20,20 h-{width}" />
+          <path class="shade" d="M{width},50 a20,20,0,1,0,-20,-20 a10,10,0,0,0,20,0 Z" />
+          <text class="l-align trim" x="10" y="110">
+            <for each="ts" in="text" trim="all">
+              <tspan class="{ts.0}">{ts.1}</tspan>
+            </for>
+          </text>
+          <text class="big {big.0}" x="{width-20}" y="115">{big.1}</text>
+        </svg>
+      </div>
     </template>
 
   </body>

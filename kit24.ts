@@ -1283,7 +1283,7 @@ function createReloadUI(time:string) {
     title.classList.add('title-font');
     title.innerText = document.title;
     const p1 = document.createElement('p');
-    p1.appendChild(document.createTextNode('Would you like to reload your progress on '));
+    p1.appendChild(document.createTextNode('Would you like to reload auto-saved progress on '));
     p1.appendChild(title);
     p1.appendChild(document.createTextNode(' from earlier?'));
     const now = new Date();
@@ -5102,6 +5102,11 @@ export function postprocessDragFunctions(container:HTMLElement) {
  * @param elem a moveable element
  */
 function preprocessMoveable(elem:HTMLElement) {
+    var xmlns = elem.namespaceURI;
+    if (xmlns != "http://www.w3.org/1999/xhtml") {  // This is both HTML and XHTML
+        console.error("WARNING: non-HTML elements are not draggable: " + elem.localName)
+    }
+
     elem.setAttribute('draggable', 'true');
     elem.onpointerdown=function(e){onClickDrag(e)};
     elem.ondrag=function(e){onDrag(e)};
@@ -7239,7 +7244,7 @@ const safari21Details:PuzzleEventDetails = {
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
-  'backLinks': { 'ps21': { href:'./menuu.xhtml'}},
+  'backLinks': { 'ps21': { href:'./Menu.xhtml'}},
   'validation': true,
 }
 
@@ -7255,7 +7260,7 @@ const giving24Details:PuzzleEventDetails = {
   'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
   // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
-  'backLinks': { 'gs24': { href:'./menuu.xhtml'}, 'ps21': { href:'./menuu.xhtml'}},
+  'backLinks': { 'gs24': { href:'./Menu.xhtml'}, 'ps21': { href:'./Menu.xhtml'}},
   'validation': true,
   eventSync: 'GivingSafari24',
 }
@@ -7422,7 +7427,9 @@ export enum EventSyncActivity {
   Solve = "Solve",
 }
 
-const localSync = window.location.href.substring(0,5) == 'file:';
+// Support testing against a local Sync server.
+// Note: test environment does not define 'window'
+const localSync = (typeof window !== 'undefined') ? (window.location.href.substring(0,5) == 'file:') : true;
 let canSyncEvents = false;
 
 let _eventName:string|undefined = undefined;
@@ -7494,15 +7501,24 @@ function doLogin(player:string, team?:string, emoji?:string) {
 /**
  * Clear any cached login info
  */
-async function doLogout(deletePlayer?:boolean) {
+async function doLogout(isModal:boolean, deletePlayer?:boolean) {
   if (deletePlayer) {
     const data = {
       eventName: _eventName,
       player: _playerName,
       avatar: _emojiAvatar,
       team: _teamName,
-    };  
-    await callSyncApi("DeletePlayer", data);
+    };
+    let callback:SyncCallback|undefined = undefined;
+    try {
+      callback = !isModal ? autoLogin
+        : 'autoLogin' in parent ? (parent['autoLogin'] as SyncCallback)
+        : undefined;
+    }
+    catch {
+      // Will fail when running on local file: protocol
+    }
+    await callSyncApi("DeletePlayer", data, undefined, callback);
   }
 
   cacheLogin(_eventName, undefined);
@@ -7535,30 +7551,42 @@ function autoLogin() {
 function promptLogin(evt:MouseEvent) {
   evt.stopPropagation();
   dismissLogin(null);
-  const modal = document.createElement('div');
-  const content = document.createElement('div');
-  const close = document.createElement('span');
-  const iframe = document.createElement('iframe');
-  modal.id = 'modal-login';
-  toggleClass(content, 'modal-content', true);
-  toggleClass(close, 'modal-close', true);
-  close.appendChild(document.createTextNode("×"));
-  close.title = 'Close';
-  close.onclick = function(e) {dismissLogin(e)};
-  iframe.src = 'LoginUI.xhtml?iframe&modal';
-  content.appendChild(close);
-  content.appendChild(iframe);
-  modal.appendChild(content);
-
-  document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
-  document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin(event)});
+  let modal = document.getElementById('modal-login') as HTMLDivElement;
+  let iframe = document.getElementById('modal-iframe') as HTMLIFrameElement;
+  if (modal && iframe) {
+    iframe.src = 'LoginUI.xhtml?iframe&modal';
+    toggleClass(modal, 'hidden', false);
+  }
+  else {
+    modal = document.createElement('div');
+    const content = document.createElement('div');
+    const close = document.createElement('span');
+    iframe = document.createElement('iframe');
+    modal.id = 'modal-login';
+    iframe.id = 'modal-iframe';
+    toggleClass(content, 'modal-content', true);
+    toggleClass(close, 'modal-close', true);
+    close.appendChild(document.createTextNode("×"));
+    close.title = 'Close';
+    close.onclick = function(e) {dismissLogin(e)};
+    iframe.src = 'LoginUI.xhtml?iframe&modal';
+    content.appendChild(close);
+    content.appendChild(iframe);
+    modal.appendChild(content);
+  
+    document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
+    document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin(event)});  
+  }
 }
 
 function dismissLogin(evt:MouseEvent|null) {
   var modal = document.getElementById('modal-login');
   if (modal) {
-    document.getElementById('pageBody')?.removeChild(modal);
-    autoLogin();
+    if (!hasClass(modal, 'hidden')) {
+      toggleClass(modal, 'hidden', true);
+      autoLogin();
+      refreshTeamHomePage();
+    }
   }
   if (evt) {
     evt.stopPropagation();
@@ -7630,19 +7658,23 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 /*DONE*/) {
           consoleTrace(xhr.responseText);
+          let response:any = xhr.responseText;
+          let isText = true;
           try {
-              var obj = TryParseJson(xhr.responseText, false);
+              var obj = TryParseJson(response, false);
+              isText = false;  // it's json
               if (jsonCallback) {
                   jsonCallback(obj);
               }
           }
           catch {
             // Most likely problem is that xhr.responseText isn't JSON
-            if (textCallback) {
-              textCallback(xhr.responseText || xhr.statusText);
-            }
+            response = xhr.responseText || xhr.statusText;
           }
-        }
+          if (isText && textCallback) {
+            textCallback(response);
+          }
+      }
       };
       var strData = JSON.stringify(data);
       consoleTrace(`Calling ${apiName} with data=${strData}`);
@@ -7653,8 +7685,17 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
   }
 }
 
-export async function refreshTeamHomePage(callback:SimpleCallback) {
+export async function refreshTeamHomePage(callback?:SimpleCallback) {
   if (!canSyncEvents || !_teamName) {
+    _teammates = [];
+    _teamSolves = {};
+    _remoteUnlocked = [];
+    if (callback) {
+      callback();
+    }
+    else if (_onTeamHomePageRefresh) {
+      _onTeamHomePageRefresh();
+    }
     return;
   }
 
@@ -7663,14 +7704,28 @@ export async function refreshTeamHomePage(callback:SimpleCallback) {
     team: _teamName,
   };
 
-  _onTeamHomePageRefresh = callback;
-  await callSyncApi('TeamHomePage', data, onRefreshTeamHomePage);
+  if (callback) {
+    _onTeamHomePageRefresh = callback;
+  }
+  else {
+    callback = _onTeamHomePageRefresh;
+  }
+  if (_onTeamHomePageRefresh) {
+    await callSyncApi('TeamHomePage', data, onRefreshTeamHomePage);
+  }
 }
 
 export type PlayerInfo = {
   Player: string;
   Avatar: string;
   Team?: string;
+}
+
+export type PlayerInfoPlus = {
+  Player: string;
+  Avatar: string;
+  Team?: string;
+  Presence?: string;
 }
 
 let _teammates:PlayerInfo[];
@@ -7688,10 +7743,9 @@ export type UnlockedPiece = {
 
 let _remoteUnlocked: UnlockedPiece[] = [];
 
-
 type SimpleCallback = () => void;
 
-let _onTeamHomePageRefresh:SimpleCallback|null = null;
+let _onTeamHomePageRefresh:SimpleCallback|undefined = undefined;
 
 
 function onRefreshTeamHomePage(json:object) {
@@ -7712,7 +7766,13 @@ function onRefreshTeamHomePage(json:object) {
   }
 }
 
-async function syncUnlockedFile(metaFeeder:string, url:string) {
+/**
+ * Ping server when a meta feeder has been unlocked.
+ * Called directly by the file in question, when it is first loaded.
+ * @param metaFeeder "[meta]-[index]"
+ * @param url The file's actual window.location.href
+ */
+export async function syncUnlockedFile(metaFeeder:string, url:string) {
   if (!canSyncEvents || !_teamName) {
     return;
   }
@@ -8561,7 +8621,7 @@ export function testBoilerplate(bp:BoilerPlateData) {
 }
 
 if (typeof window !== 'undefined') {
-    window.onload = function(){boilerplate(pageBoiler()!)};  // error if boiler still undefined
+    window.addEventListener('load', function(e) {boilerplate(pageBoiler()!)});
 }
 
 
@@ -12432,8 +12492,34 @@ function pushTemplateContext(passed_args:TemplateArg[]):object {
  * @param parent Parent element to refill. Existing contents will be cleared.
  * @param tempId ID of a <template> element
  * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element
  */
-export function refillFromTemplate(parent:Element, tempId:string, args?:object) {
+export function refillFromTemplate(parent:Element, tempId:string, args?:object):Node|undefined {
+  return injectFromTemplate(parent, refillFromNodes, tempId, args);
+}
+
+/**
+ * Appen the contents of a template after any existing children of a parent
+ * @param parent Parent element to append to.
+ * @param tempId ID of a <template> element
+ * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element
+ */
+export function appendFromTemplate(parent:Element, tempId:string, args?:object):Node|undefined {
+  return injectFromTemplate(parent, appendFromNodes, tempId, args);
+}
+
+type InjectionFunc = (parent:Element, nodes:Node[]) => void;
+
+/**
+ * Expand a template, and then inject the contents into a parent, subject to an injection function.
+ * @param parent Parent element to refill. Existing contents will be cleared.
+ * @param callback The method of injecting the template contents into the parent.
+ * @param tempId ID of a <template> element
+ * @param arg an object whose keys and values will become the arguments to the template.
+ * @returns The first injected element, if any (ignoring any prefing text). If no elements, can return text.
+ */
+function injectFromTemplate(parent:Element, callback:InjectionFunc, tempId:string, args?:object):Node|undefined {
   if (!tempId) {
     throw new ContextError('Template ID not specified');
   }
@@ -12447,6 +12533,7 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
 
   // Make sure we know the stack of our destination
   initElementStack(parent);
+  let first:Node|undefined = undefined;
 
   try {
     const passed_args = parseObjectAsUseArgs(args ?? {});
@@ -12457,15 +12544,22 @@ export function refillFromTemplate(parent:Element, tempId:string, args?:object) 
     const clone = template.content.cloneNode(true) as HTMLElement;
     const dest = expandContents(clone);
 
+    // Identify the first interesting child of the template. Ideally, the first element.
+    first = dest.filter(d => d.nodeType == Node.ELEMENT_NODE)[0];
+    if (!first) {
+      first = dest[0];
+    }
+
     popBuilderElement();
 
-    refillFromNodes(parent, dest);
+    callback(parent, dest);
   }
   catch (ex) {
-    const ctxerr = wrapContextError(ex, 'refillFromTemplate', elementSourceOffset(template));
+    const ctxerr = wrapContextError(ex, 'injectFromTemplate', elementSourceOffset(template));
     if (shouldThrow(ctxerr, template)) { throw ctxerr; }
   }
   popBuilderContext();
+  return first;
 }
 
 /**
@@ -12477,6 +12571,15 @@ function refillFromNodes(parent:Element, dest:Node[]) {
   while (parent.childNodes.length > 0) {
     parent.removeChild(parent.childNodes[0]);
   }
+  appendFromNodes(parent, dest);
+}
+
+/**
+ * Wipe the current contents of a container element, and replace with a new list of nodes.
+ * @param parent The container
+ * @param dest The new list of contents
+ */
+function appendFromNodes(parent:Element, dest:Node[]) {
   for (let i = 0; i < dest.length; i++) {
     parent.appendChild(dest[i]);
   }

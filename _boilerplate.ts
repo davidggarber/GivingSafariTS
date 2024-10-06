@@ -844,5 +844,5 @@ export function testBoilerplate(bp:BoilerPlateData) {
 }
 
 if (typeof window !== 'undefined') {
-    window.onload = function(){boilerplate(pageBoiler()!)};  // error if boiler still undefined
+    window.addEventListener('load', function(e) {boilerplate(pageBoiler()!)});
 }

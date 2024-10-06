@@ -16,8 +16,15 @@
         postSetup: doRefresh,
       };
 
-      var eventName = 'gs24';
+      var eventName = 'GivingSafari24';  // TODO: get from URL
       var firstLoad = true;
+
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      if (urlParams.has('e')) {
+        eventName =urlParams.get('e');
+        boiler.lookup['eventName'] = eventName;
+      }
 
       function doRefresh() {
         var data = {
@@ -36,7 +43,7 @@
         var existing = rowIdSet(tbody, true);
 
         for (var row of list) {
-          var id = "row-" + row['Player'];
+          var id = `row-${row['Team']}${row['Player']}${row['Avatar']}`;
           var tr = document.getElementById(id);
           if (tr) {
             // Already exists
@@ -45,7 +52,7 @@
             existing[id] = null;
           }
           else {
-            tr = createRow(id, row, colKeys);
+            tr = appendFromTemplate(tbody, 'playerRow', row);            
             toggleClass(tr, 'new', !firstLoad);
             tbody.appendChild(tr);
           }
@@ -69,16 +76,37 @@
       <button onclick="doRefresh()">Refresh Player List</button>
       <table>
         <thead>
-          <tr id="header-row">
-            <th style="min-width:3in;">Player Name</th>
-            <th style="min-width:3in;">Team Name</th>
+          <tr id="header-row" class="sortable">
+            <th style="min-width:3in;" onclick="sortTable(this)" trim="all">
+              Player Name
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th style="min-width:3in;" onclick="sortTable(this)" trim="all">
+              Avatar
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th style="min-width:3in;" onclick="sortTable(this)" trim="all">
+              Team Name
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">
-          
         </tbody>
       </table>
 
     </div>
+
+    <template id="playerRow">
+      <ttr id="row-{Team}{Player}{Avatar}">
+        <ttd class="Player">{Player}</ttd>
+        <ttd class="Avatar">{Avatar}</ttd>
+        <ttd class="Team"><a href="TeamStatus.xhtml?t={Team}">{Team}</a></ttd>
+      </ttr>      
+    </template>
+
   </body>
 </html>

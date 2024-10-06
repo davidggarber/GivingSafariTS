@@ -18,7 +18,7 @@
         lookup: {},
       };
 
-      var eventName = 'gs24';
+      var eventName = 'GivingSafari24';  // TODO: get from URL
       var firstLoad = true;
 
       const queryString = window.location.search;
@@ -28,8 +28,13 @@
         boiler.lookup['eventName'] = eventName;
       }
       var puzzleName = urlParams.get('z');
-      boiler.lookup['puzzleName'] = puzzleName;
-      boiler.title = 'Puzzle Completion: ' + puzzleName;
+      if (puzzleName) {
+        boiler.lookup['puzzleName'] = puzzleName;
+        boiler.title = 'Puzzle Completion: ' + puzzleName;
+      }
+      else {
+        window.location.href = 'Puzzles.xhtml?' + urlParams;
+      }
 
       function doRefresh() {
         var data = {
@@ -61,9 +66,9 @@
             existing[id] = null;
           }
           else {
-            tr = createRow(id, row, colKeys);
+            tr = appendFromTemplate(tbody, 'teamRow', row);            
             toggleClass(tr, 'new', !firstLoad);
-            if (row['Guess'] == row['Guess'].toUpperCase()) {
+            if (row['Activity'] == 'Solved') {
               toggleClass(tr, 'correct', true);
             }
             tbody.appendChild(tr);
@@ -75,6 +80,22 @@
         markAsMissing(missing);
 
         firstLoad = false;
+      }
+
+      function refreshPicker(response) {
+        var list = JSON.parse(response);
+        var select = document.getElementById('picker');
+        for (var row of list) {
+          var opt = document.getElementById(row.PuzzleName);
+          if (!opt) {
+            opt = document.createElement('option');
+            opt.id = row.PuzzleName;
+            opt.value = row.PuzzleName;
+            opt.innerText = row.PuzzleName;
+            opt.class = row.PuzzleType;
+            select.appendChild(opt);
+          }
+        }
       }
 
       function changePicker() {
@@ -102,15 +123,20 @@
   <body id="ListPuzzles">
     <div id="pageBody">
       <p>
-        <select id="picker" value="{puzzleName}" onchange="changePicker()" />
+        <select id="picker" value="{puzzleName}" onchange="changePicker()">
+          <option id="{puzzleName}" value="{puzzleName}">{puzzleName}</option>
+        </select>
       </p>
-      <button onclick="doRefresh()">Refresh Puzzle List</button>
+      <p>
+        <button onclick="doRefresh()">Refresh Puzzle List</button>
+        <a href="Puzzles.xhtml?e={eventName}">All puzzles</a>
+      </p>
       <table>
         <thead>
           <tr id="header-row">
             <th style="min-width:2in;">Team</th>
-            <th style="min-width:2in;">Player</th>
-            <th style="min-width:1.5in;">Guess</th>
+            <th style="min-width:2in;">Progress</th>
+            <th style="min-width:1.5in;">Submission</th>
             <th style="min-width:1.5in;">Timestamp</th>
           </tr>
         </thead>
@@ -120,5 +146,16 @@
       </table>
 
     </div>
+
+    <template id="teamRow">
+      <ttr id="row-{Name}">
+        <ttd class="Name"><a href="TeamStatus.xhtml?t={Name}">{Name}</a></ttd>
+        <ttd class="Activity">{Activity}</ttd>
+        <ttd class="Guess">{Guess}</ttd>
+        <ttd class="Timestamp">{Timestamp}</ttd>
+      </ttr>      
+    </template>
+
+
   </body>
 </html>

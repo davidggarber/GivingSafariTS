@@ -1,6 +1,6 @@
 import { theBoiler } from "./_boilerplate";
 import { consoleTrace } from "./_builder";
-import { toggleClass } from "./_classUtil";
+import { hasClass, toggleClass } from "./_classUtil";
 import { cacheLogin, getLogin, TryParseJson } from "./_storage";
 
 export enum EventSyncActivity {
@@ -11,7 +11,9 @@ export enum EventSyncActivity {
   Solve = "Solve",
 }
 
-const localSync = window.location.href.substring(0,5) == 'file:';
+// Support testing against a local Sync server.
+// Note: test environment does not define 'window'
+const localSync = (typeof window !== 'undefined') ? (window.location.href.substring(0,5) == 'file:') : true;
 let canSyncEvents = false;
 
 let _eventName:string|undefined = undefined;
@@ -83,15 +85,24 @@ function doLogin(player:string, team?:string, emoji?:string) {
 /**
  * Clear any cached login info
  */
-async function doLogout(deletePlayer?:boolean) {
+async function doLogout(isModal:boolean, deletePlayer?:boolean) {
   if (deletePlayer) {
     const data = {
       eventName: _eventName,
       player: _playerName,
       avatar: _emojiAvatar,
       team: _teamName,
-    };  
-    await callSyncApi("DeletePlayer", data);
+    };
+    let callback:SyncCallback|undefined = undefined;
+    try {
+      callback = !isModal ? autoLogin
+        : 'autoLogin' in parent ? (parent['autoLogin'] as SyncCallback)
+        : undefined;
+    }
+    catch {
+      // Will fail when running on local file: protocol
+    }
+    await callSyncApi("DeletePlayer", data, undefined, callback);
   }
 
   cacheLogin(_eventName, undefined);
@@ -124,30 +135,42 @@ function autoLogin() {
 function promptLogin(evt:MouseEvent) {
   evt.stopPropagation();
   dismissLogin(null);
-  const modal = document.createElement('div');
-  const content = document.createElement('div');
-  const close = document.createElement('span');
-  const iframe = document.createElement('iframe');
-  modal.id = 'modal-login';
-  toggleClass(content, 'modal-content', true);
-  toggleClass(close, 'modal-close', true);
-  close.appendChild(document.createTextNode("×"));
-  close.title = 'Close';
-  close.onclick = function(e) {dismissLogin(e)};
-  iframe.src = 'LoginUI.xhtml?iframe&modal';
-  content.appendChild(close);
-  content.appendChild(iframe);
-  modal.appendChild(content);
-
-  document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
-  document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin(event)});
+  let modal = document.getElementById('modal-login') as HTMLDivElement;
+  let iframe = document.getElementById('modal-iframe') as HTMLIFrameElement;
+  if (modal && iframe) {
+    iframe.src = 'LoginUI.xhtml?iframe&modal';
+    toggleClass(modal, 'hidden', false);
+  }
+  else {
+    modal = document.createElement('div');
+    const content = document.createElement('div');
+    const close = document.createElement('span');
+    iframe = document.createElement('iframe');
+    modal.id = 'modal-login';
+    iframe.id = 'modal-iframe';
+    toggleClass(content, 'modal-content', true);
+    toggleClass(close, 'modal-close', true);
+    close.appendChild(document.createTextNode("×"));
+    close.title = 'Close';
+    close.onclick = function(e) {dismissLogin(e)};
+    iframe.src = 'LoginUI.xhtml?iframe&modal';
+    content.appendChild(close);
+    content.appendChild(iframe);
+    modal.appendChild(content);
+  
+    document.getElementById('pageBody')?.appendChild(modal);  // first child of <body>
+    document.getElementById('pageBody')?.addEventListener('click', function(event) {dismissLogin(event)});  
+  }
 }
 
 function dismissLogin(evt:MouseEvent|null) {
   var modal = document.getElementById('modal-login');
   if (modal) {
-    document.getElementById('pageBody')?.removeChild(modal);
-    autoLogin();
+    if (!hasClass(modal, 'hidden')) {
+      toggleClass(modal, 'hidden', true);
+      autoLogin();
+      refreshTeamHomePage();
+    }
   }
   if (evt) {
     evt.stopPropagation();
@@ -219,19 +242,23 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 /*DONE*/) {
           consoleTrace(xhr.responseText);
+          let response:any = xhr.responseText;
+          let isText = true;
           try {
-              var obj = TryParseJson(xhr.responseText, false);
+              var obj = TryParseJson(response, false);
+              isText = false;  // it's json
               if (jsonCallback) {
                   jsonCallback(obj);
               }
           }
           catch {
             // Most likely problem is that xhr.responseText isn't JSON
-            if (textCallback) {
-              textCallback(xhr.responseText || xhr.statusText);
-            }
+            response = xhr.responseText || xhr.statusText;
           }
-        }
+          if (isText && textCallback) {
+            textCallback(response);
+          }
+      }
       };
       var strData = JSON.stringify(data);
       consoleTrace(`Calling ${apiName} with data=${strData}`);
@@ -242,8 +269,17 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
   }
 }
 
-export async function refreshTeamHomePage(callback:SimpleCallback) {
+export async function refreshTeamHomePage(callback?:SimpleCallback) {
   if (!canSyncEvents || !_teamName) {
+    _teammates = [];
+    _teamSolves = {};
+    _remoteUnlocked = [];
+    if (callback) {
+      callback();
+    }
+    else if (_onTeamHomePageRefresh) {
+      _onTeamHomePageRefresh();
+    }
     return;
   }
 
@@ -252,14 +288,28 @@ export async function refreshTeamHomePage(callback:SimpleCallback) {
     team: _teamName,
   };
 
-  _onTeamHomePageRefresh = callback;
-  await callSyncApi('TeamHomePage', data, onRefreshTeamHomePage);
+  if (callback) {
+    _onTeamHomePageRefresh = callback;
+  }
+  else {
+    callback = _onTeamHomePageRefresh;
+  }
+  if (_onTeamHomePageRefresh) {
+    await callSyncApi('TeamHomePage', data, onRefreshTeamHomePage);
+  }
 }
 
 export type PlayerInfo = {
   Player: string;
   Avatar: string;
   Team?: string;
+}
+
+export type PlayerInfoPlus = {
+  Player: string;
+  Avatar: string;
+  Team?: string;
+  Presence?: string;
 }
 
 let _teammates:PlayerInfo[];
@@ -277,10 +327,9 @@ export type UnlockedPiece = {
 
 let _remoteUnlocked: UnlockedPiece[] = [];
 
-
 type SimpleCallback = () => void;
 
-let _onTeamHomePageRefresh:SimpleCallback|null = null;
+let _onTeamHomePageRefresh:SimpleCallback|undefined = undefined;
 
 
 function onRefreshTeamHomePage(json:object) {
@@ -301,7 +350,13 @@ function onRefreshTeamHomePage(json:object) {
   }
 }
 
-async function syncUnlockedFile(metaFeeder:string, url:string) {
+/**
+ * Ping server when a meta feeder has been unlocked.
+ * Called directly by the file in question, when it is first loaded.
+ * @param metaFeeder "[meta]-[index]"
+ * @param url The file's actual window.location.href
+ */
+export async function syncUnlockedFile(metaFeeder:string, url:string) {
   if (!canSyncEvents || !_teamName) {
     return;
   }

@@ -87,10 +87,14 @@ function createRow1(id, text, cls) {
 function createCell(text, cls) {
   var td = document.createElement('td');
   td.appendChild(document.createTextNode(text));
-  if (cls) {
-    toggleClass(td, cls, true);
+  if (safeClassName(cls)) {
+    toggleClass(td, safeClassName(cls), true);
   }
   return td;
+}
+
+function safeClassName(cls) {
+  return cls.replaceAll(' ', '');
 }
 
 function createLinkCell(text, url, cls) {
@@ -129,4 +133,52 @@ function refreshPicker(response) {
     select.appendChild(opt);
   }
   select.value = current;
+}
+
+// 1, 2, ... means that column index is sorted ascending
+// -1, -2, ... means that (abs) column index is sorted descenind
+var sortOrder = 0;  // Unsorted
+
+function sortTable(th) {
+  var tr = th.parentNode;
+  var allThs = tr.getElementsByTagName('th');
+  var col = 0;
+  for (var c of allThs) {
+    col++;
+    if (c == th) {
+      break;
+    }
+  }
+
+  var table = findParentOfTag(th, 'table');
+  var tbody = table.getElementsByTagName('tbody')[0];
+  var rows = tbody.getElementsByTagName('tr');
+  var lookup = {};
+  var order = [];
+  for (var i = rows.length - 1; i >= 0; i--) {
+      var row = rows[i];
+      var cols = row.getElementsByTagName('td');
+      var cell = cols[col - 1];
+      var prevOrder = String(i).padStart(2, '0');
+      var val = cell.innerHTML.toUpperCase() + ' ' + prevOrder;
+      order.push(val);
+      lookup[val] = row;
+      tbody.removeChild(row);
+  }
+  order.sort();
+  sortOrder = (sortOrder == col) ? -col : col;
+  if (sortOrder < 0) {
+      order.reverse();
+  }
+  for (var i = 0; i < order.length; i++) {
+      var row = lookup[order[i]];
+      tbody.appendChild(row);
+  }
+  // update header with arrow indicating sort order
+  for (var t of allThs) {  // Clear previous sort state from all columns
+    toggleClass(t, 'sortedAsc', false);
+    toggleClass(t, 'sortedDesc', false);
+  }
+  toggleClass(th, 'sortedAsc', sortOrder > 0);
+  toggleClass(th, 'sortedDesc', sortOrder < 0);
 }
