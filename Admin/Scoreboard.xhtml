@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="sync.js" />
+    <link href="sync.css" rel="Stylesheet" type="text/css"></link>
+    <script>
+      //<![CDATA[
+      const boiler = {
+        safari: 'Admin',
+        orientation: 'landscape',
+        title: 'Scoreboard',
+        postSetup: doRefresh,
+      };
+
+      var eventName = 'GivingSafari24';  // TODO: get from URL
+      var firstLoad = true;
+
+      function doRefresh() {
+        var data = {
+          eventName: eventName,
+        }
+        queryServer('Scoreboard', data, refreshWithResponse)
+      }
+
+      function refreshWithResponse(response) {
+        var list = JSON.parse(response);
+        var tbody = document.getElementById('list-tbody');
+        
+        // See what rows we already have
+        var existing = rowIdSet(tbody, true);
+
+        for (var row of list) {
+          var id = "team-" + row['TeamName'];
+          var tr = document.getElementById(id);
+          if (tr) {
+            // Already exists
+            var prevScore = getOptionalStyle(tr, 'data-score');
+            tr = refillFromTemplate(tbody, 'teamRow', row);
+            var newScore = getOptionalStyle(tr, 'data-score');
+            existing[id] = null;
+
+            toggleClass(tr, 'new', prevScore != newScore);
+          }
+          else {
+            tr = appendFromTemplate(tbody, 'teamRow', row);            
+            toggleClass(tr, 'new', !firstLoad);
+          }
+        }
+
+        // If any pre-existing rows have gone missing, tag them
+        var missing = Object.entries(existing).filter(pair => pair[1]).map(pair => pair[0]);
+        markAsMissing(missing);
+
+        firstLoad = false;
+      }
+
+      // ]]>
+    </script>
+    <style>
+
+    </style>
+  </head>
+  <body id="ListTeams">
+    <!--
+        A table of teams (rows) and the numbers of puzzles and meta-puzzles they have solved.
+      -->
+    <div id="pageBody">
+      <button onclick="doRefresh()">Refresh</button>
+      <table>
+        <thead>
+          <tr id="header-row" class="sortable">
+            <th style="min-width:2in;" onclick="sortTable(this)" trim="all">
+              Team Name
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th onclick="sortTable(this)" trim="all">
+              Puzzles (10pt)
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>              
+            <th onclick="sortTable(this)" trim="all">
+              Meta-puzzles (25pt)
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th onclick="sortTable(this)" trim="all">
+              Score
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+            <th onclick="sortTable(this)" trim="all">
+              Most recent solve
+              <span class="ascArrow">↓</span>
+              <span class="descArrow">↑</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="list-tbody" class="alternate">          
+        </tbody>
+      </table>
+
+    </div>
+
+    <template id="teamRow">
+      <tr id="team-{TeamName}" data-score="{Puzzles*10 + Metas*25}">
+        <td class="name"><a href="TeamStatus.xhtml?t={TeamName}">{TeamName}</a></td>
+        <td class="count">{Puzzles}</td>
+        <td class="count">{Metas}</td>
+        <td class="score">{Puzzles*10 + Metas*25}</td>
+        <td class="time">{LocalTime}</td>
+      </tr>        
+    </template>
+
+  </body>
+</html>
