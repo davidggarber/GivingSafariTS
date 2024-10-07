@@ -72,6 +72,7 @@
         var cur = document.getElementById('avatar').value;
         if (cur) {
           undoEmoji.push(cur);
+          showUndoRedo();
         }
         
         var chars = splitEmoji(wider ? emojiMore : emojiAnimals);
@@ -84,6 +85,7 @@
           redoEmoji.push(document.getElementById('avatar').value);
           document.getElementById('avatar').value = ch;
         }
+        showUndoRedo();
       }
       function nextEmoji() {
         var ch = redoEmoji.pop();
@@ -91,6 +93,13 @@
           undoEmoji.push(document.getElementById('avatar').value);
           document.getElementById('avatar').value = ch;
         }
+        showUndoRedo();
+      }
+      function showUndoRedo() {
+        document.getElementById('redo').style.color = 
+          redoEmoji.length > 0 ? 'initial' : 'transparent';
+        document.getElementById('undo').style.color = 
+          undoEmoji.length > 0 ? 'initial' : 'transparent';
       }
 
       function validateName() {
@@ -188,7 +197,9 @@
       }
       .avatar-middle {
         position: relative;
-        top: -8px;
+        display: inline-block;
+        text-align: center;
+        top: 0px;
         left: -8px;
         white-space: nowrap;
       }
@@ -245,11 +256,12 @@
           <th>Emoji avatar</th>
           <td style="white-space: nowrap;"><input id="avatar" type="text" class="text" oninput="max1emoji()" onfocus="selectAll(this)" />
             <div style="display:inline-block">
-              <sup class="avatar-top" title="Will be used in some group UI">⭐</sup>
+              <sup class="avatar-top" title="Teammates should pick different avatars">⭐</sup>
               <span class="avatar-middle" >
-                <a href="javascript:prevEmoji()" class="a-no-underline" title="undo">⤺</a>
+                Type your own, or<br />
+                <a id="undo" href="javascript:prevEmoji()" class="a-no-underline" title="undo" style="color:transparent">⤺</a>
                 <a href="javascript:randomEmoji(true)">randomize</a>
-                <a href="javascript:nextEmoji()" class="a-no-underline" title="redo">⤳</a>
+                <a id="redo" href="javascript:nextEmoji()" class="a-no-underline" title="redo" style="color:transparent">⤳</a>
               </span>
             </div>
           </td>
