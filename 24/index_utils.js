@@ -211,6 +211,9 @@ function sortTable(th) {
       var cell = cols[col - 1];
       var prevOrder = String(i).padStart(2, '0');
       var val = cell.innerHTML + ' ' + prevOrder;
+      if (hasClass(th, 'completed') && hasClass(cell.parentNode, 'solved')) {
+        val = '✔️' + val;
+      }
       order.push(val);
       lookup[val] = row;
       tbody.removeChild(row);
