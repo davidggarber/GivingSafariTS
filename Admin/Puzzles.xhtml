@@ -14,10 +14,19 @@
         orientation: 'landscape',
         title: 'List Puzzles',
         postSetup: doRefresh,
+        reactiveBuilder: 'pageBody',
+        lookup: {},
       };
 
       var eventName = 'GivingSafari24';  // TODO: get from URL
       var firstLoad = true;
+
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      if (urlParams.has('e')) {
+        eventName = urlParams.get('e');
+      }
+      boiler.lookup['eventName'] = eventName;
 
       function doRefresh() {
         var data = {

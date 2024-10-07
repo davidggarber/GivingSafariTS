@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="sync.js" />
+    <link href="sync.css" rel="Stylesheet" type="text/css"></link>
+    <script>
+      //<![CDATA[
+      const boiler = {
+        safari: 'Admin',
+        title: 'Admin',
+        reactiveBuilder: 'pageBody',
+        lookup: {},
+      };
+
+      var eventName = 'GivingSafari24';  // TODO: get from URL
+
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      if (urlParams.has('e')) {
+        eventName = urlParams.get('e');
+      }
+      boiler.lookup['eventName'] = eventName;
+      boiler.lookup['args'] = eventName ? `?${eventName}` : '';
+
+      //]]>
+    </script>
+    <style>
+
+    </style>
+  </head>
+  <body id="Admin">
+    <!--
+        Home page for admin tools
+      -->
+    <div id="pageBody">
+      <p><a href="Puzzles.xhtml{args}">Puzzles</a></p>
+      <p><a href="Teams.xhtml{args}">Teams</a></p>
+      <p><a href="Players.xhtml{args}">Players</a></p>
+      <p><a href="Scoreboard.xhtml{args}">Scoreboard</a></p>
+    </div>
+  </body>
+</html>
