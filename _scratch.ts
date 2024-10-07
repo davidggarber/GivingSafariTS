@@ -21,7 +21,7 @@ export function setupScratch() {
 
     scratchPad.addEventListener('click', function (e) { scratchPadClick(e); } );
     page.addEventListener('click', function (e) { scratchPageClick(e); } );
-    window.addEventListener('blur', function (e) { scratchFlatten(); } );
+    window.addEventListener('blur', function (e) { scratchFlatten(null); } );
 
     page.insertAdjacentElement('afterbegin', scratchPad);
 
@@ -41,7 +41,7 @@ function scratchClick(evt:MouseEvent) {
     if (!scratchPad) { return; }
 
     if (currentScratchInput && currentScratchInput !== evt.target) {
-        scratchFlatten();
+        scratchFlatten(evt);
     }
 
     if (evt.target && hasClass(evt.target as Node, 'scratch-div')) {
@@ -83,7 +83,7 @@ function scratchClick(evt:MouseEvent) {
 function scratchPadClick(evt:MouseEvent) {
     if (!evt.ctrlKey) {
         if (evt.target != currentScratchInput) {
-            scratchFlatten();
+            scratchFlatten(evt);
         }
     }
 }
@@ -159,7 +159,7 @@ function scratchTyped(evt:KeyboardEvent) {
         return;  // WTF?
     }
     if (evt.code == 'Escape') {
-        scratchFlatten();
+        scratchFlatten(null);
         return;
     }
 
@@ -179,16 +179,20 @@ function scratchResize(ta: HTMLTextAreaElement) {
  * Convert the active textarea to a flattened div
  * The textarea will be removed, and the text added directly to the div.
  */
-function scratchFlatten() {
+function scratchFlatten(ev:Event|null) {
     if (!scratchPad || !currentScratchInput) { 
       return; 
+    }
+
+    const div = currentScratchInput.parentNode as HTMLDivElement;
+    if (ev && div.contains(ev.target as Node)) {
+        return;
     }
 
     toggleClass(scratchPad, 'topmost', false);
 
     // Avoid re-entrancy
     const ta = currentScratchInput;
-    const div = ta.parentNode as HTMLDivElement;
     const text = ta!.value.trimEnd();
     currentScratchInput = undefined;
 
@@ -205,11 +209,14 @@ function scratchFlatten() {
         div.style.maxWidth = width + 'px';
         div.style.maxHeight = rect.height + 'px';
         div.removeChild(ta!);
+        toggleClass(div, 'hydrated', false);
     }
     else {
       // Remove the entire div
       div.parentNode?.removeChild(div);
     }
+
+    scratchPad!.removeEventListener('dragover', allowDropOnScratchPad);
 
     saveScratches(scratchPad);
 }
@@ -229,8 +236,11 @@ export function textFromScratchDiv(div:HTMLDivElement):string {
         else if (child.nodeType == Node.ELEMENT_NODE && isTag(child as Element, 'br')) {
             text += '\n';
         }
+        else if (child.nodeType == Node.ELEMENT_NODE && isTag(child as Element, 'img')) {
+            // Ignore drag handle
+        }
         else {
-            console.log('Unexpected contents of a scratch-div: ' + child);
+            console.error('Unexpected contents of a scratch-div: ' + child);
         }
     }
     return text;
@@ -245,9 +255,11 @@ function scratchRehydrate(div:HTMLDivElement) {
         return;
     }
 
+    toggleClass(div, 'hydrated', true);
+
     const ta = document.createElement('textarea');
     ta.value = textFromScratchDiv(div);
-    ta.addEventListener('blur', function (e) { scratchFlatten(); } );
+    ta.addEventListener('blur', function (e) { scratchFlatten(e); } );
 
     const rcSP = scratchPad.getBoundingClientRect();
     const rcD = div.getBoundingClientRect();
@@ -312,6 +324,8 @@ export function scratchCreate(x:number, y:number, width:number, height:number, t
         div.style.maxWidth = width + 'px';
         div.style.maxHeight = height + 'px';
 
+        toggleClass(div, 'hydrated', true);
+
         scratchPad.append(div);
     }
 }
@@ -329,42 +343,57 @@ function textIntoScratchDiv(text:string, div:HTMLDivElement) {
             div.appendChild(document.createElement('br'));
         }
         div.appendChild(document.createTextNode(lines[i]));
-        console.log('flatten: ' + lines[i]);
+        // console.log('flatten: ' + lines[i]);
     }
 }
+
+const allowDropOnScratchPad = (ev) => { ev.preventDefault(); };
 
 function attachDragHandle(div:HTMLDivElement) {
     const handle = document.createElement('img');
-    handle.src = '../Icons/Clipboard.png';
+    handle.src = '../Icons/ScratchMove.png';
     toggleClass(handle, 'scratch-drag-handle', true);
     div.appendChild(handle);
 
-    handle.setAttribute('draggable', 'true');
-    handle.ondrag = function(e) { dragScratchHandle(e); };
-    handle.ondragend = function(e) { dropScratchHandle(e) };
-}
+    const doScratchDrop = (ev) => dropScratchDiv(ev);
+    
+    div.setAttribute('draggable', 'true');
+    div.addEventListener('dragstart', startDragScratch);
+    div.addEventListener('dragend', endDragScratch);
+    scratchPad!.addEventListener('dragover', allowDropOnScratchPad);
 
-let dragScratchStart:DOMPoint|undefined = undefined;
-function dragScratchHandle(e:DragEvent) {
-    if (!dragScratchStart) {
-        dragScratchStart = new DOMPoint(e.clientX, e.clientY);
-        console.log(`Drag from x=${e.clientX},${e.clientY}`);
-    }
-}
+    let startX:number = 0;
+    let startY:number = 0;
+    let startLeft:number = 0;
+    let startTop:number = 0;
 
-function dropScratchHandle(e:DragEvent) {
-    if (dragScratchStart) {
-        console.log(`Drop at x=${e.clientX},${e.clientY}`);
-        const dx = e.clientX - dragScratchStart.x;
-        const dy = e.clientY - dragScratchStart.y;
-        dragScratchStart = undefined;
-
-        const div = currentScratchInput?.parentNode as HTMLDivElement;
-        if (div) {
-            div.style.left = (parseInt(div.style.left) + dx) + 'px';
-            div.style.top = (parseInt(div.style.top) + dy) + 'px';
-            currentScratchInput?.focus();
-            saveScratches(scratchPad!);
+    function startDragScratch(ev:DragEvent) {
+        if (startX != 0) {
+            console.error('Re-entrant drag!!');
         }
+        toggleClass(div, 'dragging', true);
+        startX = ev.clientX;
+        startY = ev.clientY;
+        startLeft = parseFloat(div.style.left);
+        startTop = parseFloat(div.style.top);
+        scratchPad!.addEventListener('drop', doScratchDrop);
+        if (ev.dataTransfer) {
+            ev.dataTransfer.effectAllowed = "move";
+        }
+    }
+    
+    function dropScratchDiv(ev:DragEvent) {
+        const dx = ev.clientX - startX;
+        const dy = ev.clientY - startY;
+        div.style.left = startLeft + dx + 'px';
+        div.style.top = startTop + dy + 'px';
+        startX = 0;
+        startY = 0;
+        currentScratchInput?.focus();
+    }
+    
+    function endDragScratch(ev:DragEvent) {
+        toggleClass(div, 'dragging', false);
+        scratchPad!.removeEventListener('drop', doScratchDrop);
     }
 }
