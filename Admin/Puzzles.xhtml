@@ -22,16 +22,19 @@
       function doRefresh() {
         var data = {
           eventName: eventName,
+          data: 'counts'
         }
         queryServer('PuzzleList', data, refreshWithResponse)
       }
 
       function refreshWithResponse(response) {
         var list = JSON.parse(response);
-        var pList = list.filter(r => r.PuzzleType == "Puzzle").map(r => r.PuzzleName);
+        var pList = list.filter(r => r.PuzzleType == "Puzzle").map(r => [r.PuzzleName, r.Count]);
         refreshTable("puzzle", pList);
-        pList = list.filter(r => r.PuzzleType == "Meta").map(r => r.PuzzleName);
+        pList = list.filter(r => r.PuzzleType == "Meta").map(r => [r.PuzzleName, r.Count]);
         refreshTable("meta", pList);
+
+        firstLoad = false;
       }
 
       function refreshTable(id, list) {
@@ -41,26 +44,26 @@
         var existing = rowIdSet(tbody, true);
 
         for (var row of list) {
-          var id = "puzzle-" + row;
-          if (document.getElementById(id)) {
-            // Already exists
-            toggleClass(tr, 'missing', true);
+          var name = row[0];
+          var id = "puzzle-" + name;
+          var tr = document.getElementById(id);
+          if (tr) {
+            // Already exists, but update the score
+            var td = tr.getElementsByClassName('count')[0];
+            toggleClass(tr, 'new', td.innerText != row[1]);
+            td.innerText = row[1];
             existing[id] = null;
           }
           else {
-            var tr = createRow1(id, row, 'puzzle-name');
+            var args = { name: name, count: row[1], encoded: encodeURIComponent(name) };
+            var tr = appendFromTemplate(tbody, 'puzzleRow', args);
             toggleClass(tr, 'new', !firstLoad);
-            tr.appendChild(createLinkCell('Submitted', 'Attempts.xhtml?z=' + encodeURIComponent(row)));
-            tr.appendChild(createLinkCell('Team progress', 'Completion.xhtml?z=' + encodeURIComponent(row)));
-            tbody.appendChild(tr);
           }
         }
 
         // If any pre-existing rows have gone missing, tag them
         var missing = Object.entries(existing).filter(pair => pair[1]).map(pair => pair[0]);
         markAsMissing(missing);
-
-        firstLoad = false;
       }
 
       // ]]>
@@ -86,10 +89,10 @@
             <th style="min-width:2in;">Name</th>
             <th style="min-width:1.5in;">Attempts</th>
             <th style="min-width:1.5in;">Team progress</th>
+            <th>Total Solves</th>
           </tr>
         </thead>
         <tbody id="puzzle-tbody" class="alternate">
-          
         </tbody>
       </table>
       <table style="width:100%;">
@@ -101,13 +104,21 @@
             <th style="min-width:2in;">Name</th>
             <th style="min-width:1.5in;">Attempts</th>
             <th style="min-width:1.5in;">Team progress</th>
+            <th style="min-width:1.5in;">Total Solves</th>
           </tr>
         </thead>
-        <tbody id="meta-tbody" class="alternate">
-          
+        <tbody id="meta-tbody" class="alternate">          
         </tbody>
       </table>
-
     </div>
+
+    <template id="puzzleRow">
+      <tr id="puzzle-{name}">
+          <td class="puzzle-name">{name}</td>
+          <td><a href="Attempts.xhtml?z={encoded}">Submitted</a></td>
+          <td><a href="Completion.xhtml?z={encoded}">Team progress</a></td>
+          <td class="count">{count}</td>
+      </tr>
+    </template>
   </body>
 </html>
