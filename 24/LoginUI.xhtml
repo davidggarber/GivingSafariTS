@@ -199,6 +199,9 @@
       .table {
         margin: 0.5in 0.25in 0px 0.25in;
       }
+      .iPad .table {
+        margin: 0.5in 0.1in 0px 0.25in;
+      }
 
       #login-mode {
         display: block;
@@ -308,15 +311,15 @@
         </div>
         <table id="login-table" class="table">
           <tr>
-            <th style="width:1in;">Your name</th>
-            <td><input id="playerName" type="text" class="text" oninput="validateName()" /></td>
+            <th class="left" style="width:1in;">Your name</th>
+            <td class="middle"><input id="playerName" type="text" class="text" oninput="validateName()" /></td>
             <td rowspan="3" style="vertical-align: top;">
               <img id="logo" src="Images/GS24_logo.png" />            
             </td>
           </tr>
           <tr>
-            <th>Emoji avatar</th>
-            <td style="white-space: nowrap;"><input id="avatar" type="text" class="text" oninput="max1emoji()" onfocus="selectAll(this)" />
+            <th class="left">Emoji avatar</th>
+            <td class="middle" style="white-space: nowrap;"><input id="avatar" type="text" class="text" oninput="max1emoji()" onfocus="selectAll(this)" />
               <div style="display:inline-block">
                 <sup class="avatar-top" title="Teammates should pick different avatars">⭐</sup>
                 <span class="avatar-middle" >
@@ -329,18 +332,18 @@
             </td>
           </tr>
           <tr>
-            <th>Team name</th>
-            <td><input id="teamName" type="text" class="text" /></td>
+            <th class="left">Team name</th>
+            <td class="middle"><input id="teamName" type="text" class="text" /></td>
           </tr>
           <tr>
-            <td>&nbsp;</td>
+            <td class="left">&nbsp;</td>
             <td colspan="2">
               <i>Leave the team blank if you are playing solo.</i>
             </td>
           </tr>
           <tr>
-            <td></td>
-            <td style="text-align: center;">
+            <td class="left"></td>
+            <td class="middle" style="text-align: center;">
               <button id="login-button" onclick="login()" disabled="true">Login</button>
               <if test="{isModal}">
                 <button onclick="cancel()">Cancel</button>
@@ -356,13 +359,13 @@
         </div>
         <table id="logged-in-table" class="table">
           <tr>
-            <td style="width:3.25in; text-align:center;">Welcome <span id="logged-in-player"></span>!</td>
-            <td rowspan="3" style="vertical-align: top;">
+            <td class="left" style="width:3.25in; text-align:center;">Welcome <span id="logged-in-player"></span>!</td>
+            <td class="middle" rowspan="3" style="vertical-align: top;">
               <img id="logo" src="Images/GS24_logo.png" />            
             </td>
           </tr>
           <tr>
-            <td style="text-align:center; padding-top:20px;">
+            <td class="left" style="text-align:center; padding-top:20px;">
               <span id="logged-in-team">You are on team</span>
               <br />
               <span id="logged-in-team2" />
@@ -382,16 +385,16 @@
         </div>
         <table id="logout-table" class="table">
           <tr>
-            <th style="width:3.25in;">You are logged in as <span id="logout-player" class="logout-big"></span></th>
+            <th class="left" style="width:3.25in;">You are logged in as <span id="logout-player" class="logout-big"></span></th>
             <td rowspan="3" style="vertical-align: top;">
               <img id="logo" src="Images/GS24_logo.png" />            
             </td>
           </tr>
           <tr>
-            <th>With emoji avatar <span id="as-avatar" class="logout-big"></span></th>
+            <th class="left">With emoji avatar <span id="as-avatar" class="logout-big"></span></th>
           </tr>
           <tr>
-            <th id="on-team-name">On team</th>
+            <th class="left" id="on-team-name">On team</th>
           </tr>
           <tr>
             <td colspan="2" style="text-align: center;">
