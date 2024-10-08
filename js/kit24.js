@@ -1002,8 +1002,10 @@ exports.setupDecoderToggle = setupDecoderToggle;
  */
 function toggleDecoder() {
     var visible = getDecoderState();
+    if (visible === null) {
+        setupDecoderToggle(null);
+    }
     setDecoderState(!visible);
-    setupDecoderToggle(null);
 }
 exports.toggleDecoder = toggleDecoder;
 var localCache = {

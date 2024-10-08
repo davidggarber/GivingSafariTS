@@ -73,7 +73,9 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:boolean|st
  */
 export function toggleDecoder() {
     var visible = getDecoderState();
+    if (visible === null) {
+        setupDecoderToggle(null);
+    }
     setDecoderState(!visible);
-    setupDecoderToggle(null);
 }
 

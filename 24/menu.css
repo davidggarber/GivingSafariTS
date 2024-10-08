@@ -124,10 +124,10 @@ tr.solved .checkmark {
   top: 0.5in;
   height: 7.12in;
 }
-#decoder-frame {
+#Menu #decoder-frame {
   position: absolute;
-  left: 8.6in;
-  top: 6.2in;
+  left: 9in;
+  top: 10.5in;
 }
 .submital {
   text-align: center;

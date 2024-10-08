@@ -16,6 +16,7 @@
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
+          decoder: 'Ascii',
         },
         reactiveBuilder: true,
         lookup: {
@@ -103,8 +104,9 @@
         height: 60px;
         fill: #D9D9D9;
       }
-      .gray-sum {
-        width:1.5in;
+      #table td.gray-sum {
+        position: relative;
+        right: -10px;
         text-align: center;
         color: #666;
         font-style: italic;
