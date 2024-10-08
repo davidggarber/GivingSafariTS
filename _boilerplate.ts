@@ -53,6 +53,9 @@ function debugSetup() {
     if (urlArgs['compare-layout'] != undefined) {
         linkCss('../Css/TestLayoutDiffs.css');  // TODO: path
     }
+
+    var isiPad = navigator.userAgent.match(/iPad/i) != null;
+    toggleClass(document.getElementsByTagName('body')[0], 'iPad', isiPad);
 }
 
 /**
