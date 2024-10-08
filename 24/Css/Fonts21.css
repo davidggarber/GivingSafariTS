@@ -88,6 +88,10 @@
   border: none;
   z-index: 2000;
 }
+.iPad #modal-login {
+  width: 5.1in;
+  height: 2.7in;
+}
 .iPad #modal-iframe {
   width: 5.1in;
   height: 2.7in;
