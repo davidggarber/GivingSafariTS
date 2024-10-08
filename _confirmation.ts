@@ -349,9 +349,7 @@ export function decodeAndValidate(gl:GuessLog) {
         // Normalize guesses
         // TODO: make this optional, in theBoiler, if a puzzle needs
         gl.guess = gl.guess.toUpperCase();  // All caps (permanent)
-        let guess = gl.guess.replace(/ /g, '');  // Remove spaces for hashing - keep in UI
-        guess = guess.replace(/ /g, '');  // Remove non-breaking spaces too
-        // Keep all other punctuation
+        let guess = gl.guess.replace(/[^a-zA-Z0-9]/g, '');  // Remove everything that isn't alphanumeric
 
         const hash = rot13(guess);  // TODO: more complicated hashing
         const block = appendGuess(gl);
