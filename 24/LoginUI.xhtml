@@ -18,33 +18,52 @@
         }
       };
 
+      //<![CDATA[
+
+      var LOGIN_TBD = 0;
+      var LOGIN_MODE = 1;
+      var LOGGED_IN_MODE = 2;
+      var LOGOUT_MODE = 3;
+
       function postSetup() {
-        var body = document.getElementById('login');
-        toggleClass(body, 'logout', !!_playerName);
+        var body = document.getElementById('LoginUI');
+        // In modal UI, initialize to either login or logout
+        // In modeless UI, initialized to either login or logged-in
+        toggleClass(body, 'logout', !!_playerName && boiler.lookup.isModal);
+        toggleClass(body, 'logged-in', !!_playerName && !boiler.lookup.isModal);
         initFields(false);
       }
 
-      function toggleLogout(toggle) {
-        var body = document.getElementById('login');
-        if (toggle) {
-          toggleClass(body, 'logout');
+      function toggleLogout(mode) {
+        var body = document.getElementById('LoginUI');
+        if (mode != LOGIN_TBD) {
+          toggleClass(body, 'logout', mode == LOGOUT_MODE);
+          toggleClass(body, 'logged-in', mode == LOGGED_IN_MODE);
         }
-        initFields(toggle);
+        initFields(true);
       }
 
-      function initFields(toggle) {
-        var body = document.getElementById('login');
-        if (hasClass(body, 'logout')) {
+      function initFields(newEmoji) {
+        var body = document.getElementById('LoginUI');
+        if (hasClass(body, 'logged-in')) {
+          document.getElementById('logged-in-player').innerText = `${_playerName} ${_emojiAvatar}`;
+          document.getElementById('logged-in-team').innerText = 
+            _teamName ? 'You are on team' : 'You are playing solo.';
+          document.getElementById('logged-in-team2').innerText = 
+            _teamName ? _teamName : '';
+        }
+        else if (hasClass(body, 'logout')) {
           document.getElementById('logout-player').innerText = _playerName;
           document.getElementById('as-avatar').innerText = _emojiAvatar;
-          if (_teamName) {
-            document.getElementById('on-team-name').innerText = `On team ${_teamName}.`;
-          }
-          else {
-            document.getElementById('on-team-name').innerText = 'Playing solo.';
+          document.getElementById('on-team-name').innerText = 
+            _teamName ? `On team ${_teamName}.` : 'Playing solo.';
+
+          if (!boiler.lookup.isModal) {
+            // Default to Erase Player from kickoff page
+            document.getElementById('delete').checked = true;
           }
         }
-        else if (!toggle) {
+        else if (newEmoji) {
           randomEmoji();        
         }
       }
@@ -121,8 +140,8 @@
           dismissModal();
         }
         else {
-          // Pivot UI to LogOut
-          toggleLogout(true);
+          // Pivot UI to LoggedIn
+          toggleLogout(LOGGED_IN_MODE);
         }
       }
 
@@ -134,7 +153,19 @@
         }
         else {
           // Pivot UI to LogIn
-          toggleLogout(true);
+          toggleLogout(LOGIN_MODE);
+        }
+      }
+
+      function invite_logout() {
+        const isModal = urlArgExists('modal');
+        if (isModal) {
+          console.error('Should never be in this mode while modal');
+          dismissModal();
+        }
+        else {
+          // Pivot UI to LogOut
+          toggleLogout(LOGOUT_MODE);
         }
       }
 
@@ -151,29 +182,51 @@
         dismissModal();
       }
 
+      // ]]>
+
     </script>
     <style>
       body {
         background-color: white;
         overflow: hidden;
       }
-      #login #Login-bar {
+      #LoginUI #Login-bar {
         display: none;
       }
       #logo {
         height: 1.1in;
       }
-      #login-table {
+      .table {
         margin: 0.5in 0.25in 0px 0.25in;
       }
-      #logout-table {
-        display: none;
-        margin: 0.5in 0.25in 0px 0.25in;
+
+      #login-mode {
+        display: block;
       }
-      .logout #login-table {
+      .logged-in #login-mode {
         display: none;
       }
-      .logout #logout-table {
+      .logout #login-mode {
+        display: none;
+      }
+
+      #logged-in-mode {
+        display: none;
+      }
+      .logged-in #logged-in-mode {
+        display: block;
+      }
+      .logout #logged-in-mode {
+        display: none;
+      }
+
+      #logout-mode {
+        display: none;
+      }
+      .logged-in #logout-mode {
+        display: none;
+      }
+      .logout #logout-mode {
         display: block;
       }
 
@@ -207,7 +260,7 @@
         text-decoration: none;
         font-size: 12pt;
       }
-      #login #page {
+      #LoginUI #page {
         height: 2in;
       }
       button {
@@ -226,100 +279,139 @@
         padding: 4px;
         text-align: center;
       }
-      .logout #login-titlebar {
-        display:none;
+      #logged-in-titlebar {
+        background-color: rgb(45, 164, 67);
       }
       #logout-titlebar {
-        display:none;
         background-color: rgb(164, 45, 45);
       }
-      .logout #logout-titlebar {
-        display:block;
+      #logged-in-player {
+        font-weight: bold;
+        font-size: 18pt;
+      }
+      #logged-in-team2 {
+        font-weight: bold;
+        font-size: 16pt;
+      }
+      .logout-big {
+        font-size: 14pt;
       }
 
     </style>
   </head>
-  <body id="login" class="">
+  <body id="LoginUI">
     <div id='pageBody'>
-      <div id="login-titlebar" class="titlebar">
-        Log in to Giving Safari 24
-      </div>
-      <table id="login-table">
-        <tr>
-          <th style="width:1in;">Your name</th>
-          <td><input id="playerName" type="text" class="text" oninput="validateName()" /></td>
-          <td rowspan="3" style="vertical-align: top;">
-            <img id="logo" src="Images/GS24_logo.png" />            
-          </td>
-        </tr>
-        <tr>
-          <th>Emoji avatar</th>
-          <td style="white-space: nowrap;"><input id="avatar" type="text" class="text" oninput="max1emoji()" onfocus="selectAll(this)" />
-            <div style="display:inline-block">
-              <sup class="avatar-top" title="Teammates should pick different avatars">⭐</sup>
-              <span class="avatar-middle" >
-                Type your own, or<br />
-                <a id="undo" href="javascript:prevEmoji()" class="a-no-underline" title="undo" style="color:transparent">⤺</a>
-                <a href="javascript:randomEmoji(true)">randomize</a>
-                <a id="redo" href="javascript:nextEmoji()" class="a-no-underline" title="redo" style="color:transparent">⤳</a>
-              </span>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <th>Team name</th>
-          <td><input id="teamName" type="text" class="text" /></td>
-        </tr>
-        <tr>
-          <td>&nbsp;</td>
-          <td colspan="2">
-            <i>Leave the team blank if you are playing solo.</i>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td style="text-align: center;">
-            <button id="login-button" onclick="login()" disabled="true">Login</button>
-            <if test="{isModal}">
-              <button onclick="cancel()">Cancel</button>
-            </if>
-          </td>
-        </tr>
-      </table>
 
-      <div id="logout-titlebar" class="titlebar">
-        Log out of Giving Safari 24 ?
+      <div id="login-mode">
+        <div id="login-titlebar" class="titlebar">
+          Log in to Giving Puzzle Safari 24
+        </div>
+        <table id="login-table" class="table">
+          <tr>
+            <th style="width:1in;">Your name</th>
+            <td><input id="playerName" type="text" class="text" oninput="validateName()" /></td>
+            <td rowspan="3" style="vertical-align: top;">
+              <img id="logo" src="Images/GS24_logo.png" />            
+            </td>
+          </tr>
+          <tr>
+            <th>Emoji avatar</th>
+            <td style="white-space: nowrap;"><input id="avatar" type="text" class="text" oninput="max1emoji()" onfocus="selectAll(this)" />
+              <div style="display:inline-block">
+                <sup class="avatar-top" title="Teammates should pick different avatars">⭐</sup>
+                <span class="avatar-middle" >
+                  Type your own, or<br />
+                  <a id="undo" href="javascript:prevEmoji()" class="a-no-underline" title="undo" style="color:transparent">⤺</a>
+                  <a href="javascript:randomEmoji(true)">randomize</a>
+                  <a id="redo" href="javascript:nextEmoji()" class="a-no-underline" title="redo" style="color:transparent">⤳</a>
+                </span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th>Team name</th>
+            <td><input id="teamName" type="text" class="text" /></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td colspan="2">
+              <i>Leave the team blank if you are playing solo.</i>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td style="text-align: center;">
+              <button id="login-button" onclick="login()" disabled="true">Login</button>
+              <if test="{isModal}">
+                <button onclick="cancel()">Cancel</button>
+              </if>
+            </td>
+          </tr>
+        </table>
       </div>
-      <table id="logout-table">
-        <tr>
-          <th style="width:3.25in;">You are logged in as <u id="logout-player"></u></th>
-          <td rowspan="3" style="vertical-align: top;">
-            <img id="logo" src="Images/GS24_logo.png" />            
-          </td>
-        </tr>
-        <tr>
-          <th>With emoji avatar <span id="as-avatar"></span></th>
-        </tr>
-        <tr>
-          <th id="on-team-name">On team</th>
-        </tr>
-        <tr>
-          <td colspan="2" style="text-align: center;">
-            <if test="{isModal}">
-              <button onclick="logout()">Confirm Logout</button>
-              <button onclick="cancel()">Cancel</button>
-            </if>
-            <else>
-              <button onclick="logout()">Logout</button>
-            </else>
-            <br />
-            <span style="white-space: nowrap" trim="all">
-              <input type="checkbox" id="delete" /> 
-              <label for="delete">Delete data</label>
-            </span>
-          </td>
-        </tr>
-      </table>
+
+      <div id="logged-in-mode">
+        <div id="logged-in-titlebar" class="titlebar">
+          You are logged in to Giving Puzzle Safari 24
+        </div>
+        <table id="logged-in-table" class="table">
+          <tr>
+            <td style="width:3.25in; text-align:center;">Welcome <span id="logged-in-player"></span>!</td>
+            <td rowspan="3" style="vertical-align: top;">
+              <img id="logo" src="Images/GS24_logo.png" />            
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:center; padding-top:20px;">
+              <span id="logged-in-team">You are on team</span>
+              <br />
+              <span id="logged-in-team2" />
+            </td> 
+          </tr>
+          <tr>
+            <td colspan="2" style="text-align:center; padding-top: 20px">
+              Would you like to <button onclick="invite_logout()">Change?</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="logout-mode">
+        <div id="logout-titlebar" class="titlebar">
+          Log out of Giving Puzzle Safari 24 ?
+        </div>
+        <table id="logout-table" class="table">
+          <tr>
+            <th style="width:3.25in;">You are logged in as <span id="logout-player" class="logout-big"></span></th>
+            <td rowspan="3" style="vertical-align: top;">
+              <img id="logo" src="Images/GS24_logo.png" />            
+            </td>
+          </tr>
+          <tr>
+            <th>With emoji avatar <span id="as-avatar" class="logout-big"></span></th>
+          </tr>
+          <tr>
+            <th id="on-team-name">On team</th>
+          </tr>
+          <tr>
+            <td colspan="2" style="text-align: center;">
+              <if test="{isModal}">
+                <button onclick="logout()">Confirm Logout</button>
+                <button onclick="cancel()">Cancel</button>
+              </if>
+              <else>
+                <button onclick="logout()">Logout</button>
+                <button onclick="toggleLogout(LOGGED_IN_MODE)">Cancel</button>
+              </else>
+              <br />
+              <span style="white-space: nowrap" trim="all">
+                <input type="checkbox" id="delete" /> 
+                <label for="delete">Erase player</label>
+              </span>
+            </td>
+          </tr>
+        </table>
+      </div>
 
     </div>
   </body>
