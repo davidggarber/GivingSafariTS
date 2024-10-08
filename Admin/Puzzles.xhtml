@@ -81,6 +81,12 @@
       #page {
         height:12in;
       }
+      .center {
+        text-align: center;
+      }
+      tr:hover .puzzle-name {
+        font-weight: bold;
+      }
     </style>
   </head>
   <body id="ListPuzzles">
@@ -89,31 +95,31 @@
       -->
     <div id="pageBody">
       <button onclick="doRefresh()">Refresh Puzzle List</button>
-      <table style="width:100%;">
+      <table>
         <thead>
           <tr>
             <th colspan="3"><h1>Puzzles</h1></th>
           </tr>
           <tr id="header-row">
             <th style="min-width:2in;">Name</th>
-            <th style="min-width:1.5in;">Attempts</th>
-            <th style="min-width:1.5in;">Team progress</th>
+            <th>Attempts</th>
+            <th>Team progress</th>
             <th>Total Solves</th>
           </tr>
         </thead>
         <tbody id="puzzle-tbody" class="alternate">
         </tbody>
       </table>
-      <table style="width:100%;">
+      <table>
         <thead>
           <tr>
             <th colspan="3"><h1>Meta-Puzzles</h1></th>
           </tr>
           <tr id="header-row">
             <th style="min-width:2in;">Name</th>
-            <th style="min-width:1.5in;">Attempts</th>
-            <th style="min-width:1.5in;">Team progress</th>
-            <th style="min-width:1.5in;">Total Solves</th>
+            <th>Attempts</th>
+            <th>Team progress</th>
+            <th>Total Solves</th>
           </tr>
         </thead>
         <tbody id="meta-tbody" class="alternate">          
@@ -124,9 +130,9 @@
     <template id="puzzleRow">
       <tr id="puzzle-{name}">
           <td class="puzzle-name">{name}</td>
-          <td><a href="Attempts.xhtml?z={encoded}">Submitted</a></td>
-          <td><a href="Completion.xhtml?z={encoded}">Team progress</a></td>
-          <td class="count">{count}</td>
+          <td class="center"><a href="Attempts.xhtml?z={encoded}">✔️❌❔🤔👍</a></td>
+          <td class="center"><a href="Completion.xhtml?z={encoded}">😵🥳</a></td>
+          <td class="count center">{count}</td>
       </tr>
     </template>
   </body>

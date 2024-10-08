@@ -70,7 +70,12 @@
       // ]]>
     </script>
     <style>
-
+      .Avatar {
+        text-align: center;
+      }
+      tr:hover .Player {
+        font-weight: bold;
+      }
     </style>
   </head>
   <body id="ListPlayers">
@@ -79,17 +84,17 @@
       <table>
         <thead>
           <tr id="header-row" class="sortable">
-            <th style="min-width:3in;" onclick="sortTable(this)" trim="all">
+            <th onclick="sortTable(this)" trim="all">
               Player Name
               <span class="ascArrow">↓</span>
               <span class="descArrow">↑</span>
             </th>
-            <th style="min-width:3in;" onclick="sortTable(this)" trim="all">
+            <th onclick="sortTable(this)" trim="all">
               Avatar
               <span class="ascArrow">↓</span>
               <span class="descArrow">↑</span>
             </th>
-            <th style="min-width:3in;" onclick="sortTable(this)" trim="all">
+            <th onclick="sortTable(this)" trim="all">
               Team Name
               <span class="ascArrow">↓</span>
               <span class="descArrow">↑</span>

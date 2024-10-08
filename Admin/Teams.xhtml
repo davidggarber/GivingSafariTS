@@ -52,10 +52,9 @@
             existing[id] = null;
           }
           else {
-            var tr = createRow1(id, row, 'team-name');
+            var args = { name: row, encoded: encodeURIComponent(row) };
+            var tr = appendFromTemplate(tbody, 'teamRow', args);
             toggleClass(tr, 'new', !firstLoad);
-            tr.appendChild(createLinkCell('Team status', 'TeamStatus.xhtml?t=' + encodeURIComponent(row)));
-            tbody.appendChild(tr);
           }
         }
 
@@ -69,7 +68,9 @@
       // ]]>
     </script>
     <style>
-
+      tr:hover .team-name {
+        font-weight: bold;
+      }
     </style>
   </head>
   <body id="ListTeams">
@@ -90,5 +91,13 @@
       </table>
 
     </div>
+
+    <template id="teamRow">
+      <tr id="puzzle-{name}">
+          <td class="team-name">{name}</td>
+          <td><a href="TeamStatus.xhtml?t={encoded}">😵🥳</a></td>
+      </tr>
+    </template>
+
   </body>
 </html>
