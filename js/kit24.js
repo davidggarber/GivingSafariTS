@@ -12024,9 +12024,11 @@ function refillFromMeta(materials) {
     for (var i = 0; i < containers.length; i++) {
         if (materials[i]) {
             var container = containers[i];
-            refillFromTemplate(container, _metaInfo.refillTemplate, materials[i]);
-            toggleClass(container, 'locked', false);
-            toggleClass(container, 'unlocked', true);
+            if (!hasClass(container, 'unlocked')) {
+                refillFromTemplate(container, _metaInfo.refillTemplate, materials[i]);
+                toggleClass(container, 'locked', false);
+                toggleClass(container, 'unlocked', true);
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 import { isIFrame } from "./_boilerplate";
 import { refillFromTemplate } from "./_builderUse";
-import { toggleClass } from "./_classUtil";
+import { hasClass, toggleClass } from "./_classUtil";
 import { ContextError } from "./_contextError";
 import { loadMetaMaterials } from "./_storage";
 
@@ -124,9 +124,11 @@ function refillFromMeta(materials:object[]) {
   for (var i = 0; i < containers.length; i++) {
     if (materials[i]) {
       var container = containers[i];
-      refillFromTemplate(container, _metaInfo.refillTemplate as string, materials[i]);
-      toggleClass(container, 'locked', false);
-      toggleClass(container, 'unlocked', true);
+      if (!hasClass(container, 'unlocked')) {
+        refillFromTemplate(container, _metaInfo.refillTemplate as string, materials[i]);
+        toggleClass(container, 'locked', false);
+        toggleClass(container, 'unlocked', true);
+      }
     }
   }
 }
