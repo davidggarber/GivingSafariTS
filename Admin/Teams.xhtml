@@ -11,7 +11,7 @@
       //<![CDATA[
       const boiler = {
         safari: 'Admin',
-        orientation: 'landscape',
+        orientation: 'portrait',
         title: 'List Teams',
         postSetup: doRefresh,
         reactiveBuilder: 'pageBody',
@@ -32,7 +32,7 @@
         var data = {
           eventName: eventName,
         }
-        queryServer('TeamList', data, refreshWithResponse)
+        queryServer('TeamSignups', data, refreshWithResponse)
       }
 
       function refreshWithResponse(response) {
@@ -43,17 +43,18 @@
         var existing = rowIdSet(tbody, true);
 
         for (var row of list) {
-          var id = "team-" + row;
+          row.encoded = encodeURIComponent(row.TeamName);
+          var id = "team-" + row.TeamName;
           var tr = document.getElementById(id);
           if (tr) {
             // Already exists
             toggleClass(tr, 'missing', false);
             toggleClass(tr, 'new', false);
+            refillFromTemplate(tr, 'teamCells', row);
             existing[id] = null;
           }
           else {
-            var args = { name: row, encoded: encodeURIComponent(row) };
-            var tr = appendFromTemplate(tbody, 'teamRow', args);
+            var tr = appendFromTemplate(tbody, 'teamRow', row);
             toggleClass(tr, 'new', !firstLoad);
           }
         }
@@ -81,23 +82,41 @@
       <button onclick="doRefresh()">Refresh Team List</button>
       <table>
         <thead>
-          <tr id="header-row">
-            <th style="min-width:2in;">Team Name</th>
-            <th style="min-width:2in;">Status</th>
+          <tr id="header-row" class="sortable">
+            <use template="sortableTH" text="Order" cls="sort-numeric" />
+            <use template="sortableTH" text="Team Name" cls="Name" />
+            <use template="sortableTH" text="Player Count" cls="sort-numeric" />
+            <use template="sortableTH" text="Status" />
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">
-          
         </tbody>
       </table>
 
     </div>
 
+    <template id="sortableTH">
+      <tth onclick="sortTable(this)" trim="all" class="{cls?}">
+        {text}
+        <span class="ascArrow">↓</span>
+        <span class="descArrow">↑</span>
+      </tth>
+    </template>
+
     <template id="teamRow">
-      <tr id="puzzle-{name}">
-          <td class="team-name">{name}</td>
-          <td><a href="TeamStatus.xhtml?t={encoded}">😵🥳</a></td>
+      <tr id="team-{name}">
+        <td>{Order}</td>
+        <td class="team-name">{TeamName}</td>
+        <td>{PlayerCount}</td>
+        <td><a href="TeamStatus.xhtml?t={encoded}">🥳😵</a></td>
       </tr>
+    </template>
+
+    <template id="teamCells">
+      <td>{Order}</td>
+      <td class="team-name">{TeamName}</td>
+      <td>{PlayerCount}</td>
+      <td><a href="TeamStatus.xhtml?t={encoded}">🥳😵</a></td>
     </template>
 
   </body>

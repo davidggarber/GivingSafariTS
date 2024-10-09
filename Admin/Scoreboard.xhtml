@@ -117,6 +117,14 @@
 
     </div>
 
+    <template id="sortableTH">
+      <tth onclick="sortTable(this)" trim="all">
+        {text}
+        <span class="ascArrow">↓</span>
+        <span class="descArrow">↑</span>
+      </tth>
+    </template>
+
     <template id="teamRow">
       <tr id="team-{TeamName}" data-score="{Puzzles*10 + Metas*25}">
         <td class="name"><a href="TeamStatus.xhtml?t={TeamName}">{TeamName}</a></td>

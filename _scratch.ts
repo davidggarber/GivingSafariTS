@@ -82,7 +82,7 @@ function scratchClick(evt:MouseEvent) {
  */
 function scratchPadClick(evt:MouseEvent) {
     if (!evt.ctrlKey) {
-        if (evt.target != currentScratchInput) {
+        if (scratchFromPoint(evt.clientX, evt.clientY) != currentScratchInput) {
             scratchFlatten(evt);
         }
     }
@@ -98,17 +98,23 @@ function scratchPageClick(evt:MouseEvent) {
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
         let underScratch = false;
 
+        var div = scratchFromPoint(evt.clientX, evt.clientY);
+        if (div && div != currentScratchInput) {
+            scratchRehydrate(div as HTMLDivElement);
+            return;    
+        }
+
         // If the user clicked on an existing scratch div, rehydrate
         for (let i = 0; i < targets.length; i++) {
             const target = targets[i] as HTMLElement;
-            if (hasClass(target as Node, 'scratch-div')) {
+            if (hasClass(target as Node, 'scratch-div')) {  // impossible, since pointer-events:none
                 scratchRehydrate(target as HTMLDivElement);
                 return;
             }
             if (hasClass(target, 'scratch-drag-handle')) {
                 return;  // Let dragging happen
             }
-            if (target.id === 'scratch-pad') {
+            if (target.id === 'scratch-pad') {  // only possible when topmost, else pointer-events:none
                 underScratch = true;
                 continue;
             }
@@ -135,6 +141,31 @@ function scratchPageClick(evt:MouseEvent) {
         scratchClick(evt);
 
     }
+}
+
+/**
+ * Does this point land inside the active scratch input, or any of the scratch-div regions?
+ * @param x Client X
+ * @param y Client Y
+ * @returns The current textarea, any scratch-div, or null
+ */
+function scratchFromPoint(x:number, y:number):HTMLDivElement|HTMLTextAreaElement|null {
+    if (currentScratchInput) {
+        var rc = currentScratchInput.getBoundingClientRect();
+        if (x >= rc.left && x <= rc.right && y >= rc.top && y <= rc.bottom) {
+            return currentScratchInput;
+        }
+    }
+
+    var divs = document.getElementsByClassName('scratch-div');
+    for (var i = 0; i < divs.length; i++) {
+        var div = divs[i];
+        var rc = div.getBoundingClientRect();
+        if (x >= rc.left && x <= rc.right && y >= rc.top && y <= rc.bottom) {
+            return div as HTMLDivElement;
+        }
+    }
+    return null;
 }
 
 /**

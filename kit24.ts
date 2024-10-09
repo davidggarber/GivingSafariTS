@@ -5509,6 +5509,7 @@ type stampSet = {
     prevStampablePointer:HTMLElement|null;
     dragDrawTool: HTMLElement|null;
     lastDrawTool: HTMLElement|null;
+    usesMods: boolean;  // The stamp palette specifies special ctrl+/shift+/alt+ clicks
 }
 
 /**
@@ -5530,6 +5531,7 @@ function makeStampSet(container?:HTMLElement) {
         prevStampablePointer: null,
         dragDrawTool: null,
         lastDrawTool: null,
+        usesMods: false,
     }
     return ss;
 }
@@ -5596,6 +5598,9 @@ export function preprocessStampObjects() {
             const elmt = elems[i] as HTMLElement;
             setInfo.stampTools.push(elmt);
             elmt.onclick=function(e){onSelectStampTool(e)};
+            if (getOptionalStyle(elmt, 'data-click-modifier')) {
+                setInfo.usesMods = true;
+            }
         }
     
         // Extractor tool can overlap with other tools
@@ -5695,6 +5700,9 @@ function pointerDownInContainer(event:PointerEvent) {
         return;
     }
     const stampSet = stampSetFromEvent(event);
+    if (!stampSet.usesMods && (event.ctrlKey || event.shiftKey || event.altKey)) {
+        return;
+    }
     if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
@@ -5710,6 +5718,9 @@ function pointerUpInContainer(event:PointerEvent) {
         return;
     }
     const stampSet = stampSetFromEvent(event);
+    if (!stampSet.usesMods && (event.ctrlKey || event.shiftKey || event.altKey)) {
+        return;
+    }
     if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
@@ -7192,6 +7203,7 @@ const safariAdminDetails:PuzzleEventDetails = {
   'icon': '../DGG/Images/octopus_icon.png',
   'cssRoot': '../Css/',
   'links': [],
+  'backLinks': { '': { href:'./Admin.xhtml', friendly:'Admin'}},
 }
 
 const safariSingleDetails:PuzzleEventDetails = {
@@ -12913,7 +12925,7 @@ function scratchClick(evt:MouseEvent) {
  */
 function scratchPadClick(evt:MouseEvent) {
     if (!evt.ctrlKey) {
-        if (evt.target != currentScratchInput) {
+        if (scratchFromPoint(evt.clientX, evt.clientY) != currentScratchInput) {
             scratchFlatten(evt);
         }
     }
@@ -12929,17 +12941,23 @@ function scratchPageClick(evt:MouseEvent) {
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
         let underScratch = false;
 
+        var div = scratchFromPoint(evt.clientX, evt.clientY);
+        if (div && div != currentScratchInput) {
+            scratchRehydrate(div as HTMLDivElement);
+            return;    
+        }
+
         // If the user clicked on an existing scratch div, rehydrate
         for (let i = 0; i < targets.length; i++) {
             const target = targets[i] as HTMLElement;
-            if (hasClass(target as Node, 'scratch-div')) {
+            if (hasClass(target as Node, 'scratch-div')) {  // impossible, since pointer-events:none
                 scratchRehydrate(target as HTMLDivElement);
                 return;
             }
             if (hasClass(target, 'scratch-drag-handle')) {
                 return;  // Let dragging happen
             }
-            if (target.id === 'scratch-pad') {
+            if (target.id === 'scratch-pad') {  // only possible when topmost, else pointer-events:none
                 underScratch = true;
                 continue;
             }
@@ -12966,6 +12984,31 @@ function scratchPageClick(evt:MouseEvent) {
         scratchClick(evt);
 
     }
+}
+
+/**
+ * Does this point land inside the active scratch input, or any of the scratch-div regions?
+ * @param x Client X
+ * @param y Client Y
+ * @returns The current textarea, any scratch-div, or null
+ */
+function scratchFromPoint(x:number, y:number):HTMLDivElement|HTMLTextAreaElement|null {
+    if (currentScratchInput) {
+        var rc = currentScratchInput.getBoundingClientRect();
+        if (x >= rc.left && x <= rc.right && y >= rc.top && y <= rc.bottom) {
+            return currentScratchInput;
+        }
+    }
+
+    var divs = document.getElementsByClassName('scratch-div');
+    for (var i = 0; i < divs.length; i++) {
+        var div = divs[i];
+        var rc = div.getBoundingClientRect();
+        if (x >= rc.left && x <= rc.right && y >= rc.top && y <= rc.bottom) {
+            return div as HTMLDivElement;
+        }
+    }
+    return null;
 }
 
 /**
@@ -13355,9 +13398,11 @@ function refillFromMeta(materials:object[]) {
   for (var i = 0; i < containers.length; i++) {
     if (materials[i]) {
       var container = containers[i];
-      refillFromTemplate(container, _metaInfo.refillTemplate as string, materials[i]);
-      toggleClass(container, 'locked', false);
-      toggleClass(container, 'unlocked', true);
+      if (!hasClass(container, 'unlocked')) {
+        refillFromTemplate(container, _metaInfo.refillTemplate as string, materials[i]);
+        toggleClass(container, 'locked', false);
+        toggleClass(container, 'unlocked', true);
+      }
     }
   }
 }

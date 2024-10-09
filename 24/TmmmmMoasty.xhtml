@@ -67,8 +67,12 @@
                   if (div.getElementsByClassName('moveable').length > 0) {
                     continue;  // this starting point is occupied
                   }
+                  if (!hasClass(div, 'locked')) {
+                    continue;  // only overwrite locked positions
+                  }
                   refillFromTemplate(div, 'right-scroll', item);
                   toggleClass(div, 'drop-target', true);
+                  toggleClass(div, 'locked', false);
                   postprocessDragFunctions(div);
                   known[index] = true;
                   break;
@@ -183,7 +187,7 @@
 
         <div id="start">
           <for each="item" in="lefts">
-            <div id="start-{item#}" class="fix">
+            <div id="start-{item#}" class="fix locked">
               <img class="padlock" src="Images/locked.png" />
             </div>
           </for>        

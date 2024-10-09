@@ -3,8 +3,8 @@
     left: 0px;
     width: 100%;
     top: 0px;
-    z-index: 50;
-    background-color: #ffffee33;
+    z-index: 1050;
+    pointer-events: none;
 }
 
 @media print {
@@ -46,15 +46,12 @@
     border: none;
     color: olivedrab;
     background-color: #eeffeecc;
-    z-index: 51;
+    pointer-events: none;
 }
 
 #scratch-pad.topmost {
     z-index: 10000;
-}
-
-.scratch-div.topmost {
-    z-index: 10001;
+    pointer-events: initial;
 }
 
 .scratch-div .scratch-drag-handle {
@@ -63,6 +60,10 @@
     left: -14px;
     top: -14px;
     cursor: move;
+}
+
+#scratch-pad.topmost .scratch-div  {
+    pointer-events: initial;
 }
 
 .scratch-div.dragging textarea {

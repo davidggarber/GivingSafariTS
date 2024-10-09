@@ -198,6 +198,7 @@ function sortTable(th) {
     }
   }
 
+  var sortNumeric = hasClass(th, 'sort-numeric');
   var tbody = document.getElementById('puzzle_list');
   var rows = document.getElementsByClassName('sortable');
   var lookup = {};
@@ -214,11 +215,23 @@ function sortTable(th) {
       if (hasClass(th, 'completed') && hasClass(cell.parentNode, 'solved')) {
         val = '✔️' + val;
       }
+      if (sortNumeric) {
+        // A column that is tagged as numerically sortable promises to only have
+        // numeric cell contents. 
+        val = parseFloat(cell.innerText);
+        // There can still be ties, so the previous order is an additional fraction
+        val += (val >= 0) ? (i / (100 * rows.length)) : ((i - rows.length) / (100 * rows.length));
+      }
       order.push(val);
       lookup[val] = row;
       tbody.removeChild(row);
   }
-  order.sort();
+  if (sortNumeric) {
+    order.sort((a,b) => { return parseFloat(a) - parseFloat(b) });
+  }
+  else {
+    order.sort();
+  }
   sortOrder = (sortOrder == col) ? -col : col;
   if (sortOrder < 0) {
       order.reverse();
