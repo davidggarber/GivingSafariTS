@@ -6470,6 +6470,7 @@ const safariAdminDetails = {
     'icon': '../DGG/Images/octopus_icon.png',
     'cssRoot': '../Css/',
     'links': [],
+    'backLinks': { '': { href: './Admin.xhtml', friendly: 'Admin' } },
 };
 const safariSingleDetails = {
     'title': 'Puzzle',
