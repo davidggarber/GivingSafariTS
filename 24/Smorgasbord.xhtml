@@ -151,7 +151,7 @@
 
 
     <template id="material-fill">
-      <text class="clue-title" x="-20" y="-10">Materials #{index}</text>
+      <text class="clue-title" x="-20" y="-10">Materials #{index+1}</text>
       <for each="pic" in="{pics}">
         <g class="clue-box stampable" ttransform="translate({pic# * 183}, 0)">
           <image yy="{pic.y}" hhref="Smorgasbord/{pic.img}.png" />
