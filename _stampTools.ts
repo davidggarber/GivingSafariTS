@@ -42,6 +42,7 @@ type stampSet = {
     prevStampablePointer:HTMLElement|null;
     dragDrawTool: HTMLElement|null;
     lastDrawTool: HTMLElement|null;
+    usesMods: boolean;  // The stamp palette specifies special ctrl+/shift+/alt+ clicks
 }
 
 /**
@@ -63,6 +64,7 @@ function makeStampSet(container?:HTMLElement) {
         prevStampablePointer: null,
         dragDrawTool: null,
         lastDrawTool: null,
+        usesMods: false,
     }
     return ss;
 }
@@ -129,6 +131,9 @@ export function preprocessStampObjects() {
             const elmt = elems[i] as HTMLElement;
             setInfo.stampTools.push(elmt);
             elmt.onclick=function(e){onSelectStampTool(e)};
+            if (getOptionalStyle(elmt, 'data-click-modifier')) {
+                setInfo.usesMods = true;
+            }
         }
     
         // Extractor tool can overlap with other tools
@@ -228,6 +233,9 @@ function pointerDownInContainer(event:PointerEvent) {
         return;
     }
     const stampSet = stampSetFromEvent(event);
+    if (!stampSet.usesMods && (event.ctrlKey || event.shiftKey || event.altKey)) {
+        return;
+    }
     if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
@@ -243,6 +251,9 @@ function pointerUpInContainer(event:PointerEvent) {
         return;
     }
     const stampSet = stampSetFromEvent(event);
+    if (!stampSet.usesMods && (event.ctrlKey || event.shiftKey || event.altKey)) {
+        return;
+    }
     if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }

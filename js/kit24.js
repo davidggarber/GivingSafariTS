@@ -5016,6 +5016,7 @@ function makeStampSet(container) {
         prevStampablePointer: null,
         dragDrawTool: null,
         lastDrawTool: null,
+        usesMods: false,
     };
     return ss;
 }
@@ -5072,6 +5073,9 @@ function preprocessStampObjects() {
             const elmt = elems[i];
             setInfo.stampTools.push(elmt);
             elmt.onclick = function (e) { onSelectStampTool(e); };
+            if (getOptionalStyle(elmt, 'data-click-modifier')) {
+                setInfo.usesMods = true;
+            }
         }
         // Extractor tool can overlap with other tools
         let id = palette.getAttributeNS('', 'data-tool-extractor');
@@ -5164,6 +5168,9 @@ function pointerDownInContainer(event) {
         return;
     }
     const stampSet = stampSetFromEvent(event);
+    if (!stampSet.usesMods && (event.ctrlKey || event.shiftKey || event.altKey)) {
+        return;
+    }
     if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
@@ -5178,6 +5185,9 @@ function pointerUpInContainer(event) {
         return;
     }
     const stampSet = stampSetFromEvent(event);
+    if (!stampSet.usesMods && (event.ctrlKey || event.shiftKey || event.altKey)) {
+        return;
+    }
     if (event.pointerType != 'mouse' && stampSet.canDrag) {
         event.preventDefault();
     }
@@ -11613,7 +11623,7 @@ function scratchClick(evt) {
  */
 function scratchPadClick(evt) {
     if (!evt.ctrlKey) {
-        if (evt.target != currentScratchInput) {
+        if (scratchFromPoint(evt.clientX, evt.clientY) != currentScratchInput) {
             scratchFlatten(evt);
         }
     }
@@ -11627,17 +11637,22 @@ function scratchPageClick(evt) {
     if (evt.ctrlKey) {
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
         let underScratch = false;
+        var div = scratchFromPoint(evt.clientX, evt.clientY);
+        if (div && div != currentScratchInput) {
+            scratchRehydrate(div);
+            return;
+        }
         // If the user clicked on an existing scratch div, rehydrate
         for (let i = 0; i < targets.length; i++) {
             const target = targets[i];
-            if (hasClass(target, 'scratch-div')) {
+            if (hasClass(target, 'scratch-div')) { // impossible, since pointer-events:none
                 scratchRehydrate(target);
                 return;
             }
             if (hasClass(target, 'scratch-drag-handle')) {
                 return; // Let dragging happen
             }
-            if (target.id === 'scratch-pad') {
+            if (target.id === 'scratch-pad') { // only possible when topmost, else pointer-events:none
                 underScratch = true;
                 continue;
             }
@@ -11661,6 +11676,29 @@ function scratchPageClick(evt) {
         // We haven't deferred to other controls, so invoke scratch notes
         scratchClick(evt);
     }
+}
+/**
+ * Does this point land inside the active scratch input, or any of the scratch-div regions?
+ * @param x Client X
+ * @param y Client Y
+ * @returns The current textarea, any scratch-div, or null
+ */
+function scratchFromPoint(x, y) {
+    if (currentScratchInput) {
+        var rc = currentScratchInput.getBoundingClientRect();
+        if (x >= rc.left && x <= rc.right && y >= rc.top && y <= rc.bottom) {
+            return currentScratchInput;
+        }
+    }
+    var divs = document.getElementsByClassName('scratch-div');
+    for (var i = 0; i < divs.length; i++) {
+        var div = divs[i];
+        var rc = div.getBoundingClientRect();
+        if (x >= rc.left && x <= rc.right && y >= rc.top && y <= rc.bottom) {
+            return div;
+        }
+    }
+    return null;
 }
 /**
  * Disable all squigglies from the note surface. They are distracting.
