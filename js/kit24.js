@@ -2159,7 +2159,7 @@ exports.getLogin = getLogin;
 function cacheLogin(event, data) {
     if (event) {
         const key = getOtherFileHref('login-' + event, 0);
-        localStorage.setItem(key, JSON.stringify(data || null));
+        localStorage.setItem(key, JSON.stringify(data || ''));
     }
 }
 exports.cacheLogin = cacheLogin;

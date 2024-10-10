@@ -2354,7 +2354,7 @@ export function getLogin(event?:string):LoginInfo|null {
 export function cacheLogin(event?:string, data?:LoginInfo) {
     if (event) {
         const key = getOtherFileHref('login-' + event, 0);
-        localStorage.setItem(key, JSON.stringify(data || null));
+        localStorage.setItem(key, JSON.stringify(data || ''));
     }
 }
 
