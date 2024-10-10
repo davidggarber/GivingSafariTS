@@ -145,9 +145,9 @@
         }
       }
 
-      function logout() {
+      async function logout() {
         const isModal = urlArgExists('modal');
-        doLogout(isModal, document.getElementById('delete').checked);
+        await doLogout(isModal, document.getElementById('delete').checked);
         if (isModal) {
           dismissModal();
         }
@@ -399,11 +399,11 @@
           <tr>
             <td colspan="2" style="text-align: center;">
               <if test="{isModal}">
-                <button onclick="logout()">Confirm Logout</button>
+                <button onclick="await logout()">Confirm Logout</button>
                 <button onclick="cancel()">Cancel</button>
               </if>
               <else>
-                <button onclick="logout()">Logout</button>
+                <button onclick="await logout()">Logout</button>
                 <button onclick="toggleLogout(LOGGED_IN_MODE)">Cancel</button>
               </else>
               <br />
