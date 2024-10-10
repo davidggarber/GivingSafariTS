@@ -33,7 +33,7 @@
       var avatar = undefined;
 
       var teamName = urlParams.get('t');
-      if (teamName.indexOf('(solo)' == teamName.length - 6)) {
+      if (teamName && teamName.indexOf('(solo)' == teamName.length - 6)) {
         // Actually a solo player
         var soloPlayer = teamName.substr(0, teamName.length - 7);
         var soloEmoji = splitEmoji(soloPlayer);
