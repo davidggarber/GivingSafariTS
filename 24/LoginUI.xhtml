@@ -399,11 +399,11 @@
           <tr>
             <td colspan="2" style="text-align: center;">
               <if test="{isModal}">
-                <button onclick="await logout()">Confirm Logout</button>
+                <button onclick="logout()">Confirm Logout</button>
                 <button onclick="cancel()">Cancel</button>
               </if>
               <else>
-                <button onclick="await logout()">Logout</button>
+                <button onclick="logout()">Logout</button>
                 <button onclick="toggleLogout(LOGGED_IN_MODE)">Cancel</button>
               </else>
               <br />
