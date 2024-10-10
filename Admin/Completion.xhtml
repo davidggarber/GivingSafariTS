@@ -40,6 +40,7 @@
         var data = {
           eventName: eventName,
           puzzle: puzzleName,
+          timeZone: 'Pacific Standard Time',  // TODO: get from javascript
         }
         queryServer('PuzzleCompletion', data, refreshWithResponse);
         data = {
