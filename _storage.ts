@@ -1208,7 +1208,7 @@ export function forgetChildrenOf(path:string):number {
     const keys = Object.keys(localStorage);
     for (let i = 0; i < keys.length; i++) {
         if (keys[i].indexOf(path) == 0) {
-            localStorage.setItem(keys[i], '')
+            localStorage.removeItem(keys[i])
             count++;
         }
     }
@@ -1247,6 +1247,11 @@ export function getLogin(event?:string):LoginInfo|null {
 export function cacheLogin(event?:string, data?:LoginInfo) {
     if (event) {
         const key = getOtherFileHref('login-' + event, 0);
-        localStorage.setItem(key, JSON.stringify(data || ''));
+        if (data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+        else {
+            localStorage.removeItem(key);                        
+        }
     }
 }
