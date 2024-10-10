@@ -109,7 +109,12 @@
 
     <template id="playerRow">
       <ttr id="row-{Team}{Player}{Avatar}">
-        <ttd class="Player">{Player}</ttd>
+        <if not="{Team}">
+          <ttd class="Player"><a href="TeamStatus.xhtml?t={Player} {Avatar} (solo)">{Player}</a></ttd>
+        </if>
+        <else>
+          <ttd class="Player">{Player}</ttd>
+        </else>
         <ttd class="Avatar">{Avatar}</ttd>
         <ttd class="Team"><a href="TeamStatus.xhtml?t={Team}">{Team}</a></ttd>
       </ttr>      

@@ -113,7 +113,7 @@ function markAsMissing(ids) {
   for (var id of ids) {
     var elmt = document.getElementById(id);
     toggleClass(elmt, 'missing', true);
-    toggleClass(tr, 'new', false);
+    toggleClass(elmt, 'new', false);
   }
 }
 

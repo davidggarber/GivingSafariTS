@@ -47,9 +47,10 @@
           var tr = document.getElementById(id);
           if (tr) {
             // Already exists
-            var prevScore = getOptionalStyle(tr, 'data-score');
-            tr = refillFromTemplate(tbody, 'teamRow', row);
-            var newScore = getOptionalStyle(tr, 'data-score');
+            var prevScore = tr.getAttributeNS('', 'data-score', newScore);
+            refillFromTemplate(tr, 'teamCells', row);
+            var newScore = row.Puzzles*10 + row.Metas*25
+            tr.setAttributeNS('', 'data-score', newScore);
             existing[id] = null;
 
             toggleClass(tr, 'new', prevScore != newScore);
@@ -133,6 +134,14 @@
         <td class="score">{Puzzles*10 + Metas*25}</td>
         <td class="time">{LocalTime}</td>
       </tr>        
+    </template>
+
+    <template id="teamCells">
+      <td class="name"><a href="TeamStatus.xhtml?t={TeamName}">{TeamName}</a></td>
+      <td class="count">{Puzzles}</td>
+      <td class="count">{Metas}</td>
+      <td class="score">{Puzzles*10 + Metas*25}</td>
+      <td class="time">{LocalTime}</td>
     </template>
 
   </body>
