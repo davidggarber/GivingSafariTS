@@ -145,9 +145,9 @@
         }
       }
 
-      function logout() {
+      async function logout() {
         const isModal = urlArgExists('modal');
-        doLogout(isModal, document.getElementById('delete').checked);
+        await doLogout(isModal, document.getElementById('delete').checked);
         if (isModal) {
           dismissModal();
         }

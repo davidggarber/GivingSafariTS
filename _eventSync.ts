@@ -84,6 +84,8 @@ function doLogin(player:string, team?:string, emoji?:string) {
 
 /**
  * Clear any cached login info
+ * @param isModal If true, helper functions are called on parent. Else, called in local frame.
+ * @param deletePlayer If true, tell the server to forget the player. This is async. Else, do nothing async.
  */
 async function doLogout(isModal:boolean, deletePlayer?:boolean) {
   if (deletePlayer) {

@@ -2315,7 +2315,7 @@ export function forgetChildrenOf(path:string):number {
     const keys = Object.keys(localStorage);
     for (let i = 0; i < keys.length; i++) {
         if (keys[i].indexOf(path) == 0) {
-            localStorage.setItem(keys[i], '')
+            localStorage.removeItem(keys[i])
             count++;
         }
     }
@@ -2354,7 +2354,12 @@ export function getLogin(event?:string):LoginInfo|null {
 export function cacheLogin(event?:string, data?:LoginInfo) {
     if (event) {
         const key = getOtherFileHref('login-' + event, 0);
-        localStorage.setItem(key, JSON.stringify(data || null));
+        if (data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+        else {
+            localStorage.removeItem(key);                        
+        }
     }
 }
 
@@ -7514,6 +7519,8 @@ function doLogin(player:string, team?:string, emoji?:string) {
 
 /**
  * Clear any cached login info
+ * @param isModal If true, helper functions are called on parent. Else, called in local frame.
+ * @param deletePlayer If true, tell the server to forget the player. This is async. Else, do nothing async.
  */
 async function doLogout(isModal:boolean, deletePlayer?:boolean) {
   if (deletePlayer) {

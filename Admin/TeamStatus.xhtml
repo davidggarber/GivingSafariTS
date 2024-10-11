@@ -29,8 +29,22 @@
       }
       boiler.lookup['eventName'] = eventName;
 
+      var playerName = undefined;
+      var avatar = undefined;
+
       var teamName = urlParams.get('t');
-      if (teamName) {
+      var solo = teamName.indexOf('(solo)');
+      if (teamName && solo > 0 && solo == teamName.length - 6) {
+        // Actually a solo player
+        var soloPlayer = teamName.substr(0, teamName.length - 7);
+        var soloEmoji = splitEmoji(soloPlayer);
+        avatar = soloEmoji[soloEmoji.length - 1].trim();
+        playerName = soloPlayer.substr(0, soloPlayer.length - avatar.length - 1).trim();
+        boiler.lookup['playerName'] = playerName;
+        boiler.title = 'Solo Player Status: ' + soloPlayer;
+        teamName = undefined;
+      }      
+      else if (teamName) {
         boiler.lookup['teamName'] = teamName;
         boiler.title = 'Team Status: ' + teamName;
       }
@@ -39,10 +53,16 @@
       }
 
       function doRefresh() {
-        var data = {
-          eventName: eventName,
-          team: teamName,
-        }
+        var data = teamName 
+          ? {
+              eventName: eventName,
+              team: teamName,
+            }
+          : {
+              eventName: eventName,
+              player: playerName,
+              avatar: avatar
+            };
         queryServer('TeamStatus', data, refreshWithResponse);
         data = {
           eventName: eventName,
