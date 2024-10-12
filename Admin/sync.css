@@ -46,3 +46,8 @@
 .sortable th {
   cursor: pointer;
 }
+
+._Admin #backlink {
+  top: 0px;
+  right: 0px;
+}

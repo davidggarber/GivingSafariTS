@@ -195,3 +195,9 @@ function sortTable(th) {
   toggleClass(th, 'sortedAsc', sortOrder > 0);
   toggleClass(th, 'sortedDesc', sortOrder < 0);
 }
+
+function isDeletedPlayer(playerName) {
+  const guidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return playerName.length >= 36
+    && guidPattern.test(playerName.substring(0, 36));
+}

@@ -38,9 +38,9 @@
 
       function refreshWithResponse(response) {
         var list = JSON.parse(response);
-        var pList = list.filter(r => r.PuzzleType == "Puzzle").map(r => [r.PuzzleName, r.Count]);
+        var pList = list.filter(r => r.PuzzleType == "Puzzle").map(r => [r.PuzzleName, r.PlayerCount, r.TeamCount]);
         refreshTable("puzzle", pList);
-        pList = list.filter(r => r.PuzzleType == "Meta").map(r => [r.PuzzleName, r.Count]);
+        pList = list.filter(r => r.PuzzleType == "Meta").map(r => [r.PuzzleName, r.PlayerCount, r.TeamCount]);
         refreshTable("meta", pList);
 
         firstLoad = false;
@@ -57,14 +57,17 @@
           var id = "puzzle-" + name;
           var tr = document.getElementById(id);
           if (tr) {
-            // Already exists, but update the score
-            var td = tr.getElementsByClassName('count')[0];
+            // Already exists, but update the scores
+            var td = tr.getElementsByClassName('pcount')[0];
             toggleClass(tr, 'new', td.innerText != row[1]);
             td.innerText = row[1];
+            var td = tr.getElementsByClassName('tcount')[0];
+            toggleClass(tr, 'new', td.innerText != row[2]);
+            td.innerText = row[2];
             existing[id] = null;
           }
           else {
-            var args = { name: name, count: row[1], encoded: encodeURIComponent(name) };
+            var args = { name: name, pcount: row[1], tcount: row[2], encoded: encodeURIComponent(name) };
             var tr = appendFromTemplate(tbody, 'puzzleRow', args);
             toggleClass(tr, 'new', !firstLoad);
           }
@@ -107,7 +110,8 @@
             <use template="sortableTH" text="Name" cls="thName" />
             <use template="sortableTH" text="Attempts" />
             <use template="sortableTH" text="Team progress" />
-            <use template="sortableTH" text="Total Solves" cls="sort-numeric" />
+            <use template="sortableTH" text="Individual Solves" cls="sort-numeric" />
+            <use template="sortableTH" text="Team Solves" cls="sort-numeric" />
           </tr>
         </thead>
         <tbody id="puzzle-tbody" class="alternate">
@@ -122,7 +126,8 @@
             <use template="sortableTH" text="Name" cls="thName" />
             <use template="sortableTH" text="Attempts" />
             <use template="sortableTH" text="Team progress" />
-            <use template="sortableTH" text="Total Solves" cls="sort-numeric" />
+            <use template="sortableTH" text="Individual Solves" cls="sort-numeric" />
+            <use template="sortableTH" text="Team Solves" cls="sort-numeric" />
           </tr>
         </thead>
         <tbody id="meta-tbody" class="alternate">          
@@ -143,7 +148,8 @@
           <td class="puzzle-name">{name}</td>
           <td class="center"><a href="Attempts.xhtml?z={encoded}">✔️❌❔🤔👍</a></td>
           <td class="center"><a href="Completion.xhtml?z={encoded}">😵🥳</a></td>
-          <td class="count center">{count}</td>
+          <td class="pcount center">{pcount}</td>
+          <td class="tcount center">{tcount}</td>
       </tr>
     </template>
   </body>

@@ -44,6 +44,10 @@
         var existing = rowIdSet(tbody, true);
 
         for (var row of list) {
+          if (isDeletedPlayer(row['TeamName'])) {
+            continue;
+          }
+
           var id = "team-" + row['TeamName'];
           var tr = document.getElementById(id);
           if (tr) {
@@ -72,6 +76,9 @@
       // ]]>
     </script>
     <style>
+      td.name {
+        min-width: 2.5in;
+      }
       tr:hover .name {
         font-weight: bold;
       }
@@ -86,31 +93,11 @@
       <table>
         <thead>
           <tr id="header-row" class="sortable">
-            <th style="min-width:2in;" onclick="sortTable(this)" trim="all">
-              Team Name
-              <span class="ascArrow">↓</span>
-              <span class="descArrow">↑</span>
-            </th>
-            <th onclick="sortTable(this)" trim="all">
-              Puzzles (10pt)
-              <span class="ascArrow">↓</span>
-              <span class="descArrow">↑</span>
-            </th>              
-            <th onclick="sortTable(this)" trim="all">
-              Meta-puzzles (25pt)
-              <span class="ascArrow">↓</span>
-              <span class="descArrow">↑</span>
-            </th>
-            <th onclick="sortTable(this)" trim="all">
-              Score
-              <span class="ascArrow">↓</span>
-              <span class="descArrow">↑</span>
-            </th>
-            <th onclick="sortTable(this)" trim="all">
-              Most recent solve
-              <span class="ascArrow">↓</span>
-              <span class="descArrow">↑</span>
-            </th>
+            <use template="sortableTH" text="Team Name" />
+            <use template="sortableTH" text="Puzzles (10pt)" />
+            <use template="sortableTH" text="Meta-puzzles (25pt)" />
+            <use template="sortableTH" text="Score" cls="sort-numeric" />
+            <use template="sortableTH" text="Most recent solve" />
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">          
@@ -120,7 +107,7 @@
     </div>
 
     <template id="sortableTH">
-      <tth onclick="sortTable(this)" trim="all">
+      <tth onclick="sortTable(this)" trim="all" class="{cls?}">
         {text}
         <span class="ascArrow">↓</span>
         <span class="descArrow">↑</span>
