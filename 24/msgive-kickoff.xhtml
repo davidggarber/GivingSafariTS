@@ -7,14 +7,14 @@
     <script src="../js/kit24.js" />
     <script>
       const boiler = {
-        safaris: givingSafari24,
-        safari: 'ps21',
-        title: 'Puzzle Safari 21: Web Redux',
+        safari: 'gs24',
+        title: 'Giving Puzzle Safari 24: Kickoff',
         reloadOnRefresh: false,
         abilities: {
           textInput: 'nearest',
+          reactiveBuilder: 'pageBody',
         },
-        reactiveBuilder: 'pageBody',
+        reactiveBuilder: true,
         lookup: {
         },
         "validation":{"start-answer":{"TRAREBHF":"6cebprrq|6jnvgsbetb^fgnegrq"}},
@@ -69,12 +69,12 @@
         width: 3in;
       }
 
-      #team-tips {
+      #charity {
         margin-top: 0.75in; 
         text-align: center; 
       }
-      #team-tips p {
-        font-size: 12pt;
+      #charity p {
+        font-size: 14pt;
       }
 
       #waitforgo {
@@ -96,14 +96,23 @@
   <body id="Index">
     <div id="pageBody">
       <img id="watermark" src="Images/GS24_banner.png" />
-      <iframe ssrc="LoginUI.xhtml?iframe&amp;{_safari}" />
+      <iframe src="LoginUI.xhtml?iframe" />
     
-      <div id="team-tips" style="text-align: center;">
-        <p>If you have friends you are hoping to team with, choose a matching team name.
+      <div style="text-align: center;">
+        <p>If you have friends/coworkers you are hoping to team with, choose a matching team name.
           <br />There is no fixed team size. Play with more people if you don't have much time.
           <br />Or play with fewer if you want first dibs on more of the puzzles 😄.
         </p>
+        <p>If you would like help forming a team, speak up in the Teams channel, 
+          <br />or email us at <a href="mailto:GivingPS@microsoft.com">GivingPS@microsoft.com</a>.</p>
         <p>If you log in from multiple devices, please use a consistent name and avatar.</p>
+      </div>
+
+      <div id="charity">
+        <p>Proceeds from this event benefit <a href="https://www.rainierscholars.org/">Rainier Scholars <img src="Give/RS-mountain.png" aria-label="Rainier Scholars logo" style="height: 0.25in;" /></a></p>
+        <p>If you have not already, please donate at our <a href="https://microsoft.benevity.org/campaigns/80682">Benevity page</a>.
+          <br />Suggested donation: $25.
+        </p>  
       </div>
 
       <p id="waitforgo" class="friendly">

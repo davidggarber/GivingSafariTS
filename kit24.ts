@@ -7265,6 +7265,7 @@ const safari21Details:PuzzleEventDetails = {
                  'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
   'backLinks': { 'ps21': { href:'./Menu.xhtml'}},
   'validation': true,
+  eventSync: 'PuzzleSafari21',
 }
 
 const giving24Details:PuzzleEventDetails = {
@@ -7336,13 +7337,14 @@ const pastSafaris = {
   'Single': safariSingleDetails,
   '20': safari20Details,
   '21': safari21Details,
+  'ps21': safari21Details,
   'Dgg': safariDggDetails,
   '24': safari24Details,
   'gs24': giving24Details,
   'team': puzzylSafariTeamDetails,
 }
 
-const givingSafari24 = ['gs24','21'];
+const givingSafari24 = ['gs24','21','ps21'];
 
 let safariDetails:PuzzleEventDetails;
 
@@ -7369,6 +7371,12 @@ export function initSafariDetails(boiler?:BoilerPlateData): PuzzleEventDetails {
     console.error(err);
     return safariDetails = noEventDetails;
   }
+
+  // Mirror final safari name to lookup, as it is often used in link URLs
+  if (boiler.lookup) {
+    boiler.lookup['_safari'] = boiler.safari;
+  }
+
   safariDetails = pastSafaris[boiler.safari];
   return safariDetails;
 }

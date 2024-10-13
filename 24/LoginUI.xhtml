@@ -7,6 +7,7 @@
     <script src="../js/kit24.js"></script>
     <script>
       const boiler = {
+        safaris: givingSafari24,
         safari: 'gs24',
         reloadOnRefresh: false,
         reactiveBuilder: 'pageBody',
@@ -14,7 +15,15 @@
         preSetup: toggleLogout,
         postSetup: postSetup,
         lookup: {
-          isModal: window.location.search.indexOf('modal') >= 0
+          isModal: window.location.search.indexOf('modal') >= 0,
+          logo: {
+            gs24: 'Images/GS24_logo.png',
+            21: 'Images/PS21_logo.png',
+          },
+          eventTitle: {
+            gs24: 'Giving Puzzle Safari 24',
+            21: 'Puzzle Safari 21 : Web Redux',
+          },
         }
       };
 
@@ -307,14 +316,14 @@
 
       <div id="login-mode">
         <div id="login-titlebar" class="titlebar">
-          Log in to Giving Puzzle Safari 24
+          Log in to {eventTitle.[_safari]}
         </div>
         <table id="login-table" class="table">
           <tr>
             <th class="left" style="width:1in;">Your name</th>
             <td class="middle"><input id="playerName" type="text" class="text" oninput="validateName()" /></td>
             <td rowspan="3" style="vertical-align: top;">
-              <img id="logo" src="Images/GS24_logo.png" />            
+              <img id="logo" ssrc="{logo.[_safari]}" />
             </td>
           </tr>
           <tr>
@@ -355,13 +364,13 @@
 
       <div id="logged-in-mode">
         <div id="logged-in-titlebar" class="titlebar">
-          You are logged in to Giving Puzzle Safari 24
+          You are logged in to {eventTitle.[_safari]}
         </div>
         <table id="logged-in-table" class="table">
           <tr>
             <td class="left" style="width:3.25in; text-align:center;">Welcome <span id="logged-in-player"></span>!</td>
             <td class="middle" rowspan="3" style="vertical-align: top;">
-              <img id="logo" src="Images/GS24_logo.png" />            
+              <img id="logo" ssrc="{logo.[_safari]}" />
             </td>
           </tr>
           <tr>
@@ -381,13 +390,13 @@
 
       <div id="logout-mode">
         <div id="logout-titlebar" class="titlebar">
-          Log out of Giving Puzzle Safari 24 ?
+          Log out of {eventTitle.[_safari]} ?
         </div>
         <table id="logout-table" class="table">
           <tr>
             <th class="left" style="width:3.25in;">You are logged in as <span id="logout-player" class="logout-big"></span></th>
             <td rowspan="3" style="vertical-align: top;">
-              <img id="logo" src="Images/GS24_logo.png" />            
+              <img id="logo" ssrc="{logo.[_safari]}" />
             </td>
           </tr>
           <tr>
