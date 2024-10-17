@@ -8038,8 +8038,16 @@ function clickValidationButton(btn) {
 function decodeAndValidate(gl) {
     consoleTrace(`Guess ${gl.guess}`);
     const validation = theValidation();
-    if (validation && gl.field in validation) {
-        const obj = validation[gl.field];
+    if (!validation) {
+        console.error('No validation data');
+        return;
+    }
+    let field = gl.field;
+    if (!(field in validation) && ('' in validation)) {
+        field = '';
+    }
+    if (field in validation) {
+        const obj = validation[field];
         // Normalize guesses
         // TODO: make this optional, in theBoiler, if a puzzle needs
         gl.guess = gl.guess.toUpperCase(); // All caps (permanent)

@@ -40,7 +40,7 @@ The value of each attribute must start with a digit, indicating the consequences
 2. Correct elements within the puzzle, when such confirmation is desirable.
 3. Partial/intermediate answers, where the player is on the right path, and needs to do an additional step.
 4. Tell the player that their answer has unlocked some other puzzle or piece.
-5. Silentyly loads a script in an iframe, generally to implement the above-mentioned unlocking.
+5. Silently loads a script in an iframe, generally to implement the above-mentioned unlocking.
 6. Causes an on-page element of this page to become visible or otherwise change appearance.
 
 Codes 1-4 will give the player feedback. Each has a default message, but the puzzle can prescribe a custom message in the text after the code.  
