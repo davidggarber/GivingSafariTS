@@ -33,6 +33,9 @@ export let _rawHtmlSource:string;
  * Scan the url for special arguments.
  */
 function debugSetup() {
+    if (Object.keys(urlArgs).length > 0) {
+        return;  // Only process once
+    }
     var search = window.location.search;
     if (search !== '') {
         search = search.substring(1);  // trim leading ?

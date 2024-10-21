@@ -62,7 +62,7 @@ for srcFile in kitFiles:
   merged += lines[afterImport:]
 
 # Each year, start a new kit, to maintain backward compatibility~
-kitYear = 'kit24.ts'
+kitYear = 'kit25.ts'
 
 if os.path.isfile(kitYear):
   os.chmod(kitYear, S_IWRITE|S_IREAD|S_IRGRP|S_IROTH)  # Temporarily writable by owner

@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/bft.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Breakfast',
+        author: 'Rorke Haining',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          checkMarks:true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          placemat: [
+            ' _...B','._.   ',
+            '._...R','.._.. ',
+            ' ._..E','_...  ',
+            ' ..._A','._.   ',
+            ' .._.K','.._.  ',
+            '  ._.F','._    ',
+            '   _.A','_...  ',
+            '...._S','._..  ',
+            ' _...T','.._   '
+          ],
+          hints: [
+            ['Simple',24,75,200],
+            ['Dull pain, e.g. in the back',213,56,110],
+            ['Hat for a baseball player or fan',457,34,145],
+            ['Travel by air',668,78,200],
+            ['Small red root sometimes used as a salad garnish',118,167,200],
+            ['Play a game of ten-pin',393,127,100],
+            ['Earl Grey or Oolong, e.g.',578,176,124],
+            ['Snare',26,333,200],
+            ['Go angling',6,492,75],
+            ['Brain place',699,338,65],
+            ['Cowboy’s mount',675,510,87],
+            ['Lawyers must pass it',60,677,90],
+            ['A chamber within a house',299,713,110],
+            ['Between sunset and sunrise',563,670,138],
+            ['Hollandaise or marinara, e.g.',0,787,134],
+            ['Take the podium',244,824,88],
+            ['It keeps the doctor away',446,799,117],
+            ['Mickey or Minnie, e.g.',628,766,111],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #placemat {
+        position: absolute;
+        left: 1.09in;
+        top: 2.58in;
+      }
+      #table {
+        position: absolute;
+        left:0.5in;
+        top:7px;
+        display: grid;
+        grid-template-columns: repeat(12, 38px); /* Creates 8 columns */
+        grid-template-rows: repeat(9, 38px); /* Creates 8 rows */
+        user-select: none;
+      }
+      .cell {
+        width: 38px;
+        height: 38px;
+        text-align: center;
+      }
+      .cell_ {
+        background-color: #FFC000;
+      }
+      #Breakfast .letter-cell.extract-underline {
+        font-size: 20pt;
+      }
+      #Breakfast .letter-cell.letter-underline {
+        font-size: 20pt;
+        margin: 0px;
+        border-bottom: solid 2px black;
+      }
+      #Breakfast .extract-underline {
+        border-bottom: solid 2px black;
+      }
+      #Breakfast .letter-cell.literal {
+        font-family: 'Lucida Console', Courier, monospace;
+        font-size: 14pt;
+        font-weight: bold;
+      }
+      .hint {
+        position: absolute;
+        border: solid 1px black;
+        padding: 10px;
+        text-align: center;
+      }
+      #extracts {
+        position: absolute;
+        top: 6.4in;
+        left: 2.35in;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body id="Breakfast">
+    <div id="pageBody">
+      <div id="placemat">
+        <img src="Breakfast/placemat.png" style="width:5.32in; height:3.72in;" />
+        <img src="Breakfast/fork.png" style="position:absolute; left:0.04in; top:0.2in; width:0.46in; height:3.33in;" />
+        <img src="Breakfast/knife.png" style="position:absolute; right:0.1in; top:0.2in; width:0.33in; height:3.33in;" />
+
+        <div id="table" trim="all" data-extract-style="underline" class="letter-grid-2d">
+          <for each="row" in="{placemat}">
+            <for char="ch" in="{row}">
+              <div class="cell cell{ch}">
+                <if test="{ch}" eq=" ">&nbsp;</if>
+                <elseif test="{ch}" eq="_"><letter extract="true" extracted-id="{row#%2}" /></elseif>
+                <elseif test="{ch}" eq="."><letter /></elseif>
+                <else><literal>{ch}</literal></else>
+              </div>
+            </for>
+          </for>
+        </div>
+      </div>
+
+      <for each="hint" in="{hints}">
+        <div class="hint cross-off" sstyle="left:{hint.1/100}in; top:{hint.2/100}in; max-width:{hint.3/100}in">{hint.0}</div>
+      </for>
+
+      <div id="extracts" class="extracted"><span id="extracted-0" />&nbsp;<span id="extracted-1" /></div>
+
+      <div class="no-print validate-block" style="position:absolute; top:9.1in; left:3in;">
+        Final answer: <word id="final-answer" class="extracted" data-show-ready="submit-extracted" style="width:1.5in;" />
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+            
+    </div>
+  </body>
+</html>

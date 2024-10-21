@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/bsd.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Beyond Seasonable Doubt',
+        author: 'Wendy Stidmon',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          clues: [
+            ['GREING', 6, 2],
+            ['SPERMATIN', 9, 8],
+            ['VERNDALE', 8, 6],
+            ['AGES', 4, 4],
+            ['SARNOFF', 7, 3],
+            ['ACME', 4, 4],
+            ['ARROGANT', 8, 8],
+            ['LORRES', 6, 1],
+            ['SWABIA', 6, 6],
+            ['SLIBA', 5, 1],
+            ['VCHILER', 7, 6],
+            ['ALGCIR', 6, 4],
+            ['LIDL', 4, 2],
+            ['TUGMEN', 6, 3],
+            ['MYTHE', 5, 3]
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Beyond th {
+        font-size: 12pt;
+        text-align: left;
+      }
+      .clue {
+        width: 1.5in;
+        height: 30px;
+      }
+      #Beyond .letter-underline {
+        margin-right: 10px;
+      }
+      #extracted .letter-underline {
+        border-bottom: solid 2px black;
+      }
+    </style>
+  </head>
+  <body id="Beyond">
+    <div id="pageBody">
+      <p class="flavor">
+        I swear someone is mixing up my seasonings.
+      </p>
+
+      <build>
+        <ttable data-extract-style="highlight" class="letter-grid-2d">
+          <ttr>
+            <tth>CLUE</tth>
+            <tth>ANSWER</tth>
+          </ttr>
+          <for each="clue" in="{clues}">
+            <ttr>
+              <ttd class="clue">{clue.0}</ttd>
+              <ttd class="answer"><pattern pattern="{clue.1}" extract="{clue.2}" /></ttd>
+            </ttr>
+          </for>
+        </ttable>
+      
+        <p style="margin-top: 0.8in; text-align: center;">
+          <pattern id="extracted" extracted="15" data-show-ready="submit-extracted" />
+          <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+        </p>
+      
+      </build>
+    </div>
+  </body>
+</html>

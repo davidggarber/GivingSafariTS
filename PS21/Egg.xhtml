@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script src="V/egg.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        'title': 'Egg',
+        'author': 'Rorke Haining &amp; Jess McGatha',
+        'copyright': '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          checkMarks:true,
+        },
+        'reactiveBuilder': true,
+        'lookup': {
+        },
+      };
+
+
+      var hints = [
+        ['Revenge', 7, 4],
+        ['Betting place', 9, 7],
+        ['Kitchen danger', 9, 8],
+        ['Assault', 8, 5],
+        ['Newborn descendent', 9, 8],
+        ['Religious holiday', 8, 8],
+        ['Distant ancestor', 7, 6],
+        ['Approve', 10, 7],
+        ['Metal baking dish', 7, 7],
+      ];
+
+      boiler.lookup = {
+        hints:hints,
+      };
+    </script>
+    <style>
+      .flavor .title-font {
+        font-size: 24pt;
+      }
+
+      #Egg .letter-cell {
+        font-size: 12pt;
+      }
+
+      #center {
+        width: 4in;
+        padding: 0.1in;
+        border: solid 1px black;
+        display: grid;
+        grid-template-columns: 2.4in 1.6in;
+        grid-template-rows: repeat(9, 36pt);
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      .right {
+        padding-top: 5px;
+      }
+
+      .extract-chicken::after {
+        background-image: url('Egg/egg.png');
+        background-size: 1.2em 1.7em;
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 1.2em;
+        height: 1.7em;
+        top: 22px;
+        left: -0.1em;
+      }
+
+      .img-list img {
+        margin-bottom: 0.5in;
+        max-width: 1.4in;
+        max-height: 1.5in;
+      }
+
+      .img-list div {
+        position: relative;
+      }
+
+      .img-list .check {
+        left: initial;
+        right: 10px;
+      }
+
+      #question {
+        width: 3in;
+        margin-left: 2.25in;
+        border: solid 1px black;
+        padding: 10px;
+        text-align: center;
+      }
+
+      #extracted-div {
+        padding-left: 3in;
+      }
+
+    </style>
+  </head>
+  <body id="Egg">
+    <div id="pageBody">
+      <p class="flavor">
+        Remember: <span class="title-font">Egg</span> words, like the 9 images below, always come first, before <span class="title-font">Chicken</span> words!
+      </p>
+
+      <build>
+        <div style="width: 7.5in; display:grid; grid-template-columns:1.7in 4.3in 1.5in; margin-top: 0.5in;">
+          <div class="img-list" style="text-align: center;">
+            <div class_="cross-off"><img src="Egg/cave.png" /></div>
+            <div class_="cross-off"><img src="Egg/green.png" /></div>
+            <div class_="cross-off"><img src="Egg/beat.png" /></div>
+          </div>
+
+          <div>
+            <div id="center" data-extract-style="chicken" class="letter-grid-2d">
+              <for each="hint" in="hints">
+                <span class="left"><pattern pattern="{hint.[1]}" extract="{hint.[2]}"></pattern></span>
+                <span class="right">{hint.[0]}</span>
+              </for>
+            </div>
+          </div>
+
+          <div class="img-list" style="text-align: center;">
+            <div class_="cross-off"><img src="Egg/quarterback.jpg" /></div>
+            <div class_="cross-off"><img src="Egg/thousand.png" /></div>
+            <div class_="cross-off"><img src="Egg/cake.png" /></div>
+          </div>
+        </div>
+
+        <div class="img-list" style="width: 7.5in; display: flex; justify-content: space-around;">
+          <div class_="cross-off"><img src="Egg/credit.png" /></div>
+          <div class_="cross-off"><img src="Egg/house.png" /></div>
+          <div class_="cross-off"><img src="Egg/track.png" /></div>
+        </div>
+
+        <div id="question">
+          What do we call our arch-rival?
+        </div>
+
+        <div style="padding-left: 3in;">
+          <span id="extracted" data-show-ready="submit-extracted" /> &nbsp;
+          <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+        </div>
+
+      </build>
+
+
+    </div>
+  </body>
+</html>

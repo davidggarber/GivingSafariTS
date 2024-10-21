@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/dnp.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Dining Philosophers',
+        author: 'Joey Marianer',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          seats: [ ],
+          utensils: [ 
+            { str:'Spoons' },
+            { str:'Forks' },
+            { str:'Spoons' },
+            { str:'Knives' },
+            { str:'Forks' },
+            { str:'Knives' }
+          ],
+          words: [ 
+            { ext:1 },
+            { ext:2 },
+            { ext:3 },
+            { ext:2 },
+            { ext:2 },
+            { ext:2 },
+          ],
+        },
+      };
+
+      //<![CDATA[
+      for (var i = 0; i < 6; i++) {
+        var seat = Math.PI * (60 * i) / 180;
+        boiler.lookup.seats.push({x:300 + 220 * Math.cos(seat), y:270 + 210 * Math.sin(seat)});
+        boiler.lookup.words[i]['x'] = 300 + 230 * Math.cos(seat);
+        boiler.lookup.words[i]['y'] = 270 + 220 * Math.sin(seat);
+        var utensil = Math.PI * (30 + 60 * i) / 180;
+        boiler.lookup.utensils[i]['x'] = 300 + 140 * Math.cos(utensil);
+        boiler.lookup.utensils[i]['y'] = 270 + 140 * Math.sin(utensil);
+      }
+      //]]>
+
+    </script>
+    <style>
+      li {
+        margin-top: 16px;
+      }
+      .seat {
+        fill: #BFBFBF;
+        stroke: black;
+        stroke-width: 3px;
+      }
+      rect {
+        fill: none;
+        stroke: black;
+        stroke-width: 3px;
+      }
+      text {
+        text-anchor: middle;
+      }
+      text.SE {
+        font-size: 28pt;
+      }
+      #Philosophers .word-input {
+        width: 100px;
+      }
+      #Philosophers .word-cell .under-number {  
+        display: block;
+      }
+    </style>
+  </head>
+  <body id="Philosophers">
+    <div id="pageBody">
+      <p>
+        Six philosophers went out to a restaurant, each ordering a different dish in advance:
+      </p>
+      <ul>
+        <li>Aristotle ordered a salad, which can be eaten with a fork.</li>
+        <li>Hume ordered a steak, which needs a fork and a knife.</li>
+        <li>Nietzsche ordered spaghetti, which needs a fork and a spoon.</li>
+        <li>Russell ordered sourdough bread with butter, needing only a knife.</li>
+        <li>Plato ordered a soup and some toast, needing both a knife and a spoon.</li>
+        <li>Socrates ordered just a soup, which just needs a spoon.</li>
+      </ul>
+      <p>The following additional constraints apply:</p>
+      <ul>
+        <li>Every philosopher can only use the utensils on either side of their seat.</li>
+        <li>Hume doesn’t want to sit next to Russell.</li>
+        <li>Nietzsche wants to sit on Plato’s left (and Plato agrees to sit on Nietzsche’s right).</li>
+      </ul>
+
+      <div style="position: relative;">
+        <build>
+          <svg width="600" height="540" xmlns="http://www.w3.org/2000/svg" style="margin-left: 0.25in;">
+            <defs>
+              <marker id="arrow" markerWidth="5" markerHeight="5" refX="0" refY="2" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,4 L4,2 z" fill="#000" />
+              </marker>
+            </defs>
+
+            <line x1="480" y1="80" x2="530" y2="80" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+            <line x1="570" y1="150" x2="550" y2="195" stroke="#000" stroke-width="3" marker-end="url(#arrow)" />
+            <text x="560" y="90" class="SE">S</text>
+            <text x="580" y="140" class="SE">E</text>
+
+            <for each="pt" in="{seats}">
+              <circle ccx="{pt.x}" ccy="{pt.y}" r="60" class="seat" />
+            </for>
+            <circle cx="300" cy="270" r="180" fill="white" stroke="black" stroke-width="3" />
+            <for each="pt" in="{utensils}">
+              <g ttransform="translate({pt.x},{pt.y})">
+                <rect x="-35" y="-15" width="70" height="30" fill="none"></rect>
+                <text x="0" y="6">{pt.str}</text>
+              </g>
+            </for>
+          </svg>
+
+          <extract word="E" delay="&nbsp;" />
+          <div style="position:absolute; left:0.25in; top:0px;" data-word-style="underline" data-index-style="under" data-extract-style="none">
+            <for each="pt" in="{words}">
+              <span sstyle="position:absolute; left:{pt.x-50}px; top:{pt.y-10}px">
+                <word extract="{pt.ext}" />
+              </span>
+            </for>
+          </div>
+          <extract word="S" delay="&nbsp;" />
+        </build>
+
+        <div id="extract-and-submit" style="position:absolute; right: 0.5in; top: 4.25in;">
+          <div id="extracted" data-show-ready="submit-extracted" />
+          <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+        </div>
+
+      </div>
+
+    </div>
+  </body>
+</html>

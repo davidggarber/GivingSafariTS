@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script src="V/frr.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        'title': 'Fridge Raider',
+        'author': 'Jeffrey Lin',
+        'copyright': '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        'reactiveBuilder': true,
+        'lookup': {
+        },
+      };
+    </script>
+    <style>
+      .left {
+        position: relative;
+        width: 3.75in;
+        height: 1.3in;
+        text-align: right;
+        padding-right: 0.2in;
+      }
+      .right {
+        position: relative;
+        width: 3.75in;
+        height: 1.3in;
+        text-align: left;
+        padding-left: 0.1in;
+      }
+      .half {
+        height: 0.75in;
+      }
+      img.svg {
+        height: 1.2in;
+      }
+      img.num {
+        height: 0.3in;
+      }
+      img.arrow {
+        height: 0.29in;
+      }
+      #FridgeRaider .letter-cell {
+        font-size: 72pt;
+      }
+      #FridgeRaider #extracted .letter-cell {
+        font-size: 16pt;
+      }
+      .left .letter-cell {
+        position: absolute;
+        left: 1in;
+      }
+      .right .letter-cell {
+        position: absolute;
+        right: 1in;
+      }
+      .right .extracted .letter-cell {
+        position: initial;
+        right: initial;
+      }
+    </style>
+  </head>
+  <body id="FridgeRaider">
+    <div id="pageBody">
+      <p class="flavor">
+        Hmm, I don’t think I can eat any of these. Or can I?
+      </p>
+
+      <table data-input-style="hover" data-extract-style="hover">
+        <tr>
+          <td class="left" rowspan="2">
+            <letter extract='' />
+            <img src="FridgeRaider/a.svg" class="svg" style="margin-right:-20px" />
+            <img src="FridgeRaider/1.svg" class="num" />
+          </td>
+          <td class="half">&nbsp;</td>
+        </tr>
+        <tr>
+          <td class="right" rowspan="2">
+            <img src="FridgeRaider/g.svg" class="svg" style="margin-right:-20px" />
+            <img src="FridgeRaider/2.svg" class="num" />
+            <letter extract='' />
+          </td>
+        </tr>
+        <tr>
+          <td class="left" rowspan="2">
+            <letter extract='' />
+            <img src="FridgeRaider/b.svg" class="svg" style="margin-right:-33px" />
+            <img src="FridgeRaider/2.svg" class="num" />
+          </td>
+        </tr>
+        <tr>
+          <td class="right" rowspan="2">
+            <img src="FridgeRaider/h.svg" class="svg" style="margin-right:-20px" />
+            <img src="FridgeRaider/1.svg" class="num" />
+            <img src="FridgeRaider/rarrow.svg" class="arrow" style="position:absolute; top:4px; left: 98px;" />
+            <letter extract='' />
+          </td>
+        </tr>
+        <tr>
+          <td class="left" rowspan="2">
+            <letter extract='' />
+            <img src="FridgeRaider/c.svg" class="svg" style="margin-right:-20px" />
+            <img src="FridgeRaider/3.svg" class="num" />
+          </td>
+        </tr>
+        <tr>
+          <td class="right" rowspan="2">
+            <img src="FridgeRaider/i.svg" class="svg" style="margin-right:-20px" />
+            <img src="FridgeRaider/4.svg" class="num" />
+            <letter extract='' />
+          </td>
+        </tr>
+        <tr>
+          <td class="left" rowspan="2">
+            <letter extract='' />
+            <img src="FridgeRaider/d.svg" class="svg" style="margin-right:-26px" />
+            <img src="FridgeRaider/5.svg" class="num" />
+          </td>
+        </tr>
+        <tr>
+          <td class="right" rowspan="2">
+            <img src="FridgeRaider/j.svg" class="svg" style="margin-right:-20px" />
+            <img src="FridgeRaider/1.svg" class="num" />
+            <img src="FridgeRaider/j2.svg" style="margin-left:-75px; margin-bottom: 20px" />
+            <letter extract='' />
+          </td>
+        </tr>
+        <tr>
+          <td class="left" rowspan="2">
+            <letter extract='' />
+            <img src="FridgeRaider/arrow.svg" class="arrow" style="position:absolute; top:16px; right:142px;" />
+            <img src="FridgeRaider/e.svg" class="svg" style="margin-right:-20px;" />
+            <img src="FridgeRaider/6.svg" class="num" />
+          </td>
+        </tr>
+        <tr>
+          <td class="right" rowspan="2">
+            <img src="FridgeRaider/k.svg" class="svg" style="margin-right:-20px" />
+            <img src="FridgeRaider/3.svg" class="num" />
+            <img src="FridgeRaider/rarrow.svg" class="arrow" style="position:absolute; top:12px; left: 98px;" />
+            <letter extract='' />
+          </td>
+        </tr>
+        <tr>
+          <td class="left" rowspan="2">
+            <letter extract='' />
+            <img src="FridgeRaider/f.png" class="svg" style="margin-right:-28px" />
+            <img src="FridgeRaider/5.svg" class="num" />
+          </td>
+        </tr>
+        <tr>
+          <td rowspan="2" style="text-align: right; vertical-align: top; padding-top: 40px;">
+              <pattern id="extracted" extracted="11" data-input-style="underline" data-show-ready="submit-extracted" />
+              <br /><button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+            </td>
+        </tr>
+        <tr>
+          <td class="half">&nbsp;</td>
+        </tr>
+      </table>
+
+    </div>
+  </body>
+</html>

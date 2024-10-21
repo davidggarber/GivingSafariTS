@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/fr3.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Fridge Raider 3',
+        author: 'Jeffrey Lin',
+        copyright: '2021',
+        feeder: 'fridge',
+        abilities: {
+          textInput: 'nearest',
+          reactiveBuilder: 'pageBody',
+          scratchPad: true,
+          stamping: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          groups: [
+            [
+              [59,153],
+              [44,271],
+              [37,432],
+              [52,599],
+              [49,746],
+            ],
+            [
+              [214,141],
+              [169,322],
+              [216,501],
+              [228,621],
+              [211,792],
+            ],
+            [
+              [451,131],
+              [345,234],
+              [334,389],
+              [530,534],
+              [446,626],
+            ],
+            [
+              [596,153],
+              [589,253],
+              [677,458],
+              [689,574],
+              [606,700],
+            ]
+          ],
+
+          stubs: [
+            {
+              index: 0,
+              pics: [[],[],[],[],[]],
+            },
+            {
+              index: 1,
+              pics: [[],[],[],[],[]],
+            },
+            {
+              index: 2,
+              pics: [[],[],[],[],[]],
+            },
+            {
+              index: 3,
+              pics: [[],[],[],[],[]],
+            }
+          ],
+        },
+        metaParams: {
+          id: 'FridgeRaiderMeta',
+          count: 4,
+          refillClass: 'meta-group',
+          refillTemplate: 'group-fill'
+        },
+      };
+    </script>
+    <style>
+      .meta-group {
+        position: absolute;
+        left: 0px;
+        top: 10px;
+      }
+      .place {
+        position: absolute;
+      }
+      .locked .place::after {
+        background-image: url('Images/locked.png');
+        background-size: 32px 48px;
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 32px;
+        height: 48px;
+        top: 30px;
+        left: 30px;
+      }
+      .place img {
+        position: absolute;
+      }
+      .unlocked .pic {
+        animation-name: fade-in;
+        animation-duration: 1000ms;
+      }
+      @keyframes fade-in {
+        0% { opacity: 0%; transform: scale(0.5); }
+        100% { opacity: 100%; transform: scale(1); }
+      }
+      .check {
+        display: none;
+      }
+      .cross-off .check {
+        display: inline;
+        position: absolute;
+        left: 0px;
+        width: 40px;
+      }
+
+      #below {
+        position: absolute;
+        bottom: 0px;
+        left: 1.25in;
+      }
+      #below td {
+        text-align: center;
+        vertical-align: bottom;
+        padding: 2px;
+      }
+      #below p {
+        margin: 0px;
+        font-size: 20pt;
+        line-height: 18pt;
+      }
+      #below .arrows {
+        width: 0.2in;
+      }
+      #FridgeRaider3 .letter-cell {
+        font-size: 20pt;
+      }
+    </style>
+  </head>
+  <body id="FridgeRaider3">
+    <div id="pageBody">
+      <p class="flavor">
+        Looking through the fridge, things seem to pair up nicely. I do need some idea for what I can turn these water and chips into though.
+        This is a <b>meta-puzzle</b>. Solve feeder puzzles to populate this page.
+      </p>
+
+      <div class="stampable-container">
+        <for each="stub" in="{stubs}">
+          <div class="meta-group">
+            <use template="group-fill" index="{stub.index}" pics="{stub.pics}" unlocked="false" />
+          </div>
+        </for>
+      </div>
+      
+      <ttable id="below" data-letter-style="grid">
+        <ttr>
+          <for char="ch" in="WATERCHIPS">
+            <ttd>
+              <p>{ch}<br />
+                <img class="arrows" src="FridgeRaider3/arrows.svg" /><br />
+                <letter extract=""/>
+              </p>
+            </ttd>
+          </for>
+          
+        </ttr>
+      </ttable>
+
+      <div id="extract-and-submit" style="position:absolute; bottom:16px; right:50px;">
+        <div id="extracted" data-show-ready="submit-extracted" style="display: none;" />
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
+
+      <div id="stampPalette" data-unstyle="cross-off" style="display:none">
+        <span class="stampTool" id="cross-off-tool" data-style="cross-off" />
+        <span class="stampTool"/>
+      </div>
+
+    </div>
+
+    <template id="group-fill">
+      <for each="place" in="{groups.[index]}">
+        <div class="place stampable" sstyle="left:{(place.0-50)/100}in; top:{(place.1-100)/100}in;">
+          <for each="pic" in="{pics.[place#]}">
+            <img class="pic" ssrc="FridgeRaider3/{pic.0}" sstyle="width:{pic.1/100}in; height:{pic.2/100}in; left:{pic.3/100}in; top:{pic.4/100}in;" />
+          </for>
+          <if test="{unlocked}">
+            <img src="../Icons/Check.png" class="check" sstyle="top:{pics.[place#].0.2/220}in" />
+          </if>
+        </div>
+      </for>
+    </template>
+
+
+  </body>
+</html>

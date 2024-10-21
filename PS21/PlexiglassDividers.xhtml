@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/pdr.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Plexiglass Dividers',
+        author: 'Peter Golde',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          stamping: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          top: [1,0,0,3,0,3,1,0],
+          left: [1,1,1,0,1,1,0,1,2],
+          grid: [
+            '   EULOA',
+            '   ORHDE',
+            '   BWOUI',
+            '   ITVLA',
+            'IANSYCF ',
+            'ESEGHUR ',
+            'LCORFET ',
+            'NHISRKD ',
+            'EEUMTAPO'
+          ]
+        },
+      };
+    </script>
+    <style>
+      li {
+        margin-top: 10px;
+      }
+      table {
+        position: absolute;
+        left: 97px;
+        top: 1px;
+        border-collapse: collapse;
+      }
+      td {
+        width: 50px;
+        height: 56px;
+        padding: 2px 5px;
+        border: none;
+      }
+      .top {
+        font-size: 14pt;
+        text-align: center;
+      }
+      .left {
+        font-size: 14pt;
+        vertical-align: middle;
+        text-align: center;
+      }
+      .letter {
+        text-align: left;
+        vertical-align: top;
+      }
+      #svg {
+        position: absolute;
+        left: 1in;
+        top: 0px;
+        user-select: none;
+      }
+      .room {
+        stroke: black;
+        stroke-width: 3px;
+        fill: #AEAAAA;
+      }
+      .cell {
+        stroke: #666;
+        stroke-width: 0.25px;
+        fill: none;
+      }
+      .section {
+        stroke: black;
+        stroke-width: 3px;
+        fill: none;
+      }
+      .stampTool img {
+        height: 60px;
+      }
+      .stampTool.selected img {
+        background-color: #bff;
+      }
+    </style>
+  </head>
+  <body id="Plexiglass">
+    <div id="pageBody">
+      <p class="flavor">
+        My restaurant will be very COVID-19 safe. 
+        The carpenters have installed plexiglass dividers to separate all the diners, 
+        but I can’t quite remember where the tables are supposed to go. 
+        I know the following:
+      </p>
+      <ul>
+        <li>Each divided section has exactly one table.</li>
+        <li>The bar and kitchen areas have no tables.</li>
+        <li>Tables cannot be adjacent to another table, either horizontally, vertically, or diagonally, regardless of dividers.</li>
+        <li>I have noted the count of tables in each horizontal and vertical row.</li>
+      </ul>
+
+      <div style="position: relative; height:6.5in;">
+        <build>
+          <ttable class="no-user-select">
+            <ttr>
+              <ttd>&nbsp;</ttd>
+              <for each="n" in="{top}">
+                <ttd class="top">{n}<br />&#8681;</ttd>
+              </for>
+            </ttr>
+            <for each="row" in="{grid}">
+              <ttr>
+                <ttd class="left">{left.[row#]} &#8680;</ttd>
+                <for char="ch" in="{row}">
+                  <ttd class="letter">{ch}</ttd>
+                </for>
+              </ttr>
+            </for>
+          </ttable>
+        </build>
+        <svg id="svg" width="550" height="610" xmlns="http://www.w3.org/2000/svg" class="no-user-select">
+          <for int="y" from="1" to="9">
+            <for int="x" from="1" to="8">
+              <g ttransform="translate({x*60},{y*60})" class="stampable">
+                <rect x="0" y="0" width="60" height="60" class="cell" stampable="true" /> 
+              </g>
+            </for>
+          </for>
+
+          <rect x="60" y="60" width="180" height="240" class="room" /> 
+          <rect x="480" y="300" width="60" height="240" class="room" /> 
+          <text x="150" y="190" text-anchor="middle" font-size="13pt">KITCHEN</text>
+          <text x="510" y="420" text-anchor="middle" font-size="13pt">BAR</text>
+
+          <path d="M240,60 h60 v60 h120 v60 h-120 v60 h60 v60 h-120" class="section"/>
+          <path d="M420,180 h60 v60 h-60 v180 h-60 v-60 h-60 v-60" class="section"/>
+          <path d="M60,300 v60 h60 v60 h60 v60 h60 v-120 h60" class="section"/>
+          <path d="M300,60 h240 v240 v-60 h-60" class="section"/>
+          <path d="M60,360 v240 h120 v-120" class="section"/>
+          <path d="M120,600 h420 v-60" class="section" />
+          <path d="M360,420 h-60 v60 h180 h-120 v60 h-120 v60" class="section" />
+        </svg>
+      </div>
+
+      <p class="flavor">
+        Once you have figured out where each table should go, 
+        take the letters in the squares with tables, 
+        and anagram them to form a single common eight-letter word.	
+      </p>
+
+      <div id="stampPalette" data-tool-count="2" data-tool-erase="erase-tool" style="position:absolute; left: 0px; top: 4in;">
+        <span id="table-tool" class="stampTool" data-use-template-id="table-stamp"><img src="PlexiglassDividers/Table.png" /></span><br />
+        <span id="blank-tool" class="stampTool" data-use-template-id="blank-stamp"><img src="../Images/Stamps/blank.png" /></span><br />
+        <span id="erase-tool" class="stampTool" data-erase="true"><img src="../Images/Stamps/eraser.png" /></span>
+      </div>
+
+      <div class="no-print validate-block" style="position:absolute; top:9.1in; left: 3in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:1.5in; text-transform: uppercase;"></input>
+        <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+
+    </div>
+
+    <template id="table-stamp">
+      <image href="PlexiglassDividers/Table.png" x="5" y="6" width="50" height="50" class="stampedObject" xxmlns="http://www.w3.org/2000/svg" />
+    </template>
+    <template id="blank-stamp">
+      <image href="../Images/Stamps/blank.png" x="15" y="16" width="30" height="30" class="stampedObject" xxmlns="http://www.w3.org/2000/svg" />
+    </template>
+  </body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Fridge Raider 3 - materials #4',
+        author: 'Jeffrey Lin',
+        copyright: '2021',
+        feeder: 'fridge',
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          meta: 'FridgeRaiderMeta',
+          index: 3,
+          places: [
+            [100, 100, 1],
+            [400, 100, 1.1],
+            [220,250, 1.7],
+            [100,400, 1.5],
+            [400,400, 1],
+          ],
+          feeds: [
+            [['p.svg',136,139,0,0], ['p.svg',136,139,87,0]],
+            [['q.svg',226,192,0,0]],
+            [['r.svg',129,129,0,0]],
+            [['s.svg',117,117,0,0]],
+            [['t1.svg',185,185,0,0], ['t2.png',60,60,143,129]],
+          ],
+        },
+        postSetup: unlockFeeder
+      };
+
+      //<![CDATA[
+      function unlockFeeder() {
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
+            index: boiler.lookup.index, 
+            pics: boiler.lookup.feeds,
+            unlocked: true,
+            src: window.location.href });
+
+          if (updatePuzzleList(`${boiler.lookup.meta}-${boiler.lookup.index}`, 'loaded')) {
+            syncUnlockedFile(`${boiler.lookup.meta}-${boiler.lookup.index}`, window.location.href);
+          }
+        }
+      }
+      //]]>
+    </script>
+    <style>
+      .pic {
+        position: absolute;
+      }
+      .pic img {
+        position: absolute;
+      }
+      
+    </style>
+  </head>
+  <body id="Feeder">
+    <div id="pageBody">
+      <p class="clue" style="margin-top: 1in;">
+        Five images are available to solve the <a href="FridgeRaider3.xhtml">Fridge Raider 3</a> meta-puzzle:
+      </p>
+
+      <div style="position: relative; margin-top: 1in;">
+        <for each="place" in="{places}">
+          <div class="pic" sstyle="left:{(place.0-50)/100}in; top:{(place.1-100)/100}in;">
+            <for each="pic" in="{feeds.[place#]}">
+              <img class="" ssrc="FridgeRaider3/{pic.0}" sstyle="width:{place.2* pic.1/100}in; height:{place.2* pic.2/100}in; left:{place.2* pic.3/100}in; top:{place.2* pic.4/100}in;" />            
+            </for>
+          </div>
+        </for>
+      </div>
+
+    </div>
+  </body>
+</html>

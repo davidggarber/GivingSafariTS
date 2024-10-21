@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Forget all progress',
+        abilities: {
+        },
+      };
+
+      function forgetAll() {
+        var path = window.location.href;
+        var i = path.lastIndexOf('/');
+        path = path.substring(0, i);
+        var count = forgetChildrenOf(path);
+        showComplete(count);
+      }
+
+      function showComplete(count) {
+        document.getElementById('button').setAttribute('disabled', true);
+        document.getElementById('count').innerText = count;
+        document.getElementById('confirmed').style.display = 'block';
+      }
+    </script>
+    <style>
+    </style>
+  </head>
+  <body id="Forget">
+    <div id="pageBody">
+      <p class="flavor">
+        Click below to confirm reset of all saved progress, across all puzzles in this event.
+      </p>
+      <p><button id="button" onclick="forgetAll()">CONFIRM RESET</button></p>
+
+      <div id="confirmed" style="display:none;">
+        <p>COMPLETED. <span id="count"></span> items cleared.</p>
+        <a href="Menu.xhtml">Return to event</a>
+      </div>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/ssh.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: "Stewart’s Steakhouse",
+        author: 'Philippe Nicolle',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          reactiveBuilder: 'pageBody',
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          clues: [
+            ['a',3,5,4,3],
+            ['b',5,3,3,2],
+            ['c',4,3,3,3],
+            ['d',3,6,4,2],
+            ['e',4,5,5,2],
+            ['f',5,5,5,1],
+            ['g',4,4,5,5],
+            ['h',4,6,5,3],
+            ['i',6,5,4,4],
+          ]
+        },
+      };
+    </script>
+    <style>
+      img {
+        height: 1in;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      td {
+        padding: 0px;
+        vertical-align: middle;
+      }
+      td.right {
+        padding-left: 30px;
+        text-align: right;
+      }
+      #Stewarts .extract-highlight {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body id="Stewarts">
+    <div id="pageBody">
+
+      <ttable data-extract-style="highlight" class="letter-grid-2d">
+        <for each="clue" in="clues">
+          <ttr>
+            <ttd><img ssrc="Stewarts/{clue.0}1.png" /></ttd>
+            <ttd><pattern pattern="{clue.1}" /></ttd>
+            <ttd>OR</ttd>
+            <ttd><img ssrc="Stewarts/{clue.0}2.png" /></ttd>
+            <ttd><pattern pattern="{clue.2}" /></ttd>
+            <ttd class="right"><pattern pattern="{clue.3}" extract="{clue.4}" /></ttd>
+          </ttr>
+        </for>
+      </ttable>
+
+      <div id="extract-and-submit" style="position:absolute; top:9.1in; left: 4.5in;">
+        <div id="extracted" data-show-ready="submit-extracted"/>
+        <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

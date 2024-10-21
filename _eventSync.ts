@@ -140,7 +140,7 @@ function promptLogin(evt:MouseEvent) {
   let modal = document.getElementById('modal-login') as HTMLDivElement;
   let iframe = document.getElementById('modal-iframe') as HTMLIFrameElement;
   if (modal && iframe) {
-    iframe.src = 'LoginUI.xhtml?iframe&modal';
+    iframe.src = `LoginUI.xhtml?iframe&modal&${theBoiler().safari}`;
     toggleClass(modal, 'hidden', false);
   }
   else {
@@ -155,7 +155,7 @@ function promptLogin(evt:MouseEvent) {
     close.appendChild(document.createTextNode("×"));
     close.title = 'Close';
     close.onclick = function(e) {dismissLogin(e)};
-    iframe.src = 'LoginUI.xhtml?iframe&modal';
+    iframe.src = `LoginUI.xhtml?iframe&modal&${theBoiler().safari}`;
     content.appendChild(close);
     content.appendChild(iframe);
     modal.appendChild(content);

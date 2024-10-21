@@ -146,8 +146,14 @@ test('tokenizeFormula', () => {
   // whitespace, both in words and numbers, and alone
   testTokenizeFormula('"word " ~  (num + 2)', '",word ,", ,~,  ,(,num ,+, 2,)', '[t] . [t.#]');
 
-  // maybe?
-  testTokenizeFormula('maybe?', 'maybe?', 't');
+  // root optional
+  testTokenizeFormula('?maybe', '⸮,maybe', '!t');
+
+  // child optional
+  testTokenizeFormula('foo?maybe', 'foo,¿,maybe', 't.t');
+
+  // Old post-fix maybe? operator is deprecated
+  // testTokenizeFormula('maybe?', 'maybe?', 't');
 });
 
 /**
@@ -226,8 +232,14 @@ test('treeifyFormula', () => {
   // entities in formulas and in literals
   expect(testTreeifyFormula('"test@at;"~@at;', '~,test@at;,@,at;')).toBeTruthy();
 
-  // maybe?
-  expect(testTreeifyFormula('maybe?', 'maybe?')).toBeTruthy();
+  // Unary maybe
+  expect(testTreeifyFormula("?maybe", '⸮,maybe')).toBeTruthy();
+
+  // Binary maybe
+  expect(testTreeifyFormula("foo?maybe", '¿,foo,maybe')).toBeTruthy();
+
+  // Old post-fix maybe? operator is deprecated
+  // expect(testTreeifyFormula('maybe?', 'maybe?')).toBeTruthy();
 });
 
 function testEvaluateFormulaTree(raw:string, result:string) {
@@ -286,9 +298,19 @@ test('evaluateFormulaTree', () => {
   // Numeric entities
   testEvaluateFormulaTree("@33;~@x33;~@#33;~@#x33;", '!3!3');
 
-  // maybe?
-  testEvaluateFormulaTree("maybe?", '');
-  testEvaluateFormulaTree("num?", '1234');
+  testEvaluateFormulaTree("?maybe", '');
+  testEvaluateFormulaTree("?num", '1234');
+
+  testEvaluateFormulaTree("pt?x", '3');
+  testEvaluateFormulaTree("pt?z", '');
+  testEvaluateFormulaTree("fonts?1", 'italic');
+  testEvaluateFormulaTree("fonts?2", '');
+
+  testEvaluateFormulaTree("fonts?[pt?x]", '');
+
+  // Old post-fix maybe? operator is deprecated
+  // testEvaluateFormulaTree("maybe?", '');
+  // testEvaluateFormulaTree("num?", '1234');
 });
 
 function testEvaluateFormulaAny(raw:string, obj:any) {

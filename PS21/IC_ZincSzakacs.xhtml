@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Iron Chef - materials #4',
+        author: 'Rorke Haining',
+        copyright: '2021',
+        feeder: 'ironChef',
+        abilities: {
+          scratchPad: true,
+        },
+        lookup: {
+          meta: 'IronChefMeta',
+          index: 3,
+        },
+        postSetup: unlockFeeder
+      };
+
+      //<![CDATA[
+      function unlockFeeder() {
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
+            from: 'Materials #4',
+            which: '4th',
+            chefs: [ 'Fatma', 'Iris', 'Mac', 'Leopba', 'Coach' ],
+            src: window.location.href });
+
+          if (updatePuzzleList(`${boiler.lookup.meta}-${boiler.lookup.index}`, 'loaded')) {
+            syncUnlockedFile(`${boiler.lookup.meta}-${boiler.lookup.index}`, window.location.href);
+          }
+        }
+      }
+      //]]>
+    </script>
+    <style>
+      .clue, li {
+        margin: 10px;
+        font-size: 20pt;
+      }
+    </style>
+  </head>
+  <body id="Feeder">
+    <div id="pageBody">
+      <p class="clue" style="margin-top: 1in;">
+        The 4th set of <a href="IronChef.xhtml">Iron Chef</a> contestants are:
+      </p>
+      <ul>
+        <li>Desiree</li>
+        <li>Seacrest</li>
+        <li>Alpbakh</li>
+        <li>Christmas</li>
+        <li>Rachel</li>
+      </ul>
+    </div>
+  </body>
+</html>

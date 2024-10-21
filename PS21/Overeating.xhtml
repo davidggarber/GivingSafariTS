@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/oeg.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Overeating',
+        author: 'Martyn Lovell',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          hints: [
+            'Fabric made from animal skin',
+            'To perform a test to determine level of alcohol intoxication',
+            'To make a person feel the urge to vomit',
+            'Epidermal growth found on birds and at least some dinosaurs',
+            'Quality of activity or person who uses imagination and ideas',
+            'Small sofa for two people',
+            'Period of unusually high and intense temperature',
+            'Refreshing activity done for enjoyment and often exercise',
+            'Speaking or doing something again and again',
+            'Knitted pullover or cardigan'
+          ],
+          pats: [
+            ['1~3', 1, 1],
+            ['2~6', 4, 2],
+            ['4~1', 3, 3],
+            ['1~3', 4, 4],
+            ['2~3', 5, 5],
+            ['5~', 5, 6],
+            ['1~4', 1, 7],
+            ['4~3', 5, 8],
+            ['3~3', 3, 9],
+            ['2~2', 1, 10],
+          ]
+        },
+      };
+    </script>
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+      td {
+        border: solid 0.5px black;
+        padding: 10px;
+      }
+      #Overeating .letter-literal {
+        font-size: 10pt;
+        bottom: 4px;
+      }
+      #extracted {
+        display: block;
+        margin-top: 0.25in;
+      }
+    </style>
+  </head>
+  <body id="Overeating">
+    <div id="pageBody">
+      <p class="flavor">
+        When I overeat, I feel so full that I struggle to breathe, and I want find a seat and wait so I don’t need any treatment.
+      </p>
+
+      <ttable class="letter-grid-2d">
+        <for int="row" from="0" until="10">
+          <ttr>
+            <ttd class="hint">{hints.[row]}</ttd>
+            <ttd class="inp">
+              <pattern pattern="{pats.[row].0}" numbers="{pats.[row].1}={pats.[row].2}" />
+            </ttd>
+          </ttr>
+        </for>        
+      </ttable>
+
+      <pattern id="extracted" extract-numbered="4~6" />
+
+      <div class="no-print validate-block" style="position:absolute; top:7in; left: 0in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:2in; text-transform: uppercase"></input>
+        <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

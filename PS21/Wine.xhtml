@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script src="V/wne.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        'title': 'Wine',
+        'author': 'Rorke Haining',
+        'copyright': '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          checkMarks:true,
+        },
+        'reactiveBuilder': true
+      };
+      var hints = [
+        'To serve professional food at an event',
+        'Burglar deterrents',
+        'Sartre’s chief rival',
+        'Type of event at a stadium or arena',
+        'Humor that criticizes, e.g. a politician',
+        'Catholic aid organization founded by Lorenz Werthmann',
+        'The work of giving birth',
+        'Traveling salesman lodging',
+        'The player that can use his/her hands in soccer',
+        'It doesn’t boil if you watch it',
+        'Rental agreements',
+        'Member of Seattle’s baseball team',
+        'Ventilates',
+      ];
+      var inputs = [ 5,6,5,8,6,7,5,5,6,3,6,7,4 ];
+      var bottles = [
+        'ALIGOTÉ',
+        'AUSLESE',
+        'BAROLO',
+        'CLARET',
+        'FRASCATI',
+        'MARSALA',
+        'MERLOT',
+        'MUSCAT',
+        'PINOT GRIS',
+        'PORT',
+        'RETSINA',
+        'SIRAH',
+        'TRAMINER'
+      ];
+      boiler.lookup = {
+        hints: hints,
+        inputs: inputs,
+        bottles: bottles,
+      }
+    </script>
+    <style>
+      #table {
+        border-spacing: 0px;
+      }
+      #table td {
+        border: solid 1px black;
+        padding: 8px;
+      }
+      .left {
+        width: 4.12in;
+        height: 40px;
+      }
+      .left p {
+        margin: 0px;
+      }
+      .right {
+        width: 0.5in;
+        text-align: center;
+        vertical-align: middle;
+      }
+      #Wine .right .letter-cell {
+        font-size: 24pt;
+      }
+      #bottles {
+        position: absolute;
+        right: 0px;
+        top: 42px;
+      }
+      .bottle-row {
+        position: relative;
+      }
+      .bottle-row img {
+        height: 0.6in;
+      }
+      .bottle-row span {
+        position: absolute;
+        left: 48px;
+        top: 20px;
+        width: 90px;
+        text-align: center;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .empty {
+        display: none;
+      }
+      .crossed-off .full {
+        display: none;
+      }
+      .crossed-off .empty {
+        display: inline;
+      }
+    </style>
+  </head>
+  <body id="Wine">
+    <div id="pageBody">
+      <p class="flavor">
+        Rats, I’ve mixed up all my wine pairings.  Can you help?
+      </p>
+      <table_ id="table" class="letter-grid-2d">
+        <for each="hint" in="hints">
+          <tr_>
+            <td_ class="left">
+                <p class="hint">{hint}</p>
+                <p class="inputs"><pattern pattern="{inputs.[hint#]}"></pattern></p>
+            </td_>
+            <td_ class="right"><letter class="extract" data-input-style="hover"></letter></td_>
+          </tr_>
+        </for>
+      </table_>
+      <div id="bottles">
+        <for each="bottle" in="bottles">
+          <div class="bottle-row" class_="cross-off">
+            <img class="full" src="Wine/bottle.png" />
+            <img class="empty" src="Wine/empty.png" />
+            <span class="label">{bottle}</span>
+          </div>
+        </for>  
+      </div>
+
+      <div class="no-print validate-block" style="position:absolute; top: 9in; left: 2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:2.5in; text-transform: uppercase;"></input>
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

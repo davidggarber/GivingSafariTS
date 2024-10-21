@@ -527,13 +527,13 @@ export class FormulaNode {
       result = resolveEntities(this.value.text!);  // unless overridden below
       let trimmed = simpleTrim(result);
 
-      const maybe = result && trimmed[trimmed.length - 1] == '?';
-      if (maybe) {
-        trimmed = trimmed.substring(0, trimmed.length - 1);
-        if (evalText === undefined) {
-          evalText = true;
-        }
-      }
+      // const maybe = result && trimmed[trimmed.length - 1] == '?';
+      // if (maybe) {
+      //   trimmed = trimmed.substring(0, trimmed.length - 1);
+      //   if (evalText === undefined) {
+      //     evalText = true;
+      //   }
+      // }
 
       // Could be plain text (or a number) or a name in context
       if (evalText === true) {
@@ -542,9 +542,9 @@ export class FormulaNode {
           result = context[trimmed];
           result = resolveEntities(result);
         }
-        else if (maybe) {
-          return '';  // Special case
-        }
+        // else if (maybe) {
+        //   return '';  // Special case
+        // }
         else if (isIntegerRegex(trimmed)) {
           result = parseInt(trimmed);
         }
@@ -916,7 +916,8 @@ type OperatorInfo = {
   evalRight?: boolean;
 }
 
-const minus:OperatorInfo = { raw:'-', unaryChar:'⁻', binaryChar:'−'};  // ambiguously unary or binary
+const minus:OperatorInfo = { raw:'-', unaryChar:'⁻', binaryChar:'−'};  // ambiguously unary or binary minus
+const optional:OperatorInfo = { raw:'?', unaryChar:'⸮', binaryChar:'¿'};  // ambiguously unary or binary optional child
 const concat:OperatorInfo = { raw:'~', precedence:1, binaryOp:(a,b,aa,bb) => {return makeString(a,aa) + makeString(b,bb)}, evalLeft:true, evalRight:true};
 const entity:OperatorInfo = { raw:'@', precedence:2, unaryOp:(a,aa) => {return entitize(a, aa)}, evalRight:false};
 const plus:OperatorInfo = { raw:'+', precedence:3, binaryOp:(a,b,aa,bb) => {return makeFloat(a,aa) + makeFloat(b,bb)}, evalLeft:true, evalRight:true};
@@ -927,7 +928,9 @@ const intDivide:OperatorInfo = { raw:'\\', precedence:4, binaryOp:(a,b,aa,bb) =>
 const modulo:OperatorInfo = { raw:'%', precedence:4, binaryOp:(a,b,aa,bb) => {return makeFloat(a,aa) % makeFloat(b,bb)}, evalLeft:true, evalRight:true};
 const negative:OperatorInfo = { raw:'⁻', precedence:5, unaryOp:(a,aa) => {return -makeFloat(a,aa)}, evalRight:true};
 const childObj:OperatorInfo = { raw:'.', precedence:6, binaryOp:(a,b,aa,bb) => {return getKeyedChild(a, b, bb, false)}, evalLeft:true, evalRight:false};
+const optionalChildObj:OperatorInfo = { raw:'¿', precedence:6, binaryOp:(a,b,aa,bb) => {return getKeyedChild(a, b, bb, true)}, evalLeft:true, evalRight:false};
 const rootObj:OperatorInfo = { raw:':', precedence:7, unaryOp:(a,aa) => {return getKeyedChild(null,a,aa)}, evalRight:false};
+const optionalRootObj:OperatorInfo = { raw:'⸮', precedence:7, unaryOp:(a,aa) => {return getKeyedChild(null,a,aa,true)}, evalRight:false};
 const roundBrackets:OperatorInfo = { raw:'(', precedence:8, closeChar:')'};
 const squareBrackets:OperatorInfo = { raw:'[', precedence:8, closeChar:']'};
 const curlyBrackets:OperatorInfo = { raw:'{', precedence:8, closeChar:'}'};
@@ -938,9 +941,10 @@ const singleQuotes:OperatorInfo = { raw:'\'', precedence:10, closeChar:'\''};
 const doubleQuotes:OperatorInfo = { raw:'"', precedence:10, closeChar:'"'};
 
 const allOperators:OperatorInfo[] = [
-  minus, concat, plus, subtract, entity, 
+  minus, optional,
+  concat, plus, subtract, entity, 
   times, divide, intDivide, modulo, negative,
-  childObj, rootObj,
+  childObj, rootObj, optionalChildObj, optionalRootObj,
   roundBrackets, squareBrackets, curlyBrackets,
   closeRoundBrackets, closeSquareBrackets, closeCurlyBrackets,
   singleQuotes, doubleQuotes
@@ -1337,6 +1341,9 @@ function getKeyedChild(parent:any, key:any, kTok?:SourceOffsetable, maybe?:boole
       }
       return (parent as string)[index];
     }
+    if (maybe) {
+      return '';
+    }
     throw new ContextError('Named fields are only available on objects: ' + key + ' in ' + JSON.stringify(parent), kTok);
   }
 
@@ -1353,10 +1360,10 @@ function getKeyedChild(parent:any, key:any, kTok?:SourceOffsetable, maybe?:boole
 
   // Named members of objects
   let trimmed = simpleTrim(key);
-  if (trimmed[trimmed.length - 1] == '?') {
-    trimmed = trimmed.substring(0, trimmed.length - 1);
-    maybe = true;
-  }
+  // if (trimmed[trimmed.length - 1] == '?') {
+  //   trimmed = trimmed.substring(0, trimmed.length - 1);
+  //   maybe = true;
+  // }
   if (!(trimmed in parent)) {
     if (maybe) {
       return '';

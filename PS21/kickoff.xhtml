@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: 'ps21',
+        title: 'Puzzle Safari 21: Web Redux',
+        reloadOnRefresh: false,
+        abilities: {
+          textInput: 'nearest',
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+        "validation":{"start-answer":{"TRAREBHF":"6cebprrq|6jnvgsbetb^fgnegrq"}},
+      };
+      function onButton(e) {
+        var target = e.target;
+        console.log(target);
+        if (!findParentOfClass(target, 'clicker')) {
+          promptInOrOut();
+        }
+      }
+    </script>
+    <style>
+      #watermark {
+        position: absolute;
+        bottom: -0.25in;
+        right: 0px;
+        height: 1in;
+      }
+
+      iframe {
+        z-index: 1;
+        margin-left: 1.25in;
+        margin-top: 0.5in;;
+        margin-bottom: 0.5in;
+        width: 5in;
+        height: 2.5in;
+        overflow: hidden;
+        background-color: white;
+        border: 1px solid #888;
+        box-shadow:0px 0px 10px black;      
+      }
+      .iPad iframe {
+        width: 5.1in;
+        height: 2.75in;
+      }
+
+      #Login-bar {
+        display: none;
+      }
+
+      .friendly {
+        font-size: 20pt;
+        text-align: center;
+      }
+
+      #Index .word-cell {
+        font-size: 30pt;
+      }
+
+      #Index .word-input {
+        width: 3in;
+      }
+
+      #team-tips {
+        margin-top: 0.75in; 
+        text-align: center; 
+      }
+      #team-tips p {
+        font-size: 12pt;
+      }
+
+      #waitforgo {
+        margin-top: 0.75in;
+      }
+      #waitforgo.started {
+        display: none;
+      }
+      #proceed {
+        display: none;
+      }
+
+      #Index #guess-log {
+        display: none;
+      }
+
+    </style>
+  </head>
+  <body id="Index">
+    <div id="pageBody">
+      <img id="watermark" src="Images/GS24_banner.png" />
+      <iframe ssrc="LoginUI.xhtml?iframe&amp;{_safari}" />
+    
+      <div id="team-tips" style="text-align: center;">
+        <p>If you have friends you are hoping to team with, choose a matching team name.
+          <br />There is no fixed team size. Play with more people if you don't have much time.
+          <br />Or play with fewer if you want first dibs on more of the puzzles 😄.
+        </p>
+        <p>If you log in from multiple devices, please use a consistent name and avatar.</p>
+      </div>
+
+      <p id="waitforgo" class="friendly">
+        When the event starts,<br /> game control will give you a start code. <br />
+        <word id="start-answer" data-word-style="box" data-show-ready="submit-answer" />
+        <button class="validater" id="submit-answer" data-extracted-id="start-answer">Submit</button>
+      </p>
+
+      <p id="proceed" class="friendly">Proceed to <a href="Menu.xhtml">the Menu</a> for your puzzles.</p>
+
+
+    </div>
+  </body>
+</html>

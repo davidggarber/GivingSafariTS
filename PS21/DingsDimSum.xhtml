@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/dds.js" />
+    <script>
+      img = {
+        steamer: { url: 'DingsDimSum/steamer.png', width: 4.7*96, height: 3.86*96, cls:'ds_steamer' },
+        a: { url: 'DingsDimSum/a.png', width: 0.67*96, height: 0.8*96, cls:'ds_a' },
+        b: { url: 'DingsDimSum/b.png', width: 0.73*96, height: 0.8*96, cls:'ds_b' },
+        c: { url: 'DingsDimSum/c.png', width: 0.94*96, height: 0.8*96, cls:'ds_c' },
+        d: { url: 'DingsDimSum/d.png', width: 1.03*96, height: 0.8*96, cls:'ds_d' },
+        e: { url: 'DingsDimSum/e.png', width: 0.55*96, height: 0.8*96, cls:'ds_e' },
+        f: { url: 'DingsDimSum/f.png', width: 0.82*96, height: 0.8*96, cls:'ds_f' },
+        g: { url: 'DingsDimSum/g.png', width: 0.90*96, height: 0.8*96, cls:'ds_g' },
+      };
+
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: "Ding’s Dim Sum",
+        author: 'Philippe Nicolle',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          decoder: 'Ascii',
+        },
+        reactiveBuilder: true,
+        lookup: {
+          img: img,
+          food: "abcdefg",
+          line2: "bcdefg",
+          mods: "VQGWNH",
+
+          places: [
+            [0, 20, img.steamer],
+
+            [0, 0, img.d],
+            [0, -76, img.a],
+            [0, 76, img.g],
+            [-90, -38, img.b],
+            [-90, 38, img.e],
+            [90, -38, img.c],
+            [90, 38, img.f],
+
+            [-105, -200, img.g],
+            [-30, -240, img.a],
+            [27, -240, img.e],
+            [95, -220, img.a],
+            [157, -220, img.a],
+
+            [-300, 0, img.c],
+            [-330, 80, img.a],
+            [-272, 80, img.e],
+            [-260, 156, img.a],
+            [-202, 156, img.e],
+
+            [295, 20, img.g],
+            [252, 100, img.a],
+            [330, 100, img.d],
+            [208, 166, img.f],
+          ]
+        },
+      };
+
+      function updateDecoder(input, key) {
+        var val = input.value;
+        var id = input.parentNode.id;
+        var fruit = id.substring(4);
+        var cls = 'ds_' + fruit;
+        var spans = document.getElementsByClassName(cls);
+        for (var s of spans) {
+          s.textContent = val;
+        }
+      }
+
+    </script>
+    <style>
+      #DingsDimSum .letter-cell {
+        font-size: 32pt;
+        border-bottom: solid 2.5px black;
+      }
+      #steamer {
+        position: absolute;
+        left: 1.4in;
+        width:4.7in;
+        top: 1.5in;
+      }
+      #below {
+        position: absolute;
+        width: 7.5in;
+        left: 0px;
+        top: 6in;
+      }
+      #line1 {
+        display: block;
+        border-collapse: collapse;
+        width: 7in;
+        height: 1.5in;
+        margin-left: 0.25in;
+      }
+      #line1 td {
+        width: 1in;
+        height: 1.5in;
+        text-align: center;
+        vertical-align: bottom;
+      }
+      #line2 {
+        display: block;
+        margin-top: 0.25in;
+        border-collapse: collapse;
+        width: 7.8in;
+        height: 1.5in;
+        margin-left: -0.3in;
+      }
+      #line2 td {
+        width: 1.25in;
+        height: 1.5in;
+        text-align: center;
+      }
+      .mod {
+        position: relative;
+        font-size: 20pt;
+        top: -30px;
+      }
+      .digit {
+        text-anchor: middle;
+        font-size: 22pt;
+        stroke: #633;
+        stroke-width: 1px;
+        fill: #fcc;
+      }
+    </style>
+  </head>
+  <body id="DingsDimSum">
+    <div id="pageBody">
+      <p class="flavor">
+        Replace the dim sum with the digits 1 to 7.  The sum of each column and diagonal, as pointed to by the arrows, are in decimal.
+      </p>
+
+      <build>
+        <svg width="740" height="600" style="margin-left: -10px">
+          <defs>
+            <marker id="arrow" markerWidth="5" markerHeight="5" refX="0" refY="2" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,4 L4,2 z" fill="#000" />
+            </marker>
+          </defs>
+
+          <g transform="translate(360,294)">            
+            <for each="item" in="{places}">
+              <image x="{item.0 - (item.2.width/2)}" y="{item.1 - (item.2.height/2)}" href="{item.2.url}" height="{item.2.height}" />
+              <text x="{item.0}" y="{item.1}" class="digit {item.2.cls}"></text>
+            </for>
+
+            <line x1="0" y1="-125" x2="0" y2="-200" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+            <line x1="-90" y1="-87" x2="-90" y2="-168" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+            <line x1="90" y1="-87" x2="90" y2="-168" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+
+            <line x1="-140" y1="-30" x2="-240" y2="8" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+            <line x1="-140" y1="46" x2="-240" y2="84" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+            <line x1="-60" y1="82" x2="-180" y2="130" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+
+            <line x1="140" y1="-30" x2="240" y2="8" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+            <line x1="140" y1="46" x2="210" y2="69" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+            <line x1="60" y1="82" x2="180" y2="130" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+
+          </g>
+        </svg>
+      </build>
+
+
+      <div id="below" class="letter-grid-2d">
+        <ttable id="line1">
+          <ttr>
+            <for char="ch" in="{food}">
+              <ttd>
+                <number id="val_{ch}" data-onchange="updateDecoder" /><br />
+                <span sstyle="display:inline-block; padding:{(77-img.[ch].height)/2}px 0px">
+                  <img ssrc="{img.[ch].url}" sstyle="height:{img.[ch].height}px" />
+                </span>
+              </ttd>
+            </for>
+          </ttr>
+        </ttable>
+        <ttable id="line2" data-extract-style="underline">
+          <ttr>
+            <for char="ch" in="{line2}">
+              <ttd trim="all" style="white-space: nowrap;">
+                <letter extract="true" /><br />
+                <span sstyle="display:inline-block; padding:{(77-img.[ch].height)/2}px 0px">
+                  <span class="mod">{mods.[ch#]}+</span>
+                  <img class="food" ssrc="{img.[ch].url}" sstyle="height:{img.[ch].height}px" />
+                </span>
+              </ttd>
+            </for>
+          </ttr>
+        </ttable>
+
+        <div style="position: absolute; right: -30px; top: 1.9in;">
+          <span id="extracted" style="display:none;" data-show-ready="submit-extracted" />
+          <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+        </div>
+
+      </div>
+
+    </div>
+  </body>
+</html>

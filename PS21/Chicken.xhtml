@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script src="V/chn.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        'title': 'Chicken',
+        'author': 'Rorke Haining &amp; Jess McGatha',
+        'copyright': '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          checkMarks:true,
+        },
+        'reactiveBuilder': true,
+        'lookup': {
+        },
+      };
+
+      var hints = [
+        ['Playroom', 7, 4],
+        ['Like a Granny Smith apple', 10, 7],
+        ['Overdue funds', 7, 6],
+        ['Delicious but unhealthy', 7, 4],
+        ['Divert', 9, 9],
+        ['911 call destination', 9, 5],
+        ['Gloomy or slow', 8, 6],
+        ['Type of bridge', 8, 6],
+        ['Fancy, cute instrument', 9, 9],
+      ];
+
+      boiler.lookup = {
+        hints:hints,
+      };
+    </script>
+    <style>
+      .flavor .title-font {
+        font-size: 24pt;
+      }
+
+      #Chicken .letter-cell {
+        font-size: 12pt;
+      }
+
+      #center {
+        width: 4in;
+        padding: 0.1in;
+        border: solid 1px black;
+        display: grid;
+        grid-template-columns: 2.4in 1.6in;
+        grid-template-rows: repeat(9, 36pt);
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      .right {
+        padding-top: 5px;
+      }
+
+      .extract-chicken::after {
+        background-image: url('Chicken/chicken.png');
+        background-size: 1.2em 1.2em;
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 1.2em;
+        height: 1.2em;
+        top: 22px;
+        left: -0.1em;
+      }
+
+      .img-list img {
+        margin-bottom: 0.25in;
+        max-width: 1.4in;
+        max-height: 1.5in;
+      }
+
+      .img-list div {
+        position: relative;
+      }
+
+      .img-list .check {
+        left: initial;
+        right: 10px;
+      }
+
+      #question {
+        width: 3in;
+        margin-left: 2.25in;
+        border: solid 1px black;
+        padding: 10px;
+        text-align: center;
+      }
+
+      #extracted {
+        width: 100%;
+        text-align: center;
+      }
+
+    </style>
+  </head>
+  <body id="Chicken">
+    <div id="pageBody">
+      <p class="flavor">
+        Remember: <span class="title-font">Chicken</span> words, like the 9 images below, always come first, before <span class="title-font">Egg</span> words!
+      </p>
+
+      <build>
+        <div style="width: 7.5in; display:grid; grid-template-columns:1.7in 4.3in 1.5in; margin-top: 0.5in;">
+          <div class="img-list" style="text-align: center;">
+            <div class_="cross-off"><img src="Chicken/fire.png" /></div>
+            <div class_="cross-off"><img src="Chicken/pentagon.png" /></div>
+            <div class_="cross-off"><img src="Chicken/bulb.png" /></div>
+          </div>
+
+          <div>
+            <div id="center" data-extract-style="chicken" class="letter-grid-2d">
+              <for each="hint" in="hints">
+                <span class="left"><pattern pattern="{hint.[1]}" extract="{hint.[2]}"></pattern></span>
+                <span class="right">{hint.[0]}</span>
+              </for>
+            </div>
+          </div>
+
+          <div class="img-list" style="text-align: center;">
+            <div class_="cross-off"><img src="Chicken/mario.png" /></div>
+            <div class_="cross-off"><img src="Chicken/down.png" /></div>
+            <div class_="cross-off"><img src="Chicken/men.png" /></div>
+          </div>
+        </div>
+
+        <div class="img-list" style="width: 7.5in; display: flex; justify-content: space-around;">
+          <div class_="cross-off"><img src="Chicken/pan.png" /></div>
+          <div class_="cross-off"><img src="Chicken/back.png" /></div>
+          <div class_="cross-off"><img src="Chicken/baby.png" /></div>
+        </div>
+
+        <div id="question">
+          What do we call our arch-rival?
+        </div>
+
+        <div style="padding-left: 3in;">
+          <span id="extracted" data-show-ready="submit-extracted" /> &nbsp;
+          <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+        </div>
+
+      </build>
+
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/hns.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'A Hotdog Is Not A Sandwich',
+        author: 'Michael Cohen',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          straightEdge: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          left: [
+            ['hotdog.jpg', 62, 'Hot Dog'],
+            ['lasagna.jpg', 77, 'Lasagna'],
+            ['pigs.jpg', 59, 'Pigs In a Blanket'],
+            ['quesadilla.jpg', 59, 'Quessadilla'],
+            ['cheesecake.jpg', 67, 'Cheesecake (whole)'],
+            ['poptarts.jpg', 49, 'Pop Tarts'],
+            ['bouillabaisse.jpg', 94, 'Bouillabaisse'],
+            ['nigiri.jpg', 67, 'Nigiri Sushi']
+          ],
+          right: [
+            ['sandwich.jpg', 70, 'Sandwich'],
+            ['spaghetti.jpg', 85, 'Spaghetti'],
+            ['crostini.jpg', 54, 'Crostini'],
+            ['enchilada.jpg', 69, 'Enchilada'],
+            ['pie.jpg', 78, 'Cherry Pie Slice'],
+            ['bigmac.jpg', 78, 'Big Mac'],
+            ['quiche.jpg', 74, 'Quiche'],
+            ['gyoza.jpg', 70, 'Gyoza']
+          ],
+          letters: [
+            ['U',450,50],
+            ['C',372,100],
+            ['P',490,130],
+            ['S',320,150],
+            ['R',460,180],
+            ['O',290,190],
+            ['E',410,250],
+            ['B',560,260],
+            ['W',320,292],
+            ['M',210,330],
+            ['L',380,325],
+            ['C',450,360],
+            ['A',200,370],
+            ['E',350,417],
+            ['T',525,430],
+            ['U',390,440],
+            ['N',240,460],
+            ['R',532,478],
+            ['E',460,500],
+            ['S',300,500],
+            ['F',346,521],
+            ['P',250,550],
+            ['B',470,550],
+            ['S',315,580],
+            ['I',355,595],
+            ['U',452,583],
+            ['E',400,635],
+            ['L',444,680],
+            ['R',340,710],
+            ['R',310,750],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #flavor {
+        font-style: italic;
+      }
+      #left {
+        position: absolute;
+        top: 60px;
+        left: -0.25in;
+        width: 1.5in;
+      }
+      #left p {
+        margin: 0px;
+        min-height: 100px;
+      }
+      .l-img {
+        width: 1.25in;
+        text-align: right;
+      }
+      .l-cap {
+        width: 1.5in;
+        text-align: center;
+      }
+      #right {
+        position: absolute;
+        top: 60px;
+        right: -0.5in;
+        width: 1.75in;
+      }
+      #right p {
+        margin: 0px;
+        min-height: 100px;
+      }
+      .r-img {
+        margin-left: 0.45in;
+      }
+      .r-cap {
+        margin-left: 0.55in;
+      }
+      #svg {
+        position: absolute;
+        top: 0.5in;
+        left: 0px;
+      }
+      .anchor {
+        fill: black;
+        stroke: none;
+      }
+      .letter circle {
+        fill: none;
+        stroke: black;
+        stroke-width: 1px;
+      }
+      .letter text {
+        text-anchor: middle;
+      }
+      #Hotdog .straight-edge {
+        stroke-width: 19px;
+        stroke: #99ff99;
+      }
+    </style>
+  </head>
+  <body id="Hotdog">
+    <div id="pageBody">
+      <p class="flavor">
+        Is a hot dog not a sandwich?  If you have <b>B</b>ecome an <b>I</b>ncredibly k<b>N</b>owedgable <b>G</b>astronome, 
+        then this puzzle is as easy as <b>1, 8, 27</b> with the <b>rule</b> that solved this conundrum!
+      </p>
+
+      <div id="left" class="no-user-select">
+        <for each="item" in="{left}">
+          <p>
+            <div class="l-img">
+              <img ssrc="Hotdog/{item.0}" sstyle="height:{item.1/100}in" />
+            </div>
+            <div class="l-cap">{item.2}</div>
+          </p>
+        </for>
+      </div>
+
+      <div id="right" class="no-user-select">
+        <for each="item" in="{right}">
+          <p>
+            <div class="r-img">
+              <img ssrc="Hotdog/{item.0}" sstyle="height:{item.1/100}in" />
+            </div>
+            <div class="r-cap">{item.2}</div>
+          </p>
+        </for>
+      </div>
+
+      <svg id="svg" width="720" height="800" xmlns="http://www.w3.org/2000/svg" class="straight-edge-area" data-max-points="2" data-hover-range="50" data-can-share-vertex="false" data-show-open-drag="true">
+        <g class="straight-edge-container"></g>
+        <for int="y" from="50" to="750" step="100">
+          <circle cx="110" ccy="{y}" r="4" class="anchor vertex" />
+          <circle cx="625" ccy="{y}" r="4" class="anchor vertex" />
+        </for>
+        <g class="no-user-select">
+          <for each="let" in="{letters}">
+            <g ttransform="translate({let.1},{let.2})" class="letter">
+              <circle cx="0" cy="0" r="10" />
+              <text x="0" y="4">{let.0}</text>
+            </g>
+          </for>      
+        </g>
+      </svg>
+
+      <div class="no-print validate-block" style="position:absolute; bottom: -0.5in; left: 2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:1.5in; text-transform: uppercase;"></input>
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

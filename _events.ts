@@ -132,6 +132,20 @@ const giving24Details:PuzzleEventDetails = {
   eventSync: 'GivingSafari24',
 }
 
+const ps21Mini:PuzzleEventDetails = {
+  'title': 'Epicurious Enigmas',
+  'logo': './Images/GS24_banner.png',  // PS21 logo.png',
+  'icon': './Images/Plate_icon.png',
+  'iconRoot': './Icons/',
+  'cssRoot': '../Css/',
+  'fontCss': '../24/Css/Fonts21.css',
+  'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',  // no whitespace
+  'links': [],
+  'backLinks': { '': { href:'./MiniMenu.xhtml'}},
+  'validation': true,
+  eventSync: 'ps21Mini',
+}
+
 const safari24Details:PuzzleEventDetails = {
   'title': 'Game Night',
   // 'logo': '../24/Images/PS24 logo.png',
@@ -188,10 +202,16 @@ const pastSafaris = {
   'Dgg': safariDggDetails,
   '24': safari24Details,
   'gs24': giving24Details,
+  'fr21': ps21Mini,
+  'ic21': ps21Mini,
+  'sb21': ps21Mini,
+  'tm21': ps21Mini,
   'team': puzzylSafariTeamDetails,
 }
 
 const givingSafari24 = ['gs24','21','ps21'];
+const puzzleSafari21Minis = ['ic21','sb21','tm21','fr21'];
+const allSafari21 = ['gs24','21','ps21','ic21','sb21','tm21','fr21'];
 
 let safariDetails:PuzzleEventDetails;
 

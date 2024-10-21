@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script src="V/fr2.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        'title': 'Fridge Raider 2',
+        'author': 'Jeffrey Lin',
+        'copyright': '2021',
+        abilities: {
+          textInput: 'nearest',
+          stamping: true,
+          scratchPad: true,
+        },
+        'reactiveBuilder': true,
+        'lookup': {
+        },
+      };
+
+      var checkbox_images = ['FridgeRaider2/checkbox.svg', 'FridgeRaider2/checked.svg']
+
+      function toggleCheckbox(row) {
+        var img = row.getElementsByClassName('checkbox')[0];
+        var src = img.getAttributeNS('', 'src');
+        var i = checkbox_images.findIndex(s => s == src);
+        var next = checkbox_images[(i + 1) % checkbox_images.length];
+        img.setAttributeNS('', 'src', next);
+
+        saveStates();
+      }
+
+    </script>
+    <style>
+      div.left  {
+        position: absolute;
+      }
+      .left img {
+        position: absolute;
+      }
+      .linp {
+        position: absolute;
+        width: 100px;
+      }
+      #FridgeRaider2 .linp .letter-literal {
+        font-size: 24pt;
+      }
+      #FridgeRaider2 .linp .letter-cell {
+        font-size: 24pt;
+      }
+      #FridgeRaider2 .letter-box {
+        border: solid 3px #aaa;
+      }
+      #FridgeRaider2 #bottom .letter-cell {
+        font-size: 24pt;
+      }
+      .tristate {
+        position: relative;
+        display: inline-block;
+        border: dashed 0.5px gray;
+        width: 35px;
+        height: 35px;
+        bottom: 0.5px;
+        cursor: pointer;
+        xbackground-color: #f008;
+      }
+      .tristate-fill {
+        position: absolute;
+        bottom: 0px;
+        height: 100%;
+        width: 32px;
+        left: 4px;
+        text-align: center;
+        xbackground-color: #ff08;
+      }
+      .tristate-fill .pm {
+        position: absolute;
+        height:24pt;
+        right: 2px;
+        bottom: 2px;
+      }
+
+      .tristate.plus-stamp .pm, .tristate.minus-stamp .pm {
+        display: none;
+      }
+
+      .tristate.plus-stamp:after {
+        content: "+";
+        font-size: 24pt;
+        position: absolute;
+        top: -5px;
+        left: 5px;
+        width: 30px;
+        height: 40px;
+        padding: 0px;
+        background-color: none;
+      }
+
+      .tristate.minus-stamp:after {
+        content: "&minus;";
+        font-size: 24pt;
+        position: absolute;
+        top: -5px;
+        left: 5px;
+        width: 30px;
+        height: 40px;
+        padding: 0px;
+        background-color: none;
+      }
+
+      #right {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+      }
+      .cb {
+        padding: 10px;
+      }
+      .cb img {
+        cursor: pointer;
+      }
+      .r2 {
+        position: relative;
+      }
+      .r2 img {
+        height: 0.65in;
+      }
+    </style>
+  </head>
+  <body id="FridgeRaider2">
+    <div id="pageBody" class="no-user-select">
+      <p class="flavor">
+        Huh, these foods all seem a bit off. Let’s see if I can fix them up.<br />
+        First, a little bit less for these, then a little bit more for those … voila!
+      </p>
+      <build>
+        <div id="left" data-input-style="box">
+          <div class="left">
+            <img src="FridgeRaider2/a.svg" style="height:1.52in;" />
+            <div class="linp trim" style="top:110px;">
+              <span class="tristate plus-stamp">
+                <span class="tristate-fill" />
+              </span>
+              <letter literal="F" class="input-font"></letter>
+            </div>
+          </div>
+          <div class="left" style="left:1.4in">
+            <img src="FridgeRaider2/b-arrow.svg" style="top:-8px;" />
+            <img src="FridgeRaider2/b2.svg" style="width:1.93; top:0px; left:30px;" />
+            <img src="FridgeRaider2/b1.svg" style="width:1.93; top:-5px; left:50px;" />
+            <div class="linp trim" style="top:110px; left:50px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+          <div class="left" style="left:4in;">
+            <img src="FridgeRaider2/c.svg" style="height:1.77in;" />
+            <div class="linp trim" style="top:110px; left:10px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+
+          <div class="left" style="top:2.2in;">
+            <img src="FridgeRaider2/d1.svg" style="height:1.57in;" />
+            <img src="FridgeRaider2/d2.svg" style="height:1.47in; left:31px; top:19px;" />
+            <div class="linp trim" style="top:150px; left:50px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+          <div class="left" style="left:1.9in; top:2.2in">
+            <img src="FridgeRaider2/e.svg" style="height:1.66in;" />
+            <div class="linp trim" style="top:134px; left:90px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+          <div class="left" style="left:3.8in; top:2.6in">
+            <img src="FridgeRaider2/f.svg" style="width:1.86in;" />
+            <div class="linp trim" style="top:100px; left:60px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+
+          <div class="left" style="top:4.2in;">
+            <img src="FridgeRaider2/g1.svg" style="height:1.86in;" />
+            <img src="FridgeRaider2/g2.svg" style="height:0.66in; left:79px; top:114px;" />
+            <div class="linp trim" style="top:40px; left:110px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+          <div class="left" style="left:1.9in; top:4.2in">
+            <img src="FridgeRaider2/h.svg" style="width:1.78in;" />
+            <div class="linp trim" style="top:100px; left:75px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+          <div class="left" style="left:4in; top:4.2in;">
+            <img src="FridgeRaider2/i1.svg" style="height:1.51in;" />
+            <img src="FridgeRaider2/i2.svg" style="height:0.71in; left:79px; top:88px;" />
+            <div class="linp trim" style="top:145px; left:0px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+
+          <div class="left" style="top:6.4in;">
+            <img src="FridgeRaider2/j1.svg" style="height:1.34in;" />
+            <img src="FridgeRaider2/j2.svg" style="height:0.61in; left:79px; top:73px;" />
+            <div class="linp trim" style="top:140px; left:30px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+          <div class="left" style="left:1.8in; top:6.4in">
+            <img src="FridgeRaider2/k.svg" style="width:1.15in;" />
+            <div class="linp trim" style="top:140px; left:30px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+          <div class="left" style="left:3.1in; top:6.4in">
+            <img src="FridgeRaider2/l.svg" style="width:1.23in;" />
+            <div class="linp trim" style="top:140px; left:30px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+          <div class="left" style="left:4.5in; top:6.4in">
+            <img src="FridgeRaider2/m.svg" style="width:1.24in;" />
+            <div class="linp trim" style="top:140px; left:30px;">
+              <use template="tristate"></use>
+              <letter></letter>
+            </div>
+          </div>
+        </div>
+
+        <ttable id="right">
+          <ttr>
+            <ttd class="cb"><img src="FridgeRaider2/checked.svg" /></ttd>
+            <ttd class="r2"><img src="FridgeRaider2/1.png" /></ttd>
+          </ttr>
+          <for int="item" from="2" to="5">
+            <ttr onclick="toggleCheckbox(this)">
+              <use template="checkbox" cid="cid_{item}" />
+              <ttd class="r2 clickable"><img ssrc="FridgeRaider2/{item}.svg" /></ttd>
+            </ttr>
+          </for>
+          <ttr onclick="toggleCheckbox(this)">
+            <use template="checkbox" cid="cid_6" />
+            <ttd class="r2 clickable"><img src="FridgeRaider2/6.svg" />
+              <img src="FridgeRaider2/6b.svg" style="position:absolute;left:0px;bottom:0px;height:0.32in;" /></ttd>
+          </ttr>
+          <for int="item" from="7" to="13">
+            <ttr onclick="toggleCheckbox(this)">
+              <use template="checkbox" cid="cid_{item}" />
+              <ttd class="r2 clickable"><img ssrc="FridgeRaider2/{item}.svg" /></ttd>
+            </ttr>
+          </for>
+        </ttable>
+
+      </build>
+
+      <div id="bottom" style="position:absolute; left:0.25in; top: 8.8in; text-align: right;">
+        <pattern id="final-answer" pattern="13" data-input-style="underline" data-show-ready="submit-extracted" />
+        <br /><button class="validater" id="submit-extracted" data-extracted-id="final-answer">Submit</button>
+      </div>
+
+      <div id="stampPalette" data-tool-count="2" data-tool-erase="pm-tool" style="display:none">
+        <span id="plus-tool" class="stampTool" data-style="plus-stamp" data-unstyle="minus-stamp" />
+        <span id="minus-tool" class="stampTool" data-style="minus-stamp" data-unstyle="plus-stamp" />
+        <span id="pm-tool" class="stampTool" data-unstyle="table-stamp minus-stamp" />
+      </div>
+
+    </div>
+
+    <template id="tristate">
+      <span class="tristate stampable">
+        <span class="tristate-fill"><img class="pm" src="FridgeRaider2/pm.svg" /></span>
+      </span>
+    </template>
+
+    <template id="checkbox">
+      <ttd class="cb clickable"><img id="{cid}" src="FridgeRaider2/checkbox.svg" class="checkbox save-state" data-save-state="src" /></ttd>
+    </template>
+
+  </body>
+</html>

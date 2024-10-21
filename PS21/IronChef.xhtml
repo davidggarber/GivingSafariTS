@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/icf.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Iron Chef',
+        author: 'Rorke Haining',
+        copyright: '2021',
+        feeder: 'ironChef',
+        abilities: {
+          textInput: 'nearest',
+          reactiveBuilder: 'pageBody',
+          scratchPad: true,
+        },
+        reactiveBuilder: true,
+        lookup: {
+          teams: [
+            {
+              title: 'Team 1: RASPBERRY!',
+              rows: [
+                [7,5,14],  // [length, index to extract, extract dest]
+                [8,5,10],
+                [7,7,7],
+                [8,3,4],
+                [6,6,16]
+              ]
+            },
+            {
+              title: 'Team 2: NUTMEG!',
+              rows: [
+                [9,5,17],
+                [8,6,8],
+                [5,3,2],
+                [7,1,9],
+                [8,3,19]
+              ]
+            },
+            {
+              title: 'Team 3: MADEIRA!',
+              rows: [
+                [6,1,6],
+                [7,6,11],
+                [4,3,20],
+                [5,2,5],
+                [8,1,13]
+              ]
+            },
+            {
+              title: 'Team 4: BACON!',
+              rows: [
+                [5,2,3],
+                [7,2,1],
+                [3,3,18],
+                [6,1,12],
+                [8,7,15]
+              ]
+            },
+          ],
+        },
+        metaParams: {
+          id: 'IronChefMeta',
+          count: 4,
+          refillClass: 'meta-clue',
+          refillTemplate: 'material-fill'
+        },
+      };
+
+    </script>
+    <style>
+      #grid {
+        display: grid;
+        margin: 0.25in;
+        grid-template-columns: repeat(2,3.5in);
+      }
+      .team-box {
+        width: 2.5in;
+        padding: 10px 20px;
+        margin: 10px;
+        border: solid 1px black;
+      }
+      .team-box h3 {
+        text-align: center;
+        margin: 0px 0px 24px;
+      }
+      #below {
+        text-align: center;
+      }
+      #all-materials {
+        position: absolute;
+        left: 8.1in;
+        top: -0.9in;
+      }
+      @media print {
+        #all-materials {
+          display: none;
+        }
+      }
+      #all-materials .card {
+        position: relative;
+        height: 2.75in;
+      }
+      #all-materials .card img {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        height: 2.5in;
+      }
+      .meta-clue {
+        position: absolute;
+        top: 0.25in;
+        left: 0.75in;
+        width: 3in;
+      }
+      .meta-clue.unlocked {
+        animation-name: fade-in;
+        animation-duration: 1000ms;
+      }
+      @keyframes fade-in {
+        0% { opacity: 0%; transform: scale(0.5); }
+        100% { opacity: 100%; transform: scale(1); }
+      }
+      .meta-clue.locked::after {
+        background-image: url('Images/locked.png');
+        background-size: 32px 48px;
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 32px;
+        height: 48px;
+        top: 50px;
+        left: 120px;
+      }
+    </style>
+  </head>
+  <body id="IronChef">
+    <div id="pageBody">
+      <p class="flavor">
+        Congratulations.  You 20 chefs have done extremely well to make it this far, stunning the judges with your 
+        innovative use of the surprise mystery ingredients, and vanquishing many excellent opponents in 
+        preliminary rounds (which were: <span trim="all">
+          <use template="link" puz="Beef" />,
+          <use template="link" puz="Chicken" />,
+          <use template="link" puz="Egg" />, and
+          <use template="link" puz="Wine" />.</span>
+        Now it is time for the final round, and we have a surprise twist in store for you:  we are shuffling up 
+        the teams, with each new team themed around a common element!  Fill out your team rosters in alphabetical 
+        order, then prepare to wow the judges with your new teammates one last time to be crowned <b>IRON CHEF</b>!
+      </p>
+
+      <div id="grid">
+        <for each="team" in="teams">
+          <div id="team_{team#}" class="team-box">
+            <h3>{team.title}</h3>
+            <for each="row" in="{team.rows}">
+              <p><pattern pattern="{row.0}" numbers="{row.1}={row.2}" /></p>
+            </for>
+          </div>
+        </for>
+      </div>
+
+      <div id="below">
+        <p><pattern id="extracted" extract-numbered="20" /></p>
+        <p style="text-align: left; padding-left: 1.9in;">Whose cuisine reigns supreme? 
+          <pattern id="final-answer" pattern="4" data-show-ready="submit-final" />
+          <button class="validater" id="submit-final" data-extracted-id="final-answer">Submit</button>
+        </p>
+      </div>
+
+      <div id="all-materials">
+        <for int="i" until="4">
+          <div class="card">
+            <img src="IronChef/card.png" class="material-card" />
+            <div class="meta-clue">
+            </div>          
+          </div>
+        </for>
+      </div>
+    </div>
+
+    <template id="material-fill">
+      <h3>Clue from solving {from}</h3>
+      <p>The {which} set of Iron Chef contestants are:</p>
+      <for each="name" in="{chefs}">
+        <li>{name}</li>
+      </for>
+    </template>
+
+    <template id="link">
+      <b><a hhref='{puz}.xhtml' target="_blank">{puz}</a></b>
+    </template>
+
+  </body>
+</html>
