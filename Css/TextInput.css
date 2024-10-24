@@ -40,6 +40,32 @@
   width: 1.55em;
 }
 
+.literal-underline-faint {
+  border-bottom: solid 1px black;
+  margin-right: 0.05in;
+}
+.letter-underline-faint {
+  border-bottom: solid 1px #ddd;
+  margin-left: 1px;
+  margin-right: 1px;
+}
+.letter-cell.letter-underline-faint {
+  width: 1em;
+}
+.letter-cell.multiple-letter {
+  width: 1.5em;
+}
+.letter-cell.multiple-letter.letter-underline-faint {
+  width: 1.55em;
+}
+@media print {
+  .literal-underline-faint {
+    border-bottom-color: transparent;
+  }
+  .letter-underline-faint {
+    border-bottom-color: transparent;
+  }    
+}
 
 
 .letter-box {

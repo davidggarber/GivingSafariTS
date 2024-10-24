@@ -560,15 +560,11 @@ export function getElementsByClassOrId(cls:string, id?:string, parent?:Element):
 }
 
 export type TextInputElement = HTMLInputElement | HTMLTextAreaElement;
-export type ArrowKeyElement = TextInputElement | HTMLSelectElement;
-export type KeyboardFocusElement = ArrowKeyElement | HTMLButtonElement;
+export type ArrowKeyElement = TextInputElement | HTMLSelectElement | HTMLButtonElement;
 
 export function isTextInputElement(elmt:Element|undefined|null):boolean {
     return elmt ? (isTag(elmt, 'input') || isTag(elmt, 'textarea')) : false;
 }
 export function isArrowKeyElement(elmt:Element|undefined|null):boolean {
-    return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select')) : false;
-}
-export function isKeyboardFocusElement(elmt:Element|undefined|null):boolean {
-    return elmt ? (isArrowKeyElement(elmt) || isTag(elmt, 'button')) : false;
+    return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select') || isTag(elmt, 'button')) : false;
 }

@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <script> var exports = {}; </script>
-    <script src="../js/kit24.js" />
+    <script src="../js/kit25.js" />
     <script src="V/tnq.js" />
     <script>
       const boiler = {
@@ -100,6 +100,14 @@
       #save-menu:hover {
         z-index: 10011;
       }
+
+      #extracted .letter-underline-faint {
+        width: .9em;
+      }
+
+      #extracted .literal-none {
+        width: 0.5em;
+      }
     </style>
   </head>
   <body id="Techniques">
@@ -135,8 +143,8 @@
         </for>
       </ttable>
 
-      <div class="no-print validate-block" style="position:absolute; left: 0px; top: 8in;">
-        <div id="extracted" data-show-ready="submit-extracted"/>
+      <div class="no-print validate-block letter-grid-2d" style="position:absolute; left: 0px; top: 8.25in; width:3.5in; text-align: center;">
+        <pattern id="extracted" extracted="5 7" data-show-ready="submit-extracted" data-letter-style="underline-faint" /><br />
         <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
       </div>
 

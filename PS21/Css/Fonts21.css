@@ -54,6 +54,12 @@
   color: #ff0099;
 }
 
+input#extracted {
+  text-transform: uppercase;
+  border: solid 1px #eee;
+  border-radius: 5px;
+}
+
 @media print {
   .screen-only {
     display: none;

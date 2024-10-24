@@ -567,17 +567,13 @@ export function getElementsByClassOrId(cls:string, id?:string, parent?:Element):
 }
 
 export type TextInputElement = HTMLInputElement | HTMLTextAreaElement;
-export type ArrowKeyElement = TextInputElement | HTMLSelectElement;
-export type KeyboardFocusElement = ArrowKeyElement | HTMLButtonElement;
+export type ArrowKeyElement = TextInputElement | HTMLSelectElement | HTMLButtonElement;
 
 export function isTextInputElement(elmt:Element|undefined|null):boolean {
     return elmt ? (isTag(elmt, 'input') || isTag(elmt, 'textarea')) : false;
 }
 export function isArrowKeyElement(elmt:Element|undefined|null):boolean {
-    return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select')) : false;
-}
-export function isKeyboardFocusElement(elmt:Element|undefined|null):boolean {
-    return elmt ? (isArrowKeyElement(elmt) || isTag(elmt, 'button')) : false;
+    return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select') || isTag(elmt, 'button')) : false;
 }
 
 
@@ -2395,7 +2391,7 @@ var priorInputValue = '';
 /**
  * The input 
  */
-let keyDownTarget:TextInputElement|null = null;
+let keyDownTarget:ArrowKeyElement|null = null;
 
 /**
  * Workaround for keydown/up on mobile
@@ -2535,28 +2531,12 @@ export function onLetterKeyDown(event: KeyboardEvent) {
         }
 
         // Single-character fields always go to the next field
-        if (code == ArrowNext) {
-            const next = event.ctrlKey ? findNextWordGroup2d(input, plusX)
-                : findNextInput(input, plusX, 0, inpClass, skipClass);
-            moveFocus(next);
-            event.preventDefault();
-        }
-        else if (code == ArrowPrior) {
-            const prior = event.ctrlKey ? findNextWordGroup2d(input, -plusX)
-                : findNextInput(input, -plusX, 0, inpClass, skipClass);
-            moveFocus(prior);
-            event.preventDefault();
+        if (processArrowKeys(input, event)) {
+            return;
         }
     }
 
-    if (code == 'ArrowUp' || code == 'PageUp') {
-        moveFocus(findNextInput(input, 0, -1, inpClass, skipClass));
-        event.preventDefault();
-        return;
-    }
-    else if (code == 'ArrowDown' || code == 'PageDown') {
-        moveFocus(findNextInput(input, 0, 1, inpClass, skipClass));
-        event.preventDefault();
+    if (processArrowKeys(input, event, true)) {
         return;
     }
 
@@ -2567,6 +2547,79 @@ export function onLetterKeyDown(event: KeyboardEvent) {
             event.preventDefault();
         }
     }
+}
+
+/**
+ * Callback when a user pressed a keyboard key from any letter-input or word-input text field
+ * @param event - A keyboard event
+ */
+export function onButtonKeyDown(event: KeyboardEvent) {
+    var current = event.currentTarget as ArrowKeyElement;
+    if (processArrowKeys(current, event)) {
+        keyDownTarget = current;
+    }
+}
+
+/**
+ * Standard handlers for arrow keys and similar: home/end, page-up/down,
+ * including ctrl+ variants.
+ * @param start Element that currently has the keyboard focused
+ * @param event The key event that *might* be an arrow key
+ * @param verticalOnly If set, only up/down keys are considered, else left/right keys are too (default).
+ * @returns true if the arrow key was processed, and the focus moved.
+ * False if any other key.
+ */
+function processArrowKeys(start:ArrowKeyElement, event:KeyboardEvent, verticalOnly:boolean = false):boolean {
+    var code = event.code;
+    if (code == undefined || code == '') {
+        code = event.key;  // Mobile doesn't use code
+    }
+
+    var inpClass = 'word-input letter-input';
+    let skipClass:string|undefined;
+    if (!findParentOfClass(start, 'navigate-literals')) {
+        skipClass = 'word-non-input letter-non-input';
+    }
+
+    // Consider vertical movement keys
+    if (code == 'ArrowUp' || code == 'PageUp') {
+        moveFocus(findNextInput(start, 0, -1, inpClass, skipClass));
+        event.preventDefault();
+        return true;
+    }
+    else if (code == 'ArrowDown' || code == 'PageDown') {
+        moveFocus(findNextInput(start, 0, 1, inpClass, skipClass));
+        event.preventDefault();
+        return true;
+    }
+    else if (verticalOnly) {
+        return false;
+    }
+
+    // If !verticalOnly, consider horizontal movement keys
+    else if (code == ArrowNext) {
+        const next = event.ctrlKey ? findNextWordGroup2d(start, plusX)
+            : findNextInput(start, plusX, 0, inpClass, skipClass);
+        moveFocus(next);
+        event.preventDefault();
+        return true;
+    }
+    else if (code == ArrowPrior) {
+        const prior = event.ctrlKey ? findNextWordGroup2d(start, -plusX)
+            : findNextInput(start, -plusX, 0, inpClass, skipClass);
+        moveFocus(prior);
+        event.preventDefault();
+        return true;
+    }
+    else if (code == 'Home') {
+        moveFocus(findRowEndInput(start, -1, event.ctrlKey));
+        return true;
+    }
+    else if (code == 'End') {
+        moveFocus(findRowEndInput(start, 1, event.ctrlKey));
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -2678,12 +2731,7 @@ export function onLetterKey(event:KeyboardEvent): boolean {
         // TODO: Add special-case exception to wrap around from end back to start
         return true;
     }
-    else if (code == 'Home') {
-        moveFocus(findRowEndInput(input, -1, event.ctrlKey));
-        return true;
-    }
-    else if (code == 'End') {
-        moveFocus(findRowEndInput(input, 1, event.ctrlKey));
+    else if (processArrowKeys(input, event)) {
         return true;
     }
     else if (code == 'Backquote') {
@@ -2744,19 +2792,17 @@ export function afterInputUpdate(input:TextInputElement, key:string) {
     CheckValidationReady(input, key);
 
     if (!multiLetter) {
-        if (isTextInputElement(nextInput)) {
-            if (overflow.length > 0 && nextInput.value.length == 0) {
-                // Insert our overflow into the next cell
-                nextInput.value = overflow;
-                moveFocus(nextInput);
-                // Then do the same post-processing as this cell
-                afterInputUpdate(nextInput as TextInputElement, key);
-            }
-            else if (text.length > 0) {
-                // Just move the focus
-                moveFocus(nextInput);
-            }
+        if (isTextInputElement(nextInput) && overflow.length > 0 && nextInput.value.length == 0) {
+            // Insert our overflow into the next cell
+            nextInput.value = overflow;
+            moveFocus(nextInput);
+            // Then do the same post-processing as this cell
+            afterInputUpdate(nextInput as TextInputElement, key);
         }
+        else if (isArrowKeyElement(nextInput) && text.length > 0) {
+            // Just move the focus
+            moveFocus(nextInput);
+        }            
     }
     else if (!hasClass(input.parentNode, 'getElementsByClassName')) {
         var spacing = (text.length - 1) * 0.05;
@@ -3327,6 +3373,19 @@ function inputChangeCallback(inp:TextInputElement, key:string) {
 }
 
 /**
+ * Standardize on letter-grid-2d navigation rules.
+ * If defined, then the grid may have a narrowed scope.
+ * If undefined, the entire page should follow these rules.
+ * @param start 
+ * @returns 
+ */
+function GetArrowKeyRoot(start: ArrowKeyElement): Element|null {
+    const root2d = findParentOfClass(start, 'letter-grid-2d');
+    // TODO: someday, support a non-2d style when I have a real example
+    return root2d ?? document.getElementById('pageBody');
+}
+
+/**
  * Find the input that the user likely means when navigating from start in a given x,y direction
  * @param start - The current input
  * @param dx - A horizontal direction to look
@@ -3341,7 +3400,7 @@ function findNextInput( start: ArrowKeyElement,
                         cls: string, 
                         clsSkip: string|undefined)
                         : ArrowKeyElement {
-    const root2d = findParentOfClass(start, 'letter-grid-2d');
+    const root2d = GetArrowKeyRoot(start);
     const loop = findParentOfClass(start, 'loop-navigation');
     let find:ArrowKeyElement|null = null;
     if (root2d != null) {
@@ -3397,7 +3456,7 @@ function findNextInput( start: ArrowKeyElement,
  */
 function findRowEndInput(start: ArrowKeyElement, dx: number, global:boolean)
                             : ArrowKeyElement {
-    const root2d = findParentOfClass(start, 'letter-grid-2d');
+    const root2d = GetArrowKeyRoot(start);
     if (root2d) {
         let row:ArrowKeyElement[];
         if (global) {
@@ -3419,7 +3478,7 @@ function findRowEndInput(start: ArrowKeyElement, dx: number, global:boolean)
  * @param dx 
  */
 function findNextWordGroup2d(start: ArrowKeyElement, dx: number):ArrowKeyElement {
-    let root2d = findParentOfClass(start, 'letter-grid-2d');
+    const root2d = GetArrowKeyRoot(start);
     const row = findRowOfInputs(root2d || undefined, start, 0, undefined, 'letter-non-input');
     if (row.length == 1) {
         // If we're alone in the current row, the ctrl+arrow is the same as arrow
@@ -3538,7 +3597,7 @@ function getAllFormFields(  container?:Element|Document,
                             cls?: string, 
                             clsSkip?: string):ArrowKeyElement[] {
     const all:ArrowKeyElement[] = [];
-    const tags = ['input', 'textarea', 'select'];
+    const tags = ['input', 'textarea', 'select', 'button'];
 
     const classes = cls ? cls.split(' ') : undefined;
     const skips = clsSkip ? clsSkip.split(' ') : undefined;
@@ -4048,7 +4107,7 @@ function setupLetterPatterns() {
         }
     }
     
-    var patterns:HTMLCollectionOf<Element> = document.getElementsByClassName('create-from-pattern');
+    const patterns:HTMLCollectionOf<Element> = document.getElementsByClassName('create-from-pattern');
     for (let i = 0; i < patterns.length; i++) {
         var parent = patterns[i];
         if (parent.id === 'extracted' || hasClass(parent, 'extracted')) {
@@ -4318,7 +4377,8 @@ function parsePattern2( elmt: Element,
  *   "literal" - format that cell as read-only, and overlay the literal text or whitespace
  */
 function setupLetterCells() {
-    const cells = document.getElementsByClassName('letter-cell');
+    const allCells = document.getElementsByClassName('letter-cell');
+    const cells = SortElements(allCells);
     let extracteeIndex:number = 1;
     let extractorIndex:number = 1;
     for (let i = 0; i < cells.length; i++) {
@@ -4403,6 +4463,15 @@ function setupLetterInputs() {
         inp.onkeyup=function(e){onLetterKeyUp(e)};
         inp.onchange=function(e){onLetterChange(e as KeyboardEvent)};
         inp.oninput=function(e){onLetterInput(e as InputEvent)};
+    }
+
+    // Buttons get caught up in the arrow navigation of input fields,
+    // so make sure players can arrow back out.
+    var buttons = document.getElementsByTagName('button');
+    for (let i = 0; i < buttons.length; i++) {
+        const btn:HTMLButtonElement = buttons[i] as HTMLButtonElement;
+        btn.onkeydown=function(e){onButtonKeyDown(e)};
+        // btn.onkeyup=function(e){onLetterKeyUp(e)};
     }
 }
 

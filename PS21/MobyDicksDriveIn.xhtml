@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="../js/kit24.js"></script>
+    <script src="../js/kit25.js"></script>
     <script src="V/mdd.js" />
     <script>
       const boiler = {
@@ -118,6 +118,13 @@
         margin-top: 0.1in;
         margin-left: 2in;
       }
+      #MobyDick #extracted .letter-cell {
+        font-size: 12pt;
+      }
+      #submit-extracted {
+        position: relative;
+        top: -7px;
+      }
     </style>
   </head>
   <body id="MobyDick">
@@ -132,7 +139,7 @@
       </div>
 
       <div id="extract-and-submit">
-        <span id="extracted" data-show-ready="submit-extracted"></span>
+        <pattern id="extracted" extracted="24" data-show-ready="submit-extracted" data-letter-style="underline-faint" />
         <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
       </div>
 

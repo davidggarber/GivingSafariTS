@@ -3,8 +3,8 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.isKeyboardFocusElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = void 0;
+exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
+exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = void 0;
 exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = void 0;
 exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = void 0;
 exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = void 0;
@@ -525,13 +525,9 @@ function isTextInputElement(elmt) {
 }
 exports.isTextInputElement = isTextInputElement;
 function isArrowKeyElement(elmt) {
-    return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select')) : false;
+    return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select') || isTag(elmt, 'button')) : false;
 }
 exports.isArrowKeyElement = isArrowKeyElement;
-function isKeyboardFocusElement(elmt) {
-    return elmt ? (isArrowKeyElement(elmt) || isTag(elmt, 'button')) : false;
-}
-exports.isKeyboardFocusElement = isKeyboardFocusElement;
 /**
  * Create a generic TR tag for each row in a table.
  * Available for TableDetails.onRow where that is all that's needed
@@ -2327,27 +2323,11 @@ function onLetterKeyDown(event) {
             }
         }
         // Single-character fields always go to the next field
-        if (code == ArrowNext) {
-            const next = event.ctrlKey ? findNextWordGroup2d(input, plusX)
-                : findNextInput(input, plusX, 0, inpClass, skipClass);
-            moveFocus(next);
-            event.preventDefault();
-        }
-        else if (code == ArrowPrior) {
-            const prior = event.ctrlKey ? findNextWordGroup2d(input, -plusX)
-                : findNextInput(input, -plusX, 0, inpClass, skipClass);
-            moveFocus(prior);
-            event.preventDefault();
+        if (processArrowKeys(input, event)) {
+            return;
         }
     }
-    if (code == 'ArrowUp' || code == 'PageUp') {
-        moveFocus(findNextInput(input, 0, -1, inpClass, skipClass));
-        event.preventDefault();
-        return;
-    }
-    else if (code == 'ArrowDown' || code == 'PageDown') {
-        moveFocus(findNextInput(input, 0, 1, inpClass, skipClass));
-        event.preventDefault();
+    if (processArrowKeys(input, event, true)) {
         return;
     }
     if (findParentOfClass(input, 'digit-only')) {
@@ -2359,6 +2339,75 @@ function onLetterKeyDown(event) {
     }
 }
 exports.onLetterKeyDown = onLetterKeyDown;
+/**
+ * Callback when a user pressed a keyboard key from any letter-input or word-input text field
+ * @param event - A keyboard event
+ */
+function onButtonKeyDown(event) {
+    var current = event.currentTarget;
+    if (processArrowKeys(current, event)) {
+        keyDownTarget = current;
+    }
+}
+exports.onButtonKeyDown = onButtonKeyDown;
+/**
+ * Standard handlers for arrow keys and similar: home/end, page-up/down,
+ * including ctrl+ variants.
+ * @param start Element that currently has the keyboard focused
+ * @param event The key event that *might* be an arrow key
+ * @param verticalOnly If set, only up/down keys are considered, else left/right keys are too (default).
+ * @returns true if the arrow key was processed, and the focus moved.
+ * False if any other key.
+ */
+function processArrowKeys(start, event, verticalOnly = false) {
+    var code = event.code;
+    if (code == undefined || code == '') {
+        code = event.key; // Mobile doesn't use code
+    }
+    var inpClass = 'word-input letter-input';
+    let skipClass;
+    if (!findParentOfClass(start, 'navigate-literals')) {
+        skipClass = 'word-non-input letter-non-input';
+    }
+    // Consider vertical movement keys
+    if (code == 'ArrowUp' || code == 'PageUp') {
+        moveFocus(findNextInput(start, 0, -1, inpClass, skipClass));
+        event.preventDefault();
+        return true;
+    }
+    else if (code == 'ArrowDown' || code == 'PageDown') {
+        moveFocus(findNextInput(start, 0, 1, inpClass, skipClass));
+        event.preventDefault();
+        return true;
+    }
+    else if (verticalOnly) {
+        return false;
+    }
+    // If !verticalOnly, consider horizontal movement keys
+    else if (code == ArrowNext) {
+        const next = event.ctrlKey ? findNextWordGroup2d(start, plusX)
+            : findNextInput(start, plusX, 0, inpClass, skipClass);
+        moveFocus(next);
+        event.preventDefault();
+        return true;
+    }
+    else if (code == ArrowPrior) {
+        const prior = event.ctrlKey ? findNextWordGroup2d(start, -plusX)
+            : findNextInput(start, -plusX, 0, inpClass, skipClass);
+        moveFocus(prior);
+        event.preventDefault();
+        return true;
+    }
+    else if (code == 'Home') {
+        moveFocus(findRowEndInput(start, -1, event.ctrlKey));
+        return true;
+    }
+    else if (code == 'End') {
+        moveFocus(findRowEndInput(start, 1, event.ctrlKey));
+        return true;
+    }
+    return false;
+}
 /**
  * Does a typed character match the input rules?
  * @param input
@@ -2463,12 +2512,7 @@ function onLetterKey(event) {
         // TODO: Add special-case exception to wrap around from end back to start
         return true;
     }
-    else if (code == 'Home') {
-        moveFocus(findRowEndInput(input, -1, event.ctrlKey));
-        return true;
-    }
-    else if (code == 'End') {
-        moveFocus(findRowEndInput(input, 1, event.ctrlKey));
+    else if (processArrowKeys(input, event)) {
         return true;
     }
     else if (code == 'Backquote') {
@@ -2525,18 +2569,16 @@ function afterInputUpdate(input, key) {
     ExtractFromInput(input);
     CheckValidationReady(input, key);
     if (!multiLetter) {
-        if (isTextInputElement(nextInput)) {
-            if (overflow.length > 0 && nextInput.value.length == 0) {
-                // Insert our overflow into the next cell
-                nextInput.value = overflow;
-                moveFocus(nextInput);
-                // Then do the same post-processing as this cell
-                afterInputUpdate(nextInput, key);
-            }
-            else if (text.length > 0) {
-                // Just move the focus
-                moveFocus(nextInput);
-            }
+        if (isTextInputElement(nextInput) && overflow.length > 0 && nextInput.value.length == 0) {
+            // Insert our overflow into the next cell
+            nextInput.value = overflow;
+            moveFocus(nextInput);
+            // Then do the same post-processing as this cell
+            afterInputUpdate(nextInput, key);
+        }
+        else if (isArrowKeyElement(nextInput) && text.length > 0) {
+            // Just move the focus
+            moveFocus(nextInput);
         }
     }
     else if (!hasClass(input.parentNode, 'getElementsByClassName')) {
@@ -3070,6 +3112,18 @@ function inputChangeCallback(inp, key) {
     }
 }
 /**
+ * Standardize on letter-grid-2d navigation rules.
+ * If defined, then the grid may have a narrowed scope.
+ * If undefined, the entire page should follow these rules.
+ * @param start
+ * @returns
+ */
+function GetArrowKeyRoot(start) {
+    const root2d = findParentOfClass(start, 'letter-grid-2d');
+    // TODO: someday, support a non-2d style when I have a real example
+    return root2d ?? document.getElementById('pageBody');
+}
+/**
  * Find the input that the user likely means when navigating from start in a given x,y direction
  * @param start - The current input
  * @param dx - A horizontal direction to look
@@ -3079,7 +3133,7 @@ function inputChangeCallback(inp, key) {
  * @returns
  */
 function findNextInput(start, dx, dy, cls, clsSkip) {
-    const root2d = findParentOfClass(start, 'letter-grid-2d');
+    const root2d = GetArrowKeyRoot(start);
     const loop = findParentOfClass(start, 'loop-navigation');
     let find = null;
     if (root2d != null) {
@@ -3133,7 +3187,7 @@ function findNextInput(start, dx, dy, cls, clsSkip) {
  * @returns An element on this row
  */
 function findRowEndInput(start, dx, global) {
-    const root2d = findParentOfClass(start, 'letter-grid-2d');
+    const root2d = GetArrowKeyRoot(start);
     if (root2d) {
         let row;
         if (global) {
@@ -3153,7 +3207,7 @@ function findRowEndInput(start, dx, global) {
  * @param dx
  */
 function findNextWordGroup2d(start, dx) {
-    let root2d = findParentOfClass(start, 'letter-grid-2d');
+    const root2d = GetArrowKeyRoot(start);
     const row = findRowOfInputs(root2d || undefined, start, 0, undefined, 'letter-non-input');
     if (row.length == 1) {
         // If we're alone in the current row, the ctrl+arrow is the same as arrow
@@ -3259,7 +3313,7 @@ function compareHorizontal(cur, test) {
  */
 function getAllFormFields(container, cls, clsSkip) {
     const all = [];
-    const tags = ['input', 'textarea', 'select'];
+    const tags = ['input', 'textarea', 'select', 'button'];
     const classes = cls ? cls.split(' ') : undefined;
     const skips = clsSkip ? clsSkip.split(' ') : undefined;
     if (!container) {
@@ -3729,7 +3783,7 @@ function setupLetterPatterns() {
             }
         }
     }
-    var patterns = document.getElementsByClassName('create-from-pattern');
+    const patterns = document.getElementsByClassName('create-from-pattern');
     for (let i = 0; i < patterns.length; i++) {
         var parent = patterns[i];
         if (parent.id === 'extracted' || hasClass(parent, 'extracted')) {
@@ -3957,7 +4011,8 @@ function parsePattern2(elmt, patternAttr, offset = 0) {
  *   "literal" - format that cell as read-only, and overlay the literal text or whitespace
  */
 function setupLetterCells() {
-    const cells = document.getElementsByClassName('letter-cell');
+    const allCells = document.getElementsByClassName('letter-cell');
+    const cells = SortElements(allCells);
     let extracteeIndex = 1;
     let extractorIndex = 1;
     for (let i = 0; i < cells.length; i++) {
@@ -4035,6 +4090,14 @@ function setupLetterInputs() {
         inp.onkeyup = function (e) { onLetterKeyUp(e); };
         inp.onchange = function (e) { onLetterChange(e); };
         inp.oninput = function (e) { onLetterInput(e); };
+    }
+    // Buttons get caught up in the arrow navigation of input fields,
+    // so make sure players can arrow back out.
+    var buttons = document.getElementsByTagName('button');
+    for (let i = 0; i < buttons.length; i++) {
+        const btn = buttons[i];
+        btn.onkeydown = function (e) { onButtonKeyDown(e); };
+        // btn.onkeyup=function(e){onLetterKeyUp(e)};
     }
 }
 /**

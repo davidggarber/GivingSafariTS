@@ -1,5 +1,5 @@
-import { hasClass, toggleClass, applyAllClasses, getOptionalStyle, findParentOfClass, isTag } from "./_classUtil";
-import { onLetterKeyDown, onLetterChange, onWordKey, onWordChange, onLetterKeyUp, onWordInput, onLetterInput } from "./_textInput";
+import { hasClass, toggleClass, applyAllClasses, getOptionalStyle, findParentOfClass, isTag, SortElements } from "./_classUtil";
+import { onLetterKeyDown, onLetterChange, onWordKey, onWordChange, onLetterKeyUp, onWordInput, onLetterInput, onButtonKeyDown } from "./_textInput";
 import { indexAllInputFields } from "./_storage"
 import { ContextError } from "./_contextError";
 
@@ -99,7 +99,7 @@ function setupLetterPatterns() {
         }
     }
     
-    var patterns:HTMLCollectionOf<Element> = document.getElementsByClassName('create-from-pattern');
+    const patterns:HTMLCollectionOf<Element> = document.getElementsByClassName('create-from-pattern');
     for (let i = 0; i < patterns.length; i++) {
         var parent = patterns[i];
         if (parent.id === 'extracted' || hasClass(parent, 'extracted')) {
@@ -369,7 +369,8 @@ function parsePattern2( elmt: Element,
  *   "literal" - format that cell as read-only, and overlay the literal text or whitespace
  */
 function setupLetterCells() {
-    const cells = document.getElementsByClassName('letter-cell');
+    const allCells = document.getElementsByClassName('letter-cell');
+    const cells = SortElements(allCells);
     let extracteeIndex:number = 1;
     let extractorIndex:number = 1;
     for (let i = 0; i < cells.length; i++) {
@@ -454,6 +455,15 @@ function setupLetterInputs() {
         inp.onkeyup=function(e){onLetterKeyUp(e)};
         inp.onchange=function(e){onLetterChange(e as KeyboardEvent)};
         inp.oninput=function(e){onLetterInput(e as InputEvent)};
+    }
+
+    // Buttons get caught up in the arrow navigation of input fields,
+    // so make sure players can arrow back out.
+    var buttons = document.getElementsByTagName('button');
+    for (let i = 0; i < buttons.length; i++) {
+        const btn:HTMLButtonElement = buttons[i] as HTMLButtonElement;
+        btn.onkeydown=function(e){onButtonKeyDown(e)};
+        // btn.onkeyup=function(e){onLetterKeyUp(e)};
     }
 }
 
