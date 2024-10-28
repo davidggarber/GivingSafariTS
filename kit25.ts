@@ -3074,6 +3074,8 @@ function ApplyExtractionToPattern(text:string, extracted:HTMLElement, ready:bool
             inp.value = '';
             ready = false;
         }
+        // Save the extracted letter, just like the original, because typing into them directly would do that
+        saveLetterLocally(inp);
     }
     updateExtractionData(extracted, text, ready);
 }
@@ -3144,6 +3146,7 @@ function UpdateExtractionSource(input:TextInputElement) {
         if (dataNumber != null) {
             if (dataNumber == index) {
                 src.value = input.value;
+                saveLetterLocally(src);
                 extractId = getOptionalStyle(src, 'data-extracted-id', undefined, 'extracted-');
             }
             extraction[parseInt(dataNumber)] = src.value;

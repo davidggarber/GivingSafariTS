@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/tmm.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Teal Mime',
+        author: 'Chris Jeuell',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          clues: [
+            {a: 'a point', b: 'another word for pig', pat: '3 3', ext:'3=1'},
+            {a: 'a well-_____ machine', b: 'importunes', pat: '6 4', ext:'2=8 7=2'},
+            {a: 'Katy, Tyler, or Luke, e.g.', b: 'Indian tea', pat: '6 3', ext:'1=4'},
+            {a: '___ card, used in mobile phones', b: 'opposite of smart', pat: '3 3', ext:'4=10'},
+            {a: 'intelligent or luminescent', b: 'married', pat: '5 5', ext:'7=7'},
+            {a: 'decay', b: 'The Saturday Evening ____', pat: '3 5', ext:'3=11 6=9'},
+            {a: 'slang term for police officer', b: 'shortened word for adult entertainment with nudity', pat: '7', ext:'7=3'},
+            {a: 'scold', b: 'to go below 0 °C', pat: '5 6', ext:'1=6 7=5'},
+          ]
+        },
+      };
+    </script>
+    <style>
+      #above td {
+        height: 0.5in;
+        vertical-align: middle;
+      }
+      .clue1 {
+        width: 2in;
+        padding: 0.1in;
+      }
+      .clue2 {
+        width: 2.13in;
+        padding: 0.1in;
+      }
+      .arrow {
+        width: 0.1in;
+        padding: 0.1in;
+        text-align: center;
+      }
+      .answer {
+        width: 3in;
+        white-space: nowrap;
+      }
+      #row5_second {
+        font-style: italic;
+      }
+
+      #below td {
+        vertical-align: top;
+        text-align: center;
+      }
+      #TealMime #extracted .letter-cell {
+        font-size: 18pt;
+      }
+      #below .letter-cell {
+        font-size: 18pt;
+      }
+      #submit-answer {
+        position: absolute;
+        right: 0px;
+        top: 35px;
+      }
+    </style>
+  </head>
+  <body id="TealMime">
+    <div id="pageBody">
+      <div style="position: relative; left:-0.1in;">
+        <ttable id="above" style="width: 7.7in;">
+          <ttr>
+            <tth class="clue1">Clue 1</tth>
+            <tth class="clue2">Clue 2</tth>
+            <tth class="arrow">&nbsp;</tth>
+            <tth class="answer">Answer</tth>
+          </ttr>
+          <for each="clue" in="{clues}">
+            <ttr>
+              <ttd id="row{clue#}_first" class="clue1">{clue.a}</ttd>
+              <ttd id="row{clue#}_second" class="clue2">{clue.b}</ttd>
+              <ttd class="arrow">🡒</ttd>
+              <ttd class="answer"><pattern pattern="{clue.pat}" numbers="{clue.ext}" /></ttd>
+            </ttr>
+          </for>
+        </ttable>
+
+        <table id="below" style="width:7.7in; margin-top: 0.5in;">
+          <tr>
+            <td>
+              <pattern id="extracted" extract-numbered="11" />
+            </td>
+            <ttd class="arrow">🡒</ttd>
+            <td style="position: relative;">
+              <pattern id="final-answer" pattern="6 5" data-show-ready="submit-answer" data-letter-style="underline" />
+              <br />Final answer
+              <button class="validater" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+  </body>
+</html>
