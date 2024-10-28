@@ -2931,27 +2931,7 @@ function UpdateExtraction(extractedId:string|null) {
     }
     let extraction = parts.join(join);
 
-    if (hasClass(extracted, 'create-from-pattern')) {
-        const inps = extracted.getElementsByClassName('extractor-input');
-        if (inps.length > extraction.length) {
-            extraction += Array(1 + inps.length - extraction.length).join('_');
-        }
-        let ready = true;
-        for (let i = 0; i < inps.length; i++) {
-            const inp = inps[i] as HTMLInputElement;
-            if (extraction[i] != '_') {
-                inp.value = extraction.substring(i, i+1);
-            }
-            else {
-                inp.value = '';
-                ready = false;
-            }
-        }
-        updateExtractionData(extracted, extraction, ready);
-    }
-    else {
-        ApplyExtraction(extraction, extracted, ready);
-    }
+    ApplyExtraction(extraction, extracted, ready);
 }
 
 /**
@@ -3025,6 +3005,11 @@ function ExtractionIsInteresting(text:string): boolean {
 function ApplyExtraction(   text:string, 
                             dest:HTMLElement,
                             ready:boolean) {
+    if (hasClass(dest, 'create-from-pattern')) {
+        ApplyExtractionToPattern(text, dest, ready);
+        return;
+    }
+
     if (hasClass(dest, 'lower-case')) {
         text = text.toLocaleLowerCase();
     }
@@ -3067,6 +3052,30 @@ function ApplyExtraction(   text:string,
         var extractedId = getOptionalStyle(destFwd, 'data-extracted-id', undefined, 'extracted-');
         UpdateExtraction(extractedId);
     }
+}
+
+/**
+ * Update an pattern-generated extraction area with new text
+ * @param text The current extraction
+ * @param extracted The container for the extraction.
+ * @param ready True if all contributing inputs have contributed
+ */
+function ApplyExtractionToPattern(text:string, extracted:HTMLElement, ready:boolean) {
+    const inps = extracted.getElementsByClassName('extractor-input');
+    if (inps.length > text.length) {
+        text += Array(1 + inps.length - text.length).join('_');
+    }
+    for (let i = 0; i < inps.length; i++) {
+        const inp = inps[i] as HTMLInputElement;
+        if (text[i] != '_') {
+            inp.value = text.substring(i, i+1);
+        }
+        else {
+            inp.value = '';
+            ready = false;
+        }
+    }
+    updateExtractionData(extracted, text, ready);
 }
 
 /**
