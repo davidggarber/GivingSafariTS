@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/wgm.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Wild Game',
+        author: 'David Garber',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          boxes: [
+            ['4', 241, 113, 'std'],  // .84 x .57
+            ['4', 342, 119, 'std'],
+            ['BOAR', 443, 139, 'round-wide'],  // 1 x .6
+            ['BEAR', 487, 201, 'wide'],  // .93 x .57
+            ['4', 506, 260, 'std'],
+            ['2N1', 520, 319, 'std'],
+            ['1A2', 534, 378, 'std'],
+            ['4', 518, 437, 'std'],
+            ['3G', 489, 496, 'std'],
+            ['4', 472, 555, 'round'],
+            ['G3', 493, 616.5, 'std'],
+            ['4', 509, 675, 'std'],
+            ['C3', 522, 734, 'std'],
+            ['4', 510, 793, 'std'],
+            ['HARE', 475, 852, 'round-wide'],
+            ['4', 434, 914, 'std'],
+            ['4', 333, 924, 'std'],
+            ['L3', 232, 934, 'std'],
+            ['4', 131, 915, 'std'],
+            ['DUCK', 70, 853, 'round-wide'],
+            ['4', 58, 794, 'std'],
+            ['T3', 83, 735, 'std'],
+            ['4', 93, 676, 'std'],
+            ['K3', 109, 617, 'std'],
+            ['4', 120, 555, 'round'],
+            ['3D', 103, 496, 'std'],
+            ['4', 91, 437, 'std'],
+            ['4', 69, 378, 'std'],
+            ['B3', 47, 316, 'round'],
+            ['MEAT', 72, 257, 'wide'],
+            ['4', 107, 198, 'std'],
+            ['2L1', 140, 139, 'std'],
+            // ['4', 234, 555, 'final'],
+            // ['4', 359, 555, 'final'],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #track {
+        position: absolute;
+        left: 0.3in;
+        top: -1in;
+        width: 8.5in;
+        height: 11in;
+      }
+      .box {
+        position: absolute;
+        width: 1in;
+        padding-top: 20px;
+        text-align: center;
+      }
+      .box-std {
+        height: 0.37in;
+        border: solid 1px black;
+      }
+      .box-wide {
+        height: 0.37in;
+        border: solid 1px black;
+      }
+      .box-round {
+        height: 0.4in;
+        border: solid 1px black;
+        border-radius: 10px;
+      }
+      .box-round:after {
+        content: '';
+        position: absolute;
+        top: 1.5px;
+        bottom: 1.5px;
+        left: 1.5px;
+        right: 1.5px;
+        border: solid 1px black;
+        border-radius: 8px;
+      }
+      .box-round-wide {
+        height: 0.4in;
+        border: solid 1px black;
+        border-radius: 10px;
+      }
+      .box-round-wide:after {
+        content: '';
+        position: absolute;
+        top: 1.5px;
+        bottom: 1.5px;
+        left: 1.5px;
+        right: 1.5px;
+        border: solid 1px black;
+        border-radius: 8px;
+      }
+      .box-wide .letter-literal {
+        font-size: 16pt;
+      }
+      .box-round-wide .letter-literal {
+        font-size: 16pt;
+      }
+
+      #octagons {
+        position: absolute;
+        left: 2in;
+        top: 4in;
+      }
+      path {
+        fill: #D9D9D9;
+        stroke: black;
+        stroke-width: 1px;
+      }
+
+      #instructions {
+        position: absolute;
+        top: 1.35in;
+        left: 2.25in;
+        width: 3in;
+        text-align: center;
+      }
+      .rounded-instr {
+        display: inline-block;
+        border: solid 1px black;
+        border-radius: 6px;
+        margin: 2px;
+      }
+      .rounded-instr2 {
+        display: inline-block;
+        border: solid 1px black;
+        border-radius: 5px;
+        margin: 1.5px;
+        padding: 2px;
+      }
+      .answer {
+        font-size: 12pt;
+        text-decoration: underline;
+      }
+
+      #story {
+        position: absolute;
+        top: 5.8in;
+        left: 2.25in;
+        width: 3in;
+        text-align: center;
+      }
+      .dino {
+        display: inline-block;
+      }
+      .dino text {
+        stroke: black;
+        fill: white;
+        font-size: 16pt;
+        font-weight: bold;
+        text-anchor: middle;
+      }
+
+      .dino.dino-abs {
+        position: absolute;
+      }
+      #dino-d {
+        left: 6.9in;
+        top: 1in;
+      }
+      #dino-i {
+        left: 0.3in;
+        top: 5.5in;
+      }
+      #dino-n {
+        left: 0.2in;
+        top: 3.6in;
+      }
+      #dino-o {
+        left: 7in;
+        top: 6in;
+      }
+
+
+      #WildGame .letter-cell {
+        font-size: 11pt;
+      }
+      #WildGame .letter-cell {
+        font-size: 11pt;
+      }
+
+      #WildGame .box-final .letter-cell {
+        font-size: 14pt;
+      }
+
+    </style>
+  </head>
+  <body id="WildGame">
+    <div id="pageBody">
+
+      <div id="instructions">
+        <p>Change exactly one letter<br />
+          between neighboring cells.
+        </p>
+        <p>Every letter needed is<br />
+          hinted somwhere along<br />
+          the path.
+        </p>
+        <p>Starting from any<br />
+          <span class="rounded-instr"><span class="rounded-instr2">rounded rectangle</span></span><br />
+          the steps to the next<br />
+          <span class="rounded-instr"><span class="rounded-instr2">rounded rectangle</span></span><br />
+          along the outer loop will<br />
+          change the letters at every<br />
+          position at least once.
+        </p>
+        
+        <p class="answer">Answer</p>
+      </div>
+
+      <div id="story">
+        <p>A previous hunting party<br />
+          picked up the bones of a<br />
+          <svg class="dino" width="70" height="20">
+            <text x="35" y="19">DINO</text>
+          </svg>.
+        </p>
+        <p>They can't remember<br />
+          exactly where they were<br />
+          buried, but the rough<br />
+          locations are indicated.
+        </p>
+      </div>
+
+      <svg id="octagons" width="300" height="120">
+        <path d="M50,57 l10,-10 h100 l10,10 v50 l-10,10 h-100 l-10,-10 Z" />
+        <path d="M170,57 l10,-10 h100 l10,10 v50 l-10,10 h-100 l-10,-10 Z" />
+      </svg>
+
+      <svg id="dino-d" class="dino dino-abs" width="20" height="20">
+        <text x="10" y="19">D</text>
+      </svg>
+      <svg id="dino-i" class="dino dino-abs" width="20" height="20">
+        <text x="10" y="19">I</text>
+      </svg>
+      <svg id="dino-n" class="dino dino-abs" width="20" height="20">
+        <text x="10" y="19">N</text>
+      </svg>
+      <svg id="dino-o" class="dino dino-abs" width="20" height="20">
+        <text x="10" y="19">O</text>
+      </svg>
+
+
+      <div id="track" data-literal-style="underline">
+        <for each="box" in="boxes">
+          <div class="box box-{box.3}" sstyle="left:{box.1/100}in; top:{box.2/100}in;">
+            <pattern pattern="{box.0}" />
+          </div>
+        </for>
+
+        <div class="box box-final" style="left:2.32in; top:5.55in; width:2.3in" data-literal-style="none">
+          <pattern id="final-answer" pattern="4 4" data-show-ready="submit-answer" /><br />
+          <button class="validater" id="submit-answer" data-extracted-id="final-answer" style="margin-top:20px;">Submit</button>
+        </div>
+
+      </div>
+
+    </div>
+  </body>
+</html>

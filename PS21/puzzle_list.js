@@ -59,6 +59,7 @@ var puzzles = [
     { title: 'TealMime', thumb: 'tea', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },
     { title: 'Techniques', thumb: 'tec', author: 'Anne Grier', type: types.rebus, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },
     { title: 'Title', thumb: 'tit', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },
+    { title: 'Wild Game', thumb: 'wil', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },
     { title: 'Wine', thumb: 'win', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'ironchef',number:3}] },
     { title: '🍽️🎥', file:'EmojiDM', thumb: 'edm', author: 'Morgan Grobin', type: types.rebus, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'toaster',number:0}] },
     { title: 'Fridge Raider 3', thumb: 'fr3', author: 'Jeffrey Lin', type: types.meta, group: group.meta, orientation: orient.portrait, ir:true, metaInfo: 'fridge' },

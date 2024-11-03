@@ -1,1 +1,1 @@
-validation={"extracted":{"XVATXBAT":"1"}};
+validation={"":{"XVATXBAT":"1"}};
