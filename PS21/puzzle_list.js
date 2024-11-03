@@ -47,6 +47,7 @@ var puzzles = [
     { title: 'Grandma’s Secret Recipe',file:'GrandmasSecretRecipe', thumb: 'gra', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },
     { title: 'Greens', thumb: 'gre', author: 'Margaret Shaver', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'toaster',number:2}] },
     { title: 'Gumball', thumb: 'gun', author: 'Jesse McGatha', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },
+    { title: 'Hunting & Gathering', thumb: 'hun', author: 'Jesse McGathe', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },
     { title: 'I Need A Gyro', thumb: 'nee', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'smorgasbord',number:0}] },
     { title: 'LasagneDoku', thumb: 'las', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [{meta:'fridge',number:3}] },
     { title: 'Moby Dick’s Drive-In', file:'MobyDicksDriveIn', thumb: 'mob', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:true, feeder: [] },

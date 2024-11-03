@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/hgr.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'Hunting &amp; Gathering',
+        author: 'Jesse McGathe',
+        copyright: '2021',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          dragDrop: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          // Each piece is an array of hexes: letter, color, pieceX, pieceY
+          // Note: odd-columns are shifted downward for the same row
+          // The piece's 0,0 (top-left) hex is anchored at pageBody x,y.
+          pieces: [
+            { cols: 5, rows: 2,  // RABBIT
+              x: 350, y: 20,
+              hexes: [
+                [ 'R', 0, 0, 'pink' ],
+                [ 'B', 1, 0, 'pink' ],
+                [ 'I', 3, 0, 'peach' ],
+                [ 'A', 0, 1, 'pink' ],
+                [ 'B', 2, 1, 'pink' ],
+                [ 'T', 4, 1, 'peach' ],
+              ]
+            },
+            { cols: 3, rows: 4,  // GROUSE
+              x: -30, y: 100,
+              hexes: [
+                [ 'E', 1, 0, 'peach' ],
+                [ 'S', 1, 1, 'peach' ],
+                [ 'O', 1, 2, 'cyan' ],
+                [ 'U', 2, 2, 'cyan' ],
+                [ 'R', 0, 3, 'green' ],
+                [ 'G', 1, 3, 'cyan' ],
+              ]
+            },
+            { cols: 3, rows: 2,  // BOAR
+              x: 195, y: 120,
+              hexes: [
+                [ 'A', 1, 0, 'green' ],
+                [ 'R', 0, 1, 'yellow' ],
+                [ 'O', 1, 1, 'blue' ],
+                [ 'B', 2, 1, 'green' ],
+              ]
+            },
+            { cols: 4, rows: 3,  // GOAT
+              x: 360, y: 150,
+              hexes: [
+                [ 'T', 3, 0, 'purple' ],
+                [ 'O', 1, 1, 'blue' ],
+                [ 'A', 2, 1, 'purple' ],
+                [ 'G', 0, 2, 'blue' ],
+              ]
+            },
+            { cols: 4, rows: 3,  // QUAIL
+              x: 420, y: 330,
+              hexes: [
+                [ 'A', 1, 0, 'yellow' ],
+                [ 'I', 2, 0, 'pink' ],
+                [ 'L', 3, 0, 'green' ],
+                [ 'U', 0, 1, 'yellow' ],
+                [ 'Q', 0, 2, 'yellow' ],
+              ]
+            },
+            { cols: 3, rows: 5,  // CARIBOU
+              x: 70, y: 420,
+              hexes: [
+                [ 'U', 1, 0, 'cyan' ],
+                [ 'O', 2, 0, 'cyan' ],
+                [ 'I', 1, 1, 'cyan' ],
+                [ 'B', 2, 1, 'cyan' ],
+                [ 'R', 1, 2, 'purple' ],
+                [ 'A', 1, 3, 'purple' ],
+                [ 'C', 0, 4, 'purple' ],
+              ]
+            },
+            { cols: 2, rows: 3,  // DUCK
+              x: -30, y: 450,
+              hexes: [
+                [ 'D', 1, 0, 'yellow' ],
+                [ 'U', 0, 1, 'yellow' ],
+                [ 'C', 0, 2, 'yellow' ],
+                [ 'K', 1, 2, 'blue' ],
+              ]
+            },
+            { cols: 5, rows: 5,  // SQUIRREL
+              x: 170, y: 470,
+              hexes: [
+                [ 'S', 2, 0, 'green' ],
+                [ 'Q', 2, 1, 'green' ],
+                [ 'U', 3, 1, 'green' ],
+                [ 'R', 3, 2, 'purple' ],
+                [ 'I', 4, 2, 'purple' ],
+                [ 'R', 2, 3, 'blue' ],
+                [ 'E', 1, 3, 'blue' ],
+                [ 'L', 0, 4, 'blue' ],
+              ]
+            },
+            { cols: 4, rows: 2,  // MOOSE
+              x: 420, y: 690,
+              hexes: [
+                [ 'M', 3, 0, 'peach' ],
+                [ 'E', 0, 1, 'pink' ],
+                [ 'S', 1, 1, 'pink' ],
+                [ 'O', 2, 1, 'peach' ],
+                [ 'O', 3, 1, 'peach' ],
+              ]
+            },
+          ]
+        },
+      };
+    </script>
+    <style>
+      .hex-pink {
+        fill: #FBE5D6;
+        stroke: #843C0C
+      }
+      .hex-peach {
+        fill: #FFD7AF;
+        stroke: #7F6000;
+      }
+      .hex-yellow {
+        fill: #FFF2CC;
+        stroke: #7F6000;
+      }
+      .hex-green {
+        fill: #E2F0D9;
+        stroke: #385723;
+      }
+      .hex-cyan {
+        fill: #C1EFFF;
+        stroke: #002060;
+      }
+      .hex-blue {
+        fill: #ABBFE7;
+        stroke: #002060
+      }
+      .hex-purple {
+        fill: #E1CCF0;
+        stroke: #420042;
+      }
+      path {
+        stroke-width: 1px;
+      }
+      text {
+        fill: #385623;
+        font-size: 28pt;
+        font-weight: bold;
+        text-anchor: middle;
+      }
+    </style>
+  </head>
+  <body id="__puzzle_name">
+    <div id="pageBody">
+      <p class="flavor">
+        After you hunt these game animals and gather<br />
+        them in a pot, what would you smell?
+      </p>
+      <for each="piece" in="pieces">
+        <div class="moveable" sstyle="position:absolute; left:{piece.x}px; top:{piece.y}px;">
+          <svg width="{96 + 75 * (piece.cols - 1)}" height="{44 + 84 * (piece.rows)}">
+            <for each="hex" in="piece.hexes">
+              <g transform="translate({1 + hex.1 * 75},{1 + hex.2 * 84 + (hex.1 % 2) * 42})">
+                <path class="hex-{hex.3}" d="M0,42 l20,-42 h55 l20,42 l-20,42 h-55, Z" />
+                <text x="48" y="58">{hex.0}</text>
+              </g>              
+            </for>
+          </svg>
+        </div>
+      </for>
+
+      <div class="no-print validate-block" style="position:absolute; top: 9.5in; left: 2in;">
+        Final answer: <input id="final-answer" class="extracted" type="text" style="width:2in; text-transform: uppercase;"></input>
+        <button class="validater inline" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>
