@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: '___',
+        title: '___',
+        author: '___',
+        copyright: '2021',
+        type: '___',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          width: 16,
+          height: 16,
+        },
+      };
+    </script>
+    <style>
+      div.row {
+        display: block;
+        height: 25px;
+      }
+      div.cell {
+        display: inline-block;
+        width: 25px;
+      }
+      div.cell:nth-child(odd) {
+        background-color: #eee;
+      }
+      div.cell:nth-child(even) {
+        background-color: #ddd;
+      }
+      div.half-cell {
+        display: inline-block;
+        width: 12.5px;
+        background-color: white;
+      }
+    </style>
+  </head>
+  <body id="__puzzle_name">
+    <div id="pageBody">
+      <p class="flavor">
+        (Horizontal) Hexagon Grid...
+      </p>
+
+      <div class="letter-grid-2d">
+        <for int="y" to="{height}">
+          <div class="row" trim="all">
+            <if test="{y % 2}" eq="{0}">
+              <div class="half-cell">&nbsp;</div>              
+            </if>
+            <for int="x" to="{width}">
+              <div class="cell"><letter/></div>  
+            </for>
+          </div>
+        </for>
+      </div>
+
+
+    </div>
+  </body>
+</html>

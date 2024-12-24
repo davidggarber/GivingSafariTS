@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'X-mas Marks The Spot',
+        orientation: 'landscape',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          clues: [
+            ['Tunes up small woodwinds', 5],
+            ['Levied a fee on asphalt ingredient', 3],
+            ['Corkscrew dedicated to the sun', 5],
+            ['Future avian abode, after the old one fell down', 4],
+            ['Is linen made by squishing this ingredient into thin sheets?', 4],
+            ['Explain the shape of a lens', 6]
+          ],
+        },
+      };
+    </script>
+    <style>
+      .entry {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body id="__puzzle_name">
+    <div id="pageBody">
+      <ttable class="letter-grid-2d">
+        <for each="clue" in="clues">
+          <tr>
+            <td class="hint">
+              {clue.0}
+            </td>
+            <td class="entry">
+              <pattern pattern="{clue.1} {clue.1}" />  
+            </td>
+          </tr>
+        </for>
+      </ttable>
+
+    </div>
+  </body>
+</html>
