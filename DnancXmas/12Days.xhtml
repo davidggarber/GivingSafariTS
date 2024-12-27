@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/days.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: '12 Days of Christmas',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          cardinal: [
+            'first', 'second', 'third', 'fourth', 'fifth', 'sixth',
+            'seventh', 'eigth', 'ninth', 'tenth', 'eleventh', 'twelfth'
+          ],
+          days: [
+            'a Turtle in a Turtledove Tree!',
+            'two Wolverines',
+            'three Aardvarks Arguing',
+            'four Santas Slaying',
+            'FIVE  TEN-TA-CLES!!!!!!!',
+            'six Hedgehogs Hiking',
+            'seven Eldritch Etchings',
+            'eight Naked Narwals',
+            'nine Imps Inquiring',
+            'ten Gnats a-Gnapping',
+            'eleven Hound dogs Howling',
+            'twelve Termites Toasting',
+          ]
+        },
+      };
+    </script>
+    <style>
+      .day {
+        text-indent: -3em;
+        margin-left: 3em;
+        font-size: 11pt;
+      }
+    </style>
+  </head>
+  <body id="12Days">
+    <div id="pageBody">
+
+      <for each="day" in="days">
+        <p class="day">
+          On the {cardinal.[day#]} day of Christmas, my true love gave to me&hellip;
+          <br />{day}<if test="day#" gt="{1}">,</if>
+          <if test="day#" ne="{0}">
+            <for int="d" from="1" until="{day#}">
+              <nobr sstyle="font-size: {100-d*5}%;">{days.[day# - d]},</nobr>
+            </for>
+            <nobr sstyle="font-size: {100-day#*5}%;">and {days.0}</nobr>
+          </if>
+        </p>
+      </for>
+
+      <div style="position:absolute; bottom:0px; left: 1in;">
+        <pattern id="final-answer" pattern="12" data-show-ready="submit-extracted" />
+        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+      </div>
+
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/tree.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'In Search Of Trees',
+        abilities: {
+          //textInput: 'nearest',
+          scratchPad: true,
+          wordSearch: true
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          rows: [
+            'S',
+            'IH',
+            'TOS',
+            'TNWH',
+            'OSTFO',
+            'CEKALR',
+            'SDAERBT',
+            'LOSPRUTF',
+            'SENEILSOR',
+            'HGITLSARCH',
+            'UCHBTHGNIKC',
+            'RDERELICTSDE',
+            'PSTANRPYARAVR',
+            'HEMLOCKDINOENG',
+            'CYPRESSNACENEER',
+          ],
+          hints: [
+            ['Traditional family treat, made in 8-inch pans', 18],
+            ['Hexagonally symetric water crystal', 9],
+            ['Magical wintry flying vehicle', 6],
+            ['Glittery threads decorating trees', 6],
+            ['Footwear that occasionally receives gifts', 9],
+            ['To deeply sleep through this season', 9],
+            ['Striped candy stick with a hook', 9],
+            ['Tree-related Washington State nickname', 9],
+          ]
+        },
+      };
+    </script>
+    <style>
+      ellipse {
+        fill: none;
+        stroke: black;
+        stroke-width: 1px;
+      }
+      text {
+        text-anchor: middle;
+      }
+      .flavor {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body id="Trees">
+    <div id="pageBody">
+      <p class="flavor" style="margin-top:0.5in">
+        8 trees in this forest have been decorated with garlands. 
+        <br />Those garlands wrap the full perimeters of each tree.
+      </p>
+      <p class="flavor">
+        Once you find all eight trees, highlight the tips, so the elves can come back to put stars on top.
+      </p>
+
+      <svg width="700" height="400" class="word-select-area no-user-select" data-angle-constraints="60" data-max-points="5">
+        <g transform="translate(350,30)">
+          <for each="row" in="{rows}">
+            <for char="ch" in="{row}">
+              <g class="vertex-g" transform="translate({ch#*256/10 - row#*25/2},{row#*45/2})">
+                <ellipse class="vertex" cx="0" cy="0" rx="12.5" ry="12.5" />
+                <text x="0" y="5">{ch}</text>
+              </g>
+            </for>
+          </for>
+        </g>
+      </svg>
+
+      <div style="margin-left: 2in">
+        <for each="hint" in="hints">
+          <p>🎄&nbsp;{hint.0} ({hint.1})</p>
+        </for>
+      </div>
+
+      <div style="position:absolute; bottom:0.25in; left: 2.5in;">
+        <pattern id="final-answer" pattern="8"  data-show-ready="submit-extracted" />
+        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

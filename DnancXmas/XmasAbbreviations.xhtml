@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js" />
+    <script src="V/xmab.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari24,
+        safari: '21',
+        title: 'X-Mas Short-Hand',
+        orientation: 'landscape',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          clues: [
+            ['Nickname for what the Manhattan Project developed', 4],
+            ['Movies that feature significant nudity or violence', 5],
+            ['TV channel that broadcasts from the house and senate', 4],
+            ['Very large Jurassic predator (with stubby arms)', 3],
+            ['Common component in high-rise construction', 4, 'because its shape resists bends and twists'],
+            ['Surgical alternative to natural birth', 7]
+          ],
+        },
+      };
+    </script>
+    <style>
+      #table {
+        margin-top: 1in;
+        margin-left: 1in;
+      }
+      .entry {
+        text-align: center;
+      }
+      #XmasAbbr td {
+        font-size: 12pt;
+        height: 0.5in;
+      }
+    </style>
+  </head>
+  <body id="XmasAbbr">
+    <div id="pageBody">
+      <ttable id="table" class="letter-grid-2d">
+        <for each="clue" in="clues">
+          <tr>
+            <td class="hint">
+              {clue.0}
+              <if exists="{clue.2}"><br/>{clue.2}</if>
+            </td>
+            <td class="entry">
+              <pattern pattern="1-{clue.1}" />  
+            </td>
+          </tr>
+        </for>
+      </ttable>
+
+      <div style="position:absolute; bottom:0.25in; left: 1in;">
+        <pattern id="final-answer" pattern="6"  data-show-ready="submit-extracted" />
+        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

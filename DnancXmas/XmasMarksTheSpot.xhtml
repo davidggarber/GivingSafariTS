@@ -5,11 +5,12 @@
     <meta charset="UTF-8" />
     <script> var exports = {}; </script>
     <script src="../js/kit24.js" />
+    <script src="V/xmts.js" />
     <script>
       const boiler = {
         safaris: givingSafari24,
         safari: '21',
-        title: 'X-mas Marks The Spot',
+        title: 'X(mas) Marks The Spot',
         orientation: 'landscape',
         abilities: {
           textInput: 'nearest',
@@ -18,26 +19,34 @@
         reactiveBuilder: 'pageBody',
         lookup: {
           clues: [
-            ['Tunes up small woodwinds', 5],
-            ['Levied a fee on asphalt ingredient', 3],
+            ['Tunes up colonial woodwinds', 5],
+            ['A fee, levied on asphalt ingredient', 3],
             ['Corkscrew dedicated to the sun', 5],
             ['Future avian abode, after the old one fell down', 4],
             // ['Is linen made by squishing this ingredient into thin sheets?', 4],
-            ['A platter, holding medical images of your bones', 4],
-            ['Explain the shape of a lens', 6]
+            ['A platter, for holding medical images of your bones', 4],
+            ['Explain the essential shape of a lens', 6]
           ],
         },
       };
     </script>
     <style>
+      #table {
+        margin-top: 1in;
+        margin-left: 1in;
+      }
       .entry {
         text-align: center;
       }
+      #XmasMarks td {
+        font-size: 12pt;
+        height: 0.5in;
+      }
     </style>
   </head>
-  <body id="__puzzle_name">
+  <body id="XmasMarks">
     <div id="pageBody">
-      <ttable class="letter-grid-2d">
+      <ttable id="table" class="letter-grid-2d">
         <for each="clue" in="clues">
           <tr>
             <td class="hint">
@@ -49,6 +58,11 @@
           </tr>
         </for>
       </ttable>
+
+      <div style="position:absolute; bottom:0.25in; left: 1in;">
+        <pattern id="final-answer" pattern="6"  data-show-ready="submit-extracted" />
+        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+      </div>
 
     </div>
   </body>
