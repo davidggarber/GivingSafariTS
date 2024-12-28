@@ -201,7 +201,7 @@ const dnancXmasDetails:PuzzleEventDetails = {
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
-  'backLinks': { '': { href:'./Index.xhtml'}},
+  'backLinks': { '': { href:'./index.xhtml'}},
   'validation': true,
 }
 
