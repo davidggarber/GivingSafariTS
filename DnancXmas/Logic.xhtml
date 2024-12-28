@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/gate.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas',
+        title: 'Is Christmas Logical?',
+        orientation: 'landscape',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+      #display {
+        position: absolute;
+        left: 0.6in;
+        top: 0.3in;
+        height: 1in;
+      }
+      #flavor {
+        position: absolute;
+        top: 1.8in;
+        left: 2.8in;
+        width: 4in;
+        border: solid 1px black;
+        padding: 0.25in;
+        background-color: white;
+      }
+      #wiring {
+        position: absolute;
+        top: 3.3in;
+        height: 2.6in;
+        left: 0.25in;
+      }
+      .vline {
+        position: absolute;
+        top: 0px;
+        height: 6in;
+        border-left: solid 0.5px gray;
+      }
+    </style>
+  </head>
+  <body id="Logic">
+    <div id="pageBody">
+      <div class="vline" style="left:2.55in" />
+      <div class="vline" style="left:5in" />
+      <div class="vline" style="left:7.5in" />
+      
+      
+      <img id="display" src="Logic/Display.png" />
+      
+      <div id="flavor">
+        Each display segment below is connected through a logic gate to the two digits displayed above, in the same column. The connections are specifically to the two equivalent segments.        
+      </div>
+
+      <img id="wiring" src="Logic/Wiring.png" />
+
+      <div style="position:absolute; bottom:0px; left: 4in;">
+        <pattern id="final-answer" pattern="4" data-show-ready="submit-extracted" />
+        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

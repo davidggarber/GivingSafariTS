@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/movi.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas',
+        title: 'Movie Magic',
+        orientation: 'landscape',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+    </style>
+  </head>
+  <body id="Magic">
+    <div id="pageBody">
+      <p class="flavor">
+        After a busy day in Santa’s workshop, there’s nothing Frazzle the elf loves more than watching a warm-hearted Christmas movie. She even uses her elf magic to turn regular movies into Christmas versions by adding or changing one small element. Can you identify her favorite films, and her favorite way to binge them?
+      </p>
+
+      <img src="Movie/Hints.png" style="width:9in; margin-left: 0.5in;" />
+
+
+      <div style="position:absolute; left:2in; bottom: 0px;">
+        <pattern id="final-answer" extract-numbered="4 5" data-show-ready="submit-extracted" />
+        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

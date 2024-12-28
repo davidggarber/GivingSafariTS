@@ -34,6 +34,10 @@
   color: #ff0099;
 }
 
+._xmas #final-answer .letter-cell {
+  font-size: 32pt;
+}
+
 #extracted {
   font-family: 'Caveat';
   font-size: 20pt;
@@ -56,6 +60,10 @@
   font-family: 'Caveat';
   font-size: 20pt;
   color: #ff0099;
+}
+
+.response.rt-correct {
+  white-space: pre;
 }
 
 @media print {
