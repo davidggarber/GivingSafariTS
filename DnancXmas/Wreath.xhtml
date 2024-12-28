@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/wrth.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas',
+        title: 'The Wreath Maker',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          wordSearch: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          grid: [
+            '     TGUNBYFIJGI     ',
+            '    UTFDKBOPLOIKJ    ',
+            '   HOGLITZNEPLGWGO   ',
+            '  AMULTJIUOPMBGJFIL  ',
+            ' RSECARITWIJKBRATJIC ',
+            'SRTLSLRCEBENUVPOINMEF',
+            'BDHAOWDOPLLERRUPIBSTM',
+            'NRGRNIGLTONEDEEYONEVN',
+            'VHWILROAGINGAWNURETFK',
+            'VKRTEGVINTTYEODOCYTEJ',
+            'MOHERSSRERAGRSLFAIESU',
+            'ULJWTTRROIGRBNGDUHFWI',
+            'HDDXFNELLNEFSCARHNYXJ',
+            'YCCQDEIEDUOWMWIHLMDDL',
+            'GTEYBVMANRDOKGINEISCO',
+            'FEGNGIDXQHHBRRLETKQGP',
+            'EDUHINFCURENTOCDRLOBW',
+            'LDJFGWTDSICDOBBITPIJE',
+            ' FSPFDTJKLBIGCHRIDTM ',
+            '  GREDSWQKBUHTVIGPO  ',
+            '   CDEWSXZAQTGBNHY   ',
+            '    JUYBNOLHFRSDJ    ',
+            '     PHGTDCAEIOM     ',
+            '      ARTNUIMNI      '
+          ],
+          hints: [
+            'A rainbow of bright, battery-powered illumination (10,6)',
+            'Prickly tree dropping (4,4)',
+            'A deep red, decorative knot made of fabric (7,6,3)',
+            'Scarlet bird who isn’t from around here (8)',
+            'Old yet trendy hanging tree baubles (7,9)',
+            'Miniature versions of these sleigh-pullers, hopefully (8)',
+            'Red (or white) Christmas botanical (10,6)',
+            'Apparently some humans spit this across a room… (4,4)',
+          ],
+          width: 21,
+        },
+      };
+    </script>
+    <style>
+      #grid {
+        position: absolute;
+        right: -.1in;
+        top: 1in;
+      }
+      #Wreaths rect.vertex.building{
+        stroke: none;
+      }
+      rect {
+        fill: none
+      }    
+      #hints {
+        width: 1.9in;
+        margin-top: .5in;
+      }
+      #hints p {
+        height: .6in;
+      }
+    </style>
+  </head>
+  <body id="Wreaths">
+    <div id="pageBody">
+      <p class="flavor">
+        Mookmook the Elf loves making all kinds of wreaths, with a huge variety of decorations, around and around again, but sometimes she goes a little overboard and overlaps them when she hangs them. Santa keeps trying to send her a message, but it gets lost amongst all these wreaths! Can you help Marie to find Santa’s message?
+      </p>
+
+      <svg id="grid" width="{25*(width+1)}" height="{25*(width+1)}"  class="word-select-area no-user-select" data-angle-constraints="45" data-max-points="8" data-turn-constraint="45">
+        <for each="row" in="{grid}">
+          <for char="ch" in="{row}">
+            <g transform="translate({18+ch#*25},{27+row#*25})">
+              <rect class="vertex"
+                    width="25" height="25" />
+              <text x="8" y="17">{ch}</text>
+            </g>
+          </for>
+        </for>
+      </svg>
+
+      <div id="hints">
+        <for each="hint" in="hints">
+          <p>{hint}</p>
+        </for>
+        
+      </div>
+
+
+      <div style="position:absolute; bottom:1in; left: 1.5in;">
+        <pattern id="final-answer" pattern="4 4 4 4" data-show-ready="submit-extracted" />
+        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

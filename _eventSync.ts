@@ -117,6 +117,9 @@ async function doLogout(isModal:boolean, deletePlayer?:boolean) {
  * @param event The current event
  */
 function autoLogin() {
+  if (!canSyncEvents) {
+    return;
+  }
   const info = getLogin(_eventName);
   if (info && (_playerName != info.player || _teamName != info?.team)) {
     _playerName = info.player;

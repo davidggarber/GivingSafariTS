@@ -85,7 +85,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\PS21\\MiniMenu.xhtml?ic21",
+      "url": "${workspaceFolder}\\DnancXmas\\NewSuit.xhtml",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"

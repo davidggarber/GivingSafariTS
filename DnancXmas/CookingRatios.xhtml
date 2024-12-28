@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <!-- This is borrowed verbatim from https://puzzledpint.com/wp-content/uploads/2023/12/Mathematics_MainSet3.pdf -->
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/rati.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas',
+        title: 'Cooking Ratios',
+        author: 'Adam Levav',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          clues: [
+            'In total the recipes will use up all of the ingredients.',
+            'Each recipe uses a unique amount of each ingreident.',
+            'For each ingredient, a unique amount is used across the three recipes',
+            'For the cake, the units of flour plus the units of spice equals the units of butter.',
+            'For the muffin, the units of butter plus the units of spice equals the units of flour.',
+            'Only the cake uses more units of butter than spice.',
+            'The cake’s units of spice plus the muffin’s units of spice equals the pie’s units of spice.',
+            'The cake uses the least amount of flour and the least amount of spice.',
+            'The muffin uses four more units of flour than the cake.',
+          ]
+        },
+      };
+    </script>
+    <style>
+      .flavor {
+        font-size: 12pt;
+      }
+      li {
+        margin-top: 10px;
+        font-size: 12pt;
+      }
+      #Ratios .word-input {
+        width: 0.4in;
+      }
+      #table {
+        margin-left: 1in;
+        margin-top: 0.5in;
+        border: solid 1px black;
+      }
+      #Ratios th {
+        width: 1.25in;
+        text-align: right;
+        text-decoration: underline;
+        font-size: 16pt;
+      }
+      #header th {
+        text-align: center;
+      }
+      #Ratios td {
+        text-align: right;
+        padding-right: 0.25in;
+        font-size: 16pt;
+        height: 0.5in;
+      }
+    </style>
+  </head>
+  <body id="Ratios">
+    <div id="pageBody">
+      <p class="flavor">
+        You have 10 units of SPICE, 9 units of BUTTER and 9 units of FLOUR. You want to make three recipes
+        &mdash; cake, pie, and miffins &mdash; each of which require whole-number amounts of flour,
+        spice and butter. Unfortunately, you've lost the recipe book! However, you remember the following things:
+      </p>
+
+      <ul>
+        <for each="clue" in="clues">
+          <li>{clue}</li>
+        </for>
+      </ul>
+
+      <table id="table">
+        <tr id="header">
+          <td>&nbsp;</td>
+          <th>Cake</th>
+          <th>Pie</th>
+          <th>Muffin</th>
+        </tr>
+        <tr>
+          <th>SPICE</th>
+          <td><word />(1)</td>
+          <td><word />(2)</td>
+          <td><word />(4)</td>          
+        </tr>
+        <tr>
+          <th>BUTTER</th>
+          <td><word />(3)</td>
+          <td><word />(5)</td>
+          <td><word />(8)</td>          
+        </tr>
+        <tr>
+          <th>FLOUR</th>
+          <td><word />(6)</td>
+          <td><word />(7)</td>
+          <td><word />(9)</td>          
+        </tr>        
+      </table>
+
+      <div style="position:absolute; bottom:2in; left: 1.5in;">
+        <pattern id="final-answer" extract-numbered="5 4" data-show-ready="submit-extracted" style="font-size: 18pt;" />
+        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

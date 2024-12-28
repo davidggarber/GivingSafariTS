@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <!-- This is borrowed verbatim from https://puzzledpint.com/wp-content/uploads/2023/12/Mathematics_Location.pdf -->
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/laff.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas',
+        title: 'Math Laughs',
+        author: 'Adam Levav',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          hints: [
+            ['What did Euler call the non-artificial limb?', 'normal'],
+            ['What did the complex analyst call the fictitious wood?', 'normal'],
+            ['What did the geometer call the part of a road?', 'normal'],
+            ['What did the geometer call the Tolkien goblin who was a big deal?', 'normal'],
+            ['What did the logician call the dog or cat with nothing inside?', 'crossed'],
+            ['What did the number theorist call the circumstance that contributed to celebration of queer identity?', 'normal'],
+            ['What did the number theorist call the strife that keeps on going?', 'normal'],
+            ['What did the old-school calculator call the law about sludge?', 'normal'],
+            ['What did the statistician call the path of a football kick?', 'normal'],
+          ],
+          words: [          
+            'CONTINUED FRACTION',
+            'BELL CURVE',
+            'IMAGINARY NUMBER',
+            'LINE SEGMENT',
+            'SLIDE RULE',
+            'MAJOR ARC',
+            'PRIME FACTOR',
+            'NATURAL LOG',
+          ]
+        },
+      };
+    </script>
+    <style>
+      .crossed {
+        text-decoration: line-through;
+      }
+      #words {
+        margin-top: .5in;
+        width: 100%;
+        text-align: center;
+      }
+      #words p {
+        font-size: 16pt;
+      }
+      .struck {
+        position: relative;
+      }
+      .above {
+        position: absolute;
+        top: -16pt;
+        font-family: 'Caveat';
+        font-size: 18pt;
+      }
+    </style>
+  </head>
+  <body id="MathLaughs">
+    <div id="pageBody">
+      <p class="flavor">
+      </p>
+
+      <for each="hint" in="hints">
+        <p class="{hint.1}">{hint.0}</p>  
+      </for>
+
+      <div id="words">
+        <p>EMPTY <span class="struck"><span class="above">P</span><s>S</s></span>ET</p>
+        <for each="word" in="words">
+          <p>{word}</p>  
+        </for>
+        <p style="margin-top: .5in; ">
+          What was the mathematician’s favorite dessert?  
+        </p>
+      </div>
+
+      <div style="position:absolute; bottom:0px; left: 3in;">
+        <pattern id="final-answer" pattern="9" data-show-ready="submit-extracted" />
+        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+      </div>
+
+    </div>
+  </body>
+</html>

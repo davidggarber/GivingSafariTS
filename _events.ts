@@ -191,6 +191,20 @@ const puzzylSafariTeamDetails:PuzzleEventDetails = {
   ]
 }
 
+const dnancXmasDetails:PuzzleEventDetails = {
+  'title': 'DNANC X-Mas',
+  'icon': './Images/favicon.png',
+  'iconRoot': './Icons/',
+  'cssRoot': '../Css/',
+  'fontCss': '../DnancXmas/Css/Fonts24.css',
+  'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',  // no whitespace
+  'links': [],
+  'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+                 'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+  'backLinks': { '': { href:'./Index.xhtml'}},
+  'validation': true,
+}
+
 const pastSafaris = {
   'Docs': safariDocsDetails,
   'Admin': safariAdminDetails,
@@ -207,6 +221,7 @@ const pastSafaris = {
   'sb21': ps21Mini,
   'tm21': ps21Mini,
   'team': puzzylSafariTeamDetails,
+  'xmas': dnancXmasDetails,
 }
 
 const givingSafari24 = ['gs24','21','ps21'];

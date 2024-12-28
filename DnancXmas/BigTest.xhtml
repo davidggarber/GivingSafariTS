@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/test.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas',
+        title: 'Beverly’s Big Test',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+      #questions p {
+        margin-top: 0.4in;
+      }
+    </style>
+  </head>
+  <body id="__puzzle_name">
+    <div id="pageBody">
+      <p class="flavor">
+        Beverly Toegold is a halfling paladin who is a proud member of the Green Teen scout troop. 
+        Green Teens are never mean, their souls are sublime, and their hearts are pristine. And of 
+        course, Green Teens always try to do the right thing.  
+        Beverly is taking a test. But sometimes, there might be multiple right answers, or no right 
+        answers at all! Beverly likes to eliminate all the wrong answers first, and then neatly fill in the 
+        bubbles for all the correct answers. Help Beverly ace the test and find a word that he could use 
+        to describe himself. 
+      </p>
+
+      <div id="questions">
+        <p>1. Type of animal:</p>
+        <p>2. Considered a season:</p>
+        <p>3. Type of vehicle:</p>
+        <p>4. Option in a popular 3-choice hand game:</p>
+        <p>5. Volleyball move:</p>
+        <p>6. Type of physical attack:</p>
+        <p>7. Type of bird:</p>
+        <p>8. Article of clothing:</p>
+
+        <p>ANSWER:</p>
+        <p>
+          <pattern id="final-answer" extract-numbered="8" data-show-ready="submit-extracted"/>
+          <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>          
+        </p>
+
+      </div>
+
+    </div>
+  </body>
+</html>
