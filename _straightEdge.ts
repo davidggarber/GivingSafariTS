@@ -174,6 +174,7 @@ type RulerEventData = {
     hoverRange: number;
     angleConstraints?: number;
     angleConstraintsOffset: number;
+    turnConstraints?: number[];
     showOpenDrag: boolean;
     evtPos: DOMPoint;
     evtPoint: SVGPoint;
@@ -189,18 +190,22 @@ function createPartialRulerData(range:Element):RulerEventData {
     const bounds = svg.getBoundingClientRect();
     const max_points = range.getAttributeNS('', 'data-max-points');
     const maxPoints = max_points ? parseInt(max_points) : 2;
-    const defaultShare = selector_class == 'hashi-bridge' ? 'true' : 'false';
+    const defaultShare = selector_class == EdgeTypes.hashiBridge ? 'true' : 'false';
     const canShareVertices = range.getAttributeNS('', 'data-can-share-vertices') || defaultShare;
-    const defaultCross = selector_class == 'hashi-bridge' ? 'false' : 'true';
+    const defaultCross = selector_class == EdgeTypes.hashiBridge ? 'false' : 'true';
     const canCrossSelf = range.getAttributeNS('', 'data-can-cross-self') || defaultCross;
     const maxBridges = range.getAttributeNS('', 'data-max-bridges');
     const bridgeGap = range.getAttributeNS('', 'data-bridge-gap');
     const hoverRange = range.getAttributeNS('', 'data-hover-range');
-    const defaultAngleConstraint = selector_class == 'straight-edge' ? undefined 
-                                : selector_class == 'word-search' ? '45' : '90';
+    const defaultAngleConstraint = selector_class == EdgeTypes.straightEdge ? undefined 
+                                : selector_class == EdgeTypes.wordSelect ? '45' : '90';
     const angleConstraints = range.getAttributeNS('', 'data-angle-constraints') || defaultAngleConstraint;
+    const defaultTurnConstraint = selector_class == EdgeTypes.straightEdge ? undefined 
+                                : selector_class == EdgeTypes.wordSelect ? '0,45,90' : '0,90';
+    const turnConstraints = range.getAttributeNS('', 'data-turn-constraints') || defaultTurnConstraint;
     const showOpenDrag = range.getAttributeNS('', 'data-show-open-drag');
     const angleConstraints2 = angleConstraints ? (angleConstraints+'+0').split('+').map(c => parseInt(c)) : undefined;
+    const turnConstraints2 = turnConstraints ? (turnConstraints).split(',').map(c => parseInt(c)) : undefined;
     const data:RulerEventData = {
         svg: svg, 
         container: container,
@@ -214,6 +219,7 @@ function createPartialRulerData(range:Element):RulerEventData {
         hoverRange: hoverRange ? parseInt(hoverRange) : ((showOpenDrag != 'false') ? 30 : Math.max(bounds.width, bounds.height)),
         angleConstraints: angleConstraints2 ? angleConstraints2[0] : undefined,
         angleConstraintsOffset: angleConstraints2 ? angleConstraints2[1] : 0,
+        turnConstraints: turnConstraints2,
         showOpenDrag: showOpenDrag ? (showOpenDrag.toLowerCase() != 'false') : true,
         evtPos: new DOMPoint(NaN, NaN),  // stub
         evtPoint: svg.createSVGPoint(),  // stub 
@@ -728,7 +734,27 @@ function isReachable(data:RulerEventData, vert: VertexData):boolean {
     if (mod > data.angleConstraints / 2) {
         mod = data.angleConstraints - mod;
     }
-    return mod < 1; // Within 1 degree of constraint angle pattern
+    if (mod >= 1) {  // Must be within 1 degree of constraint angle pattern
+        return false;
+    };
+
+    if (data.turnConstraints !== undefined && _straightEdgeVertices.length >= 2) {
+        const prior = getVertexData(data, _straightEdgeVertices[_straightEdgeVertices.length - 2]);
+        const dx2 = prev.centerPos.x - prior.centerPos.x;
+        const dy2 = prev.centerPos.y - prior.centerPos.y;
+        if (Math.abs(dx2) <= 1 && Math.abs(dy2) <= 1) {
+            return false;  // That would mean previous 2 points are the same
+        }
+        let turn = Math.abs(Math.atan2(dy2, dx2) * 180 / Math.PI + 360 - degrees);
+        turn = Math.min(turn, 360 - turn);
+        for (let i = 0; i < data.turnConstraints.length; i++) {
+            if (Math.abs(turn - data.turnConstraints[i]) < 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    return true;
 }
 
 /**

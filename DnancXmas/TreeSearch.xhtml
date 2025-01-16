@@ -27,7 +27,7 @@
             'SDAERBT',
             'LOSPRUTF',
             'SENEILSOR',
-            'HGITLSARCH',
+            'HGITLASRCH',
             'UCHBTHGNIKC',
             'RDERELICTSDE',
             'PSTANRPYARAVR',
@@ -41,7 +41,7 @@
             ['Glittery threads decorating trees', 6],
             ['Footwear that occasionally receives gifts', 9],
             ['To deeply sleep through this season', 9],
-            ['Striped candy stick with a hook', 9],
+            ['Striped red and white stick with a hook', 9],
             ['Tree-related Washington State nickname', 9],
           ]
         },
@@ -59,6 +59,9 @@
       .flavor {
         text-align: center;
       }
+      #Trees ellipse.vertex.building{
+        stroke: black;
+      }
     </style>
   </head>
   <body id="Trees">
@@ -71,7 +74,7 @@
         Once you find all eight trees, highlight the tips, so the elves can come back to put stars on top.
       </p>
 
-      <svg width="700" height="400" class="word-select-area no-user-select" data-angle-constraints="60" data-max-points="5">
+      <svg width="700" height="400" class="word-select-area no-user-select" data-angle-constraints="60" data-max-points="5" data-turn-constraints="0,120">
         <g transform="translate(350,30)">
           <for each="row" in="{rows}">
             <for char="ch" in="{row}">
