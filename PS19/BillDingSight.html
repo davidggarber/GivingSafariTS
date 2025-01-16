@@ -1,0 +1,153 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <meta name="puzzle-name" content="Bill Ding Sight"></meta>
+    <meta name="puzzle-key" content="billdingsight"></meta>
+    <title>Bill Ding Sight</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/TextSetup.js"></script>
+    <script src="Kit/TextInput.js"></script>
+    <script src="Kit/Answers.js"></script>
+  </head>
+  <style>
+    .letter-cell {
+      font-family: 'Kalam', cursive;
+      font-size: 10pt;
+    }
+    #extracted .letter-cell {
+      font-family: 'Kalam', cursive;
+      font-size: 16pt;
+    }
+    .flavor {
+      font-style: italic;
+    }
+    #table td {
+      width: 33%;
+    }
+    .huge {
+      font-size: 60pt;
+    }
+    #table img {
+      height: 72pt;
+    }
+    #bottom {
+      height: 0.25in;
+    }
+    .note-above {
+      position: absolute;
+      left: 0px;
+      bottom: 3.5ex;
+      height: 3ex;
+      width: 99%;
+      background-color: #ffffffdd;
+    }
+
+  </style>
+  <body class="letter portrait" onload="textSetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+          Bill Ding Sight
+        </div>
+        <div id="icons">
+          <img src="Icons/Rebus.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 Martyn Lovell
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <img id="qr" src="QR/BillDingSight.png">
+        
+        <div id="pageBody">
+          <p class="flavor" style="margin-top: 0.25in;">
+            Solve the clues and extract the grey letters top to bottom then left to right to reveal the final answer.  
+          </p>
+          <table id="table" data-extract-style="highlight" data-literal-style="none" class="text-input-group">
+            <tr>
+              <td style="border-right: solid 1px black;">
+                <p>
+                  <span class="huge">S</span><img src="Images/BillDing/crew.png">
+                  <span class="huge">D</span><img src="Images/BillDing/river.jpg">
+                  <div class="notes-above letter-cell-block create-from-pattern" data-letter-pattern="11" data-extract-indeces="5"></div>
+                </p>
+                <p>
+                  <img src="Images/BillDing/crow.jpg">
+                  <img src="Images/BillDing/bar.png">
+                  <div class="notes-above letter-cell-block create-from-pattern" data-letter-pattern="4 3" data-extract-indeces="3"></div>
+                </p>
+                <p>
+                  <img src="Images/BillDing/bull.jpg">
+                  <img src="Images/BillDing/dozer.jpg" style="height:96pt;">
+                  <div class="notes-above letter-cell-block create-from-pattern" data-letter-pattern="9" data-extract-indeces="9"></div>
+                </p>
+              </td>
+              <td style="border-right: solid 1px black;">
+                <p>
+                  <img src="Images/BillDing/billnye.png" style="height:96pt;"><span class="huge">F</span>
+                  <div class="notes-above letter-cell-block create-from-pattern" data-letter-pattern="5" data-extract-indeces="1"></div>
+                </p>
+                <p>
+                  <span class="huge">B</span><img src="Images/BillDing/ox.png" style="height:96pt;"><br>
+                  <span class="huge">C</span><img src="Images/BillDing/otter.jpg" style="height:96pt;">
+                  <div class="notes-above letter-cell-block create-from-pattern" data-letter-pattern="3 6" data-extract-indeces="1"></div>
+                </p>
+                <p>
+                  <img src="Images/BillDing/duck.png" style="height:60pt;"><span class="huge">T</span><img src="Images/BillDing/gorilla.jpg" style="height:60pt;">
+                  <div class="notes-above letter-cell-block create-from-pattern" data-letter-pattern="4 4" data-extract-indeces="8"></div>
+                </p>
+              </td>
+              <td>
+                <p>
+                  <img src="Images/BillDing/record.png" style="height: 60pt;"><img src="Images/BillDing/king.jpg" style="height: 80pt;">
+                  <img src="Images/BillDing/haybale.jpg" style="height: 50pt;">
+                  <div class="notes-above letter-cell-block create-from-pattern" data-letter-pattern="8 4" data-extract-indeces="7"></div>
+                </p>
+                <p>
+                  <span class="huge">X</span><img src="Images/BillDing/cave.gif" style="height: 72pt;"><br>
+                  <img src="Images/BillDing/avatar.jpg" style="height: 80pt;">
+                  <div class="notes-above letter-cell-block create-from-pattern" data-letter-pattern="9" data-extract-indeces="3"></div>
+                </p>
+                <p>
+                  <img src="Images/BillDing/sock.png" style="height: 50pt;"><img src="Images/BillDing/car.jpg" style="height: 80pt;">
+                  <img src="Images/BillDing/coat.png" style="height: 80pt;">
+                  <div class="notes-above letter-cell-block create-from-pattern" data-letter-pattern="6 6" data-extract-indeces="12"></div>
+                </p>
+              </td>
+            </tr>
+          </table>
+
+          <div id="bottom" data-extractor-style="underline">
+            <p>Final answer: 
+              <span id="extracted" data-letter-pattern="9"></span>
+              <button class="submit-button" data-extract="extracted">Submit</button>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>  
+    <div id="guess-area">
+      <table id="guess-table">
+        <thead>
+          <tr>
+            <th class="time">&nbsp;</th>
+            <th class="guess">Guesses</th>
+            <th class="response">(<a href="javascript:clearGuessHistory()">clear</a>)</th>
+          </tr>
+        </thead>
+        <tbody id="guess-rows">
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

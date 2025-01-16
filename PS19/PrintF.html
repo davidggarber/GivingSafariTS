@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Printable packet of all portrait-oriented puzzles">
+    <meta name="author" content="David Garber">
+    <link rel="shortcut icon" type="image/png" href="Images/haticon.png">
+    <link href="Kit/Print.css" rel="Stylesheet" type="text/css"></link>
+
+    <title>Giving Safari 2022 - All Meta Feeders</title>
+  </head>
+  <body id="print-view" class="portrait landscape feeders" onload="onload()">
+    <div id="layout">
+      <button class="layout-btn" onclick="switchLayout('P')">Portrait</button>
+      <button class="layout-btn" onclick="switchLayout('L')">Landscape</button>
+      <button class="layout-btn current">Meta Feeders</button>
+      <a href="indexx.html" style="color:cornflowerblue">Puzzle index</a>
+      <p style="color:wheat; background-color: dark-gray;">
+        When printing. Make sure margins are set to NONE, and background graphics is checked.
+        <br>There may be an extra blank page. Recommend printing explicitly pages 1-11.
+      </p>
+    </div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Assembly_1_nurgis.html?iframe"></iframe></div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Assembly_2_zorkam.html?iframe"></iframe></div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Assembly_3_fisnit.html?iframe"></iframe></div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Assembly_4_voprix.html?iframe"></iframe></div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Seven_A_fesmar.html?iframe"></iframe></div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Seven_B_kogrix.html?iframe"></iframe></div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Seven_C_zetreb.html?iframe"></iframe></div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Seven_D_yoflux.html?iframe"></iframe></div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Seven_E_roshal.html?iframe"></iframe></div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Seven_F_beblur.html?iframe"></iframe></div>
+    <div class="page print-portrait feeder"><iframe src="Materials/Seven_G_hishar.html?iframe"></iframe></div>
+  </body>
+
+  <script>
+    function switchLayout(suffix) {
+      window.location.href = 'Print' + suffix + '.html';
+    }
+  </script>
+</html>

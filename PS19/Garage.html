@@ -1,0 +1,333 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>Garage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/TextSetup.js"></script>
+    <script src="Kit/TextInput.js"></script>
+  </head>
+  <style>
+    #tools {
+      border-collapse: collapse;
+    }
+    .tool {
+      width: .9in;
+      height: 1.05in;
+      text-align: center;
+      vertical-align: middle;
+    }
+    #tools img {
+      max-width: .9in;
+      max-height: 1in;
+    }
+    .label {
+      position: relative;
+      text-align: center;
+      vertical-align: top;
+      height: 24pt;
+    }
+    .check {
+      top: -1em;
+      left: 0px;
+    }
+
+    #clues {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      width: 3.25in;
+      border-collapse: collapse;
+    }
+    #clues td {
+      border: solid 0.5pt black;
+      padding-left: 4px;
+      padding-right: 4px;
+      position: relative;
+      vertical-align: top;
+    }
+    .word-input {
+      width: 1in;
+      position: absolute;
+      right: 2px;
+      bottom: 0px;
+      font-family: 'Kalam', cursive;
+      font-size: 10pt;
+    }
+    .extract {
+      width: 1em;
+      border: none;
+      text-align: center;
+      font-family: 'Kalam', cursive;
+      font-size: 16pt;
+      height: 2.2ex;
+      color: #ff0099;
+    }
+    .note-input.note-below {
+      bottom: -0.4ex;
+      height: 2.5ex;
+    }
+  </style>
+  <body class="letter portrait" onload="textSetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+          Garage
+        </div>
+        <div id="icons">
+          <img src="Icons/Crossword.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 Rorke Haining
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <div id="ability">✔️</div>
+        <img id="qr" src="QR/Garage.png" style="bottom: -0.1in">
+
+        <div id="pageBody">
+          <p class="flavor" style="width: 4in;">
+            These tools are such a mess, it’s no wonder I can’t get anything done.
+          </p>
+
+          <table id="tools">
+            <tr>
+              <td class="tool"><img src="Images/Garage/drill.png" alt="drill"></td>
+              <td class="tool"><img src="Images/Garage/boltcutter.png" alt="bolt cutter"></td>
+              <td class="tool"><img src="Images/Garage/file.png" alt="file"></td>
+              <td class="tool"><img src="Images/Garage/hammer.png" alt="hammer"></td>
+            </tr>
+            <tr>
+              <td class="label cross-off notes-below">DRILL</td>
+              <td class="label cross-off notes-below">BOLT CUTTER</td>
+              <td class="label cross-off notes-below">FILE</td>
+              <td class="label cross-off notes-below">HAMMER</td>
+            </tr>
+            <tr>
+              <td class="tool"><img src="Images/Garage/plunger.png" alt="plunger"></td>
+              <td class="tool"><img src="Images/Garage/clamp.png" alt="clamp"></td>
+              <td class="tool"><img src="Images/Garage/plane.png" alt="plane"></td>
+              <td class="tool"><img src="Images/Garage/goggles.png" alt="goggles"></td>
+            </tr>
+            <tr>
+              <td class="label cross-off notes-below">PLUNGER</td>
+              <td class="label cross-off notes-below">CLAMP</td>
+              <td class="label cross-off notes-below">PLANE</td>
+              <td class="label cross-off notes-below">GOGGLES</td>
+            </tr>
+            <tr>
+              <td class="tool"><img src="Images/Garage/level.png" alt="level"></td>
+              <td class="tool"><img src="Images/Garage/mallet.png" alt="mallet"></td>
+              <td class="tool"><img src="Images/Garage/flashlight.png" alt="flashlight"></td>
+              <td class="tool"><img src="Images/Garage/ladder.png" alt="ladder"></td>
+            </tr>
+            <tr>
+              <td class="label cross-off notes-below">LEVEL</td>
+              <td class="label cross-off notes-below">MALLET</td>
+              <td class="label cross-off notes-below">FLASHLIGHT</td>
+              <td class="label cross-off notes-below">LADDER</td>
+            </tr>
+            <tr>
+              <td class="tool"><img src="Images/Garage/sandpaper.png" alt="sandpaper"></td>
+              <td class="tool"><img src="Images/Garage/trowel.png" alt="trowel"></td>
+              <td class="tool"><img src="Images/Garage/rake.png" alt="rake"></td>
+              <td class="tool"><img src="Images/Garage/crowbar.png" alt="crowbar"></td>
+            </tr>
+            <tr>
+              <td class="label cross-off notes-below">SANDPAPER</td>
+              <td class="label cross-off notes-below">TROWEL</td>
+              <td class="label cross-off notes-below">RAKE</td>
+              <td class="label cross-off notes-below">CROWBAR</td>
+            </tr>
+            <tr>
+              <td class="tool"><img src="Images/Garage/saw.png" alt="saw"></td>
+              <td class="tool"><img src="Images/Garage/wheelbarrow.png" alt="wheelbarrow"></td>
+              <td class="tool"><img src="Images/Garage/scraper.png" alt="scraper"></td>
+              <td class="tool"><img src="Images/Garage/brush.png" alt="brush"></td>
+            </tr>
+            <tr>
+              <td class="label cross-off notes-below">SAW</td>
+              <td class="label cross-off notes-below">WHEELBARROW</td>
+              <td class="label cross-off notes-below">SCRAPER</td>
+              <td class="label cross-off notes-below">BRUSH</td>
+            </tr>
+            <tr>
+              <td class="tool"><img src="Images/Garage/powercord.png" alt="power cord"></td>
+              <td class="tool"><img src="Images/Garage/pliers.png" alt="pliers"></td>
+              <td class="tool"><img src="Images/Garage/hatchet.png" alt="hatchet"></td>
+              <td class="tool"><img src="Images/Garage/shovel.png" alt="shovel"></td>
+            </tr>
+            <tr>
+              <td class="label cross-off notes-below">POWER&nbsp;CORD</td>
+              <td class="label cross-off notes-below">PLIERS</td>
+              <td class="label cross-off notes-below">HATCHET</td>
+              <td class="label cross-off notes-below">SHOVEL</td>
+            </tr>
+          </table>
+
+          <table id="clues">
+            <tr>
+              <th>PUT TOOLS AWAY HERE</th>
+              <th>↓</th>
+            </tr>
+            <tr>
+              <td>Insert an H just before the last vowel to make a metal sound [1]
+                <div class="word-cell" data-extract-index="1" data-extracted-id="1"></div>
+              </td>
+              <td><input type="text" id="extracted-1" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Spoonerize this for a horse's toast topper? [2]
+                <div class="word-cell" data-extract-index="2" data-extracted-id="2"></div>
+              </td>
+              <td><input type="text" id="extracted-2" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Split in half, dropping the middle letter, for 2 ancient tools [10]
+                <div class="word-cell" data-extract-index="10" data-extracted-id="3"></div>
+              </td>
+              <td><input type="text" id="extracted-3" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Drop the 2nd letter for a spice [2]
+                <div class="word-cell" data-extract-index="2" data-extracted-id="4"></div>
+              </td>
+              <td><input type="text" id="extracted-4" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Reverse this for a new word [3]
+                <div class="word-cell" data-extract-index="3" data-extracted-id="5"></div>
+              </td>
+              <td><input type="text" id="extracted-5" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Drop all but 1 consonant to make a new tool [3]
+                <div class="word-cell" data-extract-index="3" data-extracted-id="6"></div>
+              </td>
+              <td><input type="text" id="extracted-6" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Replace the 1st 3 letters with a letter to make an office supply [3]
+                <div class="word-cell" data-extract-index="3" data-extracted-id="7"></div>
+              </td>
+              <td><input type="text" id="extracted-7" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Change the 1st letter to that of any adjacent tool (diagonals too) for many new words [3]
+                <div class="word-cell" data-extract-index="3" data-extracted-id="8"></div>
+              </td>
+              <td><input type="text" id="extracted-8" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Append R, S, or T for a similar tool, a mathematical term, or an astronomical term [5]
+                <div class="word-cell" data-extract-index="5" data-extracted-id="9"></div>
+              </td>
+              <td><input type="text" id="extracted-9" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Drop the 1st letter for a dangerous animal [6]
+                <div class="word-cell" data-extract-index="6" data-extracted-id="10"></div>
+              </td>
+              <td><input type="text" id="extracted-10" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Change the middle vowel to a new vowel to make a bird [1]
+                <div class="word-cell" data-extract-index="1" data-extracted-id="11"></div>
+              </td>
+              <td><input type="text" id="extracted-11" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Drop a letter for a president or drop a different letter for a band [1]
+                <div class="word-cell" data-extract-index="1" data-extracted-id="12"></div>
+              </td>
+              <td><input type="text" id="extracted-12" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>This tool hides an organ [2]
+                <div class="word-cell" data-extract-index="2" data-extracted-id="13"></div>
+              </td>
+              <td><input type="text" id="extracted-13" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Drop any 1 consonant to make many new words [3]
+                <div class="word-cell" data-extract-index="3" data-extracted-id="14"></div>
+              </td>
+              <td><input type="text" id="extracted-14" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Change a vowel to a new vowel for an '80s hairstyle [1]
+                <div class="word-cell" data-extract-index="1" data-extracted-id="15"></div>
+              </td>
+              <td><input type="text" id="extracted-15" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Swap the 1st 2 consonants for a magazine or board game [4]
+                <div class="word-cell" data-extract-index="4" data-extracted-id="16"></div>
+              </td>
+              <td><input type="text" id="extracted-16" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Drop the 2nd letter for a bathroom tool of sorts [1]
+                <div class="word-cell" data-extract-index="1" data-extracted-id="17"></div>
+              </td>
+              <td><input type="text" id="extracted-17" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Put an automotive tool before this tool to make yet another tool [1]
+                <div class="word-cell" data-extract-index="1" data-extracted-id="18"></div>
+              </td>
+              <td><input type="text" id="extracted-18" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>All the consonants of this tool are Roman numerals [2]
+                <div class="word-cell" data-extract-index="2" data-extracted-id="19"></div>
+              </td>
+              <td><input type="text" id="extracted-19" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Sounds like encouragement for a hen? [3]
+                <div class="word-cell" data-extract-index="3" data-extracted-id="20"></div>
+              </td>
+              <td><input type="text" id="extracted-20" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Change the 2nd consonant to an O for a word that can mean "checks" [2]
+                <div class="word-cell" data-extract-index="2" data-extracted-id="21"></div>
+              </td>
+              <td><input type="text" id="extracted-21" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Sounds like a nightclub where you go to boast? [3]
+                <div class="word-cell" data-extract-index="3" data-extracted-id="22"></div>
+              </td>
+              <td><input type="text" id="extracted-22" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>The halves of this tool can mean “showy” and “easy” [6]
+                <div class="word-cell" data-extract-index="6" data-extracted-id="23"></div>
+              </td>
+              <td><input type="text" id="extracted-23" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+            <tr>
+              <td>Drop the 2nd letter for Mr. Anthony or Mr. Morgan [6]
+                <div class="word-cell" data-extract-index="6" data-extracted-id="24"></div>
+              </td>
+              <td><input type="text" id="extracted-24" class="extract letter-input all-caps" maxlength="1"></td>
+            </tr>
+          </table>
+          
+        </div>
+
+
+      </div>
+    </div>  
+  </body>
+</html>

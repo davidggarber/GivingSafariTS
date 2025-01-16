@@ -1,0 +1,367 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>Assembly Line</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/DragDrop.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/TextSetup.js"></script>
+    <script src="Kit/TextInput.js"></script>
+    <script src="Kit/DragDrop.js"></script>
+  </head>
+  <style>
+    #title { 
+      position: absolute;
+      top: -0.25in;
+    }
+    body, p, td {
+      font-family: 'Verdana';
+      font-size: 10pt;
+      user-select: none; /* Safari */        
+      -webkit-user-select: none; /* Safari */        
+      -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* IE10+/Edge */
+    }
+    .word-cell {
+      font-family: 'Kalam', cursive;
+      font-size: 14pt;
+    }
+    #flavor {
+      position: absolute;
+      top: 5.3in;
+      left: 1.25in;
+    }
+    #feeder-notes {
+      position: absolute;
+      top: 0.75in;
+      right: 0px;
+    }
+    #feeder-words {
+      display: none;
+      color: orange;
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+
+    .show-notes #feeder-words {
+      display: inline-block;
+    }
+    .enable-notes #feeder-words {
+      display: inline-block;
+    }
+    .note-input {
+      width: 1in;
+      text-align: center;
+    }
+    .tile {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      z-index: 10;
+    }
+    .tile .moveable {
+      width: 68px;
+      height: 68px;
+      margin: 1.5px 1px 1px 1.5px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .tile .word-input {
+      width: 0.68in;
+      margin-top: 20px;
+      text-align: center;
+      border: none;
+    }
+    .tile .word-input:hover {
+      border: solid 2px black;
+      border-radius: 4px;
+    }
+    .note-input.note-left {
+      display: block;
+      position: absolute;
+      width: 3ex;
+      height: 3ex;
+      top: -0.1ex;
+      left: -3.4ex;
+    }
+
+    .note-input.answer-notes {
+      height: 3ex;
+    }
+
+    .car-icon {
+      display: inline-block;
+      cursor: pointer;
+      opacity: 0.1;
+      margin-left: 0.25in;
+    }
+    .car-icon.available {
+      opacity: 1;
+      animation-name: opacity-fadein;
+      animation-duration: 1s;
+    }
+    @keyframes opacity-fadein {
+      from {
+        opacity: 0.1;
+        transform: translate(0.6in,0px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(0,0);
+      }
+    }
+    #feeder-notes img {
+      height: 0.25in;
+    }
+    sub.car {
+      position: relative;
+      color: white;
+      left: -19.5px;
+      top: -11px;
+      font-size: 6pt;
+    }
+    #feeder-materials {
+      position: absolute;
+      left: 11in;
+      top: -0.5in;
+    }
+    #feeder-materials p {
+      margin: 4px;
+    }
+    #materials-link {
+      white-space: nowrap;
+    }
+    .materials-image img {
+      width: 2in;
+      height: 2in;
+      border: solid 1px black;
+      display: none;
+    }
+    .check-box {
+      display: none;
+      position: relative;
+      white-space: nowrap;
+    }
+    .show-notes .check-box {
+      display: inline-block;
+    }
+    .enable-notes .check-box {
+      display: inline-block;
+    }
+    .check {
+      left: -0.4em;
+    }
+    @media print {
+      #feeder-materials {
+        display: none;
+      }
+      .car-icon {
+        display: none;
+      }
+    }
+  </style>
+  <body class="letter landscape floating-title" onload="onLoad()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+          Assembly Line
+        </div>
+        <div id="icons">
+          <img src="Icons/Meta.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 Rorke Haining
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <div id="ability" style="text-shadow: 0 0 5px black;" title="Click & drop enabled">&#x1f448;✔️</div>
+        <img id="qr" src="QR/AssemblyLineL.png">
+
+        <div id="pageBody" style="top:0.2in;" class="letter-grid-discover">
+          <img id="background" src="Images/AssemblyLineL.png" style="width: 87%; z-index: 1;" alt="A purple car with lines from 5 features">
+          <p id="flavor">This is a metapuzzle.
+            <br>Solve 4 feeder puzzles with the 
+            <br><img src="Icons/Car2.png" style="height:1em;"> car icon to solve this puzzle.
+          </p>
+
+
+          <div class="tile drop-target" style="left: 12.5px; top: 10px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 136.5px; top: 10px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 260px; top: 10px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 384px; top: 10px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 507px; top: 10px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 631px; top: 10px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 754.5px; top: 10px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+
+          <div class="tile drop-target" style="left: 754.5px; top: 130px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 754.5px; top: 250px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 754.5px; top: 370px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 754.5px; top: 489px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+
+          <div class="tile drop-target" style="left: 754.5px; top: 609px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 631px; top: 609px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 507px; top: 609px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 384px; top: 609px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 260px; top: 609px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 136.5px; top: 609px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 12.5px; top: 609px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+
+          <div class="tile drop-target" style="left: 12.5px; top: 489px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 12.5px; top: 370px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 12.5px; top: 250px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+          <div class="tile drop-target" style="left: 12.5px; top: 130px;">
+            <div class="moveable word-cell" draggable="true"></div>
+          </div>
+
+
+          <div id="feeder-notes">
+            <p id="feeder-words">Feeder words:</p>
+            <p>
+              <span id="car1" class="car-icon" onclick="showMaterials(1)"><img src="Icons/Car2.png"></a><sub class="car">1</sub></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+            </p>
+            <p>
+              <span id="car2" class="car-icon" onclick="showMaterials(2)"><img src="Icons/Car2.png"></a><sub class="car">2</sub></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+            </p>
+            <p>
+              <span id="car3" class="car-icon" onclick="showMaterials(3)"><img src="Icons/Car2.png"></a><sub class="car">3</sub></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+            </p>
+            <p>
+              <span id="car4" class="car-icon" onclick="showMaterials(4)"><img src="Icons/Car2.png"></a><sub class="car">4</sub></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+              <br><span class="check-box cross-off">&#x2b1a; <input type="text" class="note-input answer-notes"></span>
+            </p>
+          </div>
+        </div>
+
+        <div id="feeder-materials">
+          <p><a id="materials-link" target="_blank">&nbsp;</a></p>
+          <p class="materials-image">
+            <img id="material-img-0">
+          </p>
+          <p class="materials-image">
+            <img id="material-img-1">
+          </p>
+          <p class="materials-image">
+            <img id="material-img-2">
+          </p>
+          <p class="materials-image">
+            <img id="material-img-3">
+          </p>
+        </div>
+
+      </div>
+    </div>  
+  </body>
+  <script>
+    function onLoad() {
+      textAndDragSetup();
+      window.onfocus=function(e){initMaterials()};
+      if (!isIFrame()) {
+        initMaterials();
+      }
+    }
+
+    function initMaterials() {
+      var cars = document.getElementsByClassName('car-icon');
+      for (var i = 1; i <= 4; i++) {
+        var car = cars[i - 1];
+        refreshAvailability(car);
+      }
+    }
+
+    function refreshAvailability(car) {
+      var index = parseInt(car.id[3]);
+      var materials = loadMetaMaterials('AssemblyLine', 0, index);
+      toggleClass(car, 'available', materials != null);
+      car.onmouseover = materials != null ? null : function(e){refreshAvailability(car)};
+    }
+
+    function showMaterials(page) {
+      var materials = loadMetaMaterials('AssemblyLine', 0, page);
+      if (materials != null) {
+        var title = document.getElementById('materials-link');
+        title.setAttribute('href', materials['href']);
+        title.innerText = 'Materials ' + page + ' of 4';
+        for (var i = 0; i < 4; i++) {
+          var img = document.getElementById('material-img-' + i);
+          img.setAttribute('src', materials['images'][i]);
+          img.setAttribute('alt', materials['alts'][i]);
+          img.style.display = 'inline';
+        }
+      } 
+      else {
+        var title = document.getElementById('materials-link');
+        title.innerHTML = 'Materials ' + page + ' of 4<br>Not yet available';
+        title.removeAttribute('href');
+        for (var i = 0; i < 4; i++) {
+          var img = document.getElementById('material-img-' + i);
+          img.style.display = 'none';
+        }
+      }
+    }
+  </script>
+</html>

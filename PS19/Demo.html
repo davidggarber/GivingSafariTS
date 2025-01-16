@@ -1,0 +1,181 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/TextSetup.js"></script>
+    <script src="Kit/TextInput.js"></script>
+  </head>
+  <style>
+    .letter-cell {
+      font-family: 'Kalam', cursive;
+      font-size: 16pt;
+    }
+    .letter-cell-block {
+      margin-bottom: 2ex;
+    }
+    .letter-grid {
+      width: 3ex;
+      height: 3ex;
+      border: solid 1px black;
+      margin-left: -1px;
+    }
+    .letter-grid .letter-input {
+      width: 3ex;
+      height: 3ex;
+    }
+
+    #example {
+      margin-left: 3in;
+    }
+    #example .box {
+      display: inline-block;
+      border: solid 1px black;
+    }
+    #example .symbol {
+      font-family: 'Segoe UI Symbol';
+    }
+
+    #clues td {
+      padding-right: .2in;
+      position: relative;
+    }
+
+    .note-input.note-right {
+      position: absolute;
+      height: 3ex;
+      width: 1.5in;
+      right: 0.25in;
+      text-align: center;
+    }
+    .note-input.note-below {
+      position: absolute;
+      height: 3ex;
+      bottom: -1.5em;
+      width: 1.5in;
+      margin-left: 2.95in;
+    }
+
+    #bottom {
+      position: absolute;
+      bottom: 0px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    #extracted {
+      font-family: 'Kalam', cursive;
+      font-size: 36pt;
+      text-align: center;
+      margin-bottom: 0px;
+      margin-top: 0px;
+    }
+  </style>
+  <body class="letter portrait" onload="textSetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+            Demo
+        </div>
+        <div id="icons">
+          <img src="Icons/Crossword.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 Rorke Haining
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <div id="ability">💡</div>
+        <img id="qr" src="QR/Demo.png">
+
+        <div id="pageBody">
+          <p id="flavor-text" style="margin-top: 0.5in;">Sometimes you need to break something to build something new.  When you do, make sure to assemble the parts in the correct order.</p>
+          <div id="example">
+            <p><span class="box">R I G H T</span> <span class="box">L E F T</span> &nbsp; <span class="symbol">✗</span>
+            <p><span class="box">L E F T</span> <span class="box">R I G H T</span> &nbsp; <span class="symbol">✓</span>
+          </div>
+
+          <table id="clues" data-extract-style="box" class="text-input-group" data-input-style="underline can-highlight">
+            <tr>
+              <td style="width: 4.5in;"><p class="notes-right">The Jetsons&rsquo; dog</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="5" data-extract-indeces="2"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Arm joint</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="5" data-extract-indeces="5"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Concepts</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="5" data-extract-indeces="4"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Small Spanish savory dishes</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="5" data-extract-indeces="3"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Curved, like a parabola</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="5" data-extract-indeces="2"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Precipitating</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="7" data-extract-indeces="5"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Type of weapon or wedding</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="7" data-extract-indeces="5"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Possesses</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="3" data-extract-indeces="1"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-below">Only manufacturer of melt pressure transducers in the UK</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="6" data-extract-indeces="1"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Domestic chores</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="9" data-extract-indeces="4"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Tall pub seat</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="8" data-extract-indeces="8"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Kentucky Derby, e.g.</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="9" data-extract-indeces="5"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Radioactive dust</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="7" data-extract-indeces="1"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Can prefix morph, physical, or puzzle</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="4" data-extract-indeces="3"></td>
+            </tr>
+            <tr>
+              <td><p class="notes-right">Bridge allowing crossing traffic not to intersect</p></td>
+              <td class="letter-cell-block create-from-pattern" data-letter-pattern="8" data-extract-indeces="7"></td>
+            </tr>
+          </table>
+
+          <div id="bottom" data-literal-style="none">
+            <p id="extracted"></p>
+            <p>Final answer: 
+              <span id="final" class="letter-cell-block create-from-pattern" data-letter-pattern="4 4"></span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>  
+  </body>
+</html>

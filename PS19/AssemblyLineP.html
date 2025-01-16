@@ -1,0 +1,157 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>Assembly Line</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/DragDrop.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/DragDrop.js"></script>
+  </head>
+  <style>
+    #body p {
+      margin: 0px;
+      margin-bottom: 6pt;
+      font-style: italic;
+    }
+    #table {
+      border-collapse: collapse;
+    }
+    #table td {
+      margin: 0px;
+      padding: 0px;
+      border: solid 1px gray;
+    }
+    .tile {
+      position: relative;
+      width: 1.25in;
+      height: 1.25in;
+      margin: 0px;
+      padding: 0px;
+      user-select: none; 
+      -webkit-user-select: none; /* Safari */        
+      -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* IE10+/Edge */
+    }
+    .center {
+      position: absolute;
+      top: 0.3in;
+      left: 0px;
+      width: 100%;
+      font-size: 30pt;
+      text-align: center;
+    }
+    .top {
+      position: absolute;
+      width: 100%;
+      top: 0px;
+      left: 0px;
+      text-align: center;
+      font-size: 9pt;
+    }
+    .bottom {
+      position: absolute;
+      width: 100%;
+      bottom: 0px;
+      left: 0px;
+      text-align: center;
+      font-size: 9pt;
+    }
+    .left {
+      position: absolute;
+      width: 100%;
+      transform: rotate(270deg);
+      transform-origin: top left;
+      top: 1.25in;
+      left: 0px;
+      text-align: center;
+      font-size: 9pt;
+    }
+    .right {
+      position: absolute;
+      width: 100%;
+      transform: rotate(270deg);
+      transform-origin: top right;
+      top: 0px;
+      right: 12pt;
+      text-align: center;
+      font-size: 9pt;
+    }
+
+    #extra {
+      position: absolute;
+      top: 8.6in;
+      left: 1.5in;
+    }
+    #extras {
+      text-align: right;
+      vertical-align: top;
+      padding-top: 10px;
+      font-size: 9pt;
+      font-style: italic;      
+      color: transparent;
+    }
+    #extra td.drop-target {
+      position: relative;
+      width: 96px;
+      height: 97px;
+      margin: 0px;
+      padding: 0px;
+      border: dotted 0.5px transparent;
+    }
+    #extra .tile {
+      position: absolute;
+      transform: scale(0.8);
+      transform-origin: top left;
+      top: -1px;
+      left: -1px;
+    }
+    #extra .tile {
+      border: solid 1px gray;
+    }
+    @media screen {
+      .show-notes #extras {
+        color: #888;
+      }
+      .enable-notes #extra {
+        display: block;
+      }
+      .enable-notes #extras {
+        color: #ccc;
+      }
+      .enable-notes #extra td.drop-target {
+        border: dotted 0.5px #ccc;
+      }
+    }
+  </style>
+  <body class="letter portrait" onload="dragSetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+          Assembly Line
+        </div>
+        <div id="icons">
+          <img src="Icons/Meta.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 Rorke Haining
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <div id="ability" style="text-shadow: 0 0 5px black;" title="Click & drop enabled">&#x1f448;</div>
+
+        <div id="pageBody">
+          <p id="flavor">This is a metapuzzle.  Solve the 4 other puzzles with the <img src="Icons/Car2.png" style="height:1em;"> car icon to solve this puzzle.</p>
+          <img id="background" src="Images/AssemblyLine.png" style="width: 98%;" alt="A purple car with lines from 5 features">
+        </div>
+
+
+      </div>
+    </div>  
+  </body>
+</html>

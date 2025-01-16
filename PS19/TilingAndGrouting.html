@@ -1,0 +1,543 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>Tiling and Grouting</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/DragDrop.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/DragDrop.js"></script>
+  </head>
+  <style>
+    #icons {
+      right: -0.15in;
+    }
+    #title { 
+      position: relative;
+      margin-bottom: 0.5in;
+    }
+    #flavor {
+      position: absolute;
+      left: 0px;
+      top: -0.1in;
+      width: 2in;
+      height: 7.7in;
+      border-right: solid 2px black;
+    }
+    #flavor p {
+      width: 1.75in;
+      margin: 0px;
+      margin-top: 12pt;
+      font-style: italic;
+    }
+    #table {
+      position: absolute;
+      top: 0px;
+      left: 2.25in;
+      border-collapse: collapse;
+    }
+    #table td {
+      margin: 0px;
+      padding: 0px;
+      border: solid 1px gray;
+    }
+    .tile {
+      position: relative;
+      width: 1.2in;
+      height: 1.2in;
+      margin: 0px;
+      padding: 0px;
+      user-select: none; 
+      -webkit-user-select: none; /* Safari */        
+      -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* IE10+/Edge */
+    }
+    .center {
+      position: absolute;
+      top: 0.3in;
+      left: 0px;
+      width: 100%;
+      font-size: 30pt;
+      text-align: center;
+    }
+    .top {
+      position: absolute;
+      width: 100%;
+      top: 0px;
+      left: 0px;
+      text-align: center;
+      font-size: 9pt;
+    }
+    .bottom {
+      position: absolute;
+      width: 100%;
+      bottom: 0px;
+      left: 0px;
+      text-align: center;
+      font-size: 9pt;
+    }
+    .left {
+      position: absolute;
+      width: 100%;
+      transform: rotate(270deg);
+      transform-origin: top left;
+      top: 1.25in;
+      left: 0px;
+      text-align: center;
+      font-size: 9pt;
+    }
+    .right {
+      position: absolute;
+      width: 100%;
+      transform: rotate(270deg);
+      transform-origin: top right;
+      top: 0px;
+      right: 12pt;
+      text-align: center;
+      font-size: 9pt;
+    }
+
+    #extra {
+      position: absolute;
+      top: 4.5in;
+      left: -0.25in;
+    }
+    #extras {
+      text-align: left;
+      vertical-align: top;
+      padding-top: 10px;
+      font-size: 9pt;
+      font-style: italic;      
+      color: transparent;
+    }
+    #extra td.drop-target {
+      position: relative;
+      width: 92px;
+      height: 93px;
+      margin: 0px;
+      padding: 0px;
+      border: dotted 0.5px transparent;
+    }
+    #extra .tile {
+      position: absolute;
+      transform: scale(0.8);
+      transform-origin: top left;
+      top: -1px;
+      left: -1px;
+    }
+    #extra .tile {
+      border: solid 1px gray;
+    }
+    @media screen {
+      .show-notes #extras {
+        color: #888;
+      }
+      .show-notes #extra td.drop-target {
+        border: dotted 0.5px #888;
+      }
+      .enable-notes #extra {
+        display: block;
+      }
+      .enable-notes #extras {
+        color: #ccc;
+      }
+      .enable-notes #extra td.drop-target {
+        border: dotted 0.5px #ccc;
+      }
+    }
+  </style>
+  <body class="letter landscape" onload="dragSetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="icons">
+          <img src="Icons/Reassemble.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 Martyn Lovell
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <div id="ability" style="text-shadow: 0 0 5px black;" title="Click & drop enabled">&#x1f448;</div>
+        <img id="qr" src="QR/TilingAndGrouting.png" style="right: -0.1in">
+
+        <div id="flavor">
+          <div id="title">
+            Tiling and Grouting
+          </div>
+
+          <p>Cut the 36 tiles at the dotted lines and use the word pairs at the tile edges to rearrange them.</p>
+          <p>Tiles do not rotate. Word pairs read left to right or top to bottom.</p>
+          <p>Letters are underlined only to clarify their correct orientation.</p>
+          <p>Finally, read off the 36 large centre letters to get a clue for the three word final answer.</p>  
+        </div>
+
+        <table id="table">
+          <tr>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">E</div>
+                <div class="top"></div>
+                <div class="left">Tile</div>
+                <div class="right">Dead</div>
+                <div class="bottom">General</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">V</div>
+                <div class="top">Space</div>
+                <div class="left">Window</div>
+                <div class="right">Lamp</div>
+                <div class="bottom"></div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">Q</div>
+                <div class="top">Joint</div>
+                <div class="left">Tile</div>
+                <div class="right">Sky</div>
+                <div class="bottom">Dry</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">N</div>
+                <div class="top">Board</div>
+                <div class="left">Permit</div>
+                <div class="right">Brick</div>
+                <div class="bottom">Office</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">R</div>
+                <div class="top">Floor</div>
+                <div class="left">Counter</div>
+                <div class="right">Building</div>
+                <div class="bottom">Window</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">M</div>
+                <div class="top">List</div>
+                <div class="left"></div>
+                <div class="right">Door</div>
+                <div class="bottom">Home</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">A</div>
+                <div class="top"></div>
+                <div class="left">Site</div>
+                <div class="right">Electrical</div>
+                <div class="bottom">Change</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">O</div>
+                <div class="top">Rod</div>
+                <div class="left">Code</div>
+                <div class="right">Area</div>
+                <div class="bottom">Kitchen</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">N</div>
+                <div class="top">Remodel</div>
+                <div class="left"></div>
+                <div class="right">Relief</div>
+                <div class="bottom">Sliding</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">U</div>
+                <div class="top">Space</div>
+                <div class="left">System</div>
+                <div class="right">Breaker</div>
+                <div class="bottom">Home</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">R</div>
+                <div class="top"></div>
+                <div class="left">Conduit</div>
+                <div class="right">Sheet</div>
+                <div class="bottom">Expansion</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">I</div>
+                <div class="top">Lock</div>
+                <div class="left">Outlet</div>
+                <div class="right"></div>
+                <div class="bottom">Stair</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">O</div>
+                <div class="top">Loan</div>
+                <div class="left">Molding</div>
+                <div class="right">Bay</div>
+                <div class="bottom"></div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">C</div>
+                <div class="top">Order</div>
+                <div class="left">Bell</div>
+                <div class="right">Roof</div>
+                <div class="bottom">Concrete</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">N</div>
+                <div class="top">Table</div>
+                <div class="left">Space</div>
+                <div class="right">Bearing</div>
+                <div class="bottom">Ceiling</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">U</div>
+                <div class="top">Closet</div>
+                <div class="left">Light</div>
+                <div class="right">Door</div>
+                <div class="bottom">Hardwood</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">I</div>
+                <div class="top">Fan</div>
+                <div class="left">Shade</div>
+                <div class="right">Bedroom</div>
+                <div class="bottom"></div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">N</div>
+                <div class="top">Cabinet</div>
+                <div class="left">Rug</div>
+                <div class="right"></div>
+                <div class="bottom">Window</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">O</div>
+                <div class="top">Pipe</div>
+                <div class="left">Board</div>
+                <div class="right">Building</div>
+                <div class="bottom">Blue</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">M</div>
+                <div class="top">Pump</div>
+                <div class="left">Pipe</div>
+                <div class="right">Crown</div>
+                <div class="bottom"></div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">G</div>
+                <div class="top"></div>
+                <div class="left"></div>
+                <div class="right">Building</div>
+                <div class="bottom">Punch</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">T</div>
+                <div class="top">Print</div>
+                <div class="left">Cotta</div>
+                <div class="right">Septic</div>
+                <div class="bottom">Heat</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">E</div>
+                <div class="top">Porch</div>
+                <div class="left">Closet</div>
+                <div class="right"></div>
+                <div class="bottom"></div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">E</div>
+                <div class="top">Door</div>
+                <div class="left">Joist</div>
+                <div class="right"></div>
+                <div class="bottom">Kitchen</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">E</div>
+                <div class="top">Contractor</div>
+                <div class="left">Stop</div>
+                <div class="right">Ceiling</div>
+                <div class="bottom">Curtain</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">B</div>
+                <div class="top">Wall</div>
+                <div class="left">Plan</div>
+                <div class="right">Kitchen</div>
+                <div class="bottom">Base</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">R</div>
+                <div class="top"></div>
+                <div class="left">Bolt</div>
+                <div class="right"></div>
+                <div class="bottom">Front</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">N</div>
+                <div class="top">Wall</div>
+                <div class="left">Box</div>
+                <div class="right">Crawl</div>
+                <div class="bottom">Storage</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">W</div>
+                <div class="top">Frame</div>
+                <div class="left">Tie</div>
+                <div class="right">Air</div>
+                <div class="bottom">Brick</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">L</div>
+                <div class="top">Light</div>
+                <div class="left"></div>
+                <div class="right">Gas</div>
+                <div class="bottom"></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">W</div>
+                <div class="top">Sink</div>
+                <div class="left">Conditioning</div>
+                <div class="right">Electrical</div>
+                <div class="bottom">Water</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">&amp;</div>
+                <div class="top">Block</div>
+                <div class="left">Valve</div>
+                <div class="right">Floor</div>
+                <div class="bottom">Water</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">E</div>
+                <div class="top">Step</div>
+                <div class="left">Wall</div>
+                <div class="right"></div>
+                <div class="bottom">Front</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">N</div>
+                <div class="top"></div>
+                <div class="left">Metal</div>
+                <div class="right">Ceramic</div>
+                <div class="bottom">Water</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">I</div>
+                <div class="top">Breaker</div>
+                <div class="left"></div>
+                <div class="right">Terra</div>
+                <div class="bottom">Pilot</div>
+              </div>
+            </td>
+            <td class="drop-target">
+              <div class="tile moveable" draggable="true">
+                <div class="center">S</div>
+                <div class="top">Door</div>
+                <div class="left"></div>
+                <div class="right">Particle</div>
+                <div class="bottom">Circuit</div>
+              </div>
+            </td>
+          </tr>
+
+        </table>
+
+        <table id="extra">
+          <tr>
+            <td colspan="2" id="extras">
+              Extras:
+            </td>
+          </tr>
+          <tr>
+            <td class="drop-target">
+            </td>
+            <td class="drop-target">
+            </td>
+          </tr>
+          <tr>
+            <td class="drop-target">                
+            </td>
+            <td class="drop-target">                
+            </td>
+          </tr>
+        </table>
+
+      </div>
+    </div>  
+  </body>
+</html>

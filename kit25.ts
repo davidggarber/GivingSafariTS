@@ -7344,6 +7344,21 @@ const safariSampleDetails:PuzzleEventDetails = {
   'backLinks': { '': { href:'./index.html'}},
 }
 
+const safari19Details:PuzzleEventDetails = {
+  'title': 'Under Construction',
+  'logo': './Images/PS19 sign.png',
+  'icon': './Images/PS19 icon.png',
+  'iconRoot': './Icons/',
+  'cssRoot': '../Css/',
+  'fontCss': './Css/Fonts19.css',
+  'googleFonts': 'Overpass,Caveat',  // no whitespace
+  'links': [],
+  // 'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+  //                'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
+  // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
+  'backLinks': { 'ps19': { href:'./safari.html'}},
+}
+
 const safari20Details:PuzzleEventDetails = {
   'title': 'Safari Labs',
   'logo': './Images/PS20 logo.png',
@@ -7471,6 +7486,8 @@ const pastSafaris = {
   'Single': safariSingleDetails,
   '20': safari20Details,
   '21': safari21Details,
+  'ps19': safari19Details,
+  'ps20': safari20Details,
   'ps21': safari21Details,
   'Dgg': safariDggDetails,
   '24': safari24Details,
@@ -7483,6 +7500,7 @@ const pastSafaris = {
   'xmas': dnancXmasDetails,
 }
 
+const puzzleSafari19 = ['ps19'];  //,'gs22'
 const givingSafari24 = ['gs24','21','ps21'];
 const puzzleSafari21Minis = ['ic21','sb21','tm21','fr21'];
 const allSafari21 = ['gs24','21','ps21','ic21','sb21','tm21','fr21'];

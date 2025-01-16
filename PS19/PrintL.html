@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Printable packet of all portrait-oriented puzzles">
+    <meta name="author" content="David Garber">
+    <link href="Kit/Print.css" rel="Stylesheet" type="text/css"></link>
+    <link rel="shortcut icon" type="image/png" href="Images/haticon.png">
+
+    <title>Giving Safari 2022 - All Landscape Puzzles</title>
+  </head>  
+  <body id="print-view" class="portrait landscape feeders">
+    <div id="layout">
+      <button class="layout-btn" onclick="switchLayout('P')">Portrait</button>
+      <button class="layout-btn current">Landscape</button>
+      <button class="layout-btn" onclick="switchLayout('F')">Meta Feeders</button>
+      <a href="indexx.html" style="color:cornflowerblue">Puzzle index</a>
+      <p style="color:wheat; background-color: dark-gray;">
+        When printing. Make sure margins are set to NONE, and background graphics is checked.
+        <br>There may be an extra blank page. Recommend printing explicitly pages 1-3.
+      </p>
+    </div>
+    <div class="page print-landscape"><iframe src="Skyline.html?iframe"></iframe></div>
+    <div class="page print-landscape"><iframe src="TilingAndGrouting.html?iframe"></iframe></div>
+    <div class="page print-landscape"><iframe id="assemblyLine" src="AssemblyLineL.html?iframe"></iframe></div>
+  </body>
+
+  <script>
+    function switchLayout(suffix) {
+      window.location.href = 'Print' + suffix + '.html';
+    }
+  </script>
+</html>

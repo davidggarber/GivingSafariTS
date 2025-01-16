@@ -85,7 +85,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "url": "${workspaceFolder}\\DnancXmas\\Wreath.xhtml",
+      "url": "${workspaceFolder}\\PS19\\BillDingSight.xhtml",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"

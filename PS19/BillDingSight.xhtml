@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js"></script>
+    <script src="V/bds.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari19,
+        safari: 'ps19',
+        title: 'Bill Ding Site',
+        author: 'Martyn Lovell',
+        copyright: '2019',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        'reactiveBuilder': true,
+        'lookup': {
+        },
+      };
+    </script>
+    <style>
+      .flavor {
+        font-style: italic;
+      }
+      #BillDing .letter-cell {
+        font-size: 10pt;
+      }
+      .huge {
+      font-size: 60pt;
+    }
+      #BillDing .letter-underline {
+        margin-right: 1px;
+      }
+      .rebus {
+        font-size: 34pt;
+      }
+      .rebus img {
+        height: 72pt;
+      }
+      td {
+        width: 2.5in;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      td p {
+        margin-top: 0px;
+      }
+      p.tight {
+        margin-bottom: 0px;
+      }
+    </style>
+  </head>
+  <body id="BillDing">
+    <div id="pageBody">
+      <p class="flavor">
+        Solve the clues and extract the grey letters top to bottom then left to right to reveal the final answer.  
+      </p>
+
+      <build>
+        <table style="width:7.6in;" data-extract-style="highlight">
+          <tr>
+            <td style="padding-left: 0px;">
+              <div>
+                <div class="rebus" trim="all">
+                  <span class="huge">S</span><img src="BillDing/crew.png"/>
+                  <span class="huge">D</span><img src="BillDing/river.jpg" style="height:80px;"/>
+                </div>
+                <p><pattern pattern="11" extract="5"></pattern></p>
+              </div>
+              <div>
+                <div class="rebus" trim="all">
+                  <img src="BillDing/crow.jpg"/>
+                  <img src="BillDing/bar.png"/>
+                </div>
+                <p><pattern pattern="11" extract="1"></pattern></p>
+              </div>
+              <div>
+                <div class="rebus" trim="all">
+                  <img src="BillDing/bull.jpg"/>
+                  <img src="BillDing/dozer.jpg" style="height:96pt;"/>
+                </div>
+                <p><pattern pattern="9" extract="9"></pattern></p>
+              </div>
+            </td>
+
+            <td style="width:2.6in; border-left:solid 1px black; border-right:solid 1px black">
+              <div>
+                <div class="rebus" trim="all">
+                  <img src="BillDing/billnye.png" style="height:96pt;"/><span class="huge">F</span>
+                </div>
+                <p><pattern pattern="5" extract="1"></pattern></p>
+              </div>
+              <div>
+                <div class="rebus" trim="all">
+                  <span class="huge">B</span><img src="BillDing/ox.png" style="height:96pt;"/>
+                  <span class="huge">C</span><img src="BillDing/otter.jpg" style="height:96pt;"/>
+                </div>
+                <p><pattern pattern="3 6" extract="1"></pattern></p>
+              </div>
+              <div>
+                <div class="rebus" trim="all">
+                  <img src="BillDing/duck.png" style="height:54pt;"/>
+                  <span class="huge">T</span>
+                  <img src="BillDing/gorilla.jpg" style="height:60pt;"/>
+                </div>
+                <p><pattern pattern="4 4" extract="8"></pattern></p>
+              </div>
+
+            </td>
+
+            <td style="padding-right: 0px;">
+              <div>
+                <div class="rebus" trim="all">
+                  <img src="BillDing/record.png" style="height: 60pt;"/>
+                  <img src="BillDing/king.jpg" style="height: 80pt;"/>
+                  <img src="BillDing/haybale.jpg" style="height: 50pt;"/>
+                </div>
+                <p><pattern pattern="8 4" extract="7"></pattern></p>
+              </div>
+              <div>
+                <div class="rebus" trim="all">
+                  <span class="huge">X</span><img src="BillDing/cave.gif" style="height: 72pt;"/>
+                  <img src="BillDing/avatar.jpg" style="height: 80pt;"/>
+                </div>
+                <p><pattern pattern="9" extract="3"></pattern></p>
+              </div>
+              <div>
+                <div class="rebus" trim="all">
+                  <img src="BillDing/sock.png" style="height: 50pt;"/>
+                  <img src="BillDing/car.jpg" style="height: 70pt;"/>
+                  <img src="BillDing/coat.png" style="height: 80pt;"/>
+                </div>
+                <p><pattern pattern="6 6" extract="12"></pattern></p>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <div style="margin-top: 0px;">
+          Final answer: <pattern id="extracted" extracted="9" data-show-ready="submit-extracted" />
+          <button class="validater" id="submit-extracted" data-extracted-id="extracted">Submit</button>
+        </div>
+
+      </build>
+
+    </div>
+  </body>
+</html>

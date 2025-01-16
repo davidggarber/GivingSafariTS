@@ -1,0 +1,173 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>Skyline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/Subway.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/TextSetup.js"></script>
+    <script src="Kit/TextInput.js"></script>
+    <script src="Kit/Subway.js"></script>
+  </head>
+  <style>
+    #title { 
+      color: white;
+      z-index: 1;
+    }
+    #icons {
+      display: none;
+    }
+    .skyline {
+      position: absolute;
+      width: 10in;
+      left: 0px;
+      top: 0px;
+      z-index: 0;
+    }
+    #table {
+      margin-top: 3.5in;
+      margin-left: 0.5in;
+      border-collapse: collapse;
+    }
+    #table td {
+      vertical-align: top;
+      padding: 0px;
+    }
+    .subway-gap {
+      position: relative;
+      width: 33px;
+    }
+    .subway {
+      width: 33px;
+    }
+
+    .letter-cell.letter-grid {
+      font-family: 'Kalam', cursive;
+      font-size: 12pt;
+      height: 2.3ex;
+      width: 2.3ex;
+      border: solid 1px gray;
+    }
+    .letter-cell.letter-grid.extract-highlight {
+      margin-left: -2px;
+      border: solid 2px black;
+      background-color: #DAEEF3;
+    }
+    #extracted {
+      margin-top: 0px;
+      font-family: 'Kalam', cursive;
+      font-size: 18pt;
+    }
+  </style>
+  <body class="letter landscape" onload="textAndSubwaySetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+          Skyline
+        </div>
+        <div id="icons">
+          <img src="Icons/Trivia.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 David Garber &amp; Carine Iskander
+        </div>
+        <a class="backlink" target="_blank" href="index.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <img id="qr" src="QR/Skyline.png">
+
+        <img class="skyline" src="Images/Skyline_sky.jpg">
+        <img class="skyline" src="Images/Skyline_buildings.png">
+        <div id="pageBody">
+          <table id="table" class="letter-grid-discover" data-input-style="grid" data-literal-style="none" data-extract-style="highlight">
+            <tr>
+              <td id="col1" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="3 9" data-extract-indeces="11"></td>
+              <td class="subway-gap">
+                <div class="subway red" data-left-end="col1.2 col1.7" data-right-end="col2.9" data-center-line="10"></div>
+                <div class="subway green" data-left-end="col1.3 col1.8" data-right-end="col2.10" data-center-line="22"></div>
+                <div class="subway indigo" data-left-end="col1.10" data-right-end="col2.2 col2.12" data-center-line="16"></div>
+              </td>
+              <td id="col2" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="3 2 7" data-extract-indeces="12"></td>
+              <td class="subway-gap">
+                <div class="subway orange" data-left-end="col2.6 col2.11" data-right-end="col3.2" data-center-line="10"></div>
+                <div class="subway purple" data-left-end="col2.1 col2.13" data-right-end="col3.7" data-center-line="22"></div>
+              </td>
+              <td id="col3" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="3 4" data-extract-indeces="1"></td>
+              <td class="subway-gap">
+                <div class="subway blue" data-left-end="col3.3" data-right-end="col4.6" data-center-line="22"></div>
+                <div class="subway green" data-left-end="col3.6" data-right-end="col4.2 col4.5" data-center-line="10"></div>
+              </td>
+              <td id="col4" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="6" data-extract-indeces="4"></td>
+              <td class="subway-gap">
+                <div class="subway red" data-left-end="col4.2 col4.5" data-right-end="col5.2 col5.4 col5.7" data-center-line="50%"></div>
+              </td>
+              <td id="col5" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="7" data-extract-indeces="3"></td>
+              <td class="subway-gap">
+                <div class="subway indigo" data-left-end="col5.1 col5.6" data-right-end="col6.4 col6.5" data-center-line="50%"></div>
+              </td>
+              <td id="col6" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="7" data-extract-indeces="2"></td>
+              <td class="subway-gap">
+                <div class="subway purple" data-left-end="col6.1" data-right-end="col7.1 col7.8" data-center-line="10"></div>
+                <div class="subway orange" data-left-end="col6.6" data-right-end="col7.4" data-center-line="22"></div>
+              </td>
+              <td id="col7" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="2 5" data-extract-indeces="2"></td>
+              <td class="subway-gap">
+                <div class="subway blue" data-left-end="col7.4" data-right-end="col8.6" data-center-line="22"></div>
+                <div class="subway green" data-left-end="col7.5" data-right-end="col8.7" data-center-line="10"></div>
+              </td>
+              <td id="col8" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="9" data-extract-indeces="5"></td>
+              <td class="subway-gap">
+                <div class="subway indigo" data-left-end="col8.1" data-right-end="col9.4" data-center-line="22"></div>
+                <div class="subway red" data-left-end="col8.3" data-right-end="col9.6" data-center-line="10"></div>
+              </td>
+              <td id="col9" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="7" data-extract-indeces="1"></td>
+              <td class="subway-gap">
+                <div class="subway orange" data-left-end="col9.2" data-right-end="col10.2 col10.6" data-center-line="22"></div>
+                <div class="subway blue" data-left-end="col9.5" data-right-end="col10.7" data-center-line="10"></div>
+              </td>
+              <td id="col10" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="3 5" data-extract-indeces="8"></td>
+              <td class="subway-gap">
+                <div class="subway purple" data-left-end="col10.7" data-right-end="col11.2 col11.8 col11.11" data-center-line="22"></div>
+                <div class="subway green" data-left-end="col10.5" data-right-end="col11.10" data-center-line="10"></div>
+              </td>
+              <td id="col11" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="5 6" data-extract-indeces="11"></td>
+              <td class="subway-gap">
+                <div class="subway indigo" data-left-end="col11.3 col11.5" data-right-end="col12.4" data-center-line="22"></div>
+                <div class="subway red" data-left-end="col11.2 col11.8 col11.11" data-right-end="col12.2" data-center-line="10"></div>
+              </td>
+              <td id="col12" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="5" data-extract-indeces="5"></td>
+              <td class="subway-gap">
+                <div class="subway orange" data-left-end="col12.2" data-right-end="col13.2 col13.9" data-center-line="10"></div>
+                <div class="subway blue" data-left-end="col12.4" data-right-end="col13.3" data-center-line="22"></div>
+              </td>
+              <td id="col13" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="9" data-extract-indeces="6"></td>
+              <td class="subway-gap">
+                <div class="subway purple" data-left-end="col13.4" data-right-end="col14.3" data-center-line="10"></div>
+                <div class="subway green" data-left-end="col13.1 col13.5" data-right-end="col14.4" data-center-line="22"></div>
+              </td>
+              <td id="col14" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="9" data-extract-indeces="7"></td>
+              <td class="subway-gap">
+                <div class="subway red" data-left-end="col14.1" data-right-end="col15.1" data-center-line="16"></div>
+                <div class="subway orange" data-left-end="col14.2" data-right-end="col15.8" data-center-line="10"></div>
+                <div class="subway indigo" data-left-end="col14.5" data-right-end="col15.3 col15.7" data-center-line="22"></div>
+              </td>
+              <td id="col15" class="letter-cell-block create-from-pattern vertical" data-letter-pattern="8" data-extract-indeces="4"></td>
+            </tr>
+          </table>
+
+          <p id="extracted" class="all-caps" style="text-align: center;"></p>
+
+        </div>
+
+
+      </div>
+    </div>  
+  </body>
+</html>

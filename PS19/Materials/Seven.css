@@ -1,0 +1,74 @@
+#title { 
+  font-family: 'Overpass';
+  font-size: 26pt;
+  font-weight: bold;
+}
+body, p, td {
+  font-family: 'Verdana';
+  font-size: 10pt;
+}
+#icons img {
+    height:0.75in;
+    box-shadow: none;
+}
+.sub-heading {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16pt;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.square {
+  display: block;
+  width: 3.15in;
+  height: 3.15in;
+  padding: 0.2in;
+  border: solid 8px black;
+  background-color: #F9E1BD;
+  position: relative;
+  margin-top: 0.3in;
+}
+.square.third {
+  position: absolute;
+  right: -0.1in;
+  top: 2.5in;
+}
+
+.square .title {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18pt;
+  font-weight: bold;
+}
+.square p {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11.75pt;
+}
+.square .exit {
+  background-color: #BF9000;
+  border: solid 1px black;
+  position: absolute;
+}
+.square .exit.east {
+  width: 0.11in;
+  right: -8px;
+  height: 56%;
+  top: 22%;
+}
+.square .exit.west {
+  width: 0.11in;
+  left: -8px;
+  height: 56%;
+  top: 22%;
+}
+.square .exit.north {
+  height: 0.11in;
+  top: -8px;
+  width: 56%;
+  left: 22%;
+}
+.square .exit.south {
+  height: 0.11in;
+  bottom: -8px;
+  width: 56%;
+  left: 22%;
+}

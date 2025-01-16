@@ -1,0 +1,594 @@
+<html>
+<head>
+    <title>Giving Safari 2022</title>
+    <meta charset="UTF-8">
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/TextSetup.js"></script>
+    <script src="Kit/TextInput.js"></script>
+    <script src="Kit/Answers.js"></script>
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+    <link rel="shortcut icon" type="image/png" href="Images/haticon.png">
+    <style>
+        th {
+            background-color: #F9AB00;
+        }
+
+        #sortHeader th {
+            cursor: s-resize;
+        }
+        .icon {
+            width: 1in; 
+            text-align: center;
+        }
+        .html {
+            width: 2.3in; 
+            text-align: left;
+        }
+        .feeder {
+            width: 1.25in;
+            text-align: center;
+            vertical-align: bottom;
+        }
+        .feeder img {
+            height: 0.25in;
+        }
+        .feeder sub {
+            color:blue; font-weight: bold;
+        }
+        .challenge {
+            width: 1.25in;
+            text-align: center;
+        }
+        .challenge img {
+            height: 0.25in;
+        }
+        .author {
+            width: 1.5in; 
+            position: relative;
+            text-align: left; 
+        }
+        td {
+            position: relative;
+            line-height: 8pt;
+            padding: 0px;
+        }
+        sub {
+            position: relative;
+            left: -.5em;
+            top: -.5em;
+            padding: 0px;
+            font-size: 6pt;
+        }
+        #table tr:nth-child(odd) {
+            background-color: #f5f5f5;
+        }
+        #table tr:nth-child(even) {
+            background-color: #ECEEEE;
+        }
+        #logo {
+            position: absolute;
+            height: 7.12in;
+            right: -4.8in;
+            cursor: default;
+        }
+        tr {
+            position: relative;
+        }
+        .check {
+            left: .7in;
+            top: 0in;
+        }
+        .feeder sub.car {
+            color: white;
+            left: -19.5px;
+            top: -11px;
+        }
+        .feeder sub.seven {
+            cursor: pointer;
+            color: darkcyan;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+        #legend td {
+            vertical-align: top;
+            line-height: normal;
+        }
+        .small {
+            opacity: 0.1;
+            position: relative;
+            top: 3px;
+            cursor: no-drop;
+        }
+        .small:link {
+            text-decoration: none;
+        }
+        .small img {
+            height: 0.2in;
+        }
+        .small sub.car {
+            left: -16px;
+            top: -9px;
+            font-size: 4.5pt;
+        }
+        .small sub.seven {
+            font-size: 5pt;
+        }
+        .small.acquired {
+            opacity: 1;
+            cursor: pointer;
+            animation-name: opacity-fadein;
+            animation-duration: 1s;
+        }
+        @keyframes opacity-fadein {
+            from {
+                opacity: 0.1;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        #earn-metas {
+            margin:10px; 
+            padding:8px; 
+            width:648px; 
+            border: solid 3px white;
+        }
+        #earn-metas #input {
+            margin: 0px;
+        }
+        .meta-try {
+            margin: 1px;
+            padding-left: 0.1in;
+            font-size: 9pt;
+        }
+        .found {
+            color: darkgreen;
+            font-size: 10pt;
+            background-color: #ccffcc33;
+            animation-name: flash-green;
+            animation-duration: 1s;
+        }
+        .found2 {
+            animation-duration: 2s;
+        }
+        @keyframes flash-green {
+            from {
+                background-color: #ccffccff;
+            }
+            to {
+                background-color: #eeffee00;
+            }
+        }
+        .wrong {
+            color: darkred;
+            animation-name: flash-red;
+            animation-duration: 1s;
+        }
+        .wrong2 {
+            animation-duration: 2s;
+        }
+        @keyframes flash-red {
+            from {
+                background-color: #ffccccff;
+            }
+            to {
+                background-color: #ffcccc00;
+            }
+        }
+
+    </style>
+</head>
+<body style="background-color: #D1D6D7;" onload="onLoad()">
+    <table id="table" style="border-collapse: collapse;">
+        <thead>
+            <tr id="sortHeader">
+                <th class="icon" onclick="sortTable(1)">Type</th>
+                <th class="html" onclick="sortTable(2)">Puzzle</th>
+                <th class="feeder" onclick="sortTable(3)">Meta Feeder</th>
+                <th class="challenge" onclick="sortTable(4)">Challenge</th>
+                <th class="author" onclick="sortTable(5)">Author
+                    <img id="logo" src="Images/GS22UC Color Sign.png" style="width: 440px; height: 705px;">
+                </th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Rebus.png" style="height:0.25in;" title="Rebus puzzle"></th>
+                <td class="html"><a href="BillDingSight.html" target="_blank">Bill Ding Sight</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 1/7"><sub class="seven">A</sub></td>
+                <td class="challenge"><img src="Icons/Arch.png" title="Arches"></td>
+                <td class="author">Martyn Lovell</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Logic.png" style="height:0.25in;" title="Logic puzzle"></th>
+                <td class="html"><a href="Bricklaying.html" target="_blank">Bricklaying</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 2/7"><sub class="seven">B</sub></td>
+                <td class="challenge"><img src="Icons/DeckBuilder.png" title="Deck Builder"></td>
+                <td class="author">Martyn Lovell</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Logic.png" style="height:0.25in;" title="Logic puzzle"></th>
+                <td class="html"><a href="CampusRedesign.html" target="_blank">Campus Redesign</a></td>
+                <td class="feeder"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 1/4"><sub class="car">1</sub></td>
+                <td class="challenge"><img src="Icons/Wheelbarrow.png" title="Don't Lose Your Balls"></td>
+                <td class="author">Peter Golde</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Trivia.png" style="height:0.25in;" title="Pop Culture"></th>
+                <td class="html"><a href="Colossus.html" target="_blank">Colossus</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 3/7"></a><sub class="seven">C</sub></td>
+                <td class="challenge"><img src="Icons/DeckBuilder.png" title="Deck Builder"></td>
+                <td class="author">Jesse McGatha</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Logic.png" style="height:0.25in;" title="Logic puzzle"></th>
+                <td class="html"><a href="Cranes.html" target="_blank">Cranes</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 4/7"><sub class="seven">D</sub></td>
+                <td class="challenge"><img src="Icons/Wheelbarrow.png" title="Don't Lose Your Balls"></td>
+                <td class="author">Tim Hannifin</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Crossword.png" style="height:0.25in;" title="Word puzzle"></th>
+                <td class="html"><a href="Demo.html" target="_blank">Demo</a></td>
+                <td class="feeder"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 2/4"><sub class="car">2</sub></td>
+                <td class="challenge"><img src="Icons/Arch.png" title="Arches"></td>
+                <td class="author">Rorke Haining</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Crossword.png" style="height:0.25in;" title="Word puzzle"></th>
+                <td class="html"><a href="Detour.html" target="_blank">Detour</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 5/7"><sub class="seven">E</sub></td>
+                <td class="challenge"><img src="Icons/Wheelbarrow.png" title="Don't Lose Your Balls"></td>
+                <td class="author">David Garber</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Logic.png" style="height:0.25in;" title="Logic puzzle"></th>
+                <td class="html"><a href="DudeWhere.html" target="_blank">Dude, Where&rsquo;s My Campus?</a></td>
+                <td class="feeder"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 3/4"><sub class="car">3</sub></td>
+                <td class="challenge"><img src="Icons/Arch.png" title="Arches"></td>
+                <td class="author">Chris Jeuell</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Crossword.png" style="height:0.25in;" title="Word puzzle"></th>
+                <td class="html"><a href="FillingPotholes.html" target="_blank">Filling Potholes</a></td>
+                <td class="feeder"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 4/4"><sub class="car">4</sub></td>
+                <td class="challenge"><img src="Icons/DeckBuilder.png" title="Deck Builder"></td>
+                <td class="author">Rorke Haining</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Logic.png" style="height:0.25in;" title="Logic puzzle"></th>
+                <td class="html"><a href="FloodLights.html" target="_blank">Flood Lights</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 6/7"><sub class="seven">F</sub></td>
+                <td class="challenge"><img src="Icons/Arch.png" title="Arches"></td>
+                <td class="author">Martyn Lovell</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Crossword.png" style="height:0.25in;" title="Word puzzle"></th>
+                <td class="html"><a href="Garage.html" target="_blank">Garage</a></td>
+                <td class="feeder"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 1/4"><sub class="car">1</sub></td>
+                <td class="challenge"><img src="Icons/DeckBuilder.png" title="Deck Builder"></td>
+                <td class="author">Rorke Haining</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Math.png" style="height:0.25in;" title="Math puzzle"></th>
+                <td class="html"><a href="Garden.html" target="_blank">Garden</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 7/7"></a><sub class="seven">G</sub></td>
+                <td class="challenge"><img src="Icons/Wheelbarrow.png" title="Don't Lose Your Balls"></td>
+                <td class="author">Jesse McGatha</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Crossword.png" style="height:0.25in;" title="Word puzzle"></th>
+                <td class="html"><a href="Mausoleum.html" target="_blank">Mausoleum</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 1/7"></a><sub class="seven">A</sub></td>
+                <td class="challenge"><img src="Icons/DeckBuilder.png" title="Deck Builder"></td>
+                <td class="author">Jesse McGatha</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Math.png" style="height:0.25in;" title="Math puzzle"></th>
+                <td class="html"><a href="PaperProducts.html" target="_blank">Paper Products</a></td>
+                <td class="feeder"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 2/4"><sub class="car">2</sub></td>
+                <td class="challenge"><img src="Icons/Wheelbarrow.png" title="Don't Lose Your Balls"></td>
+                <td class="author">Colin Robertson</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Reassemble.png" style="height:0.25in;" title="Assembly"></th>
+                <td class="html"><a href="RapidUnscheduledDisassembly.html" target="_blank">Rapid Unscheduled Disassembly</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 2/7"><sub class="seven">B</sub></td>
+                <td class="challenge"><img src="Icons/Arch.png" title="Arches"></td>
+                <td class="author">Colin Robertson</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Crossword.png" style="height:0.25in;" title="Word puzzle"></th>
+                <td class="html"><a href="SafetyFirst.html" target="_blank">SAFETY First!</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 3/7"><sub class="seven">C</sub></td>
+                <td class="challenge"><img src="Icons/Wheelbarrow.png" title="Don't Lose Your Balls"></td>
+                <td class="author">Joey Marianer</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Trivia.png" style="height:0.25in;" title="Trivia"></th>
+                <td class="html"><a href="Skyline.html" target="_blank">Skyline</a></td>
+                <td class="feeder"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 3/4"><sub class="car">3</sub></td>
+                <td class="challenge"><img src="Icons/Arch.png" title="Arches"></td>
+                <td class="author">Carine Iskander</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Reassemble.png" style="height:0.25in;" title="Assembly"></th>
+                <td class="html"><a href="Temple.html" target="_blank">Temple</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 4/7"></a><sub class="seven">D</sub></td>
+                <td class="challenge"><img src="Icons/DeckBuilder.png" title="Deck Builder"></td>
+                <td class="author">Jesse McGatha</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Crossword.png" style="height:0.25in;" title="Word puzzle"></th>
+                <td class="html"><a href="TheBuildersFamily.html" target="_blank">The Builder&rsquo;s Family</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 6/7"><sub class="seven">F</sub></td>
+                <td class="challenge"><img src="Icons/Arch.png" title="Arches"></td>
+                <td class="author">David Garber</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Reassemble.png" style="height:0.25in;" title="Assembly"></th>
+                <td class="html"><a href="TilingAndGrouting.html" target="_blank">Tiling and Grouting</a></td>
+                <td class="feeder"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 4/4"><sub class="car">4</sub></td>
+                <td class="challenge"><img src="Icons/DeckBuilder.png" title="Deck Builder"></td>
+                <td class="author">Martyn Lovell</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Crossword.png" style="height:0.25in;" title="Word puzzle"></th>
+                <td class="html"><a href="WordHelix.html" target="_blank">Word Helix</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 5/7"><sub class="seven">E</sub></td>
+                <td class="challenge"><img src="Icons/Wheelbarrow.png" title="Don't Lose Your Balls"></td>
+                <td class="author">Martyn Lovell</td>
+            </tr>
+            <tr class="cross-off sortable">
+                <td class="icon"><img src="Icons/Crossword.png" style="height:0.25in;" title="Word puzzle"></th>
+                <td class="html"><a href="WreckingBall.html" target="_blank">Wrecking Ball</a></td>
+                <td class="feeder"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 7/7"><sub class="seven">G</sub></td>
+                <td class="challenge"><img src="Icons/DeckBuilder.png" title="Deck Builder"></td>
+                <td class="author">Peter Golde</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5" style="background-color: #D1D6D7">&nbsp;</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th class="title" style="text-align: left;">Meta-Puzzle</th>
+                <th class="feeder" colspan="2">Activated</th>
+                <th class="author" style="text-align: left;">Author</th>
+            </tr>
+            <tr>
+                <td class="icon"><img src="Icons/Meta.png" style="height:0.25in;" title="Meta puzzle"></th>
+                <td class="html"><a href="AssemblyLineL.html" target="_blank">Assembly Line</a></td>
+                <td class="feeder" colspan="2" style="vertical-align: middle">
+                    <a id="a-meta-1" class="small" target="_blank"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 1/4"><sub class="car">1</sub></a
+                    ><a id="a-meta-2" class="small" target="_blank"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 2/4"><sub class="car">2</sub></a
+                    ><a id="a-meta-3" class="small" target="_blank"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 3/4"><sub class="car">3</sub></a
+                    ><a id="a-meta-4" class="small" target="_blank"><img src="Icons/Car2.png" title="Meta materials for Assembly Line 4/4"><sub class="car">4</sub></a>
+                </td>
+                <td class="author" style="text-align: left;">Rorke Haining</td>
+            </tr>
+            <tr>
+                <td class="icon"><img src="Icons/Meta.png" style="height:0.25in;" title="Meta puzzle"></th>
+                <td class="html"><a href="SevenWonders.html" target="_blank">Seven Wonders</a></td>
+                <td class="feeder" colspan="2" style="vertical-align: middle">
+                    <a id="s-meta-1" class="small" target="_blank"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 1/7"><sub class="seven">A</sub></a
+                    ><a id="s-meta-3" class="small" target="_blank"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 2/7"><sub class="seven">B</sub></a
+                    ><a id="s-meta-5" class="small" target="_blank"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 3/7"><sub class="seven">C</sub></a
+                    ><a id="s-meta-8" class="small" target="_blank"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 4/7"><sub class="seven">D</sub></a
+                    ><a id="s-meta-11" class="small" target="_blank"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 5/7"><sub class="seven">E</sub></a
+                    ><a id="s-meta-13" class="small" target="_blank"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 6/7"><sub class="seven">F</sub></a
+                    ><a id="s-meta-15" class="small" target="_blank"><img src="Icons/Seven.png" title="Meta materials for Seven Wonders 7/7"><sub class="seven">G</sub></a>
+                </td>
+                <td class="author" style="text-align: left;">Jesse McGatha</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div id="earn-metas">
+        <p id="input">As you solve puzzles, you will earn meta-feeders. Enter codes here:
+            <input id="meta-code" type="text" style="text-align: center; width:1in; text-transform: uppercase;" maxlength="6" spellcheck="false" onkeyup="codeKeyUp(event)">
+            <button onclick="tryCode()">OK</button>
+        </p>
+        <div id="metas-found"></div>
+    </div>
+
+    <table id="legend" style="margin-top: 0.5in; margin-left: 0.25in; border-collapse: collapse;">
+        <tr>
+            <th colspan="2">Special web-ready features in HTML puzzles</th>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; width: 1.25in;">Text entry</td>
+            <td>Any underlines, boxes, etc. that look like they take text entry do.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;"><span style="box-shadow:0px 0px 5px orange; color:blue;">Show Notes</span></td>
+            <td>Click on this to enable and <span style="box-shadow:0px 0px 5px orange;">highlight</span> all the note-taking fields next to most hints</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;"><span style="border:dotted 1px #999999; color:blue;">Dim Notes</span></td>
+            <td>Click on this to enable note-taking fields next to most hints, but with a more <span style="border:dotted 1px #999999;">subtle</span> UI</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; color:blue;">Disable Notes</td>
+            <td>Click on this to disable the note-taking fields next to most hints</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;"><span style="box-shadow:0px 0px 5px fuchsia;"><a href="javascript:toggleDecoder()">Show Decoders</a></span></td>
+            <td>Click on this to open a side-panel to decode <a href="../Decoders/index.html" target="_blank">common puzzle encodings</a></td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in;">&#x2714;&#xFE0F;<!--✔️--></td>
+            <td>When this icon is in the bottom-right, clicking on hints will check them off as you utilize them.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px black;">&#x1f4a1;<!--💡--></td>
+            <td>When this icon is in the bottom-right, Typing ` in cells will highlight them.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px black;">&#x1f448;<!--👈--></td>
+            <td>When this icon is in the bottom-right, elements of the page may be drag-dropped around the page.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; text-shadow: 0 0 10px blue;">&#x2712;&#xfe0f;<!--✒️--></td>
+            <td>Some puzzles offer drawing tools to draw directly on elements of the page.</td>
+        </tr>
+        <tr>
+            <td style="height: 0.3in; background-color: #ECEEEE;">Printing<br><span style="font-size: 24pt; text-shadow: 0 0 10px goldenrod;">&#x1f5a8;&#xfe0f;</span></td>
+            <td style="background-color: #ECEEEE;"><b>Import steps to print</b>
+                <br>Puzzles printed from this site require two settings to render correctly.
+                <br>&nbsp; &bullet; &nbsp; Margins = None
+                <br>&nbsp; &bullet; &nbsp; Background graphics = checked
+                <br>Both are found in "More settings"
+            </td>
+        </tr>
+        <iframe id="decoder-frame" style="top: 1px; left: 7.5in;"></iframe>
+    </table>
+
+    <iframe id="iframe" style="width:1px; height: 1px;"></iframe>
+</body>
+<script>
+    function onLoad() {
+        simpleSetup(true);
+        window.onfocus=function(e){scanMaterials()};
+        scanMaterials();
+    }
+
+    function scanMaterials() {
+        for (var i = 1; i <= 4; i++) {
+            var mat = loadMetaMaterials('AssemblyLine', 0, i);
+            var icon = document.getElementById('a-meta-' + i);
+            toggleClass(icon, 'acquired', mat != null);
+            if (mat != null) {
+                icon.setAttribute('href', mat['href']);
+            }
+        }
+        for (var i = 1; i <= 15; i++) {
+            var icon = document.getElementById('s-meta-' + i);
+            if (icon != null) {
+                var mat = loadMetaMaterials('Seven', 0, i);
+                toggleClass(icon, 'acquired', mat != null);
+                if (mat != null) {
+                    icon.setAttribute('href', mat['href']);
+                }
+            }
+        }
+    }
+
+    function codeKeyUp(e) {
+        if (e.code == 'Enter' || e.code == 'NumpadEnter') {
+            tryCode();
+        }
+    }
+
+    function tryCode() {
+        var code = document.getElementById('meta-code').value.toLowerCase();
+        sha256(code).then(
+            function (hash) {
+                tryHash(code, hash);
+            }
+        );
+    }
+
+    var hashes = {
+        '7ffd33749c58d2de929637608d7e53f561d760d579bff0b0609b84e48fa7536b': 'Assembly_1',
+        '0fd85fd6dcfd7d275af966ededfe16e6149cb5e3cbdbe51c99bccb0cfdbecdcf': 'Assembly_2',
+        'df106c67510ae54968786014f49e3a8ce0397e8bba3adfbd70bae35f6b5eb9f6': 'Assembly_3',
+        '526ecce5e14eb73f48fa081e0bb1cbdfe5f7f0717ac05904bf150781f40212f9': 'Assembly_4',
+        'cf8615261cc55ed0388efc9291a2bc173557837dd4f8379be81bf4f016fbdc6f': 'Seven_A',
+        '17365b9e05cecae5af6829301fdaea11901dc0f4d26864f4b817e3d1debb77ee': 'Seven_B',
+        '62cfa2405b02a4b63b1f3b2ab5f354f8c27a3e1865877ff5b1b2c3e283d8ea3b': 'Seven_C',
+        'fe81a9c58c14c18977def24309825d1496af21d67d8ba379238d6d9024a2ace3': 'Seven_D',
+        '18d27c7c0ca85c34f4afb58b4bd7e558788781d52b239a201cf43640908e94d8': 'Seven_E',
+        '1b189de404bbe3f5a9ba4bb279aebd57a3e6f1266dfe1a45cc247c5482bfb58f': 'Seven_F',
+        '378743e589f3fbb4a9d87a37069231907b0609a59714a25cbb722b7eeda15f08': 'Seven_G',
+    }
+
+    function tryHash(code, hash) {
+        var found = document.getElementById('metas-found');
+        if (code in hashes) {
+            var cls = hashes[code] ? 'found' : 'wrong';
+            var prev = found.getElementsByClassName('meta-try');
+            for (var i = 0; i < prev.length; i++) {
+                if (prev[i].getAttribute('data-code') == code) {
+                    toggleClass(prev[i], cls, false);
+                    toggleClass(prev[i], cls + '2', true);
+                    setTimeout(function() {pulseGuess(prev[i]);}, 10);
+                    return;
+                }
+            }
+        }
+        if (hash in hashes) {
+            hashes[code] = true;
+            var prefix = hashes[hash];
+            var url = 'Materials/' + prefix + '_' + code + '.html';
+            var p = document.createElement('p');
+            toggleClass(p, 'meta-try', true);
+            toggleClass(p, 'found', true);
+            p.innerHTML = '🎁 Materials <a href="' + url + '" target="_blank">' + prefix + '</a> found!'
+            p.setAttribute('data-code', code);
+            found.appendChild(p);
+
+            var iframe = document.getElementById('iframe');
+            iframe.src = url;
+            iframe.focus();
+
+            setTimeout(scanMaterials, 100);
+
+            var metaCode = document.getElementById('meta-code');
+            metaCode.value = '';  // clear code
+            metaCode.focus();
+        }
+        else {
+            hashes[code] = false;
+            var p = document.createElement('p');
+            toggleClass(p, 'meta-try', true);
+            toggleClass(p, 'wrong', true);
+            p.setAttribute('data-code', code);
+            p.innerHTML = '😿 Sorry. <i>' + code.toUpperCase() + '</i> does not match any materials.'
+            found.appendChild(p);            
+        }
+    }
+
+    function pulseGuess(elmt) {
+        if (hasClass(elmt, 'found2')) {
+            toggleClass(elmt, 'found', true);
+        }
+        else if (hasClass(elmt, 'wrong2')) {
+            toggleClass(elmt, 'wrong', true);
+        }
+    }
+
+    var sortOrder = 3;
+    function sortTable(col) {
+        var tbody = document.getElementById('tableBody');
+        var rows = document.getElementsByClassName('sortable');
+        var lookup = {};
+        var order = [];
+        for (var i = rows.length - 1; i >= 0; i--) {
+            var row = rows[i];
+            var cols = row.getElementsByTagName('td');
+            var cell = cols[col - 1];
+            var prevOrder = String(i).padStart(2, '0');
+            var val = cell.innerHTML + ' ' + prevOrder;
+            order.push(val);
+            lookup[val] = row;
+            tbody.removeChild(row);
+        }
+        order.sort();
+        sortOrder = (sortOrder == col) ? -col : col;
+        if (sortOrder < 0) {
+            order.reverse();
+        }
+        for (var i = 0; i < order.length; i++) {
+            var row = lookup[order[i]];
+            tbody.appendChild(row);
+        }
+        // TODO: update header with arrow indicating sort order
+    }
+</script>
+</html>

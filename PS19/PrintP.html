@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Printable packet of all portrait-oriented puzzles">
+    <meta name="author" content="David Garber">
+    <link href="Kit/Print.css" rel="Stylesheet" type="text/css"></link>
+    <link rel="shortcut icon" type="image/png" href="Images/haticon.png">
+
+    <title>Giving Safari 2022 - All Portrait Puzzles</title>
+  </head> 
+  <body id="print-view" class="portrait landscape feeders">
+    <div id="layout">
+      <button class="layout-btn current">Portrait</button>
+      <button class="layout-btn" onclick="switchLayout('L')">Landscape</button>
+      <button class="layout-btn" onclick="switchLayout('F')">Meta Feeders</button>  
+      <a href="indexx.html" style="color:cornflowerblue">Puzzle index</a>
+      <p style="color:wheat; background-color: dark-gray;">
+        When printing. Make sure margins are set to NONE, and background graphics is checked.
+        <br>There may be an extra blank page. Recommend printing explicitly pages 1-21.
+      </p>
+    </div>
+    <div class="page print-portrait"><iframe src="BillDingSight.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="Bricklaying.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="CampusRedesign.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="Colossus.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="Cranes.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="Demo.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="Detour.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="DudeWhere.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="FillingPotholes.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="FloodLights.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="Garage.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="Garden.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="Mausoleum.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="PaperProducts.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="RapidUnscheduledDisassembly.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="SafetyFirst.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="Temple.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="TheBuildersFamily.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="WordHelix.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe src="WreckingBall.html?iframe"></iframe></div>
+    <div class="page print-portrait"><iframe id="sevenWonders" src="SevenWonders.html?iframe"></iframe></div>
+  </body>
+
+  <script>
+    function switchLayout(suffix) {
+      window.location.href = 'Print' + suffix + '.html';
+    }
+  </script>
+</html>

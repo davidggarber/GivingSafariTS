@@ -1,0 +1,216 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>Word Helix</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&family=Consolas&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/TextSetup.js"></script>
+    <script src="Kit/TextInput.js"></script>
+  </head>
+  <style>
+    .letter-cell {
+      font-family: 'Kalam', cursive;
+      font-size: 12pt;
+    }
+    .letter-cell-block {
+      margin-bottom: 2ex;
+    }
+    .letter-grid {
+      width: 3ex;
+      height: 3ex;
+      border: solid 1px black;
+      margin-left: -1px;
+    }
+    .letter-grid .letter-input {
+      width: 3ex;
+      height: 3ex;
+    }
+
+    .flavor-text {
+      font-style: italic;
+    }
+
+    #clues {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    #clues th {
+      border: solid 1px black;
+      text-align: left;
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+    }
+    #clues td {
+      border: solid 1px black;
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+      height: 0.54in;
+    }
+    #clues .left {
+      width: 4.25in;
+      margin: 0px;
+    }
+    #clues .under-number {
+      font-family: 'Consolas';
+      font-size: 10pt;
+    }
+    #clues .right {
+      position: relative;
+      vertical-align: middle;
+      text-align: center;
+      font-family: 'Consolas';
+      font-size: 12pt;
+    }
+    #clues .middle {
+      vertical-align: top;
+      padding-top: 5px;
+    }
+    .triple {
+      position: relative;
+      display: block;
+      margin: 10px;
+      margin-bottom: 24px;
+    }
+
+    .note-input.note-below {
+      position: absolute;
+      height: 3ex;
+      bottom: 0px;
+      width: 1in;
+      left: 3.35in;
+    }
+
+    #bottom {
+      margin-top: 0.25in;
+    }
+    
+    .extractor {
+      font-family: 'Kalam', cursive;
+      font-size: 20pt;
+      text-align: center;
+    }
+    #extracted .under-number {
+      font-family: 'Consolas';
+      font-size: 10pt;
+    }
+  </style>
+  <body class="letter portrait" onload="textSetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+          Word Helix
+        </div>
+        <div id="icons">
+          <img src="Icons/Crossword.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 Martyn Lovell
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <div id="ability">✔️</div>
+        <img id="qr" src="QR/WordHelix.png">
+
+        <div id="pageBody">
+          <p class="flavor-text">
+            All the answers to the clues below are connected to the next and previous answers.
+            Solving one should help you solve a couple of others.
+            I am sure you will slither your way through it.
+            To help you, the middle 3 letters of each word are provided on the side.
+            The letters are in the order they appear within the word, but the list of letters is in alphabetical order.
+          </p>
+
+          <table id="clues" class="text-input-group letter-grid-discover">
+            <tr>
+              <th>Clue</th>
+              <th>Answer word</th>
+              <th class="right">Middles</th>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Document that designates disposition of assets after death</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="3=1"></td>
+              <td rowspan="13" class="right">
+                <span class="triple cross-off">CER</span>
+                <span class="triple cross-off">ELO</span>
+                <span class="triple cross-off">FFA</span>
+                <span class="triple cross-off">ICU</span>
+                <span class="triple cross-off">ITA</span>
+                <span class="triple cross-off">MIS</span>
+                <span class="triple cross-off">OLO</span>
+                <span class="triple cross-off">RAP</span>
+                <span class="triple cross-off">RIL</span>
+                <span class="triple cross-off">TAM</span>
+                <span class="triple cross-off">TIC</span>
+                <span class="triple cross-off">TIN</span>
+                <span class="triple cross-off">UND</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Lured a person into committing a crime</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="5=10"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Gave a cosmetic treatment to toes and nails</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="5=9"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Duplicative or in excess of what is necessary</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="2=4"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Ungulate animals found in Africa that are deer-like</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="3=7"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Chemical aimed at killing invasive insects and plants</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="6=2"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Person whose views are rigidly partisan</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="5=11"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Soldiers in an irregular force fighting against a government (less common spelling)</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="8=6"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Adverb describing action done in an enduring way.</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="5=8"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Substance used for sweetening and explosives [UK spelling]</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="3=13"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Too extreme to describe in words</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="8=12"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Small marks or defects in (esp) a garment</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="4=5"></td>
+            </tr>
+            <tr>
+              <td class="left notes-below"><p>Briefly pauses before continuing</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="9" data-number-assignments="1=3"></td>
+            </tr>
+          </table>
+
+          <div id="bottom">
+            <p>Final answer: 
+              <span id="extracted" data-number-pattern="13"></span>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>  
+  </body>
+</html>

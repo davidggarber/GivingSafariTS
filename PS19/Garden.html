@@ -1,0 +1,439 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>Garden</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/TextSetup.js"></script>
+    <script src="Kit/TextInput.js"></script>
+  </head>
+  <style>
+    .letter-cell {
+      font-family: 'Kalam', cursive;
+      font-size: 14pt;
+    }
+    #garden {
+      position: absolute;
+      left: -.4in;
+      top: 1in;
+    }
+    #garden tspan {
+      font-family: Verdana;
+      font-size: 16pt;
+      font-weight: bold;
+      fill: white;
+      stroke: none;
+      text-anchor: middle;
+    }
+    .leaf .outer {
+      stroke: #385723;
+      fill: #A9D18E;
+      stroke-width: 3px;
+    }
+    .leaf .inner {
+      stroke: #385723;
+      fill: #62983E;
+      stroke-width: 3px;
+    }
+    .leaf .sum {
+      fill: #548235;
+      stroke: #385723;
+      stroke-width: 2px;
+    }
+    #flowers 
+    {
+      stroke-width: 2px;
+    }
+    #flowers .pair {
+      stroke: white;
+    }
+    .flower.orange .petal {
+      stroke: #843C0C;
+      fill: #F8CBAD;
+    }
+    .flower.orange .center {
+      stroke: #843C0C;
+      fill: #C55A11;
+    }
+    .flower.yellow .petal {
+      stroke: #BF9000;
+      fill: #FFF2CC;
+    }
+    .flower.yellow .center {
+      stroke: #7F6000;
+      fill: #BF9000;
+    }
+    .flower.blue .petal {
+      stroke: #203864;
+      fill: #BDD7EE;
+    }
+    .flower.blue .center {
+      stroke: #203864;
+      fill: #2F5597;
+    }
+    .bug circle {
+      stroke: black;
+      fill: #3B3838;
+    }
+    #garden .bug tspan {
+      font-size: 12pt;
+    }
+    #solve {
+      position:absolute;
+      top:85px;
+      left: 158px;
+    }
+    #solve .triangle {
+      display: inline-block;
+      width: 60.5px;
+      height: 104px;
+      margin: 0px;
+      padding: 0px;
+    }
+    .triangle.literal {
+      width: 60.5px;
+    }
+    .triangle .letter-input {
+      height: 4ex;
+      width: 3em;
+      position: absolute;
+    }
+    .triangle.tl .letter-input {
+      left: -35px;
+      top: 60px;
+    }
+    .triangle.t .letter-input {
+      left: -1.5em;
+      top: 8px;
+    }
+    .triangle.tr .letter-input {
+      left: -1em;
+      top: 60px;
+    }
+    .triangle.bl .letter-input {
+      left: -35px;
+      top: 8px;
+    }
+    .triangle.b .letter-input {
+      left: -1.5em;
+      top: 60px;
+    }
+    .triangle.br .letter-input {
+      left: -1em;
+      top: 8px;
+    }
+    .note-input.note-above {
+      position: absolute;
+      left: -1em;
+      width: 2em;
+      top: 42px;
+      height: 2ex;
+      font-size: 16pt;
+      font-weight: bold;
+      color: rgb(23, 169, 23);
+    }
+  </style>
+  <body class="letter portrait" onload="textSetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+          Garden
+        </div>
+        <div id="icons">
+          <img src="Icons/Crossword.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 Jesse McGatha
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <a id="decoder-toggle"></a>
+        <img id="qr" src="QR/Garden.png">
+
+        <div id="pageBody">
+          <p class="flavor">
+            This garden needs re-planting.
+            There are seven blooms, represented by hexagons.
+            The numbers on the centers of each bloom, on the leaves around the blooms, and the black bugs all show the sum of the two petals they connect.
+            After placing a number on each petal, convert to letters and read across by rows, top to bottom.
+          </p>
+          <div id="garden">
+            <svg width="800" height="800">
+              <g id="center" transform="translate(400,400)">
+                <g id="leaves">
+                  <g class="leaf" transform="translate(-180,0)">
+                    <circle cx="0" cy="0" r="180" class="outer"/>
+                    <circle cx="0" cy="0" r="110" class="inner"/>
+                    <g class="sum" transform="translate(-180,0)">
+                      <circle cx="0" cy="0" r="24" class="label"/>
+                      <text x="0" y="6pt"><tspan x="0">19</tspan></text>  
+                    </g>
+                    <g class="sum" transform="translate(-110,0)">
+                      <circle cx="0" cy="0" r="24" class="label" />
+                      <text x="0" y="6pt"><tspan x="0">6</tspan></text>  
+                    </g>
+                  </g>
+                  <g class="leaf" transform="translate(180,0)">
+                    <circle cx="0" cy="0" r="180" class="outer"/>
+                    <circle cx="0" cy="0" r="110" class="inner"/>
+                    <g class="sum" transform="translate(180,0)">
+                      <circle cx="0" cy="0" r="24" class="label" />
+                      <text x="0" y="6pt"><tspan x="0">12</tspan></text>  
+                    </g>
+                    <g class="sum" transform="translate(110,0)">
+                      <circle cx="0" cy="0" r="24" class="label" />
+                      <text x="0" y="6pt"><tspan x="0">12</tspan></text>  
+                    </g>
+                  </g>
+                  <g class="leaf" transform="translate(-90,-156)">
+                    <circle cx="0" cy="0" r="180" class="outer"/>
+                    <circle cx="0" cy="0" r="110" class="inner"/>
+                    <g class="sum" transform="translate(-90,-156)">
+                      <circle cx="0" cy="0" r="24" class="label"/>
+                      <text x="0" y="6pt"><tspan x="0">6</tspan></text>  
+                    </g>
+                    <g class="sum" transform="translate(-55,-95)">
+                      <circle cx="0" cy="0" r="24" class="label" />
+                      <text x="0" y="6pt"><tspan x="0">29</tspan></text>  
+                    </g>
+                  </g>
+                  <g class="leaf" transform="translate(90,-156)">
+                    <circle cx="0" cy="0" r="180" class="outer"/>
+                    <circle cx="0" cy="0" r="110" class="inner"/>
+                    <g class="sum" transform="translate(90,-156)">
+                      <circle cx="0" cy="0" r="24" class="label"/>
+                      <text x="0" y="6pt"><tspan x="0">4</tspan></text>  
+                    </g>
+                    <g class="sum" transform="translate(55,-95)">
+                      <circle cx="0" cy="0" r="24" class="label" />
+                      <text x="0" y="6pt"><tspan x="0">27</tspan></text>  
+                    </g>
+                  </g>
+                  <g class="leaf" transform="translate(-90,156)">
+                    <circle cx="0" cy="0" r="180" class="outer"/>
+                    <circle cx="0" cy="0" r="110" class="inner"/>
+                    <g class="sum" transform="translate(-90,156)">
+                      <circle cx="0" cy="0" r="24" class="label"/>
+                      <text x="0" y="6pt"><tspan x="0">21</tspan></text>  
+                    </g>
+                    <g class="sum" transform="translate(-55,95)">
+                      <circle cx="0" cy="0" r="24" class="label" />
+                      <text x="0" y="6pt"><tspan x="0">9</tspan></text>  
+                    </g>
+                  </g>
+                  <g class="leaf" transform="translate(90,156)">
+                    <circle cx="0" cy="0" r="180" class="outer"/>
+                    <circle cx="0" cy="0" r="110" class="inner"/>
+                    <g class="sum" transform="translate(90,156)">
+                      <circle cx="0" cy="0" r="24" class="label"/>
+                      <text x="0" y="6pt"><tspan x="0">16</tspan></text>  
+                    </g>
+                    <g class="sum" transform="translate(55,95)">
+                      <circle cx="0" cy="0" r="24" class="label" />
+                      <text x="0" y="6pt"><tspan x="0">37</tspan></text>  
+                    </g>
+                  </g>
+                </g>
+
+                <g id="flowers">
+                  <g class="flower orange">
+                    <polygon class="petal" points="120,0 60,104 -60,104 -120,0 -60,-104 60,-104"></polygon>
+                    <path class="petal" d="M 120,0 L -120,0 M 60,104 L -60,-104 M 60,-104 L -60,104"></path>
+                    <circle class="center" cx="0" cy="0" r="36"></circle>
+                    <path class="pair" d="M 0,0 L -36,0 M 0,0 L 18,31 M 0,0 L 18,-31"></path>
+                    <text x="0" y="-10pt" transform="rotate(90)"><tspan x="0">12</tspan></text>
+                    <text x="0" y="-10pt" transform="rotate(-30)"><tspan x="0">21</tspan></text>
+                    <text x="0" y="21pt" transform="rotate(30)"><tspan x="0">41</tspan></text>
+                  </g>
+                  <g class="flower yellow" transform="translate(0,-210)">
+                    <polygon class="petal" points="120,0 60,104 -60,104 -120,0 -60,-104 60,-104"></polygon>
+                    <path class="petal" d="M 120,0 L -120,0 M 60,104 L -60,-104 M 60,-104 L -60,104"></path>
+                    <circle class="center" cx="0" cy="0" r="36"></circle>
+                    <path class="pair" d="M 0,0 L -36,0 M 0,0 L 18,31 M 0,0 L 18,-31"></path>
+                    <text x="0" y="-10pt" transform="rotate(90)"><tspan x="0">26</tspan></text>
+                    <text x="0" y="-10pt" transform="rotate(-30)"><tspan x="0">15</tspan></text>
+                    <text x="0" y="21pt" transform="rotate(30)"><tspan x="0">33</tspan></text>
+                  </g>
+                  <g class="flower blue" transform="translate(181.6,-104.7)">
+                    <polygon class="petal" points="120,0 60,104 -60,104 -120,0 -60,-104 60,-104"></polygon>
+                    <path class="petal" d="M 120,0 L -120,0 M 60,104 L -60,-104 M 60,-104 L -60,104"></path>
+                    <circle class="center" cx="0" cy="0" r="36"></circle>
+                    <path class="pair" d="M 0,0 L 36,0 M 0,0 L -18,31 M 0,0 L -18,-31"></path>
+                    <text x="0" y="21pt" transform="rotate(90)"><tspan x="0">16</tspan></text>
+                    <text x="0" y="-10pt" transform="rotate(30)"><tspan x="0">17</tspan></text>
+                    <text x="0" y="21pt" transform="rotate(-30)"><tspan x="0">20</tspan></text>
+                  </g>
+                  <g class="flower yellow" transform="translate(181.6,104.7)">
+                    <polygon class="petal" points="120,0 60,104 -60,104 -120,0 -60,-104 60,-104"></polygon>
+                    <path class="petal" d="M 120,0 L -120,0 M 60,104 L -60,-104 M 60,-104 L -60,104"></path>
+                    <circle class="center" cx="0" cy="0" r="36"></circle>
+                    <path class="pair" d="M 0,0 L -36,0 M 0,0 L 18,31 M 0,0 L 18,-31"></path>
+                    <text x="0" y="-10pt" transform="rotate(90)"><tspan x="0">14</tspan></text>
+                    <text x="0" y="-10pt" transform="rotate(-30)"><tspan x="0">40</tspan></text>
+                    <text x="0" y="21pt" transform="rotate(30)"><tspan x="0">20</tspan></text>
+                  </g>
+                  <g class="flower blue" transform="translate(0,210)">
+                    <polygon class="petal" points="120,0 60,104 -60,104 -120,0 -60,-104 60,-104"></polygon>
+                    <path class="petal" d="M 120,0 L -120,0 M 60,104 L -60,-104 M 60,-104 L -60,104"></path>
+                    <circle class="center" cx="0" cy="0" r="36"></circle>
+                    <path class="pair" d="M 0,0 L 36,0 M 0,0 L -18,31 M 0,0 L -18,-31"></path>
+                    <text x="0" y="21pt" transform="rotate(90)"><tspan x="0">8</tspan></text>
+                    <text x="0" y="-10pt" transform="rotate(30)"><tspan x="0">38</tspan></text>
+                    <text x="0" y="21pt" transform="rotate(-30)"><tspan x="0">26</tspan></text>
+                  </g>
+                  <g class="flower yellow" transform="translate(-181.6,104.7)">
+                    <polygon class="petal" points="120,0 60,104 -60,104 -120,0 -60,-104 60,-104"></polygon>
+                    <path class="petal" d="M 120,0 L -120,0 M 60,104 L -60,-104 M 60,-104 L -60,104"></path>
+                    <circle class="center" cx="0" cy="0" r="36"></circle>
+                    <path class="pair" d="M 0,0 L -36,0 M 0,0 L 18,31 M 0,0 L 18,-31"></path>
+                    <text x="0" y="-10pt" transform="rotate(90)"><tspan x="0">30</tspan></text>
+                    <text x="0" y="-10pt" transform="rotate(-30)"><tspan x="0">14</tspan></text>
+                    <text x="0" y="21pt" transform="rotate(30)"><tspan x="0">16</tspan></text>
+                  </g>
+                  <g class="flower blue" transform="translate(-181.6,-104.7)">
+                    <polygon class="petal" points="120,0 60,104 -60,104 -120,0 -60,-104 60,-104"></polygon>
+                    <path class="petal" d="M 120,0 L -120,0 M 60,104 L -60,-104 M 60,-104 L -60,104"></path>
+                    <circle class="center" cx="0" cy="0" r="36"></circle>
+                    <path class="pair" d="M 0,0 L 36,0 M 0,0 L -18,31 M 0,0 L -18,-31"></path>
+                    <text x="0" y="21pt" transform="rotate(90)"><tspan x="0">10</tspan></text>
+                    <text x="0" y="-10pt" transform="rotate(30)"><tspan x="0">21</tspan></text>
+                    <text x="0" y="21pt" transform="rotate(-30)"><tspan x="0">23</tspan></text>
+                  </g>
+                </g>
+
+                <g id="bugs">
+                  <g class="bug" transform="translate(0,-104)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>30</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(90,-52)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>18</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(90,52)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>29</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(0,104)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>31</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(-90,52)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>28</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(-90,-52)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>20</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(90,-156)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>14</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(180,0)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>33</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(90,156)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>27</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(-90,156)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>26</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(-180,0)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>22</tspan></text>
+                  </g>
+                  <g class="bug" transform="translate(-90,-156)">
+                    <circle r="16"></circle>
+                    <text y="5pt"><tspan>24</tspan></text>
+                  </g>
+                </g>
+              </g>
+            </svg>
+
+            <div id="solve" class="letter-grid-2d" data-input-style="box" data-literal-style="box">
+              <div class="row letter-cell-block">
+                <span class="letter-cell literal literal-none triangle bl">
+                </span><span class="letter-cell literal literal-none triangle b">
+                </span><span class="letter-cell literal literal-none triangle br">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle t">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tr">
+                </span><span class="letter-cell literal literal-none triangle bl">
+                </span><span class="letter-cell literal literal-none triangle b">
+                </span><span class="letter-cell literal literal-none triangle br"></span>
+              </div>
+              <div class="row letter-cell-block">
+                <span class="notes-above letter-cell multiple-letter numeric letter-none triangle tl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle t">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tr">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle bl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle b">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle br">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle t">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tr"></span>
+              </div>
+              <div class="row letter-cell-block">
+                <span class="notes-above letter-cell multiple-letter numeric letter-none triangle bl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle b">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle br">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle t">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tr">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle bl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle b">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle br"></span>
+              </div>
+              <div class="row letter-cell-block">
+                <span class="notes-above letter-cell multiple-letter numeric letter-none triangle tl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle t">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tr">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle bl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle b">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle br">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle t">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tr"></span>
+              </div>
+              <div class="row letter-cell-block">
+                <span class="notes-above letter-cell multiple-letter numeric letter-none triangle bl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle b">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle br">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle t">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle tr">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle bl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle b">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle br"></span>
+              </div>
+              <div class="row letter-cell-block">
+                <span class="notes-above letter-cell literal literal-none triangle tl">
+                </span><span class="notes-above letter-cell literal literal-none triangle t">
+                </span><span class="notes-above letter-cell literal literal-none triangle tr">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle bl">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle b">
+                </span><span class="notes-above letter-cell multiple-letter numeric letter-none triangle br">
+                </span><span class="notes-above letter-cell literal literal-none triangle tl">
+                </span><span class="notes-above letter-cell literal literal-none triangle t">
+                </span><span class="notes-above letter-cell literal literal-none triangle tr"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+    <iframe id="decoder-frame" data-decoder-mode="Ascii"></iframe>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="js/kit25.js" />
+    <script>
+      const boiler = {
+        abilities: {
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          dirs: [
+            ['Safari 21: Epicurious Enigmas', 'PS21/Menu.xhtml', 'PS21/Images/Plate_icon.png'],
+            ['Safari 20: Safari Labs', '23/safari.html', '23/Images/Beaker_icon.png'],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Safari p {
+        font-size: 20pt;
+      }
+      .event-icon {
+        height: 32pt;
+        top: 10px;
+        margin-right: 6px;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body id="Safaris">
+
+    <h1>Puzzle Safari selections</h1>
+    <div id="pageBody">
+      <for each="d" in="dirs">
+        <p style="position:relative">
+          <a href="{d.1}">
+            <img src="{d.2}" class="event-icon" />
+            {d.0}
+          </a></p>
+      </for>
+
+    </div>
+  </body>
+</html>

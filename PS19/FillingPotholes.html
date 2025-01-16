@@ -1,0 +1,260 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>Filling Potholes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/TextSetup.js"></script>
+    <script src="Kit/TextInput.js"></script>
+  </head>
+  <style>
+    .letter-cell {
+      font-family: 'Kalam', cursive;
+      font-size: 16pt;
+    }
+    table {
+      position: absolute;
+      border-collapse: collapse;
+    }
+    .vertical {
+      position: relative;
+      width: 24px;
+    }
+    .vertical p {
+      position: absolute;
+      margin: 0px;
+      transform: rotate(270deg);
+      transform-origin: left bottom 0;
+      white-space: nowrap;
+      left: 0.2in;
+      bottom: 0px;
+      padding-left: 0.05in;
+    }
+    .horizontal {
+      position: relative;
+      padding: 0px;
+    }
+    .horizontal p {
+      position: absolute;
+      top: 4px;
+      right: 0.05in;
+      margin: 0px;
+    }
+    .grid-row {
+      position: relative;
+      padding: 0px;
+      height: 25px;
+    }
+    .grid-row .letter-cell-block {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+    }
+    .letter-grid {
+      width: 24px;
+      height: 24px;
+    }
+    .letter-grid .letter-input {
+      width: 24px;
+      height: 24px;
+    }
+    .note-left {
+      width: 0.5in;
+      height: 2.75ex;
+    }
+    .vertical .note-right {
+      position: absolute;
+      transform: rotate(270deg);
+	    transform-origin: left bottom 0;
+      width: 0.5in;
+      height: 2.75ex;
+      left: 0.2in;
+      top: 0px;
+    }
+    .notes-below {
+      position: absolute;
+    }
+    .note-input.note-below {
+      position: absolute;
+      width: 1.05in;
+      left: auto;
+      right: 0.05in;
+      height: 2.75ex;
+      bottom: -3.5ex;
+    }
+    .grid img {
+      width: 11px;
+      height: 11px;
+    }
+  </style>
+  <body class="letter portrait" onload="textSetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+          Filling Potholes
+        </div>
+        <div id="icons">
+          <img src="Icons/Crossword.png">
+        </div>
+        <div id="copyright">
+          &copy;2019 Rorke Haining
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <div id="ability">💡</div>
+        <img id="qr" src="QR/FillingPotholes.png">
+
+        <div id="pageBody" data-input-style="grid can-highlight" class="letter-grid-discover">
+          <table style="left: -0.35in; top: 0.2in; z-index: 4;" class="notes-below grid">
+            <tr>
+              <td style="width: 2.35in; height: 2.4in;">&nbsp;</td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Thai currency</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> On the Mediterranean, e.g.</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Tire holders</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> To request or question</p></td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Lawyer&rsquo;s final exam <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Continent <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Shortens pants <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Work item type in ADO <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+          </table>
+
+          <table style="left: .7in; top: 1.65in; z-index: 3;" class="notes-below grid">
+            <tr>
+              <td style="width: 2.75in; height: 2.7in;">&nbsp;</td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Unsolicited commercial email</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> What the fourth little piggy had</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Uninvited picnic guest</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Parent Teacher Associations</p></td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Crackle and Pop&rsquo;s pal <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Poker hand winner takes it <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Actress Kendrick <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Yankees&rsquo; crosstown rivals <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+          </table>
+
+          <table style="left: 2.15in; top: 3.75in; z-index: 2;" class="notes-below grid">
+            <tr>
+              <td style="width: 2.75in; height: 2.35in;">&nbsp;</td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Arrival estimates</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> What some call soda</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Pen name of Charles Lamb</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Small whirlpool</p></td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>In league with sabre and foil <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>I hate to say I ____ you so&hellip; <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Disaster relief <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Sterilize a female animal <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+          </table>
+
+          <table style="left: 3.6in; top: 6.15in; z-index: 1;" class="notes-below grid">
+            <tr>
+              <td style="width: 2.75in; height: 1.7in;">&nbsp;</td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Beaver construct</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Behind</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Operatic solo</p></td>
+              <td class="vertical notes-right"><p><img src="Images/LeftBoldArrow.png"> Corpse</p></td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Dreary <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>Prefix for dynamic or smith <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>She&rsquo;s paid to clean <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="horizontal notes-left"><p>A drop of golden sun <img src="Images/RightBoldArrow.png"></p></td>
+              <td class="grid-row" colspan="4">
+                <div class="letter-cell-block create-from-pattern" data-letter-pattern="4"></div>
+              </td>
+            </tr>
+            <tr>
+          </table>
+
+        </div>
+      </div>
+    </div>  
+  </body>
+</html>

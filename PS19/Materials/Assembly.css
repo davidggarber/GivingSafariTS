@@ -1,0 +1,16 @@
+#icons img {
+  box-shadow: none;
+}
+.portrait #pageBody {
+  padding-top: .5in;
+  height: 7in;
+}
+.clue {
+  display: inline-block;
+  margin: 0.1in;
+}
+.clue img {
+  width: 3.5in;
+  height: 3.5in;
+  border: solid 1px black;
+}

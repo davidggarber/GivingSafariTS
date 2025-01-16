@@ -1,0 +1,219 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>SAFETY First!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/TextSetup.js"></script>
+    <script src="Kit/TextInput.js"></script>
+  </head>
+  <style>
+    .letter-cell {
+      font-family: 'Kalam', cursive;
+      font-size: 16pt;
+    }
+    .literal-none {
+      margin-right: 0.05in;
+    }
+    #tall-vertical {
+      position: absolute;
+      left: 3.53in;
+      width: 1.9em;
+      height: 6.9in;
+      border: solid 1px black;
+    }
+
+    #example {
+      margin-left: 3in;
+    }
+    #example .box {
+      display: inline-block;
+      border: solid 1px black;
+    }
+    #example .symbol {
+      font-family: 'Segoe UI Symbol';
+    }
+
+    #clues {
+      padding-top: 0.2in;
+    }
+    #clues td {
+      padding: 0px;
+      padding-right: .2in;
+      position: relative;
+      height: 0.55in;
+      vertical-align: top;
+    }
+
+    #clues td p {
+      margin: 0px;
+    }
+
+    .note-input.note-below {
+      position: absolute;
+      height: 3ex;
+      bottom: -3.2ex;
+      width: 1.5in;
+    }
+
+    #bottom {
+      position: absolute;
+      bottom: 0.8in;
+      width: 100%;
+      text-align: center;
+    }
+    
+    #bottom .safety {
+      display: inline-block;
+      position: relative;
+    }
+    #bottom .letter-cell {
+      width: 1.3em;
+      margin-left: -1px;
+    }
+    #bottom .letter-literal {
+      width: 1.3em;
+      padding-left: 1px;
+    }
+
+    #answer {
+      position: absolute;
+      bottom: 0.4in;
+      width: 100%;
+      text-align: center;
+    }
+    #answer .letter-input {
+      font-family: 'Kalam', cursive;
+      font-size: 20pt;
+      color: #ff0099;
+      width: .9em;
+    }
+    #answer .letter-cell {
+      width: 1.1em;
+    }
+
+    .left {
+      width: 1.5in;
+    }
+    .middle {
+      width: 4.4in;
+    }
+    .right {
+      width: 1.6in;
+    }
+
+  </style>
+  <body class="letter portrait" onload="textSetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+          SAFETY First!
+        </div>
+        <div id="icons">
+          <img src="Icons/Crossword.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 Joey Marianer
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <div id="ability">✔️</div>
+        <img id="qr" src="QR/SafetyFirst.png">
+
+        <div id="body">
+          <div id="tall-vertical">&nbsp;</div>
+          <table id="clues" data-extract-style="none" data-literal-style="none" class="text-input-group">
+            <tr>
+              <td class="left"><p class="notes-below">Illegible handwriting</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="   6   "></td>
+              <td class="right"><p class="notes-below">Move around a room as a baby does</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">Belonging to you</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="   5"></td>
+              <td class="right"><p class="notes-below">Belonging to us</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">In a cold manner</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="8"></td>
+              <td class="right"><p class="notes-below">In a stiff manner</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">Pres. Lincoln</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="       3"></td>
+              <td class="right"><p class="notes-below">Exist</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">Type of dress</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="     5"></td>
+              <td class="right"><p class="notes-below">Dwayne Johnson</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">Go on a journey</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="    6"></td>
+              <td class="right"><p class="notes-below">French composer Maurice</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">Assessment</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="   10"></td>
+              <td class="right"><p class="notes-below">Appraisal</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">Used in making bread or beer</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="   5"></td>
+              <td class="right"><p class="notes-below">Coast that contains New York and Florida</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">Decrease in the size of a muscle</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="     7"></td>
+              <td class="right"><p class="notes-below">Physical award manifestation</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">Hit hard</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="  6"></td>
+              <td class="right"><p class="notes-below">Three-wheeled vehicle, for short</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">_____ Washington University, Cheney</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="  7"></td>
+              <td class="right"><p class="notes-below">Towards the rear end of a ship</p></td>
+            </tr>
+            <tr>
+              <td class="left"><p class="notes-below">Dining room furniture</p></td>
+              <td class="middle letter-cell-block create-from-pattern" data-letter-pattern="   5"></td>
+              <td class="right"><p class="notes-below">Having power or skill to do something</p></td>
+            </tr>
+          </table>
+          <div id="bottom" data-input-style="box">
+            <div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="S"></div
+              ><div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="S"></div
+              ><div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="A"></div
+              ><div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="A"></div>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="F"></div
+              ><div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="F"></div
+              ><div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="E"></div
+              ><div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="E"></div>
+            &nbsp;&nbsp;&nbsp;
+            <div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="T"></div
+              ><div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="T"></div
+              ><div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="Y"></div
+              ><div class="safety letter-cell-block create-from-pattern cross-off" data-letter-pattern="Y"></div>
+          </div>
+          <div id="answer" data-input-style="underline" data-literal-style="none">
+            <div class="create-from-pattern" data-letter-pattern="4 4 4"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>  
+  </body>
+</html>

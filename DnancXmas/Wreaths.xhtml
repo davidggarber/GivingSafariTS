@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas',
+        title: '___',
+        title: '___',
+        author: '___',
+        copyright: '2021',
+        type: '___',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          wordSearch: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          grid: [
+            'ABCDEFGH',
+            'IJKLMNOP',
+            'QRSTUVWX',
+            'ABCDEFGH',
+            'IJKLMNOP',
+            'QRSTUVWX'
+          ],
+          width:8,
+          height:6,
+        },
+      };
+    </script>
+    <style>
+      rect {
+        fill: none
+      }
+    </style>
+  </head>
+  <body id="__puzzle_name">
+    <div id="pageBody">
+      <p class="flavor">
+        Hello!
+      </p>
+
+      <svg width="{25*(width+1)}"  class="word-select-area no-user-select" data-angle-constraints="45" data-max-points="8" data-turn-constraint="45">
+        <for each="row" in="{grid}">
+          <for char="ch" in="{row}">
+            <g transform="translate({18+ch#*25},{27+row#*25})">
+              <rect class="vertex"
+                    width="25" height="25" />
+              <text x="8" y="17">{ch}</text>
+            </g>
+          </for>
+        </for>
+      </svg>
+    </div>
+  </body>
+</html>

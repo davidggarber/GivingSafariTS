@@ -1,0 +1,179 @@
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <title>Temple</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+    <link href="Kit/PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/DragDrop.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit/TextInput.css" rel="Stylesheet" type="text/css"></link>
+
+    <script src="Kit/ClassUtils.js"></script>
+    <script src="Kit/Storage.js"></script>
+    <script src="Kit/Notes.js"></script>
+    <script src="Kit/DragDrop.js"></script>
+  </head>
+  <style>
+    #dest {
+      position: relative;
+      width: 100%;
+      height: 5.72in;
+    }
+    #answer-notes {
+      position: absolute;
+      width: 3.5in;
+      top: 0.75in;
+      left: 2in;
+      z-index: 10;
+    }
+    #background {
+      position: absolute;
+      left: -0.2in;
+      width: 7.87in;
+      height: 5.72in;
+      z-index: 1;
+    }
+    #dest table {
+      position: absolute;
+      top: 175px;
+      left: -4px;
+      width: 726px;
+      border-collapse: collapse;
+      z-index: 20;
+    }
+    #dest td {
+      width: 91px;
+      height: 0.92in;
+      text-align: center;
+      vertical-align: top;
+      padding: 0px;
+    }
+    #dest td .moveable {
+      height: 89px;
+    }
+    #src {
+      margin-top: 6.5px;
+      margin-left: -0.25in;
+      border-collapse: collapse;
+    }
+    #src td {
+      width: 0.8in;
+      text-align: center;
+      vertical-align: top;
+      padding-left: 7px;
+      padding-right: 7px;
+    }
+    .moveable {
+      width: 0.65in;
+      height: 0.9in;
+    }
+    .drag-selected {
+      transform: rotate(2deg) scale(1.1);
+      transform-origin: center center;
+    }
+  </style>
+  <body class="letter portrait" onload="dragSetup()">
+    <div id="page" class="printedPage">  <!--Printable paper-->
+      <div class="pageWithinMargins">
+        <div id="title">
+          Temple
+        </div>
+        <div id="icons">
+          <img src="Icons/Reassemble.png">
+        </div>
+        <div id="copyright">
+            &copy;2019 Jesse McGatha
+        </div>
+        <a id="backlink" target="_blank" href="safari.html">Puzzle list</a>
+        <a id="notes-toggle"></a>
+        <div id="ability" style="text-shadow: 0 0 5px black;" title="Click & drop enabled">&#x1f448;</div>
+        <img id="qr" src="QR/Temple.png">
+
+        <div id="pageBody">
+          <p style="margin-top: 23px;">The columns of this temple fell down and must be rebuilt. Place the column pieces back in the correct order to reveal what this temple was built to encourage.</p>
+          <div id="dest">
+            <img id="background" src="Images/Temple/Background.png">
+            <input id="answer-notes" type="text" class="note-input">
+
+            <table>
+              <tr>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+              </tr>
+              <tr>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+              </tr>
+              <tr>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+                <td class="drop-target"></td>
+              </tr>
+            </table>
+          </div>
+
+          <table id="src">
+            <tr>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/1.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/2.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/3.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/4.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/5.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/6.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/7.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/8.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/9.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/10.png"></td>
+            </tr>
+            <tr>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/11.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/12.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/13.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/14.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/15.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/16.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/17.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/18.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/19.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/20.png"></td>
+            </tr>
+            <tr>
+              <td class="drop-target"></td>
+              <td class="drop-target"></td>
+              <td class="drop-target"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/21.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/22.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/23.png"></td>
+              <td class="drop-target drag-source"><img class="moveable" draggable="true" src="Images/Temple/24.png"></td>
+              <td class="drop-target"></td>
+              <td class="drop-target"></td>
+              <td class="drop-target"></td>
+            </tr>
+          </table>
+
+        </div>
+
+
+      </div>
+    </div>  
+  </body>
+</html>
