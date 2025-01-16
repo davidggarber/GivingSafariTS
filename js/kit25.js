@@ -6611,7 +6611,6 @@ const safari21Details = {
         'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/' },
     'backLinks': { 'ps21': { href: './Menu.xhtml' } },
     'validation': true,
-    eventSync: 'PuzzleSafari21',
 };
 const giving24Details = {
     'title': 'Epicurious Enigmas',
