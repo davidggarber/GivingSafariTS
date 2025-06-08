@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari19,
+        safari: 'ps19',
+        title: 'Campus Redesign',
+        author: 'Peter Golde',
+        copyright: '2019',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          top: ['A,R','H,J,K','B,M','O','C,W'],
+          bottom: ['A,G','J,P','D,M,S','E,O,V,Y','C'],
+          left: ['O,R','A','M,N,U','F,J','C,G'],
+          right: ['O,W','A,I,K,L','M,Q,V','D,J,T','C'],
+          grid: ['     ',' K  L','U    ','     ','   Y ']
+        },
+      };
+    </script>
+    <style>
+      #flavor .sample {
+        width: 40px;
+        height: 44px;
+        font-weight: bold;
+        text-align: center;
+        border: solid 1.5px black;
+        padding: 0px;
+      }
+      .col-header {
+        width: 0.75in;
+        text-align: center;
+      }
+      .col-arrow {
+        height: 0.2in;
+        vertical-align: middle;
+        text-align: center;
+      }
+      .col-spacer {
+        width: 10px;
+        font-size: 1pt;
+        padding: 0px;
+      }
+      .row-spacer {
+        height: 10px;
+        font-size: 1pt;
+        padding: 0px;
+      }
+      .left-header {
+        height: 0.75in;
+        text-align: right;
+        vertical-align: middle;
+      }
+      .right-header {
+        height: 0.75in;
+        text-align: left;
+        vertical-align: middle;
+      }
+      .row-arrow {
+        width: 0.2in;
+        text-align: center;
+        vertical-align: middle;
+      }
+      .square-block {
+        border: solid 1px black;
+        text-align: center;
+        vertical-align: center;
+      }
+      .square-block .letter-cell {
+        width: 0.31in;
+        height: 0.31in;
+      }
+      .square-block input {
+        width: .3in;
+        height: .3in;
+      }
+
+
+    </style>
+  </head>
+  <body id="Campus">
+    <div id="pageBody">
+      <div id="flavor">
+        <p>
+          The new campus design is ... interesting.  25 buildings, Building A through Building Y, are set up in a grid of 5 blocks by 5 blocks. Each building is from 1 to 5 stories tall. Each row and each column contains exactly one building of each height, from 1 to 5 (like a Sudoku).
+        </p>
+        <p>
+          From any side, ignoring perspective, taller buildings block the view of shorter buildings. Thus, the 5 story building in a row (or column) is always visible, but a 3 story building is visible only if it is not blocked by a closer 4 or 5 story building. A 1 story building is visible only if it is the closest building, because otherwise it would be blocked.
+        </p>
+        <p>
+          The outside edges of the diagram below indicate all buildings that are visible when looking directly along the row or column, in the direction of the arrow, 
+          <b><i>but not necessarily in that order</i></b>. In this example row, from the left, C is blocked by E, and D is blocked by A; but from the right, B blocks the view of all other buildings:
+        </p>
+
+        <div style="width: 100%;">
+          <table style="margin-left: 1.6in;">
+            <tr>
+              <td>A,B,E</td>
+              <td style="width: 20px;">&#x1f87a;</td>
+              <td class="sample">E<br/>2</td>
+              <td>&nbsp;</td>
+              <td class="sample">C<br/>1</td>
+              <td>&nbsp;</td>
+              <td class="sample">A<br/>4</td>
+              <td>&nbsp;</td>
+              <td class="sample">D<br/>3</td>
+              <td>&nbsp;</td>
+              <td class="sample">B<br/>5</td>
+              <td style="width: 20px;">&#x1f878;</td>
+              <td>B</td>
+            </tr>
+          </table>
+        </div>
+        <p>Here&rsquo;s the new campus. A few building names are filled in to start you off.</p>
+
+      </div>
+
+      <ttable id="table">
+        <ttr>
+          <ttd>&nbsp;</ttd>
+          <for each="col" in="top">
+            <ttd class="col-header">{col}</ttd>
+          </for>
+          <ttd>&nbsp;</ttd>
+        </ttr>
+        <for each="row" in="grid">
+          <ttr>
+            <ttd class="left-header">{left.[row#]}</ttd>
+            <for char="ch" in="row">
+              <ttd class="square-block">
+                <letter /><br /><number />
+              </ttd>
+            </for>
+            <ttd class="right-header">{right.[row#]}</ttd>
+          </ttr>
+        </for>
+        
+      </ttable>
+
+
+    </div>
+  </body>
+</html>
