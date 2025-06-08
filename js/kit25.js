@@ -6667,6 +6667,36 @@ const giving24Details = {
     'validation': true,
     eventSync: 'GivingSafari24',
 };
+const giving25Details = {
+    'title': 'The Great Outdoors',
+    'logo': './Images/GS25_banner.png',
+    'icon': './Images/gs25_favicon.png',
+    'iconRoot': './Icons/',
+    'cssRoot': '../Css/',
+    'fontCss': '../gs25/Css/Fonts22.css',
+    'googleFonts': 'DM+Serif+Display,National+Park,Caveat',
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/gs25/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/gs25/': './Qr/puzzyl/' },
+    'backLinks': { 'gs25': { href: './Map.xhtml' }, 'ps22': { href: './Map.xhtml' } },
+    'validation': true,
+    eventSync: 'GivingSafari25',
+};
+const safari22Details = {
+    'title': 'The Great Outdoors',
+    'logo': './Images/PS22_banner.png',
+    'icon': './Images/ps22_favicon.png',
+    'iconRoot': './Icons/',
+    'cssRoot': '../Css/',
+    'fontCss': '../gs25/Css/Fonts22.css',
+    'googleFonts': 'DM+Serif+Display,National+Park,Caveat',
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/gs25/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/gs25/': './Qr/puzzyl/' },
+    'backLinks': { 'gs25': { href: './Map.xhtml' }, 'ps22': { href: './Map.xhtml' } },
+    'validation': true,
+    // no eventSync == no login
+};
 const ps21Mini = {
     'title': 'Epicurious Enigmas',
     'logo': './Images/GS24_banner.png',
@@ -6745,9 +6775,11 @@ const pastSafaris = {
     'ps19': safari19Details,
     'ps20': safari20Details,
     'ps21': safari21Details,
+    'ps22': safari22Details,
     'Dgg': safariDggDetails,
     '24': safari24Details,
     'gs24': giving24Details,
+    'gs25': giving25Details,
     'fr21': ps21Mini,
     'ic21': ps21Mini,
     'sb21': ps21Mini,
@@ -6757,6 +6789,7 @@ const pastSafaris = {
 };
 const puzzleSafari19 = ['ps19']; //,'gs22'
 const givingSafari24 = ['gs24', '21', 'ps21'];
+const givingSafari25 = ['gs25', '22', 'ps22'];
 const puzzleSafari21Minis = ['ic21', 'sb21', 'tm21', 'fr21'];
 const allSafari21 = ['gs24', '21', 'ps21', 'ic21', 'sb21', 'tm21', 'fr21'];
 let safariDetails;

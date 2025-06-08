@@ -81,6 +81,19 @@
     {
       "type": "msedge",
       "request": "launch",
+      "name": "Launch GS 25",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "url": "${workspaceFolder}\\gs25\\Map.xhtml",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/js/**/*.js"
+      ]
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
       "name": "Launch Today's puzzle",
       "skipFiles": [
         "<node_internals>/**"

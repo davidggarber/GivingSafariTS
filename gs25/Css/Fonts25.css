@@ -1,0 +1,64 @@
+.title {
+  font-size: 22pt;
+  font-family: 'National Park';
+  letter-spacing: -1.5px;
+}
+
+.title-font {
+  font-family: 'National Park';
+}
+
+.input-font {
+  font-family: 'Caveat';
+}
+
+._24 .input-font .letter-literal {
+  font-family: 'Caveat';
+}
+
+._24 .letter-cell {
+  font-family: 'Caveat';
+  font-size: 14pt;
+  width: 1.05em;
+}
+
+.word-cell {
+  font-family: 'Caveat';
+  font-size: 14pt;
+}
+
+#final .letter-cell {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+#extracted {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+.extracted {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+#extracted .letter-cell {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+#extracted .letter-input {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+@media print {
+  .screen-only {
+    display: none;
+  }
+}
