@@ -28,10 +28,60 @@ var challenge = {
 }
 
 var puzzles = [
+
+    // { title: 'Active Lifestyle', thumb: '', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'America the Beautiful', thumb: 'tbd', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Biomes of the World', thumb: 'tbd', author: 'Zhenya Ross', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Cartography', thumb: 'tbd', author: 'Jake Lui', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Disney and the Great Outdoors', thumb: 'tbd', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Down Under', thumb: 'tbd', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Down, Across, and All Around', thumb: 'tbd', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Fences', thumb: '', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Grab Crass In The Great Doubt Oars', thumb: 'tbd', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Hippocampus', thumb: 'tbd', author: 'Joe Tomkinson', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Jokes Around the Campfire', thumb: 'tbd', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'K2', thumb: 'tbd', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Networked Hints', thumb: 'tbd', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Outdoor Action!', thumb: 'tbd', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Posters', thumb: 'tbd', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Rushmore', thumb: 'rus', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Shouldn’t That Rhyme?', thumb: 'tbd', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Signposts', thumb: 'tbd', author: 'Tim Hannifin', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Ski Resort', thumb: 'tbd', author: 'Joey Marianer', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Slow Down!', thumb: 'tbd', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'The Hunt', thumb: 'tbd', author: 'Joey Marianer', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'There’s Air in the Something Tonight', thumb: '', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Up For Air', thumb: 'tbd', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: '', thumb: 'tbd', author: 'TBD', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: '', thumb: 'tbd', author: 'TBD', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: '', thumb: 'tbd', author: 'TBD', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: '', thumb: 'tbd', author: 'TBD', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+
+    // { title: 'Annual Anthem', thumb: 'tbd', author: 'Rorke Haining', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'anthem' },
+    // { title: 'Coastal Erosion', thumb: 'tbd', author: 'Martyn Lovell', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'erosion' },
+    // { title: 'Up and Down Mount Everest', thumb: 'tbd', author: 'Wei-Hwa Huang', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'everest' },            
 ];
 
 var metas = {
+    anthem: {
+        title: 'Annual Anthem',
+        store: 'AnnualAnthemMeta',
+        count: 4,
+        icon: 'Icons/anthem.png',
+    },
+    erosion: {
+        title: 'Coastal Erosion',
+        store: 'CoastalErosionMeta',
+        count: 4,
+        icon: 'Icons/erosion.png',
+    },
+    everest: {
+        title: 'Up and Down Mount Everest',
+        store: 'UpAndDownMountEverestMeta',
+        count: 4,
+        icon: 'Icons/everest.png',
+    },
+   
 }
 
 // Pass any url arguments on to the puzzles, plus the event identifier
