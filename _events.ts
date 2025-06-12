@@ -276,7 +276,7 @@ const pastSafaris = {
 
 const puzzleSafari19 = ['ps19'];  //,'gs22'
 const givingSafari24 = ['gs24','21','ps21'];
-const givingSafari25 = ['gs25','22','ps22'];
+const givingSafari25 = ['gs25','ps22'];
 const puzzleSafari21Minis = ['ic21','sb21','tm21','fr21'];
 const allSafari21 = ['gs24','21','ps21','ic21','sb21','tm21','fr21'];
 

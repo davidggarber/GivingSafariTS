@@ -8,7 +8,7 @@
     <script>
       const boiler = {
         safaris: givingSafari25,
-        safari: '21',
+        safari: 'ps22',
         title: 'Rushmore',
         author: 'David Garber',
         copyright: '2022',
@@ -18,13 +18,62 @@
         },
         reactiveBuilder: 'pageBody',
         lookup: {
+          sets: [
+            [
+              { items: ['Antelope', 'Bryce', 'Hells', 'Waimea', 'Yosemite'], take: 4},
+              { items: ['Chihuahuan', 'Great Basin', 'Mojave', 'Oaxaca', 'Sonoran'], take: 3},
+              { items: ['Bluegrass', 'Evergreen', 'Garden', 'Magnolia', 'Tulip'], take: 1},
+            ],
+            [
+              { items: ['AquaSox', 'Kraken', 'Reign', 'Seawolves', 'Sturgeon'], take: 4},
+              { items: ['Carolina', 'Hampshire', 'Jersey', 'Mexico', 'York'], take: 2},
+              { items: ['Dover', 'Frankfort', 'Memphis', 'Montpelier', 'Pierre'], take: 1},
+            ],
+            [
+              { items: ['Cochiti', 'Grand Coulee', 'Hoover', 'Oroville', 'Peach Bottom'], take: 3},
+              { items: ['Lopez', 'Orcas', 'San Juan', 'Shaw', 'Sidney'], take: 4},
+              { items: [], take: 0},
+            ]
+          ]
         },
       };
     </script>
     <style>
+      .cell {
+        position: relative;
+        width: 2.5in;
+        height: 1.75in;
+        border: solid 0.5px black;
+      }
+      .cell ul {
+        line-height: 30px;
+      }
+      .entry {
+        position: absolute;
+        left: 1.7in;
+        top: 0.5in;
+        width: 0.5in;
+        height: 0.5in;
+        text-align: center;
+      }
+      .under {
+        position: relative;
+        top: -4px;
+        font-size: 7pt;
+      }
+      #Rushmore .letter-cell.extract {
+        width: 0.5in;
+        height: 0.5in;
+        font-size: 20pt;
+      }
+      #extracted {
+        position: relative;
+        top: 0.5in;
+        text-align: center;
+      }
     </style>
   </head>
-  <body id="__puzzle_name">
+  <body id="Rushmore">
     <div id="pageBody">
       <p class="flavor">
         Many recommendations have been made to add to Mount Rushmore. But the mountain remains today with just George, Tom, Ted, Abe, and Bill, pictured here&hellip;
@@ -32,7 +81,33 @@
       <p style="text-align: center;">
         <img src="./Rushmore/Rushmore.jpg" alt="Mount Rushmore" style="width:2.16in" />
       </p>
+      <p class="flavor">
+        Travelling around the USA, we spotted eight other collections. And yet, something is amiss with each…
+      </p>
 
+      <ttable style="border-collapse: collapse;" data-extract-style="box">
+        <for each="row" in="{sets}">
+          <ttr>
+            <for each="col" in="{row}">
+              <ttd class="cell">
+                <if test="{col.take}" gt="0">
+                  <div class="entry">
+                    <letter extract="true"/><br />
+                    <span class="under">{col.take}</span>
+                  </div>
+                  <ul>
+                    <for each="item" in="{col.items}">
+                      <li>{item}</li>
+                    </for>
+                  </ul>
+                </if>
+              </ttd>
+            </for>
+          </ttr>  
+        </for>
+      </ttable>
+
+      <div id="extracted" />
 
     </div>
   </body>
