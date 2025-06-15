@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari25,
+        safari: 'ps22',
+        title: 'Active Lifestyle',
+        author: 'Martyn Lovell',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          columns: [
+            { id:'col1', 
+              words: [
+                {
+                  pat: 8, 
+                  ext: 7,
+                  data:[
+                    {pic: 'a1.png', height: 99},
+                    {pic: 'a2.png', height: 91},
+                    {pic: 'a3.png', height: 102},
+                  ]
+                },
+                {
+                  pat: 7, 
+                  ext: 3,
+                  data:[
+                    {pic: 'b1.jpg', height: 101},
+                    {pic: 'b2.png', height: 86},
+                  ]
+                },
+                {
+                  pat: 7, 
+                  ext: 5,
+                  data:[
+                    {pic: 'c1.jpg', height: 109},
+                    {pic: 'c2.png', height: 120},
+                    {text: '-B'},
+                  ]
+                },
+              ]
+            },
+            { id:'col2', 
+              words: [
+                {
+                  pat: 6, 
+                  ext: 4,
+                  data:[
+                    {pic: 'd1.png', height: 121},
+                    {pic: 'd2.png', height: 114},
+                  ]
+                },
+                {
+                  pat: 9, 
+                  ext: 7,
+                  data:[
+                    {pic: 'e1.png', height: 95},
+                    {pic: 'e2.jpg', height: 96},
+                  ]
+                },
+                {
+                  pat: 10, 
+                  ext: 7,
+                  data:[
+                    {pic: 'f1.png', height: 103},
+                    {pic: 'f2.png', height: 111},
+                    {pic: 'f3.png', height: 115},
+                  ]
+                },
+                {
+                  pat: 5, 
+                  ext: 3,
+                  data:[
+                    {text: 'K+'},
+                    {pic: 'g1.png', height: 71},
+                    {pic: 'g2.jpg', height: 97},
+                  ]
+                },
+              ]
+            },
+            { id:'col3', 
+              words: [
+                {
+                  pat: 8, 
+                  ext: 5,
+                  data:[
+                    {pic: 'h1.jpg', height: 105},
+                    {pic: 'h2.png', height: 100},
+                  ]
+                },
+                {
+                  pat: '5 4', 
+                  ext: 7,
+                  data:[
+                    {pic: 'i1.png', height: 82},
+                    {pic: 'i2.svg', height: 93},
+                    {text: '-B'},
+                  ]
+                },
+                {
+                  pat: 9, 
+                  ext: 9,
+                  data:[
+                    {pic: 'h1.jpg', height: 98},
+                    {pic: 'j2.jpg', height: 76},
+                  ]
+                },
+                {
+                  pat: 7, 
+                  ext: 7,
+                  data:[
+                    {pic: 'k1.png', height: 96},
+                    {pic: 'k2.png', height: 113},
+                    {pic: 'k3.png', height: 108},
+                    {text: '-W'},
+                  ]
+                },
+              ]
+            },
+          ]
+        },
+      };
+    </script>
+    <style>
+      .flavor {
+        font-style: italic;
+        margin: 10px 0;
+      }
+      #table {
+        position: relative;
+      }
+      #col1 {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 2.2in;
+        height: 8in;
+        border-right: solid 1px black;
+        padding-right: 0.05in;
+      }
+      #col2 {
+        position: absolute;
+        left: 2.4in;
+        top: 0px;
+        width: 2.5in;
+        height: 8in;
+        padding-right: 0.1in;
+        border-right: solid 1px black;
+      }
+      #col3 {
+        position: absolute;
+        left: 5.1in;
+        top: 0px;
+        width: 2.5in;
+        height: 8in;
+      }
+      .text {
+        font-size: 34pt;
+      }
+      #extracted {
+        position: absolute;
+        left: 2.5in;
+        top: 8.75in;
+      }
+    </style>
+  </head>
+  <body id="ActiveLifestyle" data-letter-style="underline" data-extract-style="highlight">
+    <div id="pageBody">
+      <p class="flavor">
+        We&lsquo;re visiting national parks from all over the world and have scheduled a wide range of activities. After all is done, what else will we have seen?
+      </p>
+
+      <div id="table">
+        <for each="col" in="columns">
+          <div class="column" id="{col.id}">
+            <for each="word" in="col.words">
+              <p>
+                <for each="item" in="word.data">
+                  <if exists="{item.pic}">
+                    <img src="ActiveLife/{item.pic}" style="height:{item.height/100}in" />
+                  </if>
+                  <elseif exists="{item.text}">
+                    <span class="text">{item.text}</span>
+                  </elseif>
+                  <else>
+                    <br />
+                  </else>
+                </for>
+                <br />
+                <pattern pattern="{word.pat}" extract="{word.ext}" />
+              </p>
+            </for>
+          </div>
+        </for>
+      </div>
+
+      <div id="extracted" />
+
+
+    </div>
+  </body>
+</html>
