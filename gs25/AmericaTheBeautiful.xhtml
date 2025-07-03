@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari25,
+        safari: 'ps22',
+        title: 'America The Beautiful',
+        author: 'Chris Jeuell',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          sites: [
+            'Gettysburg National Military Park',
+            'Mount Hood National Forest',
+            'Tuskegee Airmen National Historic Site',
+            'Mount Rushmore National Memorial',
+            'Shenandoah National Park',
+            'Mount Hood National Forest',
+            'Cumberland Gap National Historical Park',
+            'Tuskegee Airmen National Historic Site',
+            'Shenandoah National Park',
+          ]
+        },
+      };
+    </script>
+    <style>
+      td {
+        height: 0.5in;
+      }
+      .site {
+        text-align: right;
+      }
+      #AmericaTheBeautiful .letter-cell.letter-underline {
+        width: 0.5in;
+      }
+      #AmericaTheBeautiful .year .letter-cell.multiple-letter.letter-underline {
+        width: 1in;
+      }
+
+    </style>
+  </head>
+  <body id="AmericaTheBeautiful">
+    <div id="pageBody">
+      <p class="flavor">
+        I finished my tour of all the U.S. states and territories in 2009. So the following year, I began a new tour 
+        of some amazing national sites. I was so pleased that I made donations and never wanted any of my 
+        <i>quarters</i> back; <i>America</i> is <i>Beautiful</i>.
+      </p>
+      <p><i>Hint:</i> Yellowstone National Park &#11106; 2010 &#11106; 1 (= 2010 &minus; 2009) &#11106; A</p>
+
+      <hr />
+
+      <div style="width: 7in; position: relative;">
+        <ttable style="position: absolute; right: 0px;">
+          <for each="site" in="sites">
+            <ttr>
+              <ttd class="site">{site}</ttd>
+              <ttd class="year">&#11106; <word maxlength="4" class="numeric" /></ttd>
+              <ttd class="number">&#11106; <number /></ttd>
+              <ttd class="letter">&#11106; <letter /></ttd>
+            </ttr>
+          </for>
+        </ttable>
+      </div>
+
+
+
+    </div>
+  </body>
+</html>

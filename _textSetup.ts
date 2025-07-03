@@ -1,7 +1,7 @@
 import { hasClass, toggleClass, applyAllClasses, getOptionalStyle, findParentOfClass, isTag, SortElements } from "./_classUtil";
 import { onLetterKeyDown, onLetterChange, onWordKey, onWordChange, onLetterKeyUp, onWordInput, onLetterInput, onButtonKeyDown } from "./_textInput";
 import { indexAllInputFields } from "./_storage"
-import { ContextError } from "./_contextError";
+import { cloneSomeAttributes } from "./_builderContext";
 
 /**
  * On page load, look for any instances of elements tag with class names we respond to.
@@ -352,6 +352,10 @@ function parsePattern2( elmt: Element,
     return set;
 }
 
+// Attributes that authors can place on <letter/> elements
+// which we should mirror to the underlying input fields
+const inputAttributesToCopy = [ 'size', 'maxlength', 'inputmode' ];
+
 /**
  * Once elements are created and tagged with letter-cell,
  * (which happens automatically when containers are tagged with create-from-pattern)
@@ -380,6 +384,7 @@ function setupLetterCells() {
         // Place a small text input field in each cell
         const inp:HTMLInputElement = document.createElement('input');
         inp.type = 'text';
+        cloneSomeAttributes(cell, inp, inputAttributesToCopy);
 
         // Allow container to inject ID
         let attr:string|null;
@@ -482,6 +487,7 @@ function setupWordCells() {
         const inp:HTMLInputElement = document.createElement('input');
         inp.type = 'text';
         toggleClass(inp, 'word-input');
+        cloneSomeAttributes(cell, inp, inputAttributesToCopy);
 
         // Allow container to inject ID
         let attr:string|null;
@@ -504,6 +510,12 @@ function setupWordCells() {
             inp.onkeyup=function(e){onWordKey(e)};
             inp.onchange=function(e){onWordChange(e as KeyboardEvent)};
             inp.oninput=function(e){onWordInput(e as InputEvent)};
+
+            if (hasClass(cell, 'numeric')) {
+                // We never submit, so this doesn't have to be exact. But it should trigger the mobile numeric keyboard
+                inp.pattern = '[0-9]*';  // iOS
+                inp.inputMode = 'numeric';  // Android
+            }
         }
 
         if (inpStyle != null) {

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
 exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = void 0;
 exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = void 0;
-exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea1 = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = void 0;
+exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = void 0;
 exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
@@ -4004,6 +4004,9 @@ function parsePattern2(elmt, patternAttr, offset = 0) {
     }
     return set;
 }
+// Attributes that authors can place on <letter/> elements
+// which we should mirror to the underlying input fields
+const inputAttributesToCopy = ['size', 'maxlength', 'inputmode'];
 /**
  * Once elements are created and tagged with letter-cell,
  * (which happens automatically when containers are tagged with create-from-pattern)
@@ -4031,6 +4034,7 @@ function setupLetterCells() {
         // Place a small text input field in each cell
         const inp = document.createElement('input');
         inp.type = 'text';
+        cloneSomeAttributes(cell, inp, inputAttributesToCopy);
         // Allow container to inject ID
         let attr;
         if (attr = cell.getAttributeNS('', 'input-id')) {
@@ -4124,6 +4128,7 @@ function setupWordCells() {
         const inp = document.createElement('input');
         inp.type = 'text';
         toggleClass(inp, 'word-input');
+        cloneSomeAttributes(cell, inp, inputAttributesToCopy);
         // Allow container to inject ID
         let attr;
         if (attr = cell.getAttributeNS('', 'input-id')) {
@@ -4144,6 +4149,11 @@ function setupWordCells() {
             inp.onkeyup = function (e) { onWordKey(e); };
             inp.onchange = function (e) { onWordChange(e); };
             inp.oninput = function (e) { onWordInput(e); };
+            if (hasClass(cell, 'numeric')) {
+                // We never submit, so this doesn't have to be exact. But it should trigger the mobile numeric keyboard
+                inp.pattern = '[0-9]*'; // iOS
+                inp.inputMode = 'numeric'; // Android
+            }
         }
         if (inpStyle != null) {
             applyAllClasses(inp, inpStyle);
@@ -6727,18 +6737,18 @@ const safari24Details = {
 const safari25Details = {
     'title': 'Hip To Be Square',
     // 'logo': './Images/GS24_banner.png',  // PS21 logo.png',
-    // 'icon': './Images/Plate_icon.png',
+    'icon': './Images/ps25_favicon.png',
     // 'iconRoot': './Icons/',
     'cssRoot': '../Css/',
     'fontCss': '../24/Css/Fonts21.css',
     'googleFonts': 'Nova+Square,Caveat',
     'links': [],
-    // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
-    //                'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+    // 'qr_folders': {'https://www.puzzyl.net/ps25/': './Qr/puzzyl/',
+    //                'file:///D:/git/GivingSafariTS/ps25/': './Qr/puzzyl/'},
     // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
-    // 'backLinks': { 'gs24': { href:'./Menu.xhtml'}, 'ps21': { href:'./Menu.xhtml'}},
+    // 'backLinks': { 'ps25': { href:'./Menu.xhtml'}},
     'validation': false,
-    // eventSync: 'GivingSafari24',
+    // eventSync: 'GivingSafari25',
 };
 const safariDggDetails = {
     'title': 'David’s Puzzles',
@@ -9455,7 +9465,6 @@ exports.valueFromGlobalContext = valueFromGlobalContext;
  * Finish cloning an HTML element
  * @param src The element being cloned
  * @param dest The new element, still in need of attributes
- * @param context A dictionary of all accessible values
  */
 function cloneAttributes(src, dest) {
     for (let i = 0; i < src.attributes.length; i++) {
@@ -9489,6 +9498,28 @@ function cloneAttributes(src, dest) {
     }
 }
 exports.cloneAttributes = cloneAttributes;
+/**
+ * Finish cloning an HTML element
+ * @param src The element being cloned
+ * @param dest The new element, still in need of attributes
+ * @param attributes A list of attributes we're willing to clone
+ */
+function cloneSomeAttributes(src, dest, attributes) {
+    for (let i = 0; i < attributes.length; i++) {
+        const name = attributes[i];
+        try {
+            let value = src.getAttributeNS('', name);
+            if (value !== null && value !== undefined) {
+                value = cloneText(value);
+                dest.setAttributeNS('', name, value);
+            }
+        }
+        catch (ex) {
+            throw wrapContextError(ex, 'cloneAttributes', elementSourceOffset(src, name));
+        }
+    }
+}
+exports.cloneSomeAttributes = cloneSomeAttributes;
 /**
  * Process a text node which may contain {curly} formatting.
  * @param text A text node
@@ -11160,153 +11191,6 @@ function startInputArea(src) {
     return [span];
 }
 exports.startInputArea = startInputArea;
-/**
- * Shortcut tags for text input. These include:
- *  letter: any single character
- *  letters: a few characters, in a single input
- *  literal: readonly single character
- *  number: any numeric digit
- *  numbers: a few numeric digits
- *  word: full multi-character
- *  pattern: multiple inputs, generated from a pattern
- * @param src One of the input shortcut tags
- * @param context A dictionary of all values that can be looked up
- * @returns a node array containing a single <span>
- */
-function startInputArea1(src) {
-    const span = document.createElement('span');
-    traceTagComment(src, span, true);
-    // Copy most attributes. 
-    // Special-cased ones are harmless - no meaning in generic spans
-    cloneAttributes(src, span);
-    let cloneContents = false;
-    let literal = null;
-    const extract = src.hasAttributeNS('', 'extract') ? cloneText(src.getAttributeNS('', 'extract')) : null;
-    let styles = getLetterStyles(src, 'underline', 'none', 'box');
-    // Convert special attributes to data-* attributes for later text setup
-    let attr;
-    if (isTag(src, 'letter')) { // 1 input cell for (usually) one character
-        toggleClass(span, 'letter-cell', true);
-        literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
-    }
-    else if (isTag(src, 'letters')) { // 1 input cell for a few characters
-        toggleClass(span, 'letter-cell', true);
-        toggleClass(span, 'multiple-letter', true);
-        literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
-    }
-    else if (isTag(src, 'literal')) { // 1 input cell for (usually) one character
-        toggleClass(span, 'letter-cell', true);
-        literal = ' ';
-        cloneContents = true; // literal value
-    }
-    else if (isTag(src, 'number')) { // 1 input cell for one numeric character
-        toggleClass(span, 'letter-cell', true);
-        toggleClass(span, 'numeric', true);
-        literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
-    }
-    else if (isTag(src, 'numbers')) { // 1 input cell for multiple numeric digits
-        toggleClass(span, 'letter-cell', true);
-        toggleClass(span, 'multiple-letter', true);
-        toggleClass(span, 'numeric', true);
-        // To support longer (or negative) numbers, set class = 'multiple-letter'
-        literal = src.getAttributeNS('', 'literal'); // converts letter to letter-literal
-    }
-    else if (isTag(src, 'word')) { // 1 input cell for one or more words
-        toggleClass(span, 'word-cell', true);
-        if (attr = src.getAttributeNS('', 'extract')) {
-            // attr should be 1 or more numbers (separated by spaces), detailing which letters to extract
-            span.setAttributeNS('', 'data-extract-index', cloneText(attr));
-        }
-        if (attr = src.getAttributeNS('', 'extracted-id')) {
-            span.setAttributeNS('', 'data-extracted-id', cloneText(attr));
-        }
-        if (attr = src.getAttributeNS('', 'literal')) {
-            toggleClass(span, 'literal', true);
-            span.innerText = cloneText(attr);
-        }
-    }
-    else if (isTag(src, 'extract')) {
-        // Backdoor way to inject literals into extraction.
-        // They can have rules too.
-        // Don't specify a *-cell, since we don't actually need an <input>
-        span.style.display = 'none';
-        toggleClass(span, 'extract-literal', true);
-        if (attr = src.getAttributeNS('', 'word')) {
-            toggleClass(span, 'word-input', true);
-            span.setAttributeNS('', 'value', attr);
-        }
-        else if (attr = src.getAttributeNS('', 'letter') || src.getAttributeNS('', 'letters')) { // can be multiple letters
-            toggleClass(span, 'extract-input', true);
-            span.setAttributeNS('', 'value', attr);
-        }
-        // Other styles, especially data-*, have already copied across
-    }
-    else if (isTag(src, 'pattern')) { // multiple input cells for (usually) one character each
-        toggleClass(span, 'letter-cell-block', true);
-        if (attr = src.getAttributeNS('', 'pattern')) { // Pattern for input
-            toggleClass(span, 'create-from-pattern', true);
-            span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
-        }
-        else if (attr = src.getAttributeNS('', 'extract-numbers')) { // Pattern for #extracted with numbers
-            span.setAttributeNS('', 'data-number-pattern', cloneText(attr));
-        }
-        else if (attr = src.getAttributeNS('', 'extract-pattern')) { // Pattern for the #extracted target
-            span.setAttributeNS('', 'data-letter-pattern', cloneText(attr));
-            span.setAttributeNS('', 'data-indexed-by-letter', '');
-        }
-        if (attr = src.getAttributeNS('', 'extract')) { // Extraction indeces
-            span.setAttributeNS('', 'data-extract-indeces', cloneText(attr));
-        }
-        if (attr = src.getAttributeNS('', 'numbers')) { // Extraction with under-numbers
-            span.setAttributeNS('', 'data-number-assignments', cloneText(attr));
-        }
-    }
-    else {
-        return [src]; // Unknown tag. NYI?
-    }
-    let block = src.getAttributeNS('', 'block'); // Used in grids
-    if (block) {
-        toggleClass(span, 'block', true);
-        literal = literal || block;
-    }
-    if (literal == '¤') { // Special case (and back-compat)
-        toggleClass(span, 'block', true);
-        literal = ' ';
-    }
-    if (literal) {
-        if (!cloneContents) {
-            span.innerText = cloneText(literal);
-        }
-        toggleClass(span, 'literal', true);
-        applyAllClasses(span, styles.literal);
-    }
-    else if (!isTag(src, 'pattern')) {
-        if (!isTag(src, 'word')) {
-            applyAllClasses(span, styles.letter);
-        }
-        if (extract != null) {
-            toggleClass(span, 'extract', true);
-            if (parseInt(extract) > 0) {
-                toggleClass(span, 'numbered', true);
-                toggleClass(span, 'extract-numbered', true);
-                span.setAttributeNS('', 'data-number', extract);
-                const under = document.createElement('span');
-                toggleClass(under, 'under-number');
-                under.innerText = extract;
-                span.appendChild(under);
-            }
-            applyAllClasses(span, styles.extract);
-        }
-    }
-    if (cloneContents) {
-        appendRange(span, expandContents(src));
-    }
-    else if (src.childNodes.length > 0) {
-        throw new ContextError('Input tags like <' + src.localName + '/> should be empty elements', nodeSourceOffset(src.childNodes[0]));
-    }
-    return [span];
-}
-exports.startInputArea1 = startInputArea1;
 /**
  * Replace a <use> tag with the contents of a <template>.
  * Along the way, push any attributes of the <use> tag onto the context.

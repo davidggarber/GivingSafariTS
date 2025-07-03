@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "msedge",
+      "type": "chrome",
       "request": "launch",
       "name": "Launch w/o compiling",
       "skipFiles": [
@@ -14,7 +14,7 @@
       "url": "${workspaceFolder}\\Docs\\context.html",
     },
     {
-      "type": "msedge",
+      "type": "chrome",
       "request": "launch",
       "name": "Launch Browser",
       "skipFiles": [
@@ -27,7 +27,7 @@
       ]
     },
     {
-      "type": "msedge",
+      "type": "chrome",
       "request": "launch",
       "name": "Launch Docs",
       "skipFiles": [
@@ -40,7 +40,7 @@
       ]
     },
     {
-      "type": "msedge",
+      "type": "chrome",
       "request": "launch",
       "name": "Launch DGG",
       "skipFiles": [
@@ -53,7 +53,7 @@
       ]
     },
     {
-      "type": "msedge",
+      "type": "chrome",
       "request": "launch",
       "name": "Launch GS 23",
       "skipFiles": [
@@ -66,7 +66,7 @@
       ]
     },
     {
-      "type": "msedge",
+      "type": "chrome",
       "request": "launch",
       "name": "Launch GS 24",
       "skipFiles": [
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "type": "msedge",
+      "type": "chrome",
       "request": "launch",
       "name": "Launch GS 25",
       "skipFiles": [
@@ -92,13 +92,25 @@
       ]
     },
     {
-      "type": "msedge",
+      "type": "chrome",
       "request": "launch",
       "name": "Launch Today's puzzle",
       "skipFiles": [
         "<node_internals>/**"
       ],
       "url": "${workspaceFolder}\\PS19\\BillDingSight.xhtml",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/js/**/*.js"
+      ]
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Rebuild kit only",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/js/**/*.js"

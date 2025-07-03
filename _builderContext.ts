@@ -84,7 +84,6 @@ export function valueFromGlobalContext(path:string, maybe?:boolean):any {
  * Finish cloning an HTML element
  * @param src The element being cloned
  * @param dest The new element, still in need of attributes
- * @param context A dictionary of all accessible values
  */
 export function cloneAttributes(src:Element, dest:Element) {
   for (let i = 0; i < src.attributes.length; i++) {
@@ -109,6 +108,28 @@ export function cloneAttributes(src:Element, dest:Element) {
         // These are applied when the node is cloned, not here as an attribute
       }
       else {
+        dest.setAttributeNS('', name, value);
+      }
+    }
+    catch (ex) {
+      throw wrapContextError(ex, 'cloneAttributes', elementSourceOffset(src, name));
+    }
+  }
+}
+
+/**
+ * Finish cloning an HTML element
+ * @param src The element being cloned
+ * @param dest The new element, still in need of attributes
+ * @param attributes A list of attributes we're willing to clone
+ */
+export function cloneSomeAttributes(src:Element, dest:Element, attributes:string[]) {
+  for (let i = 0; i < attributes.length; i++) {
+    const name = attributes[i];
+    try {
+      let value = src.getAttributeNS('', name);
+      if (value !== null && value !== undefined) {
+        value = cloneText(value);
         dest.setAttributeNS('', name, value);
       }
     }
