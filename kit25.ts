@@ -2742,7 +2742,7 @@ export function onLetterKey(event:KeyboardEvent): boolean {
         // Don't move focus if nothing was typed
         if (!multiLetter) {
             afterInputUpdate(input, event.key);
-            return true;
+            return false;  // we just did the post-processing
         }
     }
     else if (input.value.length === 1 && !input.value.match(/[a-z0-9]/i)) {
@@ -7467,6 +7467,23 @@ const safari24Details:PuzzleEventDetails = {
   'backLinks': { 'ps24':{ href:'./indexx.html'}, 'gs27':{ href:'./safari.html'} },
 }
 
+const safari25Details:PuzzleEventDetails = {
+  'title': 'Hip To Be Square',
+  // 'logo': './Images/GS24_banner.png',  // PS21 logo.png',
+  // 'icon': './Images/Plate_icon.png',
+  // 'iconRoot': './Icons/',
+  'cssRoot': '../Css/',
+  'fontCss': '../24/Css/Fonts21.css',
+  'googleFonts': 'Nova+Square,Caveat',  // no whitespace
+  'links': [],
+  // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
+  //                'file:///D:/git/GivingSafariTS/24/': './Qr/puzzyl/'},
+  // 'solverSite': 'https://givingsafari2024.azurewebsites.net/Solver',  // Only during events
+  // 'backLinks': { 'gs24': { href:'./Menu.xhtml'}, 'ps21': { href:'./Menu.xhtml'}},
+  'validation': false,
+  // eventSync: 'GivingSafari24',
+}
+
 const safariDggDetails:PuzzleEventDetails = {
   'title': 'David’s Puzzles',
   'logo': './Images/octopus_watermark.png',
@@ -7481,6 +7498,7 @@ const safariDggDetails:PuzzleEventDetails = {
   // 'solverSite': 'https://givingsafari2023.azurewebsites.net/Solver',  // Only during events
   'backLinks': { '':{ href:'./indexx.html'} },
 }
+
 
 // Event for the PuzzylSafariTeam branch
 const puzzylSafariTeamDetails:PuzzleEventDetails = {
@@ -7522,6 +7540,7 @@ const pastSafaris = {
   'ps20': safari20Details,
   'ps21': safari21Details,
   'ps22': safari22Details,
+  'ps25': safari25Details,
   'Dgg': safariDggDetails,
   '24': safari24Details,
   'gs24': giving24Details,
@@ -7537,6 +7556,7 @@ const pastSafaris = {
 const puzzleSafari19 = ['ps19'];  //,'gs22'
 const givingSafari24 = ['gs24','21','ps21'];
 const givingSafari25 = ['gs25','ps22'];
+const puzzleSafari25 = ['ps25'];  //,'gs28'
 const puzzleSafari21Minis = ['ic21','sb21','tm21','fr21'];
 const allSafari21 = ['gs24','21','ps21','ic21','sb21','tm21','fr21'];
 

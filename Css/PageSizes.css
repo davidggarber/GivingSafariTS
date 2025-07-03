@@ -131,15 +131,6 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
     padding: 0.25in;
     page-break-after: avoid; 
   }
-
-  .scrapbook.portrait .printedPage {
-    width:7.5in;
-    height:10in; 
-  }
-  .scrapbook.landscape .printedPage {
-    width:10in;
-    height:7.5in; 
-  }
 }
 
 .pageWithinMargins {

@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="kit25.js" />
+    <script>
+      const boiler = {
+        title: 'Hip Covers',
+        author: 'Ken Pacquer and Jen Traeger',
+        copyright: '2025',
+        paperSize: 'scrapbook',
+        orientation: 'portrait',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: false,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+
+      // <![CDATA[
+      var playing = null;
+      function onPlay(aud) {
+        if (playing != null && playing != aud) {
+          // If another row was playing, pause that
+          playing.pause();
+          toggleClass(playing.parentNode.parentNode, 'playing', false);
+        }
+        // Track and highlight the row that's playing
+        playing = aud;
+        if (aud != null) {
+          toggleClass(aud.parentNode.parentNode, 'playing', true);
+        }
+      }
+      function toggleAudio(inp, key) {
+        if (key != 'Enter') {
+          return;
+        }
+        // Whenever the user types ENTER, play (or pause) the audio on that row
+        var tr = findParentOfTag(inp, 'tr');
+        if (tr != null) {
+          var td = tr.getElementsByTagName('td')[1];
+          var aud = td.getElementsByTagName('audio')[0];
+          if (aud == undefined) {
+            return;
+          }
+          if (aud == playing) {
+            onPlay(null);
+          }
+          else {
+            onPlay(aud);
+            aud.play();
+          }
+        }
+      }
+      //]]> 
+    </script>
+    <link xmlns="http://www.w3.org/1999/xhtml" href="https://fonts.googleapis.com" rel="preconnect" />
+    <link xmlns="http://www.w3.org/1999/xhtml" href="https://fonts.gstatic.com" rel="preconnect" crossorigin="" />
+    <link xmlns="http://www.w3.org/1999/xhtml" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=Nova+Square&amp;family=Caveat&amp;display=swap" rel="stylesheet" />
+    <link href="Kit-PageSizes.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit-PuzzleParts.css" rel="Stylesheet" type="text/css"></link>
+    <link href="Kit-TextInput.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      .title {
+        font-size: 54pt;
+        font-family: 'Nova Square';
+        font-weight: bold;
+      }
+      #table {
+        width: 100%;
+      }
+      
+      td {
+        padding: 2px;
+      }
+      td.left {
+        width: 2in;
+      }
+      td.middle {
+        width: 220px;
+      }
+      .playing td {
+        background-color: yellow;
+      }
+      
+      audio {
+        height: 30px;
+        width: 200px;
+      }
+      audio::-webkit-media-controls-timeline-container,
+      audio::-webkit-media-controls-current-time-display,
+      audio::-webkit-media-controls-time-remaining-display,
+      audio::-webkit-media-controls-mute-button {
+        display: none;
+      }
+
+      #HipCovers .under-number {
+        font-family: 'Verdana';
+        font-size: 7pt;
+      }
+      #custom-enter {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        font-size: 7pt;
+        cursor: help;
+      }
+      #custom-enter button {
+        font-size: 7pt;
+      }
+    </style>
+  </head>
+  <body id="HipCovers">
+    <div id="pageBody">
+      <p style="margin-top: 0.75in;">
+        Can you identify these cover songs? (Best on desktop devices, some mobile devices won't auto-fill the clue at the bottom.)
+      </p>
+      <p>
+        <b>Type</b> titles of these songs directly into the page. Press <b>Enter</b> to toggle music on the current line. <b>Refresh</b> to reload or start over.
+      </p>
+
+      <table id="table" data-literal-style="none" data-extract-style="none" class="text-input-group" data-onchange="toggleAudio">
+        <tr>  
+          <td class="left">Kitchen+bath+helium</td>
+          <td class="middle"><audio src="./mp3-junk-moveforme.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="5 6" numbers="1=35 2=13 6=43"/></td>
+        </tr>
+        <tr>
+          <td class="left">80s Sax</td>
+          <td class="middle"><audio src="./mp3-sax-cherryrednails.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="7" numbers="2=22 5=36 6=40"/></td>
+        </tr>
+        <tr>
+          <td class="left">8-Bit</td>
+          <td class="middle"><audio src="./mp3-8-bit-ichimein.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="1 5 4 3 9" numbers="7=19 11=28 14=1"/></td>
+        </tr>
+        <tr>
+          <td class="left">Quartet</td>
+          <td class="middle"><audio src="./mp3-quartet-mwah.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="4" numbers="2=21 3=15 4=38"/></td>
+        </tr>
+        <tr>
+          <td class="left">Halen-esque</td>
+          <td class="middle"><audio src="./mp3-metal-snoopdog.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="5 3 4" numbers="9=32 11=39 12=6"/></td>
+        </tr>
+        <tr>
+          <td class="left">Orchestra</td>
+          <td class="middle"><audio src="./mp3-orchestra-dramakarma.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="4 4 3 4 2 2" numbers="8=5 18=18 19=25"/></td>
+        </tr>
+        <tr>
+          <td class="left">German folk</td>
+          <td class="middle"><audio src="./mp3-germanfolk-cantreadmy.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="5 4" numbers="4=41 5=27 6=7"/></td>
+        </tr>
+        <tr>
+          <td class="left">Ska</td>
+          <td class="middle"><audio src="./mp3-ska-gobstopper.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="4 11" numbers="3=14 5=46 15=34"/></td>
+        </tr>
+        <tr>
+          <td class="left">Flute</td>
+          <td class="middle"><audio src="./mp3-flute-a.d.d.goneawol.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="4" numbers="1=37 2=42 3=8"/></td>
+        </tr>
+        <tr>
+          <td class="left">Delta blues</td>
+          <td class="middle"><audio src="./mp3-deltablues-triangles-stripes.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="5 6 4" numbers="3=9 5=17 6=30"/></td>
+        </tr>
+        <tr>
+          <td class="left">French café</td>                
+          <td class="middle"><audio src="./mp3-frenchcafe-chute-du-ceil.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="7" numbers="3=11 4=24 7=23"/></td>
+        </tr>
+        <tr>
+          <td class="left">Ocarina+guitar</td>                
+          <td class="middle"><audio src="./mp3-ocarina-superbowlpoker.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="5 4'2" numbers="1=20 6=45 10=3"/></td>
+        </tr>
+        <tr>
+          <td class="left">Old west</td>
+          <td class="middle"><audio src="./mp3-western-linktothepast.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right">Theme from <pattern pattern="3 6 2 5" numbers="1=44 10=33 13=10"/></td>
+        </tr>
+        <tr>
+          <td class="left">Surf rock</td>
+          <td class="middle"><audio src="./mp3-surfrock-cowabunga.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right">Theme from <pattern pattern="3 8" numbers="4=47 9=29 10=4"/></td>
+        </tr>
+        <tr>
+          <td class="left">Mariachi</td>
+          <td class="middle"><audio src="./mp3-mariachi-despiertame.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="4 2 2" numbers="1=2 2=16 7=26"/></td>
+        </tr>
+        <tr>
+          <td class="left">Theremin</td>
+          <td class="middle"><audio src="./mp3-theremin-inyourhead.mp3" controls="true" onplay="onPlay(this)"/></td>
+          <td class="right"><pattern pattern="6" numbers="4=31 6=12"/></td>
+        </tr>
+      </table>
+
+      <p style="margin-top: 0.5in;">
+        Clue:
+      </p>
+      <p>
+        <pattern id="extracted" extract-numbered="6-4 5 3 5 4 3-7 6 4" />
+      </p>
+
+      <div id="custom-enter"><button>⏎ Enter</button> toggles music, <button>⟳ Refresh</button> to start over</div>
+
+    </div>
+  </body>
+</html>

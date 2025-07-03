@@ -388,7 +388,7 @@ export function onLetterKey(event:KeyboardEvent): boolean {
         // Don't move focus if nothing was typed
         if (!multiLetter) {
             afterInputUpdate(input, event.key);
-            return true;
+            return false;  // we just did the post-processing
         }
     }
     else if (input.value.length === 1 && !input.value.match(/[a-z0-9]/i)) {
