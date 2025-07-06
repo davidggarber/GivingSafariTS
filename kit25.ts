@@ -6299,7 +6299,8 @@ export function preprocessRulerFunctions(mode:string, fill:boolean) {
 
 /**
  * When an edge area has a dedicated (mode)-container class,
- * make sure it also has a (mode)-fill-container class, immediately after.
+ * make sure it also has (mode)-fill-container class and (mode)-build-container
+ * elements immediately after.
  * @param area The top-level SVG: class="(mode)-area"
  * @param mode The mode name
  */
@@ -6315,6 +6316,16 @@ function ensureFillContiainer(area:Element, mode:string) {
             toggleClass(fContainer, mode + '-container', false);
             toggleClass(fContainer, mode + '-fill-container', true);
             container.insertAdjacentElement('afterend', fContainer);
+            fContainers = area.getElementsByClassName(mode + '-fill-container');
+        }
+        let bContainers = area.getElementsByClassName(mode + '-build-container');
+        if (!bContainers || bContainers.length == 0) {
+            // If a build container wasn't provided, create one, after the fill container.
+            const container = fContainers[0];
+            const bContainer = container.cloneNode(true) as Element;
+            toggleClass(bContainer, mode + '-fill-container', false);
+            toggleClass(bContainer, mode + '-build-container', true);
+            container.insertAdjacentElement('afterend', bContainer);
         }
     }
 }
@@ -6401,6 +6412,7 @@ type RulerEventData = {
     svg: SVGSVGElement;
     container: Element;
     fillContainer: Element;
+    buildContainer: Element;
     bounds: DOMRect;
     maxPoints: number;
     canShareVertices: boolean;
@@ -6423,6 +6435,8 @@ function createPartialRulerData(range:Element):RulerEventData {
     const container = (containers && containers.length > 0) ? containers[0] : svg;
     const fContainers = svg.getElementsByClassName(selector_class + '-fill-container');
     const fContainer = (fContainers && fContainers.length > 0) ? fContainers[0] : container;
+    const bContainers = svg.getElementsByClassName(selector_class + '-build-container');
+    const bContainer = (bContainers && bContainers.length > 0) ? bContainers[0] : fContainer;
     const bounds = svg.getBoundingClientRect();
     const max_points = range.getAttributeNS('', 'data-max-points');
     const maxPoints = max_points ? parseInt(max_points) : 2;
@@ -6446,6 +6460,7 @@ function createPartialRulerData(range:Element):RulerEventData {
         svg: svg, 
         container: container,
         fillContainer: fContainer,
+        buildContainer: bContainer,
         bounds: bounds,
         maxPoints: maxPoints <= 0 ? 10000 : maxPoints,
         canShareVertices: canShareVertices ? (canShareVertices.toLowerCase() == 'true') : false,
@@ -6670,7 +6685,7 @@ function createStraightLineFrom(ruler:RulerEventData, start:VertexData) {
     toggleClass(_straightEdgeBuilder, 'building', true);
     toggleClass(start.vertex, 'building', true);
     _straightEdgeBuilder.points.appendItem(start.centerPoint);
-    ruler.container.appendChild(_straightEdgeBuilder);
+    ruler.buildContainer.appendChild(_straightEdgeBuilder);
 
     toggleClass(_hoverEndpoint, 'hover', false);
     _hoverEndpoint = null;
@@ -6737,7 +6752,7 @@ function completeStraightLine(ruler:RulerEventData, vertexList:string, save:bool
     }
     if (_straightEdgeVertices.length < 2) {
         // Incomplete without at least two snapped ends. Abandon
-        ruler.container.removeChild(_straightEdgeBuilder);
+        ruler.buildContainer.removeChild(_straightEdgeBuilder);
         _straightEdgeBuilder = null;
         return;
     }
@@ -6751,12 +6766,16 @@ function completeStraightLine(ruler:RulerEventData, vertexList:string, save:bool
     const dupes:Element[] = findDuplicateEdges(ruler, 'data-vertices', vertexList, selector_class, []);
     if (dupes.length >= ruler.maxBridges && _straightEdgeBuilder) {
         // Disallow any more duplicates
-        ruler.container.removeChild(_straightEdgeBuilder);
+        ruler.buildContainer.removeChild(_straightEdgeBuilder);
         _straightEdgeBuilder = null;
     }
 
     if (_straightEdgeBuilder) {
+        // Convert to a normal (non-building) bridge
+        // Move from build container to regular container (lower z-order)
+        ruler.buildContainer.removeChild(_straightEdgeBuilder);
         toggleClass(_straightEdgeBuilder, 'building', false);
+        ruler.container.appendChild(_straightEdgeBuilder);
         _straightEdgeBuilder.setAttributeNS('', 'data-vertices', vertexList);
         _straightEdges.push(_straightEdgeBuilder);
 
@@ -7101,15 +7120,17 @@ function distanceToLine(edge: SVGPolylineElement, pt: SVGPoint) {
     const p1 = edge.points[edge.points.length - 1];
 
     // Line form: ax + by + c = 0
+    const dy = p1.y - p0.y;
+    const dx = p1.x - p0.x;
     const line = {
-        a: p0.y - p1.y,
-        b: p1.x - p0.x,
-        c: p0.x * (p1.y - p0.y) + p0.y * (p1.x - p0.x) };
-    const edgeLen = Math.sqrt(line.a * line.a + line.b * line.b);  // Length of edge
-    if (line.a == 0) {
+        a: dy,
+        b: -dx,
+        c: -(dy * p0.x - dx * p0.y) };
+    const edgeLen = Math.sqrt(dy * dy + dx * dx);  // Length of edge
+    if (dy == 0) {
         ret.distance = Math.abs(pt.y - p0.y);  // Horizontal line
     }
-    else if (line.b == 0) {
+    else if (dx == 0) {
         ret.distance = Math.abs(pt.x - p0.x);  // Vertical line
     }
     else {
@@ -7117,18 +7138,20 @@ function distanceToLine(edge: SVGPolylineElement, pt: SVGPoint) {
     }
 
     // Normal vector
-    const nx = line.a / edgeLen;
-    const ny = -line.b / edgeLen;
-    // Not sure which direction, so consider both directions along normal
+    const nx = dy / edgeLen;
+    const ny = -dx / edgeLen;
+    // To find point p2 on the line nearest pt, move ret.distance along the normal
+    // However, not sure which direction, so consider either way along normal from pt
     const n1 = {x: pt.x + nx * ret.distance, y: pt.y + ny * ret.distance};
     const n2 = {x: pt.x - nx * ret.distance, y: pt.y - ny * ret.distance};
-    // To find point p2 on the line
-    ret.ptOnLine = Math.abs(line.a * n1.x + line.b * n1.y + line.c) < Math.abs(line.a * n2.x + line.b * n2.y + line.c) ? n1 : n2;
+    // Then take the pt with where ax + by + c is closest to 0
+    ret.ptOnLine = Math.abs(line.a * n1.x + line.b * n1.y + line.c) < Math.abs(line.a * n2.x + line.b * n2.y + line.c) 
+        ? n1 : n2;
 
     // Calculate where on line, where 0 == p0 and 1 == p1
     ret.fractionAlongLine = line.b != 0 
-        ? (ret.ptOnLine.x - p0.x) / line.b
-        : (ret.ptOnLine.y - p0.y) / -line.a;
+        ? (ret.ptOnLine.x - p0.x) / -line.b
+        : (ret.ptOnLine.y - p0.y) / line.a;
     
     // If fraction is outside [0..1], then distance is to the nearer endpoint
     if (ret.fractionAlongLine < 0) {
@@ -7464,13 +7487,28 @@ const ps21Mini:PuzzleEventDetails = {
   eventSync: 'ps21Mini',
 }
 
+const safari23Details:PuzzleEventDetails = {
+  'title': 'Bad Idea',
+  // 'logo': './23/Images/PS23 logo.png',
+  'icon': './Images/Sample_Icon.png',
+  'iconRoot': './Icons/',
+  'cssRoot': './Css/',
+  'fontCss': './Css/Fonts23.css',
+  'googleFonts': 'Goblin+One,Caveat',  // no whitespace
+  'links': [],
+  // 'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+              //    'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
+  // 'solverSite': 'https://givingsafari2026.azurewebsites.net/Solver',  // Only during events
+  'backLinks': { 'ps23':{ href:'./ideas.html'}, 'gs26':{ href:'./safari.html'} },
+}
+
 const safari24Details:PuzzleEventDetails = {
   'title': 'Game Night',
-  // 'logo': '../24/Images/PS24 logo.png',
-  'icon': '../24/Images/Sample_Icon.png',
-  'iconRoot': '../24/Icons/',
-  'cssRoot': '../Css/',
-  'fontCss': '../24/Css/Fonts24.css',
+  // 'logo': './Images/PS24 logo.png',
+  'icon': './Images/ps24_favicon.png',
+  'iconRoot': './Icons/',
+  'cssRoot': './Css/',
+  'fontCss': './Css/Fonts24.css',
   'googleFonts': 'Goblin+One,Caveat',  // no whitespace
   'links': [],
   // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
@@ -7481,11 +7519,11 @@ const safari24Details:PuzzleEventDetails = {
 
 const safari25Details:PuzzleEventDetails = {
   'title': 'Hip To Be Square',
-  // 'logo': './Images/GS24_banner.png',  // PS21 logo.png',
+  // 'logo': './Images/PS25_banner.png',
   'icon': './Images/ps25_favicon.png',
   // 'iconRoot': './Icons/',
-  'cssRoot': '../Css/',
-  'fontCss': '../24/Css/Fonts21.css',
+  'cssRoot': './Css/',
+  'fontCss': './Css/Fonts25.css',
   'googleFonts': 'Nova+Square,Caveat',  // no whitespace
   'links': [],
   // 'qr_folders': {'https://www.puzzyl.net/ps25/': './Qr/puzzyl/',
@@ -7552,6 +7590,8 @@ const pastSafaris = {
   'ps20': safari20Details,
   'ps21': safari21Details,
   'ps22': safari22Details,
+  'ps23': safari23Details,
+  'ps24': safari24Details,
   'ps25': safari25Details,
   'Dgg': safariDggDetails,
   '24': safari24Details,
@@ -7567,7 +7607,8 @@ const pastSafaris = {
 
 const puzzleSafari19 = ['ps19'];  //,'gs22'
 const givingSafari24 = ['gs24','21','ps21'];
-const givingSafari25 = ['gs25','ps22'];
+const puzzleSafari22 = ['gs25','ps22'];
+const puzzleSafari24 = ['ps24'];  //,'gs27'
 const puzzleSafari25 = ['ps25'];  //,'gs28'
 const puzzleSafari21Minis = ['ic21','sb21','tm21','fr21'];
 const allSafari21 = ['gs24','21','ps21','ic21','sb21','tm21','fr21'];
