@@ -11534,54 +11534,54 @@ function paintByNumbersTemplate() {
     const temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        `<table_ class="paint-by-numbers stampable-container stamp-drag bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
-    <thead_>
-      <tr_ class="pbn-col-headers">
-        <th_ class="pbn-corner">
+        `<ttable class="paint-by-numbers stampable-container stamp-drag bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
+    <tthead>
+      <ttr class="pbn-col-headers">
+        <tth class="pbn-corner">
           <span class="pbn-instructions">
-            This is a nonogram<br>(aka paint-by-numbers).<br>
+            This is a nonogram<br />(aka paint-by-numbers).<br />
             For instructions, see 
             <a href="https://help.puzzyl.net/PBN" target="_blank">
-              https://help.puzzyl.net/PBN<br>
-              <img src="../Images/Intro/pbn.png">
+              https://help.puzzyl.net/PBN<br />
+              <img src="../Images/Intro/pbn.png" />
             </a>
           </span>
-        </th_>
+        </tth>
         <for each="col" in="{colGroups}">
-          <td_ id="colHeader-{col#}" class="pbn-col-header">
+          <ttd id="colHeader-{col#}" class="pbn-col-header">
             <for each="group" in="{col}"><span class="pbn-col-group" onclick="togglePbnClue(this)">{group}</span></for>
-          </td_>
+          </ttd>
         </for>
-        <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
-      </tr_>
-    </thead_>
+        <tth class="pbn-row-footer pbn-corner">&#xa0;</tth>
+      </ttr>
+    </tthead>
     <for each="row" in="{rowGroups}">
-      <tr_ class="pbn-row">
-        <td_ id="rowHeader-{row#}" class="pbn-row-header">
-          &hairsp; <for each="group" in="{row}"><span class="pbn-row-group" onclick="togglePbnClue(this)">{group}</span> </for>&hairsp;
-        </td_>
+      <ttr class="pbn-row">
+        <ttd id="rowHeader-{row#}" class="pbn-row-header">
+          &#x200a; <for each="group" in="{row}"><span class="pbn-row-group" onclick="togglePbnClue(this)">{group}</span> </for>&#x200a;
+        </ttd>
         <for each="col" in="{colGroups}">
-          <td_ id="{row#}_{col#}" class="pbn-cell stampable">&times;</td_>
+          <ttd id="{row#}_{col#}" class="pbn-cell stampable">&times;</ttd>
         </for>
-        <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
-      </tr_>
+        <ttd class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></ttd>
+      </ttr>
     </for>
-    <tfoot_>
-      <tr_ class="pbn-col-footer">
-        <th_ class="pbn-corner">&nbsp;</th_>
+    <ttfoot>
+      <ttr class="pbn-col-footer">
+        <tth class="pbn-corner">&#xa0;</tth>
         <for each="col" in="{colGroups}">
-          <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
+          <ttd class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></ttd>
         </for>
-        <th_ class="pbn-corner-validation">
-          ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ
-          <br>←&nbsp;validation</th_>
-      </tr_>
-    </tfoot_>
-  </table_>`;
+        <tth class="pbn-corner-validation">
+          ꜛ&#xa0;&#xa0;&#xa0;&#xa0;ꜛ&#xa0;&#xa0;&#xa0;&#xa0;ꜛ
+          <br />←&#xa0;validation</tth>
+      </ttr>
+    </ttfoot>
+  </ttable>`;
     return temp;
 }
 /**
- * Create a standard pant-by-numbers template element.
+ * Create a standard paint-by-numbers template element.
  * Also load the accompanying CSS file.
  * @returns The template.
  */
@@ -11590,59 +11590,59 @@ function paintByColorNumbersTemplate() {
     const temp = document.createElement('template');
     temp.id = 'paintByNumbers';
     temp.innerHTML =
-        `<table_ class="paint-by-numbers stampable-container stamp-drag pbn-two-color {styles?}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist}">
-    <thead_>
-      <tr_ class="pbn-col-headers">
-        <th_ class="pbn-corner">
+        `<ttable class="paint-by-numbers stampable-container stamp-drag pbn-two-color {?styles}" data-col-context="{cols$}" data-row-context="{rows$}" data-stamp-list="{stamplist}">
+    <tthead>
+      <ttr class="pbn-col-headers">
+        <tth class="pbn-corner">
           <span class="pbn-instructions">
-            This is a nonogram<br>(aka paint-by-numbers).<br>
+            This is a nonogram<br />(aka paint-by-numbers).<br />
             For instructions, see 
             <a href="https://help.puzzyl.net/PBN" target="_blank">
-              https://help.puzzyl.net/PBN<br>
-              <img src="https://help.puzzyl.net/pbn.png">
+              https://help.puzzyl.net/PBN<br />
+              <img src="https://help.puzzyl.net/pbn.png" />
             </a>
           </span>
-        </th_>
+        </tth>
         <for each="col" in="{colGroups}">
-          <td_ id="colHeader-{col#}" class="pbn-col-header">
+          <ttd id="colHeader-{col#}" class="pbn-col-header">
             <for each="colorGroup" in="{col}"><for key="color" in="{colorGroup}"><for each="group" in="{color!}"><span class="pbn-col-group pbn-color-{color}" onclick="togglePbnClue(this)">{group}</span></for></for></for>
-          </td_>
+          </ttd>
         </for>
-        <if test="validate?" ne="false">
-          <th_ class="pbn-row-footer pbn-corner">&nbsp;</th_>
+        <if test="?validate" ne="false">
+          <tth class="pbn-row-footer pbn-corner">&#xa0;</tth>
         </if>
-      </tr_>
-    </thead_>
+      </ttr>
+    </tthead>
       <for each="row" in="{rowGroups}">
-        <tr_ class="pbn-row">
-          <td_ id="rowHeader-{row#}" class="pbn-row-header">
-            &hairsp; 
+        <ttr class="pbn-row">
+          <ttd id="rowHeader-{row#}" class="pbn-row-header">
+            &#x200a; 
             <for each="colorGroup" in="{row}"><for key="color" in="{colorGroup}">
               <for each="group" in="{color!}"><span class="pbn-row-group pbn-color-{color}" onclick="togglePbnClue(this)">{group}</span> </for>
-            &hairsp;</for></for>
-          </td_>
+            &#x200a;</for></for>
+          </ttd>
           <for each="col" in="{colGroups}">
-          <td_ id="{row#}_{col#}" class="pbn-cell stampable">{blank?}</td_>
+          <ttd id="{row#}_{col#}" class="pbn-cell stampable">{?blank}</ttd>
         </for>
-        <if test="validate?" ne="false">
-          <td_ class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></td_>
+        <if test="?validate" ne="false">
+          <ttd class="pbn-row-footer"><span id="rowSummary-{row#}" class="pbn-row-validation"></span></ttd>
         </if>
-      </tr_>
+      </ttr>
     </for>
-    <if test="validate?" ne="false">
-      <tfoot_>
-        <tr_ class="pbn-col-footer">
-          <th_ class="pbn-corner">&nbsp;</th_>
+    <if test="?validate" ne="false">
+      <ttfoot>
+        <ttr class="pbn-col-footer">
+          <tth class="pbn-corner">&#xa0;</tth>
           <for each="col" in="{colGroups}">
-            <td_ class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></td_>
+            <ttd class="pbn-col-footer"><span id="colSummary-{col#}" class="pbn-col-validation"></span></ttd>
           </for>
-          <th_ class="pbn-corner-validation">
-            ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ&nbsp;&nbsp;&nbsp;&nbsp;ꜛ
-            <br>←&nbsp;validation</th_>
-        </tr_>
-      </tfoot_>
+          <tth class="pbn-corner-validation">
+            ꜛ&#xa0;&#xa0;&#xa0;&#xa0;ꜛ&#xa0;&#xa0;&#xa0;&#xa0;ꜛ
+            <br />←&#xa0;validation</tth>
+        </ttr>
+      </ttfoot>
     </if>
-  </table_>`;
+  </ttable>`;
     return temp;
 }
 /**
@@ -11673,11 +11673,11 @@ function classStampPaletteTemplate() {
     temp.innerHTML =
         `<div id="stampPalette" data-tool-count="3" data-tool-erase="{erase}">
     <for each="tool" in="{tools}">
-      <div id={tool.id} class="stampTool {size?}" data-stamp-id="{tool.id}" data-style="{tool.id}" data-click-modifier="{tool.modifier?}" title="{tool.modifier?} + draw" data-next-stamp-id="{tool.next}">
+      <div id="{tool.id}" class="stampTool {?size}" data-stamp-id="{tool.id}" data-style="{tool.id}" data-click-modifier="{tool?modifier}" title="{tool?modifier} + draw" data-next-stamp-id="{tool.next}">
         <div class="roundTool {tool.id}-button">
-          <span id="{tool.id}-icon" class="stampIcon"><img src_="{tool.img}"></span>
-          <span id="{tool.id}-label" class="stampLabel">{tool.label?}</span>
-          <span id="{tool.id}-mod" class="stampMod">{tool.modifier?}+click</span>
+          <span id="{tool.id}-icon" class="stampIcon"><img src_="{tool.img}" /></span>
+          <span id="{tool.id}-label" class="stampLabel">{tool?label}</span>
+          <span id="{tool.id}-mod" class="stampMod">{tool?modifier}+click</span>
         </div>
       </div>
     </for>
@@ -11701,8 +11701,8 @@ function stampPaletteTemplate() {
     linkCss(getSafariDetails().cssRoot + 'StampTools.css');
     const temp = document.createElement('template');
     temp.innerHTML =
-        `<table_ class="paint-by-numbers bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
-  </table_>`;
+        `<ttable class="paint-by-numbers bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
+  </ttable>`;
     return temp;
 }
 var pbnStampTools = [

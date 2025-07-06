@@ -6,7 +6,7 @@
     <script> var exports = {}; </script>
     <script src="../js/kit25.js" />
     <script>
-      var validate = false;
+      let validate = true;
       function doValidation(target) {
         if (validate) {
           validatePBN(target);
@@ -19,18 +19,19 @@
       }
 
       const boiler = {
-        'safari': 'team',
-        'title': 'Battleship',
-        'author': 'David Garber',
-        'copyright': '2024',
-        'orientation': 'portrait',
-        'abilities': {
-          'stamping': true,
+        safaris: puzzleSafari24,
+        safari: 'ps24',
+        title: 'Battleship',
+        author: 'David Garber',
+        copyright: '2024',
+        orientation: 'portrait',
+        abilities: {
+          stamping: true,
         },
-        'preSetup': setupValidation,
-        'onStamp': doValidation,
-        'reactiveBuilder': true,
-        'builderLookup': {
+        // preSetup: setupValidation,
+        onStamp: doValidation,
+        reactiveBuilder: 'pageBody',
+        builderLookup: {
         },
       };
 
@@ -78,7 +79,7 @@
         {id:'stampErase', modifier:'alt', label:'Erase', img:'Battleship/Eraser.png', next:'stampLand', data:''},
       ];
 
-      boiler['builderLookup'] =
+      boiler['lookup'] =
       {
         colGroups: cols,
         rowGroups: rows,
@@ -161,7 +162,7 @@
   <body id="Battleship">
     <div id="pageBody">
       <div id="pbn-pos">
-        <use template="paintByColorNumbers" cols="colGroups" rows="rowGroups" styles="double_4" blank="~" stamplist="stampTools" validating="validate"></use>
+        <use template="paintByColorNumbers" cols="{colGroups}" rows="{rowGroups}" styles="double_4" blank="~" stamplist="stampTools" validate="true"></use>
       </div>
 
       <div style="position: absolute; top: -1in; right: 1in;">
@@ -169,5 +170,8 @@
       </div>
       
     </div>
+
+
+
   </body>
 </html>
