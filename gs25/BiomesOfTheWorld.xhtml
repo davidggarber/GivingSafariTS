@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: givingSafari25,
+        safari: 'ps22',
+        title: 'Biomes Of The World',
+        author: 'Zhenya Ross',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          wordSearch: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          grid: [
+            "WTGFRESHWT",
+            "TRHRERAEAE",
+            "REWAARSATM",
+            "OSTHDSNAEP",
+            "PEENBNSGRE",
+            "IDUIALGIGR",
+            "CTEVASTAEA",
+            "AAANRTHTQT",
+            "LSDTSEROFE",
+            "RAINFOREST",
+            "UAENIRAMKE"
+          ]
+        },
+      };
+    </script>
+    <style>
+      #svg {
+        margin-left: 1.5in;
+      }
+      path {
+        stroke: black;
+        stroke-width: 0.5;
+        stroke-dasharray: 3 1;
+      }
+      text {
+        text-anchor: middle;
+        font-size: 18pt;
+      }
+      .vertex {
+        fill: none;
+        stroke: none;
+      }
+      #img {
+        margin-left: 1.1in;
+        width: 516px;
+        height: 343px;
+      }
+    </style>
+  </head>
+  <body id="Biomes">
+    <div id="pageBody">
+      <p class="flavor">
+        Find 9 biomes of the world.  Then find a question and answer it.
+      </p>
+      <svg id="svg" width="500" height="500" class="word-select-area no-user-select"
+          data-angle-constraints="45" data-max-points="2">
+          <g transform="translate(2, 2)">
+          <for each="row" in="{grid}">
+            <path d="M0,{row#*44} h440" />
+            <path d="M{row#*44},0 v484" />
+            <for char="ch" in="{row}">
+              <g transform="translate({ch#*44}, {row#*44})">
+                <rect class="vertex" x="11" y="11" width="22" height="22" />
+                <text x="22" y="30">{ch}</text>
+              </g>
+            </for>          
+          </for>
+          <path d="M0,484 h440" />
+        </g>
+      </svg>
+
+      <img id="img" src="./Biomes/biomes.jpg" alt="Biomes of the World" />
+
+    </div>
+  </body>
+</html>
