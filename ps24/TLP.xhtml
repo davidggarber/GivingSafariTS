@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <!--
     Twister Little Passages, for Microsoft Puzzle Safari 2024
     © 2024 by Rorke Haining, Jess McGatha, David Garber, and Gabe Stocco
@@ -23,17 +24,18 @@
     * As the puzzle is written, can you exit from the TUNNEL?
     * How many monsters can never be defeated?
 -->
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="Kit/kit.js"></script>
+    <script src="../js/kit25.js"></script>
     <script src="TLP/tlp.js"></script>
     <script>
       const boiler = {
-        'safari': 'team',
+        safaris: puzzleSafari24,
+        safari: 'ps24',
         'title': 'Twister Little Passages',
-        'author': 'Rorke Haining, Jess McGatha, David Garber, & Gabe Stocco',
+        'author': 'Rorke Haining, Jess McGatha, David Garber, &amp; Gabe Stocco',
         'copyright': '2024',
         'orientation': 'portrait',
         'googleFonts': 'PT+Mono',
@@ -46,6 +48,7 @@
         'postBuild': tlpInit,
       };
 
+      // <![CDATA[
       var mazeText = [
         '################################# ',
         ' T#   R      #88    #9#32  ##456# ',
@@ -127,7 +130,7 @@
         hover[i] = 'health +' + i;
       }
 
-      boiler['builderLookup'] =
+      boiler['lookup'] =
       {
         mazeText: mazeText,
         mazeColors: mazeColors,
@@ -135,7 +138,7 @@
         hover: hover,
       };
 
-
+      // ]]>
 
     </script>
     <style id="animations" type="text/css"></style>
@@ -322,7 +325,7 @@
           <div><for char="ch" in="row"><span 
             id="m{row#}_{ch#}" 
             class="maze-cell maze-color-{mazeColors.[row#].[ch#]}"
-            title="{hover.[ch]?}">{ch}</span></for></div>
+            title="{hover?[ch]}">{ch}</span></for></div>
         </for>
 
       </div>
@@ -332,14 +335,14 @@
         </for>
       </div>
 
-      <img id="start-button" src="TLP/Play.png" title="Start game!" onclick="startGame()">
+      <img id="start-button" src="TLP/Play.png" title="Start game!" onclick="startGame()" />
       <div id="game-help">
-        <img id="undo-button" class="no-undo" src="TLP/Undo.png" title="Undo move: Ctrl+Z" onclick="undoStep()">
-        <img id="mute-button" src="TLP/unmuted.png" title="Mute sound: Ctrl+M" onclick="toggleMute()">
+        <img id="undo-button" class="no-undo" src="TLP/Undo.png" title="Undo move: Ctrl+Z" onclick="undoStep()" />
+        <img id="mute-button" src="TLP/unmuted.png" title="Mute sound: Ctrl+M" onclick="toggleMute()" />
         <p>
-          You are <b>@</b>. Use arrow<br>
-          keys or click to move.<br>
-          Shift+Enter to start over.<br>
+          You are <b>@</b>. Use arrow<br />
+          keys or click to move.<br />
+          Shift+Enter to start over.<br />
           Ctrl+Z to undo.
         </p>
       </div>
