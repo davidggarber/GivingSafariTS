@@ -1,0 +1,64 @@
+.title {
+  font-size: 22pt;
+  font-family: 'Goblin One';
+  letter-spacing: -1.5px;
+}
+
+.title-font {
+  font-family: 'Goblin One';
+}
+
+.input-font {
+  font-family: 'Caveat';
+}
+
+._team .letter-cell {
+  font-family: 'Caveat';
+  font-size: 14pt;
+  width: 1.05em;
+}
+
+.word-cell {
+  font-family: 'Caveat';
+  font-size: 14pt;
+}
+
+#final .letter-cell {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+#extracted {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+.extracted {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+#extracted .letter-cell {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+#extracted .letter-input {
+  font-family: 'Caveat';
+  font-size: 20pt;
+  color: #ff0099;
+}
+
+#extracted .letter-literal {
+  font-size: 20pt;
+}
+
+@media print {
+  .screen-only {
+    display: none;
+  }
+}

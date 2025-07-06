@@ -192,13 +192,28 @@ const ps21Mini:PuzzleEventDetails = {
   eventSync: 'ps21Mini',
 }
 
+const safari23Details:PuzzleEventDetails = {
+  'title': 'Bad Idea',
+  // 'logo': './23/Images/PS23 logo.png',
+  'icon': './Images/Sample_Icon.png',
+  'iconRoot': './Icons/',
+  'cssRoot': './Css/',
+  'fontCss': './Css/Fonts23.css',
+  'googleFonts': 'Goblin+One,Caveat',  // no whitespace
+  'links': [],
+  // 'qr_folders': {'https://www.puzzyl.net/23/': './Qr/puzzyl/',
+              //    'file:///D:/git/GivingSafariTS/23/': './Qr/puzzyl/'},
+  // 'solverSite': 'https://givingsafari2026.azurewebsites.net/Solver',  // Only during events
+  'backLinks': { 'ps23':{ href:'./ideas.html'}, 'gs26':{ href:'./safari.html'} },
+}
+
 const safari24Details:PuzzleEventDetails = {
   'title': 'Game Night',
-  // 'logo': '../24/Images/PS24 logo.png',
-  'icon': '../24/Images/Sample_Icon.png',
-  'iconRoot': '../24/Icons/',
-  'cssRoot': '../Css/',
-  'fontCss': '../24/Css/Fonts24.css',
+  // 'logo': './Images/PS24 logo.png',
+  'icon': './Images/ps24_favicon.png',
+  'iconRoot': './Icons/',
+  'cssRoot': './Css/',
+  'fontCss': './Css/Fonts24.css',
   'googleFonts': 'Goblin+One,Caveat',  // no whitespace
   'links': [],
   // 'qr_folders': {'https://www.puzzyl.net/24/': './Qr/puzzyl/',
@@ -209,11 +224,11 @@ const safari24Details:PuzzleEventDetails = {
 
 const safari25Details:PuzzleEventDetails = {
   'title': 'Hip To Be Square',
-  // 'logo': './Images/GS24_banner.png',  // PS21 logo.png',
+  // 'logo': './Images/PS25_banner.png',
   'icon': './Images/ps25_favicon.png',
   // 'iconRoot': './Icons/',
-  'cssRoot': '../Css/',
-  'fontCss': '../24/Css/Fonts21.css',
+  'cssRoot': './Css/',
+  'fontCss': './Css/Fonts25.css',
   'googleFonts': 'Nova+Square,Caveat',  // no whitespace
   'links': [],
   // 'qr_folders': {'https://www.puzzyl.net/ps25/': './Qr/puzzyl/',
@@ -280,6 +295,8 @@ const pastSafaris = {
   'ps20': safari20Details,
   'ps21': safari21Details,
   'ps22': safari22Details,
+  'ps23': safari23Details,
+  'ps24': safari24Details,
   'ps25': safari25Details,
   'Dgg': safariDggDetails,
   '24': safari24Details,
@@ -295,7 +312,8 @@ const pastSafaris = {
 
 const puzzleSafari19 = ['ps19'];  //,'gs22'
 const givingSafari24 = ['gs24','21','ps21'];
-const givingSafari25 = ['gs25','ps22'];
+const puzzleSafari22 = ['gs25','ps22'];
+const puzzleSafari24 = ['ps24'];  //,'gs27'
 const puzzleSafari25 = ['ps25'];  //,'gs28'
 const puzzleSafari21Minis = ['ic21','sb21','tm21','fr21'];
 const allSafari21 = ['gs24','21','ps21','ic21','sb21','tm21','fr21'];
