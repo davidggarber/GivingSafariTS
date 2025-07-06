@@ -10666,7 +10666,9 @@ exports.textFromContext = textFromContext;
  */
 function getKeyedChild(parent, key, kTok, maybe) {
     if (parent === null) {
-        parent = theBoilerContext();
+        // When !maybe && !parent, this is the root : operator.
+        // When maybe && !parent, this is the maybe ? operator, which can be a <use> param.
+        parent = maybe ? getBuilderContext() : theBoilerContext();
     }
     let index = undefined;
     if (typeof (key) == 'number') {

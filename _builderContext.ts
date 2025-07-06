@@ -1340,7 +1340,9 @@ export function textFromContext(key:string|null):string {
  */
 function getKeyedChild(parent:any, key:any, kTok?:SourceOffsetable, maybe?:boolean):any {
   if (parent === null) {
-    parent = theBoilerContext();
+    // When !maybe && !parent, this is the root : operator.
+    // When maybe && !parent, this is the maybe ? operator, which can be a <use> param.
+    parent = maybe ? getBuilderContext() : theBoilerContext();
   }
 
   let index:number|undefined = undefined;

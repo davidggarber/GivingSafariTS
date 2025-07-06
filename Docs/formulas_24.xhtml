@@ -4,12 +4,12 @@
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="../js/kit25.js"></script>
+    <script src="../js/kit24.js"></script>
     <script>
       //<![CDATA[
       const boiler = {
         'safari': 'Docs',
-        'title': 'Formulas (kit 25)',
+        'title': 'Formulas (Kit 24)',
         paperSize: 'ledger',
         orientation: 'landscape',
         textInput: true,
@@ -47,9 +47,6 @@
         padding: 6px;
       }
 
-      #right-side {
-        top: -0.5in;
-      }
       #Formulas #right-side code {
         display: inline-block;
         width: initial;
@@ -89,15 +86,14 @@
             <use template="echo" eval="{sentence}" expected="For those about to rock, we salute you!" comment="use `{curly braces`} to lookup values in the 'lookup' data" />
             <use template="echo" eval="hello, {name}" expected="hello, Fred" comment="Mix plaintext and lookups in `{curly braces`}." />
             <use template="echo" eval="hello `{name`}" expected="hello `{name`}" comment="Use ` to escape operators and brackets" />
-            <use template="echo" eval="{code}" expected="{1234}" comment="Values can be many data types. Strings, numeric, boolean, ..." />
-            <use template="echo" eval="{code + 2}" expected="{1236}" comment="Lookups can also employ formulas" />
+            <use template="echo" eval="{code}" expected="1234" comment="Values can be many data types. Strings, numeric, boolean, ..." />
+            <use template="echo" eval="{code + 2}" expected="1236" comment="Lookups can also employ formulas" />
             <use template="echo" eval="{obj.inner.value}" expected="nested" comment="Dot notation to step into objects" />
             <use template="echo" eval="{team.0}" expected="Velma" comment="Values can also be lists. Dot notation is also the index. Not [brackets]" />
             <use template="echo" eval="{team.:third}" expected="Shaggy" comment=": prefix clarifies that 'third' is its own variable, rather than a named key within 'team'" />
             <use template="echo" eval="{name.3}" expected="d" comment="Dot lookup on a string is a character index" />
             <use template="echo" eval="{team.(third-1)}" expected="Daphne" comment="Parentheses needed, because . has higher precedence than -" />
-            <xuse template="echo" eval="{obj.inner}" expected="[object Object]" comment="Passing objects is legal, but in this case the callee is expecting text" />
-            <use template="echo" eval="blank: {obj?outer}" expected="blank: " comment="No 'outer' field" />
+            <use template="echo" eval="{obj.inner}" expected="[object Object]" comment="Passing objects is legal, but in this case the callee is expecting text" />
             <use template="echo" eval="{obj.inner.[name]}" expected="Flintstone" comment="'name' is a variable, so this becomes obj.inner.Fred" />
           </ttable>
         </build>
@@ -153,10 +149,6 @@
           <tr>
             <td class="big">.</td> <td>Named field of an object. Or indexed item of a list. Or indexed character in a string.</td>
             <td><use template="code" value="name.1 ~ team.1 ~ pt.x" /></td> <td><build>{name.1 ~ team.1 ~ pt.x}</build></td>
-          </tr>
-          <tr>
-            <td class="big">?</td> <td>Optional parameter or field of an object.</td>
-            <td><use template="code" value="?title ~ name ~ pt?z" /></td> <td><build>{?title ~ name ~ pt?z}</build></td>
           </tr>
           <tr>
             <td class="big">-</td> <td>Negative, if used as a unary operator before a number</td>
@@ -218,7 +210,7 @@
         <if test="{eval}" eq="{expected}">
           <ttd>
             {eval}
-          </ttd>
+          </ttd>  
         </if>
         <else>
           <ttd class="error">
@@ -226,7 +218,7 @@
           </ttd>  
         </else>
         <ttd>
-          {?comment}
+          {comment?}
         </ttd>  
     </ttr>
     </template>
@@ -236,7 +228,7 @@
     </template>
 
     <template id="taglink">
-      <if exists="?dest">
+      <if exists="dest?">
         <a href="{dest}"><code onclick="selectCodeBlock(this, event)">{value}</code></a>
       </if>
       <else>
