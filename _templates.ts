@@ -214,7 +214,7 @@ function classStampNoToolsTemplate() :HTMLTemplateElement {
   temp.innerHTML = 
   `<div id="stampPalette" class="hidden" data-tool-erase="{erase}">
     <for each="tool" in="{tools}">
-      <div class="stampTool" data-stamp-id="{tool.id}" data-next-stamp-id="{tool.next}">
+      <div class="stampTool" id="{tool.id}" data-next-stamp-id="{tool.next}" data-style="{tool.id}">
       </div>
     </for>
   </div>`;

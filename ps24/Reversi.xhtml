@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="Kit/kit.js"></script>
+    <script src="../js/kit25.js" />
     <script>
       const boiler = {
-        'safari': 'team',
+        safaris: puzzleSafari24,
+        safari: 'ps24',
         'title': 'Reversi',
         'author': 'Andrew Giese',
         'copyright': '2024',
@@ -14,7 +16,7 @@
         'abilities': {
           'stamping': true,
         },
-        'reactiveBuilder': true,
+        reactiveBuilder: 'pageBody',
       };
 
       var letters = [
@@ -49,7 +51,7 @@
         {id:'clear', next:'has-B'},
       ];
 
-      boiler['builderLookup'] =
+      boiler['lookup'] =
       {
         letters: letters,
         colors: colors,
@@ -162,7 +164,7 @@
 
       <div id="grid-container">
         <for each="row" in="letters">
-          <for each="ch" in="row">
+          <for char="ch" in="row">
             <div class="grid-square has-{colors.[row#].[ch#]} locked-{colors.[row#].[ch#]} {stampable.[colors.[row#].[ch#]]}">
               <div class="circle"></div>
               <span class="grid-text">{ch}</span>
