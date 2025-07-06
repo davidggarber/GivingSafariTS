@@ -1,25 +1,29 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="Kit/kit.js"></script>
+    <script src="../js/kit25.js" />
     <script>
       const boiler = {
-        'safari': 'team',
-        'title': 'Blokus',
-        'author': 'David Garber',
-        'copyright': '2024',
-        'orientation': 'portrait',
-        'textInput': true,
-        'abilities': {
+        safaris: puzzleSafari24,
+        safari: 'ps24',
+        title: 'Blokus',
+        author: 'David Garber',
+        copyright: '2024',
+        orientation: 'portrait',
+        textInput: true,
+        abilities: {
           // 'dragDrop': true,
         },
-        'reactiveBuilder': true,
-        'builderLookup': {
+        reactiveBuilder: true,
+        lookup: {
         },
-        'preSetup': buildSvgs,
+        preSetup: buildSvgs,
       };
+
+      // <![CDATA[
 
       // Tile shapes, which will never rotate.
       //   1-9 and dot indicate visible contents of each cell.
@@ -87,7 +91,7 @@
         [{x:7,y:7},{x:7,y:8}],
       ];
 
-      boiler['builderLookup'] =
+      boiler['lookup'] =
       {
         tiles: tiles,
         extractLen: extractPairs.length,
@@ -437,6 +441,7 @@
         }
       }
 
+      // ]]>
     </script>
     <style>
       #flavor {
@@ -639,10 +644,10 @@
     <div id="pageBody">
       <div id="flavor">
         <p>
-          Someone has taken some liberties with their Blokus <br>game and turned it into a jigsaw-Sudoku hybrid! 
+          Someone has taken some liberties with their Blokus <br />game and turned it into a jigsaw-Sudoku hybrid! 
         </p>
         <p>
-          They’ve taken one full set of the 21 unique pieces, and written the numbers 1-9 all over them. Six of the pieces have been glued in place on this 9×9 mini-board. A few <br>cells stick beyond the edges, but those lack digits.
+          They’ve taken one full set of the 21 unique pieces, and written the numbers 1-9 all over them. Six of the pieces have been glued in place on this 9×9 mini-board. A few <br />cells stick beyond the edges, but those lack digits.
         </p>
         <p>
           Please pack the rest back together! It looks like they’ll just barely fit, following a mix of Sudoku rules and jigsaw strategies.
@@ -663,7 +668,7 @@
         </for>  
       </div>
 
-      <svg id="svg-area" width="816" height="1056">
+      <svg xmlns="http://www.w3.org/2000/svg" id="svg-area" width="816" height="1056">
         <g id="sudoku">
           <path class="border" d="M0,0 h440 v440 h-440 Z"></path>
           <path class="interior" d="M40,40 h360 v360 h-360 v-360"></path>
