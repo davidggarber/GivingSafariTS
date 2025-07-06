@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Foxtail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        form {
+            margin: 20px auto;
+            width: 300px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        input[type="submit"] {
+            background-color: #0074D9;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Foxtail</h1>
+    <form id="hintForm">
+        <input type="text" id="hintInput" placeholder="Input your answer">
+        <input type="submit" value="Submit">
+    </form>
+    <div id="result"></div>
+
+    <script>
+        const hintForm = document.getElementById("hintForm");
+        const hintInput = document.getElementById("hintInput");
+        const resultDiv = document.getElementById("result");
+
+        // Define the hint-Response mapping
+        const hintResponse = {
+            'AXOLOTLFLOTILLA': 'Correct!',
+            'AXOLOTL FLOTILLA': 'Correct!',
+        };
+
+        hintForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const hint = hintInput.value.toUpperCase();
+            if (hint in hintResponse) {
+                resultDiv.innerHTML = `${hint}: ${hintResponse[hint]}`;
+            } else {
+                resultDiv.innerHTML = `Sorry, ${hint} is not in the puzzle.`;
+            }
+        });
+    </script>
+</body>
+</html>

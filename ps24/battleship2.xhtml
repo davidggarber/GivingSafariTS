@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      var validate = false;
+      function doValidation(target) {
+        if (validate) {
+          validatePBN(target);
+        }
+      }
+
+      function setupValidation() {
+        var arg = (urlArgs['validate'] || '').toLowerCase();
+        validate = arg == '1' || arg == 'true';
+      }
+
+      const boiler = {
+        'safari': 'team',
+        'title': 'Battleship',
+        'author': 'David Garber',
+        'copyright': '2024',
+        'orientation': 'portrait',
+        'abilities': {
+          'stamping': true,
+        },
+        'preSetup': setupValidation,
+        'onStamp': doValidation,
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+      };
+
+      var cols = [
+      [{land:[4,2,1]}],
+      [{land:[7,6]}],
+      [{land:[14]}],
+      [{land:[14]}],
+      [{land:[2,2]}],
+      [{land:[1]}, {ship:[5,1,1]}, {land:[1]}],
+      [{land:[1]}, {ship:[1,1,1,1,1,1]}, {land:[1]}],
+      [{land:[1]}, {ship:[1,1,1,1,1,1]}, {land:[1]}],
+      [{land:[1]}, {ship:[1,1,5]}, {land:[2]}],
+      [{land:[1,2]}],
+      [{land:[1]}, {ship:[5,3,1]}, {land:[2]}],
+      [{land:[1]}, {ship:[1,1,1,1,1,1]}, {land:[2]}],
+      [{land:[1]}, {ship:[1,1,1,1,1,1]}, {land:[2]}],
+      [{land:[1]}, {ship:[1,1,5]}, {land:[2]}],
+      [{land:[2,1,3]}],
+      [{land:[16]}],
+      ];
+      var rows = [
+        [{land:[15]}],
+        [{land:[4,2]}],
+        [{land:[4]}, {ship:[3,3]}, {land:[1]}],
+        [{land:[4]}, {ship:[1,1,1,1]}, {land:[1]}],
+        [{land:[4]}, {ship:[3,3]}, {land:[1]}],
+        [{land:[4]}, {ship:[1,1,1,1]}, {land:[1]}],
+        [{land:[3]}, {ship:[3,3]}, {land:[1]}],
+        [{land:[2,2]}],
+        [{land:[3]}, {ship:[4,4]}, {land:[1]}],
+        [{land:[3]}, {ship:[1,1,1]}, {land:[1]}],
+        [{land:[4]}, {ship:[3,4]}, {land:[1]}],
+        [{land:[4]}, {ship:[1,1]}, {land:[1]}],
+        [{land:[3]}, {ship:[4,4]}, {land:[1]}],
+        [{land:[5,2]}],
+        [{land:[12]}],
+        [{land:[8]}],
+      ];
+
+      var redBlackStampTools = [
+        {id:'stampLand', modifier:'', label:'Land', img:'Battleship/Land.png', next:'stampShip', data:'land'},
+        {id:'stampShip', modifier:'ctrl', label:'Ship', img:'Battleship/Ship.png', next:'stampWater', data:'ship'},
+        {id:'stampWater', modifier:'shift', label:'Water', img:'Battleship/Water.png', next:'stampErase', data:''},
+        {id:'stampErase', modifier:'alt', label:'Erase', img:'Battleship/Eraser.png', next:'stampLand', data:''},
+      ];
+
+      boiler['builderLookup'] =
+      {
+        colGroups: cols,
+        rowGroups: rows,
+        stampTools: redBlackStampTools,
+        validate: validate,
+      };
+
+
+    </script>
+    <style>
+      #Battleship .pbn-row-header {
+        text-align-last: justify;
+        width: 1.1in;
+        height: 25px;
+      }
+      #Battleship .pbn-col-header {
+        vertical-align: middle;
+        line-height: 16pt;
+        width: 25px;
+      }
+      #Battleship .pbn-row-footer {
+        width: 0.9in;
+      }
+
+      @media screen {
+        #pbn-pos {
+          /* margin-left: -0.25in; */
+        }
+        .paint-by-numbers {
+          /* width: 8.25in; */
+        }        
+      }
+
+      
+      .pbn-color-land {
+        color: rgb(61, 99, 1);
+      }
+      .pbn-color-ship {
+        color: red;
+      }
+      .pbn-cell.stampLand {
+        background-color: rgb(61, 99, 1);
+      }
+      .pbn-cell.stampShip {
+        background-color: red;
+      }
+      .pbn-cell.stampWater {
+        text-align: center;
+        vertical-align: middle;
+        background-color: #aaaaff44;
+        color: #99f;
+      }
+
+      #Battleship .pbn-col-validation.exceeded {
+        background-color: #ffff80;
+      }
+      #Battleship .pbn-row-validation.exceeded {
+        background-color: #ffff80;
+      }
+
+
+      .stampLand-button {
+        background-color: #3d6301;
+      }
+      .stampShip-button {
+        background-color: red;
+      }
+      .stampWater-button {
+        background-color: #ddf;
+      }
+      #stampLand-label {
+        color: white;
+      }
+      #stampLand-mod {
+        display: none;
+      }
+
+    </style>
+  </head>
+  <body id="Battleship">
+    <div id="pageBody">
+      <div id="pbn-pos">
+        <use template="paintByColorNumbers" cols="colGroups" rows="rowGroups" styles="double_4" blank="~" stamplist="stampTools" validating="validate"></use>
+      </div>
+
+      <div style="position: absolute; top: -1in; right: 1in;">
+        <use template="classStampPalette" tools="{stampTools}" size="medium" erase="stampErase"></use>
+      </div>
+      
+    </div>
+  </body>
+</html>

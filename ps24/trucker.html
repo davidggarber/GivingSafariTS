@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="Kit/kit.js"></script>
+    <script>
+      const boiler = {
+        'safari': 'team',
+        'title': 'Galaxy Trucker',
+        'author': 'Andrew Giese and David Garber',
+        'copyright': '2024',
+        'orientation': 'landscape',
+        'abilities': {
+          'dragDrop': true,
+        },
+        'reactiveBuilder': true,
+        'builderLookup': {
+        },
+      };
+
+      var tiles = [
+        ['Cabin2', 'Cabin10', 'Cabin4', 'Cabin5', 'Cabin6'],
+        ['Cabin7', 'Cabin9', 'Cannon1', 'Cannon2', 'Cannon3'],
+        ['Engine2', 'Cargo2', 'Cargo6', 'Cargo7', 'Cargo9'],
+        [' ', ' ', ' ', ' ', ' '],
+        ['Cabin3W', 'Cargo5W', 'Cargo8W', 'Cabin1W', 'DoubleCannon1W'],
+        ['Engine1W', 'Cargo1W', 'Engine3W', 'DoubleCannon2W', 'Cabin8W'],
+      ];
+
+      var grid = [
+        "    O    ",
+        "   SR7   ",
+        "G ROUTE P",
+        "133@*^B#L",
+        "BASICUSKY",
+        "TO NPI KS"
+      ];
+
+      var colHeaders = [0,2,5,0,5,2,0,2,2,2];
+      var rowHeaders = [0,0,2,7,9,2];
+
+      boiler['builderLookup'] =
+      {
+        tiles: tiles,
+        grid: grid,
+        colHeaders: colHeaders,
+        rowHeaders: rowHeaders,
+      };
+
+    </script>
+    <style>
+      #ship-grid {
+        display: grid;
+        grid-template-columns: 25px repeat(9, 60px); /* Creates 9 columns */
+        grid-template-rows: 25px repeat(6, 60px); /* Creates 6 rows */
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      #tile-grid {
+        position: absolute;
+        top: 1in;
+        right: 20px;
+        display: grid;
+        grid-template-columns: repeat(5, 60px);
+        grid-template-rows: repeat(5, 60px);
+      }
+
+      .tile-cell {
+        width: 60px;
+        height: 60px;
+      }
+
+      .tile-img {
+        width: 60px;
+        height: 60px;
+      }
+
+      #rule-list {
+        margin-top: -5px;
+      }
+      #rule-list ol {
+        counter-reset: list;
+      }
+      #rule-list ol > li {
+        list-style: none;
+        margin-top: 5px;
+      }
+      #rule-list ol > li:before {
+        content: counter(list) ")  ";
+        counter-increment: list;
+      }
+
+      .rule-img {
+        display: inline-block;
+        position: relative;
+        height: 20px;
+        max-width: 50px;
+      }
+      .rule-img img {
+        position: relative;
+        height: 16px;
+        max-width: 50px;
+        top: 3px;
+      }
+      .rule-tile-img {
+        display: inline-block;
+        position: relative;
+        max-width: 20px;
+        height: 20px;
+      }
+      .rule-tile-img img {
+        position: relative;
+        max-height: 20px;
+        top: 5px;
+      }
+
+      .ship-cell {
+        position: relative;
+      }
+      .ship-box {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 60px;
+        height: 60px;
+        border: solid 0.1px #666;
+      }
+      .ship-text {
+        position: absolute;
+        left: 0px;
+        width: 60px;
+        text-align: center;
+        top: 20px;
+        z-index: 100;
+      }
+      .ship-drop {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 60px;
+        height: 60px;
+        z-index: 200;
+      }
+      .colHeader {
+        background-color: #A6C9EC;
+        text-align: center;
+        margin: 0px;
+        padding-top: 4px;
+        border-bottom: solid 2px black;
+      }
+      .colHeader:nth-child(1) {
+        border-right: solid 2px black;
+        background-color: white;
+
+      }
+      .rowHeader {
+        background-color: #A6C9EC;
+        text-align: center;
+        margin: 0px;
+        padding-top: 20px;
+        border-right: solid 2px black;
+      }
+      .letter.landscape .printedPage {
+        height:7.85in !important; /* This is a hack to prevent the rules from overlapping the footer. */
+      }
+    </style>
+  </head>
+  <body id="GalaxyTrucker">
+    <div id="pageBody">
+      <div id="flavor">
+        <p>
+          Don’t panic! Or, you know what, go ahead. Panic. Corporation Incorporated has tasked you with building an entire spaceship out of a pile of
+          junk with a bunch of guidelines for how they want this thing put together. They demanded that the ship be packed with cargo and crew to
+          maximize profits! Even though they didn’t provide enough pieces to make a full ship, I’m sure we can make something of <i>the leftovers</i>.
+        </p>
+      </div>
+
+      <div id="ship-grid">
+        <for each="colH" in="{colHeaders}">
+          <span class="colHeader">
+            <if test="{colH}" ne="0">{colH}</if>
+          </span>
+        </for>
+        <for each="row" in="{grid}">
+          <span class="rowHeader">
+            <if test="{rowHeaders.[row#]}" ne="0">{rowHeaders.[row#]}</if>
+          </span>
+          <for each="ch" in="{row}">
+            <if test="{ch}" ne=" ">
+              <span id="sg{row#}{ch#}" class="ship-cell" data-text="{ch}">
+                <span class="ship-box"><span class="ship-text">{ch}</span></span>
+                <if test="{ch}" ni="*^@#">
+                  <span class="ship-drop drop-target"></span>
+                </if>
+                <if test="{ch}" in="*^@#">
+                  <span class="ship-drop">
+                    <if test="{ch}" eq="*"><img src="GalaxyTrucker/Center.png" class="tile-img"></if>
+                    <if test="{ch}" eq="^"><img src="GalaxyTrucker/Shield.png" class="tile-img"></if>
+                    <if test="{ch}" eq="@"><img src="GalaxyTrucker/Cargo4.png" class="tile-img"></if>
+                    <if test="{ch}" eq="#"><img src="GalaxyTrucker/Cargo3.png" class="tile-img"></if>
+                  </span>
+                </if>
+              </span>
+            </if>
+            <if test="{ch}" eq=" ">
+              <span class="ship-blank">&nbsp;</span>
+            </if>
+          </for>
+        </for>        
+      </div>
+
+      <div id="tile-grid">
+        <for each="row" in="{tiles}">
+          <for each="col" in="{row}">
+            <span id="tg{row#}{col#}" class="tile-cell drag-source drop-target">
+              <if test="{col}" ne=" ">
+                <img id="{col}" src_="GalaxyTrucker/{col}.png" class="tile-img moveable">
+              </if>
+            </span>
+          </for>
+        </for>        
+      </div>
+
+      <div id="rule-list">
+        <ol>
+          <li>The numbers along the borders indicate how many cargo containers (boxes in each cargo hold <span class="rule-tile-img"><img src="GalaxyTrucker/Cargo3.png"></span>) are in each row/column</li>
+          <li>Connectors: 
+              <span class="rule-img"><img src="GalaxyTrucker/SingleConnectorUp.png"></span> (one pipe)
+              cannot connect to <span class="rule-img"><img src="GalaxyTrucker/DoubleConnectorUp.png"></span> (two pipes),
+              but <span class="rule-img"><img src="GalaxyTrucker/UniversalConnectorUp.png"></span> (universal) can connect to either.</li>
+          <li>Some pieces have been welded <span class="rule-tile-img"><img src="GalaxyTrucker/WeldRule.png"></span> together and must be placed next to each other</li>
+          <li>The final ship should have no exposed connectors (every connector joins with another piece)<span class="rule-tile-img"></span></li>
+          <li>No component <b>connects</b> to another component of the same type (the starting cabin <span class="rule-tile-img"><img src="GalaxyTrucker/Center.png"></span> 
+              can connect to crew cabins <span class="rule-tile-img"><img src="GalaxyTrucker/Cabin8.png"></span>)</li>
+          <li>Engines <span class="rule-tile-img"><img src="GalaxyTrucker/Engine2.png"></span> 
+              and cannons <span class="rule-tile-img"><img src="GalaxyTrucker/Cannon1.png"></span> <span class="rule-tile-img"><img src="GalaxyTrucker/DoubleCannon1.png"></span> 
+              must have their output pointed at the exterior of the blueprint</li>
+          <li>Every crew cabin <span class="rule-tile-img"><img src="GalaxyTrucker/Cabin8.png"></span> is connected to at least one 
+              cargo hold <span class="rule-tile-img"><img src="GalaxyTrucker/Cargo3.png"></span> (and vice versa)</li>
+          <li>Full connector rules are available on <a href="https://aka.ms/gtrules" target="_blank">page 5</a> of the game manual (only needed if the rules above don't make sense)
+              <span class="rule-tile-img"></span></li>
+        </ol>
+      </div>
+
+    </div>
+  </body>
+</html>
