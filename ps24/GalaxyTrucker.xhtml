@@ -1,12 +1,13 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="Kit/kit.js"></script>
+    <script src="../js/kit25.js" />
     <script>
       const boiler = {
-        'safari': 'team',
+        safaris: puzzleSafari24,
+        safari: 'ps24',
         'title': 'Galaxy Trucker',
         'author': 'Andrew Giese and David Garber',
         'copyright': '2024',
@@ -15,7 +16,7 @@
           'dragDrop': true,
         },
         'reactiveBuilder': true,
-        'builderLookup': {
+        'lookup': {
         },
       };
 
@@ -40,7 +41,7 @@
       var colHeaders = [0,2,5,0,5,2,0,2,2,2];
       var rowHeaders = [0,0,2,7,9,2];
 
-      boiler['builderLookup'] =
+      boiler['lookup'] =
       {
         tiles: tiles,
         grid: grid,
@@ -187,7 +188,7 @@
           <span class="rowHeader">
             <if test="{rowHeaders.[row#]}" ne="0">{rowHeaders.[row#]}</if>
           </span>
-          <for each="ch" in="{row}">
+          <for char="ch" in="{row}">
             <if test="{ch}" ne=" ">
               <span id="sg{row#}{ch#}" class="ship-cell" data-text="{ch}">
                 <span class="ship-box"><span class="ship-text">{ch}</span></span>
@@ -196,10 +197,10 @@
                 </if>
                 <if test="{ch}" in="*^@#">
                   <span class="ship-drop">
-                    <if test="{ch}" eq="*"><img src="GalaxyTrucker/Center.png" class="tile-img"></if>
-                    <if test="{ch}" eq="^"><img src="GalaxyTrucker/Shield.png" class="tile-img"></if>
-                    <if test="{ch}" eq="@"><img src="GalaxyTrucker/Cargo4.png" class="tile-img"></if>
-                    <if test="{ch}" eq="#"><img src="GalaxyTrucker/Cargo3.png" class="tile-img"></if>
+                    <if test="{ch}" eq="*"><img src="GalaxyTrucker/Center.png" class="tile-img" /></if>
+                    <if test="{ch}" eq="^"><img src="GalaxyTrucker/Shield.png" class="tile-img" /></if>
+                    <if test="{ch}" eq="@"><img src="GalaxyTrucker/Cargo4.png" class="tile-img" /></if>
+                    <if test="{ch}" eq="#"><img src="GalaxyTrucker/Cargo3.png" class="tile-img" /></if>
                   </span>
                 </if>
               </span>
@@ -216,7 +217,7 @@
           <for each="col" in="{row}">
             <span id="tg{row#}{col#}" class="tile-cell drag-source drop-target">
               <if test="{col}" ne=" ">
-                <img id="{col}" src_="GalaxyTrucker/{col}.png" class="tile-img moveable">
+                <img id="{col}" src_="GalaxyTrucker/{col}.png" class="tile-img moveable" />
               </if>
             </span>
           </for>
@@ -225,20 +226,20 @@
 
       <div id="rule-list">
         <ol>
-          <li>The numbers along the borders indicate how many cargo containers (boxes in each cargo hold <span class="rule-tile-img"><img src="GalaxyTrucker/Cargo3.png"></span>) are in each row/column</li>
+          <li>The numbers along the borders indicate how many cargo containers (boxes in each cargo hold <span class="rule-tile-img"><img src="GalaxyTrucker/Cargo3.png" /></span>) are in each row/column</li>
           <li>Connectors: 
-              <span class="rule-img"><img src="GalaxyTrucker/SingleConnectorUp.png"></span> (one pipe)
-              cannot connect to <span class="rule-img"><img src="GalaxyTrucker/DoubleConnectorUp.png"></span> (two pipes),
-              but <span class="rule-img"><img src="GalaxyTrucker/UniversalConnectorUp.png"></span> (universal) can connect to either.</li>
-          <li>Some pieces have been welded <span class="rule-tile-img"><img src="GalaxyTrucker/WeldRule.png"></span> together and must be placed next to each other</li>
+              <span class="rule-img"><img src="GalaxyTrucker/SingleConnectorUp.png" /></span> (one pipe)
+              cannot connect to <span class="rule-img"><img src="GalaxyTrucker/DoubleConnectorUp.png" /></span> (two pipes),
+              but <span class="rule-img"><img src="GalaxyTrucker/UniversalConnectorUp.png" /></span> (universal) can connect to either.</li>
+          <li>Some pieces have been welded <span class="rule-tile-img"><img src="GalaxyTrucker/WeldRule.png" /></span> together and must be placed next to each other</li>
           <li>The final ship should have no exposed connectors (every connector joins with another piece)<span class="rule-tile-img"></span></li>
-          <li>No component <b>connects</b> to another component of the same type (the starting cabin <span class="rule-tile-img"><img src="GalaxyTrucker/Center.png"></span> 
-              can connect to crew cabins <span class="rule-tile-img"><img src="GalaxyTrucker/Cabin8.png"></span>)</li>
-          <li>Engines <span class="rule-tile-img"><img src="GalaxyTrucker/Engine2.png"></span> 
-              and cannons <span class="rule-tile-img"><img src="GalaxyTrucker/Cannon1.png"></span> <span class="rule-tile-img"><img src="GalaxyTrucker/DoubleCannon1.png"></span> 
+          <li>No component <b>connects</b> to another component of the same type (the starting cabin <span class="rule-tile-img"><img src="GalaxyTrucker/Center.png" /></span> 
+              can connect to crew cabins <span class="rule-tile-img"><img src="GalaxyTrucker/Cabin8.png" /></span>)</li>
+          <li>Engines <span class="rule-tile-img"><img src="GalaxyTrucker/Engine2.png" /></span> 
+              and cannons <span class="rule-tile-img"><img src="GalaxyTrucker/Cannon1.png" /></span> <span class="rule-tile-img"><img src="GalaxyTrucker/DoubleCannon1.png" /></span> 
               must have their output pointed at the exterior of the blueprint</li>
-          <li>Every crew cabin <span class="rule-tile-img"><img src="GalaxyTrucker/Cabin8.png"></span> is connected to at least one 
-              cargo hold <span class="rule-tile-img"><img src="GalaxyTrucker/Cargo3.png"></span> (and vice versa)</li>
+          <li>Every crew cabin <span class="rule-tile-img"><img src="GalaxyTrucker/Cabin8.png" /></span> is connected to at least one 
+              cargo hold <span class="rule-tile-img"><img src="GalaxyTrucker/Cargo3.png" /></span> (and vice versa)</li>
           <li>Full connector rules are available on <a href="https://aka.ms/gtrules" target="_blank">page 5</a> of the game manual (only needed if the rules above don't make sense)
               <span class="rule-tile-img"></span></li>
         </ol>

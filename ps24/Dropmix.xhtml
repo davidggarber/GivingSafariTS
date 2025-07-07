@@ -209,17 +209,17 @@
         </p>
         <build>
 
-          <table_ data-literal-style="box" data-extract-style="none" class="text-input-group" style="border-spacing: 0px;" data-onchange="toggleAudio">
+          <ttable data-literal-style="box" data-extract-style="none" class="text-input-group" style="border-spacing: 0px;" data-onchange="toggleAudio">
             <for each="song" in="songs">
-              <tr_ class="group-{(song#\3)%2} group-row-{song#%3}" data-song-index="{song#\3}">
-                <td_><img id="{col}" src_="Dropmix\{song.instrument}.png" class="instrument-icon" /></td_>
-                <td_><word extract="{song.artistIndex}" extracted-id="artist-{song#}"></word><span class='extract-number'>({song.artistIndex})</span></td_>
-                <td_><letter input-id="extracted-artist-{song#}" extract="{song.artistNum}"></letter></td_>
-                <if test="{song.mp3}" ne="*"><td_ rowspan="3"><audio ssrc="Dropmix/{song.mp3}.mp3" controls="true" onPlay="onPlay(this)" /></td_></if>
-                <td_><pattern pattern="{song.pattern}" numbers="{song.numbers}"></pattern></td_>
-              </tr_>
+              <ttr class="group-{(song#\3)%2} group-row-{song#%3}" data-song-index="{song#\3}">
+                <ttd><img id="{col}" src_="Dropmix\{song.instrument}.png" class="instrument-icon" /></ttd>
+                <ttd><word extract="{song.artistIndex}" extracted-id="artist-{song#}"></word><span class='extract-number'>({song.artistIndex})</span></ttd>
+                <ttd><letter input-id="extracted-artist-{song#}" extract="{song.artistNum}"></letter></ttd>
+                <if test="{song.mp3}" ne="*"><ttd rowspan="3"><audio ssrc="Dropmix/{song.mp3}.mp3" controls="true" onPlay="onPlay(this)" /></ttd></if>
+                <ttd><pattern pattern="{song.pattern}" numbers="{song.numbers}"></pattern></ttd>
+              </ttr>
             </for>
-          </table_>
+          </ttable>
           <div style="position: relative; margin-top: 20px;">
             <b>Bands:</b> &nbsp; &nbsp;
             <div style="display: inline-block;">
