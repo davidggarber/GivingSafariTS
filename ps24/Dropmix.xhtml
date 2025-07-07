@@ -1,12 +1,13 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="Kit/kit.js"></script>
+    <script src="../js/kit25.js" />
     <script>
       const boiler = {
-        'safari': 'team',
+        safaris: puzzleSafari24,
+        safari: 'ps24',
         'title': 'Dropmix',
         'author': 'Andrew Giese',
         'copyright': '2024',
@@ -16,7 +17,7 @@
           checkMarks: true,
         },
         'reactiveBuilder': true,
-        'builderLookup': {
+        'lookup': {
           songs: [
             // artistIndex and artistNum are currently placeholders for how I'd like the extraction from the bands to work.
             // Ideally, the list of bands at the bottom will be drag/drop labels that can be moved to the appropriate slots
@@ -158,6 +159,7 @@
 
   </style>
     <script>
+      // <![CDATA[
       var playing = null;
       function onPlay(aud) {
         if (playing != null && playing != aud) {
@@ -192,6 +194,7 @@
           }
         }
       }
+      // ]]>
     </script>
   </head>
   <body id="Dropmix">
@@ -208,11 +211,11 @@
 
           <table_ data-literal-style="box" data-extract-style="none" class="text-input-group" style="border-spacing: 0px;" data-onchange="toggleAudio">
             <for each="song" in="songs">
-              <tr_ class="group-{=(song#\3)%2} group-row-{=song#%3}" data-song-index="{=song#\3}">
-                <td_><img id="{col}" src_="Dropmix\{song.instrument}.png" class="instrument-icon"></td_>
+              <tr_ class="group-{(song#\3)%2} group-row-{song#%3}" data-song-index="{song#\3}">
+                <td_><img id="{col}" src_="Dropmix\{song.instrument}.png" class="instrument-icon" /></td_>
                 <td_><word extract="{song.artistIndex}" extracted-id="artist-{song#}"></word><span class='extract-number'>({song.artistIndex})</span></td_>
                 <td_><letter input-id="extracted-artist-{song#}" extract="{song.artistNum}"></letter></td_>
-                <if test="{song.mp3}" ne="*"><td_ rowspan="3"><audio_ src="Dropmix/{song.mp3}.mp3" controls onPlay="onPlay(this)"></audio_></td_></if>
+                <if test="{song.mp3}" ne="*"><td_ rowspan="3"><audio ssrc="Dropmix/{song.mp3}.mp3" controls="true" onPlay="onPlay(this)" /></td_></if>
                 <td_><pattern pattern="{song.pattern}" numbers="{song.numbers}"></pattern></td_>
               </tr_>
             </for>
@@ -230,7 +233,9 @@
             </div>
           </div>
 
-          <p style="text-align: center; margin-top:0px;"><b>Clue:</b> &nbsp; <pattern id="extracted" pattern="5 4 4 3 6 4  9 4 6?" numbered></pattern></p>
+          <p style="text-align: center; margin-top:0px;">
+            <b>Clue:</b> &nbsp; <pattern id="extracted" extract-numbered="5 4 4 3 6 4  9 4 6&#63;" />
+          </p>
 
         </build>
         
