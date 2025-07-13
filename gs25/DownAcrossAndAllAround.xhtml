@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Down, Across, And All Around',
+        author: 'Wei-Hwa Huang',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          checkMarks: true,
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          grids: [
+            [ 'TOURE', 'BZXAD', 'FAAE', 'RREO' ],
+            [ 'NCTTL', 'SOILT', 'OWLW', 'EEDE' ],
+            [ 'MNMMA', 'AATRR', 'EEEE', 'ITOE' ]
+          ],
+          clues: [
+            '43,560 square feet',
+            'Japanese cartoons',
+            'Part of a molecule',
+            'A shade of blue; or, a cloud computing service',
+            'What Muhammad Ali did in the past',
+            'Black bird that caws',
+            'An eon has several of these',
+            '"And others", in Latin (2 words)',
+            '"___ pas" (a mistake in etiquette)',
+            'Part of an inventory',
+            'Captioned images shared on social media',
+            'Insignificant or minor; descriptor for “mortals”',
+            'Back of the neck',
+            'Related to a point on a graph',
+            'Group of eight; or, one of four in an IP address',
+            'A sung play; or, a web browser',
+            'Pasta that looks like large rice',
+            'Possesses; or, dominates someone on Xbox Live',
+            'What a clarinet has but a flute doesnʼt',
+            '“The story __” (Recap introduction, 2 words)',
+            'Thrust a knife; or, make a guess',
+            'Engorge with liquid; or “Groovy!”',
+            '"___ tots" (Ore-Ida fried cylindrical snacks)',
+            'Swiss archer folk hero who shot an apple',
+            'Brand of (poisonous) detergent pods',
+            'Copy by hand on semi-transparent paper',
+            'Put words to paper',
+
+          ]
+        },
+      };
+    </script>
+    <style>
+      #left {
+        position: relative;
+        width: 3in;
+      }
+      #right {
+        position: absolute;
+        right: 24px;
+        top: 1.25in;
+        width: 4in;
+        line-height: 18pt;
+      }
+
+      #DownAcross table {
+        border-collapse: collapse;
+        margin-bottom: 36px;;
+      }
+      #DownAcross th {
+        font-family: 'Lucidia Console', monospace;
+        font-size: 20pt;
+        text-align: center;
+        width: 30px;
+        height: 30px;
+        user-select: none;
+      }
+      #DownAcross td {
+        width: 30px;
+        height: 30px;
+        border: solid 1px black;
+        text-align: center;
+      }
+      #DownAcross .letter-cell {
+        font-size: 18pt;
+      }
+
+      li {
+        position: relative;
+        user-select: none;
+      }
+      #DownAcross .check {
+        position: absolute;
+        left: -28px;
+        top: -3px;
+      }
+      #table-0 .row-0 .col-0,
+      #table-0 .row-1 .col-3,
+      #table-1 .row-1 .col-1,
+      #table-1 .row-2 .col-3,
+      #table-2 .row-2 .col-1,
+      #table-2 .row-3 .col-4 {
+        border: solid 4px black;
+      }
+    </style>
+  </head>
+  <body id="DownAcross">
+    <div id="pageBody">
+      <p class="flavor">
+        Oh no! We had three word rectangles (with five 4-letter words reading 
+        down in each grid and four 5-letter words reading across in each grid), 
+        but then the imprisoned letters decided they wanted to escape their cells! 
+        Can you put them back?  Clues for the words are given on the right 
+        (in alphabetical order by word). Every letter outside the grid must 
+        either stay in its row or stay in its column. Six letters managed to 
+        escape to the great outdoors (from their outlined original cells); 
+        what kind of leftover junk are they?
+      </p>
+
+      <div id="left" data-letter-style="hove">
+        <for each="grid" in="{grids}">
+          <ttable id="table-{grid#}" class="grid">
+            <ttr class="top">
+              <tth>&nbsp;</tth>
+              <for char="ch" in="{grid.0}">
+                <tth>{ch}</tth>
+              </for>
+              <tth>&nbsp;</tth>              
+            </ttr>
+
+            <for int="y" from="0" to="3">
+              <ttr class="row row-{y}">
+                <tth>{grid.2.[y]}</tth>
+                  <for int="x" from="0" to="4">
+                  <ttd class="col-{x}"><letter /></ttd>
+                </for>
+                <tth>{grid.3.[y]}</tth>
+              </ttr>
+            </for>
+
+            <ttr class="bottom">
+              <tth>&nbsp;</tth>
+              <for char="ch" in="{grid.1}">
+                <tth>{ch}</tth>
+              </for>
+              <tth>&nbsp;</tth>              
+            </ttr>
+          </ttable>
+
+        </for>        
+      </div>
+
+      <div id="right">
+        <ul>
+          <for each="clue" in="{clues}">
+            <li><span class="cross-off">{clue}</span></li>
+          </for>
+        </ul>
+      </div>
+
+
+    </div>
+  </body>
+</html>
