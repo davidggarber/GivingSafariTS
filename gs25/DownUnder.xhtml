@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Down Under',
+        author: 'Wei-Hwa Huang',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          clues: [
+            'eneulotirt',
+            'duol hgual',
+            'sliaN eniN',
+            'eot-cit',
+            'rebmun ton',
+            'retnuH retnuH',
+            'srekaL soL',
+            'gnitekram-itlum',
+            'hsiugnitxe dna ecarbme',
+            'kcehc cilcyc',
+            'erooM yraM',
+            'elbatroP yalP',
+            'senoJ semaJ',
+            'kcab eb'
+          ]
+        },
+      };
+    </script>
+    <style>
+      .flavor {
+        font-style: italic;
+      }
+      #table {
+        margin-left: 1in;
+        margin-top: 0.5in;
+        border-collapse: collapse;
+      }
+      #DownUnder .clue {
+        text-align: right;
+        font-size: 14pt;
+      }
+      td.middle {
+        border-left: solid 1px black;
+        border-right: solid 1px black;
+        height: 32px;
+      }
+      tr:first-child td.middle {
+        border-top: solid 1px black;
+      }
+      tr:nth-child(14) td.middle {
+        border-bottom: solid 1px black;
+      }
+      td.bottom {
+        border-top: solid 1px black;
+        border-bottom: solid 1px black;
+      }
+      td.bottom.left {
+        border-left: solid 1px black;
+      }
+      td.bottom.right {
+        border-right: solid 1px black;
+      }
+
+    </style>
+  </head>
+  <body id="DownUnder">
+    <div id="pageBody">
+      <p class="flavor">
+        Everything’s backwards here, but that shouldn’t matter when things are shortened.
+      </p>
+      <ttable id="table">
+        <for each="clue" in="clues">
+          <tr>
+            <td class="clue">
+              {clue} =
+            </td>
+            <td><letter /></td>
+            <td class="middle"><letter /></td>
+            <td><letter /></td>
+          </tr>
+        </for>
+
+        <tr>
+          <td class="gap" colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td class="bottom left">
+            <letter />
+          </td>
+          <td class="bottom">
+            <letter />
+          </td>
+          <td class="bottom right">
+            <letter />
+          </td>
+        </tr>
+      </ttable>
+
+    </div>
+  </body>
+</html>
