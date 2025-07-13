@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Fences',
+        author: 'Martyn Lovell',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          grid: [
+            '84xx6x3x1',
+            'xxx8xxxx9',
+            '2x6x5xx4x',
+            'x1xx9x2xx',
+            'xxx4x3xx7',
+            '7xxxxx4xx',
+            '9x41x67x5',
+            'x6xx7xx8x',
+            '1xxxxx9x6'
+          ],
+          grays: [
+            '--o--o-o-',
+            '-o--o----',
+            '---o----o',
+            'o-o------',
+            '--o-o-o--',
+            '----o----',
+            '----o--oo',
+            '--oo-o--o',
+            '-oo----o-'
+          ]
+        },
+      };
+    </script>
+    <style>
+      .flavor {
+        font-style: italic;
+      }
+      #table {
+        position: absolute;
+        left: 2px;
+        top: 2px;
+        border-collapse: collapse;
+      }
+      #table td {
+        width: 60px;
+        height: 60px;
+        padding: 0px;
+        vertical-align: middle;
+        text-align: center;
+        border: none;
+      }
+      #Fences .letter-cell {
+        font-size: 32pt;
+      }
+      #Fences .letter-literal {
+        font-size: 25pt;
+        bottom: initial;
+        position: initial;
+      }
+      #svg {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+      }
+      rect {
+        fill: none;
+      }
+      rect.red {
+        stroke: red;
+        stroke-width: 3px;
+        width: 180px;
+        height: 180px;
+      }
+      rect.black {
+        stroke: black;
+        stroke-width: 3px;
+        width: 180px;
+        height: 180px;
+      }
+      rect.thin {
+        stroke: #666;
+        stroke-width: 0.5px;
+        width: 60px;
+        height: 60px;
+      }
+      rect.gray {
+        stroke: #666;
+        stroke-width: 0.5px;
+        width: 60px;
+        height: 60px;
+        fill: #D9D9D9;
+      }
+      #table td.gray-sum {
+        position: relative;
+        right: -10px;
+        text-align: center;
+        color: #666;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body id="Fences">
+    <div id="pageBody">
+      <p class="flavor">
+        This grid works like Sudoku but with stacked layers. Each large 3×3 square that is outlined red or black must contain each of the digits 1-9 once. There may be no repeated digits in any column or row. Ignore the light grey squares until you have solved the grid.
+      </p>
+
+      <div style="position:relative; margin-left: 0.9in; height:5.7in;">
+        <ttable id="table" data-letter-style="hover" data-extract-style="hover" trim="all" data-extract-join="+" class="letter-grid-2d">
+          <for each="row" in="{grid}">
+            <ttr>
+              <for char="ch" in="{row}">
+                <ttd>
+                  <if test="{grays.[row#].[ch#]}" eq="o">
+                    <if test="{ch}" eq="x">
+                      <number extract="" data-extracted-id="{row#}" />
+                    </if>
+                    <else>
+                      <number literal="{ch}" extract="" data-extracted-id="{row#}" />
+                    </else>
+                  </if>
+                  <else>
+                    <if test="{ch}" eq="x">
+                      <number />
+                    </if>
+                    <else>
+                      <number literal="{ch}" />
+                    </else>
+                  </else>
+                </ttd>
+              </for>
+              <ttd class="gray-sum"><span id="extracted-{row#}" /></ttd>
+            </ttr>
+          </for>
+        </ttable>
+
+        <svg id="svg" width="550" height="550" xmlns="http://www.w3.org/2000/svg">
+          <for int="y" from="0" until="9">
+            <for int="x" from="0" until="9">
+              <if test="{grays.[y#].[x#]}" eq="o">
+                <rect xx="{2+60*x}" yy="{2+60*y}" class="gray" />
+              </if>
+              <else>
+                <rect xx="{2+60*x}" yy="{2+60*y}" class="thin" />
+              </else>
+            </for>
+          </for>
+          <for int="y" from="0" until="3">
+            <for int="x" from="0" until="3">
+              <rect xx="{2+180*x}" yy="{2+180*y}" class="red" />
+            </for>
+          </for>
+          <rect xx="{2+60*4}" yy="{2+60*1}" class="black" />
+          <rect xx="{2+60*1}" yy="{2+60*2}" class="black" />
+          <rect xx="{2+60*5}" yy="{2+60*4}" class="black" />
+          <rect xx="{2+60*2}" yy="{2+60*5}" class="black" />
+        </svg>
+      </div>
+
+      <p class="flavor">
+        Once you have completed the puzzle, sum the light grey shaded digits 
+        in each of the nine rows, and convert those numbers to letters. 
+        Read off in order, top to bottom.
+      </p>
+
+      <p style="line-height: 14pt;">
+        <span style="position: relative; top:-15px;">Answer:</span>
+        <pattern id="final-answer" pattern="9"  data-show-ready="submit-extracted" />
+        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+      </p>
+
+    </div>
+  </body>
+</html>
