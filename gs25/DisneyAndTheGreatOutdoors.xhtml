@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Disney and the Great Outdoors',
+        author: 'Chris Jeuell',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          lines: [
+            ['a.png', 'EHSQ'],
+            ['b.jpg', 'KLSK'],
+            ['c.png', 'EQOZE HXF'],
+            ['d.png', 'XPCIAGP XL'],
+            ['e.png', 'PSQ'],
+            ['f.png', 'AXFPN SQHP'],
+            ['g.gif', 'JAOAP DI BQQ'],
+            ['h.png', 'ASKL'],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Disney th img {
+        height: 94px;
+      }
+      #Disney td {
+        font-family: "Lucida Console",monospace;
+        font-size: 28pt;
+      }
+    </style>
+  </head>
+  <body id="Disney">
+    <div id="pageBody">
+      <p class="flavor">
+        In my tour of Disney World, I saw so many familiar characters from nature. 
+        They were identified in coded text, and I guess the person who wrote their names was  
+        so lazy that they forgot exactly one letter for each word in each character’s name….
+      </p>
+
+      <ttable>
+        <for each="line" in="lines">
+          <tr>
+            <th>
+              <img src="Disney/{line.0}" />  
+            </th>  
+            <td>
+              {line.1}
+            </td>
+          </tr>          
+        </for>  
+      </ttable>
+    </div>
+  </body>
+</html>

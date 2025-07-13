@@ -18,6 +18,30 @@
         },
         reactiveBuilder: 'pageBody',
         lookup: {
+          colgroups: [
+            [1,5,2],
+            [3,1,2],
+            [1,2,4],
+            [1,1,1,1],
+            [1,2,4,1],
+            [1,2],
+            [1,1,2,1],
+            [1,1,2],
+          ],
+          rowgroups: [
+            [3,1,1],
+            [1,1],
+            [3,2],
+            [1,1,1,2],
+            [2,1],
+            [1,1],
+            [1,3,1],
+            [1,1,1],
+            [1,1],
+            [3,4],
+            [2,1,1,1],
+            [1],
+          ],
         },
       };
     </script>
@@ -35,6 +59,9 @@
       <p class="flavor">
         Two of the trees have already been filled in for you. Now it’s up to you to draw the rest!
       </p>
+      <div id="pbn-pos">
+        <use template="paintByNumbers" cols="{colGroups}" rows="{rowGroups}" styles="double_4" blank="~" stamplist="stampTools" validate="true"></use>
+      </div>
 
 
     </div>

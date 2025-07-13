@@ -33,7 +33,7 @@ var puzzles = [
     { title: 'America the Beautiful', thumb: 'tbd', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Biomes of the World', thumb: 'tbd', author: 'Zhenya Ross', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Cartography', thumb: 'tbd', author: 'Jake Lui', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { title: 'Disney and the Great Outdoors', thumb: 'tbd', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    { title: 'Disney and the Great Outdoors', thumb: 'tbd', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Down Under', thumb: 'tbd', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Down, Across, and All Around', thumb: 'tbd', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Fences', thumb: '', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
