@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Jokes Around The Campfire',
+        author: 'Philippe Nicolle',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          straightEdge: true,
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          clues: [
+            [
+              'My wife said she hates the puns I make about her yellow oven glove.  However, I wasn’t expecting to wake up one morning and find her gone, I __________ mitt.',
+              92, 250, 47, 28, 'right'
+            ],
+            [
+              'Astronomers got tired watching the moon go around the earth for 24 hours.  They decided to call it a ______.',
+              77, 217, 44, 135, 'right'
+            ],
+            [
+              'I’m addicted to collecting vintage Beatles albums.  I need _______.',
+              63, 187, 25, 222, 'right'
+            ],
+            [
+              'Why do submarine talent shows have so much stage fright?  It’s just too much _________.',
+              77, 179, 17, 291, 'right'
+            ],
+            [
+              'Why did the judge deny the ghost bail?  Too much of a ________ risk.',
+              59, 187, 17, 376, 'right'
+            ],
+            [
+              'What did the starship captain say when he peed his pants?  ________ alert, number one.',
+              67, 215, 17, 456, 'right'
+            ],
+            [
+              '70% of dishes are under seasoned according to a recent survey by the seasoning manufacturer’s association.  Take it with a grain of ________.',
+              98, 237, 25, 537, 'right'
+            ],
+            [
+              'Why can’t a bicycle stand on its own?  Because it’s two ________.',
+              42, 248, 93, 650, 'right'
+            ],
+            [
+              'Does anyone want to buy my old vacuum cleaner?  It’s __________ dust.',
+              61, 182, 375, 38, 'left'
+            ],
+            [
+              'Did you hear about the guy who was addicted to salt?  Don’t worry, he was _______.',
+              61, 217, 465, 99, 'left'
+            ],
+            [
+              'How do crabs get around town every day?  They use the ________.',
+              58, 217, 501, 160, 'left'
+            ],
+            [
+              'I didn’t think orthopedic shoes would help with my posture, but I ________ corrected.',
+              61, 215, 541, 221, 'left'
+            ],
+            [
+              'What is the difference between a well-dressed man and a dog?  The man wears a suit, the dog just ________.',
+              91, 195, 561, 291, 'left'
+            ],
+            [
+              'What do you give the violent criminal who cured cancer?  The no ________ prize.',
+              63, 205, 550, 389, 'left'
+            ],
+            [
+              'Was asked in an interview if I could perform under pressure.  I said I’m not sure, but I can perform "Another One Bites the ________".',
+              92, 216, 526, 455, 'left'
+            ],
+            [
+              'Grandpa survived a mustard gas attack during the war and came back a ___________ veteran.',
+              80, 270, 471, 550, 'left'
+            ],
+            [
+              'Two fleas walk out of a bar and are on the sidewalk.  One turns to the other and says, "you want to walk or take a ______?"',
+              80, 259, 404, 621, 'left'
+            ]
+          ],
+          dots: [
+            [372, 168],
+            [435, 180],
+            [490, 213],
+            [528, 265],
+            [546, 326],
+            [540, 390],
+            [512, 447],
+            [463, 490],
+            [404, 515],
+            [340, 515],
+            [280, 490],
+            [232, 447],
+            [203, 390],
+            [198, 326],
+            [216, 263],
+            [253, 213],
+            [308, 179]
+          ],
+          letters: [
+            [ 'O', 246, 384 ],
+            [ 'R', 248, 335 ],
+            [ 'G', 276, 530 ],
+            [ 'S', 297, 437 ],
+            [ 'U', 311, 384 ],
+            [ 'Y', 341, 305 ],
+            [ 'R', 345, 351 ],
+            [ 'H', 359, 204 ],
+            [ 'E', 374, 457 ],
+            [ 'J', 374, 282 ],
+            [ 'N', 377, 504 ],
+            [ 'K', 385, 387 ],
+            [ 'O', 421, 551 ],
+            [ 'O', 430, 495 ],
+            [ 'E', 445, 205 ],
+            [ 'I', 455, 376 ],
+            [ 'N', 468, 329 ],
+            [ 'H', 502, 502 ],
+            [ 'E', 508, 272 ],
+            [ 'T', 511, 343 ],
+          ]
+        },
+      };
+    </script>
+    <style>
+      .clue {
+        user-select: none;
+      }
+      #letters text {
+        font-family: 'Lucida Console', monospace;
+        font-size: 22pt;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body id="Jokes">
+    <div id="pageBody">
+      <for each="clue" in="{clues}">
+        <div class="clue" style="position:absolute; height:{clue.1/100}in; width:{clue.2/100}in; left:{clue.3/100}in; top:{clue.4/100}in; text-align:{clue.5};">
+          {clue.0}
+        </div>
+      </for>
+      <img src="Jokes/campfire.png" style="position:absolute; left:2.22in; top:1.94in; width:2.98in; height:2.98in;" alt="Campfire" />
+
+      <svg id="svg" class="straight-edge-area" width="730" height="690" xmlns="http://www.w3.org/2000/svg" style="position:absolute; left: 0px; top: 0px;">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                  refX="0" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="black" />
+          </marker>
+        </defs>
+        <g id="dots" transform="scale(0.95, 1) translate(8, -12)">
+          <for each="dot" in="{dots}">
+            <circle class="vertex" ccx="{dot.0}" ccy="{dot.1}" r="4" fill="black" />
+          </for>
+        </g>
+        <g id="letters" transform="scale(0.86,0.88) translate(10,-5)">
+          <for each="let" in="{letters}">
+            <text xx="{let.1}" yy="{let.2}">{let.0}</text>>
+          </for>
+        </g>
+        <g id="arrows">
+          <line x1="285" y1="108" x2="296" y2="150" stroke="black" stroke-width="1" marker-end="url(#arrowhead)" />
+          <line x1="361" y1="86" x2="361" y2="138" stroke="black" stroke-width="1" marker-end="url(#arrowhead)" />
+          <line x1="443" y1="142" x2="432" y2="154" stroke="black" stroke-width="1" marker-end="url(#arrowhead)" />
+
+          <line x1="251" y1="517" x2="264" y2="494" stroke="black" stroke-width="1" marker-end="url(#arrowhead)" />
+          <line x1="330" y1="626" x2="330" y2="522" stroke="black" stroke-width="1" marker-end="url(#arrowhead)" />
+          <line x1="391" y1="592" x2="391" y2="522" stroke="black" stroke-width="1" marker-end="url(#arrowhead)" />
+          <line x1="464" y1="524" x2="454" y2="494" stroke="black" stroke-width="1" marker-end="url(#arrowhead)" />
+        </g>
+
+      </svg>
+
+    </div>
+  </body>
+</html>
