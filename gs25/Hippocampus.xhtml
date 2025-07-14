@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Hippocampus',
+        author: 'Joe Tompkinson',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+      li {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body id="__puzzle_name">
+    <div id="pageBody">
+      <p class="flavor">
+        I have a strange way of remembering things; 
+        I only remember when the ‘obvious’ thing is wrong.
+      </p>
+      <p class="flavor">
+        Here’s the obvious answer, and why it’s wrong:
+      </p>
+      <p style="text-align: center;">
+        <img src="Hippocampus/abcdef.png" alt="abcdef" />
+      </p>
+      <ul>
+        <li>
+          Exactly one letter is in the right place already – the other five are in the wrong place.
+        </li>
+        <li>
+          If I write down the number of ‘ends’ in each letter, then this should be symmetric from left to right
+          <br />(at the moment, it’s 2-0-2-0-3-3).
+        </li>
+        <li>
+          If I ignore the first letter in the true answer, the same is true for the ‘holes’ in the other five
+          <br />(at the moment, it’s [1]-2-0-1-0-0).
+        </li>
+        <li>
+          Two letters are rotated by 90 degrees, in opposite directions.
+        </li>
+        <li>
+          The resulting 6-letter string is actually only a rough homophone of the real 7-letter answer 
+          <br />– you’ll have to change the ‘F’ to a ‘TH’.
+        </li>
+      </ul>
+
+      <p style="margin-top: 1in; margin-left: 1in;">
+        <pattern pattern="7" />
+      </p>
+
+    </div>
+  </body>
+</html>

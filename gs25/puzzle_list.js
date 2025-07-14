@@ -38,7 +38,7 @@ var puzzles = [
     { title: 'Down, Across, and All Around', thumb: 'tbd', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Fences', thumb: '', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Grab Crass In The Great Doubt Oars', thumb: 'tbd', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { title: 'Hippocampus', thumb: 'tbd', author: 'Joe Tomkinson', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    { title: 'Hippocampus', thumb: 'tbd', author: 'Joe Tomkinson', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Jokes Around the Campfire', thumb: 'tbd', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'K2', thumb: 'tbd', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Networked Hints', thumb: 'tbd', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
