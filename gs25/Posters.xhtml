@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Posters',
+        author: 'David Garber',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+      td {
+        text-align: center;
+      }
+      td img {
+        width: 1.7in;
+        height: 2.5in;
+      }
+      #Posters .word-input {
+        width: 1.2in;
+      }
+    </style>
+  </head>
+  <body id="Posters">
+    <div id="pageBody" data-extract-style="underline">
+      <p class="flavor">
+        I was so excited when I got the POSTERS back from the printers. Imagine my disappointment when I spread them out at the REST STOP. Look how jumbled they got! They even added a letter to each!
+      </p>
+
+      <ttable>
+        <for int="r" from="1" to="3">
+          <ttr>
+            <for int="c" from="1" to="4">
+              <ttd>
+                <img src="Posters/p{r}{c}.jpg"/>
+              </ttd>
+            </for>
+          </ttr>
+          <ttr>
+            <for int="c" from="1" to="4">
+              <ttd>
+                <word />+<letter extract="true" />
+              </ttd>
+            </for>
+          </ttr>
+        </for>
+      </ttable>
+
+    </div>
+  </body>
+</html>
