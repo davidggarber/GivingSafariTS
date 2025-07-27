@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        orientation: 'landscape',
+        title: 'SkiResort',
+        author: 'Joey Marianer',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+      circle.dest {
+        fill: none;
+        stroke: #333;
+        stroke-width: 1px;
+      }
+      path.dashed {
+        fill: none;
+        stroke: #333;
+        stroke-width: 0.5px;
+        stroke-dasharray: 6, 6;
+      }
+      text.nopark {
+        font-size: 8pt;
+      }
+      .no-slash {
+        stroke-width: 5pt;
+        stroke: #bbb;
+        fill: none;
+      }
+
+      .label {
+        text-anchor: middle;
+      }
+
+      .moveable circle {
+        fill: none;
+        stroke-width: 2px;
+      }
+      .moveable text {
+        font-size: 36pt;
+        text-anchor: middle;
+      }
+      .moveable path {
+        stroke-width: 2px;
+        fill: none;
+      }
+      .elevator {
+        circle { stroke: darkred; }
+        text { fill: darkred; }
+        path { stroke: darkred; }
+      }
+      .parking-lot {
+        circle { stroke: darkblue; }
+        text { fill: darkblue; }
+        path { stroke: darkblue; }
+      }
+      .slopes {
+        circle { stroke: darkcyan; }
+        text { fill: darkcyan; }
+        path { stroke: darkcyan; }
+      }
+      .walkway {
+        circle { stroke: darkgreen; }
+        text { fill: darkgreen; }
+        path { stroke: darkgreen; }
+      }
+      .cable-car {
+        circle { stroke: darkgoldenrod; }
+        text { fill: darkgoldenrod; }
+        path { stroke: darkgoldenrod; }
+      }
+    </style>
+  </head>
+  <body id="SkiResort">
+    <div id="pageBody">
+      <p class="flavor">
+        It may be summer on the Microsoft campus, but our friends in New Zealand are ready to go skiing. Let’s try to map out this ski resort and figure out why. 
+      </p>
+      <svg width="960" height="600">
+        <g id="grid" transform="translate(360, 230)">
+          <for int="y" from="0" to="3">
+            <for int="x" from="0" to="3">
+              <circle class="dest" cx="{x*90}" cy="{y*90}" r="30" />
+            </for>
+          </for>
+          <text x="90" y="200" text-anchor="middle" font-size="40pt">S</text>
+
+          <path class="dashed" d="M -50,45 h370" />
+          <text x="-110" y="65" text-anchor="middle" font-size="44pt" font-weight="bold">P</text>
+          <circle class="no-slash" cx="-112" cy="45" r="34" />
+          <path class="no-slash" d="M-112,45 m-25,25 l50,-50" />
+          <text class="nopark" x="370" y="35" text-anchor="middle">
+            No parking
+            <tspan x="370" dy="1.2em">above this</tspan>
+            <tspan x="370" dy="1.2em">line</tspan>
+          </text>
+        </g>
+
+        <g id="pieces" transform="">
+          <g id="labels" transform="translate(0,150)">
+            <text class="label" x="96" y="0">Elevator</text>
+            <text class="label" x="288" y="0">Parking lot</text>
+            <text class="label" x="480" y="0">Slopes</text>
+            <text class="label" x="672" y="0">Walkway</text>
+            <text class="label" x="864" y="0">Cable car</text>
+          </g> 
+
+          <g transform="translate(96 110)">
+            <g transform="scale(0.5)">
+              <g class="moveable elevator">
+                <circle cx="0" cy="0" r="30" />
+                <circle cx="0" cy="-90" r="30" />
+                <circle cx="0" cy="-180" r="30" />
+                <text x="0" y="17">L</text>
+                <text x="0" y="-73">I</text>
+                <text x="0" y="-163">A</text>
+                <path d="M0,-30 v-30 m0,-60 v-30" />
+              </g>
+            </g>
+          </g>
+
+          <g transform="translate(288 110)">
+            <g transform="scale(0.5)">
+              <g class="moveable parking-lot">
+                <circle cx="-90" cy="0" r="30" />
+                <circle cx="0" cy="0" r="30" />
+                <circle cx="90" cy="0" r="30" />
+                <text x="-90" y="17">T</text>
+                <text x="0" y="17">E</text>
+                <text x="90" y="17">D</text>
+                <path d="M-60,0 h30 m60,0 h30" />
+              </g>
+            </g>
+          </g>
+
+          <g transform="translate(480 110)">
+            <g transform="translate(-24,0) scale(0.5)">
+              <g class="moveable slopes">
+                <circle cx="0" cy="0" r="30" />
+                <circle cx="90" cy="-90" r="30" />
+                <circle cx="90" cy="0" r="30" />
+                <text x="0" y="17">T</text>
+                <text x="90" y="-73">E</text>
+                <text x="90" y="17">H</text>
+                <path d="M21,-21 L69,-69 M90,-60 v30" />
+              </g>
+            </g>
+          </g>
+
+          <g transform="translate(672 110)">
+            <g transform="translate(-24,0) scale(0.5)">
+              <g class="moveable walkway">
+                <circle cx="0" cy="0" r="30" />
+                <circle cx="90" cy="0" r="30" />
+                <text x="0" y="17">T</text>
+                <text x="90" y="17">I</text>
+                <path d="M30,0 h30" />
+              </g>
+            </g>
+          </g>
+
+          <g transform="translate(864 110)">
+            <g transform="scale(0.5)">
+              <g class="moveable cable-car">
+                <circle cx="-90" cy="-90" r="30" />
+                <circle cx="0" cy="-90" r="30" />
+                <circle cx="90" cy="-90" r="30" />
+                <circle cx="0" cy="0" r="30" />
+                <text x="-90" y="-73">T</text>
+                <text x="0" y="-73">H</text>
+                <text x="90" y="-73">E</text>
+                <text x="0" y="17">R</text>
+                <path d="M-60,-90 h30 m60,0 h30 M-21,-21 L-69,-69" />
+              </g>
+            </g>
+          </g>
+
+        </g>
+      </svg>
+
+    </div>
+  </body>
+</html>
