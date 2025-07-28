@@ -280,6 +280,9 @@ export function findParentOfClass(elmt: Element,
         if (hasClass(elmt, parentClass)) {
             return elmt;
         }
+        if (elmt.parentNode === document) {
+            return null;
+        }
         elmt = elmt.parentNode as Element;
     }
     return null;
@@ -295,6 +298,9 @@ export function isSelfOrParent(elmt: Element, parent: Element) {
     while (elmt !== null && !isTag(elmt, 'body')) {
         if (elmt === parent) {
             return true;
+        }
+        if (elmt.parentNode === document) {
+            return null;
         }
         elmt = elmt.parentNode as Element;
     }
@@ -320,6 +326,9 @@ export function findParentOfTag(elmt: Element, parentTag: string)
         }
         if (name === 'BODY') {
             break;
+        }
+        if (elmt.parentNode === document) {
+            return null;
         }
         elmt = elmt.parentNode as Element;
     }

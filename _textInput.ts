@@ -1229,10 +1229,12 @@ function compareVertical(cur:Element, test:Element) {
  * @param test An element that is even with, left, or right.
  * @returns 0 if they appear to be on the same column; 
  * -1 if cur is more left; 1 if cur is more right.
+ * @remarks Don't let tiny overlaps confuse the math. 
+ * These are especially likely when slightly rotated.
  */
 function compareHorizontal(cur:Element, test:Element) {
-    const rcCur = cur.getBoundingClientRect();
-    const rcTest = test.getBoundingClientRect();
+    const rcCur = scaleDOMRect(cur.getBoundingClientRect(), 0.9);
+    const rcTest = scaleDOMRect(test.getBoundingClientRect(), 0.9);
     if (rcCur.left >= rcTest.right) {
         return 1;
     }
@@ -1240,6 +1242,22 @@ function compareHorizontal(cur:Element, test:Element) {
         return -1;
     }
     return 0;  // Some amount of horizontal overlap
+}
+
+/**
+ * Inflate or shrink a rectangle around its center.
+ * @param rect The original rectangle
+ * @param scale Size of the returned rect, relative to the original.
+ * @returns the original rect if scale==1.
+ * Or a smaller rect if scale<1. Or a larger rect if scale>1.
+ */
+function scaleDOMRect(rect: DOMRect, scale: number): DOMRect {
+    return new DOMRect(
+        (rect.x + rect.width / 2) - (rect.width * scale / 2),
+        (rect.y + rect.height / 2) - (rect.height * scale / 2),
+        rect.width * scale,
+        rect.height * scale
+    );
 }
 
 /**

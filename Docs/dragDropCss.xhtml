@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit24.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        title: 'Drag &amp; Drop in SVGs',
+        paperSize: 'ledger',
+        orientation: 'landscape',
+        textInput: true,
+        abilities: {
+        },
+        reactiveBuilder: 'pageBody'
+      };
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      #DragDropCss {
+        .urgent {
+          color: red;
+          font-weight: bold;
+        }
+      }
+    </style>
+  </head>
+  <body id="DragDropCss">
+    <div id="pageBody">
+
+      <p>Constructing pages</p>
+      <ol>
+        <li><code>abilities: { dragDrop: '<i>id</i>' }</code> where <i>id</i> is the ID of the &lt;svg&gt; that parents all drag/drop elements</li>
+        <li>&lt;g class='moveable'&gt;</li>
+        <li>&lt;g class='drag-handle'&gt;</li>
+        <li>&lt;g class='drop-target'&gt;</li>
+        <li>&lt;g class='drag-source' id='<i>mover</i>-source' &gt; where ID should correlate to the ID of the mover it initially holds</li>
+        <li>&lt;g class='free-drop'&gt; (untested)</li>
+      </ol>
+
+      <p>Optional styles, for drag effects</p>
+      <ol>
+        <li>class='dragging'</li>
+        <li>class='selection'</li>
+        <li>class='droppable'</li>
+        <li>class='hover' (on the target)</li>        
+      </ol>
+
+      <p>Future:</p>
+      <ol>
+        <li class="urgent">Storage</li>
+        <li>Collision detection</li>
+        <li>Extraction</li>
+        <li>Free-drop with sticky edges</li>
+      </ol>
+
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)">{value}</code>
+    </template>
+    <template id="tag">
+      <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+
+    <template id="link">
+      <if exists="{tag?}">
+        <a href="{tag}.xhtml">&lt;{tag}&gt;</a>        
+      </if>
+      <else>
+        <a href="{page}.xhtml">{page}</a>
+      </else>
+      <if test="{wip?}"><img class="wip" src="Images/wip2.png" title="Work in progress" alt="Work in progress" /></if>
+    </template>
+  
+  </body>
+</html>

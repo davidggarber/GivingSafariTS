@@ -4,10 +4,10 @@
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.preprocessStampObjects = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = void 0;
-exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = void 0;
-exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = void 0;
+exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = void 0;
+exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = void 0;
+exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -262,6 +262,9 @@ function findParentOfClass(elmt, parentClass) {
         if (hasClass(elmt, parentClass)) {
             return elmt;
         }
+        if (elmt.parentNode === document) {
+            return null;
+        }
         elmt = elmt.parentNode;
     }
     return null;
@@ -277,6 +280,9 @@ function isSelfOrParent(elmt, parent) {
     while (elmt !== null && !isTag(elmt, 'body')) {
         if (elmt === parent) {
             return true;
+        }
+        if (elmt.parentNode === document) {
+            return null;
         }
         elmt = elmt.parentNode;
     }
@@ -301,6 +307,9 @@ function findParentOfTag(elmt, parentTag) {
         }
         if (name === 'BODY') {
             break;
+        }
+        if (elmt.parentNode === document) {
+            return null;
         }
         elmt = elmt.parentNode;
     }
@@ -3300,10 +3309,12 @@ function compareVertical(cur, test) {
  * @param test An element that is even with, left, or right.
  * @returns 0 if they appear to be on the same column;
  * -1 if cur is more left; 1 if cur is more right.
+ * @remarks Don't let tiny overlaps confuse the math.
+ * These are especially likely when slightly rotated.
  */
 function compareHorizontal(cur, test) {
-    const rcCur = cur.getBoundingClientRect();
-    const rcTest = test.getBoundingClientRect();
+    const rcCur = scaleDOMRect(cur.getBoundingClientRect(), 0.9);
+    const rcTest = scaleDOMRect(test.getBoundingClientRect(), 0.9);
     if (rcCur.left >= rcTest.right) {
         return 1;
     }
@@ -3311,6 +3322,16 @@ function compareHorizontal(cur, test) {
         return -1;
     }
     return 0; // Some amount of horizontal overlap
+}
+/**
+ * Inflate or shrink a rectangle around its center.
+ * @param rect The original rectangle
+ * @param scale Size of the returned rect, relative to the original.
+ * @returns the original rect if scale==1.
+ * Or a smaller rect if scale<1. Or a larger rect if scale>1.
+ */
+function scaleDOMRect(rect, scale) {
+    return new DOMRect((rect.x + rect.width / 2) - (rect.width * scale / 2), (rect.y + rect.height / 2) - (rect.height * scale / 2), rect.width * scale, rect.height * scale);
 }
 /**
  * Get all of the input-type fields that can hold text focus.
@@ -5085,6 +5106,394 @@ function quickFreeMove(moveable, position) {
     }
 }
 exports.quickFreeMove = quickFreeMove;
+var _svgDragInfo = null;
+var _svgSelectInfo = null;
+// VOCABULARY
+// moveable: any object which can be clicked on to begin a move. Desgined to be <g> elements.
+// drop-target: a <g> element that can receive a (single) moveable element
+// drag-source: a <g> container of a moveable's starting location. It cannot receive other moveables, but its own moveable can return to it.
+//              to achieve that, its ID should be the moveable's ID + "-source"
+//              but if sources are interchangeable, then leave off the ID entirely.
+// free-drop: a drop-target that is also a free-drop can support a relative transform on the moveable. Otherwise, any transform on the moveable is removed.
+// The moveable's positioning should be based at a 0,0 origin provided by the drop-target's transform.
+// If "free-drop" is in effect, the moveable will get a transient translation.
+// The drop-target may contain other elements inside it, to give it dimensions. Any moveable contents will be placed in front of those.
+// Two kinds of movement: Drag-drop and click-twice.
+// A single click will select a moveable element.
+/**
+ * Attach click handlers to the root, and any moveable elements.
+ * @root: the ID or class of the root SVG element
+ */
+function preprocessSvgDragFunctions(svgId) {
+    let svg = document.getElementById(svgId);
+    if (svg != null) {
+        svg.addEventListener('pointerleave', cancelSvgDrag);
+        svg.addEventListener('pointermove', midSvgDrag);
+        svg.addEventListener('pointerup', endSvgDrag);
+        svg.addEventListener('pointerdown', clickSvgDragCanvas);
+    }
+    else {
+        const svgs = document.getElementsByClassName(svgId);
+        for (let i = 0; i < svgs.length; i++) {
+            svg = svgs[i];
+            svg.addEventListener('pointerleave', cancelSvgDrag);
+            svg.addEventListener('pointermove', midSvgDrag);
+            svg.addEventListener('pointerup', endSvgDrag);
+            svg.addEventListener('pointerdown', clickSvgDragCanvas);
+        }
+    }
+}
+exports.preprocessSvgDragFunctions = preprocessSvgDragFunctions;
+/**
+ * Convert a screen coordinate into a point in an element's frame of reference
+ * @param element: the SVG element whose frame we're interested in
+ * @param clientX: the document X coordinate, as from a pointer event
+ * @param clientY: the document Y coordinate, as from a pointer event
+ */
+function clientToLocalPoint(element, clientX, clientY) {
+    const svg = findParentOfTag(element, 'svg');
+    // Create a point in screen coordinates
+    const pt = svg.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    // Get the consolidated transformation matrix for the element
+    const ctm = element.getScreenCTM();
+    if (!ctm)
+        return new DOMPoint(NaN, NaN);
+    // Transform the point into the element's local coordinate system
+    const local = pt.matrixTransform(ctm.inverse());
+    return new DOMPoint(local.x, local.y);
+}
+/**
+ * Convert a local element coordinate into a point in screen coordinates
+ * @param element: the SVG element whose frame we're starting from
+ * @param localX: the local X coordinate
+ * @param localY: the local Y coordinate
+ */
+function localToClientPoint(element, localX, localY) {
+    const svg = findParentOfTag(element, 'svg');
+    // Create a point in local coordinates
+    const pt = svg.createSVGPoint();
+    pt.x = localX;
+    pt.y = localY;
+    // Get the consolidated transformation matrix for the element
+    const ctm = element.getScreenCTM();
+    if (!ctm)
+        return new DOMPoint(NaN, NaN);
+    // Transform the point into the element's local coordinate system
+    const client = pt.matrixTransform(ctm);
+    return new DOMPoint(client.x, client.y);
+}
+/**
+ * Start a drag action on the moveable element at this pointer
+ * @param evt A pointer down event
+ */
+function startSvgDrag(evt) {
+    if (evt.pointerType != 'mouse') {
+        evt.preventDefault();
+    }
+    if (_svgDragInfo) {
+        cancelSvgDrag();
+    }
+    let mover = firstSvgMoveable(evt.clientX, evt.clientY);
+    if (!mover) {
+        return;
+    }
+    let relPoint = clientToLocalPoint(mover, evt.clientX, evt.clientY);
+    let translation = new DOMPoint(0, 0);
+    if (mover.transform && mover.transform.baseVal.length > 0) {
+        translation.x = mover.transform.baseVal[0].matrix.e;
+        translation.y = mover.transform.baseVal[0].matrix.f;
+    }
+    let handle = null;
+    let bounds = mover.getBoundingClientRect();
+    let hDist = NaN;
+    const handles = mover.getElementsByClassName('drag-handle');
+    for (let i = 0; i < handles.length; i++) {
+        const h = handles[i];
+        const hrc = h.getBoundingClientRect();
+        const dist = Math.hypot(hrc.left + hrc.width / 2 - evt.clientX, hrc.top + hrc.height / 2 - evt.clientY);
+        if (handle == null || dist < hDist) {
+            handle = h;
+            hDist = dist;
+            bounds = hrc;
+            // relPoint = clientToLocalPoint(mover, hrc.left + hrc.width / 2, hrc.top + hrc.height / 2);
+        }
+    }
+    let source = findParentOfClass(mover, 'drag-source');
+    let target = findParentOfClass(mover, 'drop-target');
+    if (!target && !source) {
+        console.error('Found a moveable ${mover.id} that is not in a drag-source or drop-target parent');
+        return; // not a drag-source or drop-target
+    }
+    _svgDragInfo = {
+        id: mover.id,
+        mover: mover,
+        handle: handle || mover,
+        bounds: bounds,
+        parent: target || source,
+        hover: target || source,
+        client: new DOMPoint(evt.clientX, evt.clientY),
+        offset: relPoint,
+        translation: translation,
+        click: true, // this might just be a click, not a drag
+    };
+    toggleClass(mover, 'dragging', true);
+    toggleClass(mover, 'selected', true);
+    // not yet droppable
+}
+/**
+ * Continue a drag operation, while the mouse is still down.
+ * @param evt A pointer move event
+ */
+function midSvgDrag(evt) {
+    if (_svgDragInfo) {
+        if (evt.pointerType != 'mouse') {
+            evt.preventDefault();
+        }
+        var info = calcSvgDropInfo(evt.clientX, evt.clientY);
+        if (_svgDragInfo.click && info && info.drag) {
+            // We have dragged far enough to be a drag, not just a click
+            _svgDragInfo.click = false;
+            toggleClass(_svgDragInfo.mover, 'droppable', true);
+        }
+        if (info && info.target && info.target != _svgDragInfo.hover) {
+            // We're hovering over a different target, so update the hover
+            if (_svgDragInfo.hover) {
+                toggleClass(_svgDragInfo.hover, 'hover', false);
+            }
+            _svgDragInfo.hover = info.target;
+            toggleClass(_svgDragInfo.hover, 'hover', true);
+            reparentSvgDrag(info.target);
+        }
+        // Add a translation to the mover, so that it's offset (where we clicked)
+        // lands at the current pointer position, accounting for new transforms.
+        let local = clientToLocalPoint(_svgDragInfo.mover.parentNode, evt.clientX, evt.clientY);
+        local.x -= _svgDragInfo.offset.x;
+        local.y -= _svgDragInfo.offset.y;
+        _svgDragInfo.mover.style.transform = 'translate(' + local.x + 'px,' + local.y + 'px)';
+        // TODO: consider checking for collisions with other moveables
+    }
+}
+/**
+ * Find the top-most moveable candidate from a given client coordinate
+ * @param clientX pointer event X
+ * @param clientY pointer event Y
+ * @returns A moveable element, or a child of one, or else null
+ */
+function firstSvgMoveable(clientX, clientY) {
+    const elements = document.elementsFromPoint(clientX, clientY);
+    for (let i = 0; i < elements.length; i++) {
+        const elem = elements[i];
+        const mov = findParentOfClass(elem, 'moveable');
+        if (mov != null) {
+            return mov;
+        }
+    }
+    return null;
+}
+/**
+ * Find the top-most drop candidate from a given client coordinate
+ * @param clientX pointer event X
+ * @param clientY pointer event Y
+ * @returns A drop-target or drag-source, or else null
+ */
+function firstSvgDropTarget(clientX, clientY) {
+    const elements = document.elementsFromPoint(clientX, clientY);
+    for (let i = 0; i < elements.length; i++) {
+        const elem = elements[i];
+        if (findParentOfClass(elem, 'moveable')) {
+            // Ignore the moveable item, as its parents may be elsewhere on the page
+            continue;
+        }
+        // the target may not actually be one of the elements, but it might be one of their parents
+        // IDEA: do a bounding rect, as a check
+        let target = findParentOfClass(elem, 'drop-target');
+        if (target) {
+            return target;
+        }
+        // drag-sources must match the dragged element or else have no ID at all
+        target = findParentOfClass(elem, 'drag-source');
+        if (_svgDragInfo && target && (!target.id || (target.id == _svgDragInfo.id + '-source'))) {
+            return target;
+        }
+    }
+    return null;
+}
+/**
+ * What would happen if we were to drop here?
+ * @param progress The drag info from the start of the drag
+ * @param evt The latest pointer event
+ * @returns A drop info, or null if not over a drop target
+ */
+function calcSvgDropInfo(clientX, clientY) {
+    if (_svgDragInfo) {
+        let target = firstSvgDropTarget(clientX, clientY);
+        let handle = _svgDragInfo.handle;
+        if (!target) {
+            // See if any other handles hit targets?
+            const handles = _svgDragInfo.mover.getElementsByClassName('drag-handle');
+            for (let i = 0; i < handles.length; i++) {
+                handle = handles[i];
+                const hrc = handle.getBoundingClientRect();
+                const hx = hrc.left + hrc.width / 2;
+                const hy = hrc.top + hrc.height / 2;
+                target = firstSvgDropTarget(hx, hy);
+                if (target != null) {
+                    // At least one handle hit one target
+                    break;
+                }
+            }
+        }
+        let dragging = !_svgDragInfo.click || (target != _svgDragInfo.parent);
+        if (!dragging) {
+            // We have yet to drag beyond the bounds of the moveable element
+            if (clientX < _svgDragInfo.bounds.left || clientX > _svgDragInfo.bounds.right ||
+                clientY < _svgDragInfo.bounds.top || clientY > _svgDragInfo.bounds.bottom) {
+                // We've dragged outside the bounds
+                dragging = true;
+            }
+        }
+        const origin = target == null ? new DOMPoint(NaN, NaN) : localToClientPoint(target, 0, 0);
+        return {
+            target: target,
+            origin: origin,
+            handle: handle,
+            client: new DOMPoint(clientX, clientY),
+            drag: dragging,
+        };
+    }
+    return null;
+}
+function reparentSvgDrag(target) {
+    if (_svgDragInfo && _svgDragInfo.mover.parentNode != target) {
+        // The mover is not in the expected parent, so move it
+        if (_svgDragInfo.mover.parentNode) {
+            _svgDragInfo.mover.parentNode.removeChild(_svgDragInfo.mover);
+        }
+        target.appendChild(_svgDragInfo.mover); // REVIEW: prepend?
+    }
+}
+/**
+ * Attempt to end a drag operation, and drop the element.
+ * @param evt The pointer up event
+ */
+function endSvgDrag(evt) {
+    if (_svgDragInfo) {
+        if (evt.pointerType != 'mouse') {
+            evt.preventDefault();
+        }
+        // REVIEW: could endSvgDrag be called twice?
+        let info = calcSvgDropInfo(evt.clientX, evt.clientY);
+        if (_svgDragInfo.click && (!info || !info.drag)) {
+            // Never started dragging
+            // Do nothing now, but leave element selected
+            convertSvgDragToSelection();
+            return;
+        }
+        if (!info || !info.target) {
+            cancelSvgDrag();
+            return;
+        }
+        toggleClass(_svgDragInfo.mover, 'dragging', false);
+        toggleClass(_svgDragInfo.mover, 'selected', false);
+        toggleClass(_svgDragInfo.mover, 'droppable', false);
+        // toggleClass(_svgDragInfo.mover, 'collision', false);
+        if (_svgDragInfo.hover) {
+            toggleClass(_svgDragInfo.hover, 'hover', false);
+        }
+        reparentSvgDrag(info.target);
+        // Add a translation, if needed
+        let translate = null;
+        if (hasClass(info.target, 'drag-source')) {
+            // When returning to the drag source, remove the transform
+            _svgDragInfo.mover.style.transform = '';
+        }
+        else if (hasClass(info.target, 'free-drop')) {
+            // Convert the original click offset to the current screen point,
+            // but relative to the target origin
+            let local = clientToLocalPoint(_svgDragInfo.mover.parentNode, evt.clientX, evt.clientY);
+            local.x -= _svgDragInfo.offset.x;
+            local.y -= _svgDragInfo.offset.y;
+            _svgDragInfo.mover.style.transform = 'translate(' + local.x + 'px,' + local.y + 'px)';
+        }
+        else {
+            // Translate to achieve the offset from the handle to the mover's origin,
+            const oH = localToClientPoint(info.handle, 0, 0);
+            const oM = localToClientPoint(_svgDragInfo.mover, 0, 0);
+            const oT = localToClientPoint(info.target, 0, 0);
+            const off = clientToLocalPoint(info.target, oT.x + oM.x - oH.x, oT.y + oM.y - oH.y);
+            if (off.x || off.y) {
+                _svgDragInfo.mover.style.transform = 'translate(' + off.x + 'px,' + off.y + 'px)';
+            }
+            else {
+                _svgDragInfo.mover.style.transform = '';
+            }
+        }
+        _svgDragInfo = null;
+    }
+}
+/**
+ * Abort the current drag operation, and reset the state.
+ */
+function cancelSvgDrag() {
+    if (_svgDragInfo) {
+        toggleClass(_svgDragInfo.mover, 'dragging', false);
+        toggleClass(_svgDragInfo.mover, 'selected', false);
+        toggleClass(_svgDragInfo.mover, 'droppable', false);
+        // toggleClass(_svgDragInfo.mover, 'collision', false);
+        if (_svgDragInfo.hover) {
+            toggleClass(_svgDragInfo.hover, 'hover', false);
+        }
+        reparentSvgDrag(_svgDragInfo.parent);
+        // Revert to original translation
+        if (_svgDragInfo.translation.x || _svgDragInfo.translation.y) {
+            _svgDragInfo.mover.style.transform = 'translate(' + _svgDragInfo.translation.x + 'px,' + _svgDragInfo.translation.y + 'px)';
+        }
+        else {
+            _svgDragInfo.mover.style.transform = '';
+        }
+        _svgDragInfo = null;
+    }
+}
+function convertSvgDragToSelection() {
+    if (_svgDragInfo) {
+        _svgSelectInfo = _svgDragInfo;
+        cancelSvgDrag();
+        toggleClass(_svgSelectInfo.mover, 'selected', true);
+    }
+}
+function convertSvgSelectionToDrag() {
+    if (_svgSelectInfo) {
+        _svgDragInfo = _svgSelectInfo;
+        _svgSelectInfo = null;
+    }
+}
+/**
+ * Implement a 2-click drag equiavlent.
+ * The first click is on a moveable element.
+ * The second is on a drop target.
+ * @param evt
+ */
+function clickSvgDragCanvas(evt) {
+    if (_svgSelectInfo) {
+        convertSvgSelectionToDrag();
+        var info = calcSvgDropInfo(evt.clientX, evt.clientY);
+        if (!info) {
+            cancelSvgDrag();
+        }
+        else {
+            midSvgDrag(evt);
+            endSvgDrag(evt);
+            return;
+        }
+    }
+    const mover = firstSvgMoveable(evt.clientX, evt.clientY);
+    if (mover) {
+        // Start the drag operation
+        startSvgDrag(evt);
+    }
+}
 /**
  * Initialize a stampSet object with nulls
  * @param container The container may already be known
@@ -7877,11 +8286,18 @@ function setupAbilities(head, margins, data) {
         setupHighlights();
         count++;
     }
-    if (data.dragDrop) {
+    if (data.dragDrop !== false) {
         fancy += '<span id="drag-ability" title="Drag &amp; drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
-        preprocessDragFunctions();
-        indexAllDragDropFields();
-        linkCss(safariDetails.cssRoot + 'DragDrop.css');
+        if (typeof (data.dragDrop === 'string')) {
+            preprocessSvgDragFunctions(data.dragDrop);
+            indexAllDragDropFields();
+            linkCss(safariDetails.cssRoot + 'DragDropSvg.css');
+        }
+        else {
+            preprocessDragFunctions();
+            indexAllDragDropFields();
+            linkCss(safariDetails.cssRoot + 'DragDrop.css');
+        }
         count++;
     }
     if (data.stamping) {
@@ -9066,6 +9482,9 @@ function getParentIf(elmt, fn) {
         if (fn(elmt)) {
             return elmt;
         }
+        if (elmt.parentNode === document) {
+            return null;
+        }
         elmt = elmt.parentElement;
     }
     return null;
@@ -9276,6 +9695,9 @@ const nameSpaces = {
 function cloneWithContext(elmt) {
     const tagName = normalizeName(elmt.localName);
     let clone;
+    if (tagName == 'svg' && elmt.namespaceURI != exports.svg_xmlns) {
+        console.error("WARNING: <SVG> element missing xmlns='http://www.w3.org/2000/svg'");
+    }
     if (inSvgNamespace() || tagName == 'svg') {
         // TODO: contents of embedded objects aren't SVG
         clone = document.createElementNS(exports.svg_xmlns, tagName);

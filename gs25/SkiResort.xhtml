@@ -15,6 +15,7 @@
         copyright: '2022',
         abilities: {
           textInput: 'nearest',
+          dragDrop: 'svg',
           scratchPad: true,
         },
         reactiveBuilder: 'pageBody',
@@ -23,8 +24,12 @@
       };
     </script>
     <style>
+      text {
+        -webkit-user-select: none;
+        user-select: none;
+      }
       circle.dest {
-        fill: none;
+        fill: transparent;
         stroke: #333;
         stroke-width: 1px;
       }
@@ -48,7 +53,7 @@
       }
 
       .moveable circle {
-        fill: none;
+        fill: transparent;
         stroke-width: 2px;
       }
       .moveable text {
@@ -59,30 +64,53 @@
         stroke-width: 2px;
         fill: none;
       }
-      .elevator {
+
+      .selected.moveable circle {
+        stroke-width: 4px;
+      }
+      .selected.moveable text {
+        font-weight: bold;
+      }
+      .selected.moveable path {
+        stroke-width: 4px;
+      }
+      .hover circle.dest {
+        fill: #eeeeeeee;
+      }
+
+
+      #elevator {
         circle { stroke: darkred; }
         text { fill: darkred; }
         path { stroke: darkred; }
       }
-      .parking-lot {
+      #parking-lot {
         circle { stroke: darkblue; }
         text { fill: darkblue; }
         path { stroke: darkblue; }
       }
-      .slopes {
+      #slopes {
         circle { stroke: darkcyan; }
         text { fill: darkcyan; }
         path { stroke: darkcyan; }
       }
-      .walkway {
+      #walkway {
         circle { stroke: darkgreen; }
         text { fill: darkgreen; }
         path { stroke: darkgreen; }
       }
-      .cable-car {
+      #cable-car {
         circle { stroke: darkgoldenrod; }
         text { fill: darkgoldenrod; }
         path { stroke: darkgoldenrod; }
+      }
+      .drop-zone {
+        fill: none;
+        stroke: none;
+      }
+      .drop-zone-test {
+        fill: transparent;
+        stroke: none;
       }
     </style>
   </head>
@@ -91,11 +119,14 @@
       <p class="flavor">
         It may be summer on the Microsoft campus, but our friends in New Zealand are ready to go skiing. Let’s try to map out this ski resort and figure out why. 
       </p>
-      <svg width="960" height="600">
+      <svg id="svg" width="960" height="600" xmlns="http://www.w3.org/2000/svg">
         <g id="grid" transform="translate(360, 230)">
           <for int="y" from="0" to="3">
             <for int="x" from="0" to="3">
-              <circle class="dest" cx="{x*90}" cy="{y*90}" r="30" />
+              <gg class="drop-target" transform="translate({x*90}, {y*90})">
+                <circle class="dest" r="30" />
+                <rect class="drop-zone" x="-30" y="-30" width="60" height="60" />
+              </gg>
             </for>
           </for>
           <text x="90" y="200" text-anchor="middle" font-size="40pt">S</text>
@@ -121,70 +152,60 @@
           </g> 
 
           <g transform="translate(96 110)">
-            <g transform="scale(0.5)">
-              <g class="moveable elevator">
-                <circle cx="0" cy="0" r="30" />
-                <circle cx="0" cy="-90" r="30" />
-                <circle cx="0" cy="-180" r="30" />
-                <text x="0" y="17">L</text>
-                <text x="0" y="-73">I</text>
-                <text x="0" y="-163">A</text>
+            <g id="elevator-source" class="drag-source" transform="scale(0.5)">
+              <rect class="drop-zone-test" x="-150" y="-210" width="300" height="270" />
+              <g id="elevator" class="moveable">
+                <use template="circle-handle" x="0" y="0" text="L" />
+                <use template="circle-handle" x="0" y="-90" text="I" />
+                <use template="circle-handle" x="0" y="-180" text="A" />
                 <path d="M0,-30 v-30 m0,-60 v-30" />
               </g>
             </g>
           </g>
 
           <g transform="translate(288 110)">
-            <g transform="scale(0.5)">
-              <g class="moveable parking-lot">
-                <circle cx="-90" cy="0" r="30" />
-                <circle cx="0" cy="0" r="30" />
-                <circle cx="90" cy="0" r="30" />
-                <text x="-90" y="17">T</text>
-                <text x="0" y="17">E</text>
-                <text x="90" y="17">D</text>
+            <g id="parking-lot-source" class="drag-source" transform="scale(0.5)">
+              <rect class="drop-zone-test" x="-150" y="-210" width="300" height="270" />
+              <g id="parking-lot" class="moveable">
+                <use template="circle-handle" x="-90" y="0" text="T" />
+                <use template="circle-handle" x="0" y="0" text="E" />
+                <use template="circle-handle" x="90" y="0" text="D" />
                 <path d="M-60,0 h30 m60,0 h30" />
               </g>
             </g>
           </g>
 
-          <g transform="translate(480 110)">
-            <g transform="translate(-24,0) scale(0.5)">
-              <g class="moveable slopes">
-                <circle cx="0" cy="0" r="30" />
-                <circle cx="90" cy="-90" r="30" />
-                <circle cx="90" cy="0" r="30" />
-                <text x="0" y="17">T</text>
-                <text x="90" y="-73">E</text>
-                <text x="90" y="17">H</text>
+          <g transform="translate(452.5 110)">
+            <g id="slopes-source" class="drag-source" transform="scale(0.5)">
+              <rect class="drop-zone-test" x="-105" y="-210" width="300" height="270" />
+              <g id="slopes" class="moveable ">
+                <use template="circle-handle" x="0" y="0" text="T" />
+                <use template="circle-handle" x="90" y="-90" text="E" />
+                <use template="circle-handle" x="90" y="0" text="H" />
                 <path d="M21,-21 L69,-69 M90,-60 v30" />
               </g>
             </g>
           </g>
 
-          <g transform="translate(672 110)">
-            <g transform="translate(-24,0) scale(0.5)">
-              <g class="moveable walkway">
-                <circle cx="0" cy="0" r="30" />
-                <circle cx="90" cy="0" r="30" />
-                <text x="0" y="17">T</text>
-                <text x="90" y="17">I</text>
+          <g transform="translate(644.5 110)">
+            <g id="walkway-source" class="drag-source" transform="scale(0.5)">
+              <rect class="drop-zone-test" x="-105" y="-210" width="300" height="270" />
+              <g id="walkway" class="moveable">
+                <use template="circle-handle" x="0" y="0" text="T" />
+                <use template="circle-handle" x="90" y="0" text="I" />
                 <path d="M30,0 h30" />
               </g>
             </g>
           </g>
 
           <g transform="translate(864 110)">
-            <g transform="scale(0.5)">
-              <g class="moveable cable-car">
-                <circle cx="-90" cy="-90" r="30" />
-                <circle cx="0" cy="-90" r="30" />
-                <circle cx="90" cy="-90" r="30" />
-                <circle cx="0" cy="0" r="30" />
-                <text x="-90" y="-73">T</text>
-                <text x="0" y="-73">H</text>
-                <text x="90" y="-73">E</text>
-                <text x="0" y="17">R</text>
+            <g id="cable-car-source" class="drag-source" transform="scale(0.5)">
+              <rect class="drop-zone-test" x="-150" y="-210" width="300" height="270" />
+              <g id="cable-car" class="moveable cable-">
+                <use template="circle-handle" x="-90" y="-90" text="T" />
+                <use template="circle-handle" x="0" y="-90" text="H" />
+                <use template="circle-handle" x="90" y="-90" text="E" />
+                <use template="circle-handle" x="0" y="0" text="R" />
                 <path d="M-60,-90 h30 m60,0 h30 M-21,-21 L-69,-69" />
               </g>
             </g>
@@ -194,5 +215,13 @@
       </svg>
 
     </div>
+
+    <template id="circle-handle">
+      <g class="drag-handle" transform="translate({x},{y})">
+        <circle cx="0" cy="0" r="30" />
+        <text x="0" y="17">{text}</text>
+      </g>
+    </template>
+
   </body>
 </html>

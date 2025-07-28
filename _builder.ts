@@ -344,6 +344,9 @@ export function getParentIf(elmt:Element|null, fn:(e:Element) => boolean):Elemen
     if (fn(elmt)) {
       return elmt;
     }
+    if (elmt.parentNode === document) {
+        return null;
+    }
     elmt = elmt.parentElement;
   }
 
@@ -558,6 +561,9 @@ const nameSpaces = {
 function cloneWithContext(elmt:HTMLElement):Element {
   const tagName = normalizeName(elmt.localName);
   let clone:Element;
+  if (tagName == 'svg' && elmt.namespaceURI != svg_xmlns) {
+    console.error("WARNING: <SVG> element missing xmlns='http://www.w3.org/2000/svg'");
+  }
   if (inSvgNamespace() || tagName == 'svg') {
     // TODO: contents of embedded objects aren't SVG
     clone = document.createElementNS(svg_xmlns, tagName);

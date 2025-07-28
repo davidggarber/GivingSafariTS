@@ -16,6 +16,7 @@ import { wrapContextError } from "./_contextError";
 import { setupScratch } from "./_scratch";
 import { MetaParams, setupMetaSync } from "./_meta";
 import { setupEventSync } from "./_eventSync";
+import { preprocessSvgDragFunctions } from "./_dragDropSvg";
 
 
 /**
@@ -162,7 +163,7 @@ type AbilityData = {
     checkMarks?: boolean;
     highlights?: boolean;
     decoder?: boolean|string;  // If a string, should be Proper case
-    dragDrop?: boolean;
+    dragDrop?: boolean|string;
     stamping?: boolean;
     straightEdge?: boolean;
     wordSearch?: boolean;
@@ -740,11 +741,18 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         setupHighlights();
         count++;
     }
-    if (data.dragDrop) {
+    if (data.dragDrop !== false) {
         fancy += '<span id="drag-ability" title="Drag &amp; drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
-        preprocessDragFunctions();
-        indexAllDragDropFields();
-        linkCss(safariDetails.cssRoot + 'DragDrop.css');
+        if (typeof(data.dragDrop === 'string')) {
+            preprocessSvgDragFunctions(data.dragDrop as string);
+            indexAllDragDropFields();
+            linkCss(safariDetails.cssRoot + 'DragDropSvg.css');
+        }
+        else {
+            preprocessDragFunctions();
+            indexAllDragDropFields();
+            linkCss(safariDetails.cssRoot + 'DragDrop.css');
+        }
         count++;
     }
     if (data.stamping) {

@@ -11,6 +11,7 @@ kitFiles = [
     '_textSetup.ts',
     '_subway.ts',
     '_dragDrop.ts',
+    '_dragDropSvg.ts',
     '_stampTools.ts',
     '_straightEdge.ts',
     '_events.ts',
