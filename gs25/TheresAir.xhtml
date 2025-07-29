@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'There’s Air in the Something Tonight',
+        author: 'Martyn Lovell',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          clues: [
+            [ 'Scammer who falsely claims to use the supernatural to see the future', 2, 6, 6],
+            [ 'Device for riding up to a high point to ski', 2, 4, 4],
+            [ 'Place where flying machines take off and land', 0, 4, 3],
+            [ 'Tube shaped dessert normally made from chou pastry, filled with cream and topped with chocolate', 3, 0, 2],
+            [ 'Type of rodent called “_ dog”, and a great place to put a little house', 2, 2, 2],
+            [ 'Part of a golf course that leads to the green', 1, 3, 3],
+            [ 'You need 15 pieces of this to work at Chotchkie’s, according to its manager. But that’s just the bare minimum!', 2, 0, 1],
+            [ 'Single person game, often involving cards or Windows', 5, 1, 5],
+            [ 'Stack of rocks in Scotland used as trail or burial marker', 1, 1, 1],
+            [ 'Children’s story often about magical or fantastic beings and places', 1, 5, 4],
+            [ 'Outdoor area containing rides, stalls, food and recreation, often temporary or mobile', 1, 6, 3],
+            [ 'Fix something that is broken', 3, 0, 1],
+            [ 'Diminish or weaken a person, device or organisation', 3, 0, 1],
+            [ 'Soldier in part of French army, especially of non-French origin', 7, 1, 8],
+            [ 'Person who styles, colours, trims or shaves your locks', 1, 7, 3],
+            [ 'Route to heaven according to the Zeppelin song', 2, 3, 1]
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        .flavor {
+          font-style: italic;
+        }
+        .letter-literal {
+          top: 5px;
+        }
+        table {
+          border-collapse: collapse;
+        }
+        td {
+          border: solid 1px black;
+          padding: 0px 6px;
+          height: 0.37in;
+        }
+        .row {
+          vertical-align: middle;
+          width: 0.25in;
+          padding-left: 12px;
+        }
+        .clue {
+          width: 4.45in;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        I was playing golf with my millionaire friend in Scotland. 
+        He is the Laird of the estate. 
+        We played against another debonnaire pair who were so good they left us in despair.
+      </p>
+
+      <ttable data-extract-style="highlight">
+        <for each="clue" in="{clues}">
+          <ttr>
+            <td class="row">{clue# + 1}</td>
+            <td class="clue">{clue.0}</td>
+            <td class="inputs"><pattern pattern="{clue.1}~{clue.2}" extract="{clue.3}" /></td>
+          </ttr>
+        </for>        
+      </ttable>
+
+      <div>
+        <p>Final Answer: <pattern id="extracted" extract-numbered="8 8" /></p>  
+      </div>
+
+    </div>
+  </body>
+</html>

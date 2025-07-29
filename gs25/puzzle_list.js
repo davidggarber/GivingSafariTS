@@ -50,7 +50,7 @@ var puzzles = [
     { title: 'Ski Resort', thumb: 'tbd', author: 'Joey Marianer', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Slow Down!', thumb: 'tbd', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'The Hunt', thumb: 'tbd', author: 'Joey Marianer', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { title: 'There’s Air in the Something Tonight', thumb: '', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    { title: 'There’s Air in the Something Tonight', thumb: '', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Up For Air', thumb: 'tbd', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: '', thumb: 'tbd', author: 'TBD', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: '', thumb: 'tbd', author: 'TBD', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
