@@ -1,5 +1,5 @@
 import { info } from "console";
-import { findParentOfClass, findParentOfTag, hasClass, toggleClass } from "./_classUtil";
+import { findParentOfClass, findParentOfTag, hasClass, matrixFromElement, toggleClass } from "./_classUtil";
 import { svg_xmlns } from "./_tableBuilder";
 
 type SvgDragInfo = {
@@ -130,11 +130,8 @@ function startSvgDrag(evt:PointerEvent) {
   }
 
   let relPoint = clientToLocalPoint(mover, evt.clientX, evt.clientY);
-  let translation = new DOMPoint(0, 0);
-  if (mover.transform && mover.transform.baseVal.length > 0) {
-    translation.x = mover.transform.baseVal[0].matrix.e;
-    translation.y = mover.transform.baseVal[0].matrix.f;
-  }
+  let matrix = matrixFromElement(mover);
+  let translation = new DOMPoint(matrix.e, matrix.f);
 
   let handle:SVGGraphicsElement|null = null;
   let bounds = mover.getBoundingClientRect();
@@ -152,9 +149,11 @@ function startSvgDrag(evt:PointerEvent) {
     }
   }
 
-  let source = findParentOfClass(mover, 'drag-source') as SVGGraphicsElement;
-  let target = findParentOfClass(mover, 'drop-target') as SVGGraphicsElement;
-  if (!target && !source) {
+  // Before walking up the parent chain, see if the selected handle has a preferred target, which might be different
+  let hover = firstSvgDropTarget(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
+  let target = findParentOfClass(mover, 'drop-target') as SVGGraphicsElement
+            || findParentOfClass(mover, 'drag-source') as SVGGraphicsElement;
+  if (!target) {
     console.error('Found a moveable ${mover.id} that is not in a drag-source or drop-target parent');
     return;  // not a drag-source or drop-target
   }
@@ -164,8 +163,8 @@ function startSvgDrag(evt:PointerEvent) {
     mover: mover,
     handle: handle || mover,
     bounds: bounds,
-    parent: target || source,
-    hover: target || source,
+    parent: target,
+    hover: hover || target,
     client: new DOMPoint(evt.clientX, evt.clientY),
     offset: relPoint,
     translation: translation,
@@ -291,7 +290,7 @@ function calcSvgDropInfo(clientX:number, clientY:number): SvgDropInfo|null {
       }
     }
 
-    let dragging = !_svgDragInfo.click || (target != _svgDragInfo.parent);
+    let dragging = !_svgDragInfo.click || (target != _svgDragInfo.hover);
     if (!dragging) {
       // We have yet to drag beyond the bounds of the moveable element
       if (clientX < _svgDragInfo.bounds.left || clientX > _svgDragInfo.bounds.right ||

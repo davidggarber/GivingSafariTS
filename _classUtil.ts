@@ -577,3 +577,18 @@ export function isTextInputElement(elmt:Element|undefined|null):boolean {
 export function isArrowKeyElement(elmt:Element|undefined|null):boolean {
     return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select') || isTag(elmt, 'button')) : false;
 }
+
+/**
+ * Retrieve the local transform from an element.
+ * This ignores any chain of additional transforms above the element.
+ * @param element Any element.
+ * @returns A matrix. Will be the identity if no transform applied.
+ */
+export function matrixFromElement(element:Element): DOMMatrix {
+    const computed = getComputedStyle(element).transform;
+    if (computed == 'none') {
+        return new DOMMatrix();  // Identity matrix
+    }
+    return new DOMMatrix(computed);
+}
+
