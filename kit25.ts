@@ -594,7 +594,7 @@ export function isArrowKeyElement(elmt:Element|undefined|null):boolean {
 export function matrixFromElement(element:Element): DOMMatrix {
     const computed = getComputedStyle(element).transform;
     if (computed == 'none') {
-        return new DOMMatrix(); // Identity matrix
+        return new DOMMatrix();  // Identity matrix
     }
     return new DOMMatrix(computed);
 }
@@ -9321,7 +9321,7 @@ function setupAbilities(head:HTMLHeadElement, margins:HTMLDivElement, data:Abili
         setupHighlights();
         count++;
     }
-    if (data.dragDrop !== false) {
+    if (data.dragDrop !== undefined && data.dragDrop !== false) {
         fancy += '<span id="drag-ability" title="Drag &amp; drop enabled" style="text-shadow: 0 0 3px black;">👈</span>';
         if (typeof(data.dragDrop === 'string')) {
             preprocessSvgDragFunctions(data.dragDrop as string);
