@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'ShouldnShouldn’t That Rhyme?',
+        author: 'Martyn Lovell',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          clues: [
+            "Pose a challenging, confusing problem [6]",
+            "Drizzle liquid on roasting food (especially meat) [5]",
+            "Living creature that moves on two legs [5]",
+            "Hereditary social class that restricts occupation and association in some cultures [5]",
+            "Stop doing something [5]",
+            "Approach a particular person or place [4]",
+            "Person who travels under a body of water [5]",
+            "Medical symptom of having a high temperature [5]",
+            "Document with blank spaces to fill in information to submit to an organisation [4]",
+            "Be in possession of [4]",
+            "Person’s primary place of residence [4]",
+            "Partner in intense romantic or sexual relationship [5]",
+            "At no time [5]",
+            "Device held with two hands that has one or two blades and is used to propel a boat, often a canoe [6]",
+            "Speak very enthusiastically about, or a large party with dance, drink and often drugs [4]",
+            "Flow of water that travels over land [5]",
+            "Vehicle sent to space, especially Mars [5]",
+            "Playfully make fun of a person [5]",
+            "Walking motion of goose, duck, or old human [6]",
+            "Crisp batter cake baked in an iron and eaten with butter and syrup [6]",
+            "Erased completely (e.g. a hard disc) [5]",
+            "Invertebrate animal with soft body and no limbs often found in earth [4]",
+          ],
+          answers: [
+            [6, 5, 3],
+            [5, 2, 4],
+            [5, 3, 3],
+            [5, 4, 10],
+            [4, 3, 1],
+            [5, 2, 9],
+            [5, 5, 6],
+            [4, 4, 11],
+            [4, 2, 2],
+            [5, 2, 7],
+            [6, 1, 8],
+          ]
+        },
+      };
+    </script>
+    <style>
+      th {
+        text-align: left;
+      }
+      td {
+        vertical-align: top;
+      }
+      #answers .letter-cell {
+        font-size: 9pt;
+      }
+      #final .letter-cell {
+        font-size: 9pt;
+      }
+    </style>
+  </head>
+  <body id="Shouldnt">
+    <div id="pageBody">
+      <p class="flavor">
+        The English language has travelled all over the world, importing into it words and usage from everywhere. As a result, things are a lot more complicated than you might hope.
+      </p>
+      <p class="flavor" style="font-style: italic;">
+        The answers to the clues on the left are in alphabetical order. Pair them up. When writing pairs, write the alphabetically first item on the left of the pair, and the alphabetically later item on the right. The pairs are also sorted alphabetically by the left item in the pair.
+      </p>
+
+      <table>
+        <tr>
+          <th style="width: 4.8in">Clues</th>
+          <th style="padding-left: 0.25in">Answers</th>
+        </tr>
+        <tr>
+          <td id="clues" rowspan="2" style="padding-right: 0.25in">
+            <for each="clue" in="clues">
+              <p>{clue}</p>
+            </for>
+          </td>  
+          <td id="answers">
+            <for each="answer" in="answers">
+              <p>
+                <pattern pattern="{answer.0} - {answer.0}" numbers="{answer.1}={answer.2}" />
+              </p>
+            </for>
+          </td>
+        </tr>
+        <tr>
+          <td id="final" style="height: 2in; vertical-align: middle;">
+            Final Answer:<br />
+            <pattern extract-numbered="11" />
+          </td>
+        </tr>
+      </table>
+
+    </div>
+  </body>
+</html>
