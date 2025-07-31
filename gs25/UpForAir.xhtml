@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Up For Air',
+        author: 'Rorke Haining',
+        orientation: 'landscape',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          checkMarks: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          animals: [
+            'whale', 'lobster', 'crab',
+            'jellyfish', 'seal', 'octopus',
+            'electric eel', 'puffer', 'ray',
+            'shark', 'dolphin', 'salmon'
+          ],
+          clues: [
+            [ 'Can be anagrammed into words meaning “pub drinks” or “transaction”', '1st' ],
+            [ 'Has 3 neighbors that start with the same letter as one another', '1st' ],
+            [ 'Can be split into 2 parts which anagram into a piece of portable furniture and a course', '4th' ],
+            [ 'Can form a word meaning “strengthen” when you swap the positions of its first 2 consonants', '2nd' ],
+            [ 'Sounds like a fish feature on a child’s toy?', '7th' ],
+            [ 'Has a vowel which is present in every neighbor and not present in any non-neighbor', '2nd' ],
+            [ 'Can be typed with one hand on a QWERTY keyboard', '2nd' ],
+            [ 'Has more syllables than the other animals', '7th' ],
+            [ 'Can form new words if you replace its last letter with the first letters of any of its neighbors', '1st' ],
+            [ 'Can form a new word when you swap its first letter for the one to the right on a QWERTY keyboard and move that new letter to the end', '4th' ]
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        #animals {
+          border-collapse: collapse;
+        }
+        #animals td {
+          width: 1.65in;
+          height: 1.5in;
+          border: solid 1px black;
+          text-align: center;
+          vertical-align: middle;
+        }
+        #animals img {
+          max-width: 1.5in;
+          max-height: 1.25in;
+        }
+        #animals span {
+          text-transform: uppercase;
+        }
+
+        .note {
+          font-style: italic;
+          margin-top: 0px;
+        }
+        #clues {
+          border-collapse: collapse;
+        }
+        #clues th {
+          background-color: #5B9BD5;
+          height: 0.17in;
+          color: white;
+          padding: 8px;
+        }
+        #clues td {
+          padding: 8px;
+          border: solid 1px #5B9BD5;
+        }
+        #clues tr:nth-child(even) td {
+          background-color: #DEEAF6;
+        }
+        .marine {
+          width: 3.77in;
+          text-align: left;
+        }
+        .letter {
+          width: 0.67in;
+          text-align: center;
+        }
+        .cross-off {
+          position: relative;
+        }
+        .check {
+          left: 0px;
+          top: 0px;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        I went scuba diving with a marine biologist the other day. It was awesome! 
+        He managed to train a group of animals to communicate a secret password. 
+        One at a time, 10 of them contributed a letter then moved away, leaving 2 behind.
+      </p>
+
+      <div style="position:relative; width:100%">
+
+        <ttable id="animals">
+          <for int="r" from="0" to="3">
+            <ttr>
+              <for int="c" from="0" to="2">
+                <ttd  class='cross-off'>
+                  <iimg src="UpForAir/{animals.[r*3+c]}.png" />
+                  <br />
+                  <span>{animals.[r*3+c]}</span>
+                </ttd>              
+              </for>
+            </ttr>
+          </for>
+        </ttable>
+
+        <div style="position:absolute; top:0px; right:0px;">
+          <p class="note">
+            Note: animals are neighbors if they share an edge or a corner.
+          </p>
+          <ttable id="clues">
+            <ttr>
+              <tth class="marine">Marine Animal</tth>
+              <tth class="letter">Letter</tth>
+            </ttr>
+            <for each="clue" in="clues">
+              <ttr>
+                <ttd class="marine">{clue.0}</ttd>
+                <ttd class="letter">{clue.1}</ttd>
+              </ttr>
+            </for>
+          </ttable>
+          <p>
+            Final answer: <pattern pattern="7" />
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+  </body>
+</html>

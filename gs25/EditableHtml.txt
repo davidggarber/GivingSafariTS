@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      #pageBody {
+        position: absolute;
+        top: 0.25in;
+        left: 0.25in;;
+        width: 11in;
+        height: 8.5in;
+        box-shadow: 5px 5px 25px #888888;
+      }
+      /* Any element with the class='editable-position' is subject to your tool. */
+      .editable-position {
+        position: absolute;
+      }
+      /* Any element with class='editable-container' should get mouse event handlers. */
+      .editable-container {
+        position: relative;
+      }
+      /* Please create a hover effect, where the moveable element under the mouse gets a 'hover' class added (and later removed).
+         Then it's up to me to style the hover effect however I like.
+      */
+      .editable_hover {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="pageBody" class="editable-container">
+      <p class="editable-position" style="left: 100px; top: 50px;">
+        Hello <b>world</b>
+      </p>
+
+      <div style="position: absolute; top: 1in; left: 1in; width: 3in; height: 2in; background-color: lightblue;">
+        <p class="editable-position">
+          World
+        </p>
+      </div>
+
+      <div style="position: absolute; top: 4in; left: 1in; width: 3in; height: 2in; background-color: lightyellow; transform:scale(1.5)">
+        <p class="editable-position">
+          Bigger
+        </p>
+      </div>
+
+      <div style="position: absolute; top: 2in; left: 6in; width: 3in; height: 2in; background-color: lightgreen; transform:rotate()">
+        <p class="editable-position">
+          Rotated
+        </p>
+      </div>
+
+
+    </div>
+  </body>
+  <script>
+    //<![CDATA[
+    var containers = document.getElementsByClassName("editable-container");
+    for (var i = 0; i < containers.length; i++) {
+      makeContainer(containers[i]);
+    }
+
+    function makeContainer(container) {
+      container.onclick = function(event) { clickInContainer(event); };
+    }
+
+    function clickInContainer(event) {
+      var elem = event.target;
+      while (elem && !elem.classList.contains("editable-position")) {
+        if (!elem.classList.contains("editable-container")) {
+          // Not what I'm looking for
+          return;
+        }
+        elem = elem.parentElement;
+      }
+      alert(elem.outerHTML);
+    }
+    //]]>
+  </script>
+
+</html>

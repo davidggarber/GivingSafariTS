@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        orientation: 'landscape',
+        title: 'SkiResort',
+        author: 'Joey Marianer',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          dragDrop: 'svg',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+      text {
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      circle.dest {
+        fill: transparent;
+        stroke: #333;
+        stroke-width: 1px;
+      }
+      path.dashed {
+        fill: none;
+        stroke: #333;
+        stroke-width: 0.5px;
+        stroke-dasharray: 6, 6;
+      }
+      text.nopark {
+        font-size: 8pt;
+      }
+      .no-slash {
+        stroke-width: 5pt;
+        stroke: #bbb;
+        fill: none;
+      }
+
+      .label {
+        text-anchor: middle;
+      }
+
+      .moveable circle {
+        fill: transparent;
+        stroke-width: 2px;
+      }
+      .moveable text {
+        font-size: 36pt;
+        text-anchor: middle;
+      }
+      .moveable path {
+        stroke-width: 2px;
+        fill: none;
+      }
+
+      .selected.moveable circle {
+        stroke-width: 4px;
+      }
+      .selected.moveable text {
+        font-weight: bold;
+      }
+      .selected.moveable path {
+        stroke-width: 4px;
+      }
+      .hover circle.dest {
+        fill: #eeeeeeee;
+      }
+
+
+      #elevator {
+        circle { stroke: darkred; }
+        text { fill: darkred; }
+        path { stroke: darkred; }
+      }
+      #parking-lot {
+        circle { stroke: darkblue; }
+        text { fill: darkblue; }
+        path { stroke: darkblue; }
+      }
+      #slopes {
+        circle { stroke: darkcyan; }
+        text { fill: darkcyan; }
+        path { stroke: darkcyan; }
+      }
+      #walkway {
+        circle { stroke: darkgreen; }
+        text { fill: darkgreen; }
+        path { stroke: darkgreen; }
+      }
+      #cable-car {
+        circle { stroke: darkgoldenrod; }
+        text { fill: darkgoldenrod; }
+        path { stroke: darkgoldenrod; }
+      }
+      .drop-zone {
+        fill: none;
+        stroke: none;
+      }
+      .drop-zone-test {
+        fill: transparent;
+        stroke: none;
+      }
+    </style>
+  </head>
+  <body id="SkiResort">
+    <div id="pageBody">
+      <p class="flavor">
+        It may be summer on the Microsoft campus, but our friends in New Zealand are ready to go skiing. Let’s try to map out this ski resort and figure out why. 
+      </p>
+      <svg id="svg" width="960" height="600" xmlns="http://www.w3.org/2000/svg">
+        <g id="grid" transform="translate(360, 230)">
+          <for int="y" from="0" to="3">
+            <for int="x" from="0" to="3">
+              <gg class="drop-target" transform="translate({x*90}, {y*90})">
+                <circle class="dest" r="30" />
+                <rect class="drop-zone" x="-30" y="-30" width="60" height="60" />
+              </gg>
+            </for>
+          </for>
+          <text x="90" y="200" text-anchor="middle" font-size="40pt">S</text>
+
+          <path class="dashed" d="M -50,45 h370" />
+          <text x="-110" y="65" text-anchor="middle" font-size="44pt" font-weight="bold">P</text>
+          <circle class="no-slash" cx="-112" cy="45" r="34" />
+          <path class="no-slash" d="M-112,45 m-25,25 l50,-50" />
+          <text class="nopark" x="370" y="35" text-anchor="middle">
+            No parking
+            <tspan x="370" dy="1.2em">above this</tspan>
+            <tspan x="370" dy="1.2em">line</tspan>
+          </text>
+        </g>
+
+        <g id="pieces" transform="">
+          <g id="labels" transform="translate(0,150)">
+            <text class="label" x="96" y="0">Elevator</text>
+            <text class="label" x="288" y="0">Parking lot</text>
+            <text class="label" x="480" y="0">Slopes</text>
+            <text class="label" x="672" y="0">Walkway</text>
+            <text class="label" x="864" y="0">Cable car</text>
+          </g> 
+
+          <g transform="translate(96 110)">
+            <g id="elevator-source" class="drag-source" transform="scale(0.5)">
+              <rect class="drop-zone-test" x="-150" y="-210" width="300" height="270" />
+              <g id="elevator" class="moveable">
+                <use template="circle-handle" x="0" y="0" text="L" />
+                <use template="circle-handle" x="0" y="-90" text="I" />
+                <use template="circle-handle" x="0" y="-180" text="A" />
+                <path d="M0,-30 v-30 m0,-60 v-30" />
+              </g>
+            </g>
+          </g>
+
+          <g transform="translate(288 110)">
+            <g id="parking-lot-source" class="drag-source" transform="scale(0.5)">
+              <rect class="drop-zone-test" x="-150" y="-210" width="300" height="270" />
+              <g id="parking-lot" class="moveable">
+                <use template="circle-handle" x="-90" y="0" text="T" />
+                <use template="circle-handle" x="0" y="0" text="E" />
+                <use template="circle-handle" x="90" y="0" text="D" />
+                <path d="M-60,0 h30 m60,0 h30" />
+              </g>
+            </g>
+          </g>
+
+          <g transform="translate(452.5 110)">
+            <g id="slopes-source" class="drag-source" transform="scale(0.5)">
+              <rect class="drop-zone-test" x="-105" y="-210" width="300" height="270" />
+              <g id="slopes" class="moveable ">
+                <use template="circle-handle" x="0" y="0" text="T" />
+                <use template="circle-handle" x="90" y="-90" text="E" />
+                <use template="circle-handle" x="90" y="0" text="H" />
+                <path d="M21,-21 L69,-69 M90,-60 v30" />
+              </g>
+            </g>
+          </g>
+
+          <g transform="translate(644.5 110)">
+            <g id="walkway-source" class="drag-source" transform="scale(0.5)">
+              <rect class="drop-zone-test" x="-105" y="-210" width="300" height="270" />
+              <g id="walkway" class="moveable">
+                <use template="circle-handle" x="0" y="0" text="T" />
+                <use template="circle-handle" x="90" y="0" text="I" />
+                <path d="M30,0 h30" />
+              </g>
+            </g>
+          </g>
+
+          <g transform="translate(864 110)">
+            <g id="cable-car-source" class="drag-source" transform="scale(0.5)">
+              <rect class="drop-zone-test" x="-150" y="-210" width="300" height="270" />
+              <g id="cable-car" class="moveable cable-">
+                <use template="circle-handle" x="-90" y="-90" text="T" />
+                <use template="circle-handle" x="0" y="-90" text="H" />
+                <use template="circle-handle" x="90" y="-90" text="E" />
+                <use template="circle-handle" x="0" y="0" text="R" />
+                <path d="M-60,-90 h30 m60,0 h30 M-21,-21 L-69,-69" />
+              </g>
+            </g>
+          </g>
+
+        </g>
+      </svg>
+
+    </div>
+
+    <template id="circle-handle">
+      <g class="drag-handle" transform="translate({x},{y})">
+        <circle cx="0" cy="0" r="30" />
+        <text x="0" y="17">{text}</text>
+      </g>
+    </template>
+
+  </body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'The Hunt',
+        orientation: 'landscape',
+        author: 'Marni Hager &amp; Joey Marianer',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          wordSearch: true,
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          grid: [
+            'RFZUYJWQMBMYQMJWLVFRSLLJJ',
+            'BLJDLTIWHILEFEANDGUSNCABT',
+            'REKOQKBAZHGAFLAPYINAISBEL',
+            'ZABXGDCQSOZTIEGNQRJFDTSSN',
+            'FDYYPBYTSPPWNPNQJAVAGKMIR',
+            'MEGWHDLNBEGHTHSELFMRNEXDV',
+            'URLTVVIDGFXJZAAVIFNINITEZ',
+            'AWNLSSVKTUUSJNEQBEKWULGSJ',
+            'AEQSNLRHWLNWMTHFQSDAUMZOM',
+            'YTOSEERWOULDXSWHATDSOGFNB',
+            'IRBRTSDAKVJPKBMMFVGYQJFSK'
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        .flavor {
+          font-style: italic;
+          font-size: 10pt;
+        }
+
+        #grid {
+          position: absolute;
+          left: 0px;
+          top: 1in;
+          width: 960px;
+          height: 500px;
+        }
+        text {
+          text-anchor: middle;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        The answer is hiding in the grid.
+        In fact, the question – every word of it – is hiding in the grid.
+      </p>
+
+      <p>
+        What was leader hopeful we would get to see while on safari, besides elephants and giraffes?
+      </p>
+
+      <svg id="grid" class="word-select-area no-user-select" data-angle-constraints="45">
+        <for each="row" in="{grid}">
+          <for char="ch" in="{row}">
+            <g transform="translate({150+ch#*25},
+                                    {110+row#*25})">
+              <rect class="vertex"
+                    width="25" height="25" />
+              <text x="8" y="17">{ch}</text>
+            </g>
+          </for>
+        </for>
+      </svg>
+
+    </div>
+  </body>
+</html>

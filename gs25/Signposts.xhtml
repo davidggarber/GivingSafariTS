@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Signposts',
+        orientation: 'landscape',
+        author: 'Tim Hannifin',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          clues: [
+            ['Collaborator of butcher and', 'candlestick maker'],
+            ['Dehydrated meat'],
+            ['David’s weapon', 'against Goliath'],
+            ['Funny circus employee'],
+            ['Genetic duplicate'],
+            ['Slight smile'],
+            ['Spicy condiment or style of dance'],
+            ['Tongue’s sense'],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Signposts {
+        #signs {
+          position: absolute;
+          left: 2.04in;
+          top: 0.68in;
+        }
+        #signs img {
+          position: absolute;
+        }
+        #post {
+          height:5.96in; 
+          width:5.33in;
+        }
+        #plank {
+          left: 0.95in;
+          top: 3.9in;
+          height: 1.37in;
+          width: 4.63in;   
+        }
+        #zips {
+          position: absolute;
+          left: 2in;
+          top: -4px;
+          transform: rotate(-14deg);
+        }
+        #zips text {
+          font-family: 'National Park';
+          font-size: 36pt;
+        }
+        #outline text {
+          fill: transparent;
+          stroke: black;
+          stroke-width: 3px;
+        }
+        #fill text {
+          fill: #803300;
+          stroke: none;
+        }
+        #answer {
+          position: absolute;
+          left: 2in;
+          top: 4.25in;
+          transform: rotate(-6deg);
+
+          .letter-underline {
+            border-bottom: solid 3px black;
+          }
+          .letter-cell {
+            font-size: 32pt;
+          }
+        }
+
+        #table {
+          position: absolute;
+          left: 0px;
+          width: 10in;
+          top: 100px;
+        }
+        #table td {
+          vertical-align: top;
+          height: 1.1in;
+        }
+        td.col0 {
+          width: 7.75in;
+        }
+        td.col1 {
+          width: 2in;
+        }
+        .word-input {
+          margin-top: 4px;
+        }
+      }
+    </style>
+  </head>
+  <body id="Signposts">
+    <div id="pageBody">
+      <p class="flavor">
+        Follow the signposts to traverse the distance between word pairs. Then zip on over to the destination. 
+      </p>
+
+      <ttable id="table" data-word-style="hover">
+        <for int="row" from="0" to="3">
+          <ttr>
+            <for int="col" from="0" to="1">
+              <ttd class="col{col}">
+                <for each="line" in="{clues.[row * 2 + col]}">
+                  {line}<br />
+                </for>
+                <word />
+              </ttd>
+            </for>
+          </ttr>
+        </for>
+      </ttable>
+
+      <div id="signs">
+        <img id="post" src="Signposts/post.png" />
+        <img id="plank" src="Signposts/plank.png" />
+        <svg xmlns="http://www.w3.org/2000/svg" id="zips" width="200" height="400">
+          <g id="outline">
+            <text y="90">00099</text>
+            <text y="215">01044</text>
+            <text y="335">10714</text>
+          </g>
+          <g id="fill">
+            <text y="90">00099</text>
+            <text y="215">01044</text>
+            <text y="335">10714</text>
+          </g>
+        </svg>
+        <div id="answer">
+          <pattern pattern="5" />
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

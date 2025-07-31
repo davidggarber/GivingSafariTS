@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Networked Hints',
+        author: 'Philippe Nicolle',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          boxes: [
+            { y: 10, x:80, w:70, hint: 'Sport' },
+            { y: 10, x:230, w:120, pattern:4, pos:4, num:7 },
+            { y: 10, x:440, w:190, hint: 'NATO Phonetic Alphabet' },
+
+            { y: 80, x:0, w:190, pattern:7, pos:1, num:12 },
+            { y: 80, x:210, w:190, pattern:4, pos:4, num:16 },
+            { y: 80, x:430, w:110, pattern:4, pos:1, num:13 },
+            { y: 80, x:560, w:140, pattern:4, pos:1, num:11 },
+
+            { y: 150, x:0, w:70, hint: 'Insect' },
+            { y: 150, x:120, w:90, hint: 'Beverage' },
+            { y: 150, x:240, w:180, pattern:7, pos:1, num:5 },
+            { y: 150, x:445, w:120, hint: 'Type of Bean' },
+            { y: 150, x:590, w:160, hint: 'Lower River Feature' },
+
+            { y: 220, x:20, w:90, pattern:3, pos:2, num:2 },
+            { y: 220, x:130, w:100, pattern:3, pos:1, num:3 },
+            { y: 220, x:390, w:165, pattern:6, pos:2, num:4 },
+            { y: 220, x:580, w:140, pattern:5, pos:3, num:6 },
+
+            { y: 290, x:40, w:200, hint: 'Single Letter Homophone' },
+            { y: 290, x:330, w:100, pattern:3, pos:1, num:10 },
+            { y: 290, x:510, w:90, hint: 'Body Part' },
+
+            { y: 360, x:60, w:90, pattern:3, pos:2, num:8 },
+            { y: 360, x:460, w:140, pattern:5, pos:4, num:1 },
+
+            { y: 430, x:30, w:140, hint: 'Flying Vertebrate' },
+            { y: 430, x:210, w:90, pattern:3, pos:3, num:15 },
+            { y: 430, x:420, w:140, hint: 'Playing Card Suit' },
+
+            { y: 500, x:140, w:90, pattern:3, pos:3, num:9 },
+            { y: 500, x:385, w:120, pattern:4, pos:3, num:14 },
+
+            { y: 570, x:300, w:140, hint: 'Sport Equipment' },
+          ],
+          lines: [
+            [150, 30, 440, 30],
+            [115, 50, 35, 151],
+            [440, 30, 165, 151],
+            [535, 50, 505, 151],
+            [535, 50, 670, 151],
+            [210, 170, 445, 170],
+            [35, 190, 140, 291],
+            [165, 190, 140, 291],
+            [505, 190, 555, 291],
+            [670, 190, 555, 291],
+            [240, 310, 510, 310],
+            [140, 330, 100, 431],
+            [140, 330, 370, 571],
+            [555, 330, 490, 431],
+            [490, 470, 370, 571]
+
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        div.box {
+          position: absolute;
+          background-color: white;
+          height: 36px;
+        }
+        div.hint {
+          width: 100%;
+          text-align: center;
+          height: 26px;
+          padding-top: 10px;
+          border: solid 2px black;
+          background-color: white;
+        }
+        div.inp {
+          width: 100%;
+          height: 100%;
+          text-align: center;
+          border: solid 1px black;
+          background-color: white;
+        }
+
+        #svg, #boxes {
+          position:absolute;
+          left:0px;
+          top:40px;
+          width:7.5in;
+          height:7in;
+        }
+        path {
+          stroke:black;
+          stroke-width: 2px;
+          fill: transparent;
+        }
+        #below {
+          position: absolute;
+          left: 0px;
+          width: 100%;
+          text-align: center;
+          top: 7in;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+
+      <svg id="svg" xmlns="http://www.w3.org/2000/svg">
+        <for each="X" in="{lines}">
+          <path dd="M {X.0*96/100},{X.1*96/100} L {X.2*96/100},{X.3*96/100}" />
+        </for>
+      </svg>
+
+      <div id="boxes">
+        <for each="box" in="boxes">
+          <div class="box" style="left:{box.x/100}in; top:{box.y/100}in; width:{box.w/100}in">
+            <if exists="{box.hint}">
+              <div class="hint">{box.hint}</div>
+            </if>
+            <else>
+              <div class="inp"><pattern pattern="{box.pattern}" numbers="{box.pos}={box.num}" /></div>
+            </else>
+          </div>
+        </for>
+      </div>
+
+      <div id="below">
+        <pattern id="extracted" extract-numbered="16" />
+      </div>
+
+    </div>
+  </body>
+</html>

@@ -280,6 +280,9 @@ export function findParentOfClass(elmt: Element,
         if (hasClass(elmt, parentClass)) {
             return elmt;
         }
+        if (elmt.parentNode === document) {
+            return null;
+        }
         elmt = elmt.parentNode as Element;
     }
     return null;
@@ -295,6 +298,9 @@ export function isSelfOrParent(elmt: Element, parent: Element) {
     while (elmt !== null && !isTag(elmt, 'body')) {
         if (elmt === parent) {
             return true;
+        }
+        if (elmt.parentNode === document) {
+            return null;
         }
         elmt = elmt.parentNode as Element;
     }
@@ -320,6 +326,9 @@ export function findParentOfTag(elmt: Element, parentTag: string)
         }
         if (name === 'BODY') {
             break;
+        }
+        if (elmt.parentNode === document) {
+            return null;
         }
         elmt = elmt.parentNode as Element;
     }
@@ -568,3 +577,18 @@ export function isTextInputElement(elmt:Element|undefined|null):boolean {
 export function isArrowKeyElement(elmt:Element|undefined|null):boolean {
     return elmt ? (isTextInputElement(elmt) || isTag(elmt, 'select') || isTag(elmt, 'button')) : false;
 }
+
+/**
+ * Retrieve the local transform from an element.
+ * This ignores any chain of additional transforms above the element.
+ * @param element Any element.
+ * @returns A matrix. Will be the identity if no transform applied.
+ */
+export function matrixFromElement(element:Element): DOMMatrix {
+    const computed = getComputedStyle(element).transform;
+    if (computed == 'none') {
+        return new DOMMatrix();  // Identity matrix
+    }
+    return new DOMMatrix(computed);
+}
+
