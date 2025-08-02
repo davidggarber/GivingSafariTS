@@ -22,25 +22,42 @@
       };
     </script>
     <style>
-      td {
-        text-align: center;
-      }
-      td img {
-        width: 1.7in;
-        height: 2.5in;
-      }
-      #Posters .word-input {
-        width: 1.2in;
+      #Local {
+        td {
+          text-align: center;
+          padding: 0px 2px;
+        }
+        td img {
+          width: 1.7in;
+          height: 2.5in;
+        }
+        td.caption {
+          padding-bottom: 2px;
+          vertical-align: top;
+        }
+        .word-input {
+          width: 1.3in;
+        }
+        .word-underline {
+          display: inline-block;
+          height: 3ex;
+          top: -7px;
+          font-size: 12pt;
+        }
+        .plus {
+          position: relative;
+          top: -8px;
+        }
       }
     </style>
   </head>
-  <body id="Posters">
+  <body id="Local">
     <div id="pageBody" data-extract-style="underline">
       <p class="flavor">
         I was so excited when I got the POSTERS back from the printers. Imagine my disappointment when I spread them out at the REST STOP. Look how jumbled they got! They even added a letter to each!
       </p>
 
-      <ttable>
+      <ttable style="border-collapse: collapse;">
         <for int="r" from="1" to="3">
           <ttr>
             <for int="c" from="1" to="4">
@@ -51,13 +68,15 @@
           </ttr>
           <ttr>
             <for int="c" from="1" to="4">
-              <ttd>
-                <word />+<letter extract="true" />
+              <ttd class="caption">
+                <word /><span class="plus">+</span><letter extract="true" />
               </ttd>
             </for>
           </ttr>
         </for>
       </ttable>
+
+      <p style="margin-left: 3in;"><pattern id="extracted" extracted-number="12" /></p>
 
     </div>
   </body>

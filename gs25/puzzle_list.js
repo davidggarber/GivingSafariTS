@@ -47,7 +47,7 @@ var puzzles = [
     { title: 'Outdoor Action!', file: 'OutdoorAction', thumb: 'out', author: 'Martyn Lovell', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Posters', thumb: 'pos', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Rushmore', thumb: 'rus', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { title: 'Shouldn’t That Rhyme?', file: 'ShouldntThatRhyme' thumb: 'sho', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    { title: 'Shouldn’t That Rhyme?', file: 'ShouldntThatRhyme', thumb: 'sho', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Signposts', thumb: 'sig', author: 'Tim Hannifin', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Ski Resort', thumb: 'ski', author: 'Joey Marianer', type: types.jigsaw, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Slow Down!', file:'SlowDown', thumb: 'slo', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },

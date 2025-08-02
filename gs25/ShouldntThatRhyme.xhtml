@@ -15,6 +15,7 @@
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
+          checkMarks:true,
         },
         reactiveBuilder: 'pageBody',
         lookup: {
@@ -45,7 +46,7 @@
           answers: [
             [6, 5, 3],
             [5, 2, 4],
-            [5, 3, 3],
+            [5, 3, 5],
             [5, 4, 10],
             [4, 3, 1],
             [5, 2, 9],
@@ -59,6 +60,13 @@
       };
     </script>
     <style>
+      .hanging {
+        position: relative;
+        padding-left: 0.25in;
+        text-indent: -0.25in;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
       th {
         text-align: left;
       }
@@ -85,12 +93,12 @@
       <table>
         <tr>
           <th style="width: 4.8in">Clues</th>
-          <th style="padding-left: 0.25in">Answers</th>
+          <th>Answers</th>
         </tr>
         <tr>
-          <td id="clues" rowspan="2" style="padding-right: 0.25in">
+          <td id="clues" rowspan="2" style="padding-right: 0.75in">
             <for each="clue" in="clues">
-              <p>{clue}</p>
+              <p class="hanging cross-off">{clue}</p>
             </for>
           </td>  
           <td id="answers">
@@ -101,13 +109,11 @@
             </for>
           </td>
         </tr>
-        <tr>
-          <td id="final" style="height: 2in; vertical-align: middle;">
-            Final Answer:<br />
-            <pattern extract-numbered="11" />
-          </td>
-        </tr>
       </table>
+
+      <p>
+        Final Answer: <pattern id="extracted" extract-numbered="11" />
+      </p>
 
     </div>
   </body>
