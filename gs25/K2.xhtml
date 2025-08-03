@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'K2',
+        author: 'Rorke Haining',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          checkMarks: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          clues: [
+            'Mythological horse-man', 'Non-native or alien',
+            'Rot', 'First sword of Braavos, Syrio _____',
+            'The return portion of a mountain climb', 'Have a vision of the future',
+            'Pokémon with the most evolutions', 'Covered in frost',
+            'Talk show host DeGeneres', 'Motivate by offering a reward',
+            'Deadly sin', 'Preposition (or slang for "passionate about")',
+            'Short written work on a given subject', 'Prestigious league of universities',
+            'Spreadsheet application', 'Shabby or disreputable',
+            'Leftover portion', 'Nau’Jour Lazier Grainger’s stage name',
+            'Expedition', 'Ballerina’s skirt',
+          ],
+          letters: 'ACDEIKLNRSVX24¢',
+          circles: [
+            '  w  ',
+            ' gwg ',
+            'ggwgg',
+            'ggwg ',
+            ' gw  '
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        #svg {
+          height: 4.6in;
+          width: 6in;
+
+          #mt {
+            fill: #ccc;
+            stroke: black;
+            stroke-width: 2px;
+          }
+          circle {
+            stroke: black;
+            stroke-width: 1px;
+          }
+          .gray {
+            fill: transparent;
+          }
+          .white {
+            fill: white;
+          }
+          #connectors path {
+            fill: none;
+            stroke: black;
+            stroke-width: 1px;
+          }
+        }
+
+        .letter-hover {
+          background-color: transparent;
+        }
+        .letter-hover:hover {
+          background-color: #00000011;
+        }
+        #k2 .letter-cell {
+          width: 31px;
+          height: 31px;
+          border-radius: 12px;
+        }
+
+        #letters {
+          text-align: center;
+          margin-bottom: 0.2in;
+        }
+        .option {
+          display: inline-block;
+          position: relative;
+          width: 0.2in;
+          user-select: none;
+        }
+        .check {
+          left: 0px;
+          top: -18px;
+        }
+        .check::before {
+          background-size: 15px 14px;
+          width: 15px; 
+          height: 14px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        td {
+          position: relative;
+          width: 50%;
+          height: 24px;
+          border: solid 1px black;
+          padding: 1px 6px;
+        }
+        .word-cell {
+          position: absolute;
+          top: 2px;
+          right: -3px;
+          font-size: 10pt;
+        }
+        .word-input {
+          width: 0.8in;
+          height: 20px;
+        }
+        #below {
+          margin-top: 20px;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <div id="k2" style="position: relative; margin-left:0.62in;" data-letter-style="hover" data-extract-style="hover">
+        
+        <svg id="svg">
+          <defs>
+            <marker id="arrow" markerWidth="7" markerHeight="7" refX="4" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L6,3 z" fill="#000" />
+            </marker>
+          </defs>
+
+          <path id="mt" d="M0,443 L25,383 L42,402 L92,205 L122,213 L134,200 L155,132 L184,81 L212,93 L265,4 L311,32 L412,48 L476,199 L498,190 L576,443 Z" />
+          <for int="y" from="0" to="4">
+            <for int="x" from="0" to="4">
+              <if test="{circles.{y}.{x}}" eq="g">
+                <circle class="gray" cx="{171+65*x}" cy="{92+y*77}" r="19" />
+              </if>
+              <if test="{circles.{y}.{x}}" eq="w">
+                <circle class="white" cx="{171+65*x}" cy="{92+y*77}" r="19" />
+              </if>
+            </for>
+          </for>
+
+          <g id="connectors">
+            <path d="M315,106 L351,154" marker-end="url(#arrow)" />
+            <path d="M256,170 L280,170" marker-end="url(#arrow)" />
+            <path d="M237,188 L237,225" marker-end="url(#arrow)" />
+            <path d="M301,227 L301,190" marker-end="url(#arrow)" />
+            <path d="M247,230 L288,108" marker-end="url(#arrow)" />
+            <path d="M223,183 L186,232" marker-end="url(#arrow)" />
+            <path d="M190,247 L215,247" marker-end="url(#arrow)" />
+            <path d="M347,247 L322,247" marker-end="url(#arrow)" />
+            <path d="M250,260 L286,308" marker-end="url(#arrow)" />
+            <path d="M223,260 L186,309" marker-end="url(#arrow)" />
+            <path d="M255,324 L280,324" marker-end="url(#arrow)" />
+            <path d="M347,324 L322,324" marker-end="url(#arrow)" />
+            <path d="M186,338 L221,385" marker-end="url(#arrow)" />
+            <path d="M237,342 L237,379" marker-end="url(#arrow)" />
+            <path d="M255,401 L280,401" marker-end="url(#arrow)" />
+
+            <path d="M314,386 C324,376,340,357,370,357 C400,357,431,307,431,267" marker-end="url(#arrow)" />
+
+            <path d="M354,261 A120,80,0,0,1,186,261" marker-end="url(#arrow)" />
+            <path d="M320,401 A144,154,0,0,0,322,92" marker-end="url(#arrow)" />
+            <path d="M217,169 A103,116,0,0,0,215,401" marker-end="url(#arrow)" />
+            <path d="M172,304 A19,19,0,1,0,150,323" marker-end="url(#arrow)" />
+          </g>
+
+        </svg>
+
+        <for int="y" from="0" to="4">
+          <for int="x" from="0" to="4">
+            <div sstyle="position:absolute; left:{155+65*x}px; top:{76+y*77}px;">
+              <if test="{circles.{y}.{x}}" eq="g">
+                <letter />
+              </if>
+              <if test="{circles.{y}.{x}}" eq="w">
+                <letter extract="true" />
+              </if>
+            </div>
+          </for>
+        </for>
+
+      </div>
+
+      <p id="letters">
+        <img src="K2/up.png" style="height: 0.5in; margin-bottom: 12px;" /><br />
+        <for char="ch" in="{letters}">
+          <span class="option cross-off">{ch}</span>
+        </for>
+      </p>
+
+      <ttable data-word-style="hover">
+        <for int="i" from="0" to="9">
+          <ttr>
+            <td>{clues.[i*2]} <word /></td>
+            <td>{clues.[i*2+1]} <word /></td>
+          </ttr>
+        </for>
+      </ttable>
+
+      <p id="below">
+        <img src="K2/right.png" style="position:relative; height: 0.33in; top:4px; margin-right: 10px;" />
+        <pattern pattern="7 6" />
+      </p>
+
+    </div>
+  </body>
+</html>

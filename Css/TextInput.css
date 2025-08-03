@@ -10,14 +10,6 @@
   white-space: nowrap;
 }
 
-.letter-hover:hover {
-  border: dotted 1px #999;
-}
-
-.literal.letter-hover:hover {
-  border: none;
-}
-
 .literal-underline {
   border-bottom: solid 1px black;
   margin-right: 0.05in;
