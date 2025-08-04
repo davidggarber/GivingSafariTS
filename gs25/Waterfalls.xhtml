@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Waterfalls',
+        author: 'David Garber',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          grids: [
+            {
+              cardinal: '1',
+              super: 'st',
+              letters: [
+                'D N P  A C AD  G        ',
+                'LIS R EA D EHECK KA  HE ',
+                'RLVETLGENEHSSINL TESERFA',
+                'TOYOUSROSUSTTITOAWOTTTHA'
+              ],
+              literals: [
+                '   ’ ¤  ¤       ¤       ',
+                '   ¤      ¤     ¤  ¤   ¤',
+                '      ¤   ¤   ¤     ¤   ',
+                ' ¤   ’  ¤    ¤  ¤¤¤¤¤¤¤¤'
+              ]
+            },
+            {
+              cardinal: '2',
+              super: 'nd',
+              letters: [
+                'A EI  A  AL  E  E  E A E',
+                'D HO AHE FL LI NHEDF FEL',
+                'I SOFLLL MOLOOARLIERLOOR',
+                'TTTRTTOWWSYOTRWTSVKROPPW'
+              ],
+              literals: [
+                ' ¤   ¤ ¤    ¤ ¤     ¤   ',
+                ' ¤  ¤   ¤  ¤   ¤    ¤ ¤ ',
+                '        ¤  ¤     ¤      ',
+                ' ¤  ¤   ¤     ¤   ¤     '
+              ]
+            },
+            {
+              cardinal: '3',
+              super: 'rd',
+              letters: [
+                'E  A  I   FA E FAE  AD  ',
+                'LEFEEAIN AHEERITEL ANE O',
+                'NIONGISNATWTTRRVHRLFWLLR'
+              ],
+              literals: [
+                '    ¤  ¤ ¤         ¤  ’ ',
+                ' ¤   ¤  ¤   ¤     ¤   ¤ ',
+                '  ¤     ¤     ¤   ¤    ¤'
+              ]
+            },
+            {
+              cardinal: '4',
+              super: 'th',
+              letters: [
+                'I BA  E   F  G  ABE  AAL',
+                'L CGEESEEHMOMRAINHERFCLL',
+                'YINRNMZETORYUYHWTTOWMIST'
+              ],
+              literals: [
+                ' ¤   ¤   ¤  ¤       ¤   ',
+                '    ¤  ¤       ¤   ¤    ',
+                ' ¤      ¤  ¤  ¤         '                
+              ]
+            }
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        .waterfall {
+          margin: 10px 0px 0px 0px;
+          text-align: center;
+        }
+        table.dropquote {
+          border-collapse: collapse;
+          margin-left: 1in;
+        }
+        td {
+          text-align: center;
+          padding: 0px;
+        }
+        tr.work td {
+          border: solid 1px black;
+        }
+        td.block {
+          background-color: #333;
+        }
+
+        #below {
+          border-collapse: collapse;
+        }
+        #below td,th {
+          width: 0.3in;
+          border: solid 1px black;
+        }
+        #phrase .literal {
+          background-color: #ccc;
+          vertical-align: top;
+        }
+        #missing {
+          font-size: 22pt;
+          width: 0.5in;
+        }
+        #below td.block {
+          width: 0.2in;
+        }
+        .under td {
+          font-size: 8pt;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        Some thoughts on the subject…
+      </p>
+
+      <for each="grid" in="grids">
+        <p class="waterfall">
+          {grid.cardinal}<sup>{grid.super}</sup> title: <word />
+        </p>
+        <ttable class="dropquote" data-input-style="hover">
+          <for each="row" in="{grid.letters}">
+            <ttr class="letters">
+              <for char="c" in="{row}">
+                <ttd>{c}</ttd>
+              </for>
+            </ttr>
+          </for>
+          <for each="row" in="{grid.literals}">
+            <ttr class="work">
+              <for char="c" in="{row}">
+                <if test="{c}" eq="¤">
+                  <ttd class="block">&nbsp;</ttd>
+                </if>
+                <elseif test="{c}" ne=" ">
+                  <ttd class="literal">{c}</ttd>
+                </elseif>
+                <else>
+                  <ttd><letter /></ttd>
+                </else>
+              </for>
+            </ttr>
+          </for>          
+        </ttable>
+      </for>
+
+      <p style="margin-bottom: 0px;">Boxes below are labeled &lt;title number&gt;.&lt;letter index&gt;, where spaces don’t count among letters.</p>
+      <table id="below" data-letter-style="hover" data-word-style="hover">
+        <tr id="phrase">
+          <td><letter id="extracted_1" /></td>
+          <td><letter id="extracted_1" /></td>
+          <td><letter id="extracted_1" /></td>
+          <td><letter id="extracted_1" /></td>
+          <td><letter id="extracted_1" /></td>
+          <td rowspan="2" class="block">&nbsp;</td>
+          <td><word /></td>
+          <td rowspan="2" class="block">&nbsp;</td>
+          <td><letter id="extracted_1" /></td>
+          <td><letter id="extracted_1" /></td>
+          <td rowspan="2" class="block">&nbsp;</td>
+          <td><letter id="extracted_1" /></td>
+          <td rowspan="2" class="block">&nbsp;</td>
+          <td rowspan="2" class="literal">(</td>
+          <td><letter id="extracted_1" /></td>
+          <td><letter id="extracted_1" /></td>
+          <td><letter id="extracted_1" /></td>
+          <td rowspan="2" class="block">&nbsp;</td>
+          <td><letter id="extracted_1" /></td>
+          <td><letter id="extracted_1" /></td>
+          <td><letter id="extracted_1" /></td>
+          <td><letter id="extracted_1" /></td>
+          <td rowspan="2" class="literal">)</td>
+        </tr>
+        <tr class="under">
+          <td>3.2</td><td>4.12</td><td>1.4</td><td>2.12</td><td>4.3</td>
+          <td>???</td>
+          <td>3.4</td><td>1.10</td>
+          <td>4.2</td>
+          <td>1.3</td><td>2.7</td><td>4.13</td>
+          <td>1.1</td><td>4.11</td><td>3.3</td><td>2.4</td>
+        </tr>
+      </table>
+
+
+    </div>
+  </body>
+</html>
