@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        title: 'Decoder',
+        paperSize: 'letter',
+        orientation: 'portrait',
+        textInput: true,
+        abilities: {
+        },
+        reactiveBuilder: 'pageBody',
+        abilities: {
+          decoder: true,
+        }
+      };
+
+      function demoDecoder(name) {
+        var iframe = document.getElementById('decoder-frame');
+        // var url = 'https://www.decrypt.fun';
+        if (!name) {
+          iframe.removeAttribute('data-decoder-mode');
+
+        }
+        if (name) {
+          iframe.setAttribute('data-decoder-mode', name);
+          // url += '/' + name + '.html';
+        }
+        // iframe.src = url;
+        toggleDecoder(true);
+      }
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      #Local {
+
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+
+      <p>To enable a decoder shortcut in the footer, the boilerplate must contain:</p>
+      <code><pre trim="pre">
+        const boiler = `{
+          abilities: `{
+            <b>decoder: true | code,</b>
+         `},
+        `}          
+      </pre></code>
+      <p>The decoder will appear in an &lt;iframe&gt;, to the right of the puzzle.</p>
+
+      <p>If <code>decoder:true</code>, the link will be to the <a target="_blank" href="https://www.decrypt.fun">decrypt.fun</a> home page.</p>
+      <p>Or specify a specific encoding by name, and the link will go directly to that (in decode-mode).</p>
+      <p>Available decodings (<b>Case Sensitive!!!</b>):</p>
+      <ul>
+        <li><a href="javascript:demoDecoder()"><i>true</i></a> (no specific decoder)</li>
+        <li><a href="javascript:demoDecoder('Braille')">Braille</a></li>
+        <li><a href="javascript:demoDecoder('Morse')">Morse</a></li>
+        <li><a href="javascript:demoDecoder('Semaphore')">Semaphore</a></li>
+        <li><a href="javascript:demoDecoder('PigPen')">PigPen</a></li>
+        <li><a href="javascript:demoDecoder('FiveBit')">FiveBit</a></li>
+        <li><a href="javascript:demoDecoder('Trinary')">Trinary</a></li>
+        <li><a href="javascript:demoDecoder('Nautical')">Nautical</a></li>
+        <li><a href="javascript:demoDecoder('Rot')">Rot</a> (e.g. Rotation)</li>
+        <li><a href="javascript:demoDecoder('Ascii')">Ascii</a> (e.g. Index)</li>
+      </ul>
+
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)">{value}</code>
+    </template>
+    <template id="tag">
+      <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+
+    <template id="link">
+      <if exists="{tag?}">
+        <a href="{tag}.xhtml">&lt;{tag}&gt;</a>        
+      </if>
+      <else>
+        <a href="{page}.xhtml">{page}</a>
+      </else>
+      <if test="{wip?}"><img class="wip" src="Images/wip2.png" title="Work in progress" alt="Work in progress" /></if>
+    </template>
+  
+  </body>
+</html>

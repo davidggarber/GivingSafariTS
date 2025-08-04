@@ -1019,12 +1019,17 @@ exports.setupDecoderToggle = setupDecoderToggle;
 /**
  * Rotate to the next note visibility state.
  */
-function toggleDecoder() {
+function toggleDecoder(show) {
     var visible = getDecoderState();
     if (visible === null) {
         setupDecoderToggle(null);
     }
-    setDecoderState(!visible);
+    if (show == null || show == undefined) {
+        setDecoderState(!visible);
+    }
+    else {
+        setDecoderState(show);
+    }
 }
 exports.toggleDecoder = toggleDecoder;
 var localCache = {
@@ -9709,7 +9714,7 @@ function cloneWithContext(elmt) {
     const tagName = normalizeName(elmt.localName);
     let clone;
     if (tagName == 'svg' && elmt.namespaceURI != exports.svg_xmlns) {
-        console.error("WARNING: <SVG> element missing xmlns='http://www.w3.org/2000/svg'");
+        console.warn("WARNING: <SVG> element missing xmlns='http://www.w3.org/2000/svg'");
     }
     if (inSvgNamespace() || tagName == 'svg') {
         // TODO: contents of embedded objects aren't SVG

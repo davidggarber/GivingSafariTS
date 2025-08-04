@@ -80,6 +80,11 @@
         text-align: center;
         width: 30px;
         height: 30px;
+        
+        -moz-user-select: -moz-none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -o-user-select: none;
         user-select: none;
       }
       #DownAcross td {
@@ -94,7 +99,6 @@
 
       li {
         position: relative;
-        user-select: none;
       }
       #DownAcross .check {
         position: absolute;
@@ -138,7 +142,7 @@
             <for int="y" from="0" to="3">
               <ttr class="row row-{y}">
                 <tth>{grid.2.[y]}</tth>
-                  <for int="x" from="0" to="4">
+                <for int="x" from="0" to="4">
                   <ttd class="col-{x}"><letter /></ttd>
                 </for>
                 <tth>{grid.3.[y]}</tth>

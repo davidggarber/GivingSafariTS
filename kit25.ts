@@ -1122,12 +1122,17 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:boolean|st
 /**
  * Rotate to the next note visibility state.
  */
-export function toggleDecoder() {
+export function toggleDecoder(show:boolean|null) {
     var visible = getDecoderState();
     if (visible === null) {
         setupDecoderToggle(null);
     }
-    setDecoderState(!visible);
+    if (show == null || show == undefined) {
+        setDecoderState(!visible);
+    }
+    else {
+        setDecoderState(show);
+    }
 }
 
 
@@ -10882,7 +10887,7 @@ function cloneWithContext(elmt:HTMLElement):Element {
   const tagName = normalizeName(elmt.localName);
   let clone:Element;
   if (tagName == 'svg' && elmt.namespaceURI != svg_xmlns) {
-    console.error("WARNING: <SVG> element missing xmlns='http://www.w3.org/2000/svg'");
+    console.warn("WARNING: <SVG> element missing xmlns='http://www.w3.org/2000/svg'");
   }
   if (inSvgNamespace() || tagName == 'svg') {
     // TODO: contents of embedded objects aren't SVG

@@ -562,7 +562,7 @@ function cloneWithContext(elmt:HTMLElement):Element {
   const tagName = normalizeName(elmt.localName);
   let clone:Element;
   if (tagName == 'svg' && elmt.namespaceURI != svg_xmlns) {
-    console.error("WARNING: <SVG> element missing xmlns='http://www.w3.org/2000/svg'");
+    console.warn("WARNING: <SVG> element missing xmlns='http://www.w3.org/2000/svg'");
   }
   if (inSvgNamespace() || tagName == 'svg') {
     // TODO: contents of embedded objects aren't SVG

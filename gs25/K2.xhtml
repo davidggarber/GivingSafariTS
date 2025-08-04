@@ -90,7 +90,6 @@
           display: inline-block;
           position: relative;
           width: 0.2in;
-          user-select: none;
         }
         .check {
           left: 0px;
@@ -198,7 +197,7 @@
       <p id="letters">
         <img src="K2/up.png" style="height: 0.5in; margin-bottom: 12px;" /><br />
         <for char="ch" in="{letters}">
-          <span class="option cross-off">{ch}</span>
+          <span class="option no-user-select cross-off">{ch}</span>
         </for>
       </p>
 

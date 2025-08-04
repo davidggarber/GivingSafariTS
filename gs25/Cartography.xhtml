@@ -15,6 +15,9 @@
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
+          checkMarks: true,
+          stamping: true,
+          decoder: 'Braille',
         },
         reactiveBuilder: 'pageBody',
         lookup: {
@@ -42,13 +45,97 @@
             [2,1,1,1],
             [1],
           ],
+          grid: [
+            '        ',
+            '        ',
+            '        ',
+            '        ',
+            '        ',
+            '      t ',
+            '        ',
+            '       t',
+            '        ',
+            '        ',
+            '        ',
+            '        ',
+          ]
         },
       };
     </script>
     <style>
+      #Local {
+        table {
+          border-collapse: collapse;
+          margin-left: 1.5in;
+          margin-bottom: 0.25in;
+        }
+        th {
+          font-weight: normal;
+          font-size: 16pt;
+          user-select: none;
+        }
+        th.col-group {
+          vertical-align: bottom;
+          text-align: center;
+        }
+        div.col-group {
+          break-after: all;
+        }
+        th.row-group {
+          vertical-align: middle;
+          text-align: right;
+          padding-right: 4px;
+        }
+        span.row-group {
+          display: inline-block;
+          text-align: center;
+          width: 0.15in;
+        }
+        td {
+          border: solid 1px black;
+          width: 40px;
+          height: 40px;
+          text-align: center;
+          vertical-align: center;
+        }
+        td img {
+          height: 36px;
+          padding: 0px;
+          user-select: none;
+        }
+        td.tree::before {
+          content: "";
+          display: inline-block;
+          width: 31px;
+          height: 36px;
+          background: url('Cartography/tree.png') center/contain no-repeat;
+        }
+        td.x::before {
+          content: "";
+          display: inline-block;
+          width: 36px;
+          height: 36px;
+          background: url('Cartography/x.png') center/contain no-repeat;
+        }
+
+        .row-group .check {
+          left: -1px;
+          top: -1px;
+        }
+        .col-group .check {
+          left: 11px;
+          top: -1px;
+        }
+        .check::before {
+          background-size: 15px 14px;
+          width: 15px; 
+          height: 14px;
+        }
+
+      }
     </style>
   </head>
-  <body id="Cartography">
+  <body id="Local">
     <div id="pageBody">
       <p class="flavor">
         You decide to visit your local National Forest, but when you get there, you find that they’ve run out of maps! You’ll need to make your own before you set out. 
@@ -59,10 +146,52 @@
       <p class="flavor">
         Two of the trees have already been filled in for you. Now it’s up to you to draw the rest!
       </p>
-      <div id="pbn-pos">
-        <use template="paintByNumbers" cols="{colGroups}" rows="{rowGroups}" styles="double_4" blank="~" stamplist="stampTools" validate="true"></use>
-      </div>
 
+      <ttable class="stampable-container stamp-drag">
+        <ttr>
+          <tth>&nbsp;</tth>
+          <for each="col" in="colgroups">
+            <tth class="col-group">
+              <for each="x" in="{col}">
+                <div class="col-group cross-off">{x}</div>
+              </for>
+            </tth>
+          </for>
+        </ttr>  
+        
+        <for each="row" in="rowgroups">
+          <ttr>
+            <tth class="row-group">
+              <for each="x" in="{row}">
+                <span class="row-group cross-off">{x}</span>
+              </for>
+            </tth>
+            <for char="c" in="{grid.[row#]}">
+              <if test="{c}" eq="t">
+                <td>
+                  <img src="Cartography/fixed.png" />
+                </td>
+              </if>
+              <else>
+                <td class="stampable"></td>
+              </else>
+            </for>
+          </ttr>
+        </for>
+      </ttable>
+
+      <p class="flavor" style="text-align: center;">
+        If you can’t see the forest for the trees, you’ll have to get a feel for your surroundings…
+      </p>
+
+      <div id="stampPalette" style="display: none;" data-unstyle="tree x">
+        <img src="Cartography/tree.png" class="stampTool"
+            id="tree" data-style="tree" />
+        <img src="Cartography/x.png" class="stampTool"
+            id="x" data-style="x" />
+        <img src="Cartography/eraser.png" class="stampTool"
+            id="erase" />
+      </div>
 
     </div>
   </body>

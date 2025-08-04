@@ -71,11 +71,16 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:boolean|st
 /**
  * Rotate to the next note visibility state.
  */
-export function toggleDecoder() {
+export function toggleDecoder(show:boolean|null) {
     var visible = getDecoderState();
     if (visible === null) {
         setupDecoderToggle(null);
     }
-    setDecoderState(!visible);
+    if (show == null || show == undefined) {
+        setDecoderState(!visible);
+    }
+    else {
+        setDecoderState(show);
+    }
 }
 
