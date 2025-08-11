@@ -55,6 +55,8 @@ var puzzles = [
     { title: 'There’s Air in the Something Tonight', file: 'TheresAir', thumb: 'air', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Up For Air', thumb: 'upf', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Waterfalls', thumb: 'wat', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Feel The Nature', thumb: 'fee', author: 'Kensi Hartman', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Gardens', thumb: 'gar', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Outlines', thumb: 'oli', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Parking Places', thumb: 'tbd', author: 'TBD', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Tire Change', thumb: 'tbd', author: 'TBD', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },

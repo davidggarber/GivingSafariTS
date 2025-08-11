@@ -2775,7 +2775,7 @@ export function onLetterKey(evt:KeyboardEvent): boolean {
     }
 
     var input:HTMLInputElement = evt.currentTarget as HTMLInputElement;
-    if (input != keyDownTarget) {
+    if (evt.code == 'Tab' && input != keyDownTarget) {
         keyDownTarget = null;
         // key-down likely caused a navigation
 
@@ -2802,9 +2802,6 @@ export function onLetterKey(evt:KeyboardEvent): boolean {
     }
     if (code == 'CapsLock') {
         // Do nothing. User hasn't typed
-        return true;
-    }
-    else if (processArrowKeys(input, evt)) {
         return true;
     }
     else if (code == 'Backquote') {

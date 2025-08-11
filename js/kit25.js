@@ -2554,7 +2554,7 @@ function onLetterKey(evt) {
         alert('code:' + evt.code + ', key:' + evt.key);
     }
     var input = evt.currentTarget;
-    if (input != keyDownTarget) {
+    if (evt.code == 'Tab' && input != keyDownTarget) {
         keyDownTarget = null;
         // key-down likely caused a navigation
         if (document.activeElement == input && isArrowKeyElement(document.activeElement)) {
@@ -2578,9 +2578,6 @@ function onLetterKey(evt) {
     }
     if (code == 'CapsLock') {
         // Do nothing. User hasn't typed
-        return true;
-    }
-    else if (processArrowKeys(input, evt)) {
         return true;
     }
     else if (code == 'Backquote') {
