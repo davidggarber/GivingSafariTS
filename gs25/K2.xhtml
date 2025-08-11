@@ -113,13 +113,13 @@
           border: solid 1px black;
           padding: 1px 6px;
         }
-        .word-cell {
+        #table .word-cell {
           position: absolute;
           top: 2px;
           right: -3px;
           font-size: 10pt;
         }
-        .word-input {
+        #table .word-input {
           width: 0.8in;
           height: 20px;
         }
@@ -202,7 +202,7 @@
         </for>
       </p>
 
-      <ttable data-word-style="hover">
+      <ttable id="table" data-word-style="hover">
         <for int="i" from="0" to="9">
           <ttr>
             <td>{clues.[i*2]} <word /></td>
@@ -215,6 +215,11 @@
         <img src="K2/right.png" style="position:relative; height: 0.33in; top:4px; margin-right: 10px;" />
         <pattern pattern="7 6" />
       </p>
+
+      <div class="no-print validate-block" style="position:absolute; bottom:-32px; left:2in;">
+        Final answer: <word id="final-answer" class="extracted" data-show-ready="submit-answer" style="width:3in;" />
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
 
     </div>
   </body>
