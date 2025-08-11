@@ -37,7 +37,7 @@ var puzzles = [
     { title: 'Cartography', thumb: 'car', author: 'Jake Lui', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Disney and the Great Outdoors', thumb: 'dis', author: 'Chris Jeuell', type: types.code, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Down Under', thumb: 'dun', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { title: 'Down, Across, and All Around', file: 'DownAcrossandAllAround', thumb: 'dac', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    { title: 'Down, Across, and All Around', file: 'DownAcrossAndAllAround', thumb: 'dac', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Fences', thumb: 'fen', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Grab Crass In The Great Doubt Oars', thumb: 'gra', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Hippocampus', thumb: 'hip', author: 'Joe Tomkinson', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
