@@ -8784,12 +8784,22 @@ function setupValidation() {
         if (isTag(btn, 'button')) {
             btn.onclick = function (e) { clickValidationButton(e.target); };
             const srcId = getOptionalStyle(btn, 'data-extracted-id') || 'extracted';
-            const src = document.getElementById(srcId);
+            let src = document.getElementById(srcId);
             // If button is connected to a text field, hook up ENTER to submit
+            if (src && isTag(src, 'span')) {
+                // We might be associated with a readonly extracted pattern, or with an input. 
+                // For the latter, we likely have a word-cell or letter-cell parent of the actual input
+                const inps = src.getElementsByTagName('input');
+                if (inps && inps.length == 1) {
+                    src = inps[0];
+                }
+            }
             if (src && ((isTag(src, 'input') && src.type == 'text')
                 || isTag(src, 'textarea'))) { // TODO: not multiline
                 src.onkeyup = function (e) { validateInputReady(btn, e.key); };
             }
+            // Usually, disable/hide the button at first
+            validateInputReady(btn, null);
         }
     }
 }
