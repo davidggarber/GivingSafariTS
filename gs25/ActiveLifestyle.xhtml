@@ -1,10 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8" />
     <script> var exports = {}; </script>
     <script src="../js/kit25.js" />
+    <script src="V/als.js" />
     <script>
       const boiler = {
         safaris: puzzleSafari22,
@@ -188,7 +188,7 @@
               <p>
                 <for each="item" in="word.data">
                   <if exists="{item.pic}">
-                    <img src="ActiveLife/{item.pic}" style="height:{item.height/100}in" />
+                    <iimg src="ActiveLife/{item.pic}" style="height:{item.height/100}in" />
                   </if>
                   <elseif exists="{item.text}">
                     <span class="text">{item.text}</span>
@@ -207,6 +207,10 @@
 
       <div id="extracted" />
 
+      <div class="no-print validate-block" style="position:absolute; bottom:-0.25in; left:3in;">
+        Final answer: <word id="final-answer" class="extracted" data-show-ready="submit-answer" style="width:2in;" />
+        <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">Submit</button>
+      </div>
 
     </div>
   </body>

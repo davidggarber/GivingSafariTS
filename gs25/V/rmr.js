@@ -1,0 +1,1 @@
+validation={"":{"RKGENZNA":"1"}};

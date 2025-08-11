@@ -51,6 +51,7 @@
         var rows = table.getElementsByClassName('row')
         row = rows[rows.length - 1];
         initRow(row);
+        row.getElementsByClassName('guess')[0].focus();
         return row;
       }
 

@@ -226,7 +226,7 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
     consoleTrace(`Value ${value} is ${ready ? "" : "NOT "} ready`);
 
     toggleClass(btn, 'ready', ready);
-    if (ready && key == 'Enter') {
+    if (ready && (key == 'Enter' || key == 'NumpadEnter')) {
         clickValidationButton(btn as HTMLButtonElement); 
     }
     else if (isTag(ext, 'input') || isTag(ext, 'textarea')) {

@@ -82,7 +82,10 @@ export function onLetterKeyDown(event: KeyboardEvent) {
         // Multi-character fields still want the ability to arrow between cells.
         // We need to look at the selection prior to the arrow's effect, 
         // to see if we're already at the edge.
-        if (code == ArrowNext || code == 'Enter') {
+        if ((code == 'Enter' || code == 'NumpadEnter') && getOptionalStyle(input, 'data-show-ready')) {
+            // Don't move to next field
+        }
+        else if (code == ArrowNext || code == 'Enter') {
             var s = input.selectionStart;
             var e = input.selectionEnd;
             if (s == e && e == input.value.length) {
@@ -513,6 +516,27 @@ function CheckValidationReady(input:TextInputElement, key:string) {
 }
 
 /**
+ * Invoke the Submit button linked to the current input.
+ * Called when user types ENTER from input.
+ * @param input An input, which might or might not be connected to a submit button.
+ * @returns true if there is a submit, and whether it was enabled (ready).
+ */
+function AutoSubmitOnEnter(input:TextInputElement): boolean {
+    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
+    if (showReady) {
+        const btn = document.getElementById(showReady) as HTMLButtonElement;
+        if (!btn) {
+            console.error(`Button ${showReady} not found!`)
+        }
+        else if (btn.style.display != 'None' && !btn.disabled) {
+            btn.click();
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Extract contents of an extract-flagged input
  * @param input an input field
  */
@@ -891,14 +915,14 @@ export function onWordKey(event:KeyboardEvent) {
     CheckValidationReady(input, event.key);
 
     var code = event.code;
-    if (code == 'Enter') {
-        code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
+    if ((code == 'Enter' || code == 'NumpadEnter') && getOptionalStyle(input, 'data-show-ready')) {
+        // do nothing
     }
-    if (code == 'PageUp') {
+    else if (code == 'PageUp') {
         moveFocus(findNextOfClass(input, 'word-input', undefined, -1) as HTMLInputElement);
         return;
     }
-    else if (code == 'Enter' || code == 'PageDown') {
+    else if (code == 'Enter' || code == 'NumpadEnter' || code == 'PageDown') {
         moveFocus(findNextOfClass(input, 'word-input') as HTMLInputElement);
         return;
     }

@@ -165,7 +165,7 @@ img.thumb {
   max-width: 0.25in;
   border: solid 1px #ccc;
 }
-.html:hover {
+td.html:hover {
   font-size: 11pt;
   font-weight: bold;
   letter-spacing: -2px;
