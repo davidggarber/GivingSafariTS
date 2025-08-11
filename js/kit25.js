@@ -2407,6 +2407,18 @@ function onButtonKeyDown(event) {
     }
 }
 exports.onButtonKeyDown = onButtonKeyDown;
+const arrowKeyCodes = [
+    'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+    'Home', 'End', 'PageUp', 'PageDown'
+];
+/**
+ * Is this key an arrow key?
+ * @param code A key code
+ * @returns True, if any of the usual arrow keys
+ */
+function isArrowKey(code) {
+    return arrowKeyCodes.indexOf(code) >= 0;
+}
 /**
  * Standard handlers for arrow keys and similar: home/end, page-up/down,
  * including ctrl+ variants.
@@ -2578,6 +2590,10 @@ function onLetterKey(evt) {
     }
     if (code == 'CapsLock') {
         // Do nothing. User hasn't typed
+        return true;
+    }
+    if (isArrowKey(code)) {
+        // Do nothing. Navigation happened on key down.
         return true;
     }
     else if (code == 'Backquote') {

@@ -1,1 +1,1 @@
-validation={"":{"EAE":"1"}};
+validation={"":{"EAE":"1","E&E":"3Abg Dhvgr. Gur svany nafjre vf guerr yrggref (ab flzobyf).","EE":"3Abg Dhvgr. Gur svany nafjre vf guerr yrggref (ab flzobyf).","ENE":"3Abg Dhvgr. Gubfr ner vaqrrq gur svefg yrggref bs “erfg naq erynkngvba”, ohg gur zber pbzzba guerr-yrggre nooerivngvba unf na A va gur zvqqyr.","ERFGERYNKNGVBA":"3","ERFGNAQERYNKNGVBA":"3","A":"3Lbh’ir tbar gbb sne.","N":"3Lbh’ir tbar gbb sne ‘a’ jr jnag na A va gur zvqqyr.","ABVGNKNYREGFRE":"3Xrrc tbvat. Gubfr yrggref ner pbeerpg."}};
