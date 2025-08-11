@@ -168,6 +168,7 @@ img.thumb {
 .html:hover {
   font-size: 11pt;
   font-weight: bold;
+  letter-spacing: -2px;
 }
 .html:hover img.thumb {
   transform: scale(4) rotate(5deg);

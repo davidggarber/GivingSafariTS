@@ -120,14 +120,22 @@ td:has(.input-group) {
   color: black;
 }
 input::selection {
-  background-color: gold;
-  color: black;
+  background-color: transparent;
+  color: #900;
 }
 .letter-cell.extract-highlight:has(input:focus) {
   background-color: #dc9;
   color: black;
 }
 .letter-cell.extract-highlight input::selection {
-  background-color: #dc9;
+  background-color: transparent;
+  color: #900;
+}
+.word-cell:has(input:focus) {
+  background-color: gold;
   color: black;
+}
+.word-cell input::selection {
+  background-color: transparent;
+  color: #900;
 }
