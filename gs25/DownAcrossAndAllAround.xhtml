@@ -58,60 +58,62 @@
       };
     </script>
     <style>
-      #left {
-        position: relative;
-        width: 3in;
-      }
-      #right {
-        position: absolute;
-        right: 24px;
-        top: 1.25in;
-        width: 4in;
-        line-height: 18pt;
-      }
+      #DownAcross {
+        #left {
+          position: relative;
+          width: 3in;
+        }
+        #right {
+          position: absolute;
+          right: 24px;
+          top: 1.25in;
+          width: 4in;
+          line-height: 18pt;
+        }
 
-      #DownAcross table {
-        border-collapse: collapse;
-        margin-bottom: 36px;;
-      }
-      #DownAcross th {
-        font-family: 'Lucidia Console', monospace;
-        font-size: 20pt;
-        text-align: center;
-        width: 30px;
-        height: 30px;
-        
-        -moz-user-select: -moz-none;
-        -khtml-user-select: none;
-        -webkit-user-select: none;
-        -o-user-select: none;
-        user-select: none;
-      }
-      #DownAcross td {
-        width: 30px;
-        height: 30px;
-        border: solid 1px black;
-        text-align: center;
-      }
-      #DownAcross .letter-cell {
-        font-size: 18pt;
-      }
+        table {
+          border-collapse: collapse;
+          margin-bottom: 36px;;
+        }
+        th {
+          font-family: 'Lucidia Console', monospace;
+          font-size: 20pt;
+          text-align: center;
+          width: 30px;
+          height: 30px;
+          
+          -moz-user-select: -moz-none;
+          -khtml-user-select: none;
+          -webkit-user-select: none;
+          -o-user-select: none;
+          user-select: none;
+        }
+        td {
+          width: 30px;
+          height: 30px;
+          border: solid 1px black;
+          text-align: center;
+        }
+        .letter-cell {
+          font-size: 18pt;
+        }
 
-      li {
-        position: relative;
-      }
-      #DownAcross .check {
-        position: absolute;
-        left: -28px;
-        top: -3px;
-      }
-      #table-0 .row-0 .col-0,
-      #table-0 .row-1 .col-3,
-      #table-1 .row-1 .col-1,
-      #table-1 .row-2 .col-3,
-      #table-2 .row-2 .col-1,
-      #table-2 .row-3 .col-4 {
-        border: solid 4px black;
+        li {
+          position: relative;
+        }
+        .check {
+          position: absolute;
+          left: -28px;
+          top: -3px;
+        }
+        #table-0 .row-0 .col-0,
+        #table-0 .row-1 .col-3,
+        #table-1 .row-1 .col-1,
+        #table-1 .row-2 .col-3,
+        #table-2 .row-2 .col-1,
+        #table-2 .row-3 .col-4 {
+          border: solid 4px black;
+        }
       }
     </style>
   </head>
@@ -143,7 +145,7 @@
               <ttr class="row row-{y}">
                 <tth>{grid.2.[y]}</tth>
                 <for int="x" from="0" to="4">
-                  <ttd class="col-{x}"><letter /></ttd>
+                  <ttd class="col-{x}"><letter data-input-groups="r:g{grid#}.row{y#} d:g{grid#}.col{x#}" /></ttd>
                 </for>
                 <tth>{grid.3.[y]}</tth>
               </ttr>

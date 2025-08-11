@@ -115,11 +115,19 @@
 td:has(.input-group) {
   background-color: #ff9;
 }
+.letter-cell:has(input:focus) {
+  background-color: gold;
+  color: black;
+}
 input::selection {
   background-color: gold;
   color: black;
 }
-.letter-cell:has(input:focus) {
-  background-color: gold;
+.letter-cell.extract-highlight:has(input:focus) {
+  background-color: #dc9;
+  color: black;
+}
+.letter-cell.extract-highlight input::selection {
+  background-color: #dc9;
   color: black;
 }
