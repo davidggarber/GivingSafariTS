@@ -3,11 +3,11 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.matrixFromElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.toggleClass = void 0;
-exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = void 0;
-exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = void 0;
-exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = void 0;
+exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.matrixFromElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.removeClassGlobally = exports.toggleClass = void 0;
+exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.hasInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = void 0;
+exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = void 0;
+exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -38,6 +38,17 @@ function toggleClass(obj, cls, bool) {
     }
 }
 exports.toggleClass = toggleClass;
+/**
+ * Find all elements with this class, and remove from each.
+ * @param cls A class name
+ */
+function removeClassGlobally(cls) {
+    const elmts = document.getElementsByClassName(cls);
+    for (let i = elmts.length - 1; i >= 0; i--) { // Backwards
+        elmts[i].classList.remove(cls);
+    }
+}
+exports.removeClassGlobally = removeClassGlobally;
 /**
  * Several utilities allow an element to be passed as either a pointer,
  * or by its ID, or omitted completely.
@@ -451,6 +462,9 @@ function moveFocus(field, caret) {
                     input.setSelectionRange(caret, caret);
                 }
             }
+        }
+        if (isArrowKeyElement(field) && hasInputGroup(field)) {
+            setCurrentInputGroup(field);
         }
         return true;
     }
@@ -2222,6 +2236,11 @@ var priorInputValue = '';
  */
 let keyDownTarget = null;
 /**
+ * The name of the currently highlighted input group
+ */
+let inputGroupElement = null;
+let currentInputGroup = null;
+/**
  * Workaround for keydown/up on mobile
  */
 let keyDownUnidentified = true;
@@ -2256,7 +2275,8 @@ function onLetterKeyDown(event) {
             var s = input.selectionStart;
             var e = input.selectionEnd;
             if (s == e && e == input.value.length) {
-                var next = findNextInput(input, plusX, 0, inpClass, skipClass);
+                const next = findNextGroupInput(input, true, true, inpClass)
+                    || findNextInput(input, plusX, 0, inpClass, skipClass);
                 if (next != null) {
                     moveFocus(next, 0);
                 }
@@ -2267,7 +2287,8 @@ function onLetterKeyDown(event) {
             var s = input.selectionStart;
             var e = input.selectionEnd;
             if (s == e && e == 0) {
-                const prior = findNextInput(input, -plusX, 0, inpClass, skipClass);
+                const prior = findNextGroupInput(input, false, true, inpClass)
+                    || findNextInput(input, -plusX, 0, inpClass, skipClass);
                 if (prior != null) {
                     moveFocus(prior, prior.value.length);
                 }
@@ -2356,6 +2377,11 @@ function onLetterKeyDown(event) {
         }
     }
     if (processArrowKeys(input, event, true)) {
+        return;
+    }
+    if (code == 'CapsLock') {
+        // CapsLock toggles directions
+        setCurrentInputGroup(input);
         return;
     }
     if (findParentOfClass(input, 'digit-only')) {
@@ -2514,33 +2540,44 @@ function onLetterInput(event) {
 exports.onLetterInput = onLetterInput;
 /**
  * Process the end of a keystroke
- * @param event - A keyboard event
+ * @param evt - A keyboard event
  * @return true if some post-processing is still needed
  */
-function onLetterKey(event) {
-    if (isDebug()) {
-        alert('code:' + event.code + ', key:' + event.key);
+function onLetterKey(evt) {
+    if (!evt) {
+        return false;
     }
-    var input = event.currentTarget;
+    if (isDebug()) {
+        alert('code:' + evt.code + ', key:' + evt.key);
+    }
+    var input = evt.currentTarget;
     if (input != keyDownTarget) {
         keyDownTarget = null;
         // key-down likely caused a navigation
+        if (document.activeElement == input && isArrowKeyElement(document.activeElement)) {
+            // Ensure we got the focus change
+            setCurrentInputGroup(document.activeElement);
+        }
         return true;
     }
     keyDownTarget = null;
-    var code = event.code;
+    var code = evt.code;
     if (code == undefined || code == '') {
-        code = event.key; // Mobile doesn't use code
+        code = evt.key; // Mobile doesn't use code
     }
     if (code == 'Enter') {
-        code = event.shiftKey ? 'ArrowUp' : 'ArrowDown';
+        code = evt.shiftKey ? 'ArrowUp' : 'ArrowDown';
     }
     if (code == 'Tab') { // includes shift-Tab
         // Do nothing. User is just passing through
         // TODO: Add special-case exception to wrap around from end back to start
         return true;
     }
-    else if (processArrowKeys(input, event)) {
+    if (code == 'CapsLock') {
+        // Do nothing. User hasn't typed
+        return true;
+    }
+    else if (processArrowKeys(input, evt)) {
         return true;
     }
     else if (code == 'Backquote') {
@@ -2550,7 +2587,7 @@ function onLetterKey(event) {
         var multiLetter = hasClass(input.parentNode, 'multiple-letter');
         // Don't move focus if nothing was typed
         if (!multiLetter) {
-            afterInputUpdate(input, event.key);
+            afterInputUpdate(input, evt.key);
             return false; // we just did the post-processing
         }
     }
@@ -2565,7 +2602,7 @@ function onLetterKey(event) {
             }
         }
     }
-    afterInputUpdate(input, event.key);
+    afterInputUpdate(input, evt.key);
     return false;
 }
 exports.onLetterKey = onLetterKey;
@@ -2585,7 +2622,8 @@ function afterInputUpdate(input, key) {
     var overflow = '';
     var nextInput = findParentOfClass(input, 'vertical')
         ? findNextInput(input, 0, 1, 'letter-input', 'letter-non-input')
-        : findNextInput(input, plusX, 0, 'letter-input', 'letter-non-input');
+        : (findNextGroupInput(input, true, true, 'letter-input', 'letter-non-input')
+            || findNextInput(input, plusX, 0, 'letter-input', 'letter-non-input'));
     var multiLetter = hasClass(input.parentNode, 'multiple-letter');
     var word = multiLetter || hasClass(input.parentNode, 'word-cell') || hasClass(input, 'word-input');
     if (!word && text.length > 1) {
@@ -3306,38 +3344,38 @@ function findNextOfClassGroup(start, cls, clsSkip, clsGroup, dir = 1) {
 }
 /**
  * Compare the two elements' vertical rectangles.
- * @param cur The reference element
- * @param test An element that is even with, above, or below.
+ * @param a One element
+ * @param b Another element that is even with, above, or below.
  * @returns 0 if they appear to be on the same row;
  * -1 if cur is higher; 1 if cur is lower.
  */
-function compareVertical(cur, test) {
-    const rcCur = cur.getBoundingClientRect();
-    const rcTest = test.getBoundingClientRect();
-    if (rcCur.top >= rcTest.bottom) {
+function compareVertical(a, b) {
+    const rcA = a.getBoundingClientRect();
+    const rcB = b.getBoundingClientRect();
+    if (rcA.top >= rcB.bottom) {
         return 1;
     }
-    if (rcCur.bottom <= rcTest.top) {
+    if (rcA.bottom <= rcB.top) {
         return -1;
     }
     return 0; // Some amount of vertical overlap
 }
 /**
  * Compare the two elements' horizontal rectangles.
- * @param cur The reference element
- * @param test An element that is even with, left, or right.
+ * @param cur One element
+ * @param test Another element that is even with, left, or right.
  * @returns 0 if they appear to be on the same column;
  * -1 if cur is more left; 1 if cur is more right.
  * @remarks Don't let tiny overlaps confuse the math.
  * These are especially likely when slightly rotated.
  */
-function compareHorizontal(cur, test) {
-    const rcCur = scaleDOMRect(cur.getBoundingClientRect(), 0.9);
-    const rcTest = scaleDOMRect(test.getBoundingClientRect(), 0.9);
-    if (rcCur.left >= rcTest.right) {
+function compareHorizontal(a, b) {
+    const rcA = scaleDOMRect(a.getBoundingClientRect(), 0.9);
+    const rcB = scaleDOMRect(b.getBoundingClientRect(), 0.9);
+    if (rcA.left >= rcB.right) {
         return 1;
     }
-    if (rcCur.right <= rcTest.left) {
+    if (rcA.right <= rcB.left) {
         return -1;
     }
     return 0; // Some amount of horizontal overlap
@@ -3735,6 +3773,222 @@ function autoCompleteWord(input, list) {
     return false; // no matches
 }
 exports.autoCompleteWord = autoCompleteWord;
+/**
+ * What group, if any, is this element active in?
+ * If more than one, continue with the current group if possible.
+ * @param elmt An element
+ * @returns The name of a group, or null
+ */
+function getCurrentInputGroup(elmt) {
+    const inputGroups = getOptionalStyle(elmt, 'data-input-groups');
+    if (!inputGroups) {
+        return null;
+    }
+    const groups = inputGroups.split(' ');
+    if (currentInputGroup) {
+        if (groups.indexOf(currentInputGroup) >= 0) {
+            return currentInputGroup;
+        }
+        let prevPrefix = currentInputGroup.split(':')[0];
+        for (let i = 0; i < groups.length; i++) {
+            if (groups[i].split(':')[0] == prevPrefix) {
+                return groups[i];
+            }
+        }
+    }
+    return groups[0];
+}
+function setCurrentInputGroup(elmt) {
+    let newGroup = null;
+    if (inputGroupElement != elmt) {
+        // Moving group focus to this element
+        newGroup = getCurrentInputGroup(elmt);
+    }
+    else {
+        // Repeat focus this element
+        const inputGroups = getOptionalStyle(elmt, 'data-input-groups');
+        if (inputGroups) {
+            const groups = inputGroups.split(' ');
+            let index = groups.indexOf(currentInputGroup || '');
+            index = (index + 1) % groups.length;
+            newGroup = groups[index];
+        }
+    }
+    if (newGroup != currentInputGroup) {
+        removeClassGlobally('input-group');
+        if (newGroup) {
+            const members = getInputGroupMembers(newGroup);
+            for (let i = 0; i < members.length; i++) {
+                toggleClass(members[i], 'input-group', true);
+            }
+        }
+        currentInputGroup = newGroup;
+    }
+    inputGroupElement = newGroup ? elmt : null;
+}
+exports.setCurrentInputGroup = setCurrentInputGroup;
+function highlightInputGroupMembers() {
+}
+/**
+ * Get the part of an input group name that should be consistent for all members of the group.
+ * @param group An input group name
+ * @returns That string, or a substring.
+ */
+function comparableGroupName(group) {
+    let parts = group.split(':');
+    if (parts.length > 2) {
+        // A group name can have a trailing index, which will differ
+        group = `${parts[0]}:${parts[1]}`;
+    }
+    return group;
+}
+/**
+ * Does a given element consider itself to be part of this named input group?
+ * @param elmt An element to test, which may be in 0, 1, or more groups.
+ * @param groupName An input group name to match, or if omitted, any group
+ * @returns true if any of this elements groups matches the target group
+ */
+function hasInputGroup(elmt, groupName = undefined) {
+    const inputGroups = getOptionalStyle(elmt, 'data-input-groups');
+    if (inputGroups) {
+        if (!groupName) {
+            return true;
+        }
+        groupName = comparableGroupName(groupName);
+        const groups = inputGroups.split(' ');
+        for (let i = 0; i < groups.length; i++) {
+            if (comparableGroupName(groups[i]) == groupName) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+exports.hasInputGroup = hasInputGroup;
+/**
+ * Find all members of a given input group, anywhere on the page.
+ * @param group The name of an input group
+ * @param cls A class to constrain to, or undefined to search all ArrowKeyElements
+ * @returns A list of elements.
+ */
+function getInputGroupMembers(group, cls = undefined, clsSkip = undefined) {
+    const members = [];
+    if (cls) {
+        const elmts = document.getElementsByClassName(cls);
+        for (let i = 0; i < elmts.length; i++) {
+            if (!hasClass(elmts[i], clsSkip) && hasInputGroup(elmts[i], group)) {
+                members.push(elmts[i]);
+            }
+        }
+        return members;
+    }
+    const tagNames = ['input', 'textarea', 'select', 'button'];
+    for (let t = 0; t < tagNames.length; t++) {
+        const elmts = document.getElementsByTagName(tagNames[t]);
+        for (let i = 0; i < elmts.length; i++) {
+            if (hasInputGroup(elmts[i], group)) {
+                members.push(elmts[i]);
+            }
+        }
+    }
+    return members;
+}
+/**
+ * Given the name of an input group, what is the default horizontal movement?
+ * @param groupName A string which may contain a direction prefix, i.e. 'x:name'
+ * @returns The horizontal component indicated by that prefix.
+ * Or if no prefix, the normal text direction of the puzzle.
+ * @remarks Valid horizontal prefixes are r|l|h (right|left|horizontal), which can be
+ * paired with d|u|v for diagonal.
+ */
+function dxFromGroup(groupName) {
+    const parts = groupName.split(':');
+    if (parts.length <= 1) {
+        return plusX;
+    }
+    const pref = parts[0].toLowerCase();
+    if (pref.indexOf('r') >= 0) {
+        return 1;
+    }
+    if (pref.indexOf('l') >= 0) {
+        return -1;
+    }
+    if (pref.indexOf('h') >= 0) {
+        return plusX;
+    }
+    return 0;
+}
+/**
+ * Given the name of an input group, what is the default vertical movement?
+ * @param groupName A string which may contain a direction prefix, i.e. 'x:name'
+ * @returns The vertical component indicated by that prefix.
+ * Or if no prefix, the normal text direction of the puzzle (usually horizontal).
+ * @remarks Valid vertical prefixes are d|u|v (down|up|vertical), which can be
+ * paired with r|l|h for diagonal.
+ */
+function dyFromGroup(groupName) {
+    const parts = groupName.split(':');
+    if (parts.length <= 1) {
+        return 0;
+    }
+    const pref = parts[0].toLowerCase();
+    if (pref.indexOf('d') >= 0) {
+        return 1;
+    }
+    if (pref.indexOf('u') >= 0) {
+        return -1;
+    }
+    if (pref.indexOf('v') >= 0) {
+        return plusX;
+    }
+    return 0;
+}
+/**
+ * If starting element is in a group, find the next element forward or backward within the group.
+ * @param start The current element
+ * @param fwd Whether moving forward (by typing) or backwards (backspace)
+ * @param wrap If set, and if no element in the desired direction wrap around to other end.
+ * @param cls A subset of elements to filter within
+ * @returns
+ */
+function findNextGroupInput(start, fwd, wrap, cls = undefined, clsSkip = undefined) {
+    const groupName = getCurrentInputGroup(start);
+    if (!groupName) {
+        return null;
+    }
+    let dx = dxFromGroup(groupName);
+    let dy = dyFromGroup(groupName);
+    if (dx == 0 && dy == 0) {
+        // TODO: 0/0 will mean indexed
+        // Group names will have an index suffix (i.e. 'grp:1')
+        // Forward means climb the index
+        console.error(`Input group "${groupName}" has unrecognized direction prefix.`);
+        return null;
+    }
+    if (!fwd) {
+        dx = -dx;
+        dy = -dy;
+    }
+    const elements = getInputGroupMembers(groupName, cls, clsSkip);
+    let next = null;
+    for (let i = 0; i < elements.length; i++) {
+        const elmt = elements[i];
+        if (compareHorizontal(elmt, start) == dx && compareVertical(elmt, start) == dy) {
+            if (!next || (compareHorizontal(elmt, next) == -dx && compareVertical(elmt, next) == -dy)) {
+                next = elmt;
+            }
+        }
+    }
+    if (!next && wrap) {
+        for (let i = 0; i < elements.length; i++) {
+            const elmt = elements[i];
+            if (!next || (compareHorizontal(elmt, next) == -dx && compareVertical(elmt, next) == -dy)) {
+                next = elmt;
+            }
+        }
+    }
+    return next;
+}
 /*-----------------------------------------------------------
  * _textSetup.ts
  *-----------------------------------------------------------*/
@@ -4331,11 +4585,12 @@ function focusNearestInput(evt) {
     // Ignore fake events (!isTrusted)
     if (!evt.ctrlKey && !evt.shiftKey && !evt.altKey && evt.isTrusted) {
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
+        let nearest = undefined;
         for (let i = 0; i < targets.length; i++) {
             const target = targets[i];
-            if ((target.getAttribute('disabled') === null) &&
-                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a') || isTag(target, 'button'))) {
-                return; // Shouldn't need my help
+            if ((target.getAttribute('disabled') === null) && (isArrowKeyElement(target) || isTag(target, 'a'))) {
+                nearest = target; // Shouldn't need my help
+                break;
             }
             if (hasClass(target, 'stampTool') || hasClass(target, 'stampable') || hasClass(target, 'stampLock')) {
                 return; // Stamping elements don't handle their own clicks; the page does
@@ -4349,18 +4604,22 @@ function focusNearestInput(evt) {
             }
         }
         let nearestD = NaN;
-        let nearest = undefined;
-        const tags = ['input', 'textarea', 'select', 'a', 'clickable'];
-        for (let t = 0; t < tags.length; t++) {
-            const elements = tags[t] === 'clickable' ? document.getElementsByClassName(tags[t])
-                : document.getElementsByTagName(tags[t]);
-            for (let i = 0; i < elements.length; i++) {
-                const elmt = elements[i];
-                if (elmt.style.display !== 'none' && elmt.getAttribute('disabled') === null) {
-                    const d = distanceToElement(evt, elmt);
-                    if (Number.isNaN(nearestD) || d < nearestD) {
-                        nearest = elmt;
-                        nearestD = d;
+        if (nearest) {
+            nearestD = 0;
+        }
+        else {
+            const tags = ['input', 'textarea', 'select', 'a', 'clickable'];
+            for (let t = 0; t < tags.length; t++) {
+                const elements = tags[t] === 'clickable' ? document.getElementsByClassName(tags[t])
+                    : document.getElementsByTagName(tags[t]);
+                for (let i = 0; i < elements.length; i++) {
+                    const elmt = elements[i];
+                    if (elmt.style.display !== 'none' && elmt.getAttribute('disabled') === null) {
+                        const d = distanceToElement(evt, elmt);
+                        if (Number.isNaN(nearestD) || d < nearestD) {
+                            nearest = elmt;
+                            nearestD = d;
+                        }
                     }
                 }
             }
@@ -4370,10 +4629,13 @@ function focusNearestInput(evt) {
                 nearest.click();
             }
             else if (hasClass(nearest, 'clickable')) {
+                if (hasInputGroup(nearest)) {
+                    setCurrentInputGroup(nearest);
+                }
                 nearest.click();
             }
             else {
-                nearest.focus();
+                moveFocus(nearest);
             }
         }
     }

@@ -111,3 +111,15 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+td:has(.input-group) {
+  background-color: #ff9;
+}
+input::selection {
+  background-color: gold;
+  color: black;
+}
+.letter-cell:has(input:focus) {
+  background-color: gold;
+  color: black;
+}

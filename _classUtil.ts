@@ -1,5 +1,6 @@
 import { getParentIf } from "./_builder";
 import { cloneText, complexAttribute } from "./_builderContext";
+import { hasInputGroup, setCurrentInputGroup } from "./_textInput";
 
 /**
  * Add or remove a class from a classlist, based on a boolean test.
@@ -27,6 +28,17 @@ export function toggleClass(obj: Node|string|null|undefined,
                 elmt.removeAttribute('class');
             }
         }
+    }
+}
+
+/**
+ * Find all elements with this class, and remove from each.
+ * @param cls A class name
+ */
+export function removeClassGlobally(cls: string) {
+    const elmts = document.getElementsByClassName(cls);
+    for (let i = elmts.length-1; i >= 0; i--) {  // Backwards
+        elmts[i].classList.remove(cls);
     }
 }
 
@@ -485,6 +497,9 @@ export function moveFocus(field: HTMLElement,
                     input.setSelectionRange(caret, caret);
                 }
             }
+        }
+        if (isArrowKeyElement(field) && hasInputGroup(field)) {
+            setCurrentInputGroup(field as ArrowKeyElement);
         }
         return true;
     }

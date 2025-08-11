@@ -1,5 +1,5 @@
-import { hasClass, toggleClass, applyAllClasses, getOptionalStyle, findParentOfClass, isTag, SortElements } from "./_classUtil";
-import { onLetterKeyDown, onLetterChange, onWordKey, onWordChange, onLetterKeyUp, onWordInput, onLetterInput, onButtonKeyDown } from "./_textInput";
+import { hasClass, toggleClass, applyAllClasses, getOptionalStyle, findParentOfClass, isTag, SortElements, isArrowKeyElement, moveFocus, ArrowKeyElement } from "./_classUtil";
+import { onLetterKeyDown, onLetterChange, onWordKey, onWordChange, onLetterKeyUp, onWordInput, onLetterInput, onButtonKeyDown, hasInputGroup, setCurrentInputGroup } from "./_textInput";
 import { indexAllInputFields } from "./_storage"
 import { cloneSomeAttributes } from "./_builderContext";
 
@@ -665,12 +665,13 @@ function focusNearestInput(evt:MouseEvent) {
     // Ignore fake events (!isTrusted)
     if (!evt.ctrlKey && !evt.shiftKey && !evt.altKey && evt.isTrusted) {
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
+        let nearest:HTMLElement|undefined = undefined;
 
         for (let i = 0; i < targets.length; i++) {
             const target = targets[i] as HTMLElement;
-            if ((target.getAttribute('disabled') === null) &&
-                (isTag(target, 'input') || isTag(target, 'textarea') || isTag(target, 'select') || isTag(target, 'a') || isTag(target, 'button'))) {
-                return;  // Shouldn't need my help
+            if ((target.getAttribute('disabled') === null) && (isArrowKeyElement(target) || isTag(target, 'a'))) {
+                nearest = target;  // Shouldn't need my help
+                break;
             }
             if (hasClass(target, 'stampTool') || hasClass(target, 'stampable') || hasClass(target, 'stampLock')) {
                 return;  // Stamping elements don't handle their own clicks; the page does
@@ -685,19 +686,23 @@ function focusNearestInput(evt:MouseEvent) {
         }
 
         let nearestD:number = NaN;
-        let nearest:HTMLElement|undefined = undefined;
-        const tags = ['input', 'textarea', 'select', 'a', 'clickable'];
+        if (nearest) {
+            nearestD = 0;
+        }
+        else {
+            const tags = ['input', 'textarea', 'select', 'a', 'clickable'];
 
-        for (let t = 0; t < tags.length; t++) {
-            const elements = tags[t] === 'clickable' ? document.getElementsByClassName(tags[t])
-                : document.getElementsByTagName(tags[t]);
-            for (let i = 0; i < elements.length; i++) {
-                const elmt = elements[i] as HTMLElement;
-                if (elmt.style.display !== 'none' && elmt.getAttribute('disabled') === null) {
-                    const d = distanceToElement(evt, elmt);
-                    if (Number.isNaN(nearestD) || d < nearestD) {
-                        nearest = elmt;
-                        nearestD = d;
+            for (let t = 0; t < tags.length; t++) {
+                const elements = tags[t] === 'clickable' ? document.getElementsByClassName(tags[t])
+                    : document.getElementsByTagName(tags[t]);
+                for (let i = 0; i < elements.length; i++) {
+                    const elmt = elements[i] as HTMLElement;
+                    if (elmt.style.display !== 'none' && elmt.getAttribute('disabled') === null) {
+                        const d = distanceToElement(evt, elmt);
+                        if (Number.isNaN(nearestD) || d < nearestD) {
+                            nearest = elmt;
+                            nearestD = d;
+                        }
                     }
                 }
             }
@@ -708,10 +713,13 @@ function focusNearestInput(evt:MouseEvent) {
                 nearest.click();
             }
             else if (hasClass(nearest, 'clickable')) {
+                if (hasInputGroup(nearest)) {
+                    setCurrentInputGroup(nearest as ArrowKeyElement);
+                }
                 nearest.click();
             }
             else {
-                nearest.focus();
+                moveFocus(nearest);
             }
         }
     }
