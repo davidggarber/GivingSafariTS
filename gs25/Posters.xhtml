@@ -36,10 +36,10 @@
           padding-bottom: 2px;
           vertical-align: top;
         }
-        .word-input {
+        #table .word-cell {
           width: 1.3in;
         }
-        .word-underline {
+        #table .word-underline {
           display: inline-block;
           height: 3ex;
           top: -7px;
@@ -58,7 +58,7 @@
         I was so excited when I got the POSTERS back from the printers. Imagine my disappointment when I spread them out at the REST STOP. Look how jumbled they got! They even added a letter to each!
       </p>
 
-      <ttable style="border-collapse: collapse;">
+      <ttable id="table" style="border-collapse: collapse;">
         <for int="r" from="1" to="3">
           <ttr>
             <for int="c" from="1" to="4">
@@ -78,6 +78,8 @@
       </ttable>
 
       <p style="margin-left: 3in;"><pattern id="extracted" extracted-number="12" /></p>
+
+      <use template='finalAnswer' bottom='-48px' left="2in" width="3in" />
 
     </div>
   </body>

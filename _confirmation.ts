@@ -92,7 +92,7 @@ export function setupValidation() {
             div.id = 'guess-history';
             const span = document.createElement('span');
             span.id = 'guess-titlebar';
-            span.appendChild(document.createTextNode('Guesses'));
+            span.appendChild(document.createTextNode('Submissions'));
             log.appendChild(span);
             log.appendChild(div);
             document.getElementById('pageBody')?.appendChild(log);
