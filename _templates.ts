@@ -52,7 +52,7 @@ export function builtInTemplate(tempId:string) :HTMLTemplateElement|undefined {
  */
 function setDefaultsTemplateArgs(temp:HTMLTemplateElement, dict:object) {
   for (const [key, value] of Object.entries(dict)) {
-    temp.setAttribute('data-'+key, value);
+    temp.setAttribute('default-'+key, value);
   }
 }
 

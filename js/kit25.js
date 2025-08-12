@@ -8786,7 +8786,7 @@ function setupValidation() {
             div.id = 'guess-history';
             const span = document.createElement('span');
             span.id = 'guess-titlebar';
-            span.appendChild(document.createTextNode('Guesses'));
+            span.appendChild(document.createTextNode('Submissions'));
             log.appendChild(span);
             log.appendChild(div);
             document.getElementById('pageBody')?.appendChild(log);
@@ -12015,6 +12015,7 @@ function useTemplate(node, tempId) {
     }
     if (template) {
         const passed_args = parseUseNodeArgs(node, template);
+        overlayDefaultTemplateArgs(template, passed_args);
         try {
             const inner_context = pushTemplateContext(passed_args);
             pushBuilderElement(node); // the <use> node
@@ -12117,6 +12118,41 @@ function parseObjectAsUseArgs(args) {
         }
     }
     return passed_args;
+}
+/**
+ * See if the template has default arguments. If so, and if the <use> element didn't
+ * specify a value, then plug in the default arg as if it was specified in the <use>
+ * @param template The template element
+ * @param use_args The args from parseObjectAsUseArgs
+ * @remarks can modify use_args
+ */
+function overlayDefaultTemplateArgs(template, use_args) {
+    for (let i = 0; i < template.attributes.length; i++) {
+        const attr = template.attributes[i].name;
+        if (!attr.startsWith('default-')) {
+            continue;
+        }
+        const attri = attr.substring(8); // strip 'default-' prefix
+        if (use_args.some(a => a.attr == attri)) {
+            continue;
+        }
+        const val = template.attributes[i].value;
+        try {
+            const arg = {
+                attr: attri,
+                raw: val,
+                text: cloneText(val),
+                any: complexAttribute(val),
+            };
+            use_args.push(arg);
+        }
+        catch (ex) {
+            const ctxerr = wrapContextError(ex, 'overlayDefaultTemplateArgs');
+            if (shouldThrow(ctxerr, template)) {
+                throw ctxerr;
+            }
+        }
+    }
 }
 /**
  * Build a template-ready context from a set of template arguments
@@ -12256,11 +12292,15 @@ function getTemplate(tempId) {
     throw new ContextError('Template not found: ' + tempId);
 }
 exports.getTemplate = getTemplate;
+/**
+ * Map template names to methods than can generate that template.
+ */
 const builtInTemplates = {
     paintByNumbers: paintByNumbersTemplate,
     paintByColorNumbers: paintByColorNumbersTemplate,
     classStampPalette: classStampPaletteTemplate,
     classStampNoTools: classStampNoToolsTemplate,
+    finalAnswer: finalAnswerTemplate,
 };
 /**
  * Match a template name to a built-in template object
@@ -12274,6 +12314,17 @@ function builtInTemplate(tempId) {
 }
 exports.builtInTemplate = builtInTemplate;
 ;
+/**
+ * Tag a template for default argument values.
+ * Each key+value will become an attribute named 'data-'+key.
+ * @param temp A newly constructed template element.
+ * @param dict A dictionary of attribute names -> default values
+ */
+function setDefaultsTemplateArgs(temp, dict) {
+    for (const [key, value] of Object.entries(dict)) {
+        temp.setAttribute('default-' + key, value);
+    }
+}
 /**
  * Create a standard pant-by-numbers template element.
  * Also load the accompanying CSS file.
@@ -12453,6 +12504,30 @@ function stampPaletteTemplate() {
     temp.innerHTML =
         `<ttable class="paint-by-numbers bolden_5 bolden_10" data-col-context="{cols$}" data-row-context="{rows$}">
   </ttable>`;
+    return temp;
+}
+/**
+ * Invoke via <use template='finalAnswer' left='L' bottom='B' width='w' />
+ * where L and B are the absolute position of the div, and W is the width of the word input.
+ * If omitted, the defaults are:
+ *  - left = "2in"
+ *  - bottom = "0px"
+ *  - width = "3in"
+ * @returns A template element
+ */
+function finalAnswerTemplate() {
+    const temp = document.createElement('template');
+    setDefaultsTemplateArgs(temp, {
+        left: '2in',
+        bottom: '0px',
+        width: '3in'
+    });
+    temp.innerHTML =
+        `<div class="no-print validate-block" style="position:absolute; bottom:{bottom}; left:{left};">
+      Submit: 
+      <word id="final-answer" class="extracted" data-show-ready="submit-answer" style="width:{width};" />
+      <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">OK</button>
+    </div>`;
     return temp;
 }
 var pbnStampTools = [

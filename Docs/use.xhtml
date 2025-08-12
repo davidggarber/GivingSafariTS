@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="../js/kit24.js"></script>
+    <script src="../js/kit25.js"></script>
     <script>
       //<![CDATA[
       const boiler = {
@@ -17,34 +17,6 @@
         },
         'reactiveBuilder': true,
         'lookup': {
-          sentenceVar: "{sentence}",
-          enabledVar: "{enabled}",
-          optVar: ["{optional.0}","{optional.1}","{optional.2}","{optional.3}","{optional.4}","{optional.5}"],
-          numbers: [
-            { var:"{magic}", oper: 'eq', val: '123', trueWhen: 'equals 123' }, 
-            { var:"{magic}", oper: 'ne', val: '321', trueWhen: 'doesn\'t equal 321' }, 
-            { var:"{magic}", oper: 'gt', val: '120', trueWhen: 'is greater than 120' }, 
-            { var:"{magic}", oper: 'ge', val: '123', trueWhen: 'is greater than, or equal to 123' }, 
-            { var:"{magic}", oper: 'lt', val: '125', trueWhen: 'is less than 125' }, 
-            { var:"{magic}", oper: 'le', val: '123', trueWhen: 'is less than, or equal to 123' }, 
-          ],
-          strings: [
-            { var:"doc", oper: 'in', val: '{sentence}', trueWhen: 'is a substring of {sentence}' }, 
-            { var:"cod", oper: 'ni', val: '{sentence}', trueWhen: 'is not a substring of {sentence}"' }, 
-          ],
-          lists: [
-            { var:"bold", oper: 'in', val: '{fonts}', trueWhen: 'occurs in the {fonts} list' }, 
-            { var:"bald", oper: 'ni', val: '{fonts}', trueWhen: 'does not occur in the {fonts} list' }, 
-          ],
-
-          magic: "123",
-          sentence: "Help docs",
-          fonts: [ 
-            'bold', 
-            'italic' 
-          ],
-          enabled: true,
-          optional: ['x', {}, [], null, undefined, ''],
         } 
       };
       //]]>
@@ -75,8 +47,11 @@
     <div id="pageBody">
       <div id="left-side">
 
+        <h1>&lt;template&gt;</h1>
+
         <p>Templates are an existing concept within HTML. Anything inside &lt;template&gt; tags is kept in a side cache, and can be cloned into the document whenever needed.</p>
-        <p>The &lt;use&gt; tag injects the contents of templates, with the added functionality that it can pass parameters.</p>
+
+        <p>The evolution here is that templates can take arguments. Any <code>{formulas}</code> within the template body will have access to both global <a href="builder.xhtml">lookup</a> fields, as well as inline values passed to the template directly.</p>
 
         <h3>Example</h3>
 
@@ -90,31 +65,13 @@
   &lt;/for&gt;
 &lt;/template&gt;</pre></code>
         
-        <p>Invoke the template, passing arguments.</p>
-
-<code onclick="selectCodeBlock(this, event)"><pre>&lt;div id="some-page-element"&gt;
-  &lt;use template="img-grid" rows="2" cols="3"&gt;
-&lt;/div&gt;</pre></code>
-
-        <p style="margin-bottom:0px;">Within the &lt;template&gt; element&hellip;</p>
-        <ul style="margin-top:0px;">
-          <li><code class="inline">id="img-grid"</code>
-            names the template, so it can be called later.</li>
-          <li><code class="inline">{rows}</code> and <code class="inline">{cols}</code>
-            are used within the template, but are undefined. They need to be passed in.</li>
-          <li><code class="inline">{row}</code> and <code class="inline">{col}</code>
-            are defined by the &lt;for&gt; elements within the template.</li>
-        </ul>
-
-        <p style="margin-bottom:0px;">Within the &lt;use&gt; element&hellip;</p>
-        <ul style="margin-top:0px;">
-          <li><code class="inline">template="img-grid"</code>
-            identifies which template to inject.</li>
-          <li><code class="inline">rows="2"</code> and <code class="inline">cols="3"</code>
-            are parameters, passed into the template.<br />
-            In this case, they will cause 6 images to be created, in two rows of 3.</li>
-        </ul>
-
+        <h3>Default args</h3>
+        <p>A template can specify default args as <code>default-<i>arg-name</i></code>.<br />
+          So in the above example, if the default for both <i>row</i> and <i>col</i> were 2, you'd start with:
+        </p>
+<code onclick="selectCodeBlock(this, event)"><pre>&lt;template id="img-grid" default-row="2" default-col="2"&gt;
+  &hellip;
+&lt;/template&gt;</pre></code>
 
         <h3>Nested templates</h3>
 
@@ -142,82 +99,40 @@
         
 
 
-        <h3>Page organization</h3>
-
-        <p>Do not define a &lt;template&gt; within a build area.<br />
-          As a rule, define them at the end of the document, after the &lt;div id="pageBody"&gt;&lt;/div&gt;.</p>
-
-
       </div>
 
       <div id="right-side">
-        <h3>Regular expressions</h3>
 
-        <p>One addition condition attribute: <b>regex</b></p>
+        <h1>&lt;use&gt;</h1>
 
-        <table>
-          <tr>
-            <td>
-              <build>
-                <code onclick="selectCodeBlock(this, event)">&lt;use test="{sentenceVar}" <b style="font-size: large;">regex</b>="^H.*s$"&gt;<br/>
-                  &nbsp; <i>&lt;!-- contents --&gt;</i>
-                  &lt;/if&gt;
-                </code>
-  
-              </build>
-            
-            </td>
-            <td>
-              {sentence} starts with 'H' and ends with 's'
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <code onclick="selectCodeBlock(this, event)"><pre>&lt;for word="w" in="{sentence}"&gt;
-  &lt;use test="w" <b style="font-size: large;">regex</b>="^[a-z]+$"&gt;{w}&lt;/if&gt;
-&lt;/for&gt;</pre></code>
-            </td>
-            <td>
-              Each word in {sentence} that is all lower-case
-            </td>
-          </tr>
-        </table>
+        <p>The &lt;use&gt; tag injects the contents of templates, with the added functionality that it can pass parameters.</p>
+        <p>Invoke the template, passing arguments.</p>
+
+<code onclick="selectCodeBlock(this, event)"><pre>&lt;div id="some-page-element"&gt;
+  &lt;use template="img-grid" rows="2" cols="3"&gt;
+&lt;/div&gt;</pre></code>
+
+        <p style="margin-bottom:0px;">Within the &lt;template&gt; element at left&hellip;</p>
+        <ul style="margin-top:0px;">
+          <li><code class="inline">id="img-grid"</code>
+            names the template, so it can be called later.</li>
+          <li><code class="inline">{rows}</code> and <code class="inline">{cols}</code>
+            are used within the template, but are undefined. They need to be passed in.</li>
+          <li><code class="inline">{row}</code> and <code class="inline">{col}</code>
+            are defined by the &lt;for&gt; elements within the template.</li>
+        </ul>
+
+        <p style="margin-bottom:0px;">Within the &lt;use&gt; element&hellip;</p>
+        <ul style="margin-top:0px;">
+          <li><code class="inline">template="img-grid"</code>
+            identifies which template to inject.</li>
+          <li><code class="inline">rows="2"</code> and <code class="inline">cols="3"</code>
+            are parameters, passed into the template.<br />
+            In this case, they will cause 6 images to be created, in two rows of 3.</li>
+        </ul>
 
 
-
-        <h3>&lt;elseif&gt; and &lt;else&gt; sequences</h3>
-
-        <p>Like most programming languages, the first &lt;use&gt; or &lt;elseif&gt; whose condition passes will expand,
-          and any subsequent siblings will be no-ops.</p>
-
-        <table>
-          <tr>
-            <td>
-              <code onclick="selectCodeBlock(this, event)"><pre>
-&lt;for char="ch" in="{sentence}" trim&gt;
-  &lt;use test="ch" eq=" "&gt;&nbsp;&lt;/if&gt;
-  &lt;elseif test="ch" in="oO"&gt;😶&lt;/if&gt;
-  &lt;elseif test="ch" ni="ABCDEFGHIJKLMNOPQRSTUVWXYZ"&gt;
-    &lt;i&gt;{ch}&lt;/i&gt;
-  &lt;/elseif&gt;
-  &lt;else&gt;&lt;b style='color:red'&gt;{ch}&lt;/b&gt;&lt;/else&gt;
-&lt;/for&gt;</pre></code>
-            </td>
-            <td>
-              <for char="ch" in="{sentence}" trim="on">
-                <if test="ch" eq=" ">&nbsp;</if>
-                <elseif test="ch" in="oO">😶</elseif>
-                <elseif test="ch" ni="ABCDEFGHIJKLMNOPQRSTUVWXYZ">
-                  <i>{ch}</i>
-                </elseif>
-                <else><b style='color:red'>{ch}</b></else>
-              </for>
-            </td>
-          </tr>
-        </table>
-
-
-        <p>Note that the table tags don't play well with
+        <p>Note that the HTML table tags don't play well with
           <code class="inline">&lt;use&gt;</code> or
           <code class="inline">&lt;for&gt;</code> tags.<br />
           As such, encode table (and some other) tags:
@@ -242,6 +157,11 @@ const boiler = {
   }
 }</pre></code>
 
+
+        <h3>Page organization</h3>
+
+        <p>Do not define a &lt;template&gt; within a build area.<br />
+          As a rule, define them at the end of the document, after the &lt;div id="pageBody"&gt;&lt;/div&gt;.</p>
 
       </div>
     </div>

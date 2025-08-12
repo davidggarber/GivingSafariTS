@@ -13502,10 +13502,10 @@ function parseObjectAsUseArgs(args?:object):TemplateArg[] {
 function overlayDefaultTemplateArgs(template:Element, use_args:TemplateArg[]) {
   for (let i = 0; i < template.attributes.length; i++) {
     const attr = template.attributes[i].name;
-    if (!attr.startsWith('data-')) {
+    if (!attr.startsWith('default-')) {
       continue;
     }
-    const attri = attr.substring(5);  // strip 'data-' prefix
+    const attri = attr.substring(8);  // strip 'default-' prefix
     if (use_args.some(a => a.attr == attri)) {
       continue;
     }
@@ -13707,7 +13707,7 @@ export function builtInTemplate(tempId:string) :HTMLTemplateElement|undefined {
  */
 function setDefaultsTemplateArgs(temp:HTMLTemplateElement, dict:object) {
   for (const [key, value] of Object.entries(dict)) {
-    temp.setAttribute('data-'+key, value);
+    temp.setAttribute('default-'+key, value);
   }
 }
 

@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js"></script>
+    <script>
+      const boiler = {
+        safari: 'Docs',
+        title: 'Eescaping Nnames',
+        paperSize: 'ledger',
+        orientation: 'landscape',
+        textInput: true,
+        abilities: {
+        },
+        reactiveBuilder: 'pageBody'
+      };
+
+    </script>
+    <script src="docs.js"></script>
+    <link href="docs.css" rel="Stylesheet" type="text/css"></link>
+    <style>
+      #Local {
+        
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p>HTML elements and attribute values which participate in the builder trees may be invalid in their raw state.</p>
+      <p>For example:</p>
+      <table>
+        <tr>
+          <td>
+<code><pre>&lt;table&gt;
+  &lt;for int="x" to="2"&gt;
+    &lt;tr&gt;&hellip;&lt;/tr&gt;
+  &lt;/for&gt;
+&lt;/table&gt;
+</pre></code>
+          </td>
+          <td>
+            In generic xhtml, &lt;tr&gt; may NOT exist inside a &lt;for&gt; element.
+            <br />Nor may a &lt;for&gt; exist inside a &lt;table&gt;.
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<code><pre>&lt;img src=`{pic`}.png" /&gt;
+</pre></code>
+          </td>
+          <td>
+            <i>`{pic`}.png</i> is not the real name of the image, and will cause a missing file error on page load.
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+<code><pre>&lt;p style="margin-left:`{left`}px" /&gt;
+</pre></code>
+          </td>
+          <td>
+            <i>`{left`}px</i> is not a valid CSS measurement.
+          </td>
+        </tr>
+
+      </table>
+
+      <p>The solution is to escape any element or attribute name that should defer evaluated until during or after the build-out.</p>
+      <p>Any element name or attribute name that starts with a <b>d</b>double <b>i</b>initial <b>l</b>leter will be gibberish on initial page load.
+        <br />But then the builder will un-escape them to their intended names.
+      </p>
+      <p>Luckily, there are no HTML or XML elements or attributes that have that trait naturally.</p>
+      <p>Warning: make sure you do it for both the &lt;start&gt; and &lt;/end&gt; tags.</p>
+      
+      <p>Examples:</p>
+      <table>
+        <tr>
+          <td>
+<code><pre>&lt;<b>t</b>table&gt;
+  &lt;for int="x" to="2"&gt;
+    &lt;<b>t</b>tr&gt;&hellip;&lt;/<b>t</b>tr&gt;
+  &lt;/for&gt;
+&lt;/<b>t</b>table&gt;
+</pre></code>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>&lt;<b>i</b>img src=`{pic`}.png" /&gt;</code>
+            or <code>&lt;img <b>s</b>src=`{pic`}.png" /&gt;</code>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>&lt;p <b>s</b>style="margin-left:`{left`}px" /&gt;</code>
+          </td>
+        </tr>
+
+      </table>
+
+      <p>Note that you should <i>NOT</i> escape the builder elements, like <code>&lt;for&gt;</code></p>
+
+    </div>
+
+    <template id="code">
+      <code ondblclick="selectCode(this, event)">{value}</code>
+    </template>
+    <template id="tag">
+      <use template="code" value="&lt;{value}&gt;"></use>
+    </template>
+
+    <template id="link">
+      <if exists="{tag?}">
+        <a href="{tag}.xhtml">&lt;{tag}&gt;</a>        
+      </if>
+      <else>
+        <a href="{page}.xhtml">{page}</a>
+      </else>
+      <if test="{wip?}"><img class="wip" src="Images/wip2.png" title="Work in progress" alt="Work in progress" /></if>
+    </template>
+  
+  </body>
+</html>

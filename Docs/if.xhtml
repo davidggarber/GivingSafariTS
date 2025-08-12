@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="../js/kit24.js"></script>
+    <script src="../js/kit25.js"></script>
     <script>
       //<![CDATA[
       const boiler = {
@@ -271,7 +271,7 @@ const boiler = {
       <use template="code" value="&lt;{value}&gt;"></use>
     </template>
     <template id="iftest">
-      <code onclick="selectCodeBlock(this, event)">&lt;if test="{row!.var}" <b style="font-size: large;">{row!.oper}</b>="{row!.val}"&gt;<br/>
+      <code onclick="selectCodeBlock(this, event)">&lt;if test="{row.var}" <b style="font-size: large;">{row.oper}</b>="{row.val}"&gt;<br/>
         &nbsp; <i>&lt;!-- contents --&gt;</i>
         &lt;/if&gt;
       </code>
