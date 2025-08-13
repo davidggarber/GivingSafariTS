@@ -393,11 +393,11 @@ export function onLetterKey(evt:KeyboardEvent): boolean {
     }
 
     var input:HTMLInputElement = evt.currentTarget as HTMLInputElement;
-    if (evt.code == 'Tab' && input != keyDownTarget) {
+    if (input != keyDownTarget) {
         keyDownTarget = null;
         // key-down likely caused a navigation
 
-        if (document.activeElement == input && isArrowKeyElement(document.activeElement)) {
+        if (evt.code == 'Tab' && document.activeElement == input && isArrowKeyElement(document.activeElement)) {
             // Ensure we got the focus change
             setCurrentInputGroup(document.activeElement as ArrowKeyElement);
         }
@@ -1459,7 +1459,8 @@ function findNext2dInput(   root: Element,
             return start || null; // Very confusing
         }
         // Wrap around
-        row = findRowOfInputs(root, undefined, dy, cls, clsSkip);
+        const col = findNext2dColumn(root, dy);
+        row = findRowOfInputs(col, undefined, dy, cls, clsSkip);
     }
     if (!start || (dy != 0 && dx != 0)) {
         // When changing rows, we want the first or last
@@ -1481,9 +1482,32 @@ function findNext2dInput(   root: Element,
     }
     if (!last && dy == 0) {
         // Wrap to next/previous line
-        return findNext2dInput(root, start, dx, dx, cls, clsSkip);
+        return findNext2dInput(root, start, dx, dx * plusX, cls, clsSkip);
     }
     return last || null;
+}
+
+/**
+ * If there are multile root elements of class letter-grid-2d, then reaching 
+ * the end of one should find the next.
+ * @param root The current letter-grid-2d
+ * @param dir +1 for forward, -1 for prev, where direction is HTML order, not rectangles
+ * @returns A root to restart from
+ */
+function findNext2dColumn(root: Element, dir: number): Element {
+    if (!hasClass(root, 'letter-grid-2d')) {
+        return root;  // We aren't in columns - this is the pageBody
+    }
+    const cols = document.getElementsByClassName('letter-grid-2d');
+    if (cols) {
+        for (let i = 0; i < cols.length; i++) {
+            if (cols[i] == root) {
+                let n = (i + cols.length + dir) % cols.length;
+                return cols[n];
+            }
+        }
+    }
+    return document.getElementById('pageBody') as Element;
 }
 
 /**

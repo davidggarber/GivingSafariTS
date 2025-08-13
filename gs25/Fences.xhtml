@@ -45,70 +45,72 @@
       };
     </script>
     <style>
-      .flavor {
-        font-style: italic;
-      }
-      #table {
-        position: absolute;
-        left: 2px;
-        top: 2px;
-        border-collapse: collapse;
-      }
-      #table td {
-        width: 60px;
-        height: 60px;
-        padding: 0px;
-        vertical-align: middle;
-        text-align: center;
-        border: none;
-      }
-      #Fences .letter-cell {
-        font-size: 32pt;
-      }
-      #Fences .letter-literal {
-        font-size: 25pt;
-        bottom: initial;
-        position: initial;
-      }
-      #svg {
-        position: absolute;
-        left: 0px;
-        top: 0px;
-      }
-      rect {
-        fill: none;
-      }
-      rect.red {
-        stroke: red;
-        stroke-width: 3px;
-        width: 180px;
-        height: 180px;
-      }
-      rect.black {
-        stroke: black;
-        stroke-width: 3px;
-        width: 180px;
-        height: 180px;
-      }
-      rect.thin {
-        stroke: #666;
-        stroke-width: 0.5px;
-        width: 60px;
-        height: 60px;
-      }
-      rect.gray {
-        stroke: #666;
-        stroke-width: 0.5px;
-        width: 60px;
-        height: 60px;
-        fill: #D9D9D9;
-      }
-      #table td.gray-sum {
-        position: relative;
-        right: -10px;
-        text-align: center;
-        color: #666;
-        font-style: italic;
+      #Fences {
+        .flavor {
+          font-style: italic;
+        }
+        #table {
+          position: absolute;
+          left: 2px;
+          top: 2px;
+          border-collapse: collapse;
+        }
+        #table td {
+          width: 60px;
+          height: 60px;
+          padding: 0px;
+          vertical-align: middle;
+          text-align: center;
+          border: none;
+        }
+        .letter-cell {
+          font-size: 32pt;
+        }
+        .letter-literal {
+          font-size: 25pt;
+          bottom: initial;
+          position: initial;
+        }
+        #svg {
+          position: absolute;
+          left: 0px;
+          top: 0px;
+        }
+        rect {
+          fill: none;
+        }
+        rect.red {
+          stroke: red;
+          stroke-width: 3px;
+          width: 180px;
+          height: 180px;
+        }
+        rect.black {
+          stroke: black;
+          stroke-width: 3px;
+          width: 180px;
+          height: 180px;
+        }
+        rect.thin {
+          stroke: #666;
+          stroke-width: 0.5px;
+          width: 60px;
+          height: 60px;
+        }
+        rect.gray {
+          stroke: #666;
+          stroke-width: 0.5px;
+          width: 60px;
+          height: 60px;
+          fill: #D9D9D9;
+        }
+        #table td.gray-sum {
+          position: relative;
+          right: -10px;
+          text-align: center;
+          color: #666;
+          font-style: italic;
+        }
       }
     </style>
   </head>
@@ -178,9 +180,10 @@
 
       <p style="line-height: 14pt;">
         <span style="position: relative; top:-15px;">Answer:</span>
-        <pattern id="final-answer" pattern="9"  data-show-ready="submit-extracted" />
-        <button class="validater" id="submit-extracted" data-extracted-id="final-answer" style="position:relative; top:-15px;">Submit</button>
+        <pattern id="answer" pattern="9" />
       </p>
+
+      <use template='finalAnswer' bottom='-24px' left="3in" width="2in" />
 
     </div>
   </body>
