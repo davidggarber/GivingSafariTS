@@ -1115,9 +1115,9 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:boolean|st
         document.getElementsByTagName('body')[0]?.appendChild(iframe);
     }
 
-    let toggle = document.getElementById('decoder-toggle') as HTMLAnchorElement;
+    let toggle = document.getElementById('decoder-toggle') as HTMLSpanElement;
     if (toggle == null && margins != null) {
-        toggle = document.createElement('a');
+        toggle = document.createElement('span');
         toggle.id = 'decoder-toggle';
         margins.appendChild(toggle);
     }
@@ -1129,24 +1129,30 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:boolean|st
         else {
             toggle.innerText = 'Show Decoders';
         }
-        toggle.href = 'javascript:toggleDecoder()';
+        toggle.addEventListener('click', toggleDecoder)
     }
 }
 
 /**
- * Rotate to the next note visibility state.
+ * Alternate between showing and hiding the decoder iframe
  */
-export function toggleDecoder(show:boolean|null) {
+export function toggleDecoder(evt: PointerEvent) {
     var visible = getDecoderState();
     if (visible === null) {
         setupDecoderToggle(null);
     }
-    if (show == null || show == undefined) {
-        setDecoderState(!visible);
+    setDecoderState(!visible);
+}
+
+/**
+ * Explicitly show or hide the decoder iframe
+ */
+export function showDecoder(show: boolean) {
+    var visible = getDecoderState();
+    if (visible === null) {
+        setupDecoderToggle(null);
     }
-    else {
-        setDecoderState(show);
-    }
+    setDecoderState(show);
 }
 
 
@@ -2972,6 +2978,10 @@ function ExtractFromInput(input:TextInputElement) {
             }
         }
     }
+
+    if (findParentOfClass(input, 'copy-extractee')) {
+        updateCopyExtractions();
+    }
 }
 
 /**
@@ -3323,6 +3333,9 @@ export function onWordKey(event:KeyboardEvent) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         updateWordExtraction(extractId);
     }
+    if (findParentOfClass(input, 'copy-extractee')) {
+        updateCopyExtractions();
+    }
     CheckValidationReady(input, event.key);
 
     var code = event.code;
@@ -3377,8 +3390,13 @@ export function updateWordExtraction(extractedId:string|null) {
         const indeces = index.split(' ');
         let letters = '';
         for (let j = 0; j < indeces.length; j++) {
-            const inp = input as HTMLInputElement;  
-            const letter = extractWordIndex(inp.value, indeces[j])
+            const inp = input as HTMLInputElement;
+            let letter = inp.value;
+            if (indeces[j] !== '*') {
+                const i2 = indeces[j].split('.').map((s) => parseInt(s, 10));
+                letter = extractWordIndex(inp.value, i2[0], i2.length > 1 ? i2[1] : 0, '_', '');
+            }
+            
             if (letter) {
                 letters += letter.toUpperCase();;
                 partial = partial || (letter != '_');
@@ -3408,42 +3426,111 @@ export function updateWordExtraction(extractedId:string|null) {
 }
 
 /**
- * Extract a single letter from an input. Either using an absolute index, or else a word.letter index.
+ * Extract a single letter from an input. 
+ * Can have a simple or two-part index.
+ * Simple: an absolute index, starting at 1, ignoring whitespace
+ * Two-part: word# and letter#, both starting at 1
  * @param input User's input string
- * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
+ * @param index The primary index (starting at 1)
+ * @param subIndex The secondary index (starting at 1), or 0 to only use the primary index
+ * @param ifBlank What to return from blank inputs
+ * @param ifOver What to return if the index is out of bounds
+ * @returns The extracted letter, or else the blank or over fallbacks
  */
-export function extractWordIndex(input:string, index:string) {
-    if (index === '*') {
-        return input || '_';
+export function extractWordIndex(input:string, index:number, subIndex:number, ifBlank:string, ifOver:string):string {
+    if (!input.trim()) {
+        return ifBlank;
     }
-    const dot = index.split('.');
-    let letter_index:number;
-    if (dot.length == 2) {
-        let word_index = parseInt(dot[0]);
-        letter_index = parseInt(dot[1]) - 1;
+    else {
+        input = input.toUpperCase();
+    }
+    
+    let letter_index:number = index;
+    if (subIndex > 0) {
+        letter_index = subIndex;
+        // Reduce input to just the desired word
         const words = input.split(' ');
         input = '';
         for (let i = 0; i < words.length; i++) {
             const word = words[i];
             if (words[i].length > 0) {
-                if (--word_index == 0) {
+                if (--index == 0) {
                     input = word;
                     break;
                 }
             }
         }
     }
-    else {
-        letter_index = parseInt(index) - 1;
+
+    for (let i = 0; i < input.length; i++) {
+        const ch = input[i];
+        if (ch.trim()) {
+            if (--letter_index == 0) {
+                return ch;
+            }
+        }
     }
-    if (letter_index < 0) {
-        return null;  // bogus index
-    }
-    if (letter_index < input.length) {
-        return input[letter_index];
-    }
-    return '_';
+    // Index not reached
+    return ifOver;
 }
+
+/**
+ * Find all elements tagged as copy-extracters.
+ * Read their copy-id rules, and fetch the data.
+ * Extracting from an empty input, or an invalid index within an input, will yield a blank.
+ * Extracters can have multiple source extractees, in which case missing partial data will generate spaces.
+ * 
+ * Unlike push-extracters, which work in both directions, these copy-extracters only work in one direction.
+ * Changing the destination will not be reflected back into the source, 
+ * since the primary intended use is indexes into longer entries.
+ */
+function updateCopyExtractions() {
+    const extracters = document.getElementsByClassName('copy-extracter');
+    for (let i = 0; i < extracters.length; i++) {
+        let extracter = extracters[i];
+        const ifBlank = getOptionalStyle(extracter, 'data-copy-blank', '') || '';
+        let buf = '';
+        let spaces = '';
+
+        const copyIds = (getOptionalStyle(extracter, 'data-copy-id', '') || '').split(' ');
+        for (let s = 0; s < copyIds.length; s++) {
+            const copyId = copyIds[s].split('.');
+            if (copyId[0]) {
+                let extractee = document.getElementById(copyId[0]);
+                let value = getValueFromTextContainer(extractee as TextInputElement, '');
+                if (copyId.length == 2) {
+                    value = extractWordIndex(value, parseInt(copyId[1]), 0, '', '');
+                }
+                else if (copyId.length > 2) {
+                    value = extractWordIndex(value, parseInt(copyId[1]), parseInt(copyId[2]), ifBlank, ifBlank);
+                }
+                if (!value) {
+                    spaces += ' ';
+                }
+                else {
+                    buf += spaces + value;
+                    spaces = '';
+                }
+            }
+        }
+
+        if (!isTextInputElement(extracter)) {
+            let extracters = extracter?.getElementsByTagName('input');
+            if (!extracters || extracters.length == 0) {
+                throw new Error(`Element with copy-id=${copyIds} must be an input element, or a letter-/word-cell parent of one`);
+            }
+            else if (extracters.length > 1) {
+                throw new Error(`Element with copy-id=${copyIds} appears to be a container of multiple input elements`);
+            }
+            extracter = extracters[0];
+            if (!isTextInputElement(extracter)) {
+                throw new Error(`Element with copy-id=${copyIds} must be an input element, or a letter-/word-cell parent of one`);
+            }
+        }
+        (extracter as TextInputElement).value = buf.trim();
+    }
+}
+
 
 /**
  * Callback when user has changed the text in a letter-input 
@@ -4393,6 +4480,58 @@ function findNextGroupInput(start: ArrowKeyElement,
     return next;
 }
 
+/**
+ * Some functions want to flexibly pull values from various constructs:
+ *   - input elements
+ *   - containers of multiple input elements
+ * Extract an appropriate value to submit
+ * @param container The container of the text value.
+ * @param eachBlank The value to concatenate for each blank inputs.
+ * @returns The value, or concatenation of values.
+ */
+export function getValueFromTextContainer(container:HTMLElement, eachBlank:string):string {
+    // If the extraction has alredy been cached, use it
+    // If container is an input, get its value
+    if (isTag(container, 'input')) {
+        return (container as HTMLInputElement).value;
+    }
+    if (isTag(container, 'textarea')) {
+        return (container as HTMLTextAreaElement).value;
+    }
+    // If we contain multiple inputs, concat them
+    let inputs = container.getElementsByClassName('letter-input');
+    if (inputs.length == 0) {
+        inputs = container.getElementsByClassName('word-input');
+    }
+    if (inputs.length > 0) {
+        let value = '';
+        for (let i = 0; i < inputs.length; i++) {
+            if (!hasClass(inputs[i], 'letter-non-input')) {
+                const ch = (inputs[i] as HTMLInputElement).value;
+                value += ch || eachBlank;
+            }
+        }
+        return value;
+    }
+    // If we contain multiple other extractions, concat them
+    const datas = getAllElementsWithAttribute(container, 'data-extraction');
+    if (datas.length > 0) {
+        let value = '';
+        for (let i = 0; i < datas.length; i++) {
+            value += datas[i].getAttribute('data-extraction');
+        }
+        return value;
+    }
+    // If we are just a destination div, the value will be cached
+    const cached = container.getAttribute('data-extraction');
+    if (cached != null) {
+        return cached;
+    }
+    // No recognized combo
+    console.error('Unrecognized value container: ' + container);
+    return '';
+}
+
 
 /*-----------------------------------------------------------
  * _textSetup.ts
@@ -4409,6 +4548,7 @@ export function textSetup() {
     setupLetterCells();
     setupLetterInputs();
     setupWordCells();
+    setupCopyExtracters();
     indexAllInputFields();
 }
 
@@ -5017,6 +5157,40 @@ function setupExtractPattern(extracted:Element) {
             var span = createLetterLiteral(numPattern[pi]['char'] as string);
             applyAllClasses(span, styles.literal);
             extracted.appendChild(span);
+        }
+    }
+}
+
+/**
+ * An alternative to pushed extractions is pulled "copy" extractions.
+ * At setup time, we need to identify any source elements, so they know to extract.
+ * All such elements will have the class copy-extractee. 
+ * The destinations already have the class copy-extracter.
+ * 
+ * Any element of class copy-extracter should also have a data-copy-id attribute.
+ * That attribute contains the ID, and possible modifiers, of another input that we will copy from.
+ * It can also contain multiple such IDs, separated by spaces.
+ * Each ID should have the format: <id>[.index][.sub-index], where
+ *   - id is the ID of the source element (or at least its letter-/word-cell parent)
+ *   - index, if present is the character index (ignoring whitespace) of any multi-letter inputs. 
+ *     If omitted, copy the entire contents of the source input.
+ *   - sub-index, if present, converts index to a word index (1-based), 
+ *     and the sub-index is the character index within the word.
+ */
+function setupCopyExtracters() {
+    const elmts = document.getElementsByClassName('copy-extracter');
+    for (let i = 0; i < elmts.length; i++) {
+        const elmt:HTMLElement = elmts[i] as HTMLElement;
+        const copyId = elmt.getAttribute('data-copy-id');
+        if (copyId) {
+            const copyIds = copyId.split(' ');
+            for (let c = 0; c < copyIds.length; c++) {
+                const srcId = copyIds[c].split('.')[0];
+                const src = document.getElementById(srcId);
+                if (src) {
+                    toggleClass(src, 'copy-extractee', true);
+                }
+            }
         }
     }
 }
@@ -10015,7 +10189,7 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
         console.error('Button ' + btn.id + ' missing a valid "data-extracted-id" linking to its source: ' + id);
         return;
     }
-    const value = getValueToValidate(ext);
+    const value = getValueFromTextContainer(ext, '_');
     const ready = isValueReady(btn, value);
     consoleTrace(`Value ${value} is ${ready ? "" : "NOT "} ready`);
 
@@ -10026,55 +10200,6 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
     else if (isTag(ext, 'input') || isTag(ext, 'textarea')) {
         horzScaleToFit(ext, value);
     }
-}
-
-/**
- * Submit buttons can be associated with various constructs.
- * Extract an appropriate value to submit
- * @param container The container of the value to submit.
- * @returns The value, or concatenation of values.
- */
-function getValueToValidate(container:HTMLElement):string {
-    // If the extraction has alredy been cached, use it
-    // If container is an input, get its value
-    if (isTag(container, 'input')) {
-        return (container as HTMLInputElement).value;
-    }
-    if (isTag(container, 'textarea')) {
-        return (container as HTMLTextAreaElement).value;
-    }
-    // If we contain multiple inputs, concat them
-    let inputs = container.getElementsByClassName('letter-input');
-    if (inputs.length == 0) {
-        inputs = container.getElementsByClassName('word-input');
-    }
-    if (inputs.length > 0) {
-        let value = '';
-        for (let i = 0; i < inputs.length; i++) {
-            if (!hasClass(inputs[i], 'letter-non-input')) {
-                const ch = (inputs[i] as HTMLInputElement).value;
-                value += ch || '_';
-            }
-        }
-        return value;
-    }
-    // If we contain multiple other extractions, concat them
-    const datas = getAllElementsWithAttribute(container, 'data-extraction');
-    if (datas.length > 0) {
-        let value = '';
-        for (let i = 0; i < datas.length; i++) {
-            value += datas[i].getAttribute('data-extraction');
-        }
-        return value;
-    }
-    // If we are just a destination div, the value will be cached
-    const cached = container.getAttribute('data-extraction');
-    if (cached != null) {
-        return cached;
-    }
-    // No recognized combo
-    console.error('Unrecognized value container: ' + container);
-    return '';
 }
 
 /**
@@ -10120,7 +10245,7 @@ function clickValidationButton(btn:HTMLButtonElement) {
         return;
     }
 
-    const value = getValueToValidate(ext);
+    const value = getValueFromTextContainer(ext, '_');
     const ready = isValueReady(btn, value);
 
     if (ready) {
@@ -13146,9 +13271,11 @@ const inputAttributeConversions = {
       block: 'block',
       literal: 'literal',
       extract: 'extract',
+      'copy-id': 'copy-extracter',
     },
     spanRename: {
       'extracted-id': 'data-extracted-id', // Destination of extraction
+      'copy-id': 'data-copy-id', // Source of extraction
     },
     optionalStyle: {
       '': 'letter',
@@ -13198,11 +13325,13 @@ const inputAttributeConversions = {
     spanClass: {
       '': 'word-cell',
       literal: 'literal',
+      'copy-id': 'copy-extracter',
       // TODO: numbers (destination)
     },
     spanRename: {
       extract: 'data-extract-index',       // Either letter index, or word.letter index
       'extracted-id': 'data-extracted-id', // Destination of extraction
+      'copy-id': 'data-copy-id', // Source of extraction
     },
     specialCases: {
       literal: specialLiterals,
@@ -13246,6 +13375,7 @@ const inputAttributeConversions = {
       word: 'value',
       letter: 'value',
       letters: 'value',
+      'copy-id': 'data-copy-id', // Source of extraction
     },
     optionalStyle: {
       '': 'hidden',

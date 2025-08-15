@@ -137,7 +137,7 @@
 
       <for each="grid" in="grids">
         <p class="waterfall">
-          {grid.cardinal}<sup>{grid.super}</sup> title: <word />
+          {grid.cardinal}<sup>{grid.super}</sup> title: <word id="title_{1+grid#}" />
         </p>
         <ttable class="dropquote" data-input-style="hover">
           <for each="row" in="{grid.letters}">
@@ -168,28 +168,28 @@
       <p style="margin-bottom: 0px;">Boxes below are labeled &lt;title number&gt;.&lt;letter index&gt;, where spaces don’t count among letters.</p>
       <table id="below" data-letter-style="hover" data-word-style="hover">
         <tr id="phrase">
-          <td><letter id="extracted_1" /></td>
-          <td><letter id="extracted_1" /></td>
-          <td><letter id="extracted_1" /></td>
-          <td><letter id="extracted_1" /></td>
-          <td><letter id="extracted_1" /></td>
+          <td><letter copy-id="title_3.2" /></td>
+          <td><letter copy-id="title_4.12" /></td>
+          <td><letter copy-id="title_1.4" /></td>
+          <td><letter copy-id="title_2.12" /></td>
+          <td><letter copy-id="title_4.3" /></td>
           <td rowspan="2" class="block">&nbsp;</td>
           <td><word /></td>
           <td rowspan="2" class="block">&nbsp;</td>
-          <td><letter id="extracted_1" /></td>
-          <td><letter id="extracted_1" /></td>
+          <td><letter copy-id="title_3.4" /></td>
+          <td><letter copy-id="title_1.10" /></td>
           <td rowspan="2" class="block">&nbsp;</td>
-          <td><letter id="extracted_1" /></td>
+          <td><letter copy-id="title_4.2" /></td>
           <td rowspan="2" class="block">&nbsp;</td>
           <td rowspan="2" class="literal">(</td>
-          <td><letter id="extracted_1" /></td>
-          <td><letter id="extracted_1" /></td>
-          <td><letter id="extracted_1" /></td>
+          <td><letter copy-id="title_1.3" /></td>
+          <td><letter copy-id="title_2.7" /></td>
+          <td><letter copy-id="title_4.13" /></td>
           <td rowspan="2" class="block">&nbsp;</td>
-          <td><letter id="extracted_1" /></td>
-          <td><letter id="extracted_1" /></td>
-          <td><letter id="extracted_1" /></td>
-          <td><letter id="extracted_1" /></td>
+          <td><letter copy-id="title_1.1" /></td>
+          <td><letter copy-id="title_4.11" /></td>
+          <td><letter copy-id="title_3.3" /></td>
+          <td><letter copy-id="title_2.4" /></td>
           <td rowspan="2" class="literal">)</td>
         </tr>
         <tr class="under">

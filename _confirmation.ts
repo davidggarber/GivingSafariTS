@@ -1,9 +1,10 @@
 import { theBoiler } from "./_boilerplate";
 import { consoleTrace } from "./_builder";
-import { getAllElementsWithAttribute, getOptionalStyle, hasClass, isTag, toggleClass } from "./_classUtil";
+import { getOptionalStyle, isTag, toggleClass } from "./_classUtil";
 import { EventSyncActivity, pingEventServer } from "./_eventSync";
 import { scanMetaMaterials } from "./_meta";
 import { PuzzleStatus, getCurFileName, saveGuessHistory, updatePuzzleList } from "./_storage";
+import { getValueFromTextContainer } from "./_textInput";
 
 /**
  * Response codes for different kinds of responses
@@ -231,7 +232,7 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
         console.error('Button ' + btn.id + ' missing a valid "data-extracted-id" linking to its source: ' + id);
         return;
     }
-    const value = getValueToValidate(ext);
+    const value = getValueFromTextContainer(ext, '_');
     const ready = isValueReady(btn, value);
     consoleTrace(`Value ${value} is ${ready ? "" : "NOT "} ready`);
 
@@ -242,55 +243,6 @@ export function validateInputReady(btn:HTMLButtonElement, key:string|null) {
     else if (isTag(ext, 'input') || isTag(ext, 'textarea')) {
         horzScaleToFit(ext, value);
     }
-}
-
-/**
- * Submit buttons can be associated with various constructs.
- * Extract an appropriate value to submit
- * @param container The container of the value to submit.
- * @returns The value, or concatenation of values.
- */
-function getValueToValidate(container:HTMLElement):string {
-    // If the extraction has alredy been cached, use it
-    // If container is an input, get its value
-    if (isTag(container, 'input')) {
-        return (container as HTMLInputElement).value;
-    }
-    if (isTag(container, 'textarea')) {
-        return (container as HTMLTextAreaElement).value;
-    }
-    // If we contain multiple inputs, concat them
-    let inputs = container.getElementsByClassName('letter-input');
-    if (inputs.length == 0) {
-        inputs = container.getElementsByClassName('word-input');
-    }
-    if (inputs.length > 0) {
-        let value = '';
-        for (let i = 0; i < inputs.length; i++) {
-            if (!hasClass(inputs[i], 'letter-non-input')) {
-                const ch = (inputs[i] as HTMLInputElement).value;
-                value += ch || '_';
-            }
-        }
-        return value;
-    }
-    // If we contain multiple other extractions, concat them
-    const datas = getAllElementsWithAttribute(container, 'data-extraction');
-    if (datas.length > 0) {
-        let value = '';
-        for (let i = 0; i < datas.length; i++) {
-            value += datas[i].getAttribute('data-extraction');
-        }
-        return value;
-    }
-    // If we are just a destination div, the value will be cached
-    const cached = container.getAttribute('data-extraction');
-    if (cached != null) {
-        return cached;
-    }
-    // No recognized combo
-    console.error('Unrecognized value container: ' + container);
-    return '';
 }
 
 /**
@@ -336,7 +288,7 @@ function clickValidationButton(btn:HTMLButtonElement) {
         return;
     }
 
-    const value = getValueToValidate(ext);
+    const value = getValueFromTextContainer(ext, '_');
     const ready = isValueReady(btn, value);
 
     if (ready) {

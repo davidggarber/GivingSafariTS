@@ -13,6 +13,7 @@ export function textSetup() {
     setupLetterCells();
     setupLetterInputs();
     setupWordCells();
+    setupCopyExtracters();
     indexAllInputFields();
 }
 
@@ -621,6 +622,40 @@ function setupExtractPattern(extracted:Element) {
             var span = createLetterLiteral(numPattern[pi]['char'] as string);
             applyAllClasses(span, styles.literal);
             extracted.appendChild(span);
+        }
+    }
+}
+
+/**
+ * An alternative to pushed extractions is pulled "copy" extractions.
+ * At setup time, we need to identify any source elements, so they know to extract.
+ * All such elements will have the class copy-extractee. 
+ * The destinations already have the class copy-extracter.
+ * 
+ * Any element of class copy-extracter should also have a data-copy-id attribute.
+ * That attribute contains the ID, and possible modifiers, of another input that we will copy from.
+ * It can also contain multiple such IDs, separated by spaces.
+ * Each ID should have the format: <id>[.index][.sub-index], where
+ *   - id is the ID of the source element (or at least its letter-/word-cell parent)
+ *   - index, if present is the character index (ignoring whitespace) of any multi-letter inputs. 
+ *     If omitted, copy the entire contents of the source input.
+ *   - sub-index, if present, converts index to a word index (1-based), 
+ *     and the sub-index is the character index within the word.
+ */
+function setupCopyExtracters() {
+    const elmts = document.getElementsByClassName('copy-extracter');
+    for (let i = 0; i < elmts.length; i++) {
+        const elmt:HTMLElement = elmts[i] as HTMLElement;
+        const copyId = elmt.getAttribute('data-copy-id');
+        if (copyId) {
+            const copyIds = copyId.split(' ');
+            for (let c = 0; c < copyIds.length; c++) {
+                const srcId = copyIds[c].split('.')[0];
+                const src = document.getElementById(srcId);
+                if (src) {
+                    toggleClass(src, 'copy-extractee', true);
+                }
+            }
         }
     }
 }

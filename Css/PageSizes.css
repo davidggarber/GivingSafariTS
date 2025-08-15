@@ -307,6 +307,7 @@ body.build-error {
       right: 0.5in;
       box-shadow:0px 0px 5px fuchsia;
       z-index: 110; 
+      cursor: pointer;
   }
   .print #decoder-toggle {
     display: none;

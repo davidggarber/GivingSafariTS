@@ -3,11 +3,11 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.matrixFromElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.removeClassGlobally = exports.toggleClass = void 0;
-exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.hasInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = void 0;
-exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = void 0;
-exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = void 0;
+exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.showDecoder = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.matrixFromElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.removeClassGlobally = exports.toggleClass = void 0;
+exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.getValueFromTextContainer = exports.hasInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = void 0;
+exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = void 0;
+exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -1014,7 +1014,7 @@ function setupDecoderToggle(margins, mode) {
     }
     let toggle = document.getElementById('decoder-toggle');
     if (toggle == null && margins != null) {
-        toggle = document.createElement('a');
+        toggle = document.createElement('span');
         toggle.id = 'decoder-toggle';
         margins.appendChild(toggle);
     }
@@ -1026,26 +1026,32 @@ function setupDecoderToggle(margins, mode) {
         else {
             toggle.innerText = 'Show Decoders';
         }
-        toggle.href = 'javascript:toggleDecoder()';
+        toggle.addEventListener('click', toggleDecoder);
     }
 }
 exports.setupDecoderToggle = setupDecoderToggle;
 /**
- * Rotate to the next note visibility state.
+ * Alternate between showing and hiding the decoder iframe
  */
-function toggleDecoder(show) {
+function toggleDecoder(evt) {
     var visible = getDecoderState();
     if (visible === null) {
         setupDecoderToggle(null);
     }
-    if (show == null || show == undefined) {
-        setDecoderState(!visible);
-    }
-    else {
-        setDecoderState(show);
-    }
+    setDecoderState(!visible);
 }
 exports.toggleDecoder = toggleDecoder;
+/**
+ * Explicitly show or hide the decoder iframe
+ */
+function showDecoder(show) {
+    var visible = getDecoderState();
+    if (visible === null) {
+        setupDecoderToggle(null);
+    }
+    setDecoderState(show);
+}
+exports.showDecoder = showDecoder;
 var localCache = {
     letters: {},
     words: {},
@@ -2740,6 +2746,9 @@ function ExtractFromInput(input) {
             }
         }
     }
+    if (findParentOfClass(input, 'copy-extractee')) {
+        updateCopyExtractions();
+    }
 }
 /**
  * Ensure that two extraction sources are pointing at the same target.
@@ -3061,6 +3070,9 @@ function onWordKey(event) {
         var extractId = getOptionalStyle(input, 'data-extracted-id', undefined, 'extracted-');
         updateWordExtraction(extractId);
     }
+    if (findParentOfClass(input, 'copy-extractee')) {
+        updateCopyExtractions();
+    }
     CheckValidationReady(input, event.key);
     var code = event.code;
     if ((code == 'Enter' || code == 'NumpadEnter') && getOptionalStyle(input, 'data-show-ready')) {
@@ -3112,7 +3124,11 @@ function updateWordExtraction(extractedId) {
         let letters = '';
         for (let j = 0; j < indeces.length; j++) {
             const inp = input;
-            const letter = extractWordIndex(inp.value, indeces[j]);
+            let letter = inp.value;
+            if (indeces[j] !== '*') {
+                const i2 = indeces[j].split('.').map((s) => parseInt(s, 10));
+                letter = extractWordIndex(inp.value, i2[0], i2.length > 1 ? i2[1] : 0, '_', '');
+            }
             if (letter) {
                 letters += letter.toUpperCase();
                 ;
@@ -3142,43 +3158,106 @@ function updateWordExtraction(extractedId) {
 }
 exports.updateWordExtraction = updateWordExtraction;
 /**
- * Extract a single letter from an input. Either using an absolute index, or else a word.letter index.
+ * Extract a single letter from an input.
+ * Can have a simple or two-part index.
+ * Simple: an absolute index, starting at 1, ignoring whitespace
+ * Two-part: word# and letter#, both starting at 1
  * @param input User's input string
- * @param index Index rule: either one number (absolute index, starting at 1), or a decimal number (word.letter, each starting at 1)
+ * @param index The primary index (starting at 1)
+ * @param subIndex The secondary index (starting at 1), or 0 to only use the primary index
+ * @param ifBlank What to return from blank inputs
+ * @param ifOver What to return if the index is out of bounds
+ * @returns The extracted letter, or else the blank or over fallbacks
  */
-function extractWordIndex(input, index) {
-    if (index === '*') {
-        return input || '_';
+function extractWordIndex(input, index, subIndex, ifBlank, ifOver) {
+    if (!input.trim()) {
+        return ifBlank;
     }
-    const dot = index.split('.');
-    let letter_index;
-    if (dot.length == 2) {
-        let word_index = parseInt(dot[0]);
-        letter_index = parseInt(dot[1]) - 1;
+    else {
+        input = input.toUpperCase();
+    }
+    let letter_index = index;
+    if (subIndex > 0) {
+        letter_index = subIndex;
+        // Reduce input to just the desired word
         const words = input.split(' ');
         input = '';
         for (let i = 0; i < words.length; i++) {
             const word = words[i];
             if (words[i].length > 0) {
-                if (--word_index == 0) {
+                if (--index == 0) {
                     input = word;
                     break;
                 }
             }
         }
     }
-    else {
-        letter_index = parseInt(index) - 1;
+    for (let i = 0; i < input.length; i++) {
+        const ch = input[i];
+        if (ch.trim()) {
+            if (--letter_index == 0) {
+                return ch;
+            }
+        }
     }
-    if (letter_index < 0) {
-        return null; // bogus index
-    }
-    if (letter_index < input.length) {
-        return input[letter_index];
-    }
-    return '_';
+    // Index not reached
+    return ifOver;
 }
 exports.extractWordIndex = extractWordIndex;
+/**
+ * Find all elements tagged as copy-extracters.
+ * Read their copy-id rules, and fetch the data.
+ * Extracting from an empty input, or an invalid index within an input, will yield a blank.
+ * Extracters can have multiple source extractees, in which case missing partial data will generate spaces.
+ *
+ * Unlike push-extracters, which work in both directions, these copy-extracters only work in one direction.
+ * Changing the destination will not be reflected back into the source,
+ * since the primary intended use is indexes into longer entries.
+ */
+function updateCopyExtractions() {
+    const extracters = document.getElementsByClassName('copy-extracter');
+    for (let i = 0; i < extracters.length; i++) {
+        let extracter = extracters[i];
+        const ifBlank = getOptionalStyle(extracter, 'data-copy-blank', '') || '';
+        let buf = '';
+        let spaces = '';
+        const copyIds = (getOptionalStyle(extracter, 'data-copy-id', '') || '').split(' ');
+        for (let s = 0; s < copyIds.length; s++) {
+            const copyId = copyIds[s].split('.');
+            if (copyId[0]) {
+                let extractee = document.getElementById(copyId[0]);
+                let value = getValueFromTextContainer(extractee, '');
+                if (copyId.length == 2) {
+                    value = extractWordIndex(value, parseInt(copyId[1]), 0, '', '');
+                }
+                else if (copyId.length > 2) {
+                    value = extractWordIndex(value, parseInt(copyId[1]), parseInt(copyId[2]), ifBlank, ifBlank);
+                }
+                if (!value) {
+                    spaces += ' ';
+                }
+                else {
+                    buf += spaces + value;
+                    spaces = '';
+                }
+            }
+        }
+        if (!isTextInputElement(extracter)) {
+            let extracters = extracter?.getElementsByTagName('input');
+            if (!extracters || extracters.length == 0) {
+                throw new Error(`Element with copy-id=${copyIds} must be an input element, or a letter-/word-cell parent of one`);
+            }
+            else if (extracters.length > 1) {
+                throw new Error(`Element with copy-id=${copyIds} appears to be a container of multiple input elements`);
+            }
+            extracter = extracters[0];
+            if (!isTextInputElement(extracter)) {
+                throw new Error(`Element with copy-id=${copyIds} must be an input element, or a letter-/word-cell parent of one`);
+            }
+        }
+        extracter.value = buf.trim();
+    }
+}
 /**
  * Callback when user has changed the text in a letter-input
  * @param event A keyboard event
@@ -4048,6 +4127,58 @@ function findNextGroupInput(start, fwd, wrap, cls = undefined, clsSkip = undefin
     }
     return next;
 }
+/**
+ * Some functions want to flexibly pull values from various constructs:
+ *   - input elements
+ *   - containers of multiple input elements
+ * Extract an appropriate value to submit
+ * @param container The container of the text value.
+ * @param eachBlank The value to concatenate for each blank inputs.
+ * @returns The value, or concatenation of values.
+ */
+function getValueFromTextContainer(container, eachBlank) {
+    // If the extraction has alredy been cached, use it
+    // If container is an input, get its value
+    if (isTag(container, 'input')) {
+        return container.value;
+    }
+    if (isTag(container, 'textarea')) {
+        return container.value;
+    }
+    // If we contain multiple inputs, concat them
+    let inputs = container.getElementsByClassName('letter-input');
+    if (inputs.length == 0) {
+        inputs = container.getElementsByClassName('word-input');
+    }
+    if (inputs.length > 0) {
+        let value = '';
+        for (let i = 0; i < inputs.length; i++) {
+            if (!hasClass(inputs[i], 'letter-non-input')) {
+                const ch = inputs[i].value;
+                value += ch || eachBlank;
+            }
+        }
+        return value;
+    }
+    // If we contain multiple other extractions, concat them
+    const datas = getAllElementsWithAttribute(container, 'data-extraction');
+    if (datas.length > 0) {
+        let value = '';
+        for (let i = 0; i < datas.length; i++) {
+            value += datas[i].getAttribute('data-extraction');
+        }
+        return value;
+    }
+    // If we are just a destination div, the value will be cached
+    const cached = container.getAttribute('data-extraction');
+    if (cached != null) {
+        return cached;
+    }
+    // No recognized combo
+    console.error('Unrecognized value container: ' + container);
+    return '';
+}
+exports.getValueFromTextContainer = getValueFromTextContainer;
 /*-----------------------------------------------------------
  * _textSetup.ts
  *-----------------------------------------------------------*/
@@ -4061,6 +4192,7 @@ function textSetup() {
     setupLetterCells();
     setupLetterInputs();
     setupWordCells();
+    setupCopyExtracters();
     indexAllInputFields();
 }
 exports.textSetup = textSetup;
@@ -4602,6 +4734,39 @@ function setupExtractPattern(extracted) {
             var span = createLetterLiteral(numPattern[pi]['char']);
             applyAllClasses(span, styles.literal);
             extracted.appendChild(span);
+        }
+    }
+}
+/**
+ * An alternative to pushed extractions is pulled "copy" extractions.
+ * At setup time, we need to identify any source elements, so they know to extract.
+ * All such elements will have the class copy-extractee.
+ * The destinations already have the class copy-extracter.
+ *
+ * Any element of class copy-extracter should also have a data-copy-id attribute.
+ * That attribute contains the ID, and possible modifiers, of another input that we will copy from.
+ * It can also contain multiple such IDs, separated by spaces.
+ * Each ID should have the format: <id>[.index][.sub-index], where
+ *   - id is the ID of the source element (or at least its letter-/word-cell parent)
+ *   - index, if present is the character index (ignoring whitespace) of any multi-letter inputs.
+ *     If omitted, copy the entire contents of the source input.
+ *   - sub-index, if present, converts index to a word index (1-based),
+ *     and the sub-index is the character index within the word.
+ */
+function setupCopyExtracters() {
+    const elmts = document.getElementsByClassName('copy-extracter');
+    for (let i = 0; i < elmts.length; i++) {
+        const elmt = elmts[i];
+        const copyId = elmt.getAttribute('data-copy-id');
+        if (copyId) {
+            const copyIds = copyId.split(' ');
+            for (let c = 0; c < copyIds.length; c++) {
+                const srcId = copyIds[c].split('.')[0];
+                const src = document.getElementById(srcId);
+                if (src) {
+                    toggleClass(src, 'copy-extractee', true);
+                }
+            }
         }
     }
 }
@@ -8941,7 +9106,7 @@ function validateInputReady(btn, key) {
         console.error('Button ' + btn.id + ' missing a valid "data-extracted-id" linking to its source: ' + id);
         return;
     }
-    const value = getValueToValidate(ext);
+    const value = getValueFromTextContainer(ext, '_');
     const ready = isValueReady(btn, value);
     consoleTrace(`Value ${value} is ${ready ? "" : "NOT "} ready`);
     toggleClass(btn, 'ready', ready);
@@ -8953,54 +9118,6 @@ function validateInputReady(btn, key) {
     }
 }
 exports.validateInputReady = validateInputReady;
-/**
- * Submit buttons can be associated with various constructs.
- * Extract an appropriate value to submit
- * @param container The container of the value to submit.
- * @returns The value, or concatenation of values.
- */
-function getValueToValidate(container) {
-    // If the extraction has alredy been cached, use it
-    // If container is an input, get its value
-    if (isTag(container, 'input')) {
-        return container.value;
-    }
-    if (isTag(container, 'textarea')) {
-        return container.value;
-    }
-    // If we contain multiple inputs, concat them
-    let inputs = container.getElementsByClassName('letter-input');
-    if (inputs.length == 0) {
-        inputs = container.getElementsByClassName('word-input');
-    }
-    if (inputs.length > 0) {
-        let value = '';
-        for (let i = 0; i < inputs.length; i++) {
-            if (!hasClass(inputs[i], 'letter-non-input')) {
-                const ch = inputs[i].value;
-                value += ch || '_';
-            }
-        }
-        return value;
-    }
-    // If we contain multiple other extractions, concat them
-    const datas = getAllElementsWithAttribute(container, 'data-extraction');
-    if (datas.length > 0) {
-        let value = '';
-        for (let i = 0; i < datas.length; i++) {
-            value += datas[i].getAttribute('data-extraction');
-        }
-        return value;
-    }
-    // If we are just a destination div, the value will be cached
-    const cached = container.getAttribute('data-extraction');
-    if (cached != null) {
-        return cached;
-    }
-    // No recognized combo
-    console.error('Unrecognized value container: ' + container);
-    return '';
-}
 /**
  * Is this value complete, such that submitting is possible?
  * @param btn The button to submit
@@ -9041,7 +9158,7 @@ function clickValidationButton(btn) {
     if (!ext) {
         return;
     }
-    const value = getValueToValidate(ext);
+    const value = getValueFromTextContainer(ext, '_');
     const ready = isValueReady(btn, value);
     if (ready) {
         const now = new Date();
@@ -11802,9 +11919,11 @@ const inputAttributeConversions = {
             block: 'block',
             literal: 'literal',
             extract: 'extract',
+            'copy-id': 'copy-extracter',
         },
         spanRename: {
-            'extracted-id': 'data-extracted-id', // Destination of extraction
+            'extracted-id': 'data-extracted-id',
+            'copy-id': 'data-copy-id', // Source of extraction
         },
         optionalStyle: {
             '': 'letter',
@@ -11853,11 +11972,13 @@ const inputAttributeConversions = {
         spanClass: {
             '': 'word-cell',
             literal: 'literal',
+            'copy-id': 'copy-extracter',
             // TODO: numbers (destination)
         },
         spanRename: {
             extract: 'data-extract-index',
-            'extracted-id': 'data-extracted-id', // Destination of extraction
+            'extracted-id': 'data-extracted-id',
+            'copy-id': 'data-copy-id', // Source of extraction
         },
         specialCases: {
             literal: specialLiterals,
@@ -11899,6 +12020,7 @@ const inputAttributeConversions = {
             word: 'value',
             letter: 'value',
             letters: 'value',
+            'copy-id': 'data-copy-id', // Source of extraction
         },
         optionalStyle: {
             '': 'hidden',

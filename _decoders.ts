@@ -50,9 +50,9 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:boolean|st
         document.getElementsByTagName('body')[0]?.appendChild(iframe);
     }
 
-    let toggle = document.getElementById('decoder-toggle') as HTMLAnchorElement;
+    let toggle = document.getElementById('decoder-toggle') as HTMLSpanElement;
     if (toggle == null && margins != null) {
-        toggle = document.createElement('a');
+        toggle = document.createElement('span');
         toggle.id = 'decoder-toggle';
         margins.appendChild(toggle);
     }
@@ -64,23 +64,29 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:boolean|st
         else {
             toggle.innerText = 'Show Decoders';
         }
-        toggle.href = 'javascript:toggleDecoder()';
+        toggle.addEventListener('click', toggleDecoder)
     }
 }
 
 /**
- * Rotate to the next note visibility state.
+ * Alternate between showing and hiding the decoder iframe
  */
-export function toggleDecoder(show:boolean|null) {
+export function toggleDecoder(evt: PointerEvent) {
     var visible = getDecoderState();
     if (visible === null) {
         setupDecoderToggle(null);
     }
-    if (show == null || show == undefined) {
-        setDecoderState(!visible);
+    setDecoderState(!visible);
+}
+
+/**
+ * Explicitly show or hide the decoder iframe
+ */
+export function showDecoder(show: boolean) {
+    var visible = getDecoderState();
+    if (visible === null) {
+        setupDecoderToggle(null);
     }
-    else {
-        setDecoderState(show);
-    }
+    setDecoderState(show);
 }
 

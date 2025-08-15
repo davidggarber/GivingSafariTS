@@ -35,9 +35,11 @@ const inputAttributeConversions = {
       block: 'block',
       literal: 'literal',
       extract: 'extract',
+      'copy-id': 'copy-extracter',
     },
     spanRename: {
       'extracted-id': 'data-extracted-id', // Destination of extraction
+      'copy-id': 'data-copy-id', // Source of extraction
     },
     optionalStyle: {
       '': 'letter',
@@ -87,11 +89,13 @@ const inputAttributeConversions = {
     spanClass: {
       '': 'word-cell',
       literal: 'literal',
+      'copy-id': 'copy-extracter',
       // TODO: numbers (destination)
     },
     spanRename: {
       extract: 'data-extract-index',       // Either letter index, or word.letter index
       'extracted-id': 'data-extracted-id', // Destination of extraction
+      'copy-id': 'data-copy-id', // Source of extraction
     },
     specialCases: {
       literal: specialLiterals,
@@ -135,6 +139,7 @@ const inputAttributeConversions = {
       word: 'value',
       letter: 'value',
       letters: 'value',
+      'copy-id': 'data-copy-id', // Source of extraction
     },
     optionalStyle: {
       '': 'hidden',
