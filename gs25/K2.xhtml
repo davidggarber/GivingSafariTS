@@ -16,7 +16,6 @@
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
-          checkMarks: true,
         },
         reactiveBuilder: 'pageBody',
         lookup: {
@@ -42,6 +41,26 @@
           ]
         },
       };
+
+      function pasteChar(ch) {
+        const selection = document.getSelection();
+        if (selection) {
+          let input = selection.focusNode;
+          if (input) {
+            if (!isTextInputElement(input)) {
+              input = input.getElementsByTagName('input')[0];
+            }
+            if (findParentOfClass(input, 'letter-cell')) {
+              input.value = ch;
+            }
+            else if (input) {
+              input.value += ch;
+            }
+            input.focus();
+          }
+        }
+      }
+
     </script>
     <style>
       #Local {
@@ -71,6 +90,13 @@
           }
         }
 
+        .letter-cell.letter-hover {
+          background-color: transparent;
+        }
+        .letter-cell.letter-hover:has(input:focus) {
+          background-color: gold;
+          color: black;
+        }
         .letter-hover {
           background-color: transparent;
         }
@@ -81,6 +107,7 @@
           width: 31px;
           height: 31px;
           border-radius: 12px;
+          font-size: 26pt;
         }
 
         #letters {
@@ -91,6 +118,7 @@
           display: inline-block;
           position: relative;
           width: 0.2in;
+          cursor: pointer;
         }
         .check {
           left: 0px;
@@ -199,7 +227,7 @@
       <p id="letters">
         <img src="K2/up.png" style="height: 0.5in; margin-bottom: 12px;" /><br />
         <for char="ch" in="{letters}">
-          <span class="option no-user-select cross-off">{ch}</span>
+          <span class="option no-user-select" onclick="pasteChar('{ch}')">{ch}</span>
         </for>
       </p>
 

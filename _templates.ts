@@ -266,8 +266,8 @@ function finalAnswerTemplate() :HTMLTemplateElement {
   temp.innerHTML = 
     `<div class="no-print validate-block" style="position:absolute; bottom:{bottom}; left:{left};">
       Submit: 
-      <word id="final-answer" class="extracted" data-show-ready="submit-answer" style="width:{width};" />
-      <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">OK</button>
+      <word id="__final-answer" class="extracted" data-show-ready="__submit-answer" style="width:{width};" />
+      <button class="validater ready" id="__submit-answer" data-extracted-id="__final-answer">OK</button>
     </div>`;
   return temp;
 }

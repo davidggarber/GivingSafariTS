@@ -4,10 +4,10 @@
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.showDecoder = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.matrixFromElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.removeClassGlobally = exports.toggleClass = void 0;
-exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.getValueFromTextContainer = exports.hasInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = void 0;
-exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = void 0;
-exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = void 0;
+exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.getValueFromTextContainer = exports.hasInputGroup = exports.arrowFromInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = void 0;
+exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = void 0;
+exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -2307,65 +2307,7 @@ function onLetterKeyDown(event) {
     }
     else {
         if (code == 'Backspace' || code == 'Space') {
-            if (code == 'Space') {
-                // Make sure user isn't just typing a space between words
-                prior = findNextOfClass(input, 'letter-input', undefined, -1);
-                if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
-                    var lit = prior.getAttribute('data-literal');
-                    if (lit == ' ' || lit == '¶') { // match any space-like things  (lit == '¤'?)
-                        prior = findNextOfClass(prior, 'letter-input', 'literal', -1);
-                        if (prior != null && prior.value != '') {
-                            // This looks much more like a simple space between words
-                            event.preventDefault();
-                            return;
-                        }
-                    }
-                }
-            }
-            // Delete only deletes the current cell
-            // Space deletes and moves forward
-            prior = null;
-            var dxDel = code == 'Backspace' ? -plusX : plusX;
-            var dyDel = code == 'Backspace' ? -1 : 1;
-            if (priorInputValue.length == 0) {
-                var discoverRoot = findParentOfClass(input, 'letter-grid-discover');
-                if (discoverRoot != null) {
-                    prior = findParentOfClass(input, 'vertical')
-                        ? findNextByPosition(discoverRoot, input, 0, dyDel, 'letter-input', 'letter-non-input')
-                        : findNextByPosition(discoverRoot, input, dxDel, 0, 'letter-input', 'letter-non-input');
-                }
-                else {
-                    prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel);
-                    if (!prior) {
-                        const loop = findParentOfClass(input, 'loop-navigation');
-                        if (loop) {
-                            prior = findFirstChildOfClass(loop, 'letter-input', 'letter-non-input', dxDel);
-                        }
-                    }
-                }
-                ExtractFromInput(input);
-                if (prior !== null) {
-                    moveFocus(prior);
-                    input = prior; // fall through
-                }
-            }
-            if (input != null && input.value.length > 0) {
-                if (!hasClass(input.parentNode, 'multiple-letter')) {
-                    // Backspace should clear most cells
-                    input.value = '';
-                }
-                else if (prior != null) {
-                    // If backspacing across cells, into a multiple-letter cell, just remove the last character
-                    // REVIEW: should this behavior also apply when starting in multi-letter cells?
-                    if (dyDel < 0) {
-                        input.value = input.value.substring(0, input.value.length - 1);
-                    }
-                    else {
-                        input.value = input.value.substring(1);
-                    }
-                }
-            }
-            afterInputUpdate(input, event.key);
+            spaceOverNextInput(input, code);
             event.preventDefault();
             return;
         }
@@ -2388,11 +2330,11 @@ function onLetterKeyDown(event) {
     if (processArrowKeys(input, event, true)) {
         return;
     }
-    if (code == 'CapsLock') {
-        // CapsLock toggles directions
-        setCurrentInputGroup(input);
-        return;
-    }
+    // if (code == 'CapsLock') {
+    //     // CapsLock toggles directions
+    //     setCurrentInputGroup(input);
+    //     return;
+    // }
     if (findParentOfClass(input, 'digit-only')) {
         if (event.key.length == 1 && !event.ctrlKey && !event.altKey
             && (event.key >= 'A' && event.key < 'Z' || event.key > 'a' && event.key < 'z')) {
@@ -2439,6 +2381,10 @@ function processArrowKeys(start, event, verticalOnly = false) {
     if (code == undefined || code == '') {
         code = event.key; // Mobile doesn't use code
     }
+    if (arrowFromInputGroup(start, code)) {
+        event.preventDefault(); // Don't cause cursor movement within the cell
+        return true;
+    }
     var inpClass = 'word-input letter-input';
     let skipClass;
     if (!findParentOfClass(start, 'navigate-literals')) {
@@ -2474,11 +2420,11 @@ function processArrowKeys(start, event, verticalOnly = false) {
         return true;
     }
     else if (code == 'Home') {
-        moveFocus(findRowEndInput(start, -1, event.ctrlKey));
+        moveFocus(findRowEndInput(start, -plusX, event.ctrlKey));
         return true;
     }
     else if (code == 'End') {
-        moveFocus(findRowEndInput(start, 1, event.ctrlKey));
+        moveFocus(findRowEndInput(start, plusX, event.ctrlKey));
         return true;
     }
     return false;
@@ -2594,10 +2540,10 @@ function onLetterKey(evt) {
         // TODO: Add special-case exception to wrap around from end back to start
         return true;
     }
-    if (code == 'CapsLock') {
-        // Do nothing. User hasn't typed
-        return true;
-    }
+    // if (code == 'CapsLock') {
+    //     // Do nothing. User hasn't typed
+    //     return true;
+    // }
     if (isArrowKey(code)) {
         // Do nothing. Navigation happened on key down.
         return true;
@@ -3378,6 +3324,15 @@ function findNextInput(start, dx, dy, cls, clsSkip) {
  * @returns An element on this row
  */
 function findRowEndInput(start, dx, global) {
+    if (!global && currentInputGroup) {
+        // Go to start or end of group
+        let row = getInputGroupMembers(currentInputGroup);
+        if ((plusX * dxFromGroup(currentInputGroup) < 0) || (dyFromGroup(currentInputGroup) < 0)) {
+            // Group goes backward
+            dx = -dx;
+        }
+        return (dx > 0 ? row[row.length - 1] : row[0]);
+    }
     const root2d = GetArrowKeyRoot(start);
     if (root2d) {
         let row;
@@ -3390,6 +3345,107 @@ function findRowEndInput(start, dx, global) {
         return (dx > 0 ? row[row.length - 1] : row[0]);
     }
     return findEndInContainer(start, 'letter-input', 'letter-non-input', 'letter-cell-block', -dx);
+}
+/**
+ * Space and Backspace are both ways to clear input fields.
+ * Space clears forwards. Backspace clears backwards.
+ * Both will first clear the current cell. If already empty, then move.
+ * Edge cases:
+ *  - In multi-letter cells, backspace removes just one letter until empty. Then moves.
+ *  - Space within a pattern that contains spaces at that point are ignored.
+ * @param input The input where the user typed
+ * @param code Either 'Space' or 'Backspace'
+ * @returns True if position moved. False if treated as a no-op.
+ */
+function spaceOverNextInput(input, code) {
+    let prior = null;
+    if (code == 'Space') {
+        // Make sure user isn't just typing a space between words
+        prior = findNextOfClass(input, 'letter-input', undefined, -1);
+        if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
+            var lit = prior.getAttribute('data-literal');
+            if (lit == ' ' || lit == '¶') { // match any space-like things  (lit == '¤'?)
+                prior = findNextOfClass(prior, 'letter-input', 'literal', -1);
+                if (prior != null && prior.value != '') {
+                    // This looks much more like a simple space between words
+                    return false;
+                }
+            }
+        }
+    }
+    if (input != null && currentInputGroup) {
+        // Space and backspace at the end of a group no longer need to obey the group.
+        let row = getInputGroupMembers(currentInputGroup);
+        let index = row.indexOf(input);
+        if (index >= 0) {
+            if (code == 'Backspace') {
+                // Clear current if not empty, else move back and clear that
+                if (input.value.length == 0 && index > 0) {
+                    input = row[index - 1];
+                    moveFocus(input);
+                }
+            }
+            else {
+                // Clear current if not empty, else move forward and clear that
+                if (input.value.length == 0 && index < row.length - 1) {
+                    input = row[index + 1];
+                    moveFocus(input);
+                }
+            }
+            if (input.value.length > 0) {
+                // Clear current if not empty
+                input.value = '';
+                afterInputUpdate(input, code);
+            }
+            return true;
+        }
+        return false;
+    }
+    // Delete only deletes the current cell
+    // Space deletes and moves forward
+    prior = null;
+    var dxDel = code == 'Backspace' ? -plusX : plusX;
+    var dyDel = code == 'Backspace' ? -1 : 1;
+    if (priorInputValue.length == 0) {
+        var discoverRoot = findParentOfClass(input, 'letter-grid-discover');
+        if (discoverRoot != null) {
+            prior = findParentOfClass(input, 'vertical')
+                ? findNextByPosition(discoverRoot, input, 0, dyDel, 'letter-input', 'letter-non-input')
+                : findNextByPosition(discoverRoot, input, dxDel, 0, 'letter-input', 'letter-non-input');
+        }
+        else {
+            prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel);
+            if (!prior) {
+                const loop = findParentOfClass(input, 'loop-navigation');
+                if (loop) {
+                    prior = findFirstChildOfClass(loop, 'letter-input', 'letter-non-input', dxDel);
+                }
+            }
+        }
+        ExtractFromInput(input);
+        if (prior !== null) {
+            moveFocus(prior);
+            input = prior; // fall through
+        }
+    }
+    if (input != null && input.value.length > 0) {
+        if (!hasClass(input.parentNode, 'multiple-letter')) {
+            // Backspace should clear most cells
+            input.value = '';
+        }
+        else if (prior != null) {
+            // If backspacing across cells, into a multiple-letter cell, just remove the last character
+            // REVIEW: should this behavior also apply when starting in multi-letter cells?
+            if (dyDel < 0) {
+                input.value = input.value.substring(0, input.value.length - 1);
+            }
+            else {
+                input.value = input.value.substring(1);
+            }
+        }
+    }
+    afterInputUpdate(input, code);
+    return true;
 }
 /**
  * Achieve ctrl+left/right functionality, attempting to jump past any inputs left in the current group.
@@ -3936,6 +3992,12 @@ function getCurrentInputGroup(elmt) {
     }
     return groups[0];
 }
+/**
+ * Set which element group the user is inputting into.
+ * An element can be part of multiple groups. Usually, associated with differing directions.
+ * If the same element is selected repeatedly, rotate among the associated groups.
+ * @param elmt The element with the selection
+ */
 function setCurrentInputGroup(elmt) {
     let newGroup = null;
     if (inputGroupElement != elmt) {
@@ -3965,8 +4027,67 @@ function setCurrentInputGroup(elmt) {
     inputGroupElement = newGroup ? elmt : null;
 }
 exports.setCurrentInputGroup = setCurrentInputGroup;
-function highlightInputGroupMembers() {
+const oppositeDirectionPrefix = {
+    'u': 'd',
+    'd': 'u',
+    'l': 'r',
+    'r': 'l'
+};
+/**
+ * When in an element group, arrow keys have additional meanings.
+ * Arrow keys aligned with the group direction move within the group.
+ * Arrow keys aligned with an alternate direction can indicate a different group.
+ * In that case, switch groups, but do not move.
+ * If the arrow does not match an alternate direction, simply move.
+ * @param elmt The element with the selection
+ * @param key The key that was pressed from within that element
+ * @returns True if the arrow only switches group. False if it moves the selection.
+ */
+function arrowFromInputGroup(elmt, code) {
+    if (!currentInputGroup) {
+        return false;
+    }
+    let prevPrefix = currentInputGroup.split(':')[0];
+    if (!prevPrefix) {
+        return false; // Current group doesn't use directions
+    }
+    if (!code.startsWith('Arrow')) {
+        return false;
+    }
+    let dirPrefix = code.substring(5, 6).toLowerCase();
+    if (!(dirPrefix in oppositeDirectionPrefix)) {
+        return false; // ?!
+    }
+    if (prevPrefix[0] == dirPrefix) {
+        // Arrow is consistent with group direction
+        return false; // Let normal movement do its thing
+    }
+    if (prevPrefix[0] == oppositeDirectionPrefix[dirPrefix]) {
+        // Arrow is consistent with group direction
+        return false; // Let normal movement do its thing
+    }
+    // Look for an alternate group
+    const inputGroups = getOptionalStyle(elmt, 'data-input-groups') || '';
+    const groups = inputGroups.split(' ');
+    for (let i = 0; i < groups.length; i++) {
+        const groupName = groups[i];
+        let parts = groupName.split(':');
+        if (parts.length > 1) {
+            if (parts[0][0] == dirPrefix) {
+                // TODO: switch groups, don't move
+                removeClassGlobally('input-group');
+                const members = getInputGroupMembers(groupName);
+                for (let i = 0; i < members.length; i++) {
+                    toggleClass(members[i], 'input-group', true);
+                }
+                currentInputGroup = groupName;
+                return true;
+            }
+        }
+    }
+    return false;
 }
+exports.arrowFromInputGroup = arrowFromInputGroup;
 /**
  * Get the part of an input group name that should be consistent for all members of the group.
  * @param group An input group name
@@ -12670,8 +12791,8 @@ function finalAnswerTemplate() {
     temp.innerHTML =
         `<div class="no-print validate-block" style="position:absolute; bottom:{bottom}; left:{left};">
       Submit: 
-      <word id="final-answer" class="extracted" data-show-ready="submit-answer" style="width:{width};" />
-      <button class="validater ready" id="submit-answer" data-extracted-id="final-answer">OK</button>
+      <word id="__final-answer" class="extracted" data-show-ready="__submit-answer" style="width:{width};" />
+      <button class="validater ready" id="__submit-answer" data-extracted-id="__final-answer">OK</button>
     </div>`;
     return temp;
 }

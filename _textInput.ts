@@ -113,68 +113,9 @@ export function onLetterKeyDown(event: KeyboardEvent) {
     }
     else {
         if (code == 'Backspace' || code == 'Space') {
-            if (code == 'Space') {
-                // Make sure user isn't just typing a space between words
-                prior = findNextOfClass(input, 'letter-input', undefined, -1) as HTMLInputElement;
-                if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
-                    var lit = prior.getAttribute('data-literal');
-                    if (lit == ' ' || lit == '¶') {  // match any space-like things  (lit == '¤'?)
-                        prior = findNextOfClass(prior, 'letter-input', 'literal', -1) as HTMLInputElement;
-                        if (prior != null && prior.value != '') {
-                            // This looks much more like a simple space between words
-                            event.preventDefault();
-                            return;    
-                        }
-                    }
-                }
-            }
-            
-            // Delete only deletes the current cell
-            // Space deletes and moves forward
-            prior = null;
-            var dxDel = code == 'Backspace' ? -plusX : plusX;
-            var dyDel = code == 'Backspace' ? -1 : 1;
-            if (priorInputValue.length == 0) {
-                var discoverRoot = findParentOfClass(input, 'letter-grid-discover');
-                if (discoverRoot != null) {
-                    prior = findParentOfClass(input, 'vertical')
-                        ? findNextByPosition(discoverRoot, input, 0, dyDel, 'letter-input', 'letter-non-input') as TextInputElement
-                        : findNextByPosition(discoverRoot, input, dxDel, 0, 'letter-input', 'letter-non-input') as TextInputElement;
-                }
-                else {
-                    prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel) as HTMLInputElement;
-                    if (!prior) {
-                        const loop = findParentOfClass(input, 'loop-navigation');
-                        if (loop) {
-                            prior = findFirstChildOfClass(loop, 'letter-input', 'letter-non-input', dxDel) as HTMLInputElement;
-                        }
-                    }
-                }
-                ExtractFromInput(input);
-                if (prior !== null) {
-                    moveFocus(prior);
-                    input = prior;  // fall through
-                }
-            }
-            if (input != null && input.value.length > 0) {
-                if (!hasClass(input.parentNode as Element, 'multiple-letter')) {
-                    // Backspace should clear most cells
-                    input.value = '';
-                }
-                else if (prior != null) {
-                    // If backspacing across cells, into a multiple-letter cell, just remove the last character
-                    // REVIEW: should this behavior also apply when starting in multi-letter cells?
-                    if (dyDel < 0) {
-                        input.value = input.value.substring(0, input.value.length - 1);
-                    }
-                    else {
-                        input.value = input.value.substring(1);
-                    }
-                }
-            }
-            afterInputUpdate(input, event.key);
+            spaceOverNextInput(input, code);
             event.preventDefault();
-            return;
+            return;    
         }
 
         if (event.key.length == 1) {
@@ -199,11 +140,11 @@ export function onLetterKeyDown(event: KeyboardEvent) {
         return;
     }
 
-    if (code == 'CapsLock') {
-        // CapsLock toggles directions
-        setCurrentInputGroup(input);
-        return;
-    }
+    // if (code == 'CapsLock') {
+    //     // CapsLock toggles directions
+    //     setCurrentInputGroup(input);
+    //     return;
+    // }
 
     if (findParentOfClass(input, 'digit-only')) {
         if (event.key.length == 1 && !event.ctrlKey && !event.altKey
@@ -254,6 +195,11 @@ function processArrowKeys(start:ArrowKeyElement, event:KeyboardEvent, verticalOn
         code = event.key;  // Mobile doesn't use code
     }
 
+    if (arrowFromInputGroup(start, code)) {
+        event.preventDefault();  // Don't cause cursor movement within the cell
+        return true;
+    }
+
     var inpClass = 'word-input letter-input';
     let skipClass:string|undefined;
     if (!findParentOfClass(start, 'navigate-literals')) {
@@ -291,11 +237,11 @@ function processArrowKeys(start:ArrowKeyElement, event:KeyboardEvent, verticalOn
         return true;
     }
     else if (code == 'Home') {
-        moveFocus(findRowEndInput(start, -1, event.ctrlKey));
+        moveFocus(findRowEndInput(start, -plusX, event.ctrlKey));
         return true;
     }
     else if (code == 'End') {
-        moveFocus(findRowEndInput(start, 1, event.ctrlKey));
+        moveFocus(findRowEndInput(start, plusX, event.ctrlKey));
         return true;
     }
     return false;
@@ -419,10 +365,10 @@ export function onLetterKey(evt:KeyboardEvent): boolean {
         // TODO: Add special-case exception to wrap around from end back to start
         return true;
     }
-    if (code == 'CapsLock') {
-        // Do nothing. User hasn't typed
-        return true;
-    }
+    // if (code == 'CapsLock') {
+    //     // Do nothing. User hasn't typed
+    //     return true;
+    // }
     if (isArrowKey(code)) {
         // Do nothing. Navigation happened on key down.
         return true;
@@ -1264,6 +1210,16 @@ function findNextInput( start: ArrowKeyElement,
  */
 function findRowEndInput(start: ArrowKeyElement, dx: number, global:boolean)
                             : ArrowKeyElement {
+    if (!global && currentInputGroup) {
+        // Go to start or end of group
+        let row = getInputGroupMembers(currentInputGroup)
+        if ((plusX * dxFromGroup(currentInputGroup) < 0) || (dyFromGroup(currentInputGroup) < 0)) {
+            // Group goes backward
+            dx = -dx;
+        }
+        return (dx > 0 ? row[row.length - 1] : row[0]);
+    }
+    
     const root2d = GetArrowKeyRoot(start);
     if (root2d) {
         let row:ArrowKeyElement[];
@@ -1277,6 +1233,110 @@ function findRowEndInput(start: ArrowKeyElement, dx: number, global:boolean)
         return (dx > 0 ? row[row.length - 1] : row[0]);
     }
     return findEndInContainer(start, 'letter-input', 'letter-non-input', 'letter-cell-block', -dx) as ArrowKeyElement;
+}
+
+/**
+ * Space and Backspace are both ways to clear input fields.
+ * Space clears forwards. Backspace clears backwards.
+ * Both will first clear the current cell. If already empty, then move.
+ * Edge cases:
+ *  - In multi-letter cells, backspace removes just one letter until empty. Then moves.
+ *  - Space within a pattern that contains spaces at that point are ignored.
+ * @param input The input where the user typed
+ * @param code Either 'Space' or 'Backspace'
+ * @returns True if position moved. False if treated as a no-op.
+ */
+function spaceOverNextInput(input: TextInputElement, code: string) {
+    let prior: TextInputElement|null = null;
+    if (code == 'Space') {
+        // Make sure user isn't just typing a space between words
+        prior = findNextOfClass(input, 'letter-input', undefined, -1) as HTMLInputElement;
+        if (prior != null && hasClass(prior, 'letter-non-input') && findNextOfClass(prior, 'letter-input') == input) {
+            var lit = prior.getAttribute('data-literal');
+            if (lit == ' ' || lit == '¶') {  // match any space-like things  (lit == '¤'?)
+                prior = findNextOfClass(prior, 'letter-input', 'literal', -1) as HTMLInputElement;
+                if (prior != null && prior.value != '') {
+                    // This looks much more like a simple space between words
+                    return false;
+                }
+            }
+        }
+    }
+
+    if (input != null && currentInputGroup) {
+        // Space and backspace at the end of a group no longer need to obey the group.
+        let row = getInputGroupMembers(currentInputGroup)
+        let index = row.indexOf(input);
+        if (index >= 0) {
+            if (code == 'Backspace') {
+                // Clear current if not empty, else move back and clear that
+                if (input.value.length == 0 && index > 0) {
+                    input = row[index - 1] as TextInputElement;
+                    moveFocus(input);
+                }
+            }
+            else  {
+                // Clear current if not empty, else move forward and clear that
+                if (input.value.length == 0 && index < row.length - 1) {
+                    input = row[index + 1] as TextInputElement;
+                    moveFocus(input);
+                }
+            }
+            if (input.value.length > 0) {
+                // Clear current if not empty
+                input.value = '';
+                afterInputUpdate(input, code);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    // Delete only deletes the current cell
+    // Space deletes and moves forward
+    prior = null;
+    var dxDel = code == 'Backspace' ? -plusX : plusX;
+    var dyDel = code == 'Backspace' ? -1 : 1;
+    if (priorInputValue.length == 0) {
+        var discoverRoot = findParentOfClass(input, 'letter-grid-discover');
+        if (discoverRoot != null) {
+            prior = findParentOfClass(input, 'vertical')
+                ? findNextByPosition(discoverRoot, input, 0, dyDel, 'letter-input', 'letter-non-input') as TextInputElement
+                : findNextByPosition(discoverRoot, input, dxDel, 0, 'letter-input', 'letter-non-input') as TextInputElement;
+        }
+        else {
+            prior = findNextOfClassGroup(input, 'letter-input', 'letter-non-input', 'text-input-group', dxDel) as HTMLInputElement;
+            if (!prior) {
+                const loop = findParentOfClass(input, 'loop-navigation');
+                if (loop) {
+                    prior = findFirstChildOfClass(loop, 'letter-input', 'letter-non-input', dxDel) as HTMLInputElement;
+                }
+            }
+        }
+        ExtractFromInput(input);
+        if (prior !== null) {
+            moveFocus(prior);
+            input = prior;  // fall through
+        }
+    }
+    if (input != null && input.value.length > 0) {
+        if (!hasClass(input.parentNode as Element, 'multiple-letter')) {
+            // Backspace should clear most cells
+            input.value = '';
+        }
+        else if (prior != null) {
+            // If backspacing across cells, into a multiple-letter cell, just remove the last character
+            // REVIEW: should this behavior also apply when starting in multi-letter cells?
+            if (dyDel < 0) {
+                input.value = input.value.substring(0, input.value.length - 1);
+            }
+            else {
+                input.value = input.value.substring(1);
+            }
+        }
+    }
+    afterInputUpdate(input, code);
+    return true;
 }
 
 /**
@@ -1882,6 +1942,12 @@ function getCurrentInputGroup(elmt: ArrowKeyElement) : string|null {
     return groups[0];
 }
 
+/**
+ * Set which element group the user is inputting into.
+ * An element can be part of multiple groups. Usually, associated with differing directions.
+ * If the same element is selected repeatedly, rotate among the associated groups.
+ * @param elmt The element with the selection
+ */
 export function setCurrentInputGroup(elmt: ArrowKeyElement) {
     let newGroup:string|null = null;
     if (inputGroupElement != elmt) {
@@ -1911,8 +1977,70 @@ export function setCurrentInputGroup(elmt: ArrowKeyElement) {
     inputGroupElement = newGroup ? elmt : null;
 }
 
-function highlightInputGroupMembers() {
+const oppositeDirectionPrefix: {[key: string]: string} = {
+    'u': 'd',
+    'd': 'u',
+    'l': 'r',
+    'r': 'l'
+};
 
+/**
+ * When in an element group, arrow keys have additional meanings.
+ * Arrow keys aligned with the group direction move within the group.
+ * Arrow keys aligned with an alternate direction can indicate a different group.
+ * In that case, switch groups, but do not move.
+ * If the arrow does not match an alternate direction, simply move.
+ * @param elmt The element with the selection
+ * @param key The key that was pressed from within that element
+ * @returns True if the arrow only switches group. False if it moves the selection.
+ */
+export function arrowFromInputGroup(elmt: ArrowKeyElement, code:string):boolean {
+    if (!currentInputGroup) {
+        return false;
+    }
+    let prevPrefix = currentInputGroup.split(':')[0];
+    if (!prevPrefix) {
+        return false;  // Current group doesn't use directions
+    }
+
+    if (!code.startsWith('Arrow')) {
+        return false;
+    }
+    let dirPrefix = code.substring(5, 6).toLowerCase();
+    if (!(dirPrefix in oppositeDirectionPrefix)) {
+        return false;  // ?!
+    }
+
+    if (prevPrefix[0] == dirPrefix) {
+        // Arrow is consistent with group direction
+        return false;  // Let normal movement do its thing
+    }
+    if (prevPrefix[0] == oppositeDirectionPrefix[dirPrefix]) {
+        // Arrow is consistent with group direction
+        return false;  // Let normal movement do its thing
+    }
+
+    // Look for an alternate group
+    const inputGroups = getOptionalStyle(elmt, 'data-input-groups') || '';
+    const groups = inputGroups.split(' ');
+    for (let i = 0; i < groups.length; i++) {
+        const groupName = groups[i];
+        let parts = groupName.split(':');
+        if (parts.length > 1) {
+            if (parts[0][0] == dirPrefix) {
+                // TODO: switch groups, don't move
+                removeClassGlobally('input-group');
+                const members = getInputGroupMembers(groupName);
+                for (let i = 0; i < members.length; i++) {
+                    toggleClass(members[i], 'input-group', true);
+                }
+                currentInputGroup = groupName;
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 /**
