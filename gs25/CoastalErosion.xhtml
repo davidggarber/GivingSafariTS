@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/cte.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Coastal Erosion',
+        author: 'Martyn Lovell',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          colors: [
+            'bxxxrxxx',
+            'xxrxxxbx',
+            'rxxxbxxx',
+            'xxbxxxxr',
+            'xxxxbrxx',
+            'xrxxxxbx',
+            'xxbxxxxr',
+            'xxbxxrxx',
+          ],
+          borders: [
+            'xxbbxbxb',
+            'xxbbxbbb',
+            'xxxxxbxx',
+            'rxxxbbxx',
+            'rrxxxxxx',
+            'rrrrxxbx',
+            'rrrrxxbx',
+            'rrxxxxxx',
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        .flavor {
+          font-style: italic;
+        }
+        .feeder-list {
+          margin-left: 0.5in;
+        }
+        #table {
+          margin-left: 1in;
+          border-collapse: collapse;
+          border: solid 3px black;
+
+          th {
+            font-size: 14pt;
+            font-weight: normal;
+            text-align: center;
+            vertical-align: middle;
+            width: 0.4in;
+            height: 0.4in;
+            border: solid 1px black;
+          }
+          td {
+            text-align: center;
+            vertical-align: middle;
+          }
+          .col-clue {
+            height: 1.4in;
+            border: solid 1px black;
+            border-bottom: 3px solid black;
+          }
+          .row-clue {
+            width: 1.4in;
+            border: solid 1px black;
+            border-right: 3px solid black;
+          }
+          td.cell {
+            width: 0.4in;
+            height: 0.4in;
+            border: solid 1px black;
+          }
+          td.cell.color-r {
+            background-color: #F7CAAC;
+          }
+          td.cell.color-b {
+            background-color: #B4C6E7;
+          }
+          td.cell.border-b {
+            border-bottom: 3px solid black;
+          }
+          td.cell.border-r {
+            border-right: 3px solid black;
+          }
+
+          .letter-cell {
+            width: 0.32in;
+            height: 0.32in;
+            font-size: 22pt;
+          }
+          .letter-input {
+            color: purple;
+          }
+        }
+
+        #extractions {
+          th {
+            font-family: 'Lucida Console', monospace;
+            vertical-align: bottom;
+            text-align: left;
+          }
+          td {
+            padding-bottom: 10px;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        This puzzle is a metapuzzle. To solve it you must first have completed these puzzles: 
+      </p>
+      <p class="flavor feeder-list">
+        <a href="Fences.xhtml?{_safari}" target="_blank">Fences</a>;
+        <a href="OutdoorAction.xhtml?{_safari}" target="_blank">Outdoor Action!</a>;
+        <a href="ShouldntThatRhyme.xhtml?{_safari}" target="_blank">Shouldn’t That Rhyme?</a>;
+        <a href="TheresAir.xhtml?{_safari}" target="_blank">There’s Air in the Something Tonight</a>
+      </p>
+      <p class="flavor">
+        After solving each puzzle, the solution system will give you four numbered groups, each containing four letters. 
+        Insert the letters at the top or left of the grid where the numbers show, ensuring to put the first letter at the top for vertical groups.
+      </p>
+      <p class="flavor">
+        Letters slide into the grid horizontally or vertically without changing order within a group leaving one letter in each cell.
+        Thick lines represent all the word breaks, but letters will slide past them as needed.
+        Ignore the shaded boxes until you have inserted the letters.
+      </p>
+
+      <ttable id="table" data-input-style="none">
+        <ttr>
+          <ttd colspan="2" rowspan="2">&nbsp;</ttd>
+          <for int="i" from="1" to="8">
+            <tth>{i}</tth>
+          </for>
+        </ttr>
+        <ttr>
+          <for int="i" from="1" to="8">
+            <ttd id="clue-{i}" class="col-clue">...</ttd>
+          </for>
+        </ttr>
+        <for int="y" from="1" to="8">
+          <ttr>
+            <tth>{y+8}</tth>
+            <ttd id="clue-{y+8}" class="row-clue">...</ttd>
+            <for int="x" from="1" to="8">
+              <ttd id="cell-{y}{x}" class="cell color-{colors.[y-1].[x-1]} border-{borders.[y-1].[x-1]}">
+                <letter />
+              </ttd>
+            </for>
+          </ttr>
+        </for>
+      </ttable>
+
+
+
+      <p class="flavor">
+        After you have inserted all the letters, extract those that are shaded to form the final answer.
+        Extract the <b>first</b> word from the light blue squares in row order <b>top to bottom</b>, 
+        using the column numbers shown under the answer blanks.
+        Extract the <b>second</b> word from the light red squares in row order <b>bottom to top</b>, 
+        again using the column numbers shown.
+      </p>
+      <p class="flavor">
+        This will get a two word answer telling you about our activity and what we saw at the coast.
+      </p>
+
+      <table id="extractions">
+        <tr>
+          <th>
+            Final Answer:<br />Column:
+          </th>
+          <td>&nbsp;</td>
+          <td style="background-color: #B4C6E7;">
+            <letter copy-id="cell-11" under-text="1" />
+            <letter copy-id="cell-27" under-text="7" />
+            <letter copy-id="cell-35" under-text="5" />
+            <letter copy-id="cell-43" under-text="3" />
+            <letter copy-id="cell-55" under-text="5" />
+            <letter copy-id="cell-67" under-text="7" />
+            <letter copy-id="cell-73" under-text="3" />
+            <letter copy-id="cell-83" under-text="3" />
+          </td>
+          <td>&nbsp;</td>
+          <td style="background-color: #F7CAAC;">
+            <letter copy-id="cell-86" under-text="6" />
+            <letter copy-id="cell-78" under-text="8" />
+            <letter copy-id="cell-62" under-text="2" />
+            <letter copy-id="cell-56" under-text="6" />
+            <letter copy-id="cell-48" under-text="8" />
+            <letter copy-id="cell-31" under-text="1" />
+            <letter copy-id="cell-23" under-text="3" />
+            <letter copy-id="cell-15" under-text="5" />
+          </td>
+        </tr>  
+      </table>
+
+      <use template='finalAnswer' bottom='-48px' left="2.5in" width="3in" />
+
+    </div>
+  </body>
+</html>

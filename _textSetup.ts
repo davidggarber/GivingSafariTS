@@ -382,6 +382,17 @@ function setupLetterCells() {
         const cell:HTMLElement = cells[i] as HTMLElement;
         const navLiterals = findParentOfClass(cell, 'navigate-literals') != null;
 
+        // Letters can specify under-numbers, separate from extraction patterns.
+        // This enables copy-id, or other hinting.
+        const underNum = cell.getAttributeNS('', 'under-text');
+        if (underNum) {
+            // under-text spans go before the <input>
+            const under = document.createElement('span');
+            toggleClass(under, 'under-number');
+            under.innerText = underNum;
+            cell.appendChild(under);
+        }
+
         // Place a small text input field in each cell
         const inp:HTMLInputElement = document.createElement('input');
         inp.type = 'text';
