@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/aat.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Annual Anthem',
+        author: 'Rorke Haining',
+        orientation: 'landscape',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          given: [
+            'PUZZLE', 'RESULT'
+          ],
+          colors: [
+            [
+              'xxxxxr',
+              'xxbxrx',
+              'gxxxbx',
+              'gxxxrx',
+              'bxxxxg',
+              'gggggg',
+            ],
+            [
+              'xbrxxr',
+              'bbrrxr',
+              'xxxxrx',
+              'bgxbrr',
+              'xxxxbr',
+              'gggggg',
+            ]
+          ],
+        hints: [
+          'Hint: this green answer is a word related to the 4 above it.',
+          'Hint: this green answer is not a word at all.'
+        ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        #outer-table {
+          width: 100%;
+        }
+        #outer-table td {
+          position: relative;
+        }
+        #side-0 table {
+          position: absolute;
+          left: 0px;
+        }
+        #side-1 table {
+          position: absolute;
+          right: 0px;
+        }
+        .wordle-cell {
+          width: 0.66in;
+          height: 0.66in;
+          text-align: center;
+          vertical-align: middle;
+          border: 4px solid white;
+        }
+        .wordle-cell.x {
+          background-color: #787C7E;
+        }
+        .wordle-cell.g {
+          background-color: #6AAA64;
+        }
+        .wordle-cell.b {
+          background-color: #6699FF;
+        }
+        .wordle-cell.r {
+          background-color: #FF7C80;
+        }
+        .given {
+          font-size: 32pt;
+          font-weight: bold;
+          color: white;
+        }
+        .letter-cell {
+          width: 0.56in;
+          height: 0.56in;
+          font-size: 24pt;
+        }
+        .letter-input {
+          color: #ffffcc;
+        }
+        .letter-cell input::selection {
+          background-color: transparent;
+          color: #660;
+        }
+        .green-hint {
+          position: absolute;
+          top: 5in;
+          left: 0px;
+          width: 5in;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        This is a metapuzzle.
+        Find and solve the four related feeder puzzles.
+        For each feeder puzzle, enter its name and result on the same row across both grids, filling rows 2-5.
+        Then, use these entries to solve these two Wordle-inspired puzzles.
+        Cells that would normally be colored yellow by classic Wordle rules have been split into two logical sub-groups colored blue and red.
+        (When you have nothing left to fill, you’ll be on the right track!)
+        You may submit the 1st green answer, the 2nd green answer, or both together for additional hints.
+      </p>
+      <ttable id="outer-table" data-input-style="none">
+        <ttr>
+          <for each="side" in="colors">
+            <ttd id="side-{side#}">
+              <ttable class="wordle-block">
+                <for each="row" in="{side}">
+                  <ttr>
+                    <for char="cell" in="{row}">
+                      <ttd class="wordle-cell {cell}">
+                        <if test="{row#}" eq="{0}">
+                          <span class="given">{given.[side#].[cell#]}</span>
+                        </if>
+                        <else>
+                          <letter class="letter-cell" />
+                        </else>
+                      </ttd>
+                    </for>
+                  </ttr>
+                </for>                  
+              </ttable>
+              <div class="green-hint">
+                {hints.[side#]}
+              </div>
+            </ttd>
+          </for>
+        </ttr>
+      </ttable>
+
+      <use template='finalAnswer' bottom='-24px' left="3.5in" width="3in" />
+
+    </div>
+  </body>
+</html>
