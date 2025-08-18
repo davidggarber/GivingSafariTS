@@ -40,9 +40,14 @@
   text-align: center;
 }
 .html {
-  min-width: 3in; 
   text-align: left;
   white-space: nowrap;
+}
+.puz-table .html {
+  min-width: 3in; 
+}
+.meta-table .html {
+  min-width: 2.5in; 
 }
 .challenge {
   width: 1in;
