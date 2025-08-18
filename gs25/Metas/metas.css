@@ -6,6 +6,12 @@
     display: none;
   }
 }
+.print,.iframe {
+  #all-materials {
+    display: none;
+  }
+}
+
 #all-materials .meta-card {
   position: relative;
   /* height: 2.75in; */

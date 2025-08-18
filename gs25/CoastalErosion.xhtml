@@ -6,6 +6,7 @@
     <script> var exports = {}; </script>
     <script src="../js/kit25.js" />
     <script src="V/cte.js" />
+    <link rel="stylesheet" type="text/css" href="Metas/metas.css" />
     <script>
       const boiler = {
         safaris: puzzleSafari22,
@@ -40,7 +41,37 @@
             'rrxxxxxx',
           ]
         },
+        metaParams: {
+          id: 'CoastalErosionMeta',
+          count: 4,
+          refillClass: 'meta-clue',
+          refillTemplate: 'material-fill',
+          onSync: injectMetaClues,
+        },
       };
+
+      //<![CDATA[
+      function injectMetaClues(data) {  // data:object[]
+        for (var i = 0; i < data.length; i++) {
+          if (data[i] && 'clues' in data[i]) {
+            var clues = data[i].clues;
+            for (var k = 0; k < Object.keys(clues).length; k++) {
+              var index = Object.keys(clues)[k];
+              var letters = clues[index].split('');
+              var elmt = document.getElementById(`clue-${index}`);
+              elmt.innerText = '';
+              for (var l = 0; l < letters.length; l++) {
+                var span = document.createElement('span');
+                span.innerText = letters[l];
+                span.classList.add('clue-letter');
+                span.classList.add('cross-off');
+                elmt.appendChild(span);
+              }
+            }
+          }
+        }
+      }
+      //]]>
     </script>
     <style>
       #Local {
@@ -95,6 +126,15 @@
           td.cell.border-r {
             border-right: 3px solid black;
           }
+          .clue-letter {
+            display: inline-block;
+            font-size: 16pt;
+            font-family: 'Lucida Console', monospace;
+            margin: 2px;
+          }
+          .col-clue .clue-letter {
+            display: block;
+          }
 
           .letter-cell {
             width: 0.32in;
@@ -116,7 +156,13 @@
             padding-bottom: 10px;
           }
         }
+
       }
+
+      #Local.portrait #all-materials .meta-clue {
+        top: 0.5in;
+      }
+
     </style>
   </head>
   <body id="Local">
@@ -149,16 +195,16 @@
         </ttr>
         <ttr>
           <for int="i" from="1" to="8">
-            <ttd id="clue-{i}" class="col-clue">...</ttd>
+            <ttd class="col-clue" id="clue-{i}">&vellip;</ttd>
           </for>
         </ttr>
         <for int="y" from="1" to="8">
           <ttr>
             <tth>{y+8}</tth>
-            <ttd id="clue-{y+8}" class="row-clue">...</ttd>
+            <ttd class="row-clue" id="clue-{y+8}">&hellip;</ttd>
             <for int="x" from="1" to="8">
               <ttd id="cell-{y}{x}" class="cell color-{colors.[y-1].[x-1]} border-{borders.[y-1].[x-1]}">
-                <letter />
+                <letter data-input-groups="r:row{y#} d:col{x#}" />
               </ttd>
             </for>
           </ttr>
@@ -210,6 +256,28 @@
 
       <use template='finalAnswer' bottom='-48px' left="2.5in" width="3in" />
 
+      <div id="all-materials">
+        <for int="i" until="4">
+          <div class="meta-card">
+            <img src="Metas/card.png" class="material-card" />
+            <div class="meta-clue"></div>
+          </div>
+        </for>
+      </div>
+
     </div>
+
+    <template id="material-fill">
+      <ttable>
+        <ttr><ttd colspan="2">The metapuzzle inputs are:</ttd></ttr>
+        <for key="clue" in="clues">
+          <ttr>
+            <ttd style="text-align: right;">{clue}:</ttd>
+            <ttd>{clue!}</ttd>
+          </ttr>
+        </for>
+      </ttable>
+    </template>
+
   </body>
 </html>

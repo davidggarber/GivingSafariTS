@@ -65,8 +65,8 @@ var puzzles = [
     // { title: 'Up to the Campgrounds', thumb: 'tbd', author: 'TBD', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
 
     { title: 'Annual Anthem', thumb: 'ann', author: 'Rorke Haining', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'anthem' },
-    { title: 'Coastal Erosion', thumb: 'coa', author: 'Martyn Lovell', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'erosion' },
-    { title: 'Up and Down Mount Everest', thumb: 'mte', author: 'Wei-Hwa Huang', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'everest' },            
+    { title: 'Coastal Erosion', thumb: 'coa', author: 'Martyn Lovell', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'coastal' },
+    // { title: 'Up and Down Mount Everest', thumb: 'mte', author: 'Wei-Hwa Huang', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'everest' },            
 ];
 
 var metas = {
@@ -76,11 +76,11 @@ var metas = {
         count: 4,
         icon: 'Icons/anthem.png',
     },
-    erosion: {
+    coastal: {
         title: 'Coastal Erosion',
         store: 'CoastalErosionMeta',
         count: 4,
-        icon: 'Icons/erosion.png',
+        icon: 'Icons/coastal.png',
     },
     everest: {
         title: 'Up and Down Mount Everest',
@@ -88,7 +88,6 @@ var metas = {
         count: 4,
         icon: 'Icons/everest.png',
     },
-   
 }
 
 // Pass any url arguments on to the puzzles, plus the event identifier

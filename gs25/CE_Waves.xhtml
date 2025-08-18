@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Coastal Erosion - materials #4',
+        author: 'Martyn Lovell',
+        copyright: '2022',
+        feeder: 'coastal',
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          meta: 'CoastalErosionMeta',
+          index: 3,
+          clues: {
+            4: 'WDDU',
+            8: 'ESIE',
+            12: 'REEP',
+            16: 'LEER'
+          }
+        },
+        postSetup: unlockFeeder
+      };
+
+      //<![CDATA[
+      function unlockFeeder() {
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
+            index: boiler.lookup.index, 
+            clues: boiler.lookup.clues,
+            unlocked: true,
+            src: window.location.href });
+
+          if (updatePuzzleList(`${boiler.lookup.meta}-${boiler.lookup.index}`, 'loaded')) {
+            syncUnlockedFile(`${boiler.lookup.meta}-${boiler.lookup.index}`, window.location.href);
+          }
+        }
+      }
+      //]]>
+    </script>
+    <style>
+      #Local {
+        table {
+          margin-top: 0.5in;
+        }
+        td {
+          font-size: 14pt;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <ttable>
+        <ttr><ttd colspan="2">The metapuzzle inputs are: </ttd></ttr>
+        <for key="clue" in="clues">
+          <ttr>
+            <ttd style="text-align: right;">{clue}:</ttd>
+            <ttd>{clue!}</ttd>
+          </ttr>
+        </for>
+      </ttable>
+    </div>
+  </body>
+</html>
