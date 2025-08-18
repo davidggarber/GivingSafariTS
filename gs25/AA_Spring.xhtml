@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Annual Anthem - materials #2',
+        author: 'Rorke Haining',
+        copyright: '2022',
+        feeder: 'anthem',
+        abilities: {
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          meta: 'AnnualAnthemMeta',
+          index: 1,
+          phrase: 'The "result" for the puzzle named Spring is AFFAIR.',
+          puzzle: 'Spring',
+          result: 'AFFAIR',
+        },
+        postSetup: unlockFeeder
+      };
+
+      //<![CDATA[
+      function unlockFeeder() {
+        if (!isIFrame() && !isPrint()) {
+          saveMetaMaterials(boiler.lookup.meta, 0, boiler.lookup.index, {
+            index: boiler.lookup.index, 
+            phrase: boiler.lookup.phrase,
+            puzzle: boiler.lookup.puzzle,
+            result: boiler.lookup.result,
+            unlocked: true,
+            src: window.location.href });
+
+          if (updatePuzzleList(`${boiler.lookup.meta}-${boiler.lookup.index}`, 'loaded')) {
+            syncUnlockedFile(`${boiler.lookup.meta}-${boiler.lookup.index}`, window.location.href);
+          }
+        }
+      }
+      //]]>
+    </script>
+    <style>
+      #Local {
+        p {
+          margin-top: 0.5in;
+          font-size: 16pt;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p>The “result” for the puzzle named
+        <b>{puzzle}</b> is <b>{result}</b>.
+      </p>
+    </div>
+  </body>
+</html>
