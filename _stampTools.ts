@@ -1,7 +1,7 @@
 import { findAncestor } from "typescript";
 import { theBoiler } from "./_boilerplate";
 import { useTemplate } from "./_builderUse";
-import { applyAllClasses, clearAllClasses, findFirstChildOfClass, findNthChildOfClass, findParentOfClass, getElementsByClassOrId, getOptionalStyle, hasClass, siblingIndexOfClass, toggleClass } from "./_classUtil";
+import { applyAllClasses, clearAllClasses, findFirstChildOfClass, findNthChildOfClass, findParentOfClass, findParentOfTag, getElementsByClassOrId, getOptionalStyle, hasClass, isTag, siblingIndexOfClass, toggleClass } from "./_classUtil";
 import { ContextError, elementSourceOffset } from "./_contextError";
 import { saveStampingLocally } from "./_storage";
 
@@ -295,13 +295,38 @@ function pointerLeaveContainer(event:PointerEvent) {
 }
 
 function findStampableAtPointer(event:PointerEvent):HTMLElement|null {
+    // Prefer finding via direct hit, by z-order
+    const targets = document.elementsFromPoint(event.clientX, event.clientY);
+    for (let i = 0; i < targets.length; i++) {
+        const target = targets[i];
+        if (hasClass(target, 'stampable')) {
+            return target as HTMLElement;
+        }
+    }
+
+    // As a fallback, use bounding rect
     const stampable = document.getElementsByClassName('stampable');
+    let best: HTMLElement|null = null;
+    let bestDist: number = NaN;
     for (let i = 0; i < stampable.length; i++) {
-        const rect = stampable[i].getBoundingClientRect();
+        const elmt = stampable[i];
+        if (isTag(elmt, 'path') && pointInPath(elmt, event)) {
+            return elmt as HTMLElement;
+        }
+        const rect = elmt.getBoundingClientRect();
         if (rect.left <= event.clientX && rect.right > event.clientX
                 && rect.top <= event.clientY && rect.bottom > event.clientY) {
-            return stampable[i] as HTMLElement;
+            const dx = (rect.left + rect.width / 2) - event.clientX;
+            const dy = (rect.top + rect.height / 2) - event.clientY;
+            const dist = dx*dx + dy*dy;
+            if (best == null || dist < bestDist) {
+                best = elmt as HTMLElement;
+                bestDist = dist;
+            }
         }
+    }
+    if (best) {
+        return best;
     }
 
     // The stampable elements themselves can be size 0, due to absolute positioning.
@@ -314,6 +339,35 @@ function findStampableAtPointer(event:PointerEvent):HTMLElement|null {
     }
 
     return null;
+}
+
+function pointInPath(elmt: Element, event: PointerEvent): boolean {
+    const pathElmt = elmt as SVGPathElement;
+    const pathD = pathElmt.getAttribute("d");
+    if (!pathD) {
+        return false;
+    }
+    const svg = findParentOfTag(elmt, 'svg') as HTMLElement;
+    const bbox = svg.getBoundingClientRect();
+
+    // Create a canvas matching the SVG size
+    const canvas = document.createElement("canvas");
+    canvas.width = bbox.width;
+    canvas.height = bbox.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+        return false;
+    }
+
+    // Convert SVG path to canvas path
+    const path = new Path2D(pathD);
+
+    // Adjust mouse coordinates relative to SVG
+    const x = event.clientX - bbox.left;
+    const y = event.clientY - bbox.top;
+
+    var test = ctx.isPointInPath(path, x, y);
+    return test;
 }
 
 /**

@@ -4934,8 +4934,8 @@ function focusNearestInput(evt) {
             if (target.id == 'page' || target.id == 'scratch-pad' || hasClass(target, 'scratch-div')) {
                 break; // Found none. Continue below
             }
-            if (target.onclick || target.onmousedown || target.onmouseup
-                || target.onpointerdown || target.onpointerup || hasClass(target, 'clickable')) {
+            if (hasClass(target, 'clickable') || target.id.indexOf('-toggle') >= 0) {
+                // Example: #decoder-toggle
                 return; // Target has its own handler
             }
         }
@@ -4944,7 +4944,7 @@ function focusNearestInput(evt) {
             nearestD = 0;
         }
         else {
-            const tags = ['input', 'textarea', 'select', 'a', 'clickable'];
+            const tags = ['input', 'textarea', 'select', 'a', 'clickable', 'stampable'];
             for (let t = 0; t < tags.length; t++) {
                 const elements = tags[t] === 'clickable' ? document.getElementsByClassName(tags[t])
                     : document.getElementsByTagName(tags[t]);
@@ -6339,13 +6339,37 @@ function pointerLeaveContainer(event) {
     stampSet.prevStampablePointer = null;
 }
 function findStampableAtPointer(event) {
+    // Prefer finding via direct hit, by z-order
+    const targets = document.elementsFromPoint(event.clientX, event.clientY);
+    for (let i = 0; i < targets.length; i++) {
+        const target = targets[i];
+        if (hasClass(target, 'stampable')) {
+            return target;
+        }
+    }
+    // As a fallback, use bounding rect
     const stampable = document.getElementsByClassName('stampable');
+    let best = null;
+    let bestDist = NaN;
     for (let i = 0; i < stampable.length; i++) {
-        const rect = stampable[i].getBoundingClientRect();
+        const elmt = stampable[i];
+        if (isTag(elmt, 'path') && pointInPath(elmt, event)) {
+            return elmt;
+        }
+        const rect = elmt.getBoundingClientRect();
         if (rect.left <= event.clientX && rect.right > event.clientX
             && rect.top <= event.clientY && rect.bottom > event.clientY) {
-            return stampable[i];
+            const dx = (rect.left + rect.width / 2) - event.clientX;
+            const dy = (rect.top + rect.height / 2) - event.clientY;
+            const dist = dx * dx + dy * dy;
+            if (best == null || dist < bestDist) {
+                best = elmt;
+                bestDist = dist;
+            }
         }
+    }
+    if (best) {
+        return best;
     }
     // The stampable elements themselves can be size 0, due to absolute positioning.
     // So look for a child.
@@ -6356,6 +6380,30 @@ function findStampableAtPointer(event) {
         }
     }
     return null;
+}
+function pointInPath(elmt, event) {
+    const pathElmt = elmt;
+    const pathD = pathElmt.getAttribute("d");
+    if (!pathD) {
+        return false;
+    }
+    const svg = findParentOfTag(elmt, 'svg');
+    const bbox = svg.getBoundingClientRect();
+    // Create a canvas matching the SVG size
+    const canvas = document.createElement("canvas");
+    canvas.width = bbox.width;
+    canvas.height = bbox.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+        return false;
+    }
+    // Convert SVG path to canvas path
+    const path = new Path2D(pathD);
+    // Adjust mouse coordinates relative to SVG
+    const x = event.clientX - bbox.left;
+    const y = event.clientY - bbox.top;
+    var test = ctx.isPointInPath(path, x, y);
+    return test;
 }
 /**
  * Called when a draw tool is selected from the palette

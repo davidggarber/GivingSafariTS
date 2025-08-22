@@ -1,0 +1,1 @@
+validation={"":{"YNAQ":"1","JNYXVATVANJVAGREJBAQRE":"3Xrrc tbvat! Va n snzbhf fbat, jung pbzrf nsgre “JNYXVAT VA N JVAGRE JBAQRE...”?","JNYXVATVANJVAGREJBAQREYNAQ":"3Gbb sne. Whfg gur ynfg 4 yrggref.","JBAQREYNAQ":"3Gbb sne. Whfg gur ynfg 4 yrggref.","JVAGREJBAQREYNAQ":"3Xrrc tbvat! Jung jbeq pbzcyrgrf gur ylevp?"}};

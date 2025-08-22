@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/smr.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Summer',
+        author: 'Rorke Haining',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          stamping: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          palette: [
+            ['aquamarine', 'AQUAMARINE', 'black'],
+            ['chocolate', 'CHOCOLATE', 'white'],
+            ['denim', 'DENIM', 'white'],
+            ['flamingo', 'FLAMINGO', 'black'],
+            ['lime', 'LIME', 'black'],
+            ['mustard', 'MUSTARD', 'black'],
+            ['scarlet', 'SCARLET', 'white'],
+            ['tangerine', 'TANGERINE', 'black'],
+            ['violet', 'VIOLET', 'white'],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        #patterns {
+          position: absolute;
+          right: 48px;
+          top: 132px;
+          text-align: center;
+          line-height: 16px;
+
+          circle {
+            stroke: black;
+            stroke-width: 1px;
+          }
+          path {
+            stroke: black;
+            stroke-width: 0.5px;
+          }
+          .empty {
+            fill: none;
+          }
+        }
+
+        #stampPalette {
+          position: absolute;
+          right: 10px;
+          top: 5in;
+          width: 2in;
+          text-align: center;
+        }
+        .stampTool {
+          width: 1.25in;
+          height: 18px;
+          margin-bottom: 4px;
+          border: solid 1px black;
+          text-align: center;
+          padding: 2px;
+        }
+
+        path {
+          stroke: black;
+          stroke-width: 1px;
+        }
+        .empty {
+          fill: white;
+        }
+        .aquamarine {
+          fill: #7fffd4;
+          background-color: #7fffd4;
+        }
+        .chocolate {
+          fill: #7b3f00;
+          background-color: #7b3f00;
+        }
+        .denim {
+          fill: #6f8faf;
+          background-color: #6f8faf;
+        }
+        .flamingo {
+          fill: #ffc0cb;
+          background-color: #ffc0cb;
+        }
+        .lime {
+          fill: #32cd32;
+          background-color: #32cd32;
+        }
+        .mustard {
+          fill: #ffdb58;
+          background-color: #ffdb58;
+        }
+        .scarlet {
+          fill: #ff2400;
+          background-color: #ff2400;
+        }
+        .tangerine {
+          fill: #f28500;
+          background-color: #f28500;
+        }
+        .violet {
+          fill: #8f00ff;
+          background-color: #8f00ff;
+        }
+        circle.dot.white {
+          stroke: black;
+          stroke-width: 1px;
+          fill: white;
+        }
+        circle.dot.black {
+          stroke: white;
+          stroke-width: 1px;
+          fill: black;
+        }
+        #notes .word-cell {
+          width: 84px;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        At Ocean Shores this summer, a local toy store had an odd beach ball display with this note:
+      </p>
+      <p class="flavor">
+        “Each of these 24 beach balls has 1 out of 3 possible color patterns.
+        Each pattern has 6 different colors drawn from a pool of 9 possible colors named below.
+        Each color is used in 2 patterns and not the 3rd.
+        There’s no way to tell up from down on a beach ball, so the pattern used may go around the beach ball in either direction.
+        Dots have been added to one slice of each of these beach balls, but the dots are only useful in conjunction with the opposite (unseen) slices.
+        Can you figure out the secret password?”
+      </p>
+
+      <div style="position: relative">
+        <svg width="480" height="710">
+          <use template="vball" x="44" y="44" left="chocolate" middle="violet" right="aquamarine" dots="1" color="white" />
+          <use template="vball" x="166" y="44" left="tangerine" middle="flamingo" right="scarlet" dots="2" color="black" />
+          <use template="vball" x="288" y="44" left="mustard" middle="denim" right="lime" dots="5" color="white" />
+          <use template="vball" x="410" y="44" left="violet" middle="mustard" right="lime" dots="4" color="black" />
+
+          <use template="vball" x="44" y="166" left="denim" middle="scarlet" right="tangerine" dots="5" color="white" />
+          <use template="vball" x="166" y="166" left="mustard" middle="violet" right="tangerine" dots="4" color="white" />
+          <use template="vball" x="288" y="166" left="aquamarine" middle="flamingo" right="lime" dots="4" color="black" />
+          <use template="vball" x="410" y="166" left="lime" middle="scarlet" right="flamingo" dots="2" color="white" />
+
+          <use template="vball" x="44" y="288" left="aquamarine" middle="chocolate" right="mustard" dots="3" color="white" />
+          <use template="vball" x="166" y="288" left="violet" middle="tangerine" right="flamingo" dots="4" color="black" />
+          <use template="vball" x="288" y="288" left="chocolate" middle="denim" right="scarlet" dots="1" color="white" />
+          <use template="vball" x="410" y="288" left="mustard" middle="lime" right="scarlet" dots="3" color="black" />
+
+          <use template="vball" x="44" y="410" left="flamingo" middle="aquamarine" right="chocolate" dots="1" color="black" />
+          <use template="vball" x="166" y="410" left="denim" middle="chocolate" right="violet" dots="1" color="white" />
+          <use template="vball" x="288" y="410" left="denim" middle="lime" right="flamingo" dots="2" color="black" />
+          <use template="vball" x="410" y="410" left="aquamarine" middle="violet" right="chocolate" dots="6" color="white" />
+
+          <use template="vball" x="44" y="532" left="aquamarine" middle="tangerine" right="scarlet" dots="6" color="black" />
+          <use template="vball" x="166" y="532" left="denim" middle="mustard" right="chocolate" dots="5" color="black" />
+          <use template="vball" x="288" y="532" left="tangerine" middle="scarlet" right="denim" dots="1" color="white" />
+          <use template="vball" x="410" y="532" left="chocolate" middle="aquamarine" right="flamingo" dots="4" color="black" />
+
+          <use template="vball" x="44" y="654" left="tangerine" middle="aquamarine" right="violet" dots="3" color="black" />
+          <use template="vball" x="166" y="654" left="scarlet" middle="lime" right="mustard" dots="4" color="black" />
+          <use template="vball" x="288" y="654" left="mustard" middle="chocolate" right="aquamarine" dots="2" color="white" />
+          <use template="vball" x="410" y="654" left="scarlet" middle="flamingo" right="tangerine" dots="3" color="black" />
+        </svg>
+
+        <div id="notes" data-word-style="hover">
+          <for int="y" to="5">
+            <for int="x" to="3">
+              <div sstyle="position:absolute; left:{x * 122}px; top:{90+y*122}px;">
+                <word />
+              </div>
+            </for>
+          </for>
+        </div>
+      </div>
+
+      <div id="patterns">
+        <p style="margin-bottom: 0px;">Pattern worksheet</p>
+        <svg width="100" height="360" class="stampable-container canvas-hittest">
+          <use template="pball" x="50" y="50" />
+          <use template="pball" x="50" y="160" />
+          <use template="pball" x="50" y="270" />
+        </svg>
+      </div>
+
+      <div id="stampPalette" data-unstyle="aquamarine chocolate denim flamingo lime mustard scarlet tangerine violet empty" data-tool-erase="empty">
+        <p style="margin-bottom: 0px;">
+          Colors in alphabetic order<br />
+          (not pattern order)
+        </p>
+
+        <for each="row" in="{palette}">
+          <div class="stampTool {row.0}" id="{row.0}" data-style="{row.0}">
+            <span sstyle="color:{row.2}">{row.1}</span>
+          </div><br />
+        </for>
+        <div class="stampTool empty" id="empty" data-style="empty">
+          <span style="color:black">Erase</span>
+        </div>
+      </div>
+
+      <use template='finalAnswer' bottom='-24px' left="1.9in" width="4in" />
+
+    </div>
+
+    <template id="pball">
+      <g transform="translate({x}, {y})">
+        <path d="M1,-48 A120,120,1,0,0,-7,11 A120,120,1,0,0,41,-24 A48,48,1,0,0,1,-48 Z" class="stampable empty" />
+        <path d="M41,-24 A120,120,1,0,1,-7,11 A120,120,1,0,0,40,25 A48,48,1,0,0,41,-24 Z" class="stampable empty" />
+        <path d="M40,25 A120,120,1,0,1,-7,11 A120,120,1,0,0,2,48 A48,48,1,0,0,40,25 Z" class="stampable empty" />
+        <path d="M2,48 A120,120,1,0,1,-7,11 A120,120,1,0,1,-41,23 A48,48,1,0,0,2,48 Z" class="stampable empty" />
+        <path d="M-41,23 A120,120,1,0,0,-7,11 A120,120,1,0,1,-41,-24 A48,48,1,0,0,-41,23 Z" class="stampable empty" />
+        <path d="M-41,-24 A120,120,1,0,0,-7,11 A120,120,1,0,1,1,-48 A48,48,1,0,0,-41,-24 Z" class="stampable empty" />
+      </g>
+    </template>
+
+    <template id="vball">
+      <g transform="translate({x}, {y})">
+        <path d="M0,-42 a42,42,0,1,0,0,84 a21,42,0,1,1,0,-84 Z" class="{left}" />
+        <path d="M0,-42 a21,42,0,1,1,0,84 a21,42,0,1,1,0,-84 Z" class="{middle}" />
+        <path d="M0,-42 a42,42,0,1,1,0,84 a21,42,0,1,0,0,-84 Z" class="{right}" />
+        <use template="dot-{dots}" color="{color}" />
+      </g>
+    </template>
+
+    <template id="dot-1">
+      <circle cx="0" cy="0" r="4" class="dot {color}" />
+    </template>
+    <template id="dot-2">
+      <circle cx="0" cy="-7" r="4" class="dot {color}" />
+      <circle cx="0" cy="7" r="4" class="dot {color}" />
+    </template>
+    <template id="dot-3">
+      <circle cx="0" cy="-14" r="4" class="dot {color}" />
+      <circle cx="0" cy="0" r="4" class="dot {color}" />
+      <circle cx="0" cy="14" r="4" class="dot {color}" />
+    </template>
+    <template id="dot-4">
+      <circle cx="-7" cy="-7" r="4" class="dot {color}" />
+      <circle cx="7" cy="-7" r="4" class="dot {color}" />
+      <circle cx="-7" cy="7" r="4" class="dot {color}" />
+      <circle cx="7" cy="7" r="4" class="dot {color}" />
+    </template>
+    <template id="dot-5">
+      <circle cx="-7" cy="-14" r="4" class="dot {color}" />
+      <circle cx="7" cy="-14" r="4" class="dot {color}" />
+      <circle cx="0" cy="0" r="4" class="dot {color}" />
+      <circle cx="-7" cy="14" r="4" class="dot {color}" />
+      <circle cx="7" cy="14" r="4" class="dot {color}" />
+    </template>
+    <template id="dot-6">
+      <circle cx="-7" cy="-14" r="4" class="dot {color}" />
+      <circle cx="7" cy="-14" r="4" class="dot {color}" />
+      <circle cx="-7" cy="0" r="4" class="dot {color}" />
+      <circle cx="7" cy="0" r="4" class="dot {color}" />
+      <circle cx="-7" cy="14" r="4" class="dot {color}" />
+      <circle cx="7" cy="14" r="4" class="dot {color}" />
+    </template>
+
+  </body>
+</html>

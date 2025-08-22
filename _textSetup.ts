@@ -725,8 +725,8 @@ function focusNearestInput(evt:MouseEvent) {
             if (target.id == 'page' || target.id == 'scratch-pad' || hasClass(target as Node, 'scratch-div')) {
                 break;  // Found none. Continue below
             }
-            if (target.onclick || target.onmousedown || target.onmouseup 
-                || target.onpointerdown || target.onpointerup || hasClass(target, 'clickable')) {
+            if (hasClass(target, 'clickable') || target.id.indexOf('-toggle') >= 0) {
+                // Example: #decoder-toggle
                 return;  // Target has its own handler
             }
         }
@@ -736,7 +736,7 @@ function focusNearestInput(evt:MouseEvent) {
             nearestD = 0;
         }
         else {
-            const tags = ['input', 'textarea', 'select', 'a', 'clickable'];
+            const tags = ['input', 'textarea', 'select', 'a', 'clickable', 'stampable'];
 
             for (let t = 0; t < tags.length; t++) {
                 const elements = tags[t] === 'clickable' ? document.getElementsByClassName(tags[t])
