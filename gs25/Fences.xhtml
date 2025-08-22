@@ -122,6 +122,29 @@
       </p>
 
       <div style="position:relative; margin-left: 0.9in; height:5.7in;">
+
+        <svg id="svg" width="550" height="550" xmlns="http://www.w3.org/2000/svg">
+          <for int="y" from="0" until="9">
+            <for int="x" from="0" until="9">
+              <if test="{grays.[y#].[x#]}" eq="o">
+                <rect xx="{2+60*x}" yy="{2+60*y}" class="gray" />
+              </if>
+              <else>
+                <rect xx="{2+60*x}" yy="{2+60*y}" class="thin" />
+              </else>
+            </for>
+          </for>
+          <for int="y" from="0" until="3">
+            <for int="x" from="0" until="3">
+              <rect xx="{2+180*x}" yy="{2+180*y}" class="red" />
+            </for>
+          </for>
+          <rect xx="{2+60*4}" yy="{2+60*1}" class="black" />
+          <rect xx="{2+60*1}" yy="{2+60*2}" class="black" />
+          <rect xx="{2+60*5}" yy="{2+60*4}" class="black" />
+          <rect xx="{2+60*2}" yy="{2+60*5}" class="black" />
+        </svg>
+
         <ttable id="table" data-letter-style="hover" data-extract-style="hover" trim="all" data-extract-join="+" class="letter-grid-2d">
           <for each="row" in="{grid}">
             <ttr>
@@ -149,28 +172,6 @@
             </ttr>
           </for>
         </ttable>
-
-        <svg id="svg" width="550" height="550" xmlns="http://www.w3.org/2000/svg">
-          <for int="y" from="0" until="9">
-            <for int="x" from="0" until="9">
-              <if test="{grays.[y#].[x#]}" eq="o">
-                <rect xx="{2+60*x}" yy="{2+60*y}" class="gray" />
-              </if>
-              <else>
-                <rect xx="{2+60*x}" yy="{2+60*y}" class="thin" />
-              </else>
-            </for>
-          </for>
-          <for int="y" from="0" until="3">
-            <for int="x" from="0" until="3">
-              <rect xx="{2+180*x}" yy="{2+180*y}" class="red" />
-            </for>
-          </for>
-          <rect xx="{2+60*4}" yy="{2+60*1}" class="black" />
-          <rect xx="{2+60*1}" yy="{2+60*2}" class="black" />
-          <rect xx="{2+60*5}" yy="{2+60*4}" class="black" />
-          <rect xx="{2+60*2}" yy="{2+60*5}" class="black" />
-        </svg>
       </div>
 
       <p class="flavor">

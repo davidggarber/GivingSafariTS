@@ -2648,26 +2648,6 @@ function CheckValidationReady(input, key) {
     }
 }
 /**
- * Invoke the Submit button linked to the current input.
- * Called when user types ENTER from input.
- * @param input An input, which might or might not be connected to a submit button.
- * @returns true if there is a submit, and whether it was enabled (ready).
- */
-function AutoSubmitOnEnter(input) {
-    const showReady = getOptionalStyle(input.parentElement, 'data-show-ready');
-    if (showReady) {
-        const btn = document.getElementById(showReady);
-        if (!btn) {
-            console.error(`Button ${showReady} not found!`);
-        }
-        else if (btn.style.display != 'None' && !btn.disabled) {
-            btn.click();
-            return true;
-        }
-    }
-    return false;
-}
-/**
  * Extract contents of an extract-flagged input
  * @param input an input field
  */
@@ -2732,7 +2712,7 @@ function UpdateExtraction(extractedId) {
         if (!sameExtractedTarget(extractedId, input)) {
             continue;
         }
-        if (hasClass(input, 'extract-literal')) {
+        if (hasClass(input, 'extract-literal') || hasClass(input, 'letter-non-input')) {
             parts.push(HiddenExtract(input, false));
             hiddens = true;
         }
@@ -2796,6 +2776,7 @@ function HiddenExtract(span, ready, extraction) {
     const ev = span.getAttributeNS('', 'value') // eventual extraction (unless a copy)
         || getOptionalStyle(span, 'data-extract-value');
     const ec = getOptionalStyle(span, 'data-extract-copy'); // this extraction is a copy of another
+    const dl = getOptionalStyle(span, 'data-literal'); // this is a literal which is also an extraction
     if (!ready && de != null) {
         return de;
     }
@@ -2804,7 +2785,7 @@ function HiddenExtract(span, ready, extraction) {
         return extraction ? extraction[parseInt(ec) - 1] : '';
     }
     else {
-        return ev || '';
+        return ev || dl || '';
     }
 }
 /**
@@ -3056,7 +3037,7 @@ function updateWordExtraction(extractedId) {
         if (!sameExtractedTarget(extractedId, input)) {
             continue;
         }
-        if (hasClass(input, 'extract-literal')) {
+        if (hasClass(input, 'extract-literal') || hasClass(input, 'word-literal')) {
             parts.push(HiddenExtract(input, false));
             hiddens = true;
             continue;
