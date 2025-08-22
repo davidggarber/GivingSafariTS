@@ -16,25 +16,201 @@
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
+          stamping: true,
         },
         reactiveBuilder: 'pageBody',
         lookup: {
+          fields: [
+            [ 'ycw', 'wkr', 'ycy', 'yrm', 'wcy' ],
+            [ 'ywy', 'ybk', 'ywy', 'ybk', 'ymr' ],
+            [ 'cmk', 'wbm', 'wrm', 'wkm', 'wgw' ],
+            [ 'myb', 'wkw', 'wmc', 'yby', 'rcr' ],
+            [ 'gmy', 'wbc', 'crc', 'cgw', 'ymg' ],
+            [ 'cyc', 'wkm', 'wgw', 'wkm', 'cwc' ],
+            [ 'wcr', 'wrw', 'wcr', 'wkw', 'wkw' ],
+          ]
         },
       };
     </script>
     <style>
       #Local {
-        
+        .flavor span {
+          border:solid 1px black
+        }
+        path {
+          stroke: black;
+          stroke-width: 1px;
+        }
+        .tulip-y {
+          fill: yellow;
+        }
+        .tulip-r {
+          fill: red;
+        }
+        .tulip-g {
+          fill: lime;
+        }
+        .tulip-b {
+          fill: blue;
+        }
+        .tulip-c {
+          fill: cyan;
+        }
+        .tulip-m {
+          fill: magenta;
+        }
+        .tulip-k {
+          fill: #333;
+        }
+        .tulip-w {
+          fill: white;
+        }
+
+        .red-light rect {
+          fill: #900;
+        }
+        .green-light rect {
+          fill: #090;
+        }
+        .blue-light rect {
+          fill: #009;
+        }
+        // .red-light.tulip-y {
+        //   fill: #c30;
+        // }
+        // .red-light.tulip-m {
+        //   fill: #c03;
+        // }
+        // .red-light.tulip-w {
+        //   fill: #c66;
+        // }
+        // .red-light.tulip-b {
+        //   fill: #003;
+        // }
+        // .red-light.tulip-g {
+        //   fill: #030;
+        // }
+        // .red-light.tulip-c {
+        //   fill: #022;
+        // }
+
+        #rgb {
+          width: 100%;
+          text-align: center;
+        }
+        .letter-cell.letter-red {
+          border-bottom: solid 3px red;
+          margin-left: 2.5px;
+          margin-right: 2.5px;
+        }
+        .letter-cell.letter-green {
+          border-bottom: solid 3px #00dc00;
+          margin-left: 2.5px;
+          margin-right: 2.5px;
+        }
+        .letter-cell.letter-blue {
+          border-bottom: solid 3px blue;
+          margin-left: 2.5px;
+          margin-right: 2.5px;
+        }
+
+        #stampPalette {
+          position: absolute;
+          right: -.25in;
+          bottom: 0.75in;
+          text-align: center;
+        }
+        #stampPalette td {
+          width: 0.5in;
+          height: 0.7in;
+        }
+        #stampPalette img {
+          height: 0.5in;
+        }
+        #red-light.stampTool.selected {
+          background-color: #fee;
+        }
+        #green-light.stampTool.selected {
+          background-color: #efe;
+        }
+        #blue-light.stampTool.selected {
+          background-color: #eef;
+        }
+        #no-light.stampTool.selected {
+          background-color: #eee;
+        }
       }
     </style>
   </head>
   <body id="Local">
     <div id="pageBody">
       <p class="flavor">
-        Hello!
+        This spring’s tulip festival in Mount Vernon featured tulips that were 
+        <span>white</span>, 
+        <span style="background-color: red; color: white;">red</span>, 
+        <span style="background-color: lime;">green</span>, 
+        <span style="background-color: blue; color: white;">blue</span>, 
+        <span style="background-color: cyan;">cyan</span>, 
+        <span style="background-color: magenta; color: white;">magenta</span>, 
+        <span style="background-color: yellow;">yellow</span>, and
+        <span style="background-color: black; color: white;">black</span>.
+        It made me wonder what they’d look like in a dark room under the different primary colors of light.
       </p>
 
+      <svg width="700" height="750" class="stampable-container stamp-drag">
+        <use template="acre" tulips="{fields.0}" top="0" left="210" />
+        <use template="acre" tulips="{fields.1}" top="0" left="410" />
+
+        <use template="acre" tulips="{fields.2}" top="250" left="110" />
+        <use template="acre" tulips="{fields.3}" top="250" left="310" />
+        <use template="acre" tulips="{fields.4}" top="250" left="510" />
+        
+        <use template="acre" tulips="{fields.5}" top="500" left="210" />
+        <use template="acre" tulips="{fields.6}" top="500" left="410" />
+      </svg>
+
+      <div id="rgb">
+        <pattern pattern="4 3" data-input-style="red" 
+        /><pattern pattern="1 6" data-input-style="green"
+        /><pattern pattern="1 2 4" data-input-style="blue" />
+      </div>
+
+      <div id="stampPalette" data-unstyle="red-light green-light blue-light" data-tool-erase="empty">
+        <table>
+          <tr><td colspan="2" style="vertical-align: bottom;">Lights:</td></tr>
+          <tr>
+            <td class="stampTool" id="red-light" data-style="red-light"><img src="Spring/red-light.png" /><br /><span style="color:#c00">Red</span></td>
+            <td class="stampTool" id="green-light" data-style="green-light"><img src="Spring/green-light.png" /><br /><span style="color:#0c0">Green</span></td>
+          </tr>
+          <tr>
+            <td class="stampTool" id="blue-light" data-style="blue-light"><img src="Spring/blue-light.png" /><br /><span style="color:#00c">Blue</span></td>
+            <td class="stampTool" id="no-light"><img src="Spring/no-light.png" /><br />Off</td>
+          </tr>
+        </table>
+      </div>
+
+      <use template='finalAnswer' bottom='-24px' left="1.9in" width="4in" />
 
     </div>
+
+    <template id="acre">
+      <g transform="translate({left},{top})">
+        <for each="row" in="{tulips}">
+          <for char="t" in="{row}">
+            <use template="tulip" color="{t}" x="{t#}" y="{row#}" />
+          </for>
+        </for> 
+      </g>     
+    </template>
+
+    <template id="tulip">
+      <g transform="translate({x*48}, {y*48})" class="tulip-{color} stampable">
+        <rect x="-24" y="0" width="48" height="48" fill="transparent" />
+        <path d="M19,7 C15,15 16,20 16,30 L6,12 Z" />
+        <path d="M-19,7 C-15,15 -16,20 -16,30 L-6,12 Z" />
+        <path d="M0,0 C2,10 16,20 16,30 A 16,16 0,1,1 -16,30 C-16,20 -2,10 0,0 Z" />
+      </g>
+    </template>
+
   </body>
 </html>

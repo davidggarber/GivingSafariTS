@@ -6353,12 +6353,12 @@ function findStampableAtPointer(event) {
     let bestDist = NaN;
     for (let i = 0; i < stampable.length; i++) {
         const elmt = stampable[i];
-        if (isTag(elmt, 'path') && pointInPath(elmt, event)) {
-            return elmt;
-        }
         const rect = elmt.getBoundingClientRect();
         if (rect.left <= event.clientX && rect.right > event.clientX
             && rect.top <= event.clientY && rect.bottom > event.clientY) {
+            if (isTag(elmt, 'path') && pointInPath(elmt, event)) {
+                return elmt;
+            }
             const dx = (rect.left + rect.width / 2) - event.clientX;
             const dy = (rect.top + rect.height / 2) - event.clientY;
             const dist = dx * dx + dy * dy;
