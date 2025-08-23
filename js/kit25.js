@@ -4928,7 +4928,8 @@ function focusNearestInput(evt) {
                 nearest = target; // Shouldn't need my help
                 break;
             }
-            if (hasClass(target, 'stampTool') || hasClass(target, 'stampable') || hasClass(target, 'stampLock')) {
+            if (hasClass(target, 'stampTool') || hasClass(target, 'stampLock')
+                || findParentOfClass(target, 'stampable') || findParentOfClass(target, 'cross-off')) {
                 return; // Stamping elements don't handle their own clicks; the page does
             }
             if (target.id == 'page' || target.id == 'scratch-pad' || hasClass(target, 'scratch-div')) {
@@ -12824,7 +12825,7 @@ function finalAnswerTemplate() {
     const temp = document.createElement('template');
     setDefaultsTemplateArgs(temp, {
         left: '2in',
-        bottom: '0px',
+        bottom: '-60px',
         width: '3in'
     });
     temp.innerHTML =

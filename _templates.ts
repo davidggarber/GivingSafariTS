@@ -260,7 +260,7 @@ function finalAnswerTemplate() :HTMLTemplateElement {
   const temp = document.createElement('template');
   setDefaultsTemplateArgs(temp, {
     left:'2in',
-    bottom:'0px',
+    bottom:'-60px',
     width:'3in'
   });
   temp.innerHTML = 

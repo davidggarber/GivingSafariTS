@@ -42,7 +42,7 @@ var puzzles = [
     { title: 'Fences', thumb: 'fen', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'coastal',number:0}] },
     { title: 'Grab Crass In The Great Doubt Oars', thumb: 'gra', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Hippocampus', thumb: 'hip', author: 'Joe Tomkinson', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { title: 'Jokes Around The Campfire', thumb: 'jok', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Jokes Around The Campfire', thumb: 'jok', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'K2', thumb: 'k2', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Networked Hints', thumb: 'net', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Outdoor Action!', file: 'OutdoorAction', thumb: 'out', author: 'Martyn Lovell', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'coastal',number:1}] },
