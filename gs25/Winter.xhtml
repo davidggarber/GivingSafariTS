@@ -19,21 +19,82 @@
         },
         reactiveBuilder: 'pageBody',
         lookup: {
+          flakes: {
+            a: { size:96, rot:56, x:0, y:4 },
+            b: { size:74, rot:55, x:124, y:69 },
+            c: { size:90, rot:14, x:437, y:88 },
+            d: { size:84, rot:4, x:645, y:116 },
+            e: { size:90, rot:30, x:537, y:183 },
+            f: { size:80, rot:20, x:196, y:221 },
+            g: { size:74, rot:21, x:379, y:264 },
+            h: { size:76, rot:36, x:-24, y:295 },
+            i: { size:86, rot:1, x:56, y:328 },
+            j: { size:70, rot:24, x:649, y:367 },
+            k: { size:100, rot:6, x:6, y:426 },
+            l: { size:74, rot:41, x:139, y:462 },
+            m: { size:78, rot:0, x:289, y:480 },
+            n: { size:95, rot:37, x:451, y:498 },
+            o: { size:80, rot:54, x:546, y:539 },
+            p: { size:96, rot:8, x:687, y:566 },
+            q: { size:90, rot:26, x:444, y:627 },
+            r: { size:100, rot:0, x:326, y:660 },
+            s: { size:84, rot:347, x:61, y:700 },
+            t: { size:100, rot:25, x:157, y:727 },
+            u: { size:66, rot:5, x:428, y:788 },
+            v: { size:88, rot:13, x:585, y:812 },
+          }
         },
       };
     </script>
     <style>
       #Local {
-        
+        .flavor {
+          color: white;
+        }
+
+        .printedPage {
+          background-color: #81879D;
+        }
+        .title {
+          color: white;
+        }
+        #copyright {
+          color: white;
+        }
+        #snowflakes {
+          position: relative;
+        }
+        #snowflakes div {
+          position: absolute;
+        }
+        .word-hover:hover {
+          background-color: #ffffff33;
+        }
+        .validate-block {
+          color: white;
+
+          .word-underline {
+            border-bottom: solid 1px white;
+          }
+        }
       }
     </style>
   </head>
   <body id="Local">
     <div id="pageBody">
       <p class="flavor">
-        Hello!
+        The long and short of it:  Leavenworth is particularly breathtaking in winter.
       </p>
+      <div id="snowflakes" data-word-style="hover">
+        <for key="flake" in="flakes">
+          <div sstyle="left:{flake!.x/100}in; top:{flake!.y/100}in;">
+            <img ssrc="Winter/{flake}.png" class="snowflake" sstyle="width:{flake!.size/100}in; transform: rotate({flake!.rot}deg);" /><br />
+            <word sstyle="width:{flake!.size/100}in" />
+          </div>
+        </for>
+      </div>
 
+      <use template='finalAnswer' bottom='-60px' left="1.8in" width="4in" />
 
     </div>
   </body>

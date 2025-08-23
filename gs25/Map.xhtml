@@ -235,21 +235,21 @@
             <ttable id="puz-table" class="table" style="border-collapse: collapse">
               <tthead>
                 <ttr style="text-align: center;">
-                  <tth colspan="{table_cols}" class="title-font" style="text-align: center; position: relative;">
+                  <tth colspan="{table_cols}" class="title-font clickable" style="text-align: center; position: relative;">
                     Giving Safari 2025
                   </tth>
                 </ttr>
                 <ttr id="sortHeader">
-                  <tth class="presence" onclick="sortTable(this)" trim="all">
+                  <tth class="presence clickable" onclick="sortTable(this)" trim="all">
                     <span class="ascArrow">↓</span>
                     <span class="descArrow">↑</span>
                   </tth>
-                  <tth class="icons" onclick="sortTable(this)" trim="all">
+                  <tth class="icons clickable" onclick="sortTable(this)" trim="all">
                     Type
                     <span class="ascArrow">↓</span>
                     <span class="descArrow">↑</span>
                   </tth>
-                  <tth class="author sortedAsc" onclick="sortTable(this)">
+                  <tth class="author sortedAsc clickable" onclick="sortTable(this)">
                     Puzzle
                     <span class="ascArrow">↓</span>
                     <span class="descArrow">↑</span>
@@ -261,12 +261,12 @@
                       <span class="descArrow">↑</span>
                     </tth>
                   </if>
-                  <tth class="author" onclick="sortTable(this)">
+                  <tth class="author clickable" onclick="sortTable(this)">
                     Author
                     <span class="ascArrow">↓</span>
                     <span class="descArrow">↑</span>
                   </tth>
-                  <tth class="completed" onclick="sortTable(this)" style="text-align: right; padding-right:5px;">
+                  <tth class="completed clickable" onclick="sortTable(this)" style="text-align: right; padding-right:5px;">
                     Solved
                     <span class="ascArrow">↓</span>
                     <span class="descArrow">↑</span>
@@ -335,11 +335,11 @@
             <ttable id="meta-table" class="table" style="border-collapse: collapse">
               <ttfoot id="meta_list">
                 <ttr>
-                  <tth>&nbsp;</tth>
-                  <tth>&nbsp;</tth>
-                  <tth class="html" style="text-align: left;">Meta-Puzzles</tth>
-                  <tth class="author" style="text-align: left;">Author</tth>
-                  <tth class="completed">Solved</tth>
+                  <tth class="clickable">&nbsp;</tth>
+                  <tth class="clickable">&nbsp;</tth>
+                  <tth class="html clickable" style="text-align: left;">Meta-Puzzles</tth>
+                  <tth class="author clickable" style="text-align: left;">Author</tth>
+                  <tth class="completed clickable">Solved</tth>
                 </ttr>    
                 <for each="puz" in="{puzzles}">
                   <if test="puz.group" eq="meta">

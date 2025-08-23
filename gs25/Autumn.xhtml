@@ -16,25 +16,188 @@
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
+          dragDrop: 'svg',
         },
         reactiveBuilder: 'pageBody',
         lookup: {
+          ground: [
+            'PUMWE',
+            'PKINC',
+            'RVBOM',
+            'CEMNG',
+            'OGBER'
+          ],
+          leaves: [
+            ['.KO','.RE','VY.'],
+            ['L.','AT','SG','EI','UB'],
+            ['SHO.','CNOE'],
+          ]
         },
       };
+
+      // <![CDATA[
+      function flipLeaf(id) {
+        const leaf = document.getElementById(id);
+        const f = leaf.getElementsByClassName('flippable');
+        if (f.length > 0) {
+          toggleClass(f[0], 'flipped');
+        }
+      }
+
+      // ]]>
     </script>
     <style>
       #Local {
-        
+        #covers {
+          position: absolute;
+          left: 2.5in;
+          top: 2in;
+
+          text-anchor: middle;
+          user-select: none;
+          -moz-user-select: -moz-none;
+          -khtml-user-select: none;
+          -webkit-user-select: none;
+          -o-user-select: none;
+        }
+        #covers li {
+          line-height: 20pt;
+        }
+        #borders {
+          stroke: black;
+          stroke-width: 1px;
+          fill: none;
+        }
+        #floor rect {
+          stroke: black;
+          stroke-width: 1px;
+          fill: #ffffff99;
+        }
+        #floor {
+          font-family: 'Lucida Console', monospace;
+          font-size: 14pt;
+          fill: black;
+          text-anchor: middle;
+
+          user-select: none;
+          -moz-user-select: -moz-none;
+          -khtml-user-select: none;
+          -webkit-user-select: none;
+          -o-user-select: none;
+        }
+        .leaf rect {
+          stroke: #666;
+          stroke-width: 0.5px;
+        }
+        .leaf text {
+          text-anchor: middle;
+          font-family: 'Lucida Console', monospace;
+          font-size: 24pt;
+          fill: black;
+
+          user-select: none;
+          -moz-user-select: -moz-none;
+          -khtml-user-select: none;
+          -webkit-user-select: none;
+          -o-user-select: none;
+        }
+        #leaf1 rect {
+          fill: #ff59009c;
+        }
+        #leaf2 rect {
+          fill: #ecc735ac;
+        }
+        .leaf .flipped {
+          transform: scale(-1,1);
+        }
+        .drop-zone {
+          fill: transparent;
+        }
       }
     </style>
   </head>
   <body id="Local">
     <div id="pageBody">
       <p class="flavor">
-        Hello!
+        The parks in Longview are gorgeous in autumn.
+        One by one, the leaves come down, drifting gently in the wind, rotating, flipping, then covering part of the ground below.
       </p>
 
+      <ol id="covers">
+        <li>Cover a fall squash</li>        
+        <li>Cover a fall month</li>
+        <li>Cover a fall dance</li>
+        <li>Cover a fall color</li>
+        <li>Cover a fall character</li>
+        <li>Cover a fall garment</li>
+        <li>Cover a fall bug</li>
+        <li>Cover a fall holiday</li>
+      </ol>
+
+      <svg id="svg" width="720" height="830">
+        <g id="leaf1-source" transform="translate(100,100) scale(0.5)" class="drag-source">
+          <rect class="drop-zone" x="0" y="0" width="192" height="192" />
+          <g id="leaf1" class="moveable leaf flipped" onclick="flipLeaf('leaf1')">
+            <g class="flippable flipped">
+              <g transform="translate(-96,0)">
+                <for each="row" in="{leaves.0}">
+                  <for char="ch" in="{row}">
+                    <if test="{ch}" ne=".">
+                      <rect x="{ch#*64}" y="{row#*64}" width="64" height="64" class="drag-handle" />
+                      <text x="{ch#*64 + 32}" y="{row#*64 + 40}">{ch}</text>
+                    </if>
+                  </for>
+                </for>
+              </g>
+            </g>
+          </g>
+        </g>
+
+        <g id="leaf1-source" transform="translate(400,100) rotate(-95) scale(0.5)" transform-origin="64 160" class="drag-source">
+          <use template="leaf-layout" name="leaf2" layout="{leaves.1}" x="300" y="100" width="2" height="5" middle="64" flip="flipped" />
+        </g>
+
+
+
+        <g transform="translate(200,500)">
+          <g id="borders">
+            <rect x="0" y="0" width="320" height="320" />
+          </g>
+          <g id="floor">
+            <for each="row" in="{ground}">
+              <for char="ch" in="{row}">
+                <g transform="translate({ch#*64}, {row#*64})" class="drop-target">
+                  <rect x="0" y="0" width="64" height="64" />
+                  <text x="32" y="40">{ch}</text>
+                </g>
+              </for>
+            </for>
+          </g>
+        </g>
+          fill="none" stroke="#000" stroke-width="2" />
+      </svg>
+
+      <use template='finalAnswer' bottom='-48px' left="1.9in" width="4in" />
 
     </div>
+
+    <template id="leaf-layout">
+      <rect class="drop-zone" x="0" y="0" width="{64*width}" height="{64*height}" />
+      <g id="{name}" class="moveable leaf flipped" onclick="flipLeaf('{name}')">
+        <g class="flippable {flip}">
+          <g transform="translate(-{middle},0)">
+            <for each="row" in="{layout}">
+              <for char="ch" in="{row}">
+                <if test="{ch}" ne=".">
+                  <rect x="{ch#*64}" y="{row#*64}" width="64" height="64" class="drag-handle" />
+                  <text x="{ch#*64 + 32}" y="{row#*64 + 40}">{ch}</text>
+                </if>
+              </for>
+            </for>
+          </g>
+        </g>
+      </g>
+    </template>
+
   </body>
 </html>

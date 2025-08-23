@@ -33,6 +33,7 @@ var puzzles = [
 
     { title: 'Active Lifestyle', thumb: 'act', author: 'Martyn Lovell', type: types.rebus, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'America The Beautiful', thumb: 'ame', author: 'Chris Jeuell', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { title: 'Autumn', thumb: 'aut', author: 'Rorke Haining', type: types.search, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:0}] },
     { title: 'Biomes Of The World', thumb: 'bio', author: 'Zhenya Ross', type: types.search, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Cartography', thumb: 'car', author: 'Jake Lui', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Disney And The Great Outdoors', thumb: 'dis', author: 'Chris Jeuell', type: types.code, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
@@ -51,10 +52,14 @@ var puzzles = [
     { title: 'Signposts', thumb: 'sig', author: 'Tim Hannifin', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Ski Resort', thumb: 'ski', author: 'Joey Marianer', type: types.jigsaw, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Slow Down!', file:'SlowDown', thumb: 'slo', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    { title: 'Spring', thumb: 'spr', author: 'Rorke Haining', type: types.code, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:1}] },
+    { title: 'Summer', thumb: 'sum', author: 'Rorke Haining', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:2}] },
     { title: 'The Hunt', thumb: 'hun', author: 'Joey Marianer', type: types.search, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'There’s Air in the Something Tonight', file: 'TheresAir', thumb: 'air', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'coastal',number:3}] },
     { title: 'Up For Air', thumb: 'upf', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { title: 'Waterfalls', thumb: 'wat', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    { title: 'Winter', thumb: 'win', author: 'Rorke Haining', type: types.code, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:3}] },
+
     // { title: 'Fall', thumb: 'fal', author: 'Rorke', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Feel The Nature', thumb: 'fee', author: 'Kensi Hartman', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { title: 'Gardens', thumb: 'gar', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
