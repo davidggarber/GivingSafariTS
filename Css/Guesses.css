@@ -160,9 +160,10 @@ body.solved {
 
   .validater.ready {
     display: inline-block;
+    position: absolute;
     height: 2em;
-    position: relative;
-    top: -4px;
+    top: 8px;
+    right: -40px;
   }
   .validater.inline.ready {
     display: inline;

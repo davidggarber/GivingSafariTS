@@ -33,12 +33,16 @@
       };
     </script>
     <style>
-      #Disney th img {
-        height: 94px;
-      }
-      #Disney td {
-        font-family: "Lucida Console",monospace;
-        font-size: 28pt;
+      #Local {
+        #table {
+          th img {
+            height: 94px;
+          }
+          td {
+            font-family: "Lucida Console",monospace;
+            font-size: 28pt;
+          }
+        }
       }
     </style>
   </head>
@@ -50,7 +54,7 @@
         so lazy that they forgot exactly one letter for each word in each character’s name….
       </p>
 
-      <ttable>
+      <ttable id="table">
         <for each="line" in="lines">
           <tr>
             <th>
