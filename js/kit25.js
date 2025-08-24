@@ -12827,8 +12827,8 @@ function finalAnswerTemplate() {
     });
     temp.innerHTML =
         `<div class="no-print validate-block" style="position:absolute; bottom:{bottom}; left:{left};">
-      Submit: 
-      <word id="__final-answer" class="extracted" data-show-ready="__submit-answer" style="width:{width};" />
+      <span class="no-user-select">Submit: </span>
+      <word id="__final-answer" class="extracted" data-show-ready="__submit-answer" style="width:{width}; top:6px;" />
       <button class="validater ready" id="__submit-answer" data-extracted-id="__final-answer">OK</button>
     </div>`;
     return temp;
