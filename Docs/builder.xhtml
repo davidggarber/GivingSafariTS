@@ -140,6 +140,17 @@
           </ttable>
         </build>
 
+        <p>
+          <b>Whitespace</b> is generally boolean. Either there is some between content, or there is none. However,<br />
+          formatting and the dynamic programming elements can unintentially introduce whitespace. <br />
+          To override this, any element can specify a <b>trim</b> attribute, for whitespace inside it. The values are:</p>
+          <ul>
+            <li><b>off</b> - any whitespace in the HTML is kept as is (the default) .</li>
+            <li><b>on</b> - removes any whitespace between elements that is only whitespace.</li>
+            <li><b>pre</b> - trim the indentation whitespace within this element, to match the first child line.</li>
+            <li><b>all</b> - trim every text region between elements. If you want a space, you'll need <i>&amp;nbsp;</i>.</li>
+          </ul>
+
       </div>
 
 

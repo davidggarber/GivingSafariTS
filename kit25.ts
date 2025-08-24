@@ -5173,10 +5173,6 @@ function setupWordCells() {
             }
         }
 
-        if (inpStyle != null) {
-            applyAllClasses(inp, inpStyle);
-        }
-
         cell.appendChild(inp);
 
         const extractIndex = cell.getAttributeNS('', 'data-extract-index')

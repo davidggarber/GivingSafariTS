@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="../js/kit24.js"></script>
+    <script src="../js/kit25.js"></script>
     <script src="docs.js"></script>
     <script>
       const boiler = {
@@ -62,7 +62,7 @@
         line-height: 14pt;
       }
       #page {
-        height:24in;
+        height:25in;
       }
     </style>
   </head>
@@ -121,6 +121,19 @@
             <td class="comment">
               <code>extract='[number]'</code> allows the entries mirrored to <b>id="extracted"</b><br />
               to be re-ordered. In this case, these two letters will become the 5th and 3rd letters in the eventual extraction.
+            </td>
+          </tr>
+
+          <tr class="alt">
+            <td class="code" onclick="selectCodeBlock(this, event)">
+              &lt;letter under-text<b>="$"</b>/&gt;<br />
+            </td>
+            <td class="rendered">
+              <letter under-text="$" />
+            </td>
+            <td class="comment">
+              <code>under-text='[text]' </code> recreates UI that clues extraction, without hooking up extraction.<br />
+              This pairs well with <code>copy-id='[id]'</code> for pull-style extraction.
             </td>
           </tr>
 

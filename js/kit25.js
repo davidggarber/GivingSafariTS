@@ -4752,9 +4752,6 @@ function setupWordCells() {
                 inp.inputMode = 'numeric'; // Android
             }
         }
-        if (inpStyle != null) {
-            applyAllClasses(inp, inpStyle);
-        }
         cell.appendChild(inp);
         const extractIndex = cell.getAttributeNS('', 'data-extract-index');
         if (extractIndex !== null) {
