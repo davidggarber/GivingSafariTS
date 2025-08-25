@@ -17,6 +17,7 @@ import { setupScratch } from "./_scratch";
 import { MetaParams, setupMetaSync } from "./_meta";
 import { setupEventSync } from "./_eventSync";
 import { preprocessSvgDragFunctions } from "./_dragDropSvg";
+import { createRatingUI } from "./_rating";
 
 
 /**
@@ -548,6 +549,10 @@ function boilerplate(bp: BoilerPlateData) {
         setupValidation();
     }
 
+    if (safariDetails?.ratings) {
+        linkCss(safariDetails.cssRoot + 'Ratings.css');
+        createRatingUI(safariDetails?.ratings, margins);
+    }
 
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);

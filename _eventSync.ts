@@ -66,7 +66,7 @@ export type LoginInfo = {
  * Log in to an event
  * @param player The name of the player (required)
  * @param team The player's team name (optional)
- * @param team The player's emoji avatar (optional)
+ * @param emoji The player's emoji avatar (optional)
  */
 function doLogin(player:string, team?:string, emoji?:string) {
   _playerName = player;

@@ -16,6 +16,7 @@ kitFiles = [
     '_straightEdge.ts',
     '_events.ts',
     '_eventSync.ts',
+    '_rating.ts',
     '_boilerplate.ts',
     '_confirmation.ts',
     '_contextError.ts',

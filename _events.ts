@@ -24,7 +24,20 @@ export type PuzzleEventDetails = {
   backLinks?: object;  // key: URL trigger -> puzzleListBackLink
   validation?: boolean|string;  // whether to allow local validation
   eventSync?: string;  // When present, this identifies the database event group
+  ratings?: RatingDetails;  // When present, show the rating UI on every puzzle
 }
+
+export type RatingDetails = {
+  fun: boolean,
+  difficulty: boolean,
+  feedback: boolean
+}
+
+const defaultRatingDetails: RatingDetails = {
+  fun: true,
+  difficulty: true,
+  feedback: true
+};
 
 type puzzleListBackLink = {
   href: string;  // relative path
@@ -160,6 +173,7 @@ const giving25Details:PuzzleEventDetails = {
   'backLinks': { 'gs25': { href:'./Map.xhtml'}, 'ps22': { href:'./Map.xhtml'}},
   'validation': true,
   eventSync: 'GivingSafari25',
+  ratings: defaultRatingDetails,
 }
 
 const safari22Details:PuzzleEventDetails = {
@@ -176,6 +190,7 @@ const safari22Details:PuzzleEventDetails = {
   'backLinks': { 'gs25': { href:'./Map.xhtml'}, 'ps22': { href:'./Map.xhtml'}},
   'validation': true,
   // no eventSync == no login
+  ratings: defaultRatingDetails,
 }
 
 const ps21Mini:PuzzleEventDetails = {

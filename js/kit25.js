@@ -5,9 +5,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.showDecoder = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.matrixFromElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.removeClassGlobally = exports.toggleClass = void 0;
 exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.getValueFromTextContainer = exports.hasInputGroup = exports.arrowFromInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = void 0;
-exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = void 0;
-exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = void 0;
+exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.createRatingUI = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = void 0;
+exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -7665,6 +7665,11 @@ function onClickInArea(evt) {
         }
     }
 }
+const defaultRatingDetails = {
+    fun: true,
+    difficulty: true,
+    feedback: true
+};
 const noEventDetails = {
     'cssRoot': '../Css/',
     'links': []
@@ -7784,6 +7789,7 @@ const giving25Details = {
     'backLinks': { 'gs25': { href: './Map.xhtml' }, 'ps22': { href: './Map.xhtml' } },
     'validation': true,
     eventSync: 'GivingSafari25',
+    ratings: defaultRatingDetails,
 };
 const safari22Details = {
     'title': 'The Great Outdoors',
@@ -7799,6 +7805,7 @@ const safari22Details = {
     'backLinks': { 'gs25': { href: './Map.xhtml' }, 'ps22': { href: './Map.xhtml' } },
     'validation': true,
     // no eventSync == no login
+    ratings: defaultRatingDetails,
 };
 const ps21Mini = {
     'title': 'Epicurious Enigmas',
@@ -8072,7 +8079,7 @@ exports.pingEventServer = pingEventServer;
  * Log in to an event
  * @param player The name of the player (required)
  * @param team The player's team name (optional)
- * @param team The player's emoji avatar (optional)
+ * @param emoji The player's emoji avatar (optional)
  */
 function doLogin(player, team, emoji) {
     _playerName = player;
@@ -8335,6 +8342,121 @@ async function syncUnlockedFile(metaFeeder, url) {
     await callSyncApi("PuzzlePing", data);
 }
 exports.syncUnlockedFile = syncUnlockedFile;
+/*-----------------------------------------------------------
+ * _rating.ts
+ *-----------------------------------------------------------*/
+/**
+ * Create the Rating UI that lives above the top of the page (screen only).
+ * @param fun If true, add the "fun" scale.
+ * @param difficulty If true, add the "difficulty" scale.
+ * @param feedback If true, add a button to provide verbatim feedback.
+ */
+function createRatingUI(details, margins) {
+    const context = getRatingContext();
+    if (!context || !context.puzzleName) {
+        return; // Ratings UI is only for puzzles
+    }
+    const div = document.createElement('div');
+    div.id = "__puzzle_rating_ui";
+    div.appendChild(createRatingLabel("Rate this puzzle!"));
+    if (details.fun) {
+        div.appendChild(createRatingScale('Fun:', 'fun', 'star', 5));
+    }
+    if (details.difficulty) {
+        div.appendChild(createRatingScale('Difficulty:', 'difficulty', 'diff', 5));
+    }
+    if (details.feedback) {
+        div.appendChild(createFeedbackButton());
+    }
+    const body = document.getElementsByTagName('body')[0];
+    body.appendChild(div);
+}
+exports.createRatingUI = createRatingUI;
+function createRatingLabel(text) {
+    const span = document.createElement('span');
+    toggleClass(span, 'rating-label', true);
+    span.textContent = text;
+    return span;
+}
+function createRatingScale(label, scale, img, max) {
+    const span = document.createElement('span');
+    toggleClass(span, 'rating-group', true);
+    span.appendChild(createRatingLabel(label));
+    for (let i = 1; i <= max; i++) {
+        const star = document.createElement('img');
+        star.src = '../Images/Stars/' + img + '-' + i + '.png';
+        toggleClass(star, 'rating-star', true);
+        star.setAttribute('data-rating-scale', scale);
+        star.setAttribute('data-rating-value', i.toString());
+        star.onclick = () => { setRating(star); };
+        span.appendChild(star);
+    }
+    return span;
+}
+function createFeedbackButton() {
+    const span = document.createElement('span');
+    toggleClass(span, 'rating-label', true);
+    const button = document.createElement('button');
+    button.textContent = "Give Feedback";
+    toggleClass(button, 'rating-feedback-button', true);
+    button.onclick = () => { provideFeedback(button); };
+    span.appendChild(button);
+    return span;
+}
+/**
+ * Callback when the user clicks one of the rating stars.
+ * @param img Which image - could be from either group.
+ */
+function setRating(img) {
+    const group = findParentOfClass(img, "rating-group");
+    const others = group.getElementsByClassName('rating-star');
+    let unset = hasClass(img, 'selected');
+    let changed = false;
+    for (let i = others.length - 1; i >= 0; i--) {
+        if (hasClass(others[i], 'selected')) {
+            changed = true;
+        }
+        toggleClass(others[i], 'selected', false);
+    }
+    const scale = getOptionalStyle(img, 'data-rating-scale');
+    let val = parseInt(getOptionalStyle(img, 'data-rating-value') || "0");
+    if (!unset) {
+        toggleClass(img, 'selected', true);
+    }
+    else {
+        val = 0;
+    }
+}
+/**
+ * Solicit verbatim feedback, and pass it along to the server.
+ * @param button The button the user clicked.
+ */
+function provideFeedback(button) {
+    const feedback = prompt("Feedback will be forwarded to this puzzle's authors.");
+    // Show UI on the feedback button that the message was received.
+    toggleClass(button, 'sent', !!feedback);
+}
+/**
+ * When recording ratings, the context is important.
+ * Not just which puzzle, in which event. Also, how much progress has the player made, at the time of the rating?
+ */
+function getRatingContext() {
+    const boiler = theBoiler();
+    if (!boiler) {
+        return null;
+    }
+    const safari = getSafariDetails();
+    const login = safari ? getLogin(safari.title) : null;
+    const player = login ? (login.player + (login.team ? (' @ ' + login.team) : '')) : null;
+    const context = {
+        puzzleName: boiler.title,
+        event: safari?.title,
+        progress: 0,
+        user: player || undefined,
+        change: false
+    };
+    return context;
+}
 /*-----------------------------------------------------------
  * _boilerplate.ts
  *-----------------------------------------------------------*/
@@ -8767,6 +8889,10 @@ function boilerplate(bp) {
     if (enableValidation() && theValidation()) {
         linkCss(safariDetails.cssRoot + 'Guesses.css');
         setupValidation();
+    }
+    if (safariDetails?.ratings) {
+        linkCss(safariDetails.cssRoot + 'Ratings.css');
+        createRatingUI(safariDetails?.ratings, margins);
     }
     if (!isIFrame()) {
         setTimeout(checkLocalStorage, 100);
