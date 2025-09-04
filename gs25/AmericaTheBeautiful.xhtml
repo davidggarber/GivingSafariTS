@@ -46,6 +46,10 @@
       #AmericaTheBeautiful .year .letter-cell.multiple-letter.letter-underline {
         width: 1in;
       }
+      .arrow {
+        position: relative;
+        top: -4px;
+      }
 
     </style>
   </head>
@@ -65,9 +69,9 @@
           <for each="site" in="sites">
             <ttr>
               <ttd class="site">{site}</ttd>
-              <ttd class="year">&#11106; <word maxlength="4" class="numeric" /></ttd>
-              <ttd class="number">&#11106; <number /></ttd>
-              <ttd class="letter">&#11106; <letter /></ttd>
+              <ttd class="year"><span class="arrow">&#11106;</span> <word maxlength="4" class="numeric" /></ttd>
+              <ttd class="number"><span class="arrow">&#11106;</span> <number /></ttd>
+              <ttd class="letter"><span class="arrow">&#11106;</span> <letter /></ttd>
             </ttr>
           </for>
         </ttable>
