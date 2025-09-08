@@ -13,17 +13,21 @@
   }
 
   .rating-star {
+    position: relative;
     height: 24px;
+    z-index: 100;
     filter: saturate(0.5);
     transform-origin: 50% 50%;
   }
   .rating-star:hover {
+    z-index: 110;
     filter: saturate(1.5);
     transform: scale(1.5);
     animation-name: scale-to-15;
     animation-duration: 200ms;
   }
   .rating-star.selected {
+    z-index: 110;
     filter: saturate(1.5);
     transform: scale(1.5);
   }

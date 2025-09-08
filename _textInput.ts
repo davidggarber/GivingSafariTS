@@ -445,11 +445,13 @@ export function afterInputUpdate(input:TextInputElement, key:string) {
         }            
     }
     else if (!hasClass(input.parentNode, 'getElementsByClassName')) {
-        var spacing = (text.length - 1) * 0.05;
+        // What is our capacity before compressing?
+        var rc = input.getBoundingClientRect();
+        var ratio = input.inputMode == "numeric" ? 2 : 1.8;
+        var cap = Math.floor(rc.width * ratio / rc.height);
+        // Once we've exceeded our capacity, comress more for each character
+        var spacing = (text.length <= cap) ? 0 : ((text.length - cap) * 0.05);
         input.style.letterSpacing = -spacing + 'em';
-        input.style.paddingRight = (2 * spacing) + 'em';
-        //var rotate = text.length <= 2 ? 0 : (text.length * 5);
-        //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
     if (word) {
         saveWordLocally(input as HTMLInputElement);
