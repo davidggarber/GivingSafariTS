@@ -131,6 +131,10 @@ function getRatingContext(): RatingContext|null {
   if (!boiler) {
     return null;
   }
+  if (!boiler.author) {
+    return null;  // Pages without authors are generally not interesting for ratings
+  }
+
   const safari = getSafariDetails();
   const login = safari ? getLogin(safari.title) : null;
   const player = login ? (login.player + (login.team ? (' @ ' + login.team) : '')) : null;

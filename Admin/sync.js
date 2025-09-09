@@ -119,6 +119,10 @@ function markAsMissing(ids) {
 
 function refreshPicker(response) {
   var list = JSON.parse(response);
+  if (list.length > 0 && Object.keys(list[0]).length == 1) {
+    var field = Object.keys(list[0])[0];
+    list = list.map(obj => obj[field]);
+  }
   var select = document.getElementById('picker');
   if (!select) { return; }
 

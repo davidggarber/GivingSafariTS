@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <script> var exports = {}; </script>
-    <script src="../js/kit24.js" />
+    <script src="../js/kit25.js" />
     <script src="sync.js" />
     <link href="sync.css" rel="Stylesheet" type="text/css"></link>
     <script>
@@ -18,7 +18,7 @@
         lookup: {},
       };
 
-      var eventName = 'GivingSafari24';  // TODO: get from URL
+      var eventName = 'GivingSafari25';  // TODO: get from URL
       var firstLoad = true;
 
       const queryString = window.location.search;
@@ -50,7 +50,7 @@
         queryServer('PuzzleList', data, refreshPicker);
       }
 
-      var colKeys = ['Team', 'Player', 'Guess', 'Timestamp']
+      var colKeys = ['TeamName', 'PlayerName', 'Guess', 'Timestamp']
 
       function refreshWithResponse(response) {
         var list = JSON.parse(response);
@@ -60,7 +60,7 @@
         var existing = rowIdSet(tbody, false);
 
         for (var row of list) {
-          var id = `row-${row['Team']}-${row['Player']}-${row['Timestamp']}`;
+          var id = `row-${row['TeamName']}-${row['PlayerName']}-${row['Timestamp']}`;
           var tr = document.getElementById(id);
           if (tr) {
             // Already exists
@@ -70,7 +70,7 @@
           else {
             tr = createRow(id, row, colKeys);
             toggleClass(tr, 'new', !firstLoad);
-            if (row['Guess'] == row['Guess'].toUpperCase()) {
+            if (row['Correct']) {
               toggleClass(tr, 'correct', true);
             }
             tbody.appendChild(tr);

@@ -2850,11 +2850,9 @@ export function afterInputUpdate(input:TextInputElement, key:string) {
         var rc = input.getBoundingClientRect();
         var ratio = input.inputMode == "numeric" ? 2 : 1.8;
         var cap = Math.floor(rc.width * ratio / rc.height);
+        // Once we've exceeded our capacity, comress more for each character
         var spacing = (text.length <= cap) ? 0 : ((text.length - cap) * 0.05);
         input.style.letterSpacing = -spacing + 'em';
-        // input.style.paddingRight = (2 * spacing) + 'em';
-        //var rotate = text.length <= 2 ? 0 : (text.length * 5);
-        //input.style.transform = 'rotate(' + rotate + 'deg)';
     }
     if (word) {
         saveWordLocally(input as HTMLInputElement);
@@ -9431,6 +9429,10 @@ function getRatingContext(): RatingContext|null {
   if (!boiler) {
     return null;
   }
+  if (!boiler.author) {
+    return null;  // Pages without authors are generally not interesting for ratings
+  }
+
   const safari = getSafariDetails();
   const login = safari ? getLogin(safari.title) : null;
   const player = login ? (login.player + (login.team ? (' @ ' + login.team) : '')) : null;

@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js"></script>
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'gs25',
+        reloadOnRefresh: false,
+        reactiveBuilder: 'pageBody',
+        paperSize: 'postcard',
+        preSetup: toggleLogout,
+        postSetup: postSetup,
+        lookup: {
+          isModal: window.location.search.indexOf('modal') >= 0,
+          logo: {
+            gs25: 'Images/gs25_logo.png',
+            ps22: 'Images/ps22_logo.png',
+          },
+          eventTitle: {
+            gs25: 'Giving Puzzle Safari 25',
+            ps22: 'Puzzle Safari 22 : Web Redux',
+          },
+        }
+      };
+
+      //<![CDATA[
+
+      var LOGIN_TBD = 0;
+      var LOGIN_MODE = 1;
+      var LOGGED_IN_MODE = 2;
+      var LOGOUT_MODE = 3;
+
+      function postSetup() {
+        var body = document.getElementById('LoginUI');
+        // In modal UI, initialize to either login or logout
+        // In modeless UI, initialized to either login or logged-in
+        toggleClass(body, 'logout', !!_playerName && boiler.lookup.isModal);
+        toggleClass(body, 'logged-in', !!_playerName && !boiler.lookup.isModal);
+        initFields(false);
+      }
+
+      function toggleLogout(mode) {
+        var body = document.getElementById('LoginUI');
+        if (mode != LOGIN_TBD) {
+          toggleClass(body, 'logout', mode == LOGOUT_MODE);
+          toggleClass(body, 'logged-in', mode == LOGGED_IN_MODE);
+        }
+        initFields(true);
+      }
+
+      function initFields(newEmoji) {
+        var body = document.getElementById('LoginUI');
+        if (hasClass(body, 'logged-in')) {
+          document.getElementById('logged-in-player').innerText = `${_playerName} ${_emojiAvatar}`;
+          document.getElementById('logged-in-team').innerText = 
+            _teamName ? 'You are on team' : 'You are playing solo.';
+          document.getElementById('logged-in-team2').innerText = 
+            _teamName ? _teamName : '';
+        }
+        else if (hasClass(body, 'logout')) {
+          document.getElementById('logout-player').innerText = _playerName;
+          document.getElementById('as-avatar').innerText = _emojiAvatar;
+          document.getElementById('on-team-name').innerText = 
+            _teamName ? `On team ${_teamName}.` : 'Playing solo.';
+
+          if (!boiler.lookup.isModal) {
+            // Default to Erase Player from kickoff page
+            document.getElementById('delete').checked = true;
+          }
+        }
+        else if (newEmoji) {
+          randomEmoji();        
+        }
+      }
+
+      function max1emoji() {
+        var avatar = document.getElementById('avatar');
+        var chars = splitEmoji(avatar.value);
+        if (chars.length > 1) {
+          avatar.value = chars[chars.length - 1];
+          avatar.select();
+        }
+      }
+
+      function selectAll(input) {
+        input.select();
+      }
+
+      var emojiAnimals = "🦀🦞🦐🦑🐵🐒🦍🦧🐶🐕🦮🐕‍🦺🐩🐺🦊🦝🐱🐈🐈‍⬛🦁🐯🐅🐆🐴🫎🫏🐎🦄🦓🦌🦬🐮🐂🐃🐄🐷🐖🐗🐽🐏🐑🐐🐪🐫🦙🦒🐘🦣🦏🦛🐭🐁🐀🐹🐰🐇🐿️🦫🦔🦇🐻🐻‍❄️🐨🐼🦥🦦🦨🦘🦡🐾🦃🐔🐓🐣🐤🐥🐦🐧🕊️🦅🦆🦢🦉🦤🪶🦩🦚🦜🪽🐦‍⬛🪿🐸🐊🐢🦎🐍🐲🐉🦕🦖🐳🐋🐬🦭🐟🐠🐡🦈🐙🐚🪸🪼🐌🦋🐛🐜🐝🪲🐞🦗🪳🕷️🕸️🦂🦟🪰🪱🦠";
+      var emojiMore = "💐🌸💮🪷🏵️🌹🥀🌺🌻🌼🌷🪻🌱🪴🌲🌳🌴🌵🌾🌿☘️🍀🍁🍂🍃🪹🪺🍄🍇🍈🍉🍊🍋🍌🍍🥭🍎🍏🍐🍑🍒🍓🫐🥝🍅🫒🥥🥑🍆🥔🥕🌽🌶️🫑🥒🥬🥦🧄🧅🥜🫘🌰🫚🫛🍞🥐🥖🫓🥨🥯🥞🧇🧀🍖🍗🥩🥓🍔🍟🍕🌭🥪🌮🌯🫔🥙🧆🥚🍳🥘🍲🫕🥣🥗🍿🧈🧂🥫🍱🍘🍙🍚🍛🍜🍝🍠🍢🍣🍤🍥🥮🍡🥟🥠🥡🦪🍦🍧🍨🍩🍪🎂🍰🧁🥧🍫🍬🍭🍮🍯🍼🥛☕🫖🍵🍶🍾🍷🍸🍹🍺🍻🥂🥃🫗🥤🧋🧃🧉🧊🫙"
+        + "🎃🎄🎆🎇🧨✨🎈🎉🎊🎋🎍🎎🎏🎐🎑🧧🎀🎁🎗️🎟️🎫🎖️🏆🏅⚽⚾🥎🏀🏐🏈🏉🎾🥏🎳🏏🏑🏒🥍🏓🏸🥊🥋🥅⛳⛸️🎣🤿🎽🎿🛷🥌🎯🪀🪁🔫🎱🔮🪄🎮🕹️🎰🎲🧩🧸🪅🪩🪆♟️🃏🀄🎴🎭🖼️🎨🧵🪡🧶🪢"
+        + emojiAnimals;
+      var undoEmoji = [];
+      var redoEmoji = [];
+      function randomEmoji(wider) {
+        var cur = document.getElementById('avatar').value;
+        if (cur) {
+          undoEmoji.push(cur);
+          showUndoRedo();
+        }
+        
+        var chars = splitEmoji(wider ? emojiMore : emojiAnimals);
+        var rand = parseInt(Math.random() * chars.length);
+        document.getElementById('avatar').value = chars[rand];
+      }
+      function prevEmoji() {
+        var ch = undoEmoji.pop();
+        if (ch) {
+          redoEmoji.push(document.getElementById('avatar').value);
+          document.getElementById('avatar').value = ch;
+        }
+        showUndoRedo();
+      }
+      function nextEmoji() {
+        var ch = redoEmoji.pop();
+        if (ch) {
+          undoEmoji.push(document.getElementById('avatar').value);
+          document.getElementById('avatar').value = ch;
+        }
+        showUndoRedo();
+      }
+      function showUndoRedo() {
+        document.getElementById('redo').style.color = 
+          redoEmoji.length > 0 ? 'initial' : 'transparent';
+        document.getElementById('undo').style.color = 
+          undoEmoji.length > 0 ? 'initial' : 'transparent';
+      }
+
+      function validateName() {
+        var pName = document.getElementById('playerName')?.value || '';
+        if (pName.trim().length > 0) {
+          document.getElementById('login-button').removeAttribute('disabled');
+        }
+        else {
+          document.getElementById('login-button').setAttribute('disabled', true);
+        }
+      }
+
+      function login() {
+        var pName = document.getElementById('playerName').value;
+        var tName = document.getElementById('teamName').value;
+        var emoji = document.getElementById('avatar').value;
+        doLogin(pName, tName, emoji);
+        if (urlArgExists('modal')) {
+          dismissModal();
+        }
+        else {
+          // Pivot UI to LoggedIn
+          toggleLogout(LOGGED_IN_MODE);
+        }
+      }
+
+      async function logout() {
+        const isModal = urlArgExists('modal');
+        await doLogout(isModal, document.getElementById('delete').checked);
+        if (isModal) {
+          dismissModal();
+        }
+        else {
+          // Pivot UI to LogIn
+          toggleLogout(LOGIN_MODE);
+        }
+      }
+
+      function invite_logout() {
+        const isModal = urlArgExists('modal');
+        if (isModal) {
+          console.error('Should never be in this mode while modal');
+          dismissModal();
+        }
+        else {
+          // Pivot UI to LogOut
+          toggleLogout(LOGOUT_MODE);
+        }
+      }
+
+      function dismissModal() {
+        try {
+          parent.dismissLogin();
+        }
+        catch {
+          // Will fail when running on local file: protocol
+        }        
+      }
+
+      function cancel() {
+        dismissModal();
+      }
+
+      // ]]>
+
+    </script>
+    <style>
+      body {
+        background-color: white;
+        overflow: hidden;
+      }
+      #LoginUI #Login-bar {
+        display: none;
+      }
+      #logo {
+        height: 1.1in;
+      }
+      .table {
+        margin: 0.5in 0.25in 0px 0.25in;
+      }
+      .iPad .table {
+        margin: 0.5in 0.1in 0px 0.25in;
+      }
+
+      #login-mode {
+        display: block;
+      }
+      .logged-in #login-mode {
+        display: none;
+      }
+      .logout #login-mode {
+        display: none;
+      }
+
+      #logged-in-mode {
+        display: none;
+      }
+      .logged-in #logged-in-mode {
+        display: block;
+      }
+      .logout #logged-in-mode {
+        display: none;
+      }
+
+      #logout-mode {
+        display: none;
+      }
+      .logged-in #logout-mode {
+        display: none;
+      }
+      .logout #logout-mode {
+        display: block;
+      }
+
+      input.text {
+        font-size: 16pt;
+        width: 95%;
+      }
+      #avatar {
+        width: 0.65in;
+        font-size: 24pt;
+        text-align: center;
+      }
+      #as-avatar {
+        font-size: 16pt;
+      }
+      .avatar-top {
+        position: relative;
+        top: -16px;
+        left: -5px;
+        cursor: help;
+      }
+      .avatar-middle {
+        position: relative;
+        display: inline-block;
+        text-align: center;
+        top: 0px;
+        left: -8px;
+        white-space: nowrap;
+      }
+      .a-no-underline {
+        text-decoration: none;
+        font-size: 12pt;
+      }
+      #LoginUI #page {
+        height: 2in;
+      }
+      button {
+        font-size: 16pt;
+      }
+
+      .titlebar {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 5in;
+        height: 28px;
+        font-size: 14pt;
+        background-color: rgb(45, 85, 164);
+        color: white;
+        padding: 4px;
+        text-align: center;
+      }
+      #logged-in-titlebar {
+        background-color: rgb(45, 164, 67);
+      }
+      #logout-titlebar {
+        background-color: rgb(164, 45, 45);
+      }
+      #logged-in-player {
+        font-weight: bold;
+        font-size: 18pt;
+      }
+      #logged-in-team2 {
+        font-weight: bold;
+        font-size: 16pt;
+      }
+      .logout-big {
+        font-size: 14pt;
+      }
+
+    </style>
+  </head>
+  <body id="LoginUI">
+    <div id='pageBody'>
+
+      <div id="login-mode">
+        <div id="login-titlebar" class="titlebar">
+          Log in to {eventTitle.[_safari]}
+        </div>
+        <table id="login-table" class="table">
+          <tr>
+            <th class="left" style="width:1in;">Your name</th>
+            <td class="middle"><input id="playerName" type="text" class="text" oninput="validateName()" /></td>
+            <td rowspan="3" style="vertical-align: top;">
+              <img id="logo" ssrc="{logo.[_safari]}" />
+            </td>
+          </tr>
+          <tr>
+            <th class="left">Emoji avatar</th>
+            <td class="middle" style="white-space: nowrap;"><input id="avatar" type="text" class="text" oninput="max1emoji()" onfocus="selectAll(this)" />
+              <div style="display:inline-block">
+                <sup class="avatar-top" title="Teammates should pick different avatars">⭐</sup>
+                <span class="avatar-middle" >
+                  Type your own, or<br />
+                  <a id="undo" href="javascript:prevEmoji()" class="a-no-underline" title="undo" style="color:transparent">⤺</a>
+                  <a href="javascript:randomEmoji(true)">randomize</a>
+                  <a id="redo" href="javascript:nextEmoji()" class="a-no-underline" title="redo" style="color:transparent">⤳</a>
+                </span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th class="left">Team name</th>
+            <td class="middle"><input id="teamName" type="text" class="text" /></td>
+          </tr>
+          <tr>
+            <td class="left">&nbsp;</td>
+            <td colspan="2">
+              <i>Leave the team blank if you are playing solo.</i>
+            </td>
+          </tr>
+          <tr>
+            <td class="left"></td>
+            <td class="middle" style="text-align: center;">
+              <button id="login-button" onclick="login()" disabled="true">Login</button>
+              <if test="{isModal}">
+                <button onclick="cancel()">Cancel</button>
+              </if>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="logged-in-mode">
+        <div id="logged-in-titlebar" class="titlebar">
+          You are logged in to {eventTitle.[_safari]}
+        </div>
+        <table id="logged-in-table" class="table">
+          <tr>
+            <td class="left" style="width:3.25in; text-align:center;">Welcome <span id="logged-in-player"></span>!</td>
+            <td class="middle" rowspan="3" style="vertical-align: top;">
+              <img id="logo" ssrc="{logo.[_safari]}" />
+            </td>
+          </tr>
+          <tr>
+            <td class="left" style="text-align:center; padding-top:20px;">
+              <span id="logged-in-team">You are on team</span>
+              <br />
+              <span id="logged-in-team2" />
+            </td> 
+          </tr>
+          <tr>
+            <td colspan="2" style="text-align:center; padding-top: 20px">
+              Would you like to <button onclick="invite_logout()">Change?</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="logout-mode">
+        <div id="logout-titlebar" class="titlebar">
+          Log out of {eventTitle.[_safari]} ?
+        </div>
+        <table id="logout-table" class="table">
+          <tr>
+            <th class="left" style="width:3.25in;">You are logged in as <span id="logout-player" class="logout-big"></span></th>
+            <td rowspan="3" style="vertical-align: top;">
+              <img id="logo" ssrc="{logo.[_safari]}" />
+            </td>
+          </tr>
+          <tr>
+            <th class="left">With emoji avatar <span id="as-avatar" class="logout-big"></span></th>
+          </tr>
+          <tr>
+            <th class="left" id="on-team-name">On team</th>
+          </tr>
+          <tr>
+            <td colspan="2" style="text-align: center;">
+              <if test="{isModal}">
+                <button onclick="logout()">Confirm Logout</button>
+                <button onclick="cancel()">Cancel</button>
+              </if>
+              <else>
+                <button onclick="logout()">Logout</button>
+                <button onclick="toggleLogout(LOGGED_IN_MODE)">Cancel</button>
+              </else>
+              <br />
+              <span style="white-space: nowrap" trim="all">
+                <input type="checkbox" id="delete" /> 
+                <label for="delete">Erase player</label>
+              </span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+  </body>
+</html>

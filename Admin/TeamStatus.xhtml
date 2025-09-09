@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <script> var exports = {}; </script>
-    <script src="../js/kit24.js" />
+    <script src="../js/kit25.js" />
     <script src="sync.js" />
     <link href="sync.css" rel="Stylesheet" type="text/css"></link>
     <script>
@@ -19,7 +19,7 @@
         lookup: {},
       };
 
-      var eventName = 'GivingSafari24';  // TODO: get from URL
+      var eventName = 'GivingSafari25';  // TODO: get from URL
       var firstLoad = true;
 
       const queryString = window.location.search;
@@ -33,17 +33,14 @@
       var avatar = undefined;
 
       var teamName = urlParams.get('t');
-      var solo = teamName.indexOf('(solo)');
-      if (teamName && solo > 0 && solo == teamName.length - 6) {
-        // Actually a solo player
-        var soloPlayer = teamName.substr(0, teamName.length - 7);
-        var soloEmoji = splitEmoji(soloPlayer);
-        avatar = soloEmoji[soloEmoji.length - 1].trim();
-        playerName = soloPlayer.substr(0, soloPlayer.length - avatar.length - 1).trim();
+      var solo = urlParams.get('p') && urlParams.get('a');
+      if (solo) {
+        playerName = urlParams.get('p');
+        avatar = urlParams.get('a');
         boiler.lookup['playerName'] = playerName;
-        boiler.title = 'Solo Player Status: ' + soloPlayer;
+        boiler.title = `Solo Player Status: ${playerName} ${avatar}`;
         teamName = undefined;
-      }      
+      }
       else if (teamName) {
         boiler.lookup['teamName'] = teamName;
         boiler.title = 'Team Status: ' + teamName;
@@ -144,7 +141,7 @@
       function changePicker() {
         var pick = document.getElementById('picker').value;
         if (pick != teamName) {
-          window.location.href = 'TeamStatus.xhtml?t=' + encodeURIComponent(pick);
+          // window.location.href = 'TeamStatus.xhtml?t=' + encodeURIComponent(pick);
         }
       }
 
@@ -177,8 +174,6 @@
     <div id="pageBody">
       <p>
         <select id="picker" value="{teamName}" onchange="changePicker()" />
-      </p>
-      <p>
         <button onclick="doRefresh()">Refresh</button>
         <a href="Teams.xhtml?e={eventName}">All teams</a>
       </p>

@@ -100,7 +100,7 @@ var metas = {
 //  - gs25 event is an event, with teams and a leaderboard.
 var _urlEventArguments = (window.location.search.indexOf('gs25') > 0 || window.location.search.indexOf('ps22') > 0)
     ? window.location.search  // no change
-    : window.location.search === '' ? '?ps22'
+    : window.location.search === '' ? '?gs25'
     : (window.location.search + '&gs25');
 
 // Fill in the puzzle hrefs
