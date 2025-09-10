@@ -427,3 +427,24 @@ export function enableValidation():boolean {
   }
   return urlArgExists(safariDetails.validation);
 }
+
+/**
+ * Lookup a safari by any of three keys:
+ * - event key, as used in URL args
+ * - event title
+ * - event sync key
+ * @param name 
+ * @returns 
+ */
+export function lookupSafari(name:string):PuzzleEventDetails | null {
+  if (name in pastSafaris) {
+    return pastSafaris[name];
+  }
+  var list = Object.values(pastSafaris);
+  for (var i = 0; i < list.length; i++) {
+    var safari = list[i];
+    if (safari.title == name || safari.eventSync == name)
+      return safari;
+  }
+  return null;
+}

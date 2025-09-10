@@ -18,24 +18,10 @@
         lookup: {},
       };
 
-      var eventName = 'GivingSafari25';  // TODO: get from URL
       var firstLoad = true;
 
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
-      if (urlParams.has('e')) {
-        eventName = urlParams.get('e');
-      }
-      boiler.lookup['eventName'] = eventName;
-
-      var puzzleName = urlParams.get('z');
-      if (puzzleName) {
-        boiler.lookup['puzzleName'] = puzzleName;
-        boiler.title = 'Answer Attempts: ' + puzzleName;
-      }
-      else {
-        window.location.href = 'Puzzles.xhtml?' + urlParams;
-      }
+      var eventName = identifyEvent();
+      var puzzleName = identifyPuzzle('Answer Attempts: ', 'Puzzles.xhtml');
 
       function doRefresh() {
         var data = {

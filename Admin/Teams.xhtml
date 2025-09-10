@@ -18,13 +18,17 @@
         lookup: {},
       };
 
-      var eventName = 'GivingSafari25';  // TODO: get from URL
+      var eventName = 'GivingSafari25';
       var firstLoad = true;
 
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
       if (urlParams.has('e')) {
         eventName = urlParams.get('e');
+        var safari = lookupSafari(eventName);
+        if (safari) {
+          eventName = safari.eventSync;
+        }        
       }
       boiler.lookup['eventName'] = eventName;
 

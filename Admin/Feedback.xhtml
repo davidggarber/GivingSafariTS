@@ -11,26 +11,35 @@
       //<![CDATA[
       const boiler = {
         safari: 'Admin',
-        orientation: 'landscape',
-        title: 'List Players',
+        orientation: 'portrait',
+        title: 'Puzzle Feedback',
         postSetup: doRefresh,
         reactiveBuilder: 'pageBody',
-        lookup: {},
+        lookup: {
+          progress: [  // interpret progress values
+            'unknown',
+            'opened',
+            'edited',
+            'attempted',
+            'unlocked',
+            'solved',
+          ]
+
+        },
       };
 
       var firstLoad = true;
-
       var eventName = identifyEvent();
-
+      var puzzleName = identifyPuzzle('Puzzle Feedback: ', 'Ratings.xhtml');
 
       function doRefresh() {
+
         var data = {
           eventName: eventName,
+          puzzle: puzzleName,
         }
-        queryServer('PlayerList', data, refreshWithResponse)
+        queryServer('PuzzleFeedback', data, refreshWithResponse)
       }
-
-      var colKeys = ['PlayerName', 'TeamName']
 
       function refreshWithResponse(response) {
         var list = JSON.parse(response);
@@ -40,24 +49,24 @@
         var existing = rowIdSet(tbody, true);
 
         for (var row of list) {
-          var id = `row-${row['TeamName']}${row['PlayerName']}${row['Avatar']}`;
+          var id = "row-" + row['Progress'] + row['Feedback'] + row['Timestamp'];
           var tr = document.getElementById(id);
           if (tr) {
             // Already exists
             toggleClass(tr, 'missing', false);
             toggleClass(tr, 'new', false);
+            refillFromTemplate(tr, 'feedCols', row);
             existing[id] = null;
           }
           else {
-            tr = appendFromTemplate(tbody, 'playerRow', row);            
+            var tr = appendFromTemplate(tbody, 'feedRow', row);
             toggleClass(tr, 'new', !firstLoad);
-            tbody.appendChild(tr);
           }
         }
 
         // If any pre-existing rows have gone missing, tag them
         var missing = Object.entries(existing).filter(pair => pair[1]).map(pair => pair[0]);
-        markAsMissing(missing);
+        removeMissing(missing);
 
         firstLoad = false;
       }
@@ -65,35 +74,32 @@
       // ]]>
     </script>
     <style>
-      .Avatar {
+      tr:hover .team-name {
+        font-weight: bold;
+      }
+
+      .rating {
         text-align: center;
       }
-      tr:hover .Player {
-        font-weight: bold;
+      .rating img {
+        position: relative;
+        top: 4px;
+        height: 24px;
       }
     </style>
   </head>
-  <body id="ListPlayers">
+  <body id="Local">
+    <!--
+        Drill down to the specific ratings for a single puzzle
+      -->
     <div id="pageBody">
-      <button onclick="doRefresh()">Refresh Player List</button>
+      <button onclick="doRefresh()">Refresh</button>
       <table>
         <thead>
-          <tr id="header-row" class="sortable">
-            <th onclick="sortTable(this)" trim="all">
-              Player Name
-              <span class="ascArrow">↓</span>
-              <span class="descArrow">↑</span>
-            </th>
-            <th onclick="sortTable(this)" trim="all">
-              Avatar
-              <span class="ascArrow">↓</span>
-              <span class="descArrow">↑</span>
-            </th>
-            <th onclick="sortTable(this)" trim="all">
-              Team Name
-              <span class="ascArrow">↓</span>
-              <span class="descArrow">↑</span>
-            </th>
+          <tr id="header-row">
+            <th>Progress</th>
+            <th>Feedback</th>
+            <th>Timestamp</th>
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">
@@ -102,17 +108,22 @@
 
     </div>
 
-    <template id="playerRow">
-      <ttr id="row-{TeamName}{PlayerName}{Avatar}">
-        <if not="{TeamName}">
-          <ttd class="Player"><a href="TeamStatus.xhtml?p={PlayerName}&amp;a={Avatar}">{PlayerName}</a></ttd>
-        </if>
-        <else>
-          <ttd class="Player">{PlayerName}</ttd>
-        </else>
-        <ttd class="Avatar">{Avatar}</ttd>
-        <ttd class="Team"><a href="TeamStatus.xhtml?t={TeamName}">{TeamName}</a></ttd>
-      </ttr>      
+    <template id="feedRow">
+      <tr id="row-{Progress}{Feedback}{Timestamp}">
+        <td class="progress"><use template="progress" val="{Progress}" /></td>
+        <td class="feedback">{Feedback}</td>
+        <td class="time">{Timestamp}</td>
+      </tr>
+    </template>
+
+    <template id="feedCols">
+      <td class="progress"><use template="progress" val="{Progress}" /></td>
+      <td class="feedback">{Feedback}</td>
+      <td class="time">{Timestamp}</td>
+    </template>
+
+    <template id="progress">
+      {progress.[val]}
     </template>
 
   </body>

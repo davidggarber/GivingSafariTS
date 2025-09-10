@@ -8916,6 +8916,27 @@ export function enableValidation():boolean {
   return urlArgExists(safariDetails.validation);
 }
 
+/**
+ * Lookup a safari by any of three keys:
+ * - event key, as used in URL args
+ * - event title
+ * - event sync key
+ * @param name 
+ * @returns 
+ */
+export function lookupSafari(name:string):PuzzleEventDetails | null {
+  if (name in pastSafaris) {
+    return pastSafaris[name];
+  }
+  var list = Object.values(pastSafaris);
+  for (var i = 0; i < list.length; i++) {
+    var safari = list[i];
+    if (safari.title == name || safari.eventSync == name)
+      return safari;
+  }
+  return null;
+}
+
 /*-----------------------------------------------------------
  * _eventSync.ts
  *-----------------------------------------------------------*/
@@ -8929,6 +8950,14 @@ export enum EventSyncActivity {
   Solve = "Solve",
 }
 
+let ActivityRank = {
+  "Open": 1,
+  "Edit": 2,
+  "Attempt": 3,
+  "Unlock": 4,
+  "Solve": 5,
+}
+
 // Support testing against a local Sync server.
 // Note: test environment does not define 'window'
 const localSync = (typeof window !== 'undefined') ? (window.location.href.substring(0,5) == 'file:') : true;
@@ -8938,6 +8967,7 @@ let _eventName:string|undefined = undefined;
 let _playerName:string|undefined = undefined;
 let _teamName:string|undefined = undefined;
 let _emojiAvatar:string|undefined = undefined;
+let _mostProgress:EventSyncActivity = EventSyncActivity.Open;
 
 export function setupEventSync(syncKey?:string) {
   canSyncEvents = !!syncKey;
@@ -8954,6 +8984,8 @@ export function setupEventSync(syncKey?:string) {
 }
 
 export async function pingEventServer(activity:EventSyncActivity, guess?:string) {
+  cacheProgress(activity);
+
   if (!canSyncEvents || !_playerName) {
     return;
   }
@@ -8969,6 +9001,18 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
   };
 
   await callSyncApi("PuzzlePing", data);
+}
+
+/**
+ * Track the highest activity reached on the current puzzle.
+ * @param activity 
+ */
+function cacheProgress(activity:EventSyncActivity) {
+  let prev = ActivityRank[_mostProgress];
+  let next = ActivityRank[activity];
+  if (next > prev) {
+    _mostProgress = activity;
+  }
 }
 
 /**
@@ -9140,6 +9184,7 @@ function updateLoginUI() {
     span.innerText = _teamName ? (_playerName + ' @ ' + _teamName) : _playerName;
     div.onclick = function(e) { promptLogin(e);};
     div.title = "Log out?";
+    showRatingUI(true);
   }
   else {
     // Logged out
@@ -9148,6 +9193,7 @@ function updateLoginUI() {
     span.innerText = "Login?";
     div.onclick = function(e) { promptLogin(e);};
     div.title = "Log in?";
+    showRatingUI(false);
   }
 }
 
@@ -9296,6 +9342,40 @@ export async function syncUnlockedFile(metaFeeder:string, url:string) {
   await callSyncApi("PuzzlePing", data);
 }
 
+export async function sendRating(aspect: string, val: number) {
+  if (!canSyncEvents) {
+    return;
+  }
+  const data = {
+    eventName: _eventName,
+    player: _playerName || "",
+    avatar: _emojiAvatar || "",
+    team: _teamName || "",
+    puzzle: theBoiler().title,
+    activity: _mostProgress,
+    data: `${aspect}:${val}`
+  };
+
+  await callSyncApi("RatePuzzle", data);
+}
+
+export async function sendFeedback(feedback: string) {
+  if (!canSyncEvents) {
+    return;
+  }
+  const data = {
+    eventName: _eventName,
+    player: _playerName || "",
+    avatar: _emojiAvatar || "",
+    team: _teamName || "",
+    puzzle: theBoiler().title,
+    activity: _mostProgress,
+    data: feedback
+  };
+
+  await callSyncApi("GiveFeedback", data);
+}
+
 /*-----------------------------------------------------------
  * _rating.ts
  *-----------------------------------------------------------*/
@@ -9309,13 +9389,13 @@ export async function syncUnlockedFile(metaFeeder:string, url:string) {
  * @param feedback If true, add a button to provide verbatim feedback.
  */
 export function createRatingUI(details:RatingDetails, margins:HTMLDivElement) {
-  const context = getRatingContext();
-  if (!context || !context.puzzleName) {
-    return;  // Ratings UI is only for puzzles
-  }
+  const show = shouldShowRatings();
 
   const div = document.createElement('div');
   div.id = "__puzzle_rating_ui";
+  if (!show) {
+    div.style.display = 'None';
+  }
 
   div.appendChild(createRatingLabel("Rate this puzzle!"));
 
@@ -9333,6 +9413,16 @@ export function createRatingUI(details:RatingDetails, margins:HTMLDivElement) {
 
   const body = document.getElementsByTagName('body')[0];
   body.appendChild(div);
+}
+
+export function showRatingUI(show: boolean) {
+  const div = document.getElementById("__puzzle_rating_ui");
+  if (div) {
+    var isShowing = div.style.display != 'None';
+    if (show != isShowing) {
+      div.style.display = show ? '' : 'None';
+    }
+  }
 }
 
 function createRatingLabel(text:string):HTMLSpanElement {
@@ -9375,7 +9465,7 @@ function createFeedbackButton():HTMLSpanElement {
  * Callback when the user clicks one of the rating stars.
  * @param img Which image - could be from either group.
  */
-function setRating(img: HTMLElement) {
+async function setRating(img: HTMLElement) {
   const group = findParentOfClass(img, "rating-group");
   const others = group!.getElementsByClassName('rating-star');
   let unset = hasClass(img, 'selected');
@@ -9392,6 +9482,9 @@ function setRating(img: HTMLElement) {
 
   if (!unset) {
     toggleClass(img, 'selected', true);
+    if (scale) {
+      await sendRating(scale, val);
+    }
   }
   else {
     val = 0;
@@ -9403,49 +9496,42 @@ function setRating(img: HTMLElement) {
  * Solicit verbatim feedback, and pass it along to the server.
  * @param button The button the user clicked.
  */
-function provideFeedback(button:HTMLButtonElement) {
+async function provideFeedback(button:HTMLButtonElement) {
   const feedback = prompt("Feedback will be forwarded to this puzzle's authors.")
-  // Show UI on the feedback button that the message was received.
-  toggleClass(button, 'sent', !!feedback);
-}
+  if (feedback) {
+    await sendFeedback(feedback);
 
-
-type RatingContext = {
-  puzzleName?: string;  // Which puzzle is this?
-  event?: string;  // Which event
-  progress?: number;  // How far has this puzzle been filled in?
-  user?: string;  // user's ID
-  scale?: string;  // Which rating scale
-  value?: number;  // Rating 1-5, or 0 if no rating
-  change?: boolean;  // Is this a change from a different recent rating?
+    // Show UI on the feedback button that the message was received.
+    toggleClass(button, 'sent', !!feedback);
+  }
 }
 
 /**
- * When recording ratings, the context is important.
- * Not just which puzzle, in which event. Also, how much progress has the player made, at the time of the rating?
+ * Only show ratings for puzzles that care, and when we have a means to sync the feedback.
+ * Meta materials, challenge tickets, and the home index don't care. They also, coincidentally, don't have authors.
  */
-function getRatingContext(): RatingContext|null {
+function shouldShowRatings(): boolean {
   const boiler = theBoiler();
   if (!boiler) {
-    return null;
+    return false;
   }
   if (!boiler.author) {
-    return null;  // Pages without authors are generally not interesting for ratings
+    return false;  // Pages without authors are generally not interesting for ratings
   }
 
+  // Event must be legit, and syncable
   const safari = getSafariDetails();
-  const login = safari ? getLogin(safari.title) : null;
-  const player = login ? (login.player + (login.team ? (' @ ' + login.team) : '')) : null;
+  if (!safari) {
+    return false;
+  }
+  if (!safari.eventSync) {
+    return false;
+  }
 
-  const context: RatingContext = {
-    puzzleName: boiler.title,
-    event: safari?.title,
-    progress: 0,  // TBD
-    user: player || undefined,
-    change: false
-  };
-
-  return context;
+  // Player must have logged in
+  // (two reasons: to nail down the event, and because server doesn't have anonymous players)
+  const login = getLogin(safari.eventSync);
+  return !!login;
 }
 
 /*-----------------------------------------------------------

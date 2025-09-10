@@ -16,14 +16,7 @@
         lookup: {},
       };
 
-      var eventName = 'GivingSafari25';  // TODO: get from URL
-
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
-      if (urlParams.has('e')) {
-        eventName = urlParams.get('e');
-      }
-      boiler.lookup['eventName'] = eventName;
+      var eventName = identifyEvent();
       boiler.lookup['args'] = eventName ? `?${eventName}` : '';
 
       //]]>
@@ -43,6 +36,7 @@
       <p><a href="Teams.xhtml{args}">Teams</a></p>
       <p><a href="Players.xhtml{args}">Players</a></p>
       <p><a href="Scoreboard.xhtml{args}">Scoreboard</a></p>
+      <p><a href="Ratings.xhtml{args}">Ratings</a></p>
     </div>
   </body>
 </html>

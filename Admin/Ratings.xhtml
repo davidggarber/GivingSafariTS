@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="sync.js" />
+    <link href="sync.css" rel="Stylesheet" type="text/css"></link>
+    <script>
+      //<![CDATA[
+      const boiler = {
+        safari: 'Admin',
+        orientation: 'portrait',
+        title: 'Puzzle Ratings',
+        postSetup: doRefresh,
+        reactiveBuilder: 'pageBody',
+        lookup: {},
+      };
+
+      var firstLoad = true;
+      var eventName = identifyEvent();
+
+      function doRefresh() {
+        var data = {
+          eventName: eventName,
+        }
+        queryServer('PuzzleRatingSummary', data, refreshWithResponse)
+      }
+
+      function refreshWithResponse(response) {
+        var list = JSON.parse(response);
+        var tbody = document.getElementById('list-tbody');
+        
+        // See what rows we already have
+        var existing = rowIdSet(tbody, true);
+
+        for (var row of list) {
+          row.encoded = encodeURIComponent(row.PuzzleName);
+          var id = "puzzle-" + row.PuzzleName;
+          var tr = document.getElementById(id);
+          if (tr) {
+            // Already exists
+            toggleClass(tr, 'missing', false);
+            toggleClass(tr, 'new', false);
+            refillFromTemplate(tr, 'puzzleCells', row);
+            existing[id] = null;
+          }
+          else {
+            var tr = appendFromTemplate(tbody, 'puzzleRow', row);
+            toggleClass(tr, 'new', !firstLoad);
+          }
+        }
+
+        // If any pre-existing rows have gone missing, tag them
+        var missing = Object.entries(existing).filter(pair => pair[1]).map(pair => pair[0]);
+        markAsMissing(missing);
+
+        firstLoad = false;
+      }
+
+      // ]]>
+    </script>
+    <style>
+      tr:hover .team-name {
+        font-weight: bold;
+      }
+
+      .na {
+        color: gray;
+      }
+      .avg1 {
+        color: red;
+      }
+      .avg2 {
+        color: rgb(219, 143, 0);
+      }
+      .avg3 {
+        color: rgb(185, 158, 0);
+      }
+      .avg4 {
+        color: rgb(178, 198, 0);
+      }
+      .avg5 {
+        color: rgb(93, 192, 0);
+      }
+      .rating {
+        text-align: center;
+      }
+      .rating img {
+        position: relative;
+        top: 4px;
+        height: 24px;
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <!--
+        A list of all puzzles, with their average ratings.
+      -->
+    <div id="pageBody">
+      <button onclick="doRefresh()">Refresh</button>
+      <table>
+        <thead>
+          <tr id="header-row" class="sortable">
+            <use template="sortableTH" text="Puzzle" cls="Name" />
+            <use template="sortableTH" text="Fun" cls="sort-numeric" />
+            <use template="sortableTH" text="Difficulty" cls="sort-numeric" />
+            <use template="sortableTH" text="Feedback" />
+          </tr>
+        </thead>
+        <tbody id="list-tbody" class="alternate">
+        </tbody>
+      </table>
+
+    </div>
+
+    <template id="sortableTH">
+      <tth onclick="sortTable(this)" trim="all" class="{?cls}">
+        {text}
+        <span class="ascArrow">↓</span>
+        <span class="descArrow">↑</span>
+      </tth>
+    </template>
+
+    <template id="puzzleRow">
+      <tr id="puzzle-{PuzzleName}">
+          <td class="puzzle-name"><a href="Feedback.xhtml?e={eventName}&amp;z={PuzzleName}">{PuzzleName}</a></td>
+          <td class="rating"><use template="funVal" val="{Fun}" /></td>
+          <td class="rating"><use template="diffVal" val="{Difficulty}" /></td>
+          <td class="rating"><use template="feedbackVal" val="{Feedback}" /></td>
+      </tr>
+    </template>
+
+    <template id="puzzleCells">
+      <td class="puzzle-name"><a href="Feedback.xhtml?e={eventName}&amp;z={PuzzleName}">{PuzzleName}</a></td>
+      <td class="rating"><use template="funVal" val="{Fun}" /></td>
+      <td class="rating"><use template="diffVal" val="{Difficulty}" /></td>
+      <td class="rating"><use template="feedbackVal" val="{Feedback}" /></td>
+    </template>
+
+    <template id="funVal">
+      <if test="val" lt="1">
+        <span class="na">n/a</span>
+      </if>
+      <elseif test="val" lt="1.5">
+        <span class="avg1">{val}<img src="../Images/Stars/star-1.png" /></span>
+      </elseif>
+      <elseif test="val" lt="2.5">
+        <span class="avg2">{val}<img src="../Images/Stars/star-2.png" /></span>
+      </elseif>
+      <elseif test="val" lt="3.5">
+        <span class="avg3">{val}<img src="../Images/Stars/star-3.png" /></span>
+      </elseif>
+      <elseif test="val" lt="4.5">
+        <span class="avg4">{val}<img src="../Images/Stars/star-4.png" /></span>
+      </elseif>
+      <else>
+        <span class="avg5">{val}<img src="../Images/Stars/star-5.png" /></span>
+      </else>
+    </template>
+
+    <template id="diffVal">
+      <if test="val" lt="1">
+        <span class="na">n/a</span>
+      </if>
+      <elseif test="val" lt="1.5">
+        <span class="avg1">{val}<img src="../Images/Stars/diff-1.png" /></span>
+      </elseif>
+      <elseif test="val" lt="2.5">
+        <span class="avg2">{val}<img src="../Images/Stars/diff-2.png" /></span>
+      </elseif>
+      <elseif test="val" lt="3.5">
+        <span class="avg3">{val}<img src="../Images/Stars/diff-3.png" /></span>
+      </elseif>
+      <elseif test="val" lt="4.5">
+        <span class="avg4">{val}<img src="../Images/Stars/diff-4.png" /></span>
+      </elseif>
+      <else>
+        <span class="avg5">{val}<img src="../Images/Stars/diff-5.png" /></span>
+      </else>
+    </template>
+
+    <template id="feedbackVal">
+      <if test="val" lt="1">
+        <span class="na">&nbsp;</span>
+      </if>
+      <else>
+        {val}📧
+      </else>
+    </template>
+
+  </body>
+</html>

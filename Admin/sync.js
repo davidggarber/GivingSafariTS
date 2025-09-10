@@ -1,5 +1,35 @@
 const localApi = window.location.href.substring(0,5) == 'file:';
 
+function identifyEvent() {
+  var eventName = 'GivingSafari25';
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  if (urlParams.has('e')) {
+    eventName = urlParams.get('e');
+    var safari = lookupSafari(eventName);
+    if (safari) {
+      eventName = safari.eventSync;
+    }
+  }
+  boiler.lookup['eventName'] = eventName;
+  return eventName;
+}
+
+function identifyPuzzle(titlePref, listUrl) {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  var puzzleName = urlParams.get('z');
+  if (puzzleName) {
+    boiler.lookup['puzzleName'] = puzzleName;
+    boiler.title = titlePref + puzzleName;
+  }
+  else {
+    // Lacking a puzzle, jump back to the generic list
+    window.location.href = listUrl + '?' + urlParams;
+  }
+  return puzzleName;
+}
+
 async function queryServer(api, data, callback) {
   try {
       var xhr = new XMLHttpRequest();
@@ -114,6 +144,13 @@ function markAsMissing(ids) {
     var elmt = document.getElementById(id);
     toggleClass(elmt, 'missing', true);
     toggleClass(elmt, 'new', false);
+  }
+}
+
+function removeMissing(ids) {
+  for (var id of ids) {
+    var elmt = document.getElementById(id);
+    elmt.parentNode.removeChild(elmt);
   }
 }
 

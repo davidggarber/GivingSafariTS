@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <script> var exports = {}; </script>
-    <script src="../js/kit24.js" />
+    <script src="../js/kit25.js" />
     <script src="sync.js" />
     <link href="sync.css" rel="Stylesheet" type="text/css"></link>
     <script>
@@ -18,15 +18,10 @@
         lookup: {},
       };
 
-      var eventName = 'GivingSafari24';  // TODO: get from URL
       var firstLoad = true;
 
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
-      if (urlParams.has('e')) {
-        eventName = urlParams.get('e');
-      }
-      boiler.lookup['eventName'] = eventName;
+      var eventName = identifyEvent();
+
 
       function doRefresh() {
         var data = {

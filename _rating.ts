@@ -1,6 +1,7 @@
 import { theBoiler } from "./_boilerplate";
 import { findParentOfClass, getOptionalStyle, hasClass, toggleClass } from "./_classUtil";
 import { getSafariDetails, RatingDetails } from "./_events";
+import { sendFeedback, sendRating } from "./_eventSync";
 import { getLogin } from "./_storage";
 
 
@@ -11,13 +12,13 @@ import { getLogin } from "./_storage";
  * @param feedback If true, add a button to provide verbatim feedback.
  */
 export function createRatingUI(details:RatingDetails, margins:HTMLDivElement) {
-  const context = getRatingContext();
-  if (!context || !context.puzzleName) {
-    return;  // Ratings UI is only for puzzles
-  }
+  const show = shouldShowRatings();
 
   const div = document.createElement('div');
   div.id = "__puzzle_rating_ui";
+  if (!show) {
+    div.style.display = 'None';
+  }
 
   div.appendChild(createRatingLabel("Rate this puzzle!"));
 
@@ -35,6 +36,16 @@ export function createRatingUI(details:RatingDetails, margins:HTMLDivElement) {
 
   const body = document.getElementsByTagName('body')[0];
   body.appendChild(div);
+}
+
+export function showRatingUI(show: boolean) {
+  const div = document.getElementById("__puzzle_rating_ui");
+  if (div) {
+    var isShowing = div.style.display != 'None';
+    if (show != isShowing) {
+      div.style.display = show ? '' : 'None';
+    }
+  }
 }
 
 function createRatingLabel(text:string):HTMLSpanElement {
@@ -77,7 +88,7 @@ function createFeedbackButton():HTMLSpanElement {
  * Callback when the user clicks one of the rating stars.
  * @param img Which image - could be from either group.
  */
-function setRating(img: HTMLElement) {
+async function setRating(img: HTMLElement) {
   const group = findParentOfClass(img, "rating-group");
   const others = group!.getElementsByClassName('rating-star');
   let unset = hasClass(img, 'selected');
@@ -94,6 +105,9 @@ function setRating(img: HTMLElement) {
 
   if (!unset) {
     toggleClass(img, 'selected', true);
+    if (scale) {
+      await sendRating(scale, val);
+    }
   }
   else {
     val = 0;
@@ -105,47 +119,40 @@ function setRating(img: HTMLElement) {
  * Solicit verbatim feedback, and pass it along to the server.
  * @param button The button the user clicked.
  */
-function provideFeedback(button:HTMLButtonElement) {
+async function provideFeedback(button:HTMLButtonElement) {
   const feedback = prompt("Feedback will be forwarded to this puzzle's authors.")
-  // Show UI on the feedback button that the message was received.
-  toggleClass(button, 'sent', !!feedback);
-}
+  if (feedback) {
+    await sendFeedback(feedback);
 
-
-type RatingContext = {
-  puzzleName?: string;  // Which puzzle is this?
-  event?: string;  // Which event
-  progress?: number;  // How far has this puzzle been filled in?
-  user?: string;  // user's ID
-  scale?: string;  // Which rating scale
-  value?: number;  // Rating 1-5, or 0 if no rating
-  change?: boolean;  // Is this a change from a different recent rating?
+    // Show UI on the feedback button that the message was received.
+    toggleClass(button, 'sent', !!feedback);
+  }
 }
 
 /**
- * When recording ratings, the context is important.
- * Not just which puzzle, in which event. Also, how much progress has the player made, at the time of the rating?
+ * Only show ratings for puzzles that care, and when we have a means to sync the feedback.
+ * Meta materials, challenge tickets, and the home index don't care. They also, coincidentally, don't have authors.
  */
-function getRatingContext(): RatingContext|null {
+function shouldShowRatings(): boolean {
   const boiler = theBoiler();
   if (!boiler) {
-    return null;
+    return false;
   }
   if (!boiler.author) {
-    return null;  // Pages without authors are generally not interesting for ratings
+    return false;  // Pages without authors are generally not interesting for ratings
   }
 
+  // Event must be legit, and syncable
   const safari = getSafariDetails();
-  const login = safari ? getLogin(safari.title) : null;
-  const player = login ? (login.player + (login.team ? (' @ ' + login.team) : '')) : null;
+  if (!safari) {
+    return false;
+  }
+  if (!safari.eventSync) {
+    return false;
+  }
 
-  const context: RatingContext = {
-    puzzleName: boiler.title,
-    event: safari?.title,
-    progress: 0,  // TBD
-    user: player || undefined,
-    change: false
-  };
-
-  return context;
+  // Player must have logged in
+  // (two reasons: to nail down the event, and because server doesn't have anonymous players)
+  const login = getLogin(safari.eventSync);
+  return !!login;
 }

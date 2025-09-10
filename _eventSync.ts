@@ -1,6 +1,7 @@
 import { theBoiler } from "./_boilerplate";
 import { consoleTrace } from "./_builder";
 import { hasClass, toggleClass } from "./_classUtil";
+import { showRatingUI } from "./_rating";
 import { cacheLogin, getLogin, TryParseJson } from "./_storage";
 
 export enum EventSyncActivity {
@@ -9,6 +10,14 @@ export enum EventSyncActivity {
   Attempt = "Attempt",
   Unlock = "Unlock",
   Solve = "Solve",
+}
+
+let ActivityRank = {
+  "Open": 1,
+  "Edit": 2,
+  "Attempt": 3,
+  "Unlock": 4,
+  "Solve": 5,
 }
 
 // Support testing against a local Sync server.
@@ -20,6 +29,7 @@ let _eventName:string|undefined = undefined;
 let _playerName:string|undefined = undefined;
 let _teamName:string|undefined = undefined;
 let _emojiAvatar:string|undefined = undefined;
+let _mostProgress:EventSyncActivity = EventSyncActivity.Open;
 
 export function setupEventSync(syncKey?:string) {
   canSyncEvents = !!syncKey;
@@ -36,6 +46,8 @@ export function setupEventSync(syncKey?:string) {
 }
 
 export async function pingEventServer(activity:EventSyncActivity, guess?:string) {
+  cacheProgress(activity);
+
   if (!canSyncEvents || !_playerName) {
     return;
   }
@@ -51,6 +63,18 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
   };
 
   await callSyncApi("PuzzlePing", data);
+}
+
+/**
+ * Track the highest activity reached on the current puzzle.
+ * @param activity 
+ */
+function cacheProgress(activity:EventSyncActivity) {
+  let prev = ActivityRank[_mostProgress];
+  let next = ActivityRank[activity];
+  if (next > prev) {
+    _mostProgress = activity;
+  }
 }
 
 /**
@@ -222,6 +246,7 @@ function updateLoginUI() {
     span.innerText = _teamName ? (_playerName + ' @ ' + _teamName) : _playerName;
     div.onclick = function(e) { promptLogin(e);};
     div.title = "Log out?";
+    showRatingUI(true);
   }
   else {
     // Logged out
@@ -230,6 +255,7 @@ function updateLoginUI() {
     span.innerText = "Login?";
     div.onclick = function(e) { promptLogin(e);};
     div.title = "Log in?";
+    showRatingUI(false);
   }
 }
 
@@ -376,4 +402,38 @@ export async function syncUnlockedFile(metaFeeder:string, url:string) {
   };
 
   await callSyncApi("PuzzlePing", data);
+}
+
+export async function sendRating(aspect: string, val: number) {
+  if (!canSyncEvents) {
+    return;
+  }
+  const data = {
+    eventName: _eventName,
+    player: _playerName || "",
+    avatar: _emojiAvatar || "",
+    team: _teamName || "",
+    puzzle: theBoiler().title,
+    activity: _mostProgress,
+    data: `${aspect}:${val}`
+  };
+
+  await callSyncApi("RatePuzzle", data);
+}
+
+export async function sendFeedback(feedback: string) {
+  if (!canSyncEvents) {
+    return;
+  }
+  const data = {
+    eventName: _eventName,
+    player: _playerName || "",
+    avatar: _emojiAvatar || "",
+    team: _teamName || "",
+    puzzle: theBoiler().title,
+    activity: _mostProgress,
+    data: feedback
+  };
+
+  await callSyncApi("GiveFeedback", data);
 }

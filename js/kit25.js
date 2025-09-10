@@ -5,9 +5,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.showDecoder = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.matrixFromElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.removeClassGlobally = exports.toggleClass = void 0;
 exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.getValueFromTextContainer = exports.hasInputGroup = exports.arrowFromInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = void 0;
-exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.createRatingUI = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = void 0;
-exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = void 0;
+exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.showRatingUI = exports.createRatingUI = exports.sendFeedback = exports.sendRating = exports.syncUnlockedFile = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.lookupSafari = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = void 0;
+exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -8030,6 +8030,27 @@ function enableValidation() {
     return urlArgExists(safariDetails.validation);
 }
 exports.enableValidation = enableValidation;
+/**
+ * Lookup a safari by any of three keys:
+ * - event key, as used in URL args
+ * - event title
+ * - event sync key
+ * @param name
+ * @returns
+ */
+function lookupSafari(name) {
+    if (name in pastSafaris) {
+        return pastSafaris[name];
+    }
+    var list = Object.values(pastSafaris);
+    for (var i = 0; i < list.length; i++) {
+        var safari = list[i];
+        if (safari.title == name || safari.eventSync == name)
+            return safari;
+    }
+    return null;
+}
+exports.lookupSafari = lookupSafari;
 /*-----------------------------------------------------------
  * _eventSync.ts
  *-----------------------------------------------------------*/
@@ -8041,6 +8062,13 @@ var EventSyncActivity;
     EventSyncActivity["Unlock"] = "Unlock";
     EventSyncActivity["Solve"] = "Solve";
 })(EventSyncActivity || (exports.EventSyncActivity = EventSyncActivity = {}));
+let ActivityRank = {
+    "Open": 1,
+    "Edit": 2,
+    "Attempt": 3,
+    "Unlock": 4,
+    "Solve": 5,
+};
 // Support testing against a local Sync server.
 // Note: test environment does not define 'window'
 const localSync = (typeof window !== 'undefined') ? (window.location.href.substring(0, 5) == 'file:') : true;
@@ -8049,6 +8077,7 @@ let _eventName = undefined;
 let _playerName = undefined;
 let _teamName = undefined;
 let _emojiAvatar = undefined;
+let _mostProgress = EventSyncActivity.Open;
 function setupEventSync(syncKey) {
     canSyncEvents = !!syncKey;
     if (canSyncEvents) {
@@ -8062,6 +8091,7 @@ function setupEventSync(syncKey) {
 }
 exports.setupEventSync = setupEventSync;
 async function pingEventServer(activity, guess) {
+    cacheProgress(activity);
     if (!canSyncEvents || !_playerName) {
         return;
     }
@@ -8077,6 +8107,17 @@ async function pingEventServer(activity, guess) {
     await callSyncApi("PuzzlePing", data);
 }
 exports.pingEventServer = pingEventServer;
+/**
+ * Track the highest activity reached on the current puzzle.
+ * @param activity
+ */
+function cacheProgress(activity) {
+    let prev = ActivityRank[_mostProgress];
+    let next = ActivityRank[activity];
+    if (next > prev) {
+        _mostProgress = activity;
+    }
+}
 /**
  * Log in to an event
  * @param player The name of the player (required)
@@ -8229,6 +8270,7 @@ function updateLoginUI() {
         span.innerText = _teamName ? (_playerName + ' @ ' + _teamName) : _playerName;
         div.onclick = function (e) { promptLogin(e); };
         div.title = "Log out?";
+        showRatingUI(true);
     }
     else {
         // Logged out
@@ -8237,6 +8279,7 @@ function updateLoginUI() {
         span.innerText = "Login?";
         div.onclick = function (e) { promptLogin(e); };
         div.title = "Log in?";
+        showRatingUI(false);
     }
 }
 async function callSyncApi(apiName, data, jsonCallback, textCallback) {
@@ -8344,6 +8387,38 @@ async function syncUnlockedFile(metaFeeder, url) {
     await callSyncApi("PuzzlePing", data);
 }
 exports.syncUnlockedFile = syncUnlockedFile;
+async function sendRating(aspect, val) {
+    if (!canSyncEvents) {
+        return;
+    }
+    const data = {
+        eventName: _eventName,
+        player: _playerName || "",
+        avatar: _emojiAvatar || "",
+        team: _teamName || "",
+        puzzle: theBoiler().title,
+        activity: _mostProgress,
+        data: `${aspect}:${val}`
+    };
+    await callSyncApi("RatePuzzle", data);
+}
+exports.sendRating = sendRating;
+async function sendFeedback(feedback) {
+    if (!canSyncEvents) {
+        return;
+    }
+    const data = {
+        eventName: _eventName,
+        player: _playerName || "",
+        avatar: _emojiAvatar || "",
+        team: _teamName || "",
+        puzzle: theBoiler().title,
+        activity: _mostProgress,
+        data: feedback
+    };
+    await callSyncApi("GiveFeedback", data);
+}
+exports.sendFeedback = sendFeedback;
 /*-----------------------------------------------------------
  * _rating.ts
  *-----------------------------------------------------------*/
@@ -8354,12 +8429,12 @@ exports.syncUnlockedFile = syncUnlockedFile;
  * @param feedback If true, add a button to provide verbatim feedback.
  */
 function createRatingUI(details, margins) {
-    const context = getRatingContext();
-    if (!context || !context.puzzleName) {
-        return; // Ratings UI is only for puzzles
-    }
+    const show = shouldShowRatings();
     const div = document.createElement('div');
     div.id = "__puzzle_rating_ui";
+    if (!show) {
+        div.style.display = 'None';
+    }
     div.appendChild(createRatingLabel("Rate this puzzle!"));
     if (details.fun) {
         div.appendChild(createRatingScale('Fun:', 'fun', 'star', 5));
@@ -8374,6 +8449,16 @@ function createRatingUI(details, margins) {
     body.appendChild(div);
 }
 exports.createRatingUI = createRatingUI;
+function showRatingUI(show) {
+    const div = document.getElementById("__puzzle_rating_ui");
+    if (div) {
+        var isShowing = div.style.display != 'None';
+        if (show != isShowing) {
+            div.style.display = show ? '' : 'None';
+        }
+    }
+}
+exports.showRatingUI = showRatingUI;
 function createRatingLabel(text) {
     const span = document.createElement('span');
     toggleClass(span, 'rating-label', true);
@@ -8409,7 +8494,7 @@ function createFeedbackButton() {
  * Callback when the user clicks one of the rating stars.
  * @param img Which image - could be from either group.
  */
-function setRating(img) {
+async function setRating(img) {
     const group = findParentOfClass(img, "rating-group");
     const others = group.getElementsByClassName('rating-star');
     let unset = hasClass(img, 'selected');
@@ -8424,6 +8509,9 @@ function setRating(img) {
     let val = parseInt(getOptionalStyle(img, 'data-rating-value') || "0");
     if (!unset) {
         toggleClass(img, 'selected', true);
+        if (scale) {
+            await sendRating(scale, val);
+        }
     }
     else {
         val = 0;
@@ -8433,34 +8521,38 @@ function setRating(img) {
  * Solicit verbatim feedback, and pass it along to the server.
  * @param button The button the user clicked.
  */
-function provideFeedback(button) {
+async function provideFeedback(button) {
     const feedback = prompt("Feedback will be forwarded to this puzzle's authors.");
-    // Show UI on the feedback button that the message was received.
-    toggleClass(button, 'sent', !!feedback);
+    if (feedback) {
+        await sendFeedback(feedback);
+        // Show UI on the feedback button that the message was received.
+        toggleClass(button, 'sent', !!feedback);
+    }
 }
 /**
- * When recording ratings, the context is important.
- * Not just which puzzle, in which event. Also, how much progress has the player made, at the time of the rating?
+ * Only show ratings for puzzles that care, and when we have a means to sync the feedback.
+ * Meta materials, challenge tickets, and the home index don't care. They also, coincidentally, don't have authors.
  */
-function getRatingContext() {
+function shouldShowRatings() {
     const boiler = theBoiler();
     if (!boiler) {
-        return null;
+        return false;
     }
     if (!boiler.author) {
-        return null; // Pages without authors are generally not interesting for ratings
+        return false; // Pages without authors are generally not interesting for ratings
     }
+    // Event must be legit, and syncable
     const safari = getSafariDetails();
-    const login = safari ? getLogin(safari.title) : null;
-    const player = login ? (login.player + (login.team ? (' @ ' + login.team) : '')) : null;
-    const context = {
-        puzzleName: boiler.title,
-        event: safari?.title,
-        progress: 0,
-        user: player || undefined,
-        change: false
-    };
-    return context;
+    if (!safari) {
+        return false;
+    }
+    if (!safari.eventSync) {
+        return false;
+    }
+    // Player must have logged in
+    // (two reasons: to nail down the event, and because server doesn't have anonymous players)
+    const login = getLogin(safari.eventSync);
+    return !!login;
 }
 /*-----------------------------------------------------------
  * _boilerplate.ts
