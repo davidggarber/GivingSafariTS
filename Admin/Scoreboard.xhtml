@@ -49,7 +49,7 @@
             // Already exists
             var prevScore = tr.getAttributeNS('', 'data-score', newScore);
             refillFromTemplate(tr, 'teamCells', row);
-            var newScore = row.Puzzles*10 + row.Metas*25
+            var newScore = row.PuzzleCount*10 + row.MetaCount*25
             tr.setAttributeNS('', 'data-score', newScore);
             existing[id] = null;
 
@@ -89,8 +89,8 @@
         <thead>
           <tr id="header-row" class="sortable">
             <use template="sortableTH" text="Team Name" />
-            <use template="sortableTH" text="Puzzles (10pt)" />
-            <use template="sortableTH" text="Meta-puzzles (25pt)" />
+            <use template="sortableTH" text="Puzzles (10pt)" cls="sort-numeric" />
+            <use template="sortableTH" text="Meta-puzzles (25pt)" cls="sort-numeric" />
             <use template="sortableTH" text="Score" cls="sort-numeric" />
             <use template="sortableTH" text="Most recent solve" />
           </tr>
@@ -102,7 +102,7 @@
     </div>
 
     <template id="sortableTH">
-      <tth onclick="sortTable(this)" trim="all" class="{cls?}">
+      <tth onclick="sortTable(this)" trim="all" class="{?cls}">
         {text}
         <span class="ascArrow">↓</span>
         <span class="descArrow">↑</span>
@@ -110,21 +110,21 @@
     </template>
 
     <template id="teamRow">
-      <tr id="team-{TeamName}" data-score="{Puzzles*10 + Metas*25}">
+      <tr id="team-{TeamName}" data-score="{PuzzleCount*10 + MetaCount*25}">
         <td class="name"><a href="TeamStatus.xhtml?t={TeamName}">{TeamName}</a></td>
-        <td class="count">{Puzzles}</td>
-        <td class="count">{Metas}</td>
-        <td class="score">{Puzzles*10 + Metas*25}</td>
-        <td class="time">{LocalTime}</td>
+        <td class="count">{PuzzleCount}</td>
+        <td class="count">{MetaCount}</td>
+        <td class="score">{PuzzleCount*10 + MetaCount*25}</td>
+        <td class="time">{LastSolve}</td>
       </tr>        
     </template>
 
     <template id="teamCells">
       <td class="name"><a href="TeamStatus.xhtml?t={TeamName}">{TeamName}</a></td>
-      <td class="count">{Puzzles}</td>
-      <td class="count">{Metas}</td>
-      <td class="score">{Puzzles*10 + Metas*25}</td>
-      <td class="time">{LocalTime}</td>
+      <td class="count">{PuzzleCount}</td>
+      <td class="count">{MetaCount}</td>
+      <td class="score">{PuzzleCount*10 + MetaCount*25}</td>
+      <td class="time">{LastSolve}</td>
     </template>
 
   </body>
