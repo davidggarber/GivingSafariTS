@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <script> var exports = {}; </script>
-    <script src="../js/kit24.js" />
+    <script src="../js/kit25.js" />
     <script src="sync.js" />
     <link href="sync.css" rel="Stylesheet" type="text/css"></link>
     <script>
@@ -12,13 +12,22 @@
       const boiler = {
         safari: 'Admin',
         orientation: 'landscape',
-        title: 'Puzzle Completion',
+        title: 'Puzzle Progress',
         postSetup: doRefresh,
         reactiveBuilder: 'pageBody',
-        lookup: {},
+        lookup: {
+          progress: [  // interpret progress values
+            'unknown',
+            'opened',
+            'edited',
+            'attempted',
+            'unlocked',
+            'solved',
+          ]
+        },
       };
 
-      var eventName = 'GivingSafari24';
+      var eventName = identifyEvent();
       var firstLoad = true;
 
       const queryString = window.location.search;
@@ -30,7 +39,7 @@
       var puzzleName = urlParams.get('z');
       if (puzzleName) {
         boiler.lookup['puzzleName'] = puzzleName;
-        boiler.title = 'Puzzle Completion: ' + puzzleName;
+        boiler.title = 'Puzzle Progress: ' + puzzleName;
       }
       else {
         window.location.href = 'Puzzles.xhtml?' + urlParams;
@@ -40,16 +49,21 @@
         var data = {
           eventName: eventName,
           puzzle: puzzleName,
+          data: 'all',
           timeZone: 'Pacific Standard Time',  // TODO: get from javascript
         }
-        queryServer('PuzzleCompletion', data, refreshWithResponse);
-        data = {
-          eventName: eventName,
+        queryServer('PuzzleProgress', data, refreshWithResponse);
+
+        var select = document.getElementById('picker');
+        if (select.childElementCount < 2) {
+          data = {
+            eventName: eventName
+          }
+          queryServer('PuzzleList', data, refreshPicker);
         }
-        queryServer('PuzzleList', data, refreshPicker);
       }
 
-      var colKeys = ['Name', 'Activity', 'Guess', 'Timestamp']
+      var colKeys = ['Team', 'Activity', 'Player', 'Timestamp']
 
       function refreshWithResponse(response) {
         var list = JSON.parse(response);
@@ -59,15 +73,28 @@
         var existing = rowIdSet(tbody, false);
 
         for (var row of list) {
-          var id = `row-${row['Name']}`;
+          var id = (row['TeamName'] != '') ? `team-${row['TeamName']}` : `solo-${row['PlayerName']}`;
           var tr = document.getElementById(id);
           if (tr) {
             // Already exists
             toggleClass(tr, 'missing', false);
+            toggleClass(tr, 'new', false);
             existing[id] = null;
+
+            if (row['TeamName'] != "") {
+              tr = refillFromTemplate(tr, 'teamCells', row);
+            }
+            else {
+              tr = refillFromTemplate(tr, 'soloCells', row);
+            }
           }
           else {
-            tr = appendFromTemplate(tbody, 'teamRow', row);            
+            if (row['TeamName'] != "") {
+              tr = appendFromTemplate(tbody, 'teamRow', row);
+            }
+            else {
+              tr = appendFromTemplate(tbody, 'soloRow', row);
+            }
             toggleClass(tr, 'new', !firstLoad);
             if (row['Activity'] == 'Solved') {
               toggleClass(tr, 'correct', true);
@@ -102,7 +129,7 @@
       function changePicker() {
         var pick = document.getElementById('picker').value;
         if (pick != puzzleName) {
-          window.location.href = 'Completion.xhtml?z=' + encodeURIComponent(pick);
+          window.location.href = 'Progress.xhtml?z=' + encodeURIComponent(pick);
         }
       }
 
@@ -119,7 +146,13 @@
       .correct td.Guess:after {
         content: '✅';
       }
-      tr:hover .Name {
+      .Solo {
+        color: gray;
+      }
+      tr:hover .Team {
+        font-weight: bold;
+      }
+      tr:hover .Soloist {
         font-weight: bold;
       }
     </style>
@@ -127,7 +160,7 @@
   <body id="ListPuzzles">
     <div id="pageBody">
       <p>
-        <select id="picker" value="{puzzleName}" onchange="changePicker()">
+        <select id="picker" value="{puzzleName}" onchange="changePicker()" title="Other puzzles">
           <option id="{puzzleName}" value="{puzzleName}">{puzzleName}</option>
         </select>
       </p>
@@ -152,14 +185,30 @@
     </div>
 
     <template id="teamRow">
-      <ttr id="row-{Name}">
-        <ttd class="Name"><a href="TeamStatus.xhtml?t={Name}">{Name}</a></ttd>
-        <ttd class="Activity">{Activity}</ttd>
-        <ttd class="Guess">{Guess}</ttd>
-        <ttd class="Timestamp">{Timestamp}</ttd>
+      <ttr id="team-{TeamName}">
+        <use template="teamCells" />
       </ttr>      
     </template>
 
+    <template id="teamCells">
+      <ttd class="Team"><a href="TeamStatus.xhtml?t={TeamName}">{TeamName}</a></ttd>
+      <ttd class="Activity">{progress.[Progress]}</ttd>
+      <ttd class="Player">{PlayerName}</ttd>
+      <ttd class="Timestamp">{Timestamp}</ttd>
+    </template>
+
+    <template id="soloRow">
+      <ttr id="solo-{PlayerName}">
+        <use template="soloCells" />
+      </ttr>      
+    </template>
+
+    <template id="soloCells">
+      <ttd class="Solo"><i>solo</i></ttd>
+      <ttd class="Activity">{progress.[Progress]}</ttd>
+      <ttd class="Soloist">{PlayerName}</ttd>
+      <ttd class="Timestamp">{Timestamp}</ttd>
+    </template>
 
   </body>
 </html>

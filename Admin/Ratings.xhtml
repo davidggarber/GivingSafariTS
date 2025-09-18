@@ -104,9 +104,9 @@
         <thead>
           <tr id="header-row" class="sortable">
             <use template="sortableTH" text="Puzzle" cls="Name" />
+            <use template="sortableTH" text="Feedback" />
             <use template="sortableTH" text="Fun" cls="sort-numeric" />
             <use template="sortableTH" text="Difficulty" cls="sort-numeric" />
-            <use template="sortableTH" text="Feedback" />
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">
@@ -125,18 +125,16 @@
 
     <template id="puzzleRow">
       <tr id="puzzle-{PuzzleName}">
-          <td class="puzzle-name"><a href="Feedback.xhtml?e={eventName}&amp;z={PuzzleName}">{PuzzleName}</a></td>
-          <td class="rating"><use template="funVal" val="{Fun}" /></td>
-          <td class="rating"><use template="diffVal" val="{Difficulty}" /></td>
-          <td class="rating"><use template="feedbackVal" val="{Feedback}" /></td>
+        <use template="puzzleCells" />
       </tr>
     </template>
 
     <template id="puzzleCells">
       <td class="puzzle-name"><a href="Feedback.xhtml?e={eventName}&amp;z={PuzzleName}">{PuzzleName}</a></td>
+      <td class="rating"><a href="Feedback.xhtml?e={eventName}&amp;z={PuzzleName}">
+        <use template="feedbackVal" val="{Feedback}" /></a></td>
       <td class="rating"><use template="funVal" val="{Fun}" /></td>
       <td class="rating"><use template="diffVal" val="{Difficulty}" /></td>
-      <td class="rating"><use template="feedbackVal" val="{Feedback}" /></td>
     </template>
 
     <template id="funVal">
@@ -183,7 +181,7 @@
 
     <template id="feedbackVal">
       <if test="val" lt="1">
-        <span class="na">&nbsp;</span>
+        <span class="na"></span>
       </if>
       <else>
         {val}📧

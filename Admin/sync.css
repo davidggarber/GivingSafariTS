@@ -12,6 +12,9 @@
 .alternate tr:nth-child(even) td {
   background-color: #ddf;
 }
+.alternate tr:hover td {
+  background-color: #bbf;
+}
 
 ._Admin th {
   font-size: 14pt;

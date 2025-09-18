@@ -18,10 +18,8 @@
         lookup: {},
       };
 
-      var firstLoad = true;
-
       var eventName = identifyEvent();
-
+      var firstLoad = true;
 
       function doRefresh() {
         var data = {
@@ -33,9 +31,9 @@
 
       function refreshWithResponse(response) {
         var list = JSON.parse(response);
-        var pList = list.filter(r => r.PuzzleType == "Puzzle").map(r => [r.PuzzleName, r.PlayerCount, r.TeamCount]);
+        var pList = list.filter(r => r.PuzzleType == "Puzzle").map(r => [r.PuzzleName, r.PlayerSolves, r.TeamSolves, r.CountAttempts]);
         refreshTable("puzzle", pList);
-        pList = list.filter(r => r.PuzzleType == "Meta").map(r => [r.PuzzleName, r.PlayerCount, r.TeamCount]);
+        pList = list.filter(r => r.PuzzleType == "Meta").map(r => [r.PuzzleName, r.PlayerSolves, r.TeamSolves, r.CountAttempts]);
         refreshTable("meta", pList);
 
         firstLoad = false;
@@ -59,10 +57,17 @@
             var td = tr.getElementsByClassName('tcount')[0];
             toggleClass(tr, 'new', td.innerText != row[2]);
             td.innerText = row[2];
+            var td = tr.getElementsByClassName('acount')[0];
+            toggleClass(tr, 'new', td.innerText != row[3]);
+            td.innerText = row[3];
             existing[id] = null;
           }
           else {
-            var args = { name: name, pcount: row[1], tcount: row[2], encoded: encodeURIComponent(name) };
+            var args = { name: name, 
+              pcount: row[1], 
+              tcount: row[2], 
+              acount: row[3],
+              encoded: encodeURIComponent(name) };
             var tr = appendFromTemplate(tbody, 'puzzleRow', args);
             toggleClass(tr, 'new', !firstLoad);
           }
@@ -79,8 +84,14 @@
       #page {
         height:12in;
       }
-      .thName {
+      .pName {
         min-width: 2in;
+      }
+      .iSolves, .tSolves {
+        width: 1.5in;
+      }
+      .attempts {
+        width: 1in;
       }
       .center {
         text-align: center;
@@ -96,33 +107,31 @@
       -->
     <div id="pageBody">
       <button onclick="doRefresh()">Refresh Puzzle List</button>
-      <table>
+      <table style="width:100%">
         <thead>
           <tr>
             <th colspan="3"><h1>Puzzles</h1></th>
           </tr>
           <tr class="sortable">
-            <use template="sortableTH" text="Name" cls="thName" />
-            <use template="sortableTH" text="Attempts" />
-            <use template="sortableTH" text="Team progress" />
-            <use template="sortableTH" text="Individual Solves" cls="sort-numeric" />
-            <use template="sortableTH" text="Team Solves" cls="sort-numeric" />
+            <use template="sortableTH" text="Name" cls="pName" />
+            <use template="sortableTH" text="Ind. Solves" cls="iSolves sort-numeric" />
+            <use template="sortableTH" text="Team Solves" cls="tSolves sort-numeric" />
+            <use template="sortableTH" text="Attempts" cls="attempts" />
           </tr>
         </thead>
         <tbody id="puzzle-tbody" class="alternate">
         </tbody>
       </table>
-      <table>
+      <table style="width:100%">
         <thead>
           <tr>
             <th colspan="3"><h1>Meta-Puzzles</h1></th>
           </tr>
           <tr class="sortable">
-            <use template="sortableTH" text="Name" cls="thName" />
-            <use template="sortableTH" text="Attempts" />
-            <use template="sortableTH" text="Team progress" />
-            <use template="sortableTH" text="Individual Solves" cls="sort-numeric" />
-            <use template="sortableTH" text="Team Solves" cls="sort-numeric" />
+            <use template="sortableTH" text="Name" cls="pName" />
+            <use template="sortableTH" text="Ind. Solves" cls="iSolves sort-numeric" />
+            <use template="sortableTH" text="Team Solves" cls="tSolves sort-numeric" />
+            <use template="sortableTH" text="Attempts" cls="attempts" />
           </tr>
         </thead>
         <tbody id="meta-tbody" class="alternate">          
@@ -140,11 +149,10 @@
 
     <template id="puzzleRow">
       <tr id="puzzle-{name}">
-          <td class="puzzle-name">{name}</td>
-          <td class="center"><a href="Attempts.xhtml?z={encoded}">✔️❌❔🤔👍</a></td>
-          <td class="center"><a href="Completion.xhtml?z={encoded}">😵🥳</a></td>
+          <td class="puzzle-name"><a href="Progress.xhtml?z={encoded}">{name}</a></td>
           <td class="pcount center">{pcount}</td>
           <td class="tcount center">{tcount}</td>
+          <td class="acount center"><a href="Attempts.xhtml?z={encoded}">{acount}</a></td>
       </tr>
     </template>
   </body>
