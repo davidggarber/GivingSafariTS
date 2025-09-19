@@ -45,7 +45,9 @@ async function queryServer(api, data, callback) {
       xhr.onreadystatechange = function () {
           if (xhr.readyState === 4 /*DONE*/) {
               console.log(xhr.responseText);
-              callback(xhr.responseText);
+              if (callback) {
+                callback(xhr.responseText);
+              }
           }
       };
       xhr.send(JSON.stringify(data));
@@ -207,6 +209,9 @@ function sortTable(th) {
         // A column that is tagged as numerically sortable promises to only have
         // numeric cell contents. 
         val = parseFloat(cell.innerText);
+        if (isNaN(val)) {
+          val = 999888777;  // very large;
+        }
         // There can still be ties, so the previous order is an additional fraction
         val += (val >= 0) ? (i / (100 * rows.length)) : ((i - rows.length) / (100 * rows.length));
       }

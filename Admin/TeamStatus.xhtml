@@ -83,10 +83,10 @@
         }
 
         for (var row of list) {
-          if (row['puzzle'] == '') {
-            row['puzzle'] = '[Home page]';
+          if (row['PuzzleName'] == '') {
+            row['PuzzleName'] = '[Home page]';
           }
-          var id = `row-${row['puzzle']}`;
+          var id = `row-${row['PuzzleName']}`;
           var tr = document.getElementById(id);
           if (tr) {
             // Already exists
@@ -180,13 +180,8 @@
       <table>
         <thead>
           <tr id="header-row" class="sortable">
-            <th id="col-puzzle" style="min-width:1.5in;" onclick="sortTable(this)" trim="all">
-              Puzzle
-              <span class="ascArrow">↓</span>
-              <span class="descArrow">↑</span>
-            </th>
-            <th id="col-team-wide" style="min-width:1.5in;" onclick="sortTable(this)" trim="all">
-              Team&#x2011;Wide
+            <th id="col-PuzzleName" style="min-width:1.5in;" onclick="sortTable(this)" trim="all">
+              PuzzleName
               <span class="ascArrow">↓</span>
               <span class="descArrow">↑</span>
             </th>

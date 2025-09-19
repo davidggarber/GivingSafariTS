@@ -33,7 +33,13 @@
         data = {
           eventName: eventName,
         }
-        queryServer('PuzzleList', data, refreshPicker);
+        var select = document.getElementById('picker');
+        if (select.childElementCount < 2) {
+          data = {
+            eventName: eventName
+          }
+          queryServer('PuzzleList', data, refreshPicker);
+        }
       }
 
       var colKeys = ['TeamName', 'PlayerName', 'Guess', 'Timestamp']

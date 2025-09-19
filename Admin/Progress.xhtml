@@ -170,11 +170,11 @@
       </p>
       <table>
         <thead>
-          <tr id="header-row">
-            <th style="min-width:2in;">Team</th>
-            <th style="min-width:2in;">Progress</th>
-            <th style="min-width:1.5in;">Submission</th>
-            <th style="min-width:1.5in;">Timestamp</th>
+          <tr id="header-row" class="sortable">
+            <use template="sortableTH" text="Team" width="2in" />
+            <use template="sortableTH" text="Progress" width="2in" />
+            <use template="sortableTH" text="Player" width="1.5in" />
+            <use template="sortableTH" text="Timestamp" width="2in" />
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">
@@ -183,6 +183,14 @@
       </table>
 
     </div>
+
+    <template id="sortableTH">
+      <tth onclick="sortTable(this)" trim="all" class="{?cls}" sstyle="width:{width}">
+        {text}
+        <span class="ascArrow">↓</span>
+        <span class="descArrow">↑</span>
+      </tth>
+    </template>
 
     <template id="teamRow">
       <ttr id="team-{TeamName}">

@@ -9376,6 +9376,17 @@ export async function sendFeedback(feedback: string) {
   await callSyncApi("GiveFeedback", data);
 }
 
+export async function clearServerCache() {
+  if (!canSyncEvents) {
+    return;
+  }
+  const data = {
+    eventName: _eventName,
+  };
+
+  await callSyncApi("ClearCache", data);
+}
+
 /*-----------------------------------------------------------
  * _rating.ts
  *-----------------------------------------------------------*/

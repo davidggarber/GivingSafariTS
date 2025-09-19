@@ -90,7 +90,6 @@
             <use template="sortableTH" text="Order" cls="sort-numeric" />
             <use template="sortableTH" text="Team Name" cls="Name" />
             <use template="sortableTH" text="Player Count" cls="sort-numeric" />
-            <use template="sortableTH" text="Status" />
           </tr>
         </thead>
         <tbody id="list-tbody" class="alternate">
@@ -109,18 +108,14 @@
 
     <template id="teamRow">
       <tr id="team-{TeamName}">
-        <td>{Order}</td>
-        <td class="team-name">{TeamName}</td>
-        <td>{PlayerCount}</td>
-        <td><a href="TeamStatus.xhtml?t={encoded}">🥳😵</a></td>
+        <use template="teamCells" />
       </tr>
     </template>
 
     <template id="teamCells">
       <td>{Order}</td>
-      <td class="team-name">{TeamName}</td>
+      <td class="team-name"><a href="TeamStatus.xhtml?t={encoded}">{TeamName}</a></td>
       <td>{PlayerCount}</td>
-      <td><a href="TeamStatus.xhtml?t={encoded}">🥳😵</a></td>
     </template>
 
   </body>
