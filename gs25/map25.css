@@ -35,6 +35,10 @@
   text-align: center;
 }
 
+.round {
+  text-align: center;;
+}
+
 .icons {
   width: 0.5in; 
   text-align: center;
@@ -57,6 +61,7 @@
   width: 1.5in; 
   position: relative;
   text-align: left; 
+  -webkit-text-size-adjust: 9pt;
   text-size-adjust: 9pt;
 }
 
@@ -242,3 +247,4 @@ td.html:hover {
   height: 1px;
   border: none;
 }
+

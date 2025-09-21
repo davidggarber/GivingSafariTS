@@ -70,6 +70,25 @@
       // Columns are not known in advance
       var colKeys = ['puzzle']
 
+      var presence = {};  // Where each player was most recently
+
+      function refreshPresence(row) {
+        for (var key of Object.keys(row)) {
+          if (key != 'PuzzleName') {
+            presence[key] = row[key];
+          }
+        }
+      }
+
+      function reflectPresence(row) {
+        var puzzle = row['PuzzleName'];
+        for (var key of Object.keys(row)) {
+          if (key in presence && presence[key] == puzzle) {
+            row[key] += '✨';
+          }
+        }
+      }
+
       function refreshWithResponse(response) {
         var list = JSON.parse(response);
         var tbody = document.getElementById('list-tbody');
@@ -84,7 +103,11 @@
 
         for (var row of list) {
           if (row['PuzzleName'] == '') {
-            row['PuzzleName'] = '[Home page]';
+            refreshPresence(row);
+            continue;
+          }
+          else {
+            reflectPresence(row);
           }
           var id = `row-${row['PuzzleName']}`;
           var tr = document.getElementById(id);

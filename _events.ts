@@ -170,7 +170,7 @@ const giving25Details:PuzzleEventDetails = {
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/gs25/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/gs25/': './Qr/puzzyl/'},
-  'backLinks': { 'gs25': { href:'./Map.xhtml'}, 'ps22': { href:'./Map.xhtml'}},
+  'backLinks': { 'gs25': { href:'./Map25.xhtml'}, 'ps22': { href:'./Map22.xhtml'}},
   'validation': true,
   eventSync: 'GivingSafari25',
   ratings: defaultRatingDetails,
@@ -187,7 +187,7 @@ const safari22Details:PuzzleEventDetails = {
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/gs25/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/gs25/': './Qr/puzzyl/'},
-  'backLinks': { 'gs25': { href:'./Map.xhtml'}, 'ps22': { href:'./Map.xhtml'}},
+  'backLinks': { 'gs25': { href:'./Map25.xhtml'}, 'ps22': { href:'./Map22.xhtml'}},
   'validation': true,
   // no eventSync == no login
   ratings: defaultRatingDetails,

@@ -8658,7 +8658,7 @@ const giving25Details:PuzzleEventDetails = {
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/gs25/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/gs25/': './Qr/puzzyl/'},
-  'backLinks': { 'gs25': { href:'./Map.xhtml'}, 'ps22': { href:'./Map.xhtml'}},
+  'backLinks': { 'gs25': { href:'./Map25.xhtml'}, 'ps22': { href:'./Map22.xhtml'}},
   'validation': true,
   eventSync: 'GivingSafari25',
   ratings: defaultRatingDetails,
@@ -8675,7 +8675,7 @@ const safari22Details:PuzzleEventDetails = {
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/gs25/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/gs25/': './Qr/puzzyl/'},
-  'backLinks': { 'gs25': { href:'./Map.xhtml'}, 'ps22': { href:'./Map.xhtml'}},
+  'backLinks': { 'gs25': { href:'./Map25.xhtml'}, 'ps22': { href:'./Map22.xhtml'}},
   'validation': true,
   // no eventSync == no login
   ratings: defaultRatingDetails,
@@ -8969,6 +8969,10 @@ let _teamName:string|undefined = undefined;
 let _emojiAvatar:string|undefined = undefined;
 let _mostProgress:EventSyncActivity = EventSyncActivity.Open;
 
+function puzzleTitleForSync():string|undefined {
+  return theBoiler().titleSync || theBoiler().title;
+}
+
 export function setupEventSync(syncKey?:string) {
   canSyncEvents = !!syncKey;
   if (canSyncEvents) {
@@ -8995,7 +8999,7 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
     player: _playerName,
     avatar: _emojiAvatar,
     team: _teamName,
-    puzzle: theBoiler().title,
+    puzzle: puzzleTitleForSync(),
     activity: activity,
     data: guess || ''
   };
@@ -9351,7 +9355,7 @@ export async function sendRating(aspect: string, val: number) {
     player: _playerName || "",
     avatar: _emojiAvatar || "",
     team: _teamName || "",
-    puzzle: theBoiler().title,
+    puzzle: puzzleTitleForSync(),
     activity: _mostProgress,
     data: `${aspect}:${val}`
   };
@@ -9368,7 +9372,7 @@ export async function sendFeedback(feedback: string) {
     player: _playerName || "",
     avatar: _emojiAvatar || "",
     team: _teamName || "",
-    puzzle: theBoiler().title,
+    puzzle: puzzleTitleForSync(),
     activity: _mostProgress,
     data: feedback
   };
@@ -9376,16 +9380,6 @@ export async function sendFeedback(feedback: string) {
   await callSyncApi("GiveFeedback", data);
 }
 
-export async function clearServerCache() {
-  if (!canSyncEvents) {
-    return;
-  }
-  const data = {
-    eventName: _eventName,
-  };
-
-  await callSyncApi("ClearCache", data);
-}
 
 /*-----------------------------------------------------------
  * _rating.ts
@@ -9708,6 +9702,7 @@ export type BoilerPlateData = {
     safari?: string;  // key for Safari details
     safaris?: string[];  // optional keys for Safari details, triggered by url arg
     title?: string;
+    titleSync?: string;  // Title override when syncing
     qr_base64?: string;
     print_qr?: boolean;
     author?: string;
