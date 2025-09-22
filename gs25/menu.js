@@ -178,10 +178,6 @@ function loadViaIframe(urls) {
     iframe.src = url;
     // Once we have confirmation of the iframe's load, scan for new data
     iframe.onload = function(){setTimeout(() => syncUnlockedMetas(), 500)};
-    if (url.length > 1) {
-      // If we have more than one, rerun sooner, as they tend to log-jam.
-      setTimeout(() => timeToRefreshTeam(), 500);
-    }
     div.appendChild(iframe);
   }
 }

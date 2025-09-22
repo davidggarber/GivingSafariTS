@@ -8357,16 +8357,23 @@ let _teamSolves;
 let _remoteUnlocked = [];
 let _onTeamHomePageRefresh = undefined;
 function onRefreshTeamHomePage(json) {
+    if (json == null) {
+        return;
+    }
+    var update = false;
     if ('teammates' in json) {
         _teammates = json['teammates'];
+        update = true;
     }
     if ('solves' in json) {
         _teamSolves = json['solves'];
+        update = true;
     }
     if ('unlocked' in json) {
         _remoteUnlocked = json['unlocked'];
+        update = true;
     }
-    if (_onTeamHomePageRefresh) {
+    if (update && _onTeamHomePageRefresh) {
         _onTeamHomePageRefresh();
     }
 }

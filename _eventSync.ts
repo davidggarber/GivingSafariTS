@@ -363,19 +363,26 @@ let _onTeamHomePageRefresh:SimpleCallback|undefined = undefined;
 
 
 function onRefreshTeamHomePage(json:object) {
+  if (json == null) {
+    return;
+  }
+  var update = false;
   if ('teammates' in json) {
     _teammates = json['teammates'] as PlayerPresence[];
+    update = true;
   }
 
   if ('solves' in json) {
     _teamSolves = json['solves'] as SolveSummary;
+    update = true;
   }
 
   if ('unlocked' in json) {
     _remoteUnlocked = json['unlocked'] as UnlockedPiece[];
+    update = true;
   }
 
-  if (_onTeamHomePageRefresh) {
+  if (update && _onTeamHomePageRefresh) {
     _onTeamHomePageRefresh();
   }
 }
