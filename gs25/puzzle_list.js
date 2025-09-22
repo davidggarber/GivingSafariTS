@@ -95,12 +95,12 @@ var metas = {
         count: 4,
         icon: 'Icons/coastal.png',
     },
-    everest: {
-        title: 'Up and Down Mount Everest',
-        store: 'UpAndDownMountEverestMeta',
-        count: 4,
-        icon: 'Icons/everest.png',
-    },
+    // everest: {
+    //     title: 'Up and Down Mount Everest',
+    //     store: 'UpAndDownMountEverestMeta',
+    //     count: 4,
+    //     icon: 'Icons/everest.png',
+    // },
 }
 
 // Pass any url arguments on to the puzzles, plus the event identifier

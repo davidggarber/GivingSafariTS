@@ -8305,9 +8305,10 @@ async function callSyncApi(apiName, data, jsonCallback, textCallback) {
                         jsonCallback(obj);
                     }
                 }
-                catch {
+                catch (ex) {
                     // Most likely problem is that xhr.responseText isn't JSON
                     response = xhr.responseText || xhr.statusText;
+                    console.error(ex);
                 }
                 if (isText && textCallback) {
                     textCallback(response);
@@ -8338,6 +8339,7 @@ async function refreshTeamHomePage(callback) {
     const data = {
         eventName: _eventName,
         team: _teamName,
+        player: _playerName, // not used, but handy for logging
     };
     if (callback) {
         _onTeamHomePageRefresh = callback;
@@ -9653,6 +9655,16 @@ function appendResponse(block, response) {
         const friendly = caret < 0 ? response : response.substring(caret + 1);
         if (caret >= 0) {
             response = response.substring(0, caret);
+            // Keep any url args
+            var urlArgs = (window.location.search ?? "?").substring(1);
+            if (urlArgs) {
+                if (response.indexOf('?') >= 0) {
+                    response += '&' + urlArgs;
+                }
+                else {
+                    response += '?' + urlArgs;
+                }
+            }
         }
         consoleTrace(`Unlocking ${response}` + (caret >= 0 ? `(aka ${friendly})` : ''));
         div.appendChild(document.createTextNode('You have unlocked '));

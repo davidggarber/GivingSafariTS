@@ -10,6 +10,7 @@
         safaris: puzzleSafari22,
         safari: 'ps22',
         title: 'Annual Anthem - materials #1',
+        titleSync: 'AnnualAnthemMeta-0',
         author: 'Rorke Haining',
         copyright: '2022',
         feeder: 'anthem',
@@ -38,9 +39,8 @@
             unlocked: true,
             src: window.location.href });
 
-          if (updatePuzzleList(`${boiler.lookup.meta}-${boiler.lookup.index}`, 'loaded')) {
-            syncUnlockedFile(`${boiler.lookup.meta}-${boiler.lookup.index}`, window.location.href);
-          }
+          updatePuzzleList(`${boiler.lookup.meta}-${boiler.lookup.index}`, 'loaded');
+          syncUnlockedFile(`${boiler.lookup.meta}-${boiler.lookup.index}`, window.location.href);
         }
       }
       //]]>

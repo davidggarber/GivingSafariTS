@@ -130,7 +130,6 @@
                         </ttd>
                         <ttd class="completed">
                           <span class="teammate-solves" xtrim="all">
-                            <use template="teammate-solves" puz="{puz.title}" />
                           </span>
                           <span class="checkmark" />
                         </ttd>
@@ -261,7 +260,6 @@
                   </ttd>
                   <ttd class="completed">
                     <span class="teammate-solves" xtrim="all">
-                      <use template="teammate-solves" puz="{puz.title}" />
                     </span>
                     <span class="checkmark" />
                   </ttd>
@@ -312,16 +310,16 @@
         <for each="mate" in="teammates">
           <ttr>
             <td class="avatar">{mate.Avatar}</td>
-            <td class="playername">{mate.Player}</td>
+            <td class="playername">{mate.PlayerName}</td>
           </ttr>
         </for>
       </ttable>
     </template>
 
     <template id="teammate-solves" trim="all">
-      <if exists="{solves.[{puz}]}">
-        <for each="mate" in="{solves.[{puz}]}">
-          <span class="teammate" title="{mate.Player}">{mate.Avatar}</span>
+      <if exists="{solvers}">
+        <for each="mate" in="{solvers}">
+          <span class="teammate-solve" title="{mate.PlayerName}">{mate.Avatar}</span>
         </for>
       </if>
     </template>

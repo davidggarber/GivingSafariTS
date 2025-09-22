@@ -6,16 +6,16 @@ function setupSolvables() {
   syncProgress();
 }
 
-var unlocked_feeders = {};
+var _unlocked_feeders = {};
 var _refresh_interval = undefined;
 var _stopRefreshing = new Date().getTime();
 var _refreshEvery = 15 * 1000;  // 15 seconds
 
 
 function syncProgress() {
-  // if (document.hidden) {
-  //   return;
-  // }
+  if (document.hidden) {
+    return;
+  }
   for (var i = 0; i < puzzles.length; i++) {
     var puz = puzzles[i];
     updateSolves(puz.file);
@@ -43,7 +43,10 @@ function timeToRefreshTeam() {
   if (new Date().getTime() >= _stopRefreshing) {
     clearInterval(_refresh_interval);
   }
-  refreshTeamHomePage(refreshTeamProgress);
+  console.log(`${document.title} is ${document.visibilityState}`);
+  if (document.visibilityState == 'visible') {
+    refreshTeamHomePage(refreshTeamProgress);
+  }
 }
 
 function updateSolves(puzFile) {
@@ -56,16 +59,16 @@ function updateSolves(puzFile) {
 
 function updateUnlocked(meta, i) {
   var puzFile = `${meta}-${i}`;
-  if (!(puzFile in unlocked_feeders)) {
+  if (!(puzFile in _unlocked_feeders)) {
     var pStatus = getPuzzleStatus(puzFile);
     if (pStatus) {
       var mat = loadMetaMaterials(meta, 0, i);
       if (mat) {
-        unlocked_feeders[puzFile] = true;
+        _unlocked_feeders[puzFile] = true;
         var links = document.getElementsByClassName(puzFile);
         for (var a = 0; a < links.length; a++) {
           toggleClass(links[a], 'unlocked', true);
-          links[a].href = mat.src + _urlEventArguments;
+          links[a].href = mat.src;  // Should already have _urlEventArguments
           if (links[a].title.endsWith(' (locked)')) {
             links[a].title = links[a].title.substring(0, links[a].title.length - 9);
           }
@@ -85,14 +88,16 @@ function refreshTeamProgress() {
     updatePresence()
   }
 
-  if (JSON.stringify(_teamSolves) != JSON.stringify(boiler.lookup.solves)) {
-    mergeSolves(overwrite);  // Merge new solve info with previous cache
+  if (mergeSolves(overwrite)) {
     for (var puz of puzzles) {
       var tr = document.getElementById(puz.file);
-      var span = tr.getElementsByClassName('teammate-solves')[0];
-      if (span) {
-        var args = {puz:puz.title};
-        refillFromTemplate(span, 'teammate-solves', args);
+      if (tr) {
+        var span = tr.getElementsByClassName('teammate-solves')[0];
+        if (span) {
+          var solvers = boiler.lookup.solves[tr.getAttribute('name')] || [];
+          var args = {solvers: solvers};
+          refillFromTemplate(span, 'teammate-solves', args);
+        }
       }
     }
   }
@@ -101,11 +106,12 @@ function refreshTeamProgress() {
     var foundNew = false;
     var newlyUnlocked = [];
     for (var ru of _remoteUnlocked) {
-      if (!ru.Piece) {
+      if (!ru.PuzzleName) {
         continue;  // bad data. Don't load, since we'll never be able to acknowledge the load
       }
-      if (!(ru.Piece in unlocked_feeders)) {
+      if (!(ru.PuzzleName in _unlocked_feeders)) {
         newlyUnlocked.push(ru.Url);
+        // Don't add to _unlocked_feeders. That happens once it's confirmed.
         foundNew = true;
       }
     }
@@ -138,24 +144,29 @@ function updatePresence() {
 
 function mergeSolves(overwrite)
 {
-  if (overwrite || Object.keys(_teamSolves).length == 0) {
+  if (overwrite || _teamSolves.length == 0) {
     boiler.lookup.solves = {};
-    return;  // Special case: clear all
+    return true;  // Special case: clear all
   }
 
-  var keys = Object.keys(_teamSolves);
-  for (var i = 0; i < keys.length; i++) {
-    var puz = keys[i];
-    var update = _teamSolves[puz];
+  // _teamSolves is a list of tuples: PuzzleName and a list of players (PlayerName + Avatar)
+  // boiler.lookup.solves is a dictionary of puzzle names to the list of players
+  var changes = false;
+  for (var i = 0; i < _teamSolves.length; i++) {
+    var puz = _teamSolves[i].PuzzleName;
+    var update = _teamSolves[i].Solvers;
     var keep = boiler.lookup.solves[puz] || [];
+    // Make sure that new solvers are appended to existing ones
     for (var u = 0; u < update.length; u++) {
       var plyr = update[u];
       if (!keep.find(p => p.Player==plyr.Player && p.Avatar == plyr.Avatar)) {
         keep.push(update[u]);
+        changes = true;
       }
     }
     boiler.lookup.solves[puz] = keep;
   }
+  return changes;
 }
 
 function loadViaIframe(urls) {
@@ -165,7 +176,12 @@ function loadViaIframe(urls) {
     var url = urls.pop();
     const iframe = document.createElement('iframe');
     iframe.src = url;
+    // Once we have confirmation of the iframe's load, scan for new data
     iframe.onload = function(){setTimeout(() => syncUnlockedMetas(), 500)};
+    if (url.length > 1) {
+      // If we have more than one, rerun sooner, as they tend to log-jam.
+      setTimeout(() => timeToRefreshTeam(), 500);
+    }
     div.appendChild(iframe);
   }
 }

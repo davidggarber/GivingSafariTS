@@ -36,6 +36,7 @@
 }
 
 .round {
+  min-width: 0.5in;
   text-align: center;;
 }
 

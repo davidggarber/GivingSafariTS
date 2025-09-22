@@ -411,6 +411,17 @@ function appendResponse(block:HTMLDivElement, response:string):boolean {
         const friendly = caret < 0 ? response : response.substring(caret + 1);
         if (caret >= 0) {
             response = response.substring(0, caret);
+
+            // Keep any url args
+            var urlArgs = (window.location.search ?? "?").substring(1);
+            if (urlArgs) {
+                if (response.indexOf('?') >= 0) {
+                    response += '&' + urlArgs;
+                }
+                else {
+                    response += '?' + urlArgs;
+                }
+            }
         }
 
         consoleTrace(`Unlocking ${response}` + (caret >= 0 ? `(aka ${friendly})` : ''));

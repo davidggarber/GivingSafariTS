@@ -286,9 +286,10 @@ async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallba
                   jsonCallback(obj);
               }
           }
-          catch {
+          catch (ex){
             // Most likely problem is that xhr.responseText isn't JSON
             response = xhr.responseText || xhr.statusText;
+            console.error(ex);
           }
           if (isText && textCallback) {
             textCallback(response);
@@ -321,6 +322,7 @@ export async function refreshTeamHomePage(callback?:SimpleCallback) {
   const data = {
     eventName: _eventName,
     team: _teamName,
+    player: _playerName,  // not used, but handy for logging
   };
 
   if (callback) {
@@ -334,23 +336,16 @@ export async function refreshTeamHomePage(callback?:SimpleCallback) {
   }
 }
 
-export type PlayerInfo = {
+export type PlayerPresence = {
   Player: string;
   Avatar: string;
-  Team?: string;
-}
-
-export type PlayerInfoPlus = {
-  Player: string;
-  Avatar: string;
-  Team?: string;
   Presence?: string;
 }
 
-let _teammates:PlayerInfo[];
+let _teammates:PlayerPresence[];
 
 export interface SolveSummary {
-  [key: string]: PlayerInfo[]
+  [key: string]: string // Key is puzzle name, value is concatenated avatars
 }
 
 let _teamSolves:SolveSummary;
@@ -369,7 +364,7 @@ let _onTeamHomePageRefresh:SimpleCallback|undefined = undefined;
 
 function onRefreshTeamHomePage(json:object) {
   if ('teammates' in json) {
-    _teammates = json['teammates'] as PlayerInfo[];
+    _teammates = json['teammates'] as PlayerPresence[];
   }
 
   if ('solves' in json) {
