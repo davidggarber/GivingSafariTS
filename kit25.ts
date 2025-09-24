@@ -520,7 +520,7 @@ export function moveFocus(field: HTMLElement,
  */
 export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = 'data-extract-order'): Element[] {
     const lookup = {};
-    const indeces:number[] = [];
+    const indeces:string[] = [];
     const sorted:Element[] = [];
     for (let i = 0; i < src.length; i++) {
         const elmt = src[i];
@@ -528,7 +528,7 @@ export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = '
         if (order) {
             // track order values we've seen
             if (!(order in lookup)) {
-                indeces.push(parseInt(order));
+                indeces.push(order);
                 lookup[order] = [];
             }
             // make elements findable by their order
@@ -541,7 +541,7 @@ export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = '
     }
 
     // Sort indeces, then build array from them
-    indeces.sort((a,b) => a < b ? -1 : 1);
+    indeces.sort((a,b) => sortableIndex(a) < sortableIndex(b) ? -1 : 1);
     for (let i = 0; i < indeces.length; i++) {
         const order = '' + indeces[i];
         const peers = lookup[order];
@@ -551,6 +551,17 @@ export function SortElements(src:HTMLCollectionOf<Element>, sort_attr:string = '
     }
 
     return sorted;
+}
+
+/**
+ * Most x are the numeric index into an extraction.
+ * But there's support for alphabetic indexing too.
+ * @param x the index.
+ * @returns A number that can be compared.
+ */
+function sortableIndex(x:string):number {
+    let n = parseInt(x);
+    return isNaN(n) ? x.charCodeAt(0) : n;
 }
 
 /**
@@ -4921,13 +4932,13 @@ interface NumberPatternToken {
 function parseNumberPattern(elmt: Element, 
                             patternAttr: string)
                             : NumberPatternToken[] {
-    var list:NumberPatternToken[] = [];
-    var pattern = elmt.getAttributeNS('', patternAttr);
+    const list:NumberPatternToken[] = [];
+    const pattern = elmt.getAttributeNS('', patternAttr);
     if (pattern == null) {
         return list;
     }
     for (let pi = 0; pi < pattern.length; pi++) {
-        var count = 0;
+        let count = 0;
         while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
             count = count * 10 + (pattern.charCodeAt(pi) - 48);
             pi++;
@@ -4936,6 +4947,9 @@ function parseNumberPattern(elmt: Element,
             list.push({count: count as number});
         }
         if (pi < pattern.length) {
+            if (pattern[pi] == '`' && pi + 1 < pattern.length) {
+                pi++;  // The next character is escaped
+            }
             list.push({char: pattern[pi]});
         }
     }

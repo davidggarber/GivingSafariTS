@@ -276,13 +276,13 @@ interface NumberPatternToken {
 function parseNumberPattern(elmt: Element, 
                             patternAttr: string)
                             : NumberPatternToken[] {
-    var list:NumberPatternToken[] = [];
-    var pattern = elmt.getAttributeNS('', patternAttr);
+    const list:NumberPatternToken[] = [];
+    const pattern = elmt.getAttributeNS('', patternAttr);
     if (pattern == null) {
         return list;
     }
     for (let pi = 0; pi < pattern.length; pi++) {
-        var count = 0;
+        let count = 0;
         while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
             count = count * 10 + (pattern.charCodeAt(pi) - 48);
             pi++;
@@ -291,6 +291,9 @@ function parseNumberPattern(elmt: Element,
             list.push({count: count as number});
         }
         if (pi < pattern.length) {
+            if (pattern[pi] == '`' && pi + 1 < pattern.length) {
+                pi++;  // The next character is escaped
+            }
             list.push({char: pattern[pi]});
         }
     }

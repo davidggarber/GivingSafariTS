@@ -487,7 +487,7 @@ function SortElements(src, sort_attr = 'data-extract-order') {
         if (order) {
             // track order values we've seen
             if (!(order in lookup)) {
-                indeces.push(parseInt(order));
+                indeces.push(order);
                 lookup[order] = [];
             }
             // make elements findable by their order
@@ -499,7 +499,7 @@ function SortElements(src, sort_attr = 'data-extract-order') {
         }
     }
     // Sort indeces, then build array from them
-    indeces.sort((a, b) => a < b ? -1 : 1);
+    indeces.sort((a, b) => sortableIndex(a) < sortableIndex(b) ? -1 : 1);
     for (let i = 0; i < indeces.length; i++) {
         const order = '' + indeces[i];
         const peers = lookup[order];
@@ -510,6 +510,16 @@ function SortElements(src, sort_attr = 'data-extract-order') {
     return sorted;
 }
 exports.SortElements = SortElements;
+/**
+ * Most x are the numeric index into an extraction.
+ * But there's support for alphabetic indexing too.
+ * @param x the index.
+ * @returns A number that can be compared.
+ */
+function sortableIndex(x) {
+    let n = parseInt(x);
+    return isNaN(n) ? x.charCodeAt(0) : n;
+}
 /**
  * Some abilities are hooked to either a single element with a predefined ID,
  * or a set of elements with a prefined class.
@@ -4527,13 +4537,13 @@ function initLiteralLetter(span, char) {
  * @returns An array of pattern tokens
  */
 function parseNumberPattern(elmt, patternAttr) {
-    var list = [];
-    var pattern = elmt.getAttributeNS('', patternAttr);
+    const list = [];
+    const pattern = elmt.getAttributeNS('', patternAttr);
     if (pattern == null) {
         return list;
     }
     for (let pi = 0; pi < pattern.length; pi++) {
-        var count = 0;
+        let count = 0;
         while (pi < pattern.length && pattern[pi] >= '0' && pattern[pi] <= '9') {
             count = count * 10 + (pattern.charCodeAt(pi) - 48);
             pi++;
@@ -4542,6 +4552,9 @@ function parseNumberPattern(elmt, patternAttr) {
             list.push({ count: count });
         }
         if (pi < pattern.length) {
+            if (pattern[pi] == '`' && pi + 1 < pattern.length) {
+                pi++; // The next character is escaped
+            }
             list.push({ char: pattern[pi] });
         }
     }

@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8"></meta>
     <script> var exports = {}; </script>
-    <script src="../js/kit24.js"></script>
+    <script src="../js/kit25.js"></script>
     <script src="docs.js"></script>
     <script>
       const boiler = {
@@ -199,6 +199,17 @@
           </td>
           <td class="comment">
             <code>Literal ¶</code>. A paragraph-mark in literal text injects a line break.
+          </td>
+        </tr>
+        <tr class="alt">
+          <td class="code" onclick="selectCodeBlock(this, event)">
+            &lt;pattern pattern=<b>'3`2'</b>/&gt;
+          </td>
+          <td class="rendered">
+            <pattern pattern='3`2' />
+          </td>
+          <td class="comment">
+            <code>Escape `</code>. A back-tick escapes the next character as literal text.
           </td>
         </tr>
         <tr class="alt">

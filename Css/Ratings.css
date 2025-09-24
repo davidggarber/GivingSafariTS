@@ -59,3 +59,9 @@
     display: none;
   }
 }
+
+.print {
+  #__puzzle_rating_ui {
+    display: none;
+  }
+}

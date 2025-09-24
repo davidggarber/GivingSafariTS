@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/tcg.js" />
+    <script>
+      const boiler = {
+        safaris: puzzleSafari22,
+        safari: 'ps22',
+        title: 'Tire Change',
+        author: 'Ryan Berry',
+        copyright: '2022',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          blocks: [
+            [
+              ['TIGHT', 5],
+              ['TAIGA', 5],
+              ['DEAREST', 7],
+              ['CROCHET', 7],
+              ['DIGNIFIED', 9],
+              ['PORPOISE', 8],
+              ['ANGINA', 6],
+              ['MOTOR', 5],
+              ['COLONEL', 7],
+              ['SQUATS', 6],
+              ['LEVELED', 7],
+            ],
+            [
+              ['MESQUITE', 8],
+              ['CUTLET', 6],
+            ],
+            [
+              ['TORTE', 5],
+              ['BURBS', 5],
+              ['DIZZYING', 8],
+              ['SLATS', 5],
+            ],
+            [
+              ['MONOCLE', 7],
+            ],
+            [
+              ['COMICAL', 7],
+              ['PREPS', 5],
+              ['CORRODE', 7],
+              ['TORSO', 5],
+            ],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        .left {
+          width: 2in;
+        }
+        .middle {
+          width: 3in;
+        }
+        #extracted .letter-cell {
+          font-size: 14pt;
+        }
+        #extracted .letter-cell.literal {
+          width: 0.7em;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        If you’re going on a long road trip, it is essential you know how to change your vehicle’s tires. To do so effectively, simply replace all instances of a repeated letter with a new repeated letter.
+      </p>
+      <p class="flavor">
+        With this knowledge, your ability to see our country’s wide EXPANSES will be EXPANDED!
+      </p>
+
+      <ttable data-extract-style="underline">
+        <for each="block" in="blocks">
+          <for each="row" in="block">
+            <ttr>
+              <ttd class="left">
+                {row.0}
+              </ttd>
+              <ttd class="middle">
+                <pattern pattern="{row.1}" />
+              </ttd>
+              <ttd class="right">
+                <letter extract="true" />
+              </ttd>
+            </ttr>
+          </for>
+        </for>
+      </ttable>
+
+      <p id="below">
+        <pattern id="extracted" pattern="4 7 (`6) 2 4 1 4 (`6)" />
+      </p>
+      <use template='finalAnswer' left="2in" width="3in" />
+
+    </div>
+  </body>
+</html>

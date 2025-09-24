@@ -57,7 +57,7 @@ var puzzles = [
     { round: 2, title: 'Summer', thumb: 'sum', author: 'Rorke Haining', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:1}] },
     { round: 4, title: 'The Hunt', thumb: 'hun', author: 'Joey Marianer', type: types.search, group: group.puzzle, orientation: orient.landscape, ir:false, feeder: [] },
     { round: 4, title: 'There’s Air in the Something Tonight', file: 'TheresAir', thumb: 'air', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'coastal',number:3}] },
-    // { round: 5, title: 'Tire Change', thumb: 'tir', author: 'Ryan Berry', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    { round: 3, title: 'Tire Change', thumb: 'tir', author: 'Ryan Berry', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     // { round: 5, title: 'Traveling Salesman', thumb: 'tra', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { round: 1, title: 'Up For Air', thumb: 'upf', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.landscape, ir:false, feeder: [] },
     { round: 4, title: 'Waterfalls', thumb: 'wat', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
