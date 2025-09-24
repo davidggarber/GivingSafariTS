@@ -81,6 +81,7 @@ var rounds = [
     { filename: 'Ranges', release: '10/21/2025' },
     { filename: 'Bridge', release: '10/28/2025' },
 ];
+var releaseHourUTC = 13; // 9am EDT, 6am PDT
 
 var metas = {
     anthem: {

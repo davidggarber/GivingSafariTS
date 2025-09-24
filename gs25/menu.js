@@ -143,6 +143,7 @@ function updatePresence() {
         var span = document.createElement('span');
         toggleClass(span, 'presence-avatar', true);
         span.appendChild(document.createTextNode(pp.Avatar));
+        span.setAttribute('title', pp.PlayerName);
         td.appendChild(span);
       }
     }
@@ -189,11 +190,16 @@ function loadViaIframe(urls) {
   }
 }
 
+/**
+ * What round are we in currently?
+ * Could be triggered by the current date & time, or by a URL argument.
+ * @returns The index of the round.
+ */
 function roundFromDate() {
   var search = window.location.search.toLowerCase();
   var now = new Date();
   for (var r = rounds.length - 1; r >= 0; r--) {
-    var rd = new Date(rounds[r].release);
+    var rd = localReleaseTime(r);
     if (now >= rd) {
       return r;
     }
@@ -205,7 +211,64 @@ function roundFromDate() {
   return 0;
 }
 
-function roundTitle() {
+/**
+ * Name of the current round.
+ * Used during sync, but not part of UI.
+ * @returns round name, as titleSync.
+ */
+function roundName() {
   var round = roundFromDate();
   return rounds[round].filename;
 }
+
+/**
+ * Get the date and time that round R will release puzzles.
+ * @param {int} round 
+ * @returns 
+ */
+function localReleaseTime(round) {
+  var date = new Date(rounds[round].release);
+
+  // Offset to round release time, UTC
+  var time = new Date(date);
+  time.setMinutes(time.getMinutes() + releaseHourUTC * 60);
+
+  // Offset to local time
+  const tzMinutes = new Date().getTimezoneOffset();
+  time.setMinutes(time.getMinutes() - tzMinutes);
+ 
+  return time;
+}
+
+/**
+ * Construct a friendly date+time, for dates in the future.
+ * Or simply time for today.
+ * Or empty for times in the past.
+ * @param {Date} date 
+ * @returns A string like "Mar-3 at 14:05" or "14:05" or "" if in the past
+ */
+function timeToNextRound() {
+  var round = roundFromDate();
+  if (round + 1 >= rounds.length) {
+    return '';
+  }
+
+  var date = localReleaseTime(round + 1);
+  const hh = date.getHours();
+  const mm = date.getMinutes();
+
+  var wait = date - new Date();
+  var days = Math.floor(wait / (1000 * 60 * 60 * 24));
+  if (days >= 1) {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const mon = monthNames[date.getMonth()];
+    const day = date.getDate();
+    return `on ${mon}-${day} at ${hh}:${mm.toString().padStart(2, '0')}`;
+  }
+  if (days >= 0) {
+    return `at ${hh}:${mm.toString().padStart(2, '0')}`;
+  }
+  return '';
+}
+

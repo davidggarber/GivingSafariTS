@@ -107,6 +107,10 @@ tr.solved .checkmark {
   content:"";
 }
 
+.logged-in-avatar tr.solved .checkmark {
+  display: none;
+}
+
 .feeders {
   position: relative;
   text-align: center;
@@ -249,3 +253,40 @@ td.html:hover {
   border: none;
 }
 
+#Welcome {
+  margin-left: 0.25in;
+}
+
+#Menu #backlink {
+  display: none;
+}
+
+.yes-logged-in {
+  display: none;
+}
+.logged-in-player .yes-logged-in {
+  display: inline;
+}
+.logged-in-player .not-logged-in {
+  display: none;
+}
+
+.yes-logged-in-team {
+  display: none;
+}
+.logged-in-team .yes-logged-in-team {
+  display: inline;
+}
+.logged-in-team .not-logged-in-team {
+  display: none;
+}
+
+#login-perks {
+  padding: 10px;
+  margin: 0px;
+  margin-left: -10px;
+  background-color: yellow;
+}
+.logged-in-player #login-perks {
+  background-color: #ffffee;
+}

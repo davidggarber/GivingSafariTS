@@ -9150,6 +9150,7 @@ function dismissLogin(evt:MouseEvent|null) {
 
 function updateLoginUI() {
   let div = document.getElementById('Login-bar');
+  const body = document.getElementsByTagName('body')[0];
   if (!div) {
     div = document.createElement('div');
     div.id = 'Login-bar';
@@ -9174,6 +9175,9 @@ function updateLoginUI() {
     div.appendChild(span);
   }
 
+  toggleClass(body, 'logged-in-player', !!_playerName);
+  toggleClass(body, 'logged-in-avatar', !!_emojiAvatar);
+  toggleClass(body, 'logged-in-team', !!_teamName);
   toggleClass(div, 'logged-in', !!_playerName);
   toggleClass(div, 'avatar', !!_emojiAvatar);
   if (_playerName) {

@@ -16,7 +16,7 @@
         safari: 'gs25',
         paperSize: 'minimalist',
         title: 'Giving Safari 25',
-        titleSync: roundTitle(),
+        titleSync: roundName(),
         abilities: {
           textInput: 'nearest',
         },
@@ -24,6 +24,7 @@
         reactiveBuilder: 'pageBody',
         lookup: {
           round: roundFromDate(),
+          nextRound: timeToNextRound(),
           showLegend: false,
           showForget: true,
           puzzles: puzzles,
@@ -41,8 +42,10 @@
     <style>
       #Menu #Login-bar {
         position: relative;
+        left: 0px;
+        top: 2px;
         font-size: 14pt;
-        margin: 0.25in;
+        margin: 0px;
       }
       #Menu #Login-icon {
         height: 36px;
@@ -159,21 +162,31 @@
 
         <h1>Welcome to Giving Safari 2025!</h1>
         <p>We have a new format this year. Instead of one large event, we have an event in four rounds.</p>
-        <p>Each week, an additional collection of puzzles will be released.</p>
+        <p>Each week, an additional collection of puzzles will be released.
+          <if test="{nextRound}" ne="">
+            <br />
+            ⏰Next round of puzzles to be released <b>{nextRound}</b>.
+          </if>
+        </p>
 
         <if test="{round}" lt="1">
           <p id="pre-event">Pre-event puzzles can be found on posters around campus.
             <br />Scan their QR codes to unlock them.</p>
         </if>
 
-        <p>Log in to have your score tracked.
-          <span id="Login-bar" /></p>
-        <p>If you join a team, you will be able to see each other's progress.
+        <p id="login-perks">
+          <span class="not-logged-in">Log in to have your score tracked.</span>
+          <span class="yes-logged-in" style="font-weight: bold;">You are logged in as </span>
+          <span id="Login-bar" />
+        </p>
+        <p id="team-login-perks">
+          <span class="not-logged-in-team">If you join a team, you will be able to see each other's progress.</span>
+          <span class="yes-logged-in-team">Teams see each other's presence (on left) and solves (right).</span>          
           <br />You won't see solutions, so you can still solve for yourself.
           <br />But if a puzzle unlocks meta materials, an unlock by anyone on the team will propogate to all.
         </p>
 
-            <div id="team-roster" />
+        <div id="team-roster" />
       </div>
 
 
