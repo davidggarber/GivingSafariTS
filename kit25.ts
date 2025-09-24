@@ -9326,6 +9326,13 @@ function onRefreshTeamHomePage(json:object) {
 }
 
 /**
+ * Equivalent to window.location.href -minus- window.location.search
+ */
+export function urlSansArgs():string {
+  return window.location.protocol + "//" + window.location.host + window.location.pathname;
+}
+
+/**
  * Ping server when a meta feeder has been unlocked.
  * Called directly by the file in question, when it is first loaded.
  * @param metaFeeder "[meta]-[index]"

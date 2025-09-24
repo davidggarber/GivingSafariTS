@@ -388,6 +388,15 @@ function onRefreshTeamHomePage(json:object) {
 }
 
 /**
+ * Useful URL for unlocked & loaded files, shared between teammates.
+ * The recipient can then append their own search terms.
+ * Equivalent to window.location.href -minus- window.location.search
+ */
+export function urlSansArgs():string {
+  return window.location.protocol + "//" + window.location.host + window.location.pathname;
+}
+
+/**
  * Ping server when a meta feeder has been unlocked.
  * Called directly by the file in question, when it is first loaded.
  * @param metaFeeder "[meta]-[index]"

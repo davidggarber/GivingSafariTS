@@ -56,6 +56,13 @@ function updateSolves(puzFile) {
   }
 }
 
+/**
+ * Check to see if any of the unlockable files we know by title,
+ * now have their URLs known to us. 
+ * For each, change their UI to unlocked, and hook up their link to that URL.
+ * @param {*} meta 
+ * @param {*} i 
+ */
 function updateUnlocked(meta, i) {
   var puzFile = `${meta}-${i}`;
   if (!(puzFile in unlocked_feeders)) {
@@ -166,7 +173,8 @@ function loadViaIframe(urls) {
     // Create a bunch of single-use iframes
     var url = urls.pop();
     const iframe = document.createElement('iframe');
-    iframe.src = url;
+    // Let the material know that this comes from syncing, rather than locally-unlocked.
+    iframe.src = url + _urlEventArguments + '&from=sync';
     iframe.onload = function(){setTimeout(() => syncUnlockedMetas(), 500)};
     div.appendChild(iframe);
   }

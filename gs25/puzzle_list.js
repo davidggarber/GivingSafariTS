@@ -57,21 +57,21 @@ var puzzles = [
     { round: 2, title: 'Summer', thumb: 'sum', author: 'Rorke Haining', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:1}] },
     { round: 4, title: 'The Hunt', thumb: 'hun', author: 'Joey Marianer', type: types.search, group: group.puzzle, orientation: orient.landscape, ir:false, feeder: [] },
     { round: 4, title: 'There’s Air in the Something Tonight', file: 'TheresAir', thumb: 'air', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'coastal',number:3}] },
-    // { round: 4, title: 'Traveling Salesman', thumb: 'tra', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { round: 5, title: 'Tire Change', thumb: 'tir', author: 'Ryan Berry', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { round: 5, title: 'Traveling Salesman', thumb: 'tra', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { round: 1, title: 'Up For Air', thumb: 'upf', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.landscape, ir:false, feeder: [] },
     { round: 4, title: 'Waterfalls', thumb: 'wat', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { round: 2, title: 'Winter', thumb: 'win', author: 'Rorke Haining', type: types.code, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:3}] },
 
-    // { round: 4, title: 'Feel The Nature', thumb: 'fee', author: 'Kensi Hartman', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 4, title: 'Outlines', thumb: 'oli', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 4, title: 'Parking Places', thumb: 'par', author: 'Peter Golde', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 4, title: 'Tire Change', thumb: 'tir', author: 'Ryan Berry', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 4, title: 'PBN1: Hot Summer Day', thumb: 'pbn', author: 'Jeffrey Lin', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 4, title: 'Up to the Campgrounds', thumb: 'cam', author: 'Wei-Hwa Huang', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { round: 5, title: 'Feel The Nature', thumb: 'fee', author: 'Kensi Hartman', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { round: 5, title: 'Outlines', thumb: 'oli', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { round: 5, title: 'Parking Places', thumb: 'par', author: 'Peter Golde', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { round: 5, title: 'PBN1: Hot Summer Day', thumb: 'pbn', author: 'Jeffrey Lin', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { round: 5, title: 'Up to the Campgrounds', thumb: 'cam', author: 'Wei-Hwa Huang', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
 
     { round: 2, title: 'Annual Anthem', thumb: 'ann', author: 'Rorke Haining', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'anthem', forget: 'AA_Forget.xhtml' },
     { round: 4, title: 'Coastal Erosion', thumb: 'coa', author: 'Martyn Lovell', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'coastal', forget: 'CE_Forget.xhtml' },
-    // { round: 4, title: 'Up and Down Mount Everest', thumb: 'mte', author: 'Wei-Hwa Huang', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'everest' },            
+    // { round: 5, title: 'Up and Down Mount Everest', thumb: 'mte', author: 'Wei-Hwa Huang', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'everest' },            
 ];
 
 var rounds = [
@@ -106,6 +106,7 @@ var metas = {
 // Pass any url arguments on to the puzzles, plus the event identifier
 //  - ps22 event is for single-player puzzling.
 //  - gs25 event is an event, with teams and a leaderboard.
+// Note that in all cases, the result is at least '?'.
 var _urlEventArguments = (window.location.search.indexOf('gs25') > 0 || window.location.search.indexOf('ps22') > 0)
     ? window.location.search  // no change
     : window.location.search === '' ? '?gs25'
