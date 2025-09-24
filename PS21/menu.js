@@ -57,8 +57,8 @@ function updateSolves(puzFile) {
 }
 
 /**
- * Check to see if any of the unlockable files we know by title,
- * now have their URLs known to us. 
+ * Check to see if a meta material we know by title, has new local data.
+ * That would mean it has been unlocked - either locally or by team sync.
  * For each, change their UI to unlocked, and hook up their link to that URL.
  * @param {*} meta 
  * @param {*} i 

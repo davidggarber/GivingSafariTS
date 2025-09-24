@@ -8974,7 +8974,7 @@ function puzzleTitleForSync():string|undefined {
 }
 
 export function setupEventSync(syncKey?:string) {
-  canSyncEvents = !!syncKey;
+  canSyncEvents = !!syncKey && !theBoiler().noSync;
   if (canSyncEvents) {
     _eventName = syncKey;
 
@@ -9326,6 +9326,8 @@ function onRefreshTeamHomePage(json:object) {
 }
 
 /**
+ * Useful URL for unlocked & loaded files, shared between teammates.
+ * The recipient can then append their own search terms.
  * Equivalent to window.location.href -minus- window.location.search
  */
 export function urlSansArgs():string {
@@ -9712,6 +9714,7 @@ export type BoilerPlateData = {
     safaris?: string[];  // optional keys for Safari details, triggered by url arg
     title?: string;
     titleSync?: string;  // Title override when syncing
+    noSync?: boolean;
     qr_base64?: string;
     print_qr?: boolean;
     author?: string;

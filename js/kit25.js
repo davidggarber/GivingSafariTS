@@ -8082,7 +8082,7 @@ function puzzleTitleForSync() {
     return theBoiler().titleSync || theBoiler().title;
 }
 function setupEventSync(syncKey) {
-    canSyncEvents = !!syncKey;
+    canSyncEvents = !!syncKey && !theBoiler().noSync;
     if (canSyncEvents) {
         _eventName = syncKey;
         document.addEventListener('visibilitychange', function (event) { autoLogin(); });
@@ -8378,6 +8378,8 @@ function onRefreshTeamHomePage(json) {
     }
 }
 /**
+ * Useful URL for unlocked & loaded files, shared between teammates.
+ * The recipient can then append their own search terms.
  * Equivalent to window.location.href -minus- window.location.search
  */
 function urlSansArgs() {

@@ -40,11 +40,10 @@
             unlocked: true,
             src: urlSansArgs() });
 
-          if (updatePuzzleList(`${boiler.lookup.meta}-${boiler.lookup.index}`, 'loaded')) {
-            if (_urlEventArguments.indexOf('&from=sync') < 0) {
-              // Pushing back to sync suggests WE unlocked it. Don't, if from=sync.
-              syncUnlockedFile(`${boiler.lookup.meta}-${boiler.lookup.index}`, urlSansArgs());
-            }
+          updatePuzzleList(`${boiler.lookup.meta}-${boiler.lookup.index}`, 'loaded');
+          if (urlArgs['from'] != 'sync') {
+            // Pushing back to sync suggests WE unlocked it. Don't, if from=sync.
+            syncUnlockedFile(`${boiler.lookup.meta}-${boiler.lookup.index}`, urlSansArgs());
           }
         }
       }

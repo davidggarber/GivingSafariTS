@@ -1,6 +1,6 @@
 function setupSolvables() {
   document.addEventListener('visibilitychange', function (event) { syncProgress(); });
-  var body = document.getElementById('Menu');
+  var body = document.getElementsByTagName('body')[0];
   body.addEventListener('focus', function (event) { syncProgress(); } );
   // Then run it now.
   syncProgress();
@@ -57,6 +57,13 @@ function updateSolves(puzFile) {
   }
 }
 
+/**
+ * Check to see if a meta material we know by title, has new local data.
+ * That would mean it has been unlocked - either locally or by team sync.
+ * For each, change their UI to unlocked, and hook up their link to that URL.
+ * @param {*} meta 
+ * @param {*} i 
+ */
 function updateUnlocked(meta, i) {
   var puzFile = `${meta}-${i}`;
   if (!(puzFile in _unlocked_feeders)) {
@@ -68,7 +75,7 @@ function updateUnlocked(meta, i) {
         var links = document.getElementsByClassName(puzFile);
         for (var a = 0; a < links.length; a++) {
           toggleClass(links[a], 'unlocked', true);
-          links[a].href = mat.src;  // Should already have _urlEventArguments
+          links[a].href = mat.src + _urlEventArguments;
           if (links[a].title.endsWith(' (locked)')) {
             links[a].title = links[a].title.substring(0, links[a].title.length - 9);
           }

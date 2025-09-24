@@ -178,6 +178,7 @@ export type BoilerPlateData = {
     safaris?: string[];  // optional keys for Safari details, triggered by url arg
     title?: string;
     titleSync?: string;  // Title override when syncing
+    noSync?: boolean;
     qr_base64?: string;
     print_qr?: boolean;
     author?: string;

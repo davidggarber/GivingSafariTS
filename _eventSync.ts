@@ -36,7 +36,7 @@ function puzzleTitleForSync():string|undefined {
 }
 
 export function setupEventSync(syncKey?:string) {
-  canSyncEvents = !!syncKey;
+  canSyncEvents = !!syncKey && !theBoiler().noSync;
   if (canSyncEvents) {
     _eventName = syncKey;
 
