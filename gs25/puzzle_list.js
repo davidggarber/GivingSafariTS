@@ -33,7 +33,7 @@ var puzzles = [
 
     { round: 2, title: 'Active Lifestyle', thumb: 'act', author: 'Martyn Lovell', type: types.rebus, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { round: 1, title: 'America The Beautiful', thumb: 'ame', author: 'Chris Jeuell', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 2, title: 'Autumn', thumb: 'aut', author: 'Rorke Haining', type: types.search, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:2}] },
+    { round: 2, title: 'Autumn', thumb: 'aut', author: 'Rorke Haining', type: types.search, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:2}] },
     { round: 1, title: 'Biomes Of The World', thumb: 'bio', author: 'Zhenya Ross', type: types.search, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { round: 3, title: 'Cartography', thumb: 'car', author: 'Jake Lui', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
     { round: 2, title: 'Disney And The Great Outdoors', thumb: 'dis', author: 'Chris Jeuell', type: types.code, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },

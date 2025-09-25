@@ -31,6 +31,11 @@
             ['.KO','.RE','VY.'],
             ['L.','AT','SG','EI','UB'],
             ['SHO.','CNOE'],
+            ['AM..','E...','OI..','.ENG'],
+            ['RERO','WI..'],
+            ['.IK..','.EAF.','NA...','.ZE..','..LEW'],
+            ['..HEA','LANS.'],
+            ['TS..','.ERP','..ID','.RAN']
           ]
         },
       };
@@ -52,6 +57,7 @@
           position: absolute;
           left: 2.5in;
           top: 2in;
+          pointer-events: none;
 
           text-anchor: middle;
           user-select: none;
@@ -71,7 +77,7 @@
         #floor rect {
           stroke: black;
           stroke-width: 1px;
-          fill: #ffffff99;
+          xfill: #ffffff99;
         }
         #floor {
           font-family: 'Lucida Console', monospace;
@@ -102,16 +108,38 @@
           -o-user-select: none;
         }
         #leaf1 rect {
-          fill: #ff59009c;
+          fill: #ff5b00dd;
         }
         #leaf2 rect {
-          fill: #ecc735ac;
+          fill: #ecc735dd;
+        }
+        #leaf3 rect {
+          fill: #ffe400dd;
+        }
+        #leaf4 rect {
+          fill: #a63131dd;
+        }
+        #leaf5 rect {
+          fill: #fec608dd;
+        }
+        #leaf6 rect {
+          fill: #e55f54dd;
+        }
+        #leaf7 rect {
+          fill: #ffc000dd;
+        }
+        #leaf8 rect {
+          fill: #ea8037dd;
         }
         .leaf .flipped {
           transform: scale(-1,1);
         }
         .drop-zone {
           fill: transparent;
+        }
+        .drop-zone.show {
+          stroke: red;
+          stroke-width: 2px;
         }
       }
     </style>
@@ -135,40 +163,52 @@
       </ol>
 
       <svg id="svg" width="720" height="830">
-        <g id="leaf1-source" transform="translate(100,100) scale(0.5)" class="drag-source">
-          <rect class="drop-zone" x="0" y="0" width="192" height="192" />
-          <g id="leaf1" class="moveable leaf flipped" onclick="flipLeaf('leaf1')">
-            <g class="flippable flipped">
-              <g transform="translate(-96,0)">
-                <for each="row" in="{leaves.0}">
-                  <for char="ch" in="{row}">
-                    <if test="{ch}" ne=".">
-                      <rect x="{ch#*64}" y="{row#*64}" width="64" height="64" class="drag-handle" />
-                      <text x="{ch#*64 + 32}" y="{row#*64 + 40}">{ch}</text>
-                    </if>
-                  </for>
-                </for>
-              </g>
-            </g>
-          </g>
+        <rect x="0" y="0" width="720" height="830" fill="transparent" />
+
+        <g id="leaf1-source" transform="translate(115,100) scale(0.5)" class="drag-source">
+          <use template="leaf-layout" name="leaf1" layout="{leaves.0}" x="300" y="100" width="3" height="3" middle="128" flip="flipped" />
         </g>
 
-        <g id="leaf1-source" transform="translate(400,100) rotate(-95) scale(0.5)" transform-origin="64 160" class="drag-source">
+        <g id="leaf2-source" transform="translate(300,-100) rotate(-95) scale(0.5)" transform-origin="64 160" class="drag-source">
           <use template="leaf-layout" name="leaf2" layout="{leaves.1}" x="300" y="100" width="2" height="5" middle="64" flip="flipped" />
         </g>
 
+        <g id="leaf3-source" transform="translate(500,200) rotate(10) scale(0.5)" transform-origin="128 64" class="drag-source">
+          <use template="leaf-layout" name="leaf3" layout="{leaves.2}" x="300" y="100" width="4" height="2" middle="0" flip="" />
+        </g>
+
+        <g id="leaf4-source" transform="translate(480,-50) rotate(-95) scale(0.5)" transform-origin="128 128" class="drag-source">
+          <use template="leaf-layout" name="leaf4" layout="{leaves.3}" x="300" y="100" width="4" height="4" middle="0" flip="" />
+        </g>
+
+        <g id="leaf5-source" transform="translate(-50,200) rotate(-165) scale(0.5)" transform-origin="128 64" class="drag-source">
+          <use template="leaf-layout" name="leaf5" layout="{leaves.4}" x="300" y="100" width="4" height="2" middle="192" flip="flipped" />
+        </g>
+        <g id="leaf6-source" transform="translate(-100,350) rotate(120) scale(0.5)" transform-origin="160 160" class="drag-source">
+          <use template="leaf-layout" name="leaf6" layout="{leaves.5}" x="300" y="100" width="5" height="5" middle="256" flip="flipped" />
+        </g>
+        <g id="leaf7-source" transform="translate(200,380) rotate(10) scale(0.5)" transform-origin="160 64" class="drag-source">
+          <use template="leaf-layout" name="leaf7" layout="{leaves.6}" x="300" y="100" width="5" height="2" middle="256" flip="flipped" />
+        </g>
+        <g id="leaf8-source" transform="translate(480,300) rotate(-155) scale(0.5)" transform-origin="128 128" class="drag-source">
+          <use template="leaf-layout" name="leaf8" layout="{leaves.7}" x="300" y="100" width="4" height="4" middle="0" flip="" />
+        </g>
 
 
-        <g transform="translate(200,500)">
+
+
+
+
+        <g transform="translate(232,532)">
           <g id="borders">
-            <rect x="0" y="0" width="320" height="320" />
+            <rect x="-32" y="-32" width="320" height="320" />
           </g>
           <g id="floor">
             <for each="row" in="{ground}">
               <for char="ch" in="{row}">
                 <g transform="translate({ch#*64}, {row#*64})" class="drop-target">
-                  <rect x="0" y="0" width="64" height="64" />
-                  <text x="32" y="40">{ch}</text>
+                  <rect x="-32" y="-32" width="64" height="64" class="drop-zone" />
+                  <text y="8">{ch}</text>
                 </g>
               </for>
             </for>
@@ -182,15 +222,17 @@
     </div>
 
     <template id="leaf-layout">
-      <rect class="drop-zone" x="0" y="0" width="{64*width}" height="{64*height}" />
-      <g id="{name}" class="moveable leaf flipped" onclick="flipLeaf('{name}')">
+      <rect class="show2 drop-zone" x="-32" y="-32" width="{64*width}" height="{64*height}" />
+      <g id="{name}" class="moveable leaf flipped2" onclick="flipLeaf('{name}')">
         <g class="flippable {flip}">
           <g transform="translate(-{middle},0)">
             <for each="row" in="{layout}">
               <for char="ch" in="{row}">
                 <if test="{ch}" ne=".">
-                  <rect x="{ch#*64}" y="{row#*64}" width="64" height="64" class="drag-handle" />
-                  <text x="{ch#*64 + 32}" y="{row#*64 + 40}">{ch}</text>
+                  <g transform="translate({ch#*64}, {row#*64})">
+                    <rect x="-32" y="-32" width="64" height="64" class="drag-handle" />
+                    <text y="8">{ch}</text>
+                  </g>
                 </if>
               </for>
             </for>

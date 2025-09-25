@@ -6380,7 +6380,7 @@ function startSvgDrag(evt:PointerEvent) {
   }
 
   if (_svgDragInfo) {
-    cancelSvgDrag()
+    cancelSvgDrag(null)
   }
   let mover = firstSvgMoveable(evt.clientX, evt.clientY);
   if (!mover) {
@@ -6502,11 +6502,11 @@ function firstSvgDropTarget(clientX:number, clientY:number): SVGGraphicsElement|
   const elements = document.elementsFromPoint(clientX, clientY);
   for (let i = 0; i < elements.length; i++) {
     const elem = elements[i] as Element;
-    if (findParentOfClass(elem, 'moveable')) {
+    if (findParentOfClass(elem, 'drag-handle') || findParentOfClass(elem, 'moveable')) {
       // Ignore the moveable item, as its parents may be elsewhere on the page
       continue;
     }
-    // the target may not actually be one of the elements, but it might be one of their parents
+    // The target may not actually be one of the elements, but it might be one of their parents
     // IDEA: do a bounding rect, as a check
     let target = findParentOfClass(elem, 'drop-target') as SVGGraphicsElement|null
     if (target) {
@@ -6547,6 +6547,10 @@ function calcSvgDropInfo(clientX:number, clientY:number): SvgDropInfo|null {
         }
       }
     }
+
+    assertPlacementByTransform(handle);
+    assertPlacementByTransform(target);
+    assertPlacementByTransform(_svgDragInfo.mover);
 
     let dragging = !_svgDragInfo.click || (target != _svgDragInfo.hover);
     if (!dragging) {
@@ -6602,7 +6606,7 @@ function endSvgDrag(evt:PointerEvent) {
     }
 
     if (!info || !info.target) {
-      cancelSvgDrag();
+      cancelSvgDrag(null);
       return;
     }
 
@@ -6632,6 +6636,8 @@ function endSvgDrag(evt:PointerEvent) {
     }
     else {
       // Translate to achieve the offset from the handle to the mover's origin,
+      // WARNING: All components (handle/mover/target) must be position via 
+      //          translate transforms, and not via simple x/y attributes.
       const oH = localToClientPoint(info.handle, 0, 0);
       const oM = localToClientPoint(_svgDragInfo.mover, 0, 0);
       const oT = localToClientPoint(info.target, 0, 0);
@@ -6651,8 +6657,19 @@ function endSvgDrag(evt:PointerEvent) {
 /**
  * Abort the current drag operation, and reset the state.
  */
-function cancelSvgDrag() {
+function cancelSvgDrag(evt:PointerEvent|null) {
   if (_svgDragInfo) {
+    if (evt && evt.currentTarget && isTag(evt.currentTarget as Element, 'svg')) {
+      // We have an event that the mouse left. But did it really?
+      var svg = evt.currentTarget as SVGSVGElement;
+      var bounds = svg.getBoundingClientRect();
+      if (evt.clientX >= bounds.left && evt.clientX <= bounds.right
+          && evt.clientY >= bounds.top && evt.clientY <= bounds.bottom) {
+        // The pointer is still inside the SVG, so ignore this event
+        return;
+      }
+    }
+
     toggleClass(_svgDragInfo.mover, 'dragging', false);
     toggleClass(_svgDragInfo.mover, 'selected', false);
     toggleClass(_svgDragInfo.mover, 'droppable', false);
@@ -6677,7 +6694,7 @@ function cancelSvgDrag() {
 function convertSvgDragToSelection() {
   if (_svgDragInfo) {
     _svgSelectInfo = _svgDragInfo;
-    cancelSvgDrag();
+    cancelSvgDrag(null);
     toggleClass(_svgSelectInfo.mover, 'selected', true);
   }
 }
@@ -6700,7 +6717,7 @@ function clickSvgDragCanvas(evt:PointerEvent) {
     convertSvgSelectionToDrag();
     var info = calcSvgDropInfo(evt.clientX, evt.clientY);
     if (!info) {
-      cancelSvgDrag();
+      cancelSvgDrag(null);
     }
     else {
       midSvgDrag(evt);
@@ -6711,12 +6728,30 @@ function clickSvgDragCanvas(evt:PointerEvent) {
 
   const mover = firstSvgMoveable(evt.clientX, evt.clientY);
   if (mover) {
+    assertPlacementByTransform(mover);
     // Start the drag operation
     startSvgDrag(evt);
   }
 }
 
-
+/**
+ * Catch an easy authoring mistake: 
+ * Using x/y to position an element, instead of translate(x,y), 
+ * breaks the offset-transformations done for placement.
+ * @param elmt An element used in drag-drop placement -- mover or destination
+ */
+function assertPlacementByTransform(elmt:SVGGraphicsElement|null): void {
+  if (!elmt) return;
+  var bounds = elmt.getBoundingClientRect();
+  // The local origin must be inside this rectangle
+  var orig = localToClientPoint(elmt, 0, 0);
+  if (orig.x < bounds.left || orig.x > bounds.right
+      || orig.y < bounds.top || orig.y > bounds.bottom) {
+        // It likely isn't using translate(x,y) for positioning.
+        console.error(`WARNING: <${elmt.tagName} id=${elmt.id}}> has origin (${orig.x},${orig.y}) outside its bounds: `
+          + `(left=${bounds.left},top=${bounds.top},right=${bounds.right},bottom=${bounds.bottom}).`);
+  }
+}
 
 /*-----------------------------------------------------------
  * _stampTools.ts
