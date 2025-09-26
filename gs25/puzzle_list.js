@@ -75,11 +75,11 @@ var puzzles = [
 ];
 
 var rounds = [
-    { filename: 'Map25', release: '10/1/2025' },
-    { filename: 'Trails', release: '10/7/2025' },
-    { filename: 'Creeks', release: '10/14/2025' },
-    { filename: 'Ranges', release: '10/21/2025' },
-    { filename: 'Bridge', release: '10/28/2025' },
+    { filename: 'Map25', release: '10/1/2025', pdf: '' },
+    { filename: 'Trails', release: '10/3/2025', pdf: 'trails' },
+    { filename: 'Creeks', release: '10/10/2025', pdf: 'creeks' },
+    { filename: 'Ranges', release: '10/17/2025', pdf: 'ranges' },
+    { filename: 'Bridge', release: '10/24/2025', pdf: 'bridges' },
 ];
 var releaseHourUTC = 13; // 9am EDT, 6am PDT
 

@@ -25,6 +25,7 @@
         lookup: {
           round: roundFromDate(),
           nextRound: timeToNextRound(),
+          pdf: pdfForRound(),
           showLegend: false,
           showForget: true,
           puzzles: puzzles,
@@ -143,9 +144,11 @@
               </ttbody>
             </ttable>
 
-            <p style="text-align: center;">
-              If you want a printed copy, <a href="PDF/trail_puzzles.pdf" target="_blank">this PDF</a> contains all puzzles (but not meta-puzzles).
-            </p>
+            <if test="{pdf}" ne="">
+              <p style="text-align: center;">
+                If you want a printed copy, <a href="PDF/{pdf}.pdf" target="_blank">this PDF</a> contains all puzzles so far.
+              </p>
+            </if>
 
             <use template="meta-template" />
 

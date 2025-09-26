@@ -272,3 +272,7 @@ function timeToNextRound() {
   return '';
 }
 
+function pdfForRound() {
+  var round = roundFromDate();
+  return rounds[round].pdf;
+}
