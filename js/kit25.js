@@ -3,11 +3,11 @@
  * Puzzyl.net puzzle-building web kit                       *
  ************************************************************/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.showDecoder = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.matrixFromElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.removeClassGlobally = exports.toggleClass = void 0;
-exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.getValueFromTextContainer = exports.hasInputGroup = exports.arrowFromInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = void 0;
-exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.showRatingUI = exports.createRatingUI = exports.sendFeedback = exports.sendRating = exports.syncUnlockedFile = exports.urlSansArgs = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.lookupSafari = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = void 0;
-exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = void 0;
+exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.showDecoder = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveChildOrder = exports.getChildOrder = exports.mutualAncestor = exports.matrixFromElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.isHTMLElement = exports.isElement = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.removeClassGlobally = exports.toggleClass = void 0;
+exports.hasInputGroup = exports.arrowFromInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = void 0;
+exports.forceReload = exports.isRestart = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.showRatingUI = exports.createRatingUI = exports.sendFeedback = exports.sendRating = exports.syncUnlockedFile = exports.urlSansArgs = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.lookupSafari = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.getAccumulatedTransformMatrix = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.getValueFromTextContainer = void 0;
+exports.treeifyFormula = exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -237,6 +237,26 @@ function findEndInContainer(current, matchClass, skipClass, containerClass, dir 
     return findFirstChildOfClass(container, matchClass, skipClass, dir);
 }
 exports.findEndInContainer = findEndInContainer;
+/**
+ * Check whether a node, i.e. from elem.parentNode, is an element.
+ * @param node Any node, or null|undefined (which would both return false)
+ * @returns true for elements
+ */
+function isElement(node) {
+    return node != undefined
+        && node != null
+        && node.nodeType === Node.ELEMENT_NODE;
+}
+exports.isElement = isElement;
+/**
+ * Check whether a node, i.e. from elem.parentNode, is an HTML element.
+ * @param node Any node, or null|undefined (which would both return false)
+ * @returns true for HTML elements
+ */
+function isHTMLElement(node) {
+    return isElement(node) && node instanceof HTMLElement;
+}
+exports.isHTMLElement = isHTMLElement;
 /**
  * Determine the tag type, based on the tag name (case-insenstive)
  * @param elmt An HTML element
@@ -575,6 +595,63 @@ function matrixFromElement(element) {
     return new DOMMatrix(computed);
 }
 exports.matrixFromElement = matrixFromElement;
+/**
+ * Find the nearest common ancestor of two elements.
+ * This could be a or b, if one is inside the other, or else any element up to the body.
+ * @param a Any Element in the document
+ * @param b Any Element in the document
+ * @returns Another Element
+ */
+function mutualAncestor(a, b) {
+    const ancestors = [];
+    let aa = a;
+    while (isElement(aa) && !isTag(aa, 'body')) {
+        ancestors.push(aa);
+        aa = aa.parentNode;
+    }
+    let bb = b;
+    while (isElement(bb) && !isTag(bb, 'body')) {
+        if (ancestors.indexOf(bb) >= 0) {
+            return bb;
+        }
+        bb = bb.parentNode;
+    }
+    // Surely they are both contained by the body!
+    console.error("No common ancestor found! Are these elements in the same document?");
+    return null;
+}
+exports.mutualAncestor = mutualAncestor;
+/**
+ * Determine the order of this element within its siblings
+ * @param elem Any element
+ * @returns 0 to element.parentNode.childNodes.length - 1
+ */
+function getChildOrder(elem) {
+    const parent = elem.parentNode;
+    for (let i = 0; i < parent.childNodes.length; i++) {
+        if (parent?.childNodes[i] == elem) {
+            return i;
+        }
+    }
+    throw new Error(`Cannot find ${elem} order within ${parent}`);
+}
+exports.getChildOrder = getChildOrder;
+/**
+ * Moves an element within its siblings, to a new index
+ * @param elem The element to move
+ * @param index The desired index, or -1 for last
+ */
+function moveChildOrder(elem, index) {
+    const parent = elem.parentNode;
+    parent?.removeChild(elem);
+    if (index == -1 || index >= parent.childNodes.length) {
+        parent?.appendChild(elem);
+        return;
+    }
+    const sibling = parent.childNodes[index];
+    parent?.insertBefore(elem, sibling);
+}
+exports.moveChildOrder = moveChildOrder;
 /**
  * Create a generic TR tag for each row in a table.
  * Available for TableDetails.onRow where that is all that's needed
@@ -5772,6 +5849,16 @@ function preprocessSvgDragFunctions(svgId) {
             svg.addEventListener('pointerdown', clickSvgDragCanvas);
         }
     }
+    const movers = document.getElementsByClassName('moveable');
+    for (let i = 0; i < movers.length; i++) {
+        const moveable = movers[i];
+        const tc = findParentOfClass(moveable, 'transform-copy');
+        if (tc) {
+            const tcid = tc.getAttributeNS('', 'transform-copy');
+            const tSrc = document.getElementById(tcid || '');
+            CopyTransformation(tc, tSrc);
+        }
+    }
 }
 exports.preprocessSvgDragFunctions = preprocessSvgDragFunctions;
 /**
@@ -5829,6 +5916,7 @@ function startSvgDrag(evt) {
     if (!mover) {
         return;
     }
+    assertPlacementByTransform(mover);
     let relPoint = clientToLocalPoint(mover, evt.clientX, evt.clientY);
     let matrix = matrixFromElement(mover);
     let translation = new DOMPoint(matrix.e, matrix.f);
@@ -5849,24 +5937,27 @@ function startSvgDrag(evt) {
     }
     // Before walking up the parent chain, see if the selected handle has a preferred target, which might be different
     let hover = firstSvgDropTarget(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
-    let target = findParentOfClass(mover, 'drop-target')
-        || findParentOfClass(mover, 'drag-source');
-    if (!target) {
-        console.error('Found a moveable ${mover.id} that is not in a drag-source or drop-target parent');
-        return; // not a drag-source or drop-target
-    }
+    assertPlacementByTransform(handle);
+    const tc = findParentOfClass(mover, 'transform-copy');
     _svgDragInfo = {
         id: mover.id,
         mover: mover,
         handle: handle || mover,
+        transformer: tc,
         bounds: bounds,
-        parent: target,
-        hover: hover || target,
+        undo: {
+            transformer: getTransformMatrix(tc),
+            mover: getTransformMatrix(mover),
+            zOrder: getChildOrder(tc)
+        },
+        hover: hover,
         client: new DOMPoint(evt.clientX, evt.clientY),
         offset: relPoint,
         translation: translation,
         click: true, // this might just be a click, not a drag
     };
+    // Move to top-most. Must do this immediately, as it interferes with dragging and clicking if later.
+    moveChildOrder(_svgDragInfo.transformer, -1);
     toggleClass(mover, 'dragging', true);
     toggleClass(mover, 'selected', true);
     // not yet droppable
@@ -5893,14 +5984,14 @@ function midSvgDrag(evt) {
             }
             _svgDragInfo.hover = info.target;
             toggleClass(_svgDragInfo.hover, 'hover', true);
-            reparentSvgDrag(info.target);
+            CopyTransformation(_svgDragInfo.transformer, info.target);
         }
         // Add a translation to the mover, so that it's offset (where we clicked)
         // lands at the current pointer position, accounting for new transforms.
-        let local = clientToLocalPoint(_svgDragInfo.mover.parentNode, evt.clientX, evt.clientY);
+        let local = clientToLocalPoint(_svgDragInfo.mover, evt.clientX, evt.clientY);
         local.x -= _svgDragInfo.offset.x;
         local.y -= _svgDragInfo.offset.y;
-        _svgDragInfo.mover.style.transform = 'translate(' + local.x + 'px,' + local.y + 'px)';
+        _svgDragInfo.mover.style.transform += 'translate(' + local.x + 'px,' + local.y + 'px)';
         // TODO: consider checking for collisions with other moveables
     }
 }
@@ -5941,10 +6032,18 @@ function firstSvgDropTarget(clientX, clientY) {
         if (target) {
             return target;
         }
-        // drag-sources must match the dragged element or else have no ID at all
+        // Once dragging, drag-sources must match the dragged element 
+        // or else have no ID at all, meaning generic.
         target = findParentOfClass(elem, 'drag-source');
-        if (_svgDragInfo && target && (!target.id || (target.id == _svgDragInfo.id + '-source'))) {
+        if (!_svgDragInfo || (target && (!target.id || (target.id == _svgDragInfo.id + '-source')))) {
             return target;
+        }
+        else if (_svgDragInfo) {
+            const altDragSource = document.getElementById(_svgDragInfo.id + '-source');
+            // If user tries to drop a mover on the wrong drag source, redirect them to the right one
+            if (altDragSource) {
+                return altDragSource;
+            }
         }
     }
     return null;
@@ -5974,9 +6073,9 @@ function calcSvgDropInfo(clientX, clientY) {
                 }
             }
         }
-        assertPlacementByTransform(handle);
-        assertPlacementByTransform(target);
-        assertPlacementByTransform(_svgDragInfo.mover);
+        // assertPlacementByTransform(handle);
+        // assertPlacementByTransform(target);
+        // assertPlacementByTransform(_svgDragInfo.mover);
         let dragging = !_svgDragInfo.click || (target != _svgDragInfo.hover);
         if (!dragging) {
             // We have yet to drag beyond the bounds of the moveable element
@@ -6019,7 +6118,11 @@ function endSvgDrag(evt) {
         let info = calcSvgDropInfo(evt.clientX, evt.clientY);
         if (_svgDragInfo.click && (!info || !info.drag)) {
             // Never started dragging
-            // Do nothing now, but leave element selected
+            // If this is on mouse-/pointer-up, treat this as a click
+            if (evt.type.endsWith('up') && _svgDragInfo.mover.onclick) {
+                _svgDragInfo.mover.onclick(evt);
+            }
+            // Leave element selected
             convertSvgDragToSelection();
             return;
         }
@@ -6034,7 +6137,7 @@ function endSvgDrag(evt) {
         if (_svgDragInfo.hover) {
             toggleClass(_svgDragInfo.hover, 'hover', false);
         }
-        reparentSvgDrag(info.target);
+        // reparentSvgDrag(info.target!);
         // Add a translation, if needed
         let translate = null;
         if (hasClass(info.target, 'drag-source')) {
@@ -6089,7 +6192,13 @@ function cancelSvgDrag(evt) {
         if (_svgDragInfo.hover) {
             toggleClass(_svgDragInfo.hover, 'hover', false);
         }
-        reparentSvgDrag(_svgDragInfo.parent);
+        const tc = findParentOfClass(_svgDragInfo.mover, 'transform-copy');
+        setTransformMatrix(tc, _svgDragInfo.undo.transformer);
+        setTransformMatrix(_svgDragInfo.mover, _svgDragInfo.undo.mover);
+        // if (!_svgDragInfo.click) {
+        //   moveChildOrder(_svgDragInfo.transformer, _svgDragInfo.undo.zOrder);
+        // }
+        // reparentSvgDrag(_svgDragInfo.parent);
         // Revert to original translation
         if (_svgDragInfo.translation.x || _svgDragInfo.translation.y) {
             _svgDragInfo.mover.style.transform = 'translate(' + _svgDragInfo.translation.x + 'px,' + _svgDragInfo.translation.y + 'px)';
@@ -6120,19 +6229,22 @@ function convertSvgSelectionToDrag() {
  * @param evt
  */
 function clickSvgDragCanvas(evt) {
+    const mover = firstSvgMoveable(evt.clientX, evt.clientY);
     if (_svgSelectInfo) {
         convertSvgSelectionToDrag();
-        var info = calcSvgDropInfo(evt.clientX, evt.clientY);
-        if (!info) {
-            cancelSvgDrag(null);
-        }
-        else {
-            midSvgDrag(evt);
-            endSvgDrag(evt);
-            return;
+        if (mover != _svgDragInfo?.mover) {
+            // This was a click+click. Try to move or cancel.
+            var info = calcSvgDropInfo(evt.clientX, evt.clientY);
+            if (!info) {
+                cancelSvgDrag(null);
+            }
+            else {
+                midSvgDrag(evt);
+                endSvgDrag(evt);
+                return;
+            }
         }
     }
-    const mover = firstSvgMoveable(evt.clientX, evt.clientY);
     if (mover) {
         assertPlacementByTransform(mover);
         // Start the drag operation
@@ -6157,6 +6269,63 @@ function assertPlacementByTransform(elmt) {
         console.error(`WARNING: <${elmt.tagName} id=${elmt.id}}> has origin (${orig.x},${orig.y}) outside its bounds: `
             + `(left=${bounds.left},top=${bounds.top},right=${bounds.right},bottom=${bounds.bottom}).`);
     }
+}
+/**
+ * Copy the cumulative transformation of one element to another.
+ * This is intended for application in an un-transformed layer,
+ * that is a sibling to the layer in which the copied element sits.
+ * That way, elem will behave like it is a child of tc.
+ * @param elem An element to transform (overwriting any previous transform)
+ * @param tc Another element, in a complex transform tree
+ */
+function CopyTransformation(elem, tc) {
+    // Find mutual parent
+    const ancestor = mutualAncestor(elem, tc);
+    if (!ancestor) {
+        return;
+    }
+    const matrix = getAccumulatedTransformMatrix(tc, ancestor);
+    setTransformMatrix(elem, matrix);
+}
+/**
+ * Calculate the relative transform matrix from the container down to the child.
+ * @param child Any element inside container
+ * @param container Any element
+ * @returns A transform matrix, from the containers frame of reference, to the child's
+ */
+function getAccumulatedTransformMatrix(child, container) {
+    if (!container.contains(child)) {
+        throw new Error("container must be an ancestor of child");
+    }
+    let matrix = new DOMMatrix(); // Identity matrix
+    let current = child;
+    while (current && current !== container) {
+        const localMatrix = getTransformMatrix(current);
+        matrix = localMatrix.multiply(matrix);
+        current = current.parentElement;
+    }
+    return matrix;
+}
+exports.getAccumulatedTransformMatrix = getAccumulatedTransformMatrix;
+/**
+ * The transform set on an element, as a matrix
+ * @param elem Any element
+ * @returns The
+ */
+function getTransformMatrix(elem) {
+    const style = getComputedStyle(elem);
+    if (style.transform === 'none') {
+        return new DOMMatrix(); // identity
+    }
+    return new DOMMatrix(style.transform);
+}
+/**
+ * Change an element's transform to a desired matrix
+ * @param elem The element
+ * @param matrix The matrix
+ */
+function setTransformMatrix(elem, matrix) {
+    elem.style.transform = `matrix(${matrix.a}, ${matrix.b}, ${matrix.c}, ${matrix.d}, ${matrix.e}, ${matrix.f})`;
 }
 /**
  * Initialize a stampSet object with nulls

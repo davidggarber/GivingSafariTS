@@ -1,14 +1,22 @@
 import { info } from "console";
-import { findParentOfClass, findParentOfTag, hasClass, isTag, matrixFromElement, toggleClass } from "./_classUtil";
+import { findParentOfClass, findParentOfTag, getChildOrder, hasClass, isTag, matrixFromElement, moveChildOrder, mutualAncestor, toggleClass } from "./_classUtil";
 import { svg_xmlns } from "./_tableBuilder";
+
+type TransformCache = {
+  transformer: DOMMatrix,  // The matrix of the element we pretend contains us
+  mover: DOMMatrix,        // An offset to the container's matrix
+  zOrder: number,          // A desired z-order
+};
 
 type SvgDragInfo = {
   id: string,  // ID of the element being dragged
   mover: SVGGraphicsElement,  // The element being dragged
   handle: SVGGraphicsElement,  // The sub-element being dragged (or just the main element)
+  transformer: SVGGraphicsElement,  // The transform-copy parent of the mover
   bounds: DOMRect,  // The bounds of the inntermost handle
-  parent: SVGGraphicsElement,  // Its current parent, either drop-target or drag-source
-  hover: SVGGraphicsElement|null,  // The prospective parent we're currently over
+  // parent: SVGGraphicsElement,  // Its current parent, either drop-target or drag-source
+  undo: TransformCache,  // Initial state, so we can undo
+  hover: SVGGraphicsElement|null,  // The prospective drop-target we're currently over
   client: DOMPoint,  // Initial point of drag, in screen coordinates
   offset: DOMPoint,  // Where within the mover the mouse was clicked, in initial parent coordinates
   translation: DOMPoint,  // Is the mover already translated within its parent?
@@ -62,6 +70,17 @@ export function preprocessSvgDragFunctions(svgId:string) {
         svg.addEventListener('pointermove', midSvgDrag);
         svg.addEventListener('pointerup', endSvgDrag);
         svg.addEventListener('pointerdown', clickSvgDragCanvas);
+      }
+    }
+
+    const movers = document.getElementsByClassName('moveable');
+    for (let i = 0; i < movers.length; i++) {
+      const moveable = movers[i] as SVGElement;
+      const tc = findParentOfClass(moveable, 'transform-copy');
+      if (tc) {
+        const tcid = tc.getAttributeNS('', 'transform-copy');
+        const tSrc = document.getElementById(tcid || '');
+        CopyTransformation(tc as SVGElement, tSrc as Element);
       }
     }
 }
@@ -128,6 +147,7 @@ function startSvgDrag(evt:PointerEvent) {
   if (!mover) {
     return;
   }
+  assertPlacementByTransform(mover);
 
   let relPoint = clientToLocalPoint(mover, evt.clientX, evt.clientY);
   let matrix = matrixFromElement(mover);
@@ -151,26 +171,30 @@ function startSvgDrag(evt:PointerEvent) {
 
   // Before walking up the parent chain, see if the selected handle has a preferred target, which might be different
   let hover = firstSvgDropTarget(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
-  let target = findParentOfClass(mover, 'drop-target') as SVGGraphicsElement
-            || findParentOfClass(mover, 'drag-source') as SVGGraphicsElement;
-  if (!target) {
-    console.error('Found a moveable ${mover.id} that is not in a drag-source or drop-target parent');
-    return;  // not a drag-source or drop-target
-  }
+  assertPlacementByTransform(handle);
+
+  const tc = findParentOfClass(mover, 'transform-copy') as SVGGraphicsElement;
 
   _svgDragInfo = {
     id: mover.id,
     mover: mover,
     handle: handle || mover,
+    transformer: tc,
     bounds: bounds,
-    parent: target,
-    hover: hover || target,
+    undo: {
+      transformer: getTransformMatrix(tc),
+      mover: getTransformMatrix(mover),     // An offset to the container's matrix
+      zOrder: getChildOrder(tc)
+    },
+    hover: hover,
     client: new DOMPoint(evt.clientX, evt.clientY),
     offset: relPoint,
     translation: translation,
     click: true,  // this might just be a click, not a drag
   };
 
+  // Move to top-most. Must do this immediately, as it interferes with dragging and clicking if later.
+  moveChildOrder(_svgDragInfo.transformer, -1);
   toggleClass(mover, 'dragging', true);
   toggleClass(mover, 'selected', true);
   // not yet droppable
@@ -201,15 +225,15 @@ function midSvgDrag(evt:PointerEvent) {
       _svgDragInfo.hover = info.target;
       toggleClass(_svgDragInfo.hover, 'hover', true);
 
-      reparentSvgDrag(info.target);
+      CopyTransformation(_svgDragInfo.transformer, info.target);
     }
 
     // Add a translation to the mover, so that it's offset (where we clicked)
     // lands at the current pointer position, accounting for new transforms.
-    let local = clientToLocalPoint(_svgDragInfo.mover.parentNode as SVGGraphicsElement, evt.clientX, evt.clientY);
+    let local = clientToLocalPoint(_svgDragInfo.mover as SVGGraphicsElement, evt.clientX, evt.clientY);
     local.x -= _svgDragInfo.offset.x;
     local.y -= _svgDragInfo.offset.y;
-    _svgDragInfo.mover.style.transform = 'translate(' + local.x + 'px,' + local.y + 'px)';
+    _svgDragInfo.mover.style.transform += 'translate(' + local.x + 'px,' + local.y + 'px)';
 
 
     // TODO: consider checking for collisions with other moveables
@@ -255,11 +279,19 @@ function firstSvgDropTarget(clientX:number, clientY:number): SVGGraphicsElement|
       return target;
     } 
 
-    // drag-sources must match the dragged element or else have no ID at all
+    // Once dragging, drag-sources must match the dragged element 
+    // or else have no ID at all, meaning generic.
     target = findParentOfClass(elem, 'drag-source') as SVGGraphicsElement|null;
-    if (_svgDragInfo && target && (!target.id || (target.id == _svgDragInfo.id + '-source'))) {
+    if (!_svgDragInfo || (target && (!target.id || (target.id == _svgDragInfo.id + '-source')))) {
       return target;
-    } 
+    }
+    else if (_svgDragInfo) {
+      const altDragSource = document.getElementById(_svgDragInfo.id + '-source');
+      // If user tries to drop a mover on the wrong drag source, redirect them to the right one
+      if (altDragSource) {
+        return altDragSource as Element as SVGGraphicsElement;
+      }
+    }
   }
   return null;
 }
@@ -290,9 +322,9 @@ function calcSvgDropInfo(clientX:number, clientY:number): SvgDropInfo|null {
       }
     }
 
-    assertPlacementByTransform(handle);
-    assertPlacementByTransform(target);
-    assertPlacementByTransform(_svgDragInfo.mover);
+    // assertPlacementByTransform(handle);
+    // assertPlacementByTransform(target);
+    // assertPlacementByTransform(_svgDragInfo.mover);
 
     let dragging = !_svgDragInfo.click || (target != _svgDragInfo.hover);
     if (!dragging) {
@@ -342,7 +374,11 @@ function endSvgDrag(evt:PointerEvent) {
     let info = calcSvgDropInfo(evt.clientX, evt.clientY);
     if (_svgDragInfo.click && (!info || !info.drag)) {
       // Never started dragging
-      // Do nothing now, but leave element selected
+      // If this is on mouse-/pointer-up, treat this as a click
+      if (evt.type.endsWith('up') && _svgDragInfo.mover.onclick) {
+        _svgDragInfo.mover.onclick(evt);
+      }
+      // Leave element selected
       convertSvgDragToSelection();
       return;
     }
@@ -360,7 +396,7 @@ function endSvgDrag(evt:PointerEvent) {
     if (_svgDragInfo.hover) {
       toggleClass(_svgDragInfo.hover, 'hover', false);
     }
-    reparentSvgDrag(info.target!);
+    // reparentSvgDrag(info.target!);
     
     // Add a translation, if needed
     let translate:DOMPoint|null = null;
@@ -419,7 +455,15 @@ function cancelSvgDrag(evt:PointerEvent|null) {
     if (_svgDragInfo.hover) {
       toggleClass(_svgDragInfo.hover, 'hover', false);
     }
-    reparentSvgDrag(_svgDragInfo.parent);
+    
+    const tc = findParentOfClass(_svgDragInfo.mover, 'transform-copy') as SVGElement;
+    setTransformMatrix(tc, _svgDragInfo.undo.transformer);
+    setTransformMatrix(_svgDragInfo.mover, _svgDragInfo.undo.mover);
+    // if (!_svgDragInfo.click) {
+    //   moveChildOrder(_svgDragInfo.transformer, _svgDragInfo.undo.zOrder);
+    // }
+
+    // reparentSvgDrag(_svgDragInfo.parent);
 
     // Revert to original translation
     if (_svgDragInfo.translation.x || _svgDragInfo.translation.y) {
@@ -455,20 +499,23 @@ function convertSvgSelectionToDrag() {
  * @param evt 
  */
 function clickSvgDragCanvas(evt:PointerEvent) {
+  const mover = firstSvgMoveable(evt.clientX, evt.clientY);
   if (_svgSelectInfo) {
     convertSvgSelectionToDrag();
-    var info = calcSvgDropInfo(evt.clientX, evt.clientY);
-    if (!info) {
-      cancelSvgDrag(null);
-    }
-    else {
-      midSvgDrag(evt);
-      endSvgDrag(evt);
-      return;
+    if (mover != _svgDragInfo?.mover) {
+      // This was a click+click. Try to move or cancel.
+      var info = calcSvgDropInfo(evt.clientX, evt.clientY);
+      if (!info) {
+        cancelSvgDrag(null);
+      }
+      else {
+        midSvgDrag(evt);
+        endSvgDrag(evt);
+        return;
+      }
     }
   }
 
-  const mover = firstSvgMoveable(evt.clientX, evt.clientY);
   if (mover) {
     assertPlacementByTransform(mover);
     // Start the drag operation
@@ -494,3 +541,68 @@ function assertPlacementByTransform(elmt:SVGGraphicsElement|null): void {
           + `(left=${bounds.left},top=${bounds.top},right=${bounds.right},bottom=${bounds.bottom}).`);
   }
 }
+
+/**
+ * Copy the cumulative transformation of one element to another.
+ * This is intended for application in an un-transformed layer, 
+ * that is a sibling to the layer in which the copied element sits.
+ * That way, elem will behave like it is a child of tc.
+ * @param elem An element to transform (overwriting any previous transform)
+ * @param tc Another element, in a complex transform tree
+ */
+function CopyTransformation(elem:SVGElement, tc:Element):void {
+    // Find mutual parent
+    const ancestor = mutualAncestor(elem, tc);
+    if (!ancestor) {
+        return;
+    }
+
+    const matrix = getAccumulatedTransformMatrix(tc, ancestor as Element);
+    setTransformMatrix(elem, matrix);
+}
+
+/**
+ * Calculate the relative transform matrix from the container down to the child.
+ * @param child Any element inside container
+ * @param container Any element
+ * @returns A transform matrix, from the containers frame of reference, to the child's
+ */
+export function getAccumulatedTransformMatrix(child:Element, container:Element) {
+  if (!container.contains(child)) {
+    throw new Error("container must be an ancestor of child");
+  }
+
+  let matrix = new DOMMatrix(); // Identity matrix
+  let current:Element|null = child;
+
+  while (current && current !== container) {
+    const localMatrix = getTransformMatrix(current);
+    matrix = localMatrix.multiply(matrix);
+    current = current.parentElement;
+  }
+
+  return matrix;
+}
+
+/**
+ * The transform set on an element, as a matrix
+ * @param elem Any element
+ * @returns The 
+ */
+function getTransformMatrix(elem: Element): DOMMatrix {
+    const style = getComputedStyle(elem);
+    if (style.transform === 'none') {
+      return new DOMMatrix();  // identity
+    }
+    return new DOMMatrix(style.transform);
+}
+
+/**
+ * Change an element's transform to a desired matrix
+ * @param elem The element
+ * @param matrix The matrix
+ */
+function setTransformMatrix(elem: HTMLElement|SVGElement, matrix: DOMMatrix): void {
+  elem.style.transform = `matrix(${matrix.a}, ${matrix.b}, ${matrix.c}, ${matrix.d}, ${matrix.e}, ${matrix.f})`;
+}
+

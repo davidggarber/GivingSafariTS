@@ -254,6 +254,26 @@ export function findEndInContainer( current: Element,
 }
 
 /**
+ * Check whether a node, i.e. from elem.parentNode, is an element.
+ * @param node Any node, or null|undefined (which would both return false)
+ * @returns true for elements
+ */
+export function isElement(node:Node|null|undefined): boolean {
+    return node != undefined 
+        && node != null 
+        && node.nodeType === Node.ELEMENT_NODE;
+}
+
+/**
+ * Check whether a node, i.e. from elem.parentNode, is an HTML element.
+ * @param node Any node, or null|undefined (which would both return false)
+ * @returns true for HTML elements
+ */
+export function isHTMLElement(node:Node|null|undefined): boolean {
+    return isElement(node) && node instanceof HTMLElement;
+}
+
+/**
  * Determine the tag type, based on the tag name (case-insenstive)
  * @param elmt An HTML element
  * @param tag a tag name, or array of names
@@ -618,3 +638,60 @@ export function matrixFromElement(element:Element): DOMMatrix {
     return new DOMMatrix(computed);
 }
 
+/**
+ * Find the nearest common ancestor of two elements.
+ * This could be a or b, if one is inside the other, or else any element up to the body.
+ * @param a Any Element in the document
+ * @param b Any Element in the document
+ * @returns Another Element
+ */
+export function mutualAncestor(a:Element, b:Element): Element|null {
+    const ancestors:Element[] = [];
+    let aa:Node|null = a;
+    while (isElement(aa) && !isTag(aa as Element, 'body')) {
+        ancestors.push(aa as Element);
+        aa = (aa as Node).parentNode;
+    }
+    let bb:Node|null = b;
+    while (isElement(bb) && !isTag(bb as Element, 'body')) {
+        if (ancestors.indexOf(bb as Element) >= 0) {
+            return bb as Element;
+        }
+        bb = (bb as Node).parentNode;
+    }
+    
+    // Surely they are both contained by the body!
+    console.error("No common ancestor found! Are these elements in the same document?");
+    return null;
+}
+
+/**
+ * Determine the order of this element within its siblings
+ * @param elem Any element
+ * @returns 0 to element.parentNode.childNodes.length - 1
+ */
+export function getChildOrder(elem: Element): number {
+    const parent = elem.parentNode;
+    for (let i = 0; i < parent!.childNodes.length; i++) {
+        if (parent?.childNodes[i] == elem) {
+            return i;
+        }
+    }
+    throw new Error(`Cannot find ${elem} order within ${parent}`);
+}
+
+/**
+ * Moves an element within its siblings, to a new index
+ * @param elem The element to move
+ * @param index The desired index, or -1 for last
+ */
+export function moveChildOrder(elem: Element, index: number):void {
+    const parent = elem.parentNode;
+    parent?.removeChild(elem);
+    if (index == -1 || index >= parent!.childNodes.length) {
+        parent?.appendChild(elem);
+        return;
+    }
+    const sibling = parent!.childNodes[index];
+    parent?.insertBefore(elem, sibling);
+}
