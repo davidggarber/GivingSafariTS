@@ -81,6 +81,12 @@ var rounds = [
     { filename: 'Ranges', release: '10/17/2025', pdf: 'ranges' },
     { filename: 'Bridge', release: '10/24/2025', pdf: 'bridges' },
 ];
+var minis = [
+    { filename: 'Hike', round: 1, pdf: 'hikes' },
+    { filename: 'Swim', round: 2, pdf: 'swims' },
+    { filename: 'Ride', round: 3, pdf: 'rides' },
+    { filename: 'Sail', round: 4, pdf: 'sails' },
+];
 var releaseHourUTC = 13; // 9am EDT, 6am PDT
 
 var metas = {
