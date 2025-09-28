@@ -93,7 +93,7 @@
         }
         .leaf rect {
           stroke: #666;
-          stroke-width: 0.5px;
+          stroke-width: 1px;
         }
         .leaf text {
           text-anchor: middle;
@@ -149,14 +149,14 @@
       <svg id="svg" width="720" height="830">
         <rect x="0" y="0" width="720" height="830" fill="transparent" />
 
-        <use template="leaf-source" name="leaf1" tx="100" ty="100" rot="0" width="3" height="3" flip="flipped" />
-        <use template="leaf-source" name="leaf2" tx="350" ty="80" rot="-100" width="2" height="5" flip="flipped" />
-        <use template="leaf-source" name="leaf3" tx="600" ty="120" rot="-95" width="4" height="4" flip="" />
-        <use template="leaf-source" name="leaf4" tx="600" ty="280" rot="10" width="4" height="2" flip="" />
-        <use template="leaf-source" name="leaf5" tx="120" ty="260" rot="-165" width="4" height="2" flip="" />
-        <use template="leaf-source" name="leaf6" tx="100" ty="430" rot="120" width="5" height="5" flip="" />
-        <use template="leaf-source" name="leaf7" tx="330" ty="430" rot="10" width="5" height="2" flip="" />
-        <use template="leaf-source" name="leaf8" tx="580" ty="430" rot="-155" width="4" height="4" flip="" />
+        <use template="leaf-source" name="leaf1" tx="100" ty="100" rot="0" width="280" height="326" flip="flipped" />
+        <use template="leaf-source" name="leaf2" tx="350" ty="80" rot="-100" width="480" height="259" flip="flipped" />
+        <use template="leaf-source" name="leaf3" tx="600" ty="120" rot="-95" width="350" height="350" flip="" />
+        <use template="leaf-source" name="leaf4" tx="560" ty="280" rot="10" width="420" height="166" flip="" />
+        <use template="leaf-source" name="leaf5" tx="120" ty="260" rot="-165" width="440" height="190" flip="" />
+        <use template="leaf-source" name="leaf6" tx="100" ty="430" rot="120" width="398" height="540" flip="" />
+        <use template="leaf-source" name="leaf7" tx="330" ty="430" rot="10" width="400" height="225" flip="" />
+        <use template="leaf-source" name="leaf8" tx="610" ty="450" rot="-155" width="480" height="400" flip="" />
 
         <g transform="translate(232,532)">
           <g id="borders">
@@ -191,7 +191,7 @@
 
     <template id="leaf-source">
       <g id="{name}-source" transform="translate({tx},{ty}) scale(0.5) rotate({rot})" class="drag-source">
-        <rect class="drop-zone" x="{-32*(width+2)}" y="{-32*(height+2)}" width="{64*(width+2)}" height="{64*(height+2)}" />
+        <image href="Autumn/{name}.png" x="{width/-2}" y="{height/-2}" width="{width}" height="{height}" transform="rotate({-rot})" />
       </g>
     </template>
 
