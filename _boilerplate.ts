@@ -195,6 +195,7 @@ export type BoilerPlateData = {
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content (DEPRECATE)
     reactiveBuilder?: boolean|string;  // invoke the new reactive builder
     lookup?: object;  // a dictionary of json data available to builder code
+    preBuild?: () => void;  // invoked before the builder - i.e. to create templates
     postBuild?: () => void;  // invoked after the builder is done
     preSetup?: () => void;
     postSetup?: () => void;
@@ -402,6 +403,9 @@ function boilerplate(bp: BoilerPlateData) {
      *   </html>
      */
 
+    if (bp.preBuild) {
+        bp.preBuild();
+    }
     if (bp.reactiveBuilder) {
         try {
             expandControlTags(bp.reactiveBuilder);

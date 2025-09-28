@@ -9044,6 +9044,7 @@ const puzzleSafari24 = ['ps24'];  //,'gs27'
 const puzzleSafari25 = ['ps25'];  //,'gs28'
 const puzzleSafari21Minis = ['ic21','sb21','tm21','fr21'];
 const allSafari21 = ['gs24','21','ps21','ic21','sb21','tm21','fr21'];
+const previewSafaris = ['gs25'];
 
 let safariDetails:PuzzleEventDetails;
 
@@ -9959,6 +9960,7 @@ export type BoilerPlateData = {
     tableBuilder?: TableDetails;  // Arguments to table-generate the page content (DEPRECATE)
     reactiveBuilder?: boolean|string;  // invoke the new reactive builder
     lookup?: object;  // a dictionary of json data available to builder code
+    preBuild?: () => void;  // invoked before the builder - i.e. to create templates
     postBuild?: () => void;  // invoked after the builder is done
     preSetup?: () => void;
     postSetup?: () => void;
@@ -10166,6 +10168,9 @@ function boilerplate(bp: BoilerPlateData) {
      *   </html>
      */
 
+    if (bp.preBuild) {
+        bp.preBuild();
+    }
     if (bp.reactiveBuilder) {
         try {
             expandControlTags(bp.reactiveBuilder);

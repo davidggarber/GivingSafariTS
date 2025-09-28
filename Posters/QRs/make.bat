@@ -1,0 +1,3 @@
+D:\vsts\QRCode\Console\bin\Release\net6.0-windows\QRMake.exe -format="svg.circle" -save="givingps.svg" https://aka.ms/givingps
+D:\vsts\QRCode\Console\bin\Release\net6.0-windows\QRMake.exe -format="svg.circle" -save="gs25.svg" https://www.puzzyle.net/gs25/Map25.xhtml
+D:\vsts\QRCode\Console\bin\Release\net6.0-windows\QRMake.exe -format="svg.circle" -save="gumball.svg" https://www.puzzyle.net/Posters/Gumball.xhtml?gs25

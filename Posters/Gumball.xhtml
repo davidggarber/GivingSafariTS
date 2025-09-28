@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/gbl.js" />
+    <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script src="poster.js" />
+    <script>
+      const boiler = {
+        safaris: previewSafaris,
+        safari: 'gs25',
+        title: 'Gumball',
+        author: 'Jesse McGatha',
+        copyright: '2021',
+        paperSize: 'ledger',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        preBuild: posterTemplates,
+        lookup: {
+          solveqr: 'gumball',
+        },
+      };
+    </script>
+    <style>
+    </style>
+  </head>
+  <body id="Poster">
+    <div id="pageBody">
+      <use template="poster-header" />
+
+      <img src="Gumball/machine.png" style="position:absolute; top:0px; left:1in; width:4.7in; height: 8.89in;" />
+
+      <use template='finalAnswer' left="3in" width="2.5in" bottom="0px" />
+
+      <use template="poster-footer" />
+    </div>
+  </body>
+</html>

@@ -25,44 +25,15 @@ Use class="ledger portrait"       for 11" x 17"
 Use class="scrapbook portrait"    for 12" x 12" except when printing, when it's simple letter portrait
 Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's simple letter landscape
 */
-.letter.landscape .printedPage {
-  width:10in;
-  height:7.5in; 
-}
-
-.letter.portrait .printedPage {
-  width:7.5in;
-  height:10in; 
-}
-
-.legal.portrait .printedPage {
-  width:7.5in;
-  height:13in; 
-}
-.ledger.portrait .printedPage {
-  width:10in;
-  height:16in; 
-}
-.ledger.landscape .printedPage {
-  width:16in;
-  height:10in; 
-}
-.scrapbook .printedPage {
-  width:11in;
-  height:11in; 
-}
-.scrapbook.portrait .printedPage {
-  width:11in;
-  height:11in; 
-}
-.scrapbook.landscape .printedPage {
-  width:11in;
-  height:11in; 
-}
-.postcard .printedPage {
-  width:5in;
-  height:4in; 
-}
+.letter.landscape     .printedPage { width:10in;  height:7.5in; }
+.letter.portrait      .printedPage { width:7.5in; height:10in;  }
+.legal.portrait       .printedPage { width:7.5in; height:13in;  }
+.ledger.portrait      .printedPage { width:10in;  height:16in;  }
+.ledger.landscape     .printedPage { width:16in;  height:10in;  }
+.scrapbook            .printedPage { width:11in;  height:11in;  }
+.scrapbook.portrait   .printedPage { width:11in;  height:11in;  }
+.scrapbook.landscape  .printedPage { width:11in;  height:11in;  }
+.postcard             .printedPage { width:5in;   height:4in;   }
 
 .print.iframe.letter.landscape #page {
   transform: rotate(90deg) translate(0px, 48px);
@@ -149,45 +120,18 @@ Use class="scrapbook landscape"   for 12" x 12" except when printing, when it's 
   top: 0.5in;
   z-index: 100;
 }
-
 .no-title #pageBody {
   top: 0px;
 }
-
-.letter.portrait #pageBody {
-  height: 9.25in;
-}
-
-.letter.landscape #pageBody {
-  height: 6.75in;
-}
-
-.legal.portrait #pageBody {
-  height: 12.25in;
-}    
-
-.legal.landscape #pageBody {
-  height: 6.75in;
-}
-
-.ledger.portrait #pageBody {
-  height: 15.25in;
-}    
-
-.ledger.landscape #pageBody {
-  height: 9.25in;
-}    
-
-.scrapbook #pageBody {
-  height: 10.5in;
-}    
-.scrapbook.portrait #pageBody {
-  height: 10.5in;
-}    
-.scrapbook.landscape #pageBody {
-  height: 10.5in;
-}    
-
+.letter.portrait     #pageBody { height: 9.25in;  }
+.letter.landscape    #pageBody { height: 6.75in;  }
+.legal.portrait      #pageBody { height: 12.25in; }    
+.legal.landscape     #pageBody { height: 6.75in;  }
+.ledger.portrait     #pageBody { height: 15.25in; }    
+.ledger.landscape    #pageBody { height: 9.25in;  }    
+.scrapbook           #pageBody { height: 10.5in;  }    
+.scrapbook.portrait  #pageBody { height: 10.5in;  }    
+.scrapbook.landscape #pageBody { height: 10.5in;  }    
 .debug #pageBody {
   box-shadow:0px 0px 15px #33cc66; 
 }
@@ -542,4 +486,9 @@ body.build-error {
 }
 .print #Login-bar {
   display: none;
+}
+@media print {
+  #Login-bar {
+    display: none;
+  }
 }
