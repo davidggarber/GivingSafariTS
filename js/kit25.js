@@ -8289,7 +8289,7 @@ function puzzleTitleForSync() {
     return theBoiler().titleSync || theBoiler().title;
 }
 function setupEventSync(syncKey) {
-    canSyncEvents = !!syncKey && !theBoiler().noSync;
+    canSyncEvents = !!syncKey && !theBoiler().noSync && !isPrint() && !isIFrame() && !isIcon();
     if (canSyncEvents) {
         _eventName = syncKey;
         document.addEventListener('visibilitychange', function (event) { autoLogin(); });

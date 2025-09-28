@@ -208,7 +208,47 @@ function roundFromDate() {
       return r;
     }
   }
+  for (var m = 0; m < minis.length; m++) {
+    var code = 'mini=' + minis[m].filename.toLowerCase();
+    if (code && search.includes(code)) {
+      return minis[m].round;
+    }
+  }
   return 0;
+}
+
+function minRoundFromUrl() {
+  var search = window.location.search.toLowerCase();
+  for (var r = 1; r < rounds.length; r++) {
+    var code = 'round=' + rounds[r].filename.toLowerCase();
+    if (code && search.includes(code)) {
+      return 1;
+    }
+  }
+  for (var m = 0; m < minis.length; m++) {
+    var code = 'mini=' + minis[m].filename.toLowerCase();
+    if (code && search.includes(code)) {
+      return minis[m].round;
+    }
+  }
+  return 0;
+}
+
+function maxRoundFromUrl() {
+  var search = window.location.search.toLowerCase();
+  for (var r = 1; r < rounds.length; r++) {
+    var code = 'round=' + rounds[r].filename.toLowerCase();
+    if (code && search.includes(code)) {
+      return r;
+    }
+  }
+  for (var m = 0; m < minis.length; m++) {
+    var code = 'mini=' + minis[m].filename.toLowerCase();
+    if (code && search.includes(code)) {
+      return minis[m].round;
+    }
+  }
+  return rounds.length - 1;
 }
 
 /**
@@ -272,7 +312,34 @@ function timeToNextRound() {
   return '';
 }
 
+// PDF for the current round or mini
 function pdfForRound() {
-  var round = roundFromDate();
-  return rounds[round].pdf;
+  var search = window.location.search.toLowerCase();
+  for (var r = 1; r < rounds.length; r++) {
+    var code = 'round=' + rounds[r].filename.toLowerCase();
+    if (code && search.includes(code)) {
+      return rounds[r].pdf;
+    }
+  }
+  for (var m = 0; m < minis.length; m++) {
+    var code = 'mini=' + minis[m].filename.toLowerCase();
+    if (code && search.includes(code)) {
+      return minis[m].pdf;
+    }
+  }
+  return '';  // No PDF
+}
+
+// Don't show meta table until we have visible metas
+function showMetas() {
+  var min = minRoundFromUrl();
+  var max = roundFromDate();
+  var m = puzzles.find(puz => puz.round >= min && puz.round <= max && puz.type == types.meta);
+  return !!m;
+}
+
+// Mini-events are a single round, so hide round labels
+function showRounds() {
+  var search = window.location.search.toLowerCase();
+  return !search.includes('mini=');
 }

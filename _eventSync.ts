@@ -1,4 +1,4 @@
-import { theBoiler } from "./_boilerplate";
+import { isIcon, isIFrame, isPrint, theBoiler } from "./_boilerplate";
 import { consoleTrace } from "./_builder";
 import { hasClass, toggleClass } from "./_classUtil";
 import { showRatingUI } from "./_rating";
@@ -36,7 +36,7 @@ function puzzleTitleForSync():string|undefined {
 }
 
 export function setupEventSync(syncKey?:string) {
-  canSyncEvents = !!syncKey && !theBoiler().noSync;
+  canSyncEvents = !!syncKey && !theBoiler().noSync && !isPrint() && !isIFrame() && !isIcon();
   if (canSyncEvents) {
     _eventName = syncKey;
 

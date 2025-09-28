@@ -7,13 +7,19 @@
     <meta name="description" content="Printable packet of all puzzles" />
     <meta name="author" content="David Garber" />
     <link href="../Css/Print.css" rel="Stylesheet" type="text/css" />
-    <link rel="shortcut icon" type="image/png" href="./Images/Plate_icon.png" />
+    <link rel="shortcut icon" type="image/png" href="./Images/gs25_favicon.png" />
     
     <title>Giving Safari 2024 - All Puzzles</title>
 
     <script src="puzzle_list.js" />
+    <script src="menu.js" />
     <script>
       // <![CDATA[
+
+      var search = window.location.search.toLowerCase();
+      var minRound = minRoundFromUrl();
+      var maxRound = maxRoundFromUrl();
+      var withMetas = search.includes('metas=true');
 
       var icon_mode = false;
 
@@ -43,6 +49,9 @@
           var count = 0;
           for (var i = 0; i < puzzles.length; i++) {
               var puz = puzzles[i];
+              if (puz.round < minRound || puz.round > maxRound) {
+                continue;
+              }
               // if (puz.orientation != ort) {
               //   continue;
               // }
@@ -51,7 +60,7 @@
                 continue;
               }
               var isMeta = puz.group == group.meta;
-              if (!icon_mode && isMeta) {
+              if (!icon_mode && isMeta && !withMetas) {
                 continue;
               }
 
