@@ -311,9 +311,8 @@ body.build-error {
       box-shadow:0px 0px 5px fuchsia;    
   }
 
-  .landscape #decoder-frame {
-    left: 11.5in;
-  }
+  .landscape #decoder-frame { left: 11.5in; }
+  .ledger.portrait #decoder-frame { left: 11.5in; }
 }
 
 @media print {

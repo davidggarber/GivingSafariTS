@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/edm.js" />
+    <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script src="poster.js" />
+    <script>
+      const boiler = {
+        safaris: previewSafaris,
+        safari: 'gs25',
+        'title': '🍽️🎥',
+        'author': 'Morgan Grobin',
+        'copyright': '2021',
+        paperSize: 'ledger',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        preBuild: posterTemplates,
+        'lookup': {
+          solveqr: 'EmojiDM',
+          emoji: {
+            '🏭':'factory',
+            '🌋':'volcano',
+            '🏙️':'city',
+            '🔥':'fire',
+            '🚱':'not-potable',
+            '☢️':'radioactive',
+            '☣️':'biohazzard',
+            '🔴':'red',
+            '🟡':'yellow',
+            '🟢':'green',
+            '😐':'neutral',
+            '🙂':'happy',
+            '😍':'love-eyes',
+            '🤩':'star-eyes',
+            '😦':'frowning',
+            '😧':'anguished',
+            '😨':'fearful',
+            '😲':'astonished',
+            '😱':'scream',
+            '📚':'books',
+            '❓':'question',
+            '⁉️':'bang-question',
+            '🚫':'no',
+            '🦠':'virus',
+            '🟰':'equals',
+            '👥':'silhouettes',
+            '👩🏻‍🔬':'scientist',
+            '👴🏻':'old-man',
+            '🐒':'monkey',
+            '👩🏻‍🏭':'mechanic',
+            '🕵️':'detective',
+            '🐟':'fish',
+            '🙍🏻‍♀️':'woman-frown',
+            '💡':'lightbulb',
+            '🎛️':'controls',
+            '🌫️':'fog',
+            '🌧️':'rain-cloud',
+            '⛈️':'storm-cloud',
+            '🌥️':'sun-peeking-cloud',
+            '🌤️':'sun-cloud',
+            '☀️':'sun',
+            '⭐':'star',
+            '🥣':'bowl',
+            '🍔':'cheeseburger',
+            '🥓':'bacon',
+            '🍳':'fry-egg',
+            '🍗':'drumstick',
+            '🥩':'steak',
+            '🌭':'hotdog',
+            '🌪️':'tornado',
+            '🍝':'spaghetti',
+            '🍟':'french-fries',
+            '🍕':'pizza',
+            '🍖':'meat-bone',
+            '🌀':'cyclone',
+            '🍩':'donut',
+            '🌎':'earth-americas',
+            '💥':'explosion',
+            '🐀':'rat',
+            '🤝':'handshake',
+            '🧑🏻‍🍳':'chef',
+            '💆🏻':'head-massage',
+            '🍲':'dinner-bowl',
+            '🇫🇷':'france',
+            '🇯🇵':'japan',
+            '👴🏼':'old-man-2',
+            '🧑‍🍳':'chef-0',
+            '👦':'boy-1',
+            '👵🏻':'old-woman-1',
+            '🤶🏻':'old-woman-2',
+            '👦🏼':'boy-2',
+            '🏃🏼':'run-left',
+            '🍣':'sushi',
+            '🚇':'metro',
+            '🍽️':'place-setting',
+            '🙏':'pray-hands',
+            '❤️':'red-heart',
+            '🛏️':'bed',
+            '🍫':'chocolate',
+            '🎟️':'ticket',
+            '➡️':'arrow-right',
+            '🍬':'bonbon',
+            '🍭':'lollipop',
+            '🍦':'icecream-cone',
+            '🍨':'icecream',
+            '🧁':'cupcake',
+            '🏆':'trophy',
+            '_':'transparent-pixel',  // space
+          },
+          questions: [
+            { emoji: [
+              '🏭🌋🏙️🔥🚱☢️☣️🕵️',
+              '🥣🔴😐_🥣🟡🙂_🥣🟢😍',
+              '🕵️📚❓🥣🟢🚫🦠⁉️__🥣🟢🟰👥_😱'
+              ],
+              pattern: "7 5",
+              extract: "1",
+              special: {},
+            },
+            { emoji: [
+              '👩🏻‍🔬🐒👴🏻🐟🐟🐟🙍🏻‍♀️💡_👩🏻‍🏭🎛️🌧️🍔🤩',
+              '👩🏻‍🔬🎛️🌧️🥓🍳_🌧️🍗🥩_👩🏻‍🔬🎛️⛈️🌭😦_👩🏻‍🔬🎛️⛈️🥩😧',
+              '👩🏻‍🔬🎛️🌪️🍝😨_🌪️🍟🍕_🌀🍖🍩🌎😱_🙍🏻‍♀️💡👩🏻‍🔬🌫️💥🌥️🌤️☀️' ],
+              pattern: "6 4 1 6 2 9",
+              extract: "12",
+              special: {
+                '0-7': 'idea',
+                '1-19': 'tall',
+                '2-3': 'tall',
+                '2-7': 'tall',
+                '2-8': 'tall',
+                '2-17': 'idea',
+              }
+            },
+            { emoji: ['🇫🇷_🐀🤝🧑🏻‍🍳__💆🏻🐀🍲'],
+              pattern: "11",
+              extract: "1",
+              special: {'0-8': 'above'},
+            },
+            { emoji: ['👴🏼🧑‍🍳⭐⭐⭐🍣🇯🇵🚇'],
+              pattern: "4 6 2 5",
+              extract: "2",
+              special: {},
+            },
+            { emoji: ['🍽️🙏❤️'],
+              pattern: "3 4 4",
+              extract: "4",
+              special: {},
+            },
+            { emoji: [
+              '👦👴🏻🤶🏻👴🏼👵🏻🛏️__👦🍫🎟️😲👦🏼🏃🏼',
+              '👦🏼👴🏻➡️🏭🍬🍩🍬🍫🍬🍭🍫🍦🍨🍫🍬🍭🧁🍫🍭_👦🏼👴🏻🏆' ],
+              pattern: "5 5 &amp; 3 9 7",
+              extract: "21",
+              special: {},
+            }
+          ]
+        },
+      };
+
+    </script>
+    <style>
+      #Poster {
+        p.emoji {
+          margin-top: 0.5in;
+        }
+        .emoji img {
+          height: 0.28in;
+        }
+        .line {
+          position: relative;
+        }
+        .big {
+          font-size:30pt;
+          letter-spacing: -8px;
+        }
+        .letter-cell {
+          font-size: 11pt;
+        }
+      }
+    </style>
+  </head>
+  <body id="Poster">
+    <div id="pageBody">
+      <build>
+      <div data-extract-style="box">
+        <for each="q" in="questions">
+          <p class="emoji" trim="all">
+            <for each="line" in="{q.emoji}">
+              <span class="line">
+                <for char="ch" in="line" nothrow="true">
+                  <if exists="{q.special.(line#~'-'~ch#)}">
+                    <use template="{q.special.(line#~'-'~ch#)}" char="{ch}"></use>
+                  </if>
+                  <else>
+                    <img class="normal" ssrc="EmojiDM/{emoji.[ch]}.png" />
+                  </else>
+                </for><br />
+              </span>
+            </for>
+          </p>
+          <p><pattern pattern="{q.pattern}" extract="{q.extract}"></pattern></p>
+        </for>
+
+      </div>
+      </build>
+
+      <use template="poster-header" />
+      <use template='finalAnswer' left="3in" width="2.5in" bottom="0px" />
+      <use template="poster-footer" />
+
+    </div>
+
+    <template id="idea">
+      <span style="position:relative" trim="all">
+        <img src="EmojiDM/{emoji.[ch]}.png" style="position:relative; top:-15px; height:0.16in; margin-left:-8px;" />
+      </span>
+    </template>
+    <template id="tall">
+      <span>
+        <img src="EmojiDM/{emoji.[ch]}.png" style="height:0.47in;" />
+      </span>
+    </template>
+    <template id="above">
+      <span style="position:relative">
+        <img src="EmojiDM/{emoji.[ch]}.png" style="position:absolute; left:-2.1em; top:-0.44in;" />
+      </span>
+    </template>
+  </body>
+</html>

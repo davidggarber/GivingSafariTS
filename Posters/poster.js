@@ -5,13 +5,13 @@ function posterTemplates() {
   var temp = document.createElement('template');
   temp.id = 'poster-header';
   temp.innerHTML = `<div id="header">
-          <img class="banner" src="../gs25/Images/GS25_banner.png" />
-          <img class="event-qr" src="QRs/givingps.svg" />
+          <a href="../gs25/Map25.xhtml"><img class="banner" src="../gs25/Images/GS25_banner.png" /></a>
+          <a href="https://aka.ms/givingps"><img class="event-qr" src="QRs/givingps.svg" /></a>
           <div style="margin-left: 2.5in">
-            <h1>Giving Puzzle Safari</h1>  
+            <h1 style="margin-right: 1.25in">Giving Puzzle Safari</h1>  
             <h2>Enjoy puzzles? Words / Logic / Math/ Trivia / More!</h2>
             <h2>Join us at <a href="https://www.puzzyl.net/gs25/Map25.xhtml">aka.ms/givingps</a>.
-              Donations benefit <a href="benivty">Rainier Scholars</a>.
+              Donations benefit <a href="aka.ms/benevity">Rainier Scholars</a>.
               <br />Puzzles released Fridays, October 3<sup>rd</sup> / 10<sup>th</sup> / 17<sup>th</sup> / 24<sup>th</sup>.</h2>
           </div>
         </div>`;

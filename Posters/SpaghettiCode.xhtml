@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/spc.js" />
+    <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script src="poster.js" />
+    <script>
+      const boiler = {
+        safaris: previewSafaris,
+        safari: '21',
+        title: 'Spaghetti Code',
+        author: 'Joseph Joy',
+        copyright: '2021',
+        paperSize: 'ledger',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          decoder: 'Morse',
+        },
+        reactiveBuilder: true,
+        preBuild: posterTemplates,
+        lookup: {
+          solveqr: 'SpaghettiCode',
+        },
+      };
+    </script>
+    <style>
+      #Poster {
+        .letter-cell.literal {
+          width: 30px;
+        }
+        .letter-literal {
+          font-family: 'Lucida Console', Courier, monospace;
+          font-size: 18pt;
+        }
+        .letter-cell {
+          font-size: 18pt;
+        }
+      } 
+    </style>
+  </head>
+  <body id="Poster">
+    <div id="pageBody">
+      <use template="poster-header" />
+
+      <p class="flavor">
+        Let spaghetti help you decode the text below, which is a hint to the answer.
+      </p>
+      <img src="SpaghettiCode/spaghetti.png" />
+      <div style="text-align: center;">
+        <p><pattern pattern="EHIKM OEPRIRSRIT ORHMX" /></p>
+        <p><pattern pattern="5 10 5" data-letter-style="underline" /></p>
+      </div>
+  
+      <use template='finalAnswer' left="3in" width="2.5in" bottom="0px" />
+      <use template="poster-footer" />
+    </div>
+  </body>
+</html>
