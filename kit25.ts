@@ -6331,7 +6331,6 @@ export function quickFreeMove(moveable:HTMLElement, position:Position) {
     }
 }
 
-
 /*-----------------------------------------------------------
  * _dragDropSvg.ts
  *-----------------------------------------------------------*/
@@ -6349,7 +6348,6 @@ type SvgDragInfo = {
   handle: SVGGraphicsElement,  // The sub-element being dragged (or just the main element)
   transformer: SVGGraphicsElement,  // The transform-copy parent of the mover
   bounds: DOMRect,  // The bounds of the inntermost handle
-  // parent: SVGGraphicsElement,  // Its current parent, either drop-target or drag-source
   undo: TransformCache,  // Initial state, so we can undo
   hover: SVGGraphicsElement|null,  // The prospective drop-target we're currently over
   client: DOMPoint,  // Initial point of drag, in screen coordinates
@@ -6411,11 +6409,18 @@ export function preprocessSvgDragFunctions(svgId:string) {
     const movers = document.getElementsByClassName('moveable');
     for (let i = 0; i < movers.length; i++) {
       const moveable = movers[i] as SVGElement;
-      const tc = findParentOfClass(moveable, 'transform-copy');
+      // Every moveable MUST have a transform-copy. If not on itself, in a parent
+      let tc = findParentOfClass(moveable, 'transform-copy');
+      if (tc == moveable) {
+        console.warn("Usually, the transform-copy node is a parent of the moveable node: " + debugTagAttrs(moveable));
+      }
       if (tc) {
         const tcid = tc.getAttributeNS('', 'transform-copy');
         const tSrc = document.getElementById(tcid || '');
         CopyTransformation(tc as SVGElement, tSrc as Element);
+      }
+      else {
+        console.error('Missing transform-copy on ' + debugTagAttrs(moveable));
       }
     }
 }
@@ -6657,10 +6662,6 @@ function calcSvgDropInfo(clientX:number, clientY:number): SvgDropInfo|null {
       }
     }
 
-    // assertPlacementByTransform(handle);
-    // assertPlacementByTransform(target);
-    // assertPlacementByTransform(_svgDragInfo.mover);
-
     let dragging = !_svgDragInfo.click || (target != _svgDragInfo.hover);
     if (!dragging) {
       // We have yet to drag beyond the bounds of the moveable element
@@ -6682,16 +6683,6 @@ function calcSvgDropInfo(clientX:number, clientY:number): SvgDropInfo|null {
     };
   }
   return null;
-}
-
-function reparentSvgDrag(target:SVGGraphicsElement) {
-  if (_svgDragInfo && _svgDragInfo.mover.parentNode != target) {
-    // The mover is not in the expected parent, so move it
-    if (_svgDragInfo.mover.parentNode) {
-      _svgDragInfo.mover.parentNode.removeChild(_svgDragInfo.mover);
-    }
-    target.appendChild(_svgDragInfo.mover);  // REVIEW: prepend?
-  }
 }
 
 /**
@@ -6731,8 +6722,7 @@ function endSvgDrag(evt:PointerEvent) {
     if (_svgDragInfo.hover) {
       toggleClass(_svgDragInfo.hover, 'hover', false);
     }
-    // reparentSvgDrag(info.target!);
-    
+
     // Add a translation, if needed
     let translate:DOMPoint|null = null;
     if (hasClass(info.target, 'drag-source')) {
@@ -6794,11 +6784,6 @@ function cancelSvgDrag(evt:PointerEvent|null) {
     const tc = findParentOfClass(_svgDragInfo.mover, 'transform-copy') as SVGElement;
     setTransformMatrix(tc, _svgDragInfo.undo.transformer);
     setTransformMatrix(_svgDragInfo.mover, _svgDragInfo.undo.mover);
-    // if (!_svgDragInfo.click) {
-    //   moveChildOrder(_svgDragInfo.transformer, _svgDragInfo.undo.zOrder);
-    // }
-
-    // reparentSvgDrag(_svgDragInfo.parent);
 
     // Revert to original translation
     if (_svgDragInfo.translation.x || _svgDragInfo.translation.y) {
@@ -6872,7 +6857,7 @@ function assertPlacementByTransform(elmt:SVGGraphicsElement|null): void {
   if (orig.x < bounds.left || orig.x > bounds.right
       || orig.y < bounds.top || orig.y > bounds.bottom) {
         // It likely isn't using translate(x,y) for positioning.
-        console.error(`WARNING: <${elmt.tagName} id=${elmt.id}}> has origin (${orig.x},${orig.y}) outside its bounds: `
+        console.error(`WARNING: <${debugTagAttrs(elmt)}> has origin (${orig.x},${orig.y}) outside its bounds: `
           + `(left=${bounds.left},top=${bounds.top},right=${bounds.right},bottom=${bounds.bottom}).`);
   }
 }

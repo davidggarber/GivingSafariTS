@@ -155,63 +155,77 @@
           <g transform="translate(96 110)">
             <g id="elevator-source" class="drag-source" transform="scale(0.5)">
               <rect class="drop-zone-test" x="-150" y="-210" width="300" height="270" />
-              <g id="elevator" class="moveable">
-                <use template="circle-handle" x="0" y="0" text="L" />
-                <use template="circle-handle" x="0" y="-90" text="I" />
-                <use template="circle-handle" x="0" y="-180" text="A" />
-                <path d="M0,-30 v-30 m0,-60 v-30" />
-              </g>
             </g>
           </g>
 
           <g transform="translate(288 110)">
             <g id="parking-lot-source" class="drag-source" transform="scale(0.5)">
               <rect class="drop-zone-test" x="-150" y="-210" width="300" height="270" />
-              <g id="parking-lot" class="moveable">
-                <use template="circle-handle" x="-90" y="0" text="T" />
-                <use template="circle-handle" x="0" y="0" text="E" />
-                <use template="circle-handle" x="90" y="0" text="D" />
-                <path d="M-60,0 h30 m60,0 h30" />
-              </g>
             </g>
           </g>
 
           <g transform="translate(452.5 110)">
             <g id="slopes-source" class="drag-source" transform="scale(0.5)">
               <rect class="drop-zone-test" x="-105" y="-210" width="300" height="270" />
-              <g id="slopes" class="moveable ">
-                <use template="circle-handle" x="0" y="0" text="T" />
-                <use template="circle-handle" x="90" y="-90" text="E" />
-                <use template="circle-handle" x="90" y="0" text="H" />
-                <path d="M21,-21 L69,-69 M90,-60 v30" />
-              </g>
             </g>
           </g>
 
           <g transform="translate(644.5 110)">
             <g id="walkway-source" class="drag-source" transform="scale(0.5)">
               <rect class="drop-zone-test" x="-105" y="-210" width="300" height="270" />
-              <g id="walkway" class="moveable">
-                <use template="circle-handle" x="0" y="0" text="T" />
-                <use template="circle-handle" x="90" y="0" text="I" />
-                <path d="M30,0 h30" />
-              </g>
             </g>
           </g>
 
           <g transform="translate(864 110)">
             <g id="cable-car-source" class="drag-source" transform="scale(0.5)">
               <rect class="drop-zone-test" x="-150" y="-210" width="300" height="270" />
-              <g id="cable-car" class="moveable cable-">
-                <use template="circle-handle" x="-90" y="-90" text="T" />
-                <use template="circle-handle" x="0" y="-90" text="H" />
-                <use template="circle-handle" x="90" y="-90" text="E" />
-                <use template="circle-handle" x="0" y="0" text="R" />
-                <path d="M-60,-90 h30 m60,0 h30 M-21,-21 L-69,-69" />
-              </g>
             </g>
           </g>
 
+        </g>
+
+        <g id="drag-layer">
+
+          <g class="transform-copy" transform-copy="elevator-source">
+            <g id="elevator" class="moveable">
+              <use template="circle-handle" x="0" y="0" text="L" />
+              <use template="circle-handle" x="0" y="-90" text="I" />
+              <use template="circle-handle" x="0" y="-180" text="A" />
+              <path d="M0,-30 v-30 m0,-60 v-30" />
+            </g>          
+          </g>
+          <g class="transform-copy" transform-copy="parking-lot-source">
+            <g id="parking-lot" class="moveable">
+              <use template="circle-handle" x="-90" y="0" text="T" />
+              <use template="circle-handle" x="0" y="0" text="E" />
+              <use template="circle-handle" x="90" y="0" text="D" />
+              <path d="M-60,0 h30 m60,0 h30" />
+            </g>          
+          </g>
+          <g class="transform-copy" transform-copy="slopes-source">
+            <g id="slopes" class="moveable">
+              <use template="circle-handle" x="0" y="0" text="T" />
+              <use template="circle-handle" x="90" y="-90" text="E" />
+              <use template="circle-handle" x="90" y="0" text="H" />
+              <path d="M21,-21 L69,-69 M90,-60 v30" />
+            </g>
+          </g>
+          <g class="transform-copy" transform-copy="walkway-source">
+            <g id="walkway" class="moveable">
+              <use template="circle-handle" x="0" y="0" text="T" />
+              <use template="circle-handle" x="90" y="0" text="I" />
+              <path d="M30,0 h30" />
+            </g>
+          </g>
+          <g class="transform-copy" transform-copy="cable-car-source">
+            <g id="cable-car" class="moveable">
+              <use template="circle-handle" x="-90" y="-90" text="T" />
+              <use template="circle-handle" x="0" y="-90" text="H" />
+              <use template="circle-handle" x="90" y="-90" text="E" />
+              <use template="circle-handle" x="0" y="0" text="R" />
+              <path d="M-60,-90 h30 m60,0 h30 M-21,-21 L-69,-69" />
+            </g>
+          </g>
         </g>
       </svg>
 
