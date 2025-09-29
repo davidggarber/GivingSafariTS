@@ -30,6 +30,12 @@
     #guess-history {
       height: 2.2in;
     }
+    #hint-link {
+      position: absolute;
+      top: 13in;
+      width: 100%;
+      text-align: center;
+    }
     .banner {
       position: absolute;
       height: 2.25in;
@@ -54,7 +60,13 @@
       font-family: 'National Park';
       margin: 0px;
     }
-
+    h3 {
+      position: relative;
+      font-size: 14pt;
+      font-family: 'National Park';
+      margin: 0px;
+      font-weight: normal;
+    }
     #header {
       position: absolute;
       top: -3.5in;
@@ -75,13 +87,12 @@
 
     #footer {
       position: absolute;
-      top: 10.5in;
+      top: 10.25in;
       left: -0.5in;
       width: 9in;
       height: 2in;
 
       .banner {
-        top: -24px;
         right: 0px;
         height: 2.5in;
       }
@@ -112,6 +123,10 @@
     .pageWithinMargins {
       top: 2.25in;
       left: 0.75in;
+
+      #hint-link {
+        top: 12.75in;
+      }
     }
   }
 }
@@ -132,6 +147,9 @@
     .pageWithinMargins {
       #footer {
         display: block;
+      }
+      #hint-link {
+        top: 12.6in;
       }
     }
   }

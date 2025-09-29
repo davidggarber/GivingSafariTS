@@ -32,6 +32,8 @@
           showLegend: false,
           showForget: true,
           showRounds: showRounds(),
+          showEmail: true,
+          showCharity: true,
           puzzles: puzzles,
           urlArgs: _urlEventArguments,
           metas: metas,
@@ -190,6 +192,12 @@
               <br />Scan their QR codes to unlock them.</p>
           </if>
         </if>
+        <if test="{showEmail}">
+          <p>🥳 This Giving Event is about having fun!
+            <br />If you find a bug🐞 or need a hint💡, email
+              <a href="mailto:givingps@microsoft.com" title="MSFT internal emails only">GivingPS&#x2009;@&#x2009;microsoft.com</a>.
+          </p>
+        </if>
 
         <p id="login-perks">
           <span class="not-logged-in">Log in to have your score tracked.</span>
@@ -206,6 +214,9 @@
         <div id="team-roster" />
       </div>
 
+      <if test="{showCharity}">
+        <use template="charity-shout" />
+      </if>
 
       <if test="{showLegend}">
         <table id="legend" style="margin-top: 0.5in; margin-left: 0.25in;">
@@ -354,6 +365,13 @@
           <span class="teammate-solve" title="{mate.PlayerName}">{mate.Avatar}</span>
         </for>
       </if>
+    </template>
+
+    <template id="charity-shout">
+      <div style="border:solid 2px blue; width: 4.5in; margin: 0.25in; padding: 0px 0.25in; font-weight: bold; background-color: #ccf;">
+        <p>Our featured charity this year is <a href="https://www.rainierscholars.org/" target="_blank">Rainier Scholars</a>.</p>
+        <p>The suggested donation is $25, at their <a href="https://microsoft.benevity.org/cause/840-912045918" target="_blank">Benevity link</a>.</p>
+      </div>
     </template>
 
   </body>
