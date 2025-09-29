@@ -73,43 +73,30 @@
       }
     }
 
-    @media screen {
-      #footer {
-        display: none;
+    #footer {
+      position: absolute;
+      top: 10.5in;
+      left: -0.5in;
+      width: 9in;
+      height: 2in;
+
+      .banner {
+        top: -24px;
+        right: 0px;
+        height: 2.5in;
       }
-    }
-
-    @media print {
-      top: 2.25in;
-      left: 0.75in;
-
-      #footer {
-        position: absolute;
-        top: 10.5in;
-        left: -0.5in;
-        width: 9in;
-        height: 2in;
-
-        .banner {
-          top: -24px;
-          right: 0px;
-          height: 2.5in;
-        }
-        .solve-qr {
-          position: relative;
-          top: 0.4in;
-        }
-
-        h1 {
-          font-size: 32pt;
-          font-family: 'National Park';
-          margin: 0px;
-        }
+      .solve-qr {
+        position: relative;
+        top: 0.4in;
       }
-    }
 
+      h1 {
+        font-size: 32pt;
+        font-family: 'National Park';
+        margin: 0px;
+      }
+    }    
   }
-
   #ability {
     right: 1.75in;
     margin-bottom: 3.25in;
@@ -117,5 +104,32 @@
   #decoder-toggle {
     right: 1.4in;
     bottom: 3.1in;
+  }
+}
+
+@media print {
+  #Poster.ledger {
+    .pageWithinMargins {
+      top: 2.25in;
+      left: 0.75in;
+    }
+  }
+}
+
+
+@media screen {
+  #Poster.ledger {
+    .pageWithinMargins {
+      #footer {
+        display: none;
+      }
+    }
+  }
+  #Poster.ledger.print {
+    .pageWithinMargins {
+      #footer {
+        display: block;
+      }
+    }
   }
 }

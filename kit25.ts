@@ -7000,7 +7000,7 @@ function makeStampSet(container?:HTMLElement) {
 /**
  * Look up a stamp set by name
  */
-const _stampSets = {};
+const _stampSets: { [key:string]: stampSet } = {};
 
 /**
  * Scan the page for anything marked stampable or a draw tool
@@ -7153,7 +7153,23 @@ function stampSetFromElement(elmt:Element):stampSet {
     if (!(name in _stampSets)) {
         throw Error('Cannot find stamp set matching target: ' + elmt);
     }
-    return _stampSets[name];
+
+    // Might need to belatedly stitch together a stamp container and a stamp palette
+    // They can be separate entries in the _stampSets.
+    const stampSet = _stampSets[name];
+    if (stampSet && (!stampSet.stampTools || stampSet.stampTools.length == 0)) {
+        // Reuse the stamps from another set
+        const altName = stampSet.container?.getAttributeNS('', 'data-stamp-palette') ?? "";
+        const setKeys = Object.keys(_stampSets);
+        for (var i = 0; i < setKeys.length; i++) {
+            const altSet = _stampSets[setKeys[i]];
+            if (setKeys[i] == altName && altSet.stampTools) {
+                _stampSets[name] = altSet;
+                return altSet;
+            }
+        }
+    }
+    return stampSet;
 }
 
 function pointerDownInContainer(event:PointerEvent) {

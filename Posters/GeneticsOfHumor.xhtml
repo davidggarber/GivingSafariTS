@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/goh.js" />
+    <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script src="poster.js" />
+    <script>
+      const boiler = {
+        safaris: previewSafaris,
+        safari: 'gs25',
+        'title': 'Genetics Of Humor',
+        'author': 'Colin Robertson',
+        'copyright': '2020',
+        paperSize: 'ledger',
+        'abilities': {
+          textInput: 'nearest',
+          scratchPad: true,
+          'straightEdge': true,
+          'checkMarks': true,
+        },
+        reactiveBuilder: 'pageBody',
+        preBuild: posterTemplates,
+        lookup: {
+          solveqr: 'GeneticsOfHumor',
+        },      };
+    </script>
+    <style>
+      .clues li {
+        margin-top: 6pt;
+        margin-bottom: 8pt;
+        position: relative;
+      }
+      .clues li .check {
+        left: -2em;
+      }
+      #dot2dot {
+        user-select: none; 
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+      }
+      .straight-edge-area text {
+        font-family: Lora;
+        font-size: 14pt;
+        font-weight: bold;
+        text-anchor: end;
+        transform: translate(-8px, 5px);
+      }
+    </style>
+  </head>
+  <body id="Poster">
+    <div id="pageBody">
+      <use template="poster-header" />
+      <use template='finalAnswer' left="3in" width="2in" bottom="0px" />
+      <use template="poster-footer" />
+
+      <p class="flavor">
+        We don&rsquo;t make science jokes all the time, just periodically. We&rsquo;re looking for the genetic source of these jokes:
+      </p>
+      <ol class="clues">
+        <li class="cross-off">Do I think I&rsquo;m losing my electrons?</li>
+        <li class="cross-off">I&rsquo;m reading a book on anti-gravity.</li>
+        <li class="cross-off">A physicist and a biologist have a relationship.</li>
+        <li class="cross-off">The photon, asked why there was no luggage, said,</li>
+        <li class="cross-off">My science puns are bad, because all the good ones</li>
+        <li class="cross-off">When I try jokes on Helium,</li>
+        <li class="cross-off">You can&rsquo;t trust atoms,</li>
+        <li class="cross-off">How Oxygen&rsquo;s date with Potassium went:</li>
+        <li class="cross-off">When are multiplication and division the same?</li>
+      </ol>
+
+      <svg id="dot2dot" class="straight-edge-area" width="720" height="320" data-max-points="2" data-hover-range="50" data-can-share-vertex="false" data-show-open-drag="true">
+        <use template="dot" x="48" y="44" label="1" />
+        <use template="dot" x="401" y="256" label="2" />
+        <use template="dot" x="294" y="158" label="3" />
+        <use template="dot" x="75" y="270" label="4" />
+        <use template="dot" x="217" y="70" label="5" />
+        <use template="dot" x="274" y="225" label="6" />
+        <use template="dot" x="141" y="260" label="7" />
+        <use template="dot" x="363" y="40" label="8" />
+        <use template="dot" x="182" y="112" label="9" />
+        <use template="dot" x="264" y="272" label="a" />
+        <use template="dot" x="271" y="199" label="b" />
+        <use template="dot" x="378" y="137" label="c" />
+        <use template="dot" x="250" y="56" label="d" />
+        <use template="dot" x="150" y="184" label="e" />
+        <use template="dot" x="48" y="262" label="f" />
+        <use template="dot" x="363" y="269" label="g" />
+        <use template="dot" x="184" y="155" label="h" />
+        <use template="dot" x="76" y="23" label="i" />
+      </svg>
+
+      <ol class="clues" type="a">
+        <li class="cross-off">Argon.</li>
+        <li class="cross-off">I can&rsquo;t put it down.</li>
+        <li class="cross-off">He doesn&rsquo;t react.</li>
+        <li class="cross-off">They make up everything.</li>
+        <li class="cross-off">There&rsquo;s no chemistry.</li>
+        <li class="cross-off">In cellular biology.</li>
+        <li class="cross-off">It was OK.</li>
+        <li class="cross-off">I&rsquo;m positive.</li>
+        <li class="cross-off">I&rsquo;m traveling light.</li>
+      </ol>
+
+    </div>
+
+    <template id="dot">
+      <g class="vertex-g" transform="translate({x} {y})">
+        <text>{label}</text>
+        <ellipse class="vertex" cx="0" cy="0" rx="4" ry="4"></ellipse>
+      </g>
+      
+    </template>
+  </body>
+</html>

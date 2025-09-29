@@ -23,8 +23,8 @@ function posterTemplates() {
   temp.innerHTML = `<div id="footer">
           <img class="banner" src="../gs25/Images/GS25_banner.png" />
           <div style="margin-right: 2.5in">
-            <h1>Think you can solve this?</h1>
-            <h2>Submit your guess here: <img class="solve-qr" src="QRs/{solveqr}.svg" />
+            <h1>Think you have a solution?</h1>
+            <h2>Submit your guess online: <img class="solve-qr" src="QRs/{solveqr}.svg" />
             </h2>
           </div>
         </div>`;

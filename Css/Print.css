@@ -16,30 +16,14 @@ iframe {
   background-color: white;
 }
 
-.print-portrait { 
-  width:8.5in;
-  height:11in; 
-}
-.print-portrait iframe {
-  width:8.5in;
-  height:11in;
-}
-.print-tallportrait { 
-  width:8.5in;
-  height:14in; 
-}
-.print-tallportrait iframe {
-  width:8.5in;
-  height:14in;
-}
-.print-landscape { 
-  width:11in;
-  height:8.5in; 
-}
-.print-landscape iframe {
-  width:11in;
-  height:8.5in;
-}
+.print-portrait               { width:8.5in; height:11in;  }
+.print-portrait iframe        { width:8.5in; height:11in; }
+.print-tallportrait           { width:8.5in; height:14in;  }
+.print-tallportrait iframe    { width:8.5in; height:14in; }
+.print-landscape              { width:11in; height:8.5in;  }
+.print-landscape iframe       { width:11in; height:8.5in; }
+.print-ledger-portrait        { width:11in; height:17in;  }
+.print-ledger-portrait iframe { width:11in; height:17in; }
 
 .layout-btn.current {
   background-color: #ffee66 ;
