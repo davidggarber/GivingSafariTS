@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="V/ppd.js" />
+    <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script src="poster.js" />
+    <script>
+      const boiler = {
+        safaris: previewSafaris,
+        safari: 'gs25',
+        title: 'Paper Products',
+        author: 'Colin Robertson',
+        copyright: '2019',
+        paperSize: 'ledger',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          decoder: 'Ascii',
+        },
+        reactiveBuilder: 'pageBody',
+        preBuild: posterTemplates,
+        lookup: {
+          solveqr: 'PaperProducts',
+          sizes: [
+            ['large', 'big', 'huge'],
+            ['double', 'mega', 'super_mega'],
+            ['mega_plus', 'giant']
+          ]
+        },
+      };
+    </script>
+    <style>
+      #pageBody p {
+        margin-bottom: 0px;
+      }
+      #table {
+        margin-bottom: 0.1in;
+      }
+      #table td {
+        position: relative;
+        width: 2.5in;
+        height: 2.5in;
+      }
+      #table img {
+        width: 2.4in;
+        height: 2.4in;
+        margin-top: 0.1in;
+        margin-right: 0.1in;
+        z-index: 1;
+      }
+      .overlay {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 2.4in;
+        height: 2.5in;
+        z-index: 2;
+      }
+
+      .notes-below {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+      }
+      .note-input.note-below {
+        width: 1.6in;
+        height: 3.5ex;
+        text-align: center;
+        margin-left: 0.4in;
+        top: 2.3in;
+        background-color: #ffffffdd;
+        color: hsl(39, 100%, 30%);
+        text-shadow: 0 0 5px white;
+        z-index: 3;
+      }
+      #answer {
+        text-align: center;
+      }
+      .letter-cell {
+        font-family: 'Kalam', cursive;
+        font-size: 20pt;
+      }
+    </style>
+  </head>
+  <body id="Poster">
+    <div id="pageBody">
+      <use template="poster-header" />
+      <use template='finalAnswer' left="3in" width="2in" bottom="0px" />
+      <use template="poster-footer" />
+
+      <ttable id="table">
+        <for each="row" in="{sizes}">
+          <ttr>
+            <for each="name" in="{row}">
+              <ttd>
+                <div class="overlay">&nbsp;</div>
+                <span class="notes-below"><img ssrc="PaperProducts/{name}.png" /></span>
+              </ttd>
+            </for>
+          </ttr>
+        </for>
+      </ttable>
+
+      <p>
+        Paper products at the grocery store use the strangest math I've ever seen. Can you decipher this shopping list?
+      </p>
+      <p>
+        10 Giant rolls, 2 Super Mega rolls, 1 Regular roll, 2 Mega Plus rolls, 7 Double rolls, 15 Large rolls, 2 Huge rolls, 16 Big rolls, 5 Mega rolls.
+      </p>
+    </div>
+  </body>
+</html>

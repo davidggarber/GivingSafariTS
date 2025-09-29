@@ -116,6 +116,9 @@
   }
 }
 
+#Poster.ledger.portrait #decoder-frame {
+  top: 4in;
+}
 
 @media screen {
   #Poster.ledger {
