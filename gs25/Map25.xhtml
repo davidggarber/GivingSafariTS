@@ -78,15 +78,16 @@
   </head>
   <body id="Menu">
     <div id="pageBody">
-      <ttable id="side-by-side">
+      <ttable id="side-by-side" style="width: 100%">
         <tr>
           <td style="vertical-align: top;">
-            <ttable id="puz-table" class="table" style="border-collapse: collapse">
+            <ttable id="puz-table" class="table" style="border-collapse: collapse; width: 100%">
               <tthead id="puz-col-headers">
                 <ttr style="text-align: center;">
                   <tth colspan="{table_cols}" class="title-font clickable" style="text-align: center; position: relative;">
-                    Giving Safari 2025
+                    <img src="Images/giving-safari-2025.png" style="max-width:3in;"/>
                   </tth>
+                  <th style="width:100%">&nbsp;</th>
                 </ttr>
                 <ttr id="sortHeader">
                   <use template="sortableTH" text="" cls="presence" />
@@ -100,6 +101,7 @@
                   </if>
                   <use template="sortableTH" text="Author" cls="author" />
                   <use template="sortableTH" text="Solved" cls="completed" />
+                  <th style="width:100%">&nbsp;</th>
                 </ttr>    
               </tthead>
 
