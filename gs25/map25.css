@@ -287,6 +287,12 @@ td.html:hover {
   background-color: yellow;
   border-radius: 5px;
 }
+#Login-player {
+  background-color: gold;
+}
+.logged-in-player #Login-player {
+  background-color: transparent;
+}
 .logged-in-player #login-perks {
   background-color: #ffffee;
 }
@@ -301,9 +307,23 @@ td.html:hover {
   p {
     font-family: 'National Park';
     font-size: 14pt;
+    text-align: center;
   }
 
   .v-break {
     margin-top: 0.5in;
+  }
+
+  #register {
+    background-color: #fcc;
+    padding:10px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  #register .round-0 {
+    font-size: 22pt;
+  }
+  #register .round-1 {
+    font-size: 18pt;
   }
 }

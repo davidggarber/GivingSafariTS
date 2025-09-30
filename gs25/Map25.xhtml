@@ -180,8 +180,8 @@
       <div id="Welcome" style="position: relative; margin:auto">
         <h1 style="text-align: center;">Welcome to Giving Safari 2025!</h1>
         
-        <p style="background-color: #fcc; padding:10px; border-radius: 5px;">
-          If you have not yet, <a href="https://forms.cloud.microsoft/r/5FiKzTxQpg">please register</a>.
+        <p id="register">
+          <span class="round-{maxRound}">If you have not yet, <a href="https://forms.cloud.microsoft/r/5FiKzTxQpg">please register</a>.</span>
           <br />This way, we can update you as puzzles are released.
         </p>
 
@@ -202,7 +202,7 @@
         </if>
 
 
-        <p class="v-break">💡Check out these <a href="Tips.xhtml" target="_blank">helpful tips</a> for features and quirks of this puzzle site.</p>
+        <p class="v-break">💡Check out these <a href="Tips.xhtml" target="_blank">helpful tips</a> for features and quirks of this site.</p>
 
         <if test="{showEmail}">
           <p>🥳 This Giving Event is about having fun! If you really need
@@ -212,7 +212,7 @@
         </if>
 
         <p id="login-perks" class="v-break">
-          <span class="not-logged-in">Log in to have your score tracked or form a team.</span>
+          <span class="not-logged-in">Log in to have your score tracked or to form a team.</span>
           <span class="yes-logged-in" style="font-weight: bold;">You are logged in as </span>
           <span id="Login-bar" />
         </p>
