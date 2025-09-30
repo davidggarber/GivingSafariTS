@@ -21,12 +21,12 @@ function posterTemplates() {
   temp = document.createElement('template');
   temp.id = 'poster-footer';
   temp.innerHTML = `<div id="footer">
-          <img class="banner" src="../gs25/Images/GS25_banner.png" />
-          <div style="margin-right: 2.5in; padding:6px;">
+          <a href="../gs25/Map25.xhtml"><img class="banner" src="../gs25/Images/GS25_banner.png" /></a>
+          <div style="margin-right: 2.5in;">
             <h1>Think you have a solution?</h1>
             <ttable style="margin-left: 0.5in;">
               <ttr>
-                <ttd style="vertical-align:middle">
+                <ttd style="vertical-align:middle; text-align: right; padding-right:8px;">
                   <h2>For solving tools, or to 
                     <br />enter a solution, go to
                   </h2>
