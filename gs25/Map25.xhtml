@@ -58,6 +58,11 @@
         height: 36px;
       }
 
+      .spacer {
+        width: 20%;
+        min-width: 0px;
+      }
+
       #meta-table {
         width: 5.5in;
       }
@@ -78,114 +83,115 @@
   </head>
   <body id="Menu">
     <div id="pageBody">
-      <ttable id="side-by-side" style="width: 100%">
-        <tr>
-          <td style="vertical-align: top;">
-            <ttable id="puz-table" class="table" style="border-collapse: collapse; width: 100%">
-              <tthead id="puz-col-headers">
-                <ttr style="text-align: center;">
-                  <tth colspan="{table_cols}" class="title-font clickable" style="text-align: center; position: relative;">
-                    <img src="Images/giving-safari-2025.png" style="max-width:3in;"/>
-                  </tth>
-                  <th style="width:100%">&nbsp;</th>
-                </ttr>
-                <ttr id="sortHeader">
-                  <use template="sortableTH" text="" cls="presence" />
-                  <if test="{showRounds}">
-                    <use template="sortableTH" text="Round" cls="round" />
-                  </if>
-                  <use template="sortableTH" text="Type" cls="icons" />
-                  <use template="sortableTH" text="Puzzle" cls="author" />
-                  <if test="{feeders}">
-                    <use template="sortableTH" text="Feeder" cls="feeders" />
-                  </if>
-                  <use template="sortableTH" text="Author" cls="author" />
-                  <use template="sortableTH" text="Solved" cls="completed" />
-                  <th style="width:100%">&nbsp;</th>
-                </ttr>    
-              </tthead>
 
-              <ttbody id="puzzle_list">
-                <for each="puz" in="puzzles">
-                  <if test="puz.group" ne="meta">
-                    <if test="puz.round" ge="{minRound}">
-                      <if test="puz.round" le="{maxRound}">
-                        <ttr id="{puz.file}" name="{puz.title}" class="sortable">
-                          <ttd class="presence"></ttd>
-                          <if test="{showRounds}">
-                            <ttd class="round">
-                              {puz.round}
-                            </ttd>
-                          </if>
-                          <ttd class="icons">
-                            <if exists="{puz.icon}">
-                              <img ssrc="Icons/{puz.icon}.png" />
-                            </if>
-                            <if notex="{puz.icon}">
-                              <img ssrc="Icons/{puz.type.icon}.png" title="{puz.type.alt}" />
-                            </if>
-                          </ttd>
-                          <ttd class="html">
-                            <a class="hover" href="{puz.href}" target="_blank">
-                              {puz.title}
-                              <if exists="{puz.thumb}">
-                                <img class="thumb" ssrc="Thumbs/{puz.thumb}.jpg" />
-                              </if>
-                            </a>
-                          </ttd>
-                          <if test="{feeders}">
-                            <ttd class="feeders">
-                              <for each="feed" in="{puz.feeder}">
-                                <a class="feedLink {metas.[feed.meta].store}-{feed.number}" target="_blank" title="{metas.[feed.meta].title} - Materials #{feed.number} (locked)" trim="all">
-                                  <img ssrc="{metas.[feed.meta].icon}" /><sub>{feed.number + 1}</sub>
-                                </a>
-                              </for>  
-                            </ttd>
-                          </if>
-                          <ttd class="authors">
-                            {puz.author}
-                          </ttd>
-                          <ttd class="completed">
-                            <span class="teammate-solves" xtrim="all">
-                            </span>
-                            <span class="checkmark" />
-                          </ttd>
-                        </ttr>
-                      </if>
+      <ttable id="puz-table" class="table" style="border-collapse: collapse; width: 100%">
+        <tthead id="puz-col-headers">
+          <ttr style="text-align: center;">
+            <th class="spacer">&nbsp;</th>
+            <tth colspan="{table_cols}" class="title-font clickable" style="text-align: center; position: relative;">
+              <img src="Images/giving-safari-2025.png" style="max-width:3in;"/>
+            </tth>
+            <th class="spacer">&nbsp;</th>
+          </ttr>
+          <ttr id="sortHeader">
+            <th class="spacer">&nbsp;</th>
+            <use template="sortableTH" text="" cls="presence" />
+            <if test="{showRounds}">
+              <use template="sortableTH" text="Round" cls="round" />
+            </if>
+            <use template="sortableTH" text="Type" cls="icons" />
+            <use template="sortableTH" text="Puzzle" cls="author" />
+            <if test="{feeders}">
+              <use template="sortableTH" text="Feeder" cls="feeders" />
+            </if>
+            <use template="sortableTH" text="Author" cls="author" />
+            <use template="sortableTH" text="Solved" cls="completed" />
+            <th class="spacer">&nbsp;</th>
+          </ttr>    
+        </tthead>
+
+        <ttbody id="puzzle_list">
+          <for each="puz" in="puzzles">
+            <if test="puz.group" ne="meta">
+              <if test="puz.round" ge="{minRound}">
+                <if test="puz.round" le="{maxRound}">
+                  <ttr id="{puz.file}" name="{puz.title}" class="sortable">
+                    <ttd class="spacer">&nbsp;</ttd>
+                    <ttd class="presence"></ttd>
+                    <if test="{showRounds}">
+                      <ttd class="round">
+                        {puz.round}
+                      </ttd>
                     </if>
-                  </if>
-                </for>
-              </ttbody>
-            </ttable>
-
-            <if test="{pdf}" ne="">
-              <p style="text-align: center;">
-                If you want a printed copy, <a href="PDFs/{pdf}.pdf" target="_blank">this PDF</a> contains all puzzles so far.
-              </p>
+                    <ttd class="icons">
+                      <if exists="{puz.icon}">
+                        <img ssrc="Icons/{puz.icon}.png" />
+                      </if>
+                      <if notex="{puz.icon}">
+                        <img ssrc="Icons/{puz.type.icon}.png" title="{puz.type.alt}" />
+                      </if>
+                    </ttd>
+                    <ttd class="html">
+                      <a class="hover" href="{puz.href}" target="_blank">
+                        {puz.title}
+                        <if exists="{puz.thumb}">
+                          <img class="thumb" ssrc="Thumbs/{puz.thumb}.jpg" />
+                        </if>
+                      </a>
+                    </ttd>
+                    <if test="{feeders}">
+                      <ttd class="feeders">
+                        <for each="feed" in="{puz.feeder}">
+                          <a class="feedLink {metas.[feed.meta].store}-{feed.number}" target="_blank" title="{metas.[feed.meta].title} - Materials #{feed.number} (locked)" trim="all">
+                            <img ssrc="{metas.[feed.meta].icon}" /><sub>{feed.number + 1}</sub>
+                          </a>
+                        </for>  
+                      </ttd>
+                    </if>
+                    <ttd class="authors">
+                      {puz.author}
+                    </ttd>
+                    <ttd class="completed">
+                      <span class="teammate-solves" xtrim="all">
+                      </span>
+                      <span class="checkmark" />
+                    </ttd>
+                    <ttd class="spacer">&nbsp;</ttd>
+                  </ttr>
+                </if>
+              </if>
             </if>
-
-            <if test="{showMetas}">
-              <use template="meta-template" />
-            </if>
-
-          </td>
-          <td style="width: 10px;">&nbsp;</td>
-          <td style="vertical-align: top;">
-
-          </td>
-        </tr>
+          </for>
+        </ttbody>
       </ttable>
 
-      <div id="Welcome" style="position: relative; width: 5in;">
-        <img ssrc="Images/{banner}" style="width: 3.75in; position: absolute; top: 0px; left: 5in" />
+      <if test="{pdf}" ne="">
+        <p style="text-align: center;">
+          If you want a printed copy, <a href="PDFs/{pdf}.pdf" target="_blank">this PDF</a> contains all puzzles so far.
+        </p>
+      </if>
 
-        <h1>Welcome to Giving Safari 2025!</h1>
+      <if test="{showMetas}">
+        <div style="text-align: center;">
+          <use template="meta-template" />
+        </div>
+      </if>
+
+      <div id="Welcome" style="position: relative; margin:auto">
+        <h1 style="text-align: center;">Welcome to Giving Safari 2025!</h1>
+        
+        <p style="background-color: #fcc; padding:10px; border-radius: 5px;">
+          If you have not yet, <a href="https://forms.cloud.microsoft/r/5FiKzTxQpg">please register</a>.
+          <br />This way, we can update you as puzzles are released.
+        </p>
+
         <if test="{showRounds}">
-          <p>We have a new format this year. Instead of one large event, we have an event in four rounds.</p>
+          <p class="v-break">We have a new format this year! Instead of one large event, 
+            <br />we have a rolling event in four rounds, spaced over the month.</p>
           <p>Each week, an additional collection of puzzles will be released.
             <if test="{nextRound}" ne="">
               <br />
-              ⏰ The next round of puzzles will be released <b>{nextRound}</b>.
+              ⏰ The next round of puzzles will arrive <b>{nextRound}</b>.
             </if>
           </p>
 
@@ -194,24 +200,28 @@
               <br />Scan their QR codes to unlock them.</p>
           </if>
         </if>
+
+
+        <p class="v-break">💡Check out these <a href="Tips.xhtml" target="_blank">helpful tips</a> for features and quirks of this puzzle site.</p>
+
         <if test="{showEmail}">
-          <p>🥳 This Giving Event is about having fun!
-            <br />If you find a bug🐞 or need a hint💡, email
+          <p>🥳 This Giving Event is about having fun! If you really need
+            <br />a hint🔍 (or find a bug🐞), email
               <a href="mailto:givingps@microsoft.com" title="MSFT internal emails only">GivingPS&#x2009;@&#x2009;microsoft.com</a>.
           </p>
         </if>
 
-        <p id="login-perks">
-          <span class="not-logged-in">Log in to have your score tracked.</span>
+        <p id="login-perks" class="v-break">
+          <span class="not-logged-in">Log in to have your score tracked or form a team.</span>
           <span class="yes-logged-in" style="font-weight: bold;">You are logged in as </span>
           <span id="Login-bar" />
         </p>
-        <p id="team-login-perks">
+        <!--p id="team-login-perks">
           <span class="not-logged-in-team">If you join a team, you will be able to see each other's progress.</span>
           <span class="yes-logged-in-team">Teams see each other's presence (on left) and solves (right).</span>          
           <br />You won't see solutions, so you can still solve for yourself.
           <br />But if a puzzle unlocks meta materials, an unlock by anyone on the team will propogate to all.
-        </p>
+        </p-->
 
         <div id="team-roster" />
       </div>
@@ -220,60 +230,16 @@
         <use template="charity-shout" />
       </if>
 
-      <if test="{showLegend}">
-        <table id="legend" style="margin-top: 0.5in; margin-left: 0.25in;">
-          <tr>
-              <th colspan="2">Special web-ready features in HTML puzzles</th>
-          </tr>
-          <tr>
-              <td style="height: 0.3in; width: 1.25in;">Text entry</td>
-              <td>Any underlines, boxes, etc. that look like they take text entry do.</td>
-          </tr>
-          <tr>
-              <td style="height: 0.3in;"><span style="box-shadow:0px 0px 5px fuchsia;"><a href="javascript:toggleDecoder()">Show Decoders</a></span></td>
-              <td>Click on this to open a side-panel to decode <a href="https://www.decrypt.fun/index.html" target="_blank">common puzzle encodings</a></td>
-          </tr>
-          <tr>
-              <td style="height: 0.3in;">📔</td>
-              <td>When this icon is in the bottom-right, ctrl+clicking will allow you to write notes on the page.</td>
-          </tr>
-          <tr>
-              <td style="height: 0.3in;">&#x2714;&#xFE0F;<!--✔️--></td>
-              <td>When this icon is in the bottom-right, clicking on hints will check them off as you utilize them.</td>
-          </tr>
-          <tr>
-              <td style="height: 0.3in; text-shadow: 0 0 10px black;">&#x1f448;<!--👈--></td>
-              <td>When this icon is in the bottom-right, elements of the page may be drag-dropped around the page.</td>
-          </tr>
-          <tr>
-              <td style="height: 0.3in; text-shadow: 0 0 10px #ff0;">&#x1F4D0;<!--📐--></td>
-              <td>When this icon is in the bottom-right, a line drawing tool will connect vertices.</td>
-          </tr>
-          <tr>
-              <td style="height: 0.3in; text-shadow: 0 0 10px black;">&#x1F48A;<!--💊--></td>
-              <td>When this icon is in the bottom-right, a word-circling tool is available.</td>
-          </tr>
-          <tr>
-              <td style="height: 0.3in; text-shadow: 0 0 10px black;"><img src="Icons/stamp-glow.png" style="height:3ex;" /><!--✒️--></td>
-              <td>Some puzzles offer stamping tools to mark directly on elements of the page.</td>
-          </tr>
-          <tr>
-              <td style="height: 0.3in;">Printing <span style="text-shadow: 0 0 10px yellow;">&#x1f5a8;&#xfe0f;</span></td>
-              <td style="line-height:normal;"><b>Important steps to print</b>
-                  <br />Puzzles printed from this site require two settings to render correctly.
-                  <br />&nbsp; &bullet; &nbsp; Margins = None
-                  <br />&nbsp; &bullet; &nbsp; Background graphics = checked
-                  <br />Both are found in "More settings"
-              </td>
-          </tr>
-        </table>
-      </if>
+      <p style="text-align: center;">
+          <img ssrc="Images/{banner}" style="width: 3.75in;" />
+      </p>
+
       <div id="iframe-loader" />
 
     </div>
 
     <template id="meta-template">
-      <ttable id="meta-table" class="table" style="border-collapse: collapse">
+      <ttable id="meta-table" class="table" style="border-collapse: collapse; margin:auto">
         <ttfoot id="meta_list">
           <ttr>
             <tth class="clickable">&nbsp;</tth>
@@ -370,9 +336,14 @@
     </template>
 
     <template id="charity-shout">
-      <div style="border:solid 2px blue; width: 4.5in; margin: 0.25in; padding: 0px 0.25in; font-weight: bold; background-color: #ccf;">
-        <p>Our featured charity this year is <a href="https://www.rainierscholars.org/" target="_blank">Rainier Scholars</a>.</p>
-        <p>The suggested donation is $25, at our <a href="https://microsoft.benevity.org/campaigns/93098" target="_blank">Benevity campaign</a>.</p>
+      <div style="border:solid 2px blue; width: 5in; margin:auto; margin-top:0.5in; padding: 0px 0.25in; font-weight: bold; background-color: #ccf; border-radius: 10px; text-align: center;">
+        <p>Our featured charity this year is <a href="https://www.rainierscholars.org/" target="_blank">Rainier Scholars</a>.
+          <span style="position: relative;"><img src="Images/Rainier-Scholars.png" style="position:relative; display:inline-block; height:0.5in; top:10px;" /></span>
+        </p>
+        <p style="font-style: italic; font-weight: normal;">
+          Supporting students most underrepresented on college campuses.
+        </p>
+        <p>Please donate at our <a href="https://microsoft.benevity.org/campaigns/93098" target="_blank">Benevity page</a>. Suggested amount: $25.</p>
       </div>
     </template>
 

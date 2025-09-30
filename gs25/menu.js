@@ -293,8 +293,10 @@ function timeToNextRound() {
   }
 
   var date = localReleaseTime(round + 1);
-  const hh = date.getHours();
+  let hh = date.getHours();
   const mm = date.getMinutes();
+  const ap = hh < 12 ? "am" : "pm";
+  hh = ((hh + 11) % 12) + 1;
 
   var wait = date - new Date();
   var days = Math.floor(wait / (1000 * 60 * 60 * 24));
@@ -303,10 +305,10 @@ function timeToNextRound() {
                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const mon = monthNames[date.getMonth()];
     const day = date.getDate();
-    return `on ${mon}-${day} at ${hh}:${mm.toString().padStart(2, '0')}`;
+    return `on ${mon}-${day} at ${hh}:${mm.toString().padStart(2, '0')}${ap}`;
   }
   if (days >= 0) {
-    return `at ${hh}:${mm.toString().padStart(2, '0')}`;
+    return `at ${hh}:${mm.toString().padStart(2, '0')}${ap}`;
   }
   return '';
 }

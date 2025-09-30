@@ -58,9 +58,8 @@
   width: 1in;
   text-align: center;
 }
-.author {
+.authors {
   width: 1.5in; 
-  position: relative;
   text-align: left; 
   -webkit-text-size-adjust: 9pt;
   text-size-adjust: 9pt;
@@ -286,7 +285,25 @@ td.html:hover {
   margin: 0px;
   margin-left: -10px;
   background-color: yellow;
+  border-radius: 5px;
 }
 .logged-in-player #login-perks {
   background-color: #ffffee;
+}
+
+#Welcome {
+  width: 6in; 
+
+  h1 {
+    font-family: 'National Park';
+  }
+
+  p {
+    font-family: 'National Park';
+    font-size: 14pt;
+  }
+
+  .v-break {
+    margin-top: 0.5in;
+  }
 }
