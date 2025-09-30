@@ -22,9 +22,20 @@ function posterTemplates() {
   temp.id = 'poster-footer';
   temp.innerHTML = `<div id="footer">
           <img class="banner" src="../gs25/Images/GS25_banner.png" />
-          <div style="margin-right: 2.5in">
+          <div style="margin-right: 2.5in; padding:6px;">
             <h1>Think you have a solution?</h1>
-            <h2>Submit your guess online: <img class="solve-qr" src="QRs/{solveqr}.svg" /></h2>
+            <ttable style="margin-left: 0.5in;">
+              <ttr>
+                <ttd style="vertical-align:middle">
+                  <h2>For solving tools, or to 
+                    <br />enter a solution, go to
+                  </h2>
+                </ttd>
+                <ttd style="vertical-align:middle;">
+                  <img class="solve-qr" src="QRs/{solveqr}.svg" />
+                </ttd>
+              </ttr>
+            </ttable>
           </div>
         </div>
         <div id="hint-link">

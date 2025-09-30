@@ -43,7 +43,6 @@ function timeToRefreshTeam() {
   if (new Date().getTime() >= _stopRefreshing) {
     clearInterval(_refresh_interval);
   }
-  console.log(`${document.title} is ${document.visibilityState}`);
   if (document.visibilityState == 'visible') {
     refreshTeamHomePage(refreshTeamProgress);
   }
