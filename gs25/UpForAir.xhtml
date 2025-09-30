@@ -67,6 +67,8 @@
           margin-top: 0px;
         }
         #clues {
+          position: relative;
+          margin-right: 0.6in;
           border-collapse: collapse;
         }
         #clues th {
@@ -83,11 +85,12 @@
           background-color: #DEEAF6;
         }
         .marine {
-          width: 3.77in;
+          width: 3.4in;
           text-align: left;
         }
         .letter {
-          width: 0.67in;
+          position: relative;
+          width: 0.5in;
           text-align: center;
         }
         .cross-off {
@@ -96,6 +99,16 @@
         .check {
           left: 0px;
           top: 0px;
+        }
+        .work {
+          position: absolute;
+          left: 0.7in;
+          top: 30%;
+          line-height: 10pt;
+        }
+        .work .word-cell {
+          width: 1in;
+          font-size: 10pt;
         }
       }
     </style>
@@ -136,7 +149,13 @@
             <for each="clue" in="clues">
               <ttr>
                 <ttd class="marine">{clue.0}</ttd>
-                <ttd class="letter">{clue.1}</ttd>
+                <ttd class="letter">
+                  {clue.1}
+                  <div class="work" data-input-style="none">
+                    <word extract="{clue.1.0}" extracted-id="anim-{clue#}" />
+                    <br /><letter id="extracted-anim-{clue#}" />
+                  </div>
+                </ttd>
               </ttr>
             </for>
           </ttable>
