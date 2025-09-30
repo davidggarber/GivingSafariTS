@@ -9216,7 +9216,9 @@ function puzzleTitleForSync():string|undefined {
 }
 
 export function setupEventSync(syncKey?:string) {
-  canSyncEvents = !!syncKey && !theBoiler().noSync && !isPrint() && !isIFrame() && !isIcon();
+  canSyncEvents = !!syncKey   // Don't sync if there's no event key
+    && !theBoiler().noSync    // Don't sync if boiler has an explicit noSync=true
+    && !isPrint() && !isIcon() && (!isIFrame() || isModal());  // Don't sync when printing
   if (canSyncEvents) {
     _eventName = syncKey;
 
@@ -9907,6 +9909,14 @@ export function isPrint() {
  */
 export function isIcon() {
     return urlArgs['icon'] != undefined && urlArgs['icon'] !== false;
+}
+
+/**
+ * Identifies floating iframes, used to evoke modal dialogs.
+ * @returns true if this page's URL contains a modal argument (other than false)
+ */
+export function isModal() {
+    return urlArgs['modal'] != undefined && urlArgs['modal'] !== false;
 }
 
 /**

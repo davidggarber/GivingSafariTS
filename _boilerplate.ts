@@ -128,6 +128,14 @@ export function isIcon() {
 }
 
 /**
+ * Identifies floating iframes, used to evoke modal dialogs.
+ * @returns true if this page's URL contains a modal argument (other than false)
+ */
+export function isModal() {
+    return urlArgs['modal'] != undefined && urlArgs['modal'] !== false;
+}
+
+/**
  * Special url arg to override any cached storage. Always restarts.
  * @returns true if this page's URL contains a restart argument (other than =false)
  */
