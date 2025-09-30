@@ -7,20 +7,23 @@
     <script src="../js/kit25.js" />
     <script src="V/edm.js" />
     <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script src="poster.js" />
     <script>
       const boiler = {
-        noSync: true,
         safaris: previewSafaris,
         safari: 'gs25',
         'title': '🍽️🎥',
         'author': 'Morgan Grobin',
         'copyright': '2021',
+        paperSize: 'ledger',
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
         },
         reactiveBuilder: 'pageBody',
+        preBuild: posterTemplates,
         'lookup': {
+          solveqr: 'EmojiDM',
           emoji: {
             '🏭':'factory',
             '🌋':'volcano',
@@ -209,8 +212,10 @@
       </div>
       </build>
 
-      <use template='finalAnswer' left="3in" width="2.5in" />
-      <div id="hint-link">Need a hint? Email <a href="mailto:givingps@microsoft.com">GivingPS&#x2009;@&#x2009;microsoft.com</a>.</div>
+      <use template="poster-header" />
+      <use template='finalAnswer' left="3in" width="2.5in" bottom="0px" />
+      <use template="poster-footer" />
+
     </div>
 
     <template id="idea">

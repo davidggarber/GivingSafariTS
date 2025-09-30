@@ -7,14 +7,15 @@
     <script src="../js/kit25.js" />
     <script src="V/goh.js" />
     <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script src="poster.js" />
     <script>
       const boiler = {
-        noSync: true,
         safaris: previewSafaris,
         safari: 'gs25',
         'title': 'Genetics Of Humor',
         'author': 'Colin Robertson',
         'copyright': '2020',
+        paperSize: 'ledger',
         'abilities': {
           textInput: 'nearest',
           scratchPad: true,
@@ -22,7 +23,9 @@
           'checkMarks': true,
         },
         reactiveBuilder: 'pageBody',
+        preBuild: posterTemplates,
         lookup: {
+          solveqr: 'GeneticsOfHumor',
         },      };
     </script>
     <style>
@@ -51,6 +54,10 @@
   </head>
   <body id="Poster">
     <div id="pageBody">
+      <use template="poster-header" />
+      <use template='finalAnswer' left="3in" width="2in" bottom="0px" />
+      <use template="poster-footer" />
+
       <p class="flavor">
         We don&rsquo;t make science jokes all the time, just periodically. We&rsquo;re looking for the genetic source of these jokes:
       </p>
@@ -99,8 +106,6 @@
         <li class="cross-off">I&rsquo;m traveling light.</li>
       </ol>
 
-      <use template='finalAnswer' left="3in" width="2in" />
-      <div id="hint-link">Need a hint? Email <a href="mailto:givingps@microsoft.com">GivingPS&#x2009;@&#x2009;microsoft.com</a>.</div>
     </div>
 
     <template id="dot">

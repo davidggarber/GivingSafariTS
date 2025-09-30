@@ -7,20 +7,23 @@
     <script src="../js/kit25.js" />
     <script src="V/cpr.js" />
     <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script src="poster.js" />
     <script>
       const boiler = {
-        noSync: true,
         safaris: previewSafaris,
         safari: 'gs25',
         'title': 'Computers',
         'print_qr': true,
         'author': 'Rorke Haining',
         'copyright': '2020',
+        paperSize: 'ledger',
         'abilities': {
           'stamping': true
         },
         reactiveBuilder: 'pageBody',
+        preBuild: posterTemplates,
         lookup: {
+          solveqr: 'Computers',
         },
 
       };
@@ -122,6 +125,11 @@
   </head>
   <body id="Poster">
     <div id="pageBody">
+      <use template="poster-header" />
+      <use template='finalAnswer' left="3.5in" width="1.5in" bottom="0px" />
+      <use template="poster-footer" />
+
+
       <p class="flavor" style="margin-top: 0.6in; width: 2.17in;">
         Truth tables for digital logic gates, for your reference:
       </p>
@@ -322,8 +330,6 @@
         </div>
       </div>
 
-      <use template='finalAnswer' left="3.5in" width="1.5in" />
-      <div id="hint-link">Need a hint? Email <a href="mailto:givingps@microsoft.com">GivingPS&#x2009;@&#x2009;microsoft.com</a>.</div>
     </div>
 
     <template id="7-bit-display">

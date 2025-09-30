@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Printable packet of all puzzles" />
+    <meta name="author" content="David Garber" />
+    <link href="../Css/Print.css" rel="Stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/png" href="./Images/gs25_favicon.png" />
+    
+    <title>Giving Safari Printable Posters</title>
+
+    <script>
+      // <![CDATA[
+      var poster_list = [
+        'Gumball',
+        'SpaghettiCode',
+        'EmojiDM',
+        'Computers',
+        'GeneticsOfHumor',
+        'PaperProducts',
+        'BillDingSight',
+      ];
+
+      function onLoad() {
+          var list = document.getElementById('puzzle_list');
+          for (var i = 0; i < poster_list.length; i++) {
+              var puz = poster_list[i];
+
+              var div = document.createElement('div');
+              var iframe = document.createElement('iframe');
+              div.classList.add('page');
+              div.classList.add('ledger');
+              div.classList.add('print-ledger-portrait');
+
+              var href = `${puz}.xhtml?iframe&print`;
+              iframe.src = href;
+
+              div.appendChild(iframe);
+              list.appendChild(div);
+          }
+      }
+      // ]]>
+    </script>
+    <style>
+    </style>
+  </head> 
+  <body id="print-view" class="portrait landscape feeders" onload="onLoad()">
+    <div id="layout">
+      <p id="print-tips" style="color:wheat; background-color: dark-gray;">
+        When printing, confirm all the following:
+        <ol>
+          <li>Paper size is Tabloid (aka Ledger)</li>
+          <li>Margins are set to NONE</li>
+          <li>Background graphics is checked</li>
+          <li>There may be an extra blank page. Recommend printing explicitly pages 1-[page count].</li>
+        </ol>
+      </p>
+    </div>
+    <div id="puzzle_list" class="group-list"></div>
+  </body>
+</html>

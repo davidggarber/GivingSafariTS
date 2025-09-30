@@ -7,21 +7,24 @@
     <script src="../js/kit25.js" />
     <script src="V/spc.js" />
     <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script src="poster.js" />
     <script>
       const boiler = {
-        noSync: true,
         safaris: previewSafaris,
-        safari: 'gs25',
+        safari: '21',
         title: 'Spaghetti Code',
         author: 'Joseph Joy',
         copyright: '2021',
+        paperSize: 'ledger',
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
           decoder: 'Morse',
         },
         reactiveBuilder: true,
+        preBuild: posterTemplates,
         lookup: {
+          solveqr: 'SpaghettiCode',
         },
       };
     </script>
@@ -42,6 +45,8 @@
   </head>
   <body id="Poster">
     <div id="pageBody">
+      <use template="poster-header" />
+
       <p class="flavor">
         Let spaghetti help you decode the text below, which is a hint to the answer.
       </p>
@@ -51,8 +56,8 @@
         <p><pattern pattern="5 10 5" data-letter-style="underline" /></p>
       </div>
   
-      <use template='finalAnswer' left="3in" width="2.5in" />
-      <div id="hint-link">Need a hint? Email <a href="mailto:givingps@microsoft.com">GivingPS&#x2009;@&#x2009;microsoft.com</a>.</div>
+      <use template='finalAnswer' left="3in" width="2.5in" bottom="0px" />
+      <use template="poster-footer" />
     </div>
   </body>
 </html>

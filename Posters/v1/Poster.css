@@ -1,0 +1,152 @@
+#Poster.ledger {
+  .pageWithinMargins {
+    position: absolute;
+    top: 3in;
+    left: 1.25in;
+    width: 7.5in;
+    height: 10in;
+    padding: 0.5in;
+    box-shadow:5px 5px 25px #888888; 
+
+    #pageBody {
+      margin-top: 0.5in;
+      width: 7.5in;
+      height: 9.5in;
+    }
+
+    #copyright {
+      left: 0.5in;
+      bottom: 0.5in;
+    }
+
+    #guess-log {
+      width: 8in;
+      top: 10.25in;
+      left: -0.5in;
+      bottom: 0.5in;
+      height: 2in;
+    }
+
+    #guess-history {
+      height: 2.2in;
+    }
+    #hint-link {
+      position: absolute;
+      top: 13in;
+      width: 100%;
+      text-align: center;
+    }
+    .banner {
+      position: absolute;
+      height: 2.25in;
+    }
+    .event-qr {
+      width: 1in;
+    }
+    .solve-qr {
+      width: 1in;
+    }
+
+    h1 {
+      position: relative;
+      font-size: 44pt;
+      font-family: 'National Park';
+      margin: 0px;
+      margin-bottom: 0.2in;
+    }
+    h2 {
+      position: relative;
+      font-size: 18pt;
+      font-family: 'National Park';
+      margin: 0px;
+    }
+    h3 {
+      position: relative;
+      font-size: 14pt;
+      font-family: 'National Park';
+      margin: 0px;
+      font-weight: normal;
+    }
+    #header {
+      position: absolute;
+      top: -3.5in;
+      left: -1.25in;
+      width: 10in;
+      height: 2in;
+
+      .banner {
+        top: 0px;
+        left: 0px;
+      }
+      .event-qr {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+      }
+    }
+
+    #footer {
+      position: absolute;
+      top: 10.25in;
+      left: -0.5in;
+      width: 9in;
+      height: 2in;
+
+      .banner {
+        right: 0px;
+        height: 2.5in;
+      }
+
+      h1 {
+        font-size: 32pt;
+        font-family: 'National Park';
+        margin: 0px;
+      }
+    }    
+  }
+  #ability {
+    right: 1.75in;
+    margin-bottom: 3.25in;
+  }
+  #decoder-toggle {
+    right: 1.4in;
+    bottom: 3.1in;
+  }
+}
+
+@media print {
+  #Poster.ledger {
+    .pageWithinMargins {
+      top: 2.25in;
+      left: 0.75in;
+
+      #hint-link {
+        top: 12.75in;
+      }
+    }
+  }
+}
+
+#Poster.ledger.portrait #decoder-frame {
+  top: 4in;
+}
+
+@media screen {
+  #Poster.ledger {
+    .pageWithinMargins {
+      #footer {
+        display: none;
+      }
+    }
+  }
+  #Poster.ledger.print {
+    .pageWithinMargins {
+      #footer {
+        display: block;
+      }
+      #hint-link {
+        top: 12.6in;
+      }
+    }
+  }
+}

@@ -7,21 +7,24 @@
     <script src="../js/kit25.js" />
     <script src="V/ppd.js" />
     <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script src="poster.js" />
     <script>
       const boiler = {
-        noSync: true,
         safaris: previewSafaris,
         safari: 'gs25',
         title: 'Paper Products',
         author: 'Colin Robertson',
         copyright: '2019',
+        paperSize: 'ledger',
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
           decoder: 'Ascii',
         },
         reactiveBuilder: 'pageBody',
+        preBuild: posterTemplates,
         lookup: {
+          solveqr: 'PaperProducts',
           sizes: [
             ['large', 'big', 'huge'],
             ['double', 'mega', 'super_mega'],
@@ -85,6 +88,10 @@
   </head>
   <body id="Poster">
     <div id="pageBody">
+      <use template="poster-header" />
+      <use template='finalAnswer' left="3in" width="2in" bottom="0px" />
+      <use template="poster-footer" />
+
       <ttable id="table">
         <for each="row" in="{sizes}">
           <ttr>
@@ -104,9 +111,6 @@
       <p>
         10 Giant rolls, 2 Super Mega rolls, 1 Regular roll, 2 Mega Plus rolls, 7 Double rolls, 15 Large rolls, 2 Huge rolls, 16 Big rolls, 5 Mega rolls.
       </p>
-
-      <use template='finalAnswer' left="3in" width="2in" />
-      <div id="hint-link">Need a hint? Email <a href="mailto:givingps@microsoft.com">GivingPS&#x2009;@&#x2009;microsoft.com</a>.</div>
     </div>
   </body>
 </html>

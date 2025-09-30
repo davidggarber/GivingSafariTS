@@ -54,6 +54,7 @@ export function setupDecoderToggle(margins:HTMLDivElement|null, mode?:boolean|st
     if (toggle == null && margins != null) {
         toggle = document.createElement('span');
         toggle.id = 'decoder-toggle';
+        toggle.title = 'Open a helpful decoder at right';
         margins.appendChild(toggle);
     }
     if (toggle) {
