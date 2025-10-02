@@ -31,7 +31,7 @@
 
       function refreshWithResponse(response) {
         var list = JSON.parse(response);
-        var pList = list.filter(r => r.PuzzleType == "Puzzle").map(r => [r.PuzzleName, r.PlayerSolves, r.TeamSolves, r.CountAttempts]);
+        var pList = list.filter(r => r.PuzzleType == "Puzzle" && r.Round != 0).map(r => [r.PuzzleName, r.PlayerSolves, r.TeamSolves, r.CountAttempts]);
         refreshTable("puzzle", pList);
         pList = list.filter(r => r.PuzzleType == "Meta").map(r => [r.PuzzleName, r.PlayerSolves, r.TeamSolves, r.CountAttempts]);
         refreshTable("meta", pList);
