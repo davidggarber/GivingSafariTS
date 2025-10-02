@@ -24,6 +24,10 @@
   background-color: #8d8;
 }
 
+.table tr.hidden {
+  display: none;
+}
+
 .table td {
   position: relative;
   line-height: 8pt;

@@ -18,7 +18,7 @@ function syncProgress() {
   }
   for (var i = 0; i < puzzles.length; i++) {
     var puz = puzzles[i];
-    updateSolves(puz.file);
+    updateSolves(puz.file, puz.round);
   }
   
   syncUnlockedMetas();
@@ -48,11 +48,29 @@ function timeToRefreshTeam() {
   }
 }
 
-function updateSolves(puzFile) {
+function updateSolves(puzFile, round) {
   var pStatus = getPuzzleStatus(puzFile);
   var tr = document.getElementById(puzFile);
   if (tr) {
     toggleClass(tr, 'solved', pStatus == 'solved');
+  }
+  if (round == 0) {
+    // HACK HACK HACK HACK HACK :(
+    // Look in the Posters folder
+    if (hasClass(tr, 'hidden')) {
+      pStatus = getPuzzleStatus('url_' + puzFile, undefined, '../Posters/puzzle_list');
+      if (pStatus) {  // Show row, and overwrite the link URL
+        var hovers = tr.getElementsByClassName('hover');
+        if (hovers.length > 0) {
+          toggleClass(tr, 'hidden', false);
+          hovers[0].href = pStatus;
+        }
+      }
+    }
+    pStatus = getPuzzleStatus(puzFile, undefined, '../Posters/puzzle_list');
+    if (tr) {
+      toggleClass(tr, 'solved', pStatus == 'solved');
+    }
   }
 }
 
@@ -221,7 +239,7 @@ function minRoundFromUrl() {
   for (var r = 1; r < rounds.length; r++) {
     var code = 'round=' + rounds[r].filename.toLowerCase();
     if (code && search.includes(code)) {
-      return 1;
+      return 0;
     }
   }
   for (var m = 0; m < minis.length; m++) {

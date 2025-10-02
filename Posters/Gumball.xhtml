@@ -21,17 +21,53 @@
         },
         reactiveBuilder: 'pageBody',
         lookup: {
+          file: 'Gumball',
         },
+        postSetup: unlockPoster
       };
+
+      //<![CDATA[
+      function unlockPoster() {
+        if (!isIFrame() && !isPrint()) {
+          updatePuzzleList(`url_${boiler.lookup.file}`, window.location.href);
+        }
+        // Hack the backlink
+        var back = document.getElementById('backlink');
+        if (back) {
+          back.href = '../gs25/Map25.xhtml';
+        }
+      }
+      //]]>
+
     </script>
     <style>
+      #Poster {
+        #entries {
+          position: absolute;
+          right: 0px;
+          top: 1in;
+
+          p {
+            line-height: 20pt;
+          }
+        }
+      }
     </style>
   </head>
   <body id="Poster">
     <div id="pageBody">
       <img src="Gumball/machine.png" style="position:absolute; top:0px; left:1in; width:4.7in; height: 8.89in;" />
 
-      <use template='finalAnswer' left="3in" width="2.5in" />
+      <div id="entries" data-word-style="dotted">
+        <p><word /></p>
+        <p><word /></p>
+        <p><word /></p>
+        <p><word /></p>
+        <p><word /></p>
+        <p><word /></p>
+      </div>
+
+      <use template='finalAnswer' left="2.5in" width="3in" />
       <div id="hint-link">Need a hint? Email <a href="mailto:givingps@microsoft.com">GivingPS&#x2009;@&#x2009;microsoft.com</a>.</div>
     </div>
   </body>

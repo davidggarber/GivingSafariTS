@@ -84,19 +84,19 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       else if ((value = evaluateAttribute(src, 'ne', false, false)) !== undefined) {  // not-equals
         result.passed = test !== value;  // REVIEW: no casting of either
       }
-      else if (value = evaluateAttribute(src, 'lt', false, false)) {  // less-than
+      else if ((value = evaluateAttribute(src, 'lt', false, false)) != null) {  // less-than
         result.passed = makeFloat(test, testTok) < makeFloat(value, elementSourceOffseter(src, 'lt'));
       }
-      else if (value = evaluateAttribute(src, 'le', false, false)) {  // less-than or equals
+      else if ((value = evaluateAttribute(src, 'le', false, false)) != null) {  // less-than or equals
         result.passed = makeFloat(test, testTok) <= makeFloat(value, elementSourceOffseter(src, 'le'));
       }
-      else if (value = evaluateAttribute(src, 'gt', false, false)) {  // greater-than
+      else if ((value = evaluateAttribute(src, 'gt', false, false)) != null) {  // greater-than
         result.passed = makeFloat(test, testTok) > makeFloat(value, elementSourceOffseter(src, 'gt'));
       }
-      else if (value = evaluateAttribute(src, 'ge', false, false)) {  // greater-than or equals
+      else if ((value = evaluateAttribute(src, 'ge', false, false)) != null) {  // greater-than or equals
         result.passed = makeFloat(test, testTok) >= makeFloat(value, elementSourceOffseter(src, 'ge'));
       }
-      else if (value = evaluateAttribute(src, 'in', false, false)) {  // string contains
+      else if ((value = evaluateAttribute(src, 'in', false, false)) != null) {  // string contains
         if (Array.isArray(value)) {
           result.passed = value.indexOf(test) >= 0;
         }

@@ -20,7 +20,24 @@
           scratchPad: true,
         },
         reactiveBuilder: 'pageBody',
+        lookup: {
+          file: 'BillDingSight',
+        },
+        postSetup: unlockPoster
       };
+
+      //<![CDATA[
+      function unlockPoster() {
+        if (!isIFrame() && !isPrint()) {
+          updatePuzzleList(`url_${boiler.lookup.file}`, window.location.href);
+        }
+        // Hack the backlink
+        var back = document.getElementById('backlink');
+        if (back) {
+          back.href = '../gs25/Map25.xhtml';
+        }
+      }
+      //]]>
     </script>
     <style>
       #Poster {
@@ -65,7 +82,7 @@
 
       <table style="width:7.6in;" data-extract-style="highlight">
         <tr>
-          <td style="padding-left: 0px;">
+          <td style="padding-left: 0px;" class="column letter-grid-2d">
             <div>
               <div class="rebus" trim="all">
                 <span class="huge">S</span><img src="BillDing/crew.png"/>
@@ -78,7 +95,7 @@
                 <img src="BillDing/crow.jpg"/>
                 <img src="BillDing/bar.png"/>
               </div>
-              <p><pattern pattern="11" extract="1"></pattern></p>
+              <p><pattern pattern="4 3" extract="3"></pattern></p>
             </div>
             <div>
               <div class="rebus" trim="all">
@@ -89,7 +106,7 @@
             </div>
           </td>
 
-          <td style="width:2.6in; border-left:solid 1px black; border-right:solid 1px black">
+          <td style="width:2.6in; border-left:solid 1px black; border-right:solid 1px black" class="column letter-grid-2d">
             <div>
               <div class="rebus" trim="all">
                 <img src="BillDing/billnye.png" style="height:96pt;"/><span class="huge">F</span>
@@ -114,7 +131,7 @@
 
           </td>
 
-          <td style="padding-right: 0px;">
+          <td style="padding-right: 0px;" class="column letter-grid-2d">
             <div>
               <div class="rebus" trim="all">
                 <img src="BillDing/record.png" style="height: 60pt;"/>

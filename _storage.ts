@@ -988,14 +988,21 @@ export const PuzzleStatus = {
  * Update the master list of puzzles for this event
  * @param puzzle The name of this puzzle (not the filename)
  * @param status One of the statuses in PuzzleStatus
+ * @param puzzleList The relative path to the puzzle_list to update (omit if local)
  * @returns true if the new status is different than the old
  */
-export function updatePuzzleList(puzzle:string|null, status:string):boolean {
+export function updatePuzzleList(puzzle:string|null, status:string, puzzleList?:string):boolean {
     if (!puzzle) {
         puzzle = getCurFileName();
     }
-    var key = getOtherFileHref('puzzle_list', 0);
-    let pList = {};
+    let up = 0;
+    puzzleList = puzzleList || 'puzzle_list';
+    while (puzzleList.startsWith('../')) {
+        puzzleList = puzzleList.substring(3);
+        up += 1;
+    }
+    const key = getOtherFileHref(puzzleList, up);
+    let pList: {[key: string]: string} = {};
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
@@ -1015,14 +1022,21 @@ export function updatePuzzleList(puzzle:string|null, status:string):boolean {
  * Lookup the status of a puzzle
  * @param puzzle The name of a puzzle
  * @param defaultStatus The initial status, before a player updates it
+ * @param puzzleList The relative path to the puzzle_list to update (omit if local)
  * @returns The saved status
  */
-export function getPuzzleStatus(puzzle:string|null, defaultStatus?:string): string|undefined {
+export function getPuzzleStatus(puzzle:string|null, defaultStatus?:string, puzzleList?:string): string|undefined {
     if (!puzzle) {
         puzzle = getCurFileName();
     }
-    var key = getOtherFileHref('puzzle_list', 0);
-    let pList = {};
+    let up = 0;
+    puzzleList = puzzleList || 'puzzle_list';
+    while (puzzleList.startsWith('../')) {
+        puzzleList = puzzleList.substring(3);
+        up += 1;
+    }
+    const key = getOtherFileHref(puzzleList, up);
+    let pList: {[key: string]: string} = {};
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {

@@ -21,9 +21,23 @@
         },
         reactiveBuilder: 'pageBody',
         lookup: {
+          file: 'Computers',
         },
-
+        postSetup: unlockPoster
       };
+
+      //<![CDATA[
+      function unlockPoster() {
+        if (!isIFrame() && !isPrint()) {
+          updatePuzzleList(`url_${boiler.lookup.file}`, window.location.href);
+        }
+        // Hack the backlink
+        var back = document.getElementById('backlink');
+        if (back) {
+          back.href = '../gs25/Map25.xhtml';
+        }
+      }
+      //]]>
     </script>
     <style>
       #Poster {

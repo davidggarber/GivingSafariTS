@@ -11,6 +11,7 @@ var types = {
     construction: { icon: 'construction', alt: 'Construction puzzle' },
     meta: { icon: 'meta', alt: 'Meta-puzzle' },
     challenge: { icon: 'experiment', alt: 'Challenge' },
+    poster: { icon: 'unknown', alt: 'Pre-event puzzle' },
 };
 var group = {
     puzzle: 'puzzle',
@@ -30,48 +31,57 @@ var challenge = {
 }
 
 var puzzles = [
+    // Posters (not originally in PS22)
+    { round: 0, title: 'Artifacts from an Alternate Universe', thumb: '', author: 'Jeffrey Lin', type: types.poster, group: group.puzzle, orientation: orient.portrait, cls:'hidden', feeder: [] },
+    { round: 0, title: 'Bill Ding Sight', thumb: '', author: 'Martyn Lovell', type: types.poster, group: group.puzzle, orientation: orient.portrait, cls:'hidden', feeder: [] },
+    { round: 0, title: 'Computers', thumb: '', author: 'Rorke Haining', type: types.poster, group: group.puzzle, orientation: orient.portrait, cls:'hidden', feeder: [] },
+    { round: 0, title: '🍽️🎥', file:'EmojiDM', thumb: '', author: 'Morgan Grobin', type: types.poster, group: group.puzzle, orientation: orient.portrait, cls:'hidden', feeder: [] },
+    { round: 0, title: 'Genetics of Humor', thumb: '', author: 'Colin Robertson', type: types.poster, group: group.puzzle, orientation: orient.portrait, cls:'hidden', feeder: [] },
+    { round: 0, title: 'Gumball', thumb: '', author: 'Jess McGatha', type: types.poster, group: group.puzzle, orientation: orient.portrait, cls:'hidden', feeder: [] },
+    { round: 0, title: 'Paper Products', thumb: '', author: 'Colin Robertson', type: types.poster, group: group.puzzle, orientation: orient.portrait, cls:'hidden', feeder: [] },
+    { round: 0, title: 'Spaghetti Code', thumb: '', author: 'Joseph Joy', type: types.poster, group: group.puzzle, orientation: orient.portrait, cls:'hidden', feeder: [] },
 
-    { round: 2, title: 'Active Lifestyle', thumb: 'act', author: 'Martyn Lovell', type: types.rebus, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 1, title: 'America The Beautiful', thumb: 'ame', author: 'Chris Jeuell', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 2, title: 'Autumn', thumb: 'aut', author: 'Rorke Haining', type: types.search, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:2}] },
-    { round: 1, title: 'Biomes Of The World', thumb: 'bio', author: 'Zhenya Ross', type: types.search, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 3, title: 'Cartography', thumb: 'car', author: 'Jake Lui', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 2, title: 'Disney And The Great Outdoors', thumb: 'dis', author: 'Chris Jeuell', type: types.code, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 1, title: 'Down Under', thumb: 'dun', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 3, title: 'Down, Across, And All Around', file: 'DownAcrossAndAllAround', thumb: 'dac', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 4, title: 'Fences', thumb: 'fen', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'coastal',number:0}] },
-    { round: 3, title: 'Gardens', thumb: 'gar', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.landscape, ir:false, feeder: [] },
-    { round: 3, title: 'Grab Crass In The Great Doubt Oars', thumb: 'gra', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 1, title: 'Hippocampus', thumb: 'hip', author: 'Joe Tomkinson', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 3, title: 'Jokes Around The Campfire', thumb: 'jok', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 3, title: 'K2', thumb: 'k2', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 1, title: 'Networked Hints', thumb: 'net', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 4, title: 'Outdoor Action!', file: 'OutdoorAction', thumb: 'out', author: 'Martyn Lovell', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'coastal',number:1}] },
-    { round: 1, title: 'Posters', thumb: 'pos', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 2, title: 'Rushmore', thumb: 'rus', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 4, title: 'Shouldn’t That Rhyme?', file: 'ShouldntThatRhyme', thumb: 'sho', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'coastal',number:2}] },
-    { round: 3, title: 'Signposts', thumb: 'sig', author: 'Tim Hannifin', type: types.word, group: group.puzzle, orientation: orient.landscape, ir:false, feeder: [] },
-    { round: 1, title: 'Ski Resort', thumb: 'ski', author: 'Joey Marianer', type: types.jigsaw, group: group.puzzle, orientation: orient.landscape, ir:false, feeder: [] },
-    { round: 4, title: 'Slow Down!', file:'SlowDown', thumb: 'slo', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 2, title: 'Spring', thumb: 'spr', author: 'Rorke Haining', type: types.code, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:0}] },
-    { round: 2, title: 'Summer', thumb: 'sum', author: 'Rorke Haining', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:1}] },
-    { round: 4, title: 'The Hunt', thumb: 'hun', author: 'Joey Marianer', type: types.search, group: group.puzzle, orientation: orient.landscape, ir:false, feeder: [] },
-    { round: 4, title: 'There’s Air in the Something Tonight', file: 'TheresAir', thumb: 'air', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'coastal',number:3}] },
-    { round: 3, title: 'Tire Change', thumb: 'tir', author: 'Ryan Berry', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 5, title: 'Traveling Salesman', thumb: 'tra', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 1, title: 'Up For Air', thumb: 'upf', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.landscape, ir:false, feeder: [] },
-    { round: 4, title: 'Waterfalls', thumb: 'wat', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    { round: 2, title: 'Winter', thumb: 'win', author: 'Rorke Haining', type: types.code, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [{meta:'anthem',number:3}] },
+    { round: 2, title: 'Active Lifestyle', thumb: 'act', author: 'Martyn Lovell', type: types.rebus, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 1, title: 'America The Beautiful', thumb: 'ame', author: 'Chris Jeuell', type: types.trivia, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 2, title: 'Autumn', thumb: 'aut', author: 'Rorke Haining', type: types.search, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [{meta:'anthem',number:2}] },
+    { round: 1, title: 'Biomes Of The World', thumb: 'bio', author: 'Zhenya Ross', type: types.search, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 3, title: 'Cartography', thumb: 'car', author: 'Jake Lui', type: types.logic, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 2, title: 'Disney And The Great Outdoors', thumb: 'dis', author: 'Chris Jeuell', type: types.code, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 1, title: 'Down Under', thumb: 'dun', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 3, title: 'Down, Across, And All Around', file: 'DownAcrossAndAllAround', thumb: 'dac', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 4, title: 'Fences', thumb: 'fen', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [{meta:'coastal',number:0}] },
+    { round: 3, title: 'Gardens', thumb: 'gar', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.landscape, cls:'', feeder: [] },
+    { round: 3, title: 'Grab Crass In The Great Doubt Oars', thumb: 'gra', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 1, title: 'Hippocampus', thumb: 'hip', author: 'Joe Tomkinson', type: types.logic, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 3, title: 'Jokes Around The Campfire', thumb: 'jok', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 3, title: 'K2', thumb: 'k2', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 1, title: 'Networked Hints', thumb: 'net', author: 'Phil Nicolle', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 4, title: 'Outdoor Action!', file: 'OutdoorAction', thumb: 'out', author: 'Martyn Lovell', type: types.trivia, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [{meta:'coastal',number:1}] },
+    { round: 1, title: 'Posters', thumb: 'pos', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 2, title: 'Rushmore', thumb: 'rus', author: 'David Garber', type: types.trivia, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 4, title: 'Shouldn’t That Rhyme?', file: 'ShouldntThatRhyme', thumb: 'sho', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [{meta:'coastal',number:2}] },
+    { round: 3, title: 'Signposts', thumb: 'sig', author: 'Tim Hannifin', type: types.word, group: group.puzzle, orientation: orient.landscape, cls:'', feeder: [] },
+    { round: 1, title: 'Ski Resort', thumb: 'ski', author: 'Joey Marianer', type: types.jigsaw, group: group.puzzle, orientation: orient.landscape, cls:'', feeder: [] },
+    { round: 4, title: 'Slow Down!', file:'SlowDown', thumb: 'slo', author: 'Chris Jeuell', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 2, title: 'Spring', thumb: 'spr', author: 'Rorke Haining', type: types.code, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [{meta:'anthem',number:0}] },
+    { round: 2, title: 'Summer', thumb: 'sum', author: 'Rorke Haining', type: types.logic, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [{meta:'anthem',number:1}] },
+    { round: 4, title: 'The Hunt', thumb: 'hun', author: 'Joey Marianer', type: types.search, group: group.puzzle, orientation: orient.landscape, cls:'', feeder: [] },
+    { round: 4, title: 'There’s Air in the Something Tonight', file: 'TheresAir', thumb: 'air', author: 'Martyn Lovell', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [{meta:'coastal',number:3}] },
+    { round: 3, title: 'Tire Change', thumb: 'tir', author: 'Ryan Berry', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    // { round: 5, title: 'Traveling Salesman', thumb: 'tra', author: 'David Garber', type: types.logic, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 1, title: 'Up For Air', thumb: 'upf', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.landscape, cls:'', feeder: [] },
+    { round: 4, title: 'Waterfalls', thumb: 'wat', author: 'David Garber', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 2, title: 'Winter', thumb: 'win', author: 'Rorke Haining', type: types.code, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [{meta:'anthem',number:3}] },
 
-    // { round: 5, title: 'Feel The Nature', thumb: 'fee', author: 'Kensi Hartman', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 5, title: 'Outlines', thumb: 'oli', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 5, title: 'Parking Places', thumb: 'par', author: 'Peter Golde', type: types.word, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 5, title: 'PBN1: Hot Summer Day', thumb: 'pbn', author: 'Jeffrey Lin', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
-    // { round: 5, title: 'Up to the Campgrounds', thumb: 'cam', author: 'Wei-Hwa Huang', type: types.logic, group: group.puzzle, orientation: orient.portrait, ir:false, feeder: [] },
+    // { round: 5, title: 'Feel The Nature', thumb: 'fee', author: 'Kensi Hartman', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    // { round: 5, title: 'Outlines', thumb: 'oli', author: 'Rorke Haining', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    // { round: 5, title: 'Parking Places', thumb: 'par', author: 'Peter Golde', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    // { round: 5, title: 'PBN1: Hot Summer Day', thumb: 'pbn', author: 'Jeffrey Lin', type: types.logic, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    // { round: 5, title: 'Up to the Campgrounds', thumb: 'cam', author: 'Wei-Hwa Huang', type: types.logic, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
 
-    { round: 2, title: 'Annual Anthem', thumb: 'ann', author: 'Rorke Haining', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'anthem', forget: 'AA_Forget.xhtml' },
-    { round: 4, title: 'Coastal Erosion', thumb: 'coa', author: 'Martyn Lovell', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'coastal', forget: 'CE_Forget.xhtml' },
-    // { round: 5, title: 'Up and Down Mount Everest', thumb: 'mte', author: 'Wei-Hwa Huang', type: types.meta, group: group.meta, orientation: orient.portrait, ir:false, metaInfo: 'everest' },            
+    { round: 2, title: 'Annual Anthem', thumb: 'ann', author: 'Rorke Haining', type: types.meta, group: group.meta, orientation: orient.portrait, cls:'', metaInfo: 'anthem', forget: 'AA_Forget.xhtml' },
+    { round: 4, title: 'Coastal Erosion', thumb: 'coa', author: 'Martyn Lovell', type: types.meta, group: group.meta, orientation: orient.portrait, cls:'', metaInfo: 'coastal', forget: 'CE_Forget.xhtml' },
+    // { round: 5, title: 'Up and Down Mount Everest', thumb: 'mte', author: 'Wei-Hwa Huang', type: types.meta, group: group.meta, orientation: orient.portrait, cls:'', metaInfo: 'everest' },            
 ];
 
 var rounds = [
@@ -122,7 +132,15 @@ var _urlEventArguments = (window.location.search.indexOf('gs25') > 0 || window.l
 // Fill in the puzzle hrefs
 for (var puz of puzzles) {
     if (!puz['file']) {
-        puz['file'] = puz.title.replaceAll(' ', '');
+        // The assumed name is a CamelCase version of the original
+        var words = puz.title.split(' ');
+        puz['file'] = '';
+        for (var w = 0; w < words.length; w++) {
+            if (words[w].length > 0) {
+                var word = words[w][0].toUpperCase() + words[w].substring(1);
+                puz['file'] += word;
+            }
+        }
     }
     puz['href'] = puz['file'] + '.xhtml' + _urlEventArguments;
 }

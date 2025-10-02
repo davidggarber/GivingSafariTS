@@ -2228,14 +2228,21 @@ export const PuzzleStatus = {
  * Update the master list of puzzles for this event
  * @param puzzle The name of this puzzle (not the filename)
  * @param status One of the statuses in PuzzleStatus
+ * @param puzzleList The relative path to the puzzle_list to update (omit if local)
  * @returns true if the new status is different than the old
  */
-export function updatePuzzleList(puzzle:string|null, status:string):boolean {
+export function updatePuzzleList(puzzle:string|null, status:string, puzzleList?:string):boolean {
     if (!puzzle) {
         puzzle = getCurFileName();
     }
-    var key = getOtherFileHref('puzzle_list', 0);
-    let pList = {};
+    let up = 0;
+    puzzleList = puzzleList || 'puzzle_list';
+    while (puzzleList.startsWith('../')) {
+        puzzleList = puzzleList.substring(3);
+        up += 1;
+    }
+    const key = getOtherFileHref(puzzleList, up);
+    let pList: {[key: string]: string} = {};
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
@@ -2255,14 +2262,21 @@ export function updatePuzzleList(puzzle:string|null, status:string):boolean {
  * Lookup the status of a puzzle
  * @param puzzle The name of a puzzle
  * @param defaultStatus The initial status, before a player updates it
+ * @param puzzleList The relative path to the puzzle_list to update (omit if local)
  * @returns The saved status
  */
-export function getPuzzleStatus(puzzle:string|null, defaultStatus?:string): string|undefined {
+export function getPuzzleStatus(puzzle:string|null, defaultStatus?:string, puzzleList?:string): string|undefined {
     if (!puzzle) {
         puzzle = getCurFileName();
     }
-    var key = getOtherFileHref('puzzle_list', 0);
-    let pList = {};
+    let up = 0;
+    puzzleList = puzzleList || 'puzzle_list';
+    while (puzzleList.startsWith('../')) {
+        puzzleList = puzzleList.substring(3);
+        up += 1;
+    }
+    const key = getOtherFileHref(puzzleList, up);
+    let pList: {[key: string]: string} = {};
     if (key in localStorage) {
         const item = localStorage.getItem(key);
         if (item) {
@@ -11496,7 +11510,23 @@ export function debugTagAttrs(elmt:Element, expandFormulas:boolean=false): strin
  */
 export function traceTagComment(src:Element, dest:Element|Node[], expandFormulas:boolean) {
   const dbg1 = debugTagAttrs(src);
-  const cmt1 = consoleComment(dbg1);
+  let complex:any;
+  try {
+    // Don't let an exception derail anything else
+    complex = complexAttribute(dbg1);
+    if (typeof(complex) !== "string" ) {
+      complex = JSON.stringify(complex);
+    }
+  }
+  catch (ex) {
+    if (ex instanceof(Error)) {
+      complex = ex.name + ': ' + ex.message;
+    }
+    else {
+      complex = "Exception: " + ex;
+    }
+  }
+  const cmt1 = consoleComment(dbg1 + "➟" + complex as string);
   if (Array.isArray(dest)) {
     pushRange(dest, cmt1);
   }
@@ -12027,11 +12057,26 @@ export function expandContents(src:HTMLElement):Node[] {
       pushRange(dest, cloneTextNode(child as Text));
     }
     else {
+      echoCommentsToConsole(child);
       dest.push(cloneNode(child));
     }
   }
 
   return dest;
+}
+
+function echoCommentsToConsole(node: Node) {
+  if (node.nodeType == Node.COMMENT_NODE) {
+    // Comment nodes echo to the console
+    const comment = node as Comment;
+    const complex = complexAttribute(comment.textContent);
+    if (typeof(complex) === "string" ) {
+      console.log(comment.textContent + ' => ' + complex as string);
+    }
+    else {
+      console.log(comment.textContent + ' => ' + JSON.stringify(complex));
+    }
+  }
 }
 
 /**
@@ -12122,6 +12167,7 @@ function cloneWithContext(elmt:HTMLElement):Element {
         appendRange(clone, cloneTextNode(child as Text));
       }
       else {
+        echoCommentsToConsole(child);
         clone.insertBefore(cloneNode(child), null);
       }
     }
@@ -13033,7 +13079,7 @@ export function evaluateFormula(str:string|null):any {
  * @param required Whether the attribute is required, in which case it will throw if not present. 
  * Otherwise it would return undefined
  * @param onerr What to return in the special case of an exception. If omitted, exceptions throw.
- * @returns Any data type
+ * @returns Any data type, or undefined if attr isn't present at all
  */
 export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boolean, required?:boolean, onerr?:any):any {
   const val = elmt.getAttributeNS('', attr);
@@ -13885,19 +13931,19 @@ export function startIfBlock(src:HTMLElement, result:ifResult):Node[] {
       else if ((value = evaluateAttribute(src, 'ne', false, false)) !== undefined) {  // not-equals
         result.passed = test !== value;  // REVIEW: no casting of either
       }
-      else if (value = evaluateAttribute(src, 'lt', false, false)) {  // less-than
+      else if ((value = evaluateAttribute(src, 'lt', false, false)) != null) {  // less-than
         result.passed = makeFloat(test, testTok) < makeFloat(value, elementSourceOffseter(src, 'lt'));
       }
-      else if (value = evaluateAttribute(src, 'le', false, false)) {  // less-than or equals
+      else if ((value = evaluateAttribute(src, 'le', false, false)) != null) {  // less-than or equals
         result.passed = makeFloat(test, testTok) <= makeFloat(value, elementSourceOffseter(src, 'le'));
       }
-      else if (value = evaluateAttribute(src, 'gt', false, false)) {  // greater-than
+      else if ((value = evaluateAttribute(src, 'gt', false, false)) != null) {  // greater-than
         result.passed = makeFloat(test, testTok) > makeFloat(value, elementSourceOffseter(src, 'gt'));
       }
-      else if (value = evaluateAttribute(src, 'ge', false, false)) {  // greater-than or equals
+      else if ((value = evaluateAttribute(src, 'ge', false, false)) != null) {  // greater-than or equals
         result.passed = makeFloat(test, testTok) >= makeFloat(value, elementSourceOffseter(src, 'ge'));
       }
-      else if (value = evaluateAttribute(src, 'in', false, false)) {  // string contains
+      else if ((value = evaluateAttribute(src, 'in', false, false)) != null) {  // string contains
         if (Array.isArray(value)) {
           result.passed = value.indexOf(test) >= 0;
         }

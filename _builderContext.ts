@@ -802,7 +802,7 @@ export function evaluateFormula(str:string|null):any {
  * @param required Whether the attribute is required, in which case it will throw if not present. 
  * Otherwise it would return undefined
  * @param onerr What to return in the special case of an exception. If omitted, exceptions throw.
- * @returns Any data type
+ * @returns Any data type, or undefined if attr isn't present at all
  */
 export function evaluateAttribute(elmt:Element, attr:string, implicitFormula:boolean, required?:boolean, onerr?:any):any {
   const val = elmt.getAttributeNS('', attr);

@@ -266,7 +266,23 @@ export function debugTagAttrs(elmt:Element, expandFormulas:boolean=false): strin
  */
 export function traceTagComment(src:Element, dest:Element|Node[], expandFormulas:boolean) {
   const dbg1 = debugTagAttrs(src);
-  const cmt1 = consoleComment(dbg1);
+  let complex:any;
+  try {
+    // Don't let an exception derail anything else
+    complex = complexAttribute(dbg1);
+    if (typeof(complex) !== "string" ) {
+      complex = JSON.stringify(complex);
+    }
+  }
+  catch (ex) {
+    if (ex instanceof(Error)) {
+      complex = ex.name + ': ' + ex.message;
+    }
+    else {
+      complex = "Exception: " + ex;
+    }
+  }
+  const cmt1 = consoleComment(dbg1 + "➟" + complex as string);
   if (Array.isArray(dest)) {
     pushRange(dest, cmt1);
   }

@@ -2043,13 +2043,20 @@ exports.PuzzleStatus = {
  * Update the master list of puzzles for this event
  * @param puzzle The name of this puzzle (not the filename)
  * @param status One of the statuses in PuzzleStatus
+ * @param puzzleList The relative path to the puzzle_list to update (omit if local)
  * @returns true if the new status is different than the old
  */
-function updatePuzzleList(puzzle, status) {
+function updatePuzzleList(puzzle, status, puzzleList) {
     if (!puzzle) {
         puzzle = getCurFileName();
     }
-    var key = getOtherFileHref('puzzle_list', 0);
+    let up = 0;
+    puzzleList = puzzleList || 'puzzle_list';
+    while (puzzleList.startsWith('../')) {
+        puzzleList = puzzleList.substring(3);
+        up += 1;
+    }
+    const key = getOtherFileHref(puzzleList, up);
     let pList = {};
     if (key in localStorage) {
         const item = localStorage.getItem(key);
@@ -2070,13 +2077,20 @@ exports.updatePuzzleList = updatePuzzleList;
  * Lookup the status of a puzzle
  * @param puzzle The name of a puzzle
  * @param defaultStatus The initial status, before a player updates it
+ * @param puzzleList The relative path to the puzzle_list to update (omit if local)
  * @returns The saved status
  */
-function getPuzzleStatus(puzzle, defaultStatus) {
+function getPuzzleStatus(puzzle, defaultStatus, puzzleList) {
     if (!puzzle) {
         puzzle = getCurFileName();
     }
-    var key = getOtherFileHref('puzzle_list', 0);
+    let up = 0;
+    puzzleList = puzzleList || 'puzzle_list';
+    while (puzzleList.startsWith('../')) {
+        puzzleList = puzzleList.substring(3);
+        up += 1;
+    }
+    const key = getOtherFileHref(puzzleList, up);
     let pList = {};
     if (key in localStorage) {
         const item = localStorage.getItem(key);
@@ -10253,7 +10267,23 @@ exports.debugTagAttrs = debugTagAttrs;
  */
 function traceTagComment(src, dest, expandFormulas) {
     const dbg1 = debugTagAttrs(src);
-    const cmt1 = consoleComment(dbg1);
+    let complex;
+    try {
+        // Don't let an exception derail anything else
+        complex = complexAttribute(dbg1);
+        if (typeof (complex) !== "string") {
+            complex = JSON.stringify(complex);
+        }
+    }
+    catch (ex) {
+        if (ex instanceof (Error)) {
+            complex = ex.name + ': ' + ex.message;
+        }
+        else {
+            complex = "Exception: " + ex;
+        }
+    }
+    const cmt1 = consoleComment(dbg1 + "➟" + complex);
     if (Array.isArray(dest)) {
         pushRange(dest, cmt1);
     }
@@ -10767,12 +10797,26 @@ function expandContents(src) {
             pushRange(dest, cloneTextNode(child));
         }
         else {
+            echoCommentsToConsole(child);
             dest.push(cloneNode(child));
         }
     }
     return dest;
 }
 exports.expandContents = expandContents;
+function echoCommentsToConsole(node) {
+    if (node.nodeType == Node.COMMENT_NODE) {
+        // Comment nodes echo to the console
+        const comment = node;
+        const complex = complexAttribute(comment.textContent);
+        if (typeof (complex) === "string") {
+            console.log(comment.textContent + ' => ' + complex);
+        }
+        else {
+            console.log(comment.textContent + ' => ' + JSON.stringify(complex));
+        }
+    }
+}
 /**
  * Some HTML elements and attributes are immediately acted upon by the DOM.
  * To delay that until after builds (especially <for> and <if>),
@@ -10858,6 +10902,7 @@ function cloneWithContext(elmt) {
                 appendRange(clone, cloneTextNode(child));
             }
             else {
+                echoCommentsToConsole(child);
                 clone.insertBefore(cloneNode(child), null);
             }
         }
@@ -11718,7 +11763,7 @@ exports.evaluateFormula = evaluateFormula;
  * @param required Whether the attribute is required, in which case it will throw if not present.
  * Otherwise it would return undefined
  * @param onerr What to return in the special case of an exception. If omitted, exceptions throw.
- * @returns Any data type
+ * @returns Any data type, or undefined if attr isn't present at all
  */
 function evaluateAttribute(elmt, attr, implicitFormula, required, onerr) {
     const val = elmt.getAttributeNS('', attr);
@@ -12484,19 +12529,19 @@ function startIfBlock(src, result) {
             else if ((value = evaluateAttribute(src, 'ne', false, false)) !== undefined) { // not-equals
                 result.passed = test !== value; // REVIEW: no casting of either
             }
-            else if (value = evaluateAttribute(src, 'lt', false, false)) { // less-than
+            else if ((value = evaluateAttribute(src, 'lt', false, false)) != null) { // less-than
                 result.passed = makeFloat(test, testTok) < makeFloat(value, elementSourceOffseter(src, 'lt'));
             }
-            else if (value = evaluateAttribute(src, 'le', false, false)) { // less-than or equals
+            else if ((value = evaluateAttribute(src, 'le', false, false)) != null) { // less-than or equals
                 result.passed = makeFloat(test, testTok) <= makeFloat(value, elementSourceOffseter(src, 'le'));
             }
-            else if (value = evaluateAttribute(src, 'gt', false, false)) { // greater-than
+            else if ((value = evaluateAttribute(src, 'gt', false, false)) != null) { // greater-than
                 result.passed = makeFloat(test, testTok) > makeFloat(value, elementSourceOffseter(src, 'gt'));
             }
-            else if (value = evaluateAttribute(src, 'ge', false, false)) { // greater-than or equals
+            else if ((value = evaluateAttribute(src, 'ge', false, false)) != null) { // greater-than or equals
                 result.passed = makeFloat(test, testTok) >= makeFloat(value, elementSourceOffseter(src, 'ge'));
             }
-            else if (value = evaluateAttribute(src, 'in', false, false)) { // string contains
+            else if ((value = evaluateAttribute(src, 'in', false, false)) != null) { // string contains
                 if (Array.isArray(value)) {
                     result.passed = value.indexOf(test) >= 0;
                 }

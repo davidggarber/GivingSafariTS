@@ -1,5 +1,5 @@
 import { isDebug, isTrace, theBoiler } from "./_boilerplate";
-import { cloneAttributes, cloneTextNode } from "./_builderContext";
+import { cloneAttributes, cloneTextNode, complexAttribute } from "./_builderContext";
 import { startForLoop } from "./_builderFor";
 import { ifResult, startIfBlock } from "./_builderIf";
 import { inputAreaTagNames, startInputArea } from "./_builderInput";
@@ -512,11 +512,26 @@ export function expandContents(src:HTMLElement):Node[] {
       pushRange(dest, cloneTextNode(child as Text));
     }
     else {
+      echoCommentsToConsole(child);
       dest.push(cloneNode(child));
     }
   }
 
   return dest;
+}
+
+function echoCommentsToConsole(node: Node) {
+  if (node.nodeType == Node.COMMENT_NODE) {
+    // Comment nodes echo to the console
+    const comment = node as Comment;
+    const complex = complexAttribute(comment.textContent);
+    if (typeof(complex) === "string" ) {
+      console.log(comment.textContent + ' => ' + complex as string);
+    }
+    else {
+      console.log(comment.textContent + ' => ' + JSON.stringify(complex));
+    }
+  }
 }
 
 /**
@@ -607,6 +622,7 @@ function cloneWithContext(elmt:HTMLElement):Element {
         appendRange(clone, cloneTextNode(child as Text));
       }
       else {
+        echoCommentsToConsole(child);
         clone.insertBefore(cloneNode(child), null);
       }
     }

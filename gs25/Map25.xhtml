@@ -110,12 +110,13 @@
           </ttr>    
         </tthead>
 
+        <!--{minRound}-->
         <ttbody id="puzzle_list">
           <for each="puz" in="puzzles">
-            <if test="puz.group" ne="meta">
-              <if test="puz.round" ge="{minRound}">
-                <if test="puz.round" le="{maxRound}">
-                  <ttr id="{puz.file}" name="{puz.title}" class="sortable">
+            <if test="{puz.group}" ne="meta">
+              <if test="{puz.round}" ge="{minRound}">
+                <if test="{puz.round}" le="{maxRound}">
+                  <ttr id="{puz.file}" name="{puz.title}" class="sortable {puz.cls}">
                     <ttd class="spacer">&nbsp;</ttd>
                     <ttd class="presence"></ttd>
                     <if test="{showRounds}">
@@ -216,12 +217,6 @@
           <span class="yes-logged-in" style="font-weight: bold;">You are logged in as </span>
           <span id="Login-bar" />
         </p>
-        <!--p id="team-login-perks">
-          <span class="not-logged-in-team">If you join a team, you will be able to see each other's progress.</span>
-          <span class="yes-logged-in-team">Teams see each other's presence (on left) and solves (right).</span>          
-          <br />You won't see solutions, so you can still solve for yourself.
-          <br />But if a puzzle unlocks meta materials, an unlock by anyone on the team will propogate to all.
-        </p-->
 
         <div id="team-roster" />
       </div>
@@ -337,7 +332,7 @@
 
     <template id="charity-shout">
       <div id="charity">
-        <p>Our featured charity this year is <a href="https://www.rainierscholars.org/" target="_blank">Rainier Scholars</a>.
+        <p style="font-size: 14pt;">Our featured charity this year is <a href="https://www.rainierscholars.org/" target="_blank">Rainier Scholars</a>.
           <span style="position: relative;"><img src="Images/Rainier-Scholars.png" style="position:relative; display:inline-block; height:0.5in; top:10px;" /></span>
         </p>
         <p style="font-style: italic; font-weight: normal;">
