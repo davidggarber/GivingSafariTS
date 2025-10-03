@@ -17,7 +17,7 @@
       // <![CDATA[
 
       var search = window.location.search.toLowerCase();
-      var minRound = minRoundFromUrl();
+      var minRound = Math.max(1, minRoundFromUrl());
       var maxRound = maxRoundFromUrl();
       var withMetas = search.includes('metas=true');
 
