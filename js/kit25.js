@@ -5013,9 +5013,61 @@ function hasProgress(event) {
  * @param page
  */
 function clicksFindInputs(page) {
-    page.addEventListener('click', function (e) { focusNearestInput(e); });
+    page.addEventListener('pointerdown', function (e) { startSloppyClick(e); });
+    page.addEventListener('pointerup', function (e) { endSloppyClick(e); });
+    page.addEventListener('pointerleave', function () { cancelSloppyClick(); });
 }
 exports.clicksFindInputs = clicksFindInputs;
+let _sloppyTargets = null;
+let _sloppyCaret = null;
+let _sloppyPrevDown = 0;
+function startSloppyClick(evt) {
+    _sloppyTargets = document.elementsFromPoint(evt.clientX, evt.clientY);
+    _sloppyCaret = document.caretRangeFromPoint(evt.clientX, evt.clientY);
+    const now = Date.now();
+    if ((now - _sloppyPrevDown) < 300) {
+        cancelSloppyClick(); // Double-clicks are disqualified
+    }
+    ;
+    _sloppyPrevDown = now;
+}
+function endSloppyClick(evt) {
+    if (_sloppyTargets) {
+        const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
+        let match = targets.length == _sloppyTargets.length;
+        if (match) {
+            for (let i = 0; i < targets.length; i++) {
+                if (targets[i] != _sloppyTargets[i]) {
+                    match = false;
+                    break;
+                }
+            }
+        }
+        if (match) {
+            const caret = document.caretRangeFromPoint(evt.clientX, evt.clientY);
+            if (isSameCaret(_sloppyCaret, caret)) {
+                focusNearestInput(evt);
+            }
+        }
+    }
+    cancelSloppyClick();
+}
+function cancelSloppyClick() {
+    _sloppyTargets = null;
+    _sloppyCaret = null;
+}
+function isSameCaret(a, b) {
+    if (!a && !b) {
+        return true;
+    }
+    if (!a || !b) {
+        return false;
+    }
+    if (a.startContainer != a.endContainer || a.startContainer != b.startContainer || b.startContainer != b.endContainer) {
+        return false;
+    }
+    return a.startOffset == a.endOffset && b.startOffset == b.endOffset && a.startOffset == b.startOffset;
+}
 /**
  * Move the focus to the nearest input-appropriate element.
  * @param evt A mouse event
@@ -5031,6 +5083,11 @@ function focusNearestInput(evt) {
             if ((target.getAttribute('disabled') === null) && (isArrowKeyElement(target) || isTag(target, 'a'))) {
                 nearest = target; // Shouldn't need my help
                 break;
+            }
+            if (findParentOfClass(target, 'word-select-area') || findParentOfClass(target, 'straight-edge-area')
+                || findParentOfClass(target, 'hashi-bridge-area')
+                || findParentOfClass(target, 'moveable') || findParentOfClass(target, 'drop-target')) {
+                return; // Drag affect regions
             }
             if (hasClass(target, 'stampTool') || hasClass(target, 'stampLock')
                 || findParentOfClass(target, 'stampable') || findParentOfClass(target, 'cross-off')) {
