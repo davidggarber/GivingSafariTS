@@ -9524,7 +9524,7 @@ function updateLoginUI() {
   }
 }
 
-type SyncCallback = (any) => void;
+type SyncCallback = (json:any) => void;
 
 async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallback, textCallback?:SyncCallback) {
   try {
@@ -9779,6 +9779,7 @@ function createRatingScale(label:string, scale:string, img:string, max:number):H
   for (let i = 1; i <= max; i++) {
     const star = document.createElement('img');
     star.src = '../Images/Stars/' + img + '-' + i + '.png';
+    star.title = `${scale}: ${i} out of ${max}`;
     toggleClass(star, 'rating-star', true);
     star.setAttribute('data-rating-scale', scale);
     star.setAttribute('data-rating-value', i.toString());
@@ -14659,9 +14660,14 @@ export function getTemplate(tempId:string) :HTMLTemplateElement {
 }
 
 /**
+ * Any method that creates <template> nodes
+ */
+type TemplateBuilder = () => HTMLTemplateElement;
+
+/**
  * Map template names to methods than can generate that template.
  */
-const builtInTemplates = {
+const builtInTemplates: {[key: string]: TemplateBuilder}  = {
   paintByNumbers: paintByNumbersTemplate,
   paintByColorNumbers: paintByColorNumbersTemplate,
   classStampPalette: classStampPaletteTemplate,
@@ -15297,7 +15303,7 @@ function textIntoScratchDiv(text:string, div:HTMLDivElement) {
     }
 }
 
-const allowDropOnScratchPad = (ev) => { ev.preventDefault(); };
+const allowDropOnScratchPad = (ev:DragEvent) => { ev.preventDefault(); };
 
 function attachDragHandle(div:HTMLDivElement) {
     const handle = document.createElement('img');
@@ -15305,7 +15311,7 @@ function attachDragHandle(div:HTMLDivElement) {
     toggleClass(handle, 'scratch-drag-handle', true);
     div.appendChild(handle);
 
-    const doScratchDrop = (ev) => dropScratchDiv(ev);
+    const doScratchDrop = (ev:DragEvent) => dropScratchDiv(ev);
     
     div.setAttribute('draggable', 'true');
     div.addEventListener('dragstart', startDragScratch);

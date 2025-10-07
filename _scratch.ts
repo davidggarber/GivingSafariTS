@@ -380,7 +380,7 @@ function textIntoScratchDiv(text:string, div:HTMLDivElement) {
     }
 }
 
-const allowDropOnScratchPad = (ev) => { ev.preventDefault(); };
+const allowDropOnScratchPad = (ev:DragEvent) => { ev.preventDefault(); };
 
 function attachDragHandle(div:HTMLDivElement) {
     const handle = document.createElement('img');
@@ -388,7 +388,7 @@ function attachDragHandle(div:HTMLDivElement) {
     toggleClass(handle, 'scratch-drag-handle', true);
     div.appendChild(handle);
 
-    const doScratchDrop = (ev) => dropScratchDiv(ev);
+    const doScratchDrop = (ev:DragEvent) => dropScratchDiv(ev);
     
     div.setAttribute('draggable', 'true');
     div.addEventListener('dragstart', startDragScratch);

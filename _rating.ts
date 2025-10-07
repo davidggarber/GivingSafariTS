@@ -63,6 +63,7 @@ function createRatingScale(label:string, scale:string, img:string, max:number):H
   for (let i = 1; i <= max; i++) {
     const star = document.createElement('img');
     star.src = '../Images/Stars/' + img + '-' + i + '.png';
+    star.title = `${scale}: ${i} out of ${max}`;
     toggleClass(star, 'rating-star', true);
     star.setAttribute('data-rating-scale', scale);
     star.setAttribute('data-rating-value', i.toString());

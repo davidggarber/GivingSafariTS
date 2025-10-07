@@ -23,9 +23,14 @@ export function getTemplate(tempId:string) :HTMLTemplateElement {
 }
 
 /**
+ * Any method that creates <template> nodes
+ */
+type TemplateBuilder = () => HTMLTemplateElement;
+
+/**
  * Map template names to methods than can generate that template.
  */
-const builtInTemplates = {
+const builtInTemplates: {[key: string]: TemplateBuilder}  = {
   paintByNumbers: paintByNumbersTemplate,
   paintByColorNumbers: paintByColorNumbersTemplate,
   classStampPalette: classStampPaletteTemplate,

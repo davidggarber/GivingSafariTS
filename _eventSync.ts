@@ -269,7 +269,7 @@ function updateLoginUI() {
   }
 }
 
-type SyncCallback = (any) => void;
+type SyncCallback = (json:any) => void;
 
 async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallback, textCallback?:SyncCallback) {
   try {
