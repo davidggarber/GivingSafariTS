@@ -1254,28 +1254,23 @@ export function showDecoder(show: boolean) {
 // Types
 //
 
-type CacheProgress = {
-    id: number;
-    time: Date;
-    fraction: number;
-}
-
 /**
  * Cache structure for of all collections that persist on page refresh
  */
 type LocalCacheStruct = {
-    letters: object;    // number => string
-    words: object;      // number => string
-    notes: object;      // number => string
-    checks: object;     // number => boolean
-    containers: object; // number => number
-    positions: object;  // number => Position
-    stamps: object;     // number => string
-    highlights: object; // number => boolean
-    controls: object;   // id => attribute
-    scratch: object;    // (x,y) => string
+    letters:    {[key: number]: string};   // number => string
+    words:      {[key: number]: string};   // number => string
+    notes:      {[key: number]: string};   // number => string
+    checks:     {[key: number]: boolean};  // number => boolean
+    containers: {[key: number]: number};   // number => number
+    positions:  {[key: number]: Position}; // number => Position
+    stamps:     {[key: number]: string};   // number => string
+    highlights: {[key: number]: boolean};  // number => boolean
+    controls:   {[key: string]: string};   // id => attribute
+    scratch:    {[key: string]: string};   // key is a rectangle, joined by ',' into a string
     edges: string[];    // strings
     guesses: GuessLog[];
+    usage: string|undefined;
     // started: Date|null;
     // latest: Date|null;
     time: Date|null;
@@ -1298,6 +1293,7 @@ var localCache:LocalCacheStruct = {
     scratch: {}, 
     edges: [], 
     guesses: [], 
+    usage: undefined,
     // started: null, 
     // latest: null ,
     time: null,
@@ -1544,7 +1540,7 @@ function isEmptyCache():boolean {
     if (Object.values(localCache.words).find(x => x != '') != null) {
         return false;
     }
-    if (Object.values(localCache.positions).find(x => x != '') != null) {
+    if (Object.values(localCache.positions).length > 0) {
         return false;
     }
     if (Object.keys(localCache.stamps).length > 0) {
@@ -1716,7 +1712,7 @@ export function saveGuessHistory(guesses: GuessLog[]) {
  * @param scratchPad The parent div of all notes
  */
 export function saveScratches(scratchPad:HTMLDivElement) {
-    const map = {};
+    const map:{[key: string]: string} = {};
     const rectSP = scratchPad.getBoundingClientRect();
     const divs = scratchPad.getElementsByClassName('scratch-div');
     for (let i = 0; i < divs.length; i++) {
@@ -1743,7 +1739,7 @@ type ValuableElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElemen
  * If omitted, the default is the value of an form field.
  */
 export function saveStates() {
-    const map = {};
+    const map:{[key: string]: string} = {};
     const savers = document.getElementsByClassName('save-state');
     for (let i = 0; i < savers.length; i++) {
         const elmt = savers[i];
@@ -1861,13 +1857,13 @@ export function findGlobalIndex(cls: string, index: number, suffix?:string) :HTM
  * @param cls the class tag on all applicable elements
  * @param suffix the optional suffix of the global indeces
  */
-export function mapGlobalIndeces(cls:string, suffix?:string):object {
-    const map = {};
+export function mapGlobalIndeces(cls:string, suffix?:string):{[key: number]: HTMLElement} {
+    const map:{[key: number]: HTMLElement} = {};
     const elements = document.getElementsByClassName(cls);
     for (let i = 0; i < elements.length; i++) {
         const index = getGlobalIndex(elements[i] as HTMLElement, suffix);
         if (index >= 0) {
-            map[index] = elements[String(i)] as HTMLElement;
+            map[index] = elements[i] as HTMLElement;
         }
     }
     return map;
@@ -1973,7 +1969,7 @@ let currently_restoring:HTMLElement|null = null;
  * Restore any saved letter input values
  * @param values A dictionary of index=>string
  */
-function restoreLetters(values:object) {
+function restoreLetters(values:{[key: number]: string}) {
     localCache.letters = values;
     var inputs = document.getElementsByClassName('letter-input');
     for (let i = 0; i < inputs.length; i++) {
@@ -1992,7 +1988,7 @@ function restoreLetters(values:object) {
  * Restore any saved word input values
  * @param values A dictionary of index=>string
  */
-function restoreWords(values:object) {
+function restoreWords(values:{[key: number]: string}) {
     localCache.words = values;
     var inputs = document.getElementsByClassName('word-input');
     for (let i = 0; i < inputs.length; i++) {
@@ -2020,7 +2016,7 @@ function restoreWords(values:object) {
  * Restore any saved note input values
  * @param values A dictionary of index=>string
  */
-function restoreNotes(values:object) {
+function restoreNotes(values:{[key: number]: string}) {
     localCache.notes = values;
     var elements = document.getElementsByClassName('note-input');
     for (let i = 0; i < elements.length; i++) {
@@ -2037,7 +2033,7 @@ function restoreNotes(values:object) {
  * Restore any saved note input values
  * @param values A dictionary of index=>boolean
  */
-function restoreCrossOffs(values:object) {
+function restoreCrossOffs(values:{[key: number]: boolean}) {
     localCache.checks = values;
     let elements = document.getElementsByClassName('cross-off');
     for (let i = 0; i < elements.length; i++) {
@@ -2054,14 +2050,14 @@ function restoreCrossOffs(values:object) {
  * Restore any saved moveable objects to drop targets
  * @param containers A dictionary of moveable-index=>target-index
  */
-function restoreContainers(containers:object) {
+function restoreContainers(containers:{[key: number]: number}) {
     localCache.containers = containers;
     var movers = document.getElementsByClassName('moveable');
     var targets = document.getElementsByClassName('drop-target');
     // Each time an element is moved, the containers structure changes out from under us. So pre-fetch.
     const moving:number[] = [];
     for (let key in containers) {
-        moving[parseInt(key)] = parseInt(containers[key]);
+        moving[parseInt(key)] = containers[key];
     }
     for (let key in moving) {
         const mover = findGlobalIndex('moveable', parseInt(key));
@@ -2076,7 +2072,7 @@ function restoreContainers(containers:object) {
  * Restore any saved moveable objects to free-positions within their targets
  * @param positions A dictionary of index=>Position
  */
-function restorePositions(positions:object) {
+function restorePositions(positions:{[key: number]: Position}) {
     localCache.positions = positions;
     var movers = document.getElementsByClassName('moveable');
     for (let i = 0; i < movers.length; i++) {
@@ -2091,7 +2087,7 @@ function restorePositions(positions:object) {
  * Restore any saved note input values
  * @param values A dictionary of index=>string
  */
-function restoreStamps(drawings:object) {
+function restoreStamps(drawings:{[key: number]: string}) {
     localCache.stamps = drawings;
     var targets = document.getElementsByClassName('stampable');
     for (let i = 0; i < targets.length; i++) {
@@ -2109,7 +2105,7 @@ function restoreStamps(drawings:object) {
  * Restore any saved highlight toggle
  * @param highlights A dictionary of index=>boolean
  */
-function restoreHighlights(highlights) {
+function restoreHighlights(highlights:{[key: number]: boolean}) {
     localCache.highlights = highlights == undefined ? {} : highlights;
     var elements = document.getElementsByClassName('can-highlight');
     for (let i = 0; i < elements.length; i++) {
@@ -2157,7 +2153,7 @@ function restoreGuesses(guesses:GuessLog[]) {
  * Update the local cache with the latest notes, and where they're placed.
  * NOTE: only call this once any active note has been flattened.
  */
-function restoreScratches(scratch:object) {
+function restoreScratches(scratch:{[key: string]: string}) {
     localCache.scratch = scratch;
     
     scratchClear();
@@ -2175,7 +2171,7 @@ function restoreScratches(scratch:object) {
  * They must each have a unique ID. One attribute may be saved for each.
  * @param controls 
  */
-function restoreStates(controls:object) {
+function restoreStates(controls:{[key: string]: string}) {
     localCache.controls = controls;
 
     const savers = document.getElementsByClassName('save-state');
@@ -2394,7 +2390,7 @@ export function getCurFileName(no_extension:boolean = true) {
 
 // Convert the absolute href of the current window to a relative href
 // levels: 1=just this file, 2=parent folder + file, etc.
-function getRelFileHref(levels) {
+function getRelFileHref(levels:number) {
     const key = storageKey();
     const bslash = key.lastIndexOf('\\');
     const fslash = key.lastIndexOf('/');
@@ -9267,12 +9263,19 @@ export enum EventSyncActivity {
   Solve = "Solve",
 }
 
-let ActivityRank = {
+// Convert either EventSyncActivity or PuzzleStatus to a relative order
+// TODO: merge the two systems
+let ActivityRank:{[key: string]: number} = {
+  "hidden": -1,
+  "locked": 0,
   "Open": 1,
+  "loaded": 1,
   "Edit": 2,
   "Attempt": 3,
   "Unlock": 4,
+  "unlocked": 4,
   "Solve": 5,
+  "solved": 5,
 }
 
 // Support testing against a local Sync server.
@@ -9307,7 +9310,7 @@ export function setupEventSync(syncKey?:string) {
 }
 
 export async function pingEventServer(activity:EventSyncActivity, guess?:string) {
-  cacheProgress(activity);
+  trackPuzzleProgress(activity);
 
   if (!canSyncEvents || !_playerName) {
     return;
@@ -9330,11 +9333,29 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
  * Track the highest activity reached on the current puzzle.
  * @param activity 
  */
-function cacheProgress(activity:EventSyncActivity) {
+export function trackPuzzleProgress(activity:EventSyncActivity) {
   let prev = ActivityRank[_mostProgress];
   let next = ActivityRank[activity];
   if (next > prev) {
+    // _mostProgress tracks the current in-browser instance
     _mostProgress = activity;
+
+    // Look in local storage for earlier instances
+    const puzzle = puzzleTitleForSync();
+    if (puzzle) {
+      const store = 'Usage-Milestone-' + _eventName;
+      const cached = getPuzzleStatus(puzzle, undefined, store) || '';
+      if (!cached || !(cached in ActivityRank) || (ActivityRank[cached] < ActivityRank[activity])) {
+        // We have gotten farther on this puzzle than we have in the past
+        updatePuzzleList(puzzle, activity, store);
+        const data = {
+          eventName: _eventName,
+          puzzle: puzzle,
+          activity: activity,
+        };
+        callSyncApi("Usage", data);  // don't await
+      }
+    }
   }
 }
 

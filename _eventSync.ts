@@ -2,7 +2,7 @@ import { isIcon, isIFrame, isModal, isPrint, theBoiler } from "./_boilerplate";
 import { consoleTrace } from "./_builder";
 import { hasClass, toggleClass } from "./_classUtil";
 import { showRatingUI } from "./_rating";
-import { cacheLogin, getLogin, TryParseJson } from "./_storage";
+import { cacheLogin, getLogin, getPuzzleStatus, TryParseJson, updatePuzzleList } from "./_storage";
 
 export enum EventSyncActivity {
   Open = "Open",
@@ -12,12 +12,19 @@ export enum EventSyncActivity {
   Solve = "Solve",
 }
 
-let ActivityRank = {
+// Convert either EventSyncActivity or PuzzleStatus to a relative order
+// TODO: merge the two systems
+let ActivityRank:{[key: string]: number} = {
+  "hidden": -1,
+  "locked": 0,
   "Open": 1,
+  "loaded": 1,
   "Edit": 2,
   "Attempt": 3,
   "Unlock": 4,
+  "unlocked": 4,
   "Solve": 5,
+  "solved": 5,
 }
 
 // Support testing against a local Sync server.
@@ -52,7 +59,7 @@ export function setupEventSync(syncKey?:string) {
 }
 
 export async function pingEventServer(activity:EventSyncActivity, guess?:string) {
-  cacheProgress(activity);
+  trackPuzzleProgress(activity);
 
   if (!canSyncEvents || !_playerName) {
     return;
@@ -75,11 +82,29 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
  * Track the highest activity reached on the current puzzle.
  * @param activity 
  */
-function cacheProgress(activity:EventSyncActivity) {
+export function trackPuzzleProgress(activity:EventSyncActivity) {
   let prev = ActivityRank[_mostProgress];
   let next = ActivityRank[activity];
   if (next > prev) {
+    // _mostProgress tracks the current in-browser instance
     _mostProgress = activity;
+
+    // Look in local storage for earlier instances
+    const puzzle = puzzleTitleForSync();
+    if (puzzle) {
+      const store = 'Usage-Milestone-' + _eventName;
+      const cached = getPuzzleStatus(puzzle, undefined, store) || '';
+      if (!cached || !(cached in ActivityRank) || (ActivityRank[cached] < ActivityRank[activity])) {
+        // We have gotten farther on this puzzle than we have in the past
+        updatePuzzleList(puzzle, activity, store);
+        const data = {
+          eventName: _eventName,
+          puzzle: puzzle,
+          activity: activity,
+        };
+        callSyncApi("Usage", data);  // don't await
+      }
+    }
   }
 }
 
