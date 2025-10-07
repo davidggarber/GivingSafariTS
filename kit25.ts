@@ -9520,7 +9520,7 @@ function updateLoginUI() {
     span.innerText = "Login?";
     div.onclick = function(e) { promptLogin(e);};
     div.title = "Log in?";
-    showRatingUI(false);
+    // showRatingUI(false);
   }
 }
 
@@ -9869,8 +9869,10 @@ function shouldShowRatings(): boolean {
 
   // Player must have logged in
   // (two reasons: to nail down the event, and because server doesn't have anonymous players)
-  const login = getLogin(safari.eventSync);
-  return !!login;
+  // const login = getLogin(safari.eventSync);
+  // return !!login;
+
+  return true;
 }
 
 /*-----------------------------------------------------------
@@ -15178,6 +15180,7 @@ export function textFromScratchDiv(div:HTMLDivElement):string {
         const child = div.childNodes[i];
         if (child.nodeType == Node.TEXT_NODE) {
             text += (child as Text).textContent;
+            text = text.replaceAll("  ", "  ");  // expand multiple spaces
         }
         else if (child.nodeType == Node.ELEMENT_NODE && isTag(child as Element, 'br')) {
             text += '\n';
@@ -15288,7 +15291,8 @@ function textIntoScratchDiv(text:string, div:HTMLDivElement) {
         if (i > 0) {
             div.appendChild(document.createElement('br'));
         }
-        div.appendChild(document.createTextNode(lines[i]));
+        const spaced = lines[i].replaceAll("  ", "  ");  // multiple spaces would be lost
+        div.appendChild(document.createTextNode(spaced));
         // console.log('flatten: ' + lines[i]);
     }
 }

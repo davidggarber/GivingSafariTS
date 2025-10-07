@@ -153,6 +153,8 @@ function shouldShowRatings(): boolean {
 
   // Player must have logged in
   // (two reasons: to nail down the event, and because server doesn't have anonymous players)
-  const login = getLogin(safari.eventSync);
-  return !!login;
+  // const login = getLogin(safari.eventSync);
+  // return !!login;
+
+  return true;
 }

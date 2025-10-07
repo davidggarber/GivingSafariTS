@@ -85,10 +85,18 @@
           background-color: #6AAA64;
         }
         .wordle-cell.b {
-          background-color: #6699FF;
+          background-image: url('AnnualAnthem/blue.svg');
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: center;
+          x-background-color: #6699FF;
         }
         .wordle-cell.r {
-          background-color: #FF7C80;
+          background-image: url('AnnualAnthem/red.svg');
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: center;
+          x-background-color: #FF7C80;
         }
         .given {
           font-size: 32pt;
@@ -138,7 +146,7 @@
         <ttr>
           <for each="side" in="colors">
             <ttd id="side-{side#}">
-              <ttable class="wordle-block">
+              <ttable class="wordle-block letter-grid-2d">
                 <for each="row" in="{side}">
                   <ttr>
                     <for char="cell" in="{row}">

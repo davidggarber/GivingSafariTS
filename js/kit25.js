@@ -8583,7 +8583,7 @@ function updateLoginUI() {
         span.innerText = "Login?";
         div.onclick = function (e) { promptLogin(e); };
         div.title = "Log in?";
-        showRatingUI(false);
+        // showRatingUI(false);
     }
 }
 async function callSyncApi(apiName, data, jsonCallback, textCallback) {
@@ -8873,8 +8873,9 @@ function shouldShowRatings() {
     }
     // Player must have logged in
     // (two reasons: to nail down the event, and because server doesn't have anonymous players)
-    const login = getLogin(safari.eventSync);
-    return !!login;
+    // const login = getLogin(safari.eventSync);
+    // return !!login;
+    return true;
 }
 /*-----------------------------------------------------------
  * _boilerplate.ts
@@ -13664,6 +13665,7 @@ function textFromScratchDiv(div) {
         const child = div.childNodes[i];
         if (child.nodeType == Node.TEXT_NODE) {
             text += child.textContent;
+            text = text.replaceAll("  ", "  "); // expand multiple spaces
         }
         else if (child.nodeType == Node.ELEMENT_NODE && isTag(child, 'br')) {
             text += '\n';
@@ -13764,7 +13766,8 @@ function textIntoScratchDiv(text, div) {
         if (i > 0) {
             div.appendChild(document.createElement('br'));
         }
-        div.appendChild(document.createTextNode(lines[i]));
+        const spaced = lines[i].replaceAll("  ", "  "); // multiple spaces would be lost
+        div.appendChild(document.createTextNode(spaced));
         // console.log('flatten: ' + lines[i]);
     }
 }

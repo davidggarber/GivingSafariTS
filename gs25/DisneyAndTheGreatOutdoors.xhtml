@@ -42,6 +42,12 @@
             font-family: "Lucida Console",monospace;
             font-size: 28pt;
           }
+          .work {
+            padding-left: 10px;
+          }
+          .word-cell {
+            width: 2in;
+          }
         }
       }
     </style>
@@ -54,7 +60,7 @@
         so lazy that they forgot exactly one letter for each word in each character’s name….
       </p>
 
-      <ttable id="table">
+      <ttable id="table" data-word-style="dotted">
         <for each="line" in="lines">
           <tr>
             <th>
@@ -62,6 +68,9 @@
             </th>  
             <td>
               {line.1}
+            </td>
+            <td class="work no-print">
+              <word />
             </td>
           </tr>          
         </for>  

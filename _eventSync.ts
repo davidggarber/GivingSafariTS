@@ -265,7 +265,7 @@ function updateLoginUI() {
     span.innerText = "Login?";
     div.onclick = function(e) { promptLogin(e);};
     div.title = "Log in?";
-    showRatingUI(false);
+    // showRatingUI(false);
   }
 }
 
