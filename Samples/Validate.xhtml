@@ -59,6 +59,14 @@
         return row;
       }
 
+      function deleteRow(cell) {
+        var tr = findParentOfTag(cell, 'tr');
+        if (tr) {
+          var tbody = document.getElementById('guesses');
+          tbody.removeChild(tr);
+        }
+        combine();
+      }
 
       function initRow(row) {
         var guess = row.getElementsByClassName('guess')[0];
@@ -98,6 +106,7 @@
           var sib = rows[index];
           sib.insertAdjacentElement('afterend', row);
         }
+        combine();
       }
 
       function onChange(evt) {
@@ -138,6 +147,7 @@
         type = type.value;
         response = response.value;
         // smart quotes
+        response = response.replaceAll('`', '‘');  // ❛
         response = response.replaceAll(' \'', ' ‘');  // ❛
         response = response.replaceAll('\'', '’');  // ❜
         response = response.replaceAll(' \"', ' “');  // ❝
@@ -164,6 +174,10 @@
         combine();
       }
 
+      /**
+       * Combine all rows into a single JSON object.
+       * Write json to output boxes.
+       */
       function combine() {
         var multi = {};
         var obj = {};
@@ -358,6 +372,9 @@
       .up, .down {
         height: 0.17in;
       }
+      .deleteUI {
+        cursor: pointer;
+      }
     </style>
   </head>
   <body id="body">
@@ -370,6 +387,7 @@
       <table>
         <thead>
           <tr>
+            <th></th>
             <th>Player's guess</th>
             <th>Response type</th>
             <th>Response text</th>
@@ -380,6 +398,7 @@
         </thead>
         <tbody id="guesses">
           <tr class="row" data-type="1">
+            <td class="deleteUI" onclick="deleteRow(this)">🗑️</td>
             <td><input class="guess" /></td>
             <td>
               <select class="type">
@@ -430,6 +449,7 @@
 
       <template id="newRow">
         <tr class="row">
+          <td class="deleteUI" onclick="deleteRow(this)">🗑️</td>
           <td><input class="guess" /></td>
           <td>
             <select class="type">
