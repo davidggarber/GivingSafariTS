@@ -9,7 +9,7 @@
   touch-action: none;
 }
 .word-select-area .vertex {
-  fill:none;
+  fill:transparent;
 }
 .word-select-area .hover .vertex {
   fill:#ffff9999;

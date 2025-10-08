@@ -95,6 +95,7 @@ function scratchPadClick(evt:MouseEvent) {
  */
 function scratchPageClick(evt:MouseEvent) {
     if (evt.ctrlKey) {
+        scratchFlatten(evt);
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
         let underScratch = false;
 
