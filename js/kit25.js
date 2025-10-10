@@ -7,7 +7,7 @@ exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = e
 exports.hasInputGroup = exports.arrowFromInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = void 0;
 exports.isRestart = exports.isModal = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.showRatingUI = exports.createRatingUI = exports.sendFeedback = exports.sendRating = exports.syncUnlockedFile = exports.urlSansArgs = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.lookupSafari = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.getAccumulatedTransformMatrix = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.getValueFromTextContainer = void 0;
 exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.copyto_final_answer = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -13210,6 +13210,7 @@ const builtInTemplates = {
     classStampPalette: classStampPaletteTemplate,
     classStampNoTools: classStampNoToolsTemplate,
     finalAnswer: finalAnswerTemplate,
+    extractedCopiableSpan: extractedCopiableSpanTemplate,
 };
 /**
  * Match a template name to a built-in template object
@@ -13439,6 +13440,49 @@ function finalAnswerTemplate() {
     </div>`;
     return temp;
 }
+/**
+ * Puzzles that have extractions to a span (not a pattern) need an initial id="extracted",
+ * but then want to be able to easily copy that extraction to the submitted field.
+ * The calling page may want a style for #__extracted-div, to position it.
+ * @returns a template element
+ */
+function extractedCopiableSpanTemplate() {
+    const temp = document.createElement('template');
+    temp.innerHTML =
+        `<div id="__extracted-div">
+      <span id="extracted" data-show-ready="submit-extracted" />
+      <button id="submit-extracted" class="copy-extracted" data-extracted-id="extracted" onclick="copyto_final_answer('extracted')">OK</button>
+    </div>`;
+    return temp;
+}
+/**
+ * Method to pair with finalAnswer and extractedCopiable* templates
+ * @param id ID of extracted, default 'extracted'
+ */
+function copyto_final_answer(id = 'extracted') {
+    const src = document.getElementById(id);
+    let dest = document.getElementById("__final-answer");
+    const destInputs = dest?.getElementsByTagName('input');
+    const btn = document.getElementById("__submit-answer");
+    if (src && destInputs && destInputs.length > 0 && btn) {
+        var str = "";
+        var inputs = src.getElementsByTagName("input");
+        if (inputs.length == 0) {
+            str = src.textContent;
+        }
+        else {
+            for (var i = 0; i < inputs.length; i++) {
+                str += inputs[i].value;
+            }
+        }
+        destInputs[0].value = str;
+        validateInputReady(btn, 'Enter');
+    }
+    else {
+        console.error('Missing expected elements for copyto_final_answer');
+    }
+}
+exports.copyto_final_answer = copyto_final_answer;
 var pbnStampTools = [
     { id: 'stampPaint', modifier: 'ctrl', label: 'Paint', img: '../Images/Stamps/brushH.png', next: 'stampBlank' },
     { id: 'stampBlank', modifier: 'shift', label: 'Blank', img: '../Images/Stamps/blankH.png', next: 'stampErase' },
