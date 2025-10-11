@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8"></meta>
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="poster.js" />
+    <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script>
+      const boiler = {
+        noSync: true,
+        safaris: previewSafaris,
+        safari: 'gs25',
+        paperSize: 'ledger',
+        googleFonts: 'Lato,Tan-Harmoni',
+        preBuild: posterTemplates,
+        abilities: {
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+      #Poster {
+        svg {
+          user-select: none;
+        }
+        .circuit-gate {
+          fill: #bbb  ;
+          stroke: black;
+          stroke-width: 2px;
+          cursor: pointer;
+        }
+        .start {
+          stroke-width: 0.5px;
+        }
+        .circuit-diode {
+          fill: white;
+          stroke: black;
+          stroke-width: 3px;
+          cursor: pointer;
+        }
+        .circuit-gate.power-on,.circuit-diode.power-on {
+          fill: lime;
+          stroke: green;
+        }
+        .circuit-gate.power-off,.circuit-diode.power-off {
+          fill: #333;
+        }
+        #diagram text {
+          font-family: Arial;
+          font-size: 28px;
+          text-anchor:middle;
+          fill:black;
+          stroke:none;
+        }
+        .circuit-wire {
+          fill: none;
+          stroke: black;
+          stroke-width: 2px;
+        }
+        .circuit-end {
+          fill: black;
+          stroke: none;
+        }
+
+        .display-diode {
+          fill: white;
+          stroke: black;
+          stroke-width: 0.5px;
+          cursor: pointer;
+        }
+        .display-diode.power-on {
+          fill: lime;
+          stroke: green;
+        }
+        .display-diode.power-off {
+          fill: #333;
+        }
+
+        #display text {
+          font-family:'Lucida Console', Courier, monospace;
+          font-size: 10pt;
+          text-anchor: middle;
+        }
+
+        .truth-table {
+          margin-top: 0.25in; 
+          margin-left: 0.1in;
+        }
+        .truth-table text {
+          font-family:'Lucida Console', Courier, monospace;
+          font-size: 14pt;
+          text-anchor: middle;
+        }
+        .truth-table td {
+          text-align: center;
+          vertical-align: middle;
+          font-family:'Lucida Console', Courier, monospace;
+          font-size: 10pt;
+          padding: 10px;
+        }
+        .stampTool img {
+          position: relative;
+          top: 9px;
+          width: 0.3in;
+          height: 0.3in;
+        }
+        .stampTool.selected div {
+          border: solid 3px #77f;
+        }
+        #stamp-ability {
+          display: none;
+        }
+        #stampPalette {
+          display: none;
+        }
+        #zoom {
+          top: 2.4in;
+          left: 0.2in;
+          transform: scale(1.2);
+        }
+      }
+    </style>
+  </head>
+  <body id="Poster">
+    <div id="pageBody">
+      <use template='posterHeader' color="#FF5757" />
+      <use template='posterFooter' color="#FF5757" qr="Computers" />
+      <div id="zoom">
+        <p class="flavor" style="margin-top: 0.6in; width: 2.17in;">
+          Truth tables for digital logic gates, for your reference:
+        </p>
+
+        <table class="truth-table">
+          <tr>
+            <td style="padding:0px;">
+              <svg id="and-demo" width="80" height="180">
+                <g transform="scale(1.2)">
+                  <text x="16" y="16">A</text>
+                  <text x="41" y="16">B</text>
+                  <text x="29" y="140">C</text>
+                  <path d="M17,20 v20" class="circuit-wire"></path>
+                  <path d="M41,20 v20" class="circuit-wire"></path>
+                  <path d="M29,104 v20" class="circuit-wire"></path>
+                  <path d="M5,40 v40 a24,23,0,0,0,48,0 v-40 Z" class="circuit-gate and"></path>
+                </g>
+        
+              </svg>      
+            </td>
+            <td>
+              <table style="border-spacing: 0px;">
+                <tr>
+                  <td>Ins<br/>A&nbsp;B</td>
+                  <td style="border-left:solid 1.5px black; ">Out<br/>C</td>
+                </tr>
+                <tr>
+                  <td style="border-top:solid 1.5px black; ">0&nbsp;0<br/>0&nbsp;1<br/>1&nbsp;0<br/>1&nbsp;1</td>
+                  <td style="border-left:solid 1.5px black; border-top:solid 1.5px black; ">0<br/>0<br/>0<br/>1</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <table class="truth-table">
+          <tr>
+            <td style="padding:0px;">
+              <svg id="or-demo" width="80" height="180">
+                <g transform="scale(1.2)">
+                  <text x="16" y="16">A</text>
+                  <text x="41" y="16">B</text>
+                  <text x="29" y="140">C</text>
+                  <path d="M17,20 v27" class="circuit-wire"></path>
+                  <path d="M41,20 v27" class="circuit-wire"></path>
+                  <path d="M29,104 v20" class="circuit-wire"></path>
+                  <path d="M5,40 l0,19 a40,60,0,0,0,24,44 a40,60,0,0,0,24,-44 l0,-19 a40,46,0,0,1,-48,0 Z" class="circuit-gate or"></path>
+                </g>
+        
+              </svg>      
+            </td>
+            <td>
+              <table style="border-spacing: 0px;">
+                <tr>
+                  <td>Ins<br/>A&nbsp;B</td>
+                  <td style="border-left:solid 1.5px black; ">Out<br/>C</td>
+                </tr>
+                <tr>
+                  <td style="border-top:solid 1.5px black; ">0&nbsp;0<br/>0&nbsp;1<br/>1&nbsp;0<br/>1&nbsp;1</td>
+                  <td style="border-left:solid 1.5px black; border-top:solid 1.5px black; ">0<br/>1<br/>1<br/>1</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <table class="truth-table">
+          <tr>
+            <td style="padding:0px;">
+              <svg id="not-demo" width="80" height="180">
+                <g transform="scale(1.2)">
+                  <text x="29" y="16">A</text>
+                  <text x="29" y="135">B</text>
+                  <path d="M29,20 v20" class="circuit-wire"></path>
+                  <path d="M5,40 l48,0 l-24,48 a4,4,0,0,1,0,8 a4,4,0,0,1,0,-8 Z" class="circuit-gate not"></path>
+                  <path d="M29,92 v24" class="circuit-wire"></path>
+                </g>
+        
+              </svg>      
+            </td>
+            <td>
+              <table style="border-spacing: 0px;">
+                <tr>
+                  <td>In<br/>A</td>
+                  <td style="border-left:solid 1.5px black; ">Out<br/>B</td>
+                </tr>
+                <tr>
+                  <td style="border-top:solid 1.5px black; ">0<br/>1</td>
+                  <td style="border-left:solid 1.5px black; border-top:solid 1.5px black; ">1<br/>0</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <svg id="display" style="position: absolute; left: 0px; bottom: 0px; width:4in; height: 1.5in;" class="stampable-container" data-stamp-set="7-bit-memory">
+          <use template="7-bit-display" x="0" input="0" />
+          <use template="7-bit-display" x="80" input="1" />
+          <use template="7-bit-display" x="160" input="2" />
+          <use template="7-bit-display" x="240" input="3" />
+        </svg>
+
+
+        <svg id="diagram" style="position: absolute; right: -0.25in; top: 0px; width: 4.5in; height: 9.1in;" class="stampable-container" data-stamp-set="circuit-board">
+          <!--starts-->
+          <g class="circuit-gate stampable">
+            <rect x="103" y="4.5" width="35" height="35" rx="9" class="start"></rect>
+            <text x="120.5" y="32">?</text>
+          </g>
+          <g class="circuit-gate stampable">
+            <rect x="231.5" y="4.5" width="35" height="35" rx="9" class="start"></rect>
+            <text x="249" y="32">?</text>
+          </g>
+
+          <!--horizontal diodes-->
+          <path d="M125.5,600.5 l17,17 l69,0 l17,-17 l-17,-17 l-69,0 Z" class="circuit-diode stampable"></path>
+          <path d="M125.5,712.5 l17,17 l69,0 l17,-17 l-17,-17 l-69,0 Z" class="circuit-diode stampable"></path>
+          <path d="M125.5,823.5 l17,17 l69,0 l17,-17 l-17,-17 l-69,0 Z" class="circuit-diode stampable"></path>
+
+          <!--vertical diodes-->
+          <path d="M117,606 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="circuit-diode stampable"></path>
+          <path d="M237,606 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="circuit-diode stampable"></path>
+          <path d="M117,716 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="circuit-diode stampable"></path>
+          <path d="M237,716 l17,17 l0,69 l-17,17 l-17,-17 l0,-69 Z" class="circuit-diode stampable"></path>
+
+          <!--circuits from left start-->
+          <path d="M120.5,39 v245" class="circuit-wire"></path>
+          <path d="M120.5,103 h122 a6,5,0,0,1,13,0 h70 a6,5,0,0,1,13,0 h56 v188" class="circuit-wire"></path>
+          <path d="M180,103 v27" class="circuit-wire"></path>
+
+          <!--circuits from right start-->
+          <path d="M249,39 v202 h-105 v43" class="circuit-wire"></path>
+          <path d="M249,65 h-122 a6,5,0,0,0,-13,0 h-71 v225" class="circuit-wire"></path>
+          <path d="M46,65 h-40 v647 h43 a6,5,0,0,1,13,0 h116" class="circuit-wire"></path>
+          <ellipse cx="177" cy="712.5" rx="5" ry="5" class="circuit-end"></ellipse>
+          <path d="M249,65 h169 v225" class="circuit-wire"></path>
+          <path d="M332,65 v65" class="circuit-wire"></path>
+
+          <!--first two NOT gates-->
+          <path d="M156.5,129 l48,0 l-24,48 a4,4,0,0,1,0,8 a4,4,0,0,1,0,-8 Z" class="circuit-gate not stampable"></path>
+          <path d="M309,129 l48,0 l-24,48 a4,4,0,0,1,0,8 a4,4,0,0,1,0,-8 Z" class="circuit-gate not stampable"></path>
+
+          <!--circuits from first not-->
+          <path d="M180.5,180 v22.5 h62 a6,5,0,0,1,13,0 h53.5 v81" class="circuit-wire"></path>
+          <path d="M180.5,202.5 h-53.5 a6,5,0,0,0,-13,0 h-46.5 v88" class="circuit-wire"></path>
+
+          <!--circuit from second not-->
+          <path d="M333,180 v103" class="circuit-wire"></path>
+
+          <!--first two ORs and ANDs-->
+          <path d="M31.5,283 l0,19 a40,60,0,0,0,24,44 a40,60,0,0,0,24,-44 l0,-19 a40,46,0,0,1,-48,0 Z" class="circuit-gate or stampable"></path>
+          <path d="M382.5,283 l0,19 a40,60,0,0,0,24,44 a40,60,0,0,0,24,-44 l0,-19 a40,46,0,0,1,-48,0 Z" class="circuit-gate or stampable"></path>
+          <path d="M108.5,283 l0,40 a24,23,0,0,0,48,0 l0,-40 Z" class="circuit-gate and stampable"></path>
+          <path d="M297,283 l0,40 a24,23,0,0,0,48,0 l0,-40 Z" class="circuit-gate and stampable"></path>
+
+          <!--circuits from first or-->
+          <path d="M55.5,346 v311 h62 m-62,0 v110 h62" class="circuit-wire"></path>
+          <ellipse cx="117" cy="657" rx="5" ry="5" class="circuit-end"></ellipse>
+          <ellipse cx="117" cy="767" rx="5" ry="5" class="circuit-end"></ellipse>
+
+          <!--circuit from second or-->
+          <path d="M406.5,346 v311 h-79 a6,5,0,0,0,-13,0 h-27 a6,5,0,0,0,-13,0 h-37" class="circuit-wire"></path>
+          <ellipse cx="237" cy="657" rx="5" ry="5" class="circuit-end"></ellipse>
+
+          <!--circuit from first and-->
+          <path d="M132.5,346 v29 h32 v47" class="circuit-wire"></path>
+
+          <!--circuit2 from second and-->
+          <path d="M321,346 v29 h-132 v47" class="circuit-wire"></path>
+          <path d="M321,375 v488 h-144 v-38" class="circuit-wire"></path>
+          <ellipse cx="177" cy="823.5" rx="5" ry="5" class="circuit-end"></ellipse>
+
+          <!--third OR-->
+          <path d="M153,414 l0,19 a40,60,0,0,0,24,44 a40,60,0,0,0,24,-44 l0,-19 a40,46,0,0,1,-48,0 Z" class="circuit-gate or stampable"></path>
+
+          <!--circuits from third or-->
+          <path d="M177,477 v124" class="circuit-wire"></path>
+          <ellipse cx="177" cy="601" rx="5" ry="5" class="circuit-end"></ellipse>
+          <path d="M177,506 h104 v23" class="circuit-wire"></path>
+
+          <!--third NOT-->
+          <path d="M257.5,528 l48,0 l-24,48 a4,4,0,0,1,0,8 a4,4,0,0,1,0,-8 Z" class="circuit-gate not stampable"></path>
+          <ellipse cx="237" cy="767" rx="5" ry="5" class="circuit-end"></ellipse>
+
+          <!--circuit from third not-->
+          <path d="M281.5,579 v188 h-44" class="circuit-wire"></path>
+        </svg>
+
+        <div id="stampPalette" data-unstyle="power-on power-off" style="position: absolute; right:0in; top: 7.25in;">
+          <div id="power-on" class="stampTool small" data-style="power-on" data-click-modifier="ctrl" title="ctrl + stamp" style="display:block;">
+            <div class="stampIcon power-on" style="background-color: #99ff99;"><img src="Computers/lightbulb.png"/></div>
+          </div>
+          <div id="power-off" class="stampTool small" data-style="power-off" data-click-modifier="shift" title="shift + stamp" style="display:block;">
+            <div class="stampIcon power-off" style="background-color: #333;"><img src="Computers/open-circuit.png"/></div>
+          </div>
+          <div class="stampTool small" style="display:block;">
+            <div class="stampIcon" style="background-color: #ccc;"><img src="Computers/undo.png"/></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <template id="7-bit-display">
+      <g transform="translate({x},0)">
+        <path d="M8,12 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode stampable" />
+        <path d="M8,53 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode stampable" />
+        <path d="M8,94 l4,4 h31 l4,-4 l-4,-4 h-31 Z" class="display-diode stampable" />
+        <path d="M7,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode stampable" />
+        <path d="M48,13 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode stampable" />
+        <path d="M7,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode stampable" />
+        <path d="M48,54 l4,4 v31 l-4,4 l-4,-4 v-31 Z" class="display-diode stampable" />
+        <text x="28" y="116">{input}</text>
+      </g>
+    </template>
+  </body>
+</html>

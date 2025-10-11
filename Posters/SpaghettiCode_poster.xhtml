@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="poster.js" />
+    <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script>
+      const boiler = {
+        noSync: true,
+        safaris: previewSafaris,
+        safari: 'gs25',
+        paperSize: 'ledger',
+        googleFonts: 'Lato,Tan-Harmoni',
+        preBuild: posterTemplates,
+        abilities: {
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+      #Poster {
+        .letter-cell.literal {
+          width: 30px;
+        }
+        .letter-literal {
+          font-family: 'Lucida Console', Courier, monospace;
+          font-size: 18pt;
+        }
+        .letter-cell {
+          font-size: 18pt;
+        }
+        #zoom {
+          left: 0.25in;
+        }
+      } 
+    </style>
+  </head>
+  <body id="Poster">
+    <div id="pageBody">
+      <use template='posterHeader' color="#8B52FF" />
+      <use template='posterFooter' color="#8B52FF" qr="SpaghettiCode" />
+      <div id="zoom">
+        <img src="SpaghettiCode/spaghetti.png" />
+        <div style="text-align: center;">
+          <p><pattern pattern="EHIKM OEPRIRSRIT ORHMX" /></p>
+          <p><pattern pattern="5 10 5" data-letter-style="underline" /></p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

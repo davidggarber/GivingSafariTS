@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="poster.js" />
+    <link href="Css/Poster.css" rel="Stylesheet" type="text/css" />
+    <script>
+      const boiler = {
+        noSync: true,
+        safaris: previewSafaris,
+        safari: 'gs25',
+        paperSize: 'ledger',
+        googleFonts: 'Lato,Tan-Harmoni',
+        preBuild: posterTemplates,
+        abilities: {
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+        },
+      };
+    </script>
+    <style>
+      #Poster {
+        #entries {
+          position: absolute;
+          right: 0px;
+          top: 1in;
+
+          p {
+            line-height: 20pt;
+          }
+        }
+        #zoom {
+          left: 1.1in;
+          transform: scale(1.15);
+        }
+      }
+    </style>
+  </head>
+  <body id="Poster">
+    <div id="pageBody">
+      <use template='posterHeader' color="#5879E3" />
+      <use template='posterFooter' color="#5879E3" qr="Gumball" />
+      <div id="zoom">
+        <img src="Gumball/machine.png" style="position:absolute; top:0px; left:1in; width:4.7in; height: 8.89in;" />
+      </div>
+    </div>
+  </body>
+</html>
