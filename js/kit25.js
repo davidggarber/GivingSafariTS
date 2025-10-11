@@ -13211,6 +13211,8 @@ const builtInTemplates = {
     classStampNoTools: classStampNoToolsTemplate,
     finalAnswer: finalAnswerTemplate,
     extractedCopiableSpan: extractedCopiableSpanTemplate,
+    extractedCopiablePattern: extractedCopiablePatternTemplate,
+    copiablePattern: copiablePatternTemplate,
 };
 /**
  * Match a template name to a built-in template object
@@ -13448,11 +13450,59 @@ function finalAnswerTemplate() {
  */
 function extractedCopiableSpanTemplate() {
     const temp = document.createElement('template');
+    setDefaultsTemplateArgs(temp, {
+        tag: 'div',
+        id: 'extracted',
+    });
+    var inner = `<span id="{id}" data-show-ready="submit-extracted" />
+    <button id="submit-extracted" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
     temp.innerHTML =
-        `<div id="__extracted-div">
-      <span id="extracted" data-show-ready="submit-extracted" />
-      <button id="submit-extracted" class="copy-extracted" data-extracted-id="extracted" onclick="copyto_final_answer('extracted')">OK</button>
-    </div>`;
+        `<if test="{tag}" eq="span">
+      <span id="__extracted-span">` + inner + `</span></if>
+    <else>
+      <div id="__extracted-div">` + inner + `</div></else>`;
+    return temp;
+}
+/**
+ * Puzzles that have extractions to a span (not a pattern) need an initial id="extracted",
+ * but then want to be able to easily copy that extraction to the submitted field.
+ * The calling page may want a style for #__extracted-div, to position it.
+ * @returns a template element
+ */
+function extractedCopiablePatternTemplate() {
+    const temp = document.createElement('template');
+    setDefaultsTemplateArgs(temp, {
+        tag: 'div',
+        id: 'extracted',
+    });
+    var inner = `<pattern id="{id}" pattern="{pattern}" data-show-ready="submit-extracted" />
+      <button id="submit-extracted" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
+    temp.innerHTML =
+        `<if test="{tag}" eq="span">
+      <span id="__extracted-span">` + inner + `</span></if>
+    <else>
+      <div id="__extracted-div">` + inner + `</div></else>`;
+    return temp;
+}
+/**
+ * Puzzles that have extractions to a span (not a pattern) need an initial id="extracted",
+ * but then want to be able to easily copy that extraction to the submitted field.
+ * The calling page may want a style for #__extracted-div, to position it.
+ * @returns a template element
+ */
+function copiablePatternTemplate() {
+    const temp = document.createElement('template');
+    setDefaultsTemplateArgs(temp, {
+        tag: 'div',
+        id: 'copiable',
+    });
+    var inner = `<pattern id="{id}" pattern="{pattern}" data-show-ready="submit-copiable" />
+    <button id="submit-copiable" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
+    temp.innerHTML =
+        `<if test="{tag}" eq="span">
+      <span id="__copiable-span">` + inner + `</span></if>
+    <else>
+      <div id="__copiable-div">` + inner + `</div></else>`;
     return temp;
 }
 /**
