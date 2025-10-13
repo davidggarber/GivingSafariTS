@@ -283,15 +283,14 @@
                       </a>
                     </for>  
                   </ttd>
-                  <ttd class="empty">&nbsp;</ttd>
                   <ttd>
                     <if test="{showForget}">
                       <if exists="{puz.forget}">
                         <a href="{puz.forget}" target="_blank" style="font-size: smaller;">Forget materials</a>
                       </if>
-                    </if>
+                    </if>&nbsp;
                   </ttd>
-                  <ttd class="completed" />
+                  <ttd colspan="2" />
                   <ttd class="spacer">&nbsp;</ttd>
                 </ttr>
               </if>
@@ -300,7 +299,7 @@
         </for>
         <if test="{showForget}">
           <ttr>
-            <ttd colspan="{table_cols+2}">
+            <ttd colspan="{table_cols+2}" style="text-align: center;">
               To reset local saved progress for all puzzles in this event, click <a href="Forget_all_progress.xhtml{urlArgs}">HERE</a>.
             </ttd>
           </ttr>
