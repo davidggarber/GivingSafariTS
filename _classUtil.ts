@@ -444,9 +444,9 @@ export function getOptionalStyle(   elmt: Element|null,
     if (!elmt) {
         return null;
     }
-    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName)) !== '');
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName), false) !== '');
     let val = e ? e.getAttribute(attrName) : null;
-    val = val !== null ? cloneText(val) : (defaultStyle || null);
+    val = val !== null ? cloneText(val, false) : (defaultStyle || null);
     return (val === null || prefix === undefined) ? val : (prefix + val);
 }
 

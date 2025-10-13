@@ -413,9 +413,9 @@ function getOptionalStyle(elmt, attrName, defaultStyle, prefix) {
     if (!elmt) {
         return null;
     }
-    const e = getParentIf(elmt, (e) => e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName)) !== '');
+    const e = getParentIf(elmt, (e) => e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName), false) !== '');
     let val = e ? e.getAttribute(attrName) : null;
-    val = val !== null ? cloneText(val) : (defaultStyle || null);
+    val = val !== null ? cloneText(val, false) : (defaultStyle || null);
     return (val === null || prefix === undefined) ? val : (prefix + val);
 }
 exports.getOptionalStyle = getOptionalStyle;
@@ -11162,7 +11162,7 @@ function cloneAttributes(src, dest) {
         const name = normalizeName(src.attributes[i].name);
         let value = src.attributes[i].value;
         try {
-            value = cloneText(value);
+            value = cloneText(value, false);
             if (name == 'id') {
                 dest.id = value;
             }
@@ -11201,7 +11201,7 @@ function cloneSomeAttributes(src, dest, attributes) {
         try {
             let value = src.getAttributeNS('', name);
             if (value !== null && value !== undefined) {
-                value = cloneText(value);
+                value = cloneText(value, false);
                 dest.setAttributeNS('', name, value);
             }
         }
@@ -11248,14 +11248,16 @@ function cloneTextNode(text) {
 exports.cloneTextNode = cloneTextNode;
 /**
  * Process text which may contain {curly} formatting.
- * @param text Any text, including text inside attributes
+ * @param str Any text, including text inside attributes
+ * @param trueText should be true for text from text nodes,
+ * and false for text from attributes.
  * @returns Expanded text
  */
-function cloneText(str) {
+function cloneText(str, trueText) {
     if (str === null) {
         return '';
     }
-    const trimMode = getTrimMode();
+    const trimMode = trueText ? getTrimMode() : TrimMode.off;
     const cloned = complexAttribute(str, Math.max(trimMode, TrimMode.on));
     return '' + cloned;
 }
@@ -12855,7 +12857,7 @@ function startInputArea(src) {
             for (let i = 0; i < keys.length; i++) {
                 const attr = src.getAttributeNS('', keys[i]);
                 if (attr !== null) {
-                    span.setAttributeNS('', conversion.spanRename[keys[i]], cloneText(attr));
+                    span.setAttributeNS('', conversion.spanRename[keys[i]], cloneText(attr, false));
                 }
             }
         }
@@ -12866,13 +12868,13 @@ function startInputArea(src) {
                 const attr = src.getAttributeNS('', keys[i]);
                 if (attr !== null) {
                     const func = conversion.specialCases[keys[i]];
-                    func(cloneText(attr), span);
+                    func(cloneText(attr, false), span);
                 }
             }
             if ('' in conversion.specialCases && src.innerText.length > 0) {
                 // Special case any innerText
                 const func = conversion.specialCases[''];
-                func(cloneText(src.innerText), span);
+                func(cloneText(src.innerText, true), span);
             }
         }
         // Repeat with any additional inherited rules
@@ -12906,7 +12908,7 @@ function useTemplate(node, tempId) {
         if (!tempId) {
             throw new ContextError('<use> tag must specify a template attribute');
         }
-        tempId = cloneText(tempId);
+        tempId = cloneText(tempId, false);
     }
     let template = null;
     try {
@@ -12980,7 +12982,7 @@ function parseUseNodeArgs(node, template) {
                 const arg = {
                     attr: attr,
                     raw: val,
-                    text: cloneText(val),
+                    text: cloneText(val, false),
                     any: complexAttribute(val),
                 };
                 passed_args.push(arg);
@@ -13050,7 +13052,7 @@ function overlayDefaultTemplateArgs(template, use_args) {
             const arg = {
                 attr: attri,
                 raw: val,
-                text: cloneText(val),
+                text: cloneText(val, false),
                 any: complexAttribute(val),
             };
             use_args.push(arg);

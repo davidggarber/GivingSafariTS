@@ -216,7 +216,7 @@ export function startInputArea(src:HTMLElement):Node[] {
       for (let i = 0; i < keys.length; i++) {
         const attr = src.getAttributeNS('', keys[i]);
         if (attr !== null) {
-          span.setAttributeNS('', conversion.spanRename[keys[i]], cloneText(attr));
+          span.setAttributeNS('', conversion.spanRename[keys[i]], cloneText(attr, false));
         }
       }
     }
@@ -227,13 +227,13 @@ export function startInputArea(src:HTMLElement):Node[] {
         const attr = src.getAttributeNS('', keys[i]);
         if (attr !== null) {
           const func:SpecialCaseFunction = conversion.specialCases[keys[i]] as SpecialCaseFunction;
-          func(cloneText(attr), span);
+          func(cloneText(attr, false), span);
         }
       }
       if ('' in conversion.specialCases && src.innerText.length > 0) {
         // Special case any innerText
         const func:SpecialCaseFunction = conversion.specialCases[''] as SpecialCaseFunction;
-        func(cloneText(src.innerText), span);
+        func(cloneText(src.innerText, true), span);
       }
     }
 
