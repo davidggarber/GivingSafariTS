@@ -1,4 +1,5 @@
 import { linkCss } from "./_boilerplate";
+import { validateInputReady } from "./_confirmation";
 import { ContextError } from "./_contextError";
 import { getSafariDetails } from "./_events";
 
@@ -36,6 +37,9 @@ const builtInTemplates: {[key: string]: TemplateBuilder}  = {
   classStampPalette: classStampPaletteTemplate,
   classStampNoTools: classStampNoToolsTemplate,
   finalAnswer: finalAnswerTemplate,
+  extractedCopiableSpan: extractedCopiableSpanTemplate,
+  extractedCopiablePattern: extractedCopiablePatternTemplate,
+  copiablePattern: copiablePatternTemplate,
 }
 
 /**
@@ -276,6 +280,104 @@ function finalAnswerTemplate() :HTMLTemplateElement {
     </div>`;
   return temp;
 }
+
+/**
+ * Puzzles that have extractions to a span (not a pattern) need an initial id="extracted",
+ * but then want to be able to easily copy that extraction to the submitted field.
+ * The calling page may want a style for #__extracted-div, to position it.
+ * @returns a template element
+ */
+function extractedCopiableSpanTemplate() :HTMLTemplateElement {
+  const temp = document.createElement('template');
+  setDefaultsTemplateArgs(temp, {
+    tag: 'div',
+    id: 'extracted',
+  });
+  var inner = 
+    `<span id="{id}" data-show-ready="submit-extracted" />
+    <button id="submit-extracted" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
+  temp.innerHTML = 
+    `<if test="{tag}" eq="span">
+      <span id="__extracted-span">` + inner + `</span></if>
+    <else>
+      <div id="__extracted-div">` + inner + `</div></else>`;
+  return temp;
+}
+
+/**
+ * Puzzles that have extractions to a span (not a pattern) need an initial id="extracted",
+ * but then want to be able to easily copy that extraction to the submitted field.
+ * The calling page may want a style for #__extracted-div, to position it.
+ * @returns a template element
+ */
+function extractedCopiablePatternTemplate() :HTMLTemplateElement {
+  const temp = document.createElement('template');
+  setDefaultsTemplateArgs(temp, {
+    tag: 'div',
+    id: 'extracted',
+  });
+  var inner = 
+    `<pattern id="{id}" pattern="{pattern}" data-show-ready="submit-extracted" />
+      <button id="submit-extracted" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
+  temp.innerHTML = 
+    `<if test="{tag}" eq="span">
+      <span id="__extracted-span">` + inner + `</span></if>
+    <else>
+      <div id="__extracted-div">` + inner + `</div></else>`;
+  return temp;
+}
+
+/**
+ * Puzzles that have extractions to a span (not a pattern) need an initial id="extracted",
+ * but then want to be able to easily copy that extraction to the submitted field.
+ * The calling page may want a style for #__extracted-div, to position it.
+ * @returns a template element
+ */
+function copiablePatternTemplate() :HTMLTemplateElement {
+  const temp = document.createElement('template');
+  setDefaultsTemplateArgs(temp, {
+    tag: 'div',
+    id: 'copiable',
+  });
+  var inner = 
+    `<pattern id="{id}" pattern="{pattern}" data-show-ready="submit-copiable" />
+    <button id="submit-copiable" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
+  temp.innerHTML = 
+    `<if test="{tag}" eq="span">
+      <span id="__copiable-span">` + inner + `</span></if>
+    <else>
+      <div id="__copiable-div">` + inner + `</div></else>`;
+  return temp;
+}
+
+/**
+ * Method to pair with finalAnswer and extractedCopiable* templates
+ * @param id ID of extracted, default 'extracted'
+ */
+export function copyto_final_answer(id:string = 'extracted') {
+  const src = document.getElementById(id);
+  let dest = document.getElementById("__final-answer");
+  const destInputs = dest?.getElementsByTagName('input');
+  const btn = document.getElementById("__submit-answer");
+  if (src && destInputs && destInputs.length > 0 && btn) {
+    var str = "";
+    var inputs = src.getElementsByTagName("input");
+    if (inputs.length==0) {
+      str = src.textContent;
+    }
+    else {
+      for (var i=0; i<inputs.length; i++) {
+        str += inputs[i].value;
+      }
+    }
+    destInputs[0].value = str;
+    validateInputReady(btn as HTMLButtonElement, 'Enter');
+  }
+  else {
+    console.error('Missing expected elements for copyto_final_answer');
+  }
+}
+
 
 var pbnStampTools = [
   {id:'stampPaint', modifier:'ctrl', label:'Paint', img:'../Images/Stamps/brushH.png', next:'stampBlank'},

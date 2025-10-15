@@ -450,9 +450,9 @@ export function getOptionalStyle(   elmt: Element|null,
     if (!elmt) {
         return null;
     }
-    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName)) !== '');
+    const e = getParentIf(elmt, (e)=>e.getAttribute(attrName) !== null && cloneText(e.getAttribute(attrName), false) !== '');
     let val = e ? e.getAttribute(attrName) : null;
-    val = val !== null ? cloneText(val) : (defaultStyle || null);
+    val = val !== null ? cloneText(val, false) : (defaultStyle || null);
     return (val === null || prefix === undefined) ? val : (prefix + val);
 }
 
@@ -12438,7 +12438,7 @@ export function cloneAttributes(src:Element, dest:Element) {
     const name = normalizeName(src.attributes[i].name);
     let value = src.attributes[i].value;
     try {
-      value = cloneText(value);
+      value = cloneText(value, false);
       if (name == 'id') {
         dest.id = value;
       }
@@ -12477,7 +12477,7 @@ export function cloneSomeAttributes(src:Element, dest:Element, attributes:string
     try {
       let value = src.getAttributeNS('', name);
       if (value !== null && value !== undefined) {
-        value = cloneText(value);
+        value = cloneText(value, false);
         dest.setAttributeNS('', name, value);
       }
     }
@@ -12529,14 +12529,16 @@ export function cloneTextNode(text:Text):Node[] {
 
 /**
  * Process text which may contain {curly} formatting.
- * @param text Any text, including text inside attributes
+ * @param str Any text, including text inside attributes
+ * @param trueText should be true for text from text nodes, 
+ * and false for text from attributes.
  * @returns Expanded text
  */
-export function cloneText(str:string|null):string {
+export function cloneText(str:string|null, trueText:boolean):string {
   if (str === null) {
     return '';
   }
-  const trimMode = getTrimMode();
+  const trimMode = trueText ? getTrimMode() : TrimMode.off;
   const cloned = complexAttribute(str, Math.max(trimMode, TrimMode.on));
   return '' + cloned;
 }
@@ -14287,7 +14289,7 @@ export function startInputArea(src:HTMLElement):Node[] {
       for (let i = 0; i < keys.length; i++) {
         const attr = src.getAttributeNS('', keys[i]);
         if (attr !== null) {
-          span.setAttributeNS('', conversion.spanRename[keys[i]], cloneText(attr));
+          span.setAttributeNS('', conversion.spanRename[keys[i]], cloneText(attr, false));
         }
       }
     }
@@ -14298,13 +14300,13 @@ export function startInputArea(src:HTMLElement):Node[] {
         const attr = src.getAttributeNS('', keys[i]);
         if (attr !== null) {
           const func:SpecialCaseFunction = conversion.specialCases[keys[i]] as SpecialCaseFunction;
-          func(cloneText(attr), span);
+          func(cloneText(attr, false), span);
         }
       }
       if ('' in conversion.specialCases && src.innerText.length > 0) {
         // Special case any innerText
         const func:SpecialCaseFunction = conversion.specialCases[''] as SpecialCaseFunction;
-        func(cloneText(src.innerText), span);
+        func(cloneText(src.innerText, true), span);
       }
     }
 
@@ -14358,7 +14360,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
     if (!tempId) {
       throw new ContextError('<use> tag must specify a template attribute');
     }
-    tempId = cloneText(tempId);
+    tempId = cloneText(tempId, false);
   }
   let template:HTMLTemplateElement|null = null;
   try {
@@ -14433,7 +14435,7 @@ function parseUseNodeArgs(node:Element, template?:Element):TemplateArg[] {
         const arg:TemplateArg = {
           attr: attr,
           raw: val,  // Store the context path, so it can also be referenced
-          text: cloneText(val),
+          text: cloneText(val, false),
           any: complexAttribute(val),
         }
         passed_args.push(arg);
@@ -14503,7 +14505,7 @@ function overlayDefaultTemplateArgs(template:Element, use_args:TemplateArg[]) {
       const arg:TemplateArg = {
         attr: attri,
         raw: val,  // Store the context path, so it can also be referenced
-        text: cloneText(val),
+        text: cloneText(val, false),
         any: complexAttribute(val),
       }
       use_args.push(arg);
@@ -14680,6 +14682,9 @@ const builtInTemplates: {[key: string]: TemplateBuilder}  = {
   classStampPalette: classStampPaletteTemplate,
   classStampNoTools: classStampNoToolsTemplate,
   finalAnswer: finalAnswerTemplate,
+  extractedCopiableSpan: extractedCopiableSpanTemplate,
+  extractedCopiablePattern: extractedCopiablePatternTemplate,
+  copiablePattern: copiablePatternTemplate,
 }
 
 /**
@@ -14920,6 +14925,104 @@ function finalAnswerTemplate() :HTMLTemplateElement {
     </div>`;
   return temp;
 }
+
+/**
+ * Puzzles that have extractions to a span (not a pattern) need an initial id="extracted",
+ * but then want to be able to easily copy that extraction to the submitted field.
+ * The calling page may want a style for #__extracted-div, to position it.
+ * @returns a template element
+ */
+function extractedCopiableSpanTemplate() :HTMLTemplateElement {
+  const temp = document.createElement('template');
+  setDefaultsTemplateArgs(temp, {
+    tag: 'div',
+    id: 'extracted',
+  });
+  var inner = 
+    `<span id="{id}" data-show-ready="submit-extracted" />
+    <button id="submit-extracted" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
+  temp.innerHTML = 
+    `<if test="{tag}" eq="span">
+      <span id="__extracted-span">` + inner + `</span></if>
+    <else>
+      <div id="__extracted-div">` + inner + `</div></else>`;
+  return temp;
+}
+
+/**
+ * Puzzles that have extractions to a span (not a pattern) need an initial id="extracted",
+ * but then want to be able to easily copy that extraction to the submitted field.
+ * The calling page may want a style for #__extracted-div, to position it.
+ * @returns a template element
+ */
+function extractedCopiablePatternTemplate() :HTMLTemplateElement {
+  const temp = document.createElement('template');
+  setDefaultsTemplateArgs(temp, {
+    tag: 'div',
+    id: 'extracted',
+  });
+  var inner = 
+    `<pattern id="{id}" pattern="{pattern}" data-show-ready="submit-extracted" />
+      <button id="submit-extracted" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
+  temp.innerHTML = 
+    `<if test="{tag}" eq="span">
+      <span id="__extracted-span">` + inner + `</span></if>
+    <else>
+      <div id="__extracted-div">` + inner + `</div></else>`;
+  return temp;
+}
+
+/**
+ * Puzzles that have extractions to a span (not a pattern) need an initial id="extracted",
+ * but then want to be able to easily copy that extraction to the submitted field.
+ * The calling page may want a style for #__extracted-div, to position it.
+ * @returns a template element
+ */
+function copiablePatternTemplate() :HTMLTemplateElement {
+  const temp = document.createElement('template');
+  setDefaultsTemplateArgs(temp, {
+    tag: 'div',
+    id: 'copiable',
+  });
+  var inner = 
+    `<pattern id="{id}" pattern="{pattern}" data-show-ready="submit-copiable" />
+    <button id="submit-copiable" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
+  temp.innerHTML = 
+    `<if test="{tag}" eq="span">
+      <span id="__copiable-span">` + inner + `</span></if>
+    <else>
+      <div id="__copiable-div">` + inner + `</div></else>`;
+  return temp;
+}
+
+/**
+ * Method to pair with finalAnswer and extractedCopiable* templates
+ * @param id ID of extracted, default 'extracted'
+ */
+export function copyto_final_answer(id:string = 'extracted') {
+  const src = document.getElementById(id);
+  let dest = document.getElementById("__final-answer");
+  const destInputs = dest?.getElementsByTagName('input');
+  const btn = document.getElementById("__submit-answer");
+  if (src && destInputs && destInputs.length > 0 && btn) {
+    var str = "";
+    var inputs = src.getElementsByTagName("input");
+    if (inputs.length==0) {
+      str = src.textContent;
+    }
+    else {
+      for (var i=0; i<inputs.length; i++) {
+        str += inputs[i].value;
+      }
+    }
+    destInputs[0].value = str;
+    validateInputReady(btn as HTMLButtonElement, 'Enter');
+  }
+  else {
+    console.error('Missing expected elements for copyto_final_answer');
+  }
+}
+
 
 var pbnStampTools = [
   {id:'stampPaint', modifier:'ctrl', label:'Paint', img:'../Images/Stamps/brushH.png', next:'stampBlank'},

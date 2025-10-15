@@ -133,7 +133,7 @@ test('evaluate', () => {
 
 function catchCloneText(raw:string):SourceOffset|null {
   try {
-    const result = cloneText(raw);
+    const result = cloneText(raw, true);
     return null;
   }
   catch (ex) {
@@ -145,7 +145,7 @@ function catchCloneText(raw:string):SourceOffset|null {
 
 test('formulaInText', () => {
 
-  expect(cloneText('this is {fonts.0}')).toEqual('this is bold');
+  expect(cloneText('this is {fonts.0}', true)).toEqual('this is bold');
 
   // innermost offset is relative to the formula, not the whole
   expect(catchCloneText('this is {fonts.3}')?.offset).toEqual(6);

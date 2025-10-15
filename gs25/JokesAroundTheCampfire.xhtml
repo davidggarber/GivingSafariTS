@@ -22,8 +22,8 @@
         lookup: {
           clues: [
             // clue phrases, with explicit line breaks
-            // width, height in inches
-            // left, top, in pixels
+            // width (in inches/100)
+            // left, top (in pixels)
             // alignment
             [
               ['My wife said she hates the puns I', '¶', 'make about her yellow oven glove.', '¶', 'However, I wasn’t expecting to', '¶', 'wake up one morning and find her', '¶', 'gone, I ', '$', ' mitt.'],
@@ -31,7 +31,7 @@
             ],
             [
               ['Astronomers got tired', '¶', 'watching the moon go around', '¶', 'the earth for 24 hours. They', '¶', 'decided to call it a ', '$', '.'],
-              237, 32, 135, 'right'
+              240, 30, 135, 'right'
             ],
             [
               [ 'I’m addicted to collecting', '¶', 'vintage Beatles albums. I', '¶', 'need ', '$', '.'],
@@ -63,7 +63,7 @@
             ],
             [
               ['Did you hear about the guy', '¶', 'who was addicted to salt?', '¶', 'Don’t worry, he was ', '$', '.'],
-              247, 444, 94, 'left'
+              250, 444, 94, 'left'
             ],
             [
               ['How do crabs get around town', '¶', 'every day? They use the ', '$', '.'],
@@ -141,7 +141,7 @@
             [ 'U', 270, 339 ],
             [ 'Y', 296, 271 ],
             [ 'R', 304, 315 ],
-            [ 'H', 313, 183 ],
+            [ 'H', 313, 180 ],
             [ 'E', 324, 404 ],
             [ 'J', 319, 245 ],
             [ 'N', 330, 446 ],
@@ -181,6 +181,25 @@
         #lines {
           display: none;
         }
+        .straight-edge {
+          stroke: #ff0000cc;
+          stroke-width: 8px;
+        }
+        .straight-edge:not(.building):hover {
+          stroke: orange;
+          stroke-dasharray: 12,12;
+        }
+        .vertex:hover {
+          fill: #6ff;
+          stroke: black;
+          stroke-width: 2px;
+        } 
+        .cross-letter {
+          font-weight: bold;
+          fill: black;
+          stroke: white;
+          stroke-width: 1px;
+        }
       }
     </style>
   </head>
@@ -196,23 +215,6 @@
         </defs>
         <image href="Jokes/campfire.png" x="217" y="193" width="286" height="286" alt="Campfire" />
 
-        <g id="dots">
-          <for each="rad" in="{pi17}">
-            <circle class="vertex" ccx="{360+radius*rad.0/1000}" ccy="{336+radius*rad.1/1000}" r="4" fill="black" />
-          </for>
-        </g>
-        <g id="lines">
-          <for each="line" in="{lines}">
-            <line xx1="{360+radius*pi17.[line.0].0/1000}" yy1="{336+radius*pi17.[line.0].1/1000}" 
-                  xx2="{360+radius*pi17.[line.1].0/1000}" yy2="{336+radius*pi17.[line.1].1/1000}" 
-                  stroke="red" stroke-width="2" />
-          </for>
-        </g>
-        <g id="letters">
-          <for each="let" in="{letters}">
-            <text xx="{let.1}" yy="{let.2}">{let.0}</text>
-          </for>
-        </g>
         <g id="arrows">
           <line x1="285" y1="108" x2="296" y2="162" />
           <line x1="360" y1="86" x2="360" y2="149" />
@@ -222,6 +224,23 @@
           <line x1="329" y1="623" x2="329" y2="520" />
           <line x1="391" y1="592" x2="391" y2="522" />
           <line x1="464" y1="524" x2="455" y2="496" />
+        </g>
+        <g id="dots">
+          <for each="rad" in="{pi17}">
+            <circle class="vertex" ccx="{360+radius*rad.0/1000}" ccy="{336+radius*rad.1/1000}" r="4" fill="black" />
+          </for>
+        </g>
+        <g id="lines">
+          <for each="line" in="{lines}">
+            <line class="line" xx1="{360+radius*pi17.[line.0].0/1000}" yy1="{336+radius*pi17.[line.0].1/1000}" 
+                  xx2="{360+radius*pi17.[line.1].0/1000}" yy2="{336+radius*pi17.[line.1].1/1000}" />
+          </for>
+        </g>
+        <g class="straight-edge-container" />
+        <g id="letters">
+          <for each="let" in="{letters}">
+            <text class="cross-letter" xx="{let.1}" yy="{let.2}">{let.0}</text>
+          </for>
         </g>
 
 
