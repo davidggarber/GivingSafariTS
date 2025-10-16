@@ -95,6 +95,7 @@ function scratchPadClick(evt:MouseEvent) {
  */
 function scratchPageClick(evt:MouseEvent) {
     if (evt.ctrlKey) {
+        scratchFlatten(evt);
         const targets = document.elementsFromPoint(evt.clientX, evt.clientY);
         let underScratch = false;
 
@@ -263,6 +264,7 @@ export function textFromScratchDiv(div:HTMLDivElement):string {
         const child = div.childNodes[i];
         if (child.nodeType == Node.TEXT_NODE) {
             text += (child as Text).textContent;
+            text = text.replaceAll("  ", "  ");  // expand multiple spaces
         }
         else if (child.nodeType == Node.ELEMENT_NODE && isTag(child as Element, 'br')) {
             text += '\n';
@@ -373,12 +375,13 @@ function textIntoScratchDiv(text:string, div:HTMLDivElement) {
         if (i > 0) {
             div.appendChild(document.createElement('br'));
         }
-        div.appendChild(document.createTextNode(lines[i]));
+        const spaced = lines[i].replaceAll("  ", "  ");  // multiple spaces would be lost
+        div.appendChild(document.createTextNode(spaced));
         // console.log('flatten: ' + lines[i]);
     }
 }
 
-const allowDropOnScratchPad = (ev) => { ev.preventDefault(); };
+const allowDropOnScratchPad = (ev:DragEvent) => { ev.preventDefault(); };
 
 function attachDragHandle(div:HTMLDivElement) {
     const handle = document.createElement('img');
@@ -386,7 +389,7 @@ function attachDragHandle(div:HTMLDivElement) {
     toggleClass(handle, 'scratch-drag-handle', true);
     div.appendChild(handle);
 
-    const doScratchDrop = (ev) => dropScratchDiv(ev);
+    const doScratchDrop = (ev:DragEvent) => dropScratchDiv(ev);
     
     div.setAttribute('draggable', 'true');
     div.addEventListener('dragstart', startDragScratch);

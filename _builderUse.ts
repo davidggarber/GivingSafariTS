@@ -29,7 +29,7 @@ export function useTemplate(node:HTMLElement, tempId?:string|null):Node[] {
     if (!tempId) {
       throw new ContextError('<use> tag must specify a template attribute');
     }
-    tempId = cloneText(tempId);
+    tempId = cloneText(tempId, false);
   }
   let template:HTMLTemplateElement|null = null;
   try {
@@ -104,7 +104,7 @@ function parseUseNodeArgs(node:Element, template?:Element):TemplateArg[] {
         const arg:TemplateArg = {
           attr: attr,
           raw: val,  // Store the context path, so it can also be referenced
-          text: cloneText(val),
+          text: cloneText(val, false),
           any: complexAttribute(val),
         }
         passed_args.push(arg);
@@ -174,7 +174,7 @@ function overlayDefaultTemplateArgs(template:Element, use_args:TemplateArg[]) {
       const arg:TemplateArg = {
         attr: attri,
         raw: val,  // Store the context path, so it can also be referenced
-        text: cloneText(val),
+        text: cloneText(val, false),
         any: complexAttribute(val),
       }
       use_args.push(arg);

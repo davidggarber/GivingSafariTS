@@ -77,7 +77,11 @@
       #below td,th {
         height: 20px;
       }
-      </style>
+      .work {
+        display: inline-block;
+        margin: 6px 6px 6px 0px;
+      }
+    </style>
   </head>
   <body id="GrabCrass">
     <div id="pageBody">
@@ -85,7 +89,7 @@
         I was spoon-fed these clues that seem to be for various plants…
       </p>
 
-      <ttable style="width: 100%">
+      <ttable style="width: 100%" data-word-style="dotted">
         <tr>
           <th>Clue 1</th>
           <th>Clue 2</th>
@@ -99,11 +103,13 @@
               <for each="line" in="{clue.0}">
                 {line}<br />
               </for>
+              <span class="work no-print"><word /></span>
             </td>
             <td class="clue2">
               <for each="line" in="{clue.1}">
                 {line}<br />
               </for>
+              <span class="work no-print"><word /></span>
             </td>
             <td class="arrow">→</td>
             <td class="answer">
@@ -114,14 +120,14 @@
 
       </ttable>
 
-      <table id="below" style="width: 7in; margin-top: 0.5in;">
+      <table id="below" style="width: 7.5in; margin-top: 0.5in;">
         <tr>
           <td style="width: 4.05in; text-align: center;">
             <pattern id="extracted" extract-numbered="7" numbers="7=6=2" />  
           </td>
           <td class="arrow">→</td>
           <td style="position: relative; text-align: left;">
-            <pattern id="final-answer" pattern="4 3" />
+            <use template="copiablePattern" pattern="4 3" />
           </td>
         </tr>
         <tr id="short">

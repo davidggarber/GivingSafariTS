@@ -454,6 +454,9 @@ body.build-error {
 .validater {
   display: none;
 }
+.copy-extracted {
+  display: none;
+}
 
 #Login-bar {
   position: absolute;

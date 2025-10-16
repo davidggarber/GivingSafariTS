@@ -63,6 +63,7 @@ function createRatingScale(label:string, scale:string, img:string, max:number):H
   for (let i = 1; i <= max; i++) {
     const star = document.createElement('img');
     star.src = '../Images/Stars/' + img + '-' + i + '.png';
+    star.title = `${scale}: ${i} out of ${max}`;
     toggleClass(star, 'rating-star', true);
     star.setAttribute('data-rating-scale', scale);
     star.setAttribute('data-rating-value', i.toString());
@@ -153,6 +154,8 @@ function shouldShowRatings(): boolean {
 
   // Player must have logged in
   // (two reasons: to nail down the event, and because server doesn't have anonymous players)
-  const login = getLogin(safari.eventSync);
-  return !!login;
+  // const login = getLogin(safari.eventSync);
+  // return !!login;
+
+  return true;
 }

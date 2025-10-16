@@ -171,4 +171,7 @@ body.solved {
   body.show-validater.print .validate-block.no-print {
     display: none;
   }
+  .copy-extracted.ready {
+    display: inline;
+  }
 }

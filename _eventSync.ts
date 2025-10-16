@@ -290,11 +290,11 @@ function updateLoginUI() {
     span.innerText = "Login?";
     div.onclick = function(e) { promptLogin(e);};
     div.title = "Log in?";
-    showRatingUI(false);
+    // showRatingUI(false);
   }
 }
 
-type SyncCallback = (any) => void;
+type SyncCallback = (json:any) => void;
 
 async function callSyncApi(apiName:string, data:object, jsonCallback?:SyncCallback, textCallback?:SyncCallback) {
   try {

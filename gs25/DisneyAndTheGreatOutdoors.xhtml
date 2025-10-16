@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <script> var exports = {}; </script>
     <script src="../js/kit25.js" />
-    <script src="V/daa.js" />
+    <script src="V/dgo.js" />
     <script>
       const boiler = {
         safaris: puzzleSafari22,
@@ -20,14 +20,14 @@
         reactiveBuilder: 'pageBody',
         lookup: {
           lines: [
-            ['a.png', 'EHSQ'],
-            ['b.jpg', 'KLSK'],
-            ['c.png', 'EQOZE HXF'],
-            ['d.png', 'XPCIAGP XL'],
-            ['e.png', 'PSQ'],
-            ['f.png', 'AXFPN SQHP'],
-            ['g.gif', 'JAOAP DI BQQ'],
-            ['h.png', 'ASKL'],
+            ['a.png', 'EHSQ', '4'],
+            ['b.jpg', 'KLSK', '4'],
+            ['c.png', 'EQOZE HXF', '5 3'],
+            ['d.png', 'XPCIAGP XL', '7 2'],
+            ['e.png', 'PSQ', '3'],
+            ['f.png', 'AXFPN SQHP', '5 4'],
+            ['g.gif', 'JAOAP DI BQQ', '5 2 3'],
+            ['h.png', 'ASKL', '4'],
           ]
         },
       };
@@ -42,6 +42,24 @@
             font-family: "Lucida Console",monospace;
             font-size: 28pt;
           }
+          .work {
+            padding-left: 10px;
+          }
+          .word-cell {
+            width: 1.6in;
+          }
+          .below {
+            position: absolute;
+            top: 55px;
+            left: 0;
+
+            .letter-cell {
+              font-size: 13.25pt;
+            }
+          }
+          .letter-cell.multiple-letter {
+            width: 40px;
+          }
         }
       }
     </style>
@@ -54,14 +72,19 @@
         so lazy that they forgot exactly one letter for each word in each character’s name….
       </p>
 
-      <ttable id="table">
+      <ttable id="table" class="letter-grid-2d" data-word-style="dotted" data-letter-style="dotted">
         <for each="line" in="lines">
           <tr>
             <th>
               <iimg src="Disney/{line.0}" />  
             </th>  
-            <td>
+            <td style="position:relative">
+              <span class="below no-print"><pattern pattern="{line.2}" /></span>
               {line.1}
+            </td>
+            <td class="work no-print">
+              <word />
+              <letters />
             </td>
           </tr>          
         </for>  

@@ -709,7 +709,9 @@ let _sloppyPrevDown:number = 0;
 
 function startSloppyClick(evt:PointerEvent) {
     _sloppyTargets = document.elementsFromPoint(evt.clientX, evt.clientY);
-    _sloppyCaret = document.caretRangeFromPoint(evt.clientX, evt.clientY);
+    if (document.caretRangeFromPoint) {
+        _sloppyCaret = document.caretRangeFromPoint(evt.clientX, evt.clientY);
+    }
     const now = Date.now();
     if ((now - _sloppyPrevDown) < 300) {
         cancelSloppyClick();  // Double-clicks are disqualified
@@ -730,9 +732,14 @@ function endSloppyClick(evt:PointerEvent) {
             }
         }
         if (match) {
-            const caret = document.caretRangeFromPoint(evt.clientX, evt.clientY);
-            if (isSameCaret(_sloppyCaret, caret)) {
+            if (!document.caretRangeFromPoint) {
                 focusNearestInput(evt);
+            }
+            else {
+                const caret = document.caretRangeFromPoint(evt.clientX, evt.clientY);
+                if (isSameCaret(_sloppyCaret, caret)) {
+                    focusNearestInput(evt);
+                }
             }
         }
     }
