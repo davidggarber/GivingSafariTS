@@ -8831,6 +8831,7 @@ export type PuzzleEventDetails = {
   backLinks?: object;  // key: URL trigger -> puzzleListBackLink
   validation?: boolean|string;  // whether to allow local validation
   eventSync?: string;  // When present, this identifies the database event group
+  usageSync?: string;  // When present, this identifies the database for usage stats. If absent, eventSync is used.
   ratings?: RatingDetails;  // When present, show the rating UI on every puzzle
 }
 
@@ -8997,6 +8998,7 @@ const safari22Details:PuzzleEventDetails = {
   'backLinks': { 'gs25': { href:'./Map25.xhtml'}, 'ps22': { href:'./Map22.xhtml'}},
   'validation': true,
   // no eventSync == no login
+  usageSync: 'PuzzleSafari22',
   ratings: defaultRatingDetails,
 }
 
@@ -9271,17 +9273,18 @@ export enum EventSyncActivity {
 }
 
 // Convert either EventSyncActivity or PuzzleStatus to a relative order
+// All lower-case, to avoid ambiguity
 // TODO: merge the two systems
 let ActivityRank:{[key: string]: number} = {
   "hidden": -1,
   "locked": 0,
-  "Open": 1,
+  "open": 1,
   "loaded": 1,
-  "Edit": 2,
-  "Attempt": 3,
-  "Unlock": 4,
+  "edit": 2,
+  "attempt": 3,
+  "unlock": 4,
   "unlocked": 4,
-  "Solve": 5,
+  "solve": 5,
   "solved": 5,
 }
 
@@ -9291,21 +9294,23 @@ const localSync = (typeof window !== 'undefined') ? (window.location.href.substr
 let canSyncEvents = false;
 
 let _eventName:string|undefined = undefined;
+let _usageEventName:string|undefined = undefined;
 let _playerName:string|undefined = undefined;
 let _teamName:string|undefined = undefined;
 let _emojiAvatar:string|undefined = undefined;
-let _mostProgress:EventSyncActivity = EventSyncActivity.Open;
+let _mostProgress:number = -1;  // ActivityRank[hidden]
 
 function puzzleTitleForSync():string|undefined {
   return theBoiler().titleSync || theBoiler().title;
 }
 
-export function setupEventSync(syncKey?:string) {
+export function setupEventSync(syncKey?:string, usageKey?:string) {
   canSyncEvents = !!syncKey   // Don't sync if there's no event key
     && !theBoiler().noSync    // Don't sync if boiler has an explicit noSync=true
     && !isPrint() && !isIcon() && (!isIFrame() || isModal());  // Don't sync when printing
   if (canSyncEvents) {
     _eventName = syncKey;
+    _usageEventName = usageKey || syncKey;
 
     document.addEventListener('visibilitychange', function (event) { autoLogin(); });
     var body = document.getElementsByTagName('body')[0];
@@ -9313,6 +9318,10 @@ export function setupEventSync(syncKey?:string) {
 
     // Run immediately
     autoLogin();
+  }
+  else if (!isPrint() && !isIcon() && !isIFrame()) {
+    // We can still ping usage, even if not syncing an active event
+    _usageEventName = usageKey || syncKey;
   }
 }
 
@@ -9341,27 +9350,31 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
  * @param activity 
  */
 export function trackPuzzleProgress(activity:EventSyncActivity) {
-  let prev = ActivityRank[_mostProgress];
-  let next = ActivityRank[activity];
-  if (next > prev) {
+  if (!_usageEventName){
+    return;
+  }
+  const puzzle = puzzleTitleForSync();
+  if (!puzzle) {
+    return;
+  }
+
+  let newProgress = ActivityRank[activity.toLowerCase()];
+  if (newProgress > _mostProgress) {
     // _mostProgress tracks the current in-browser instance
-    _mostProgress = activity;
+    _mostProgress = newProgress;
 
     // Look in local storage for earlier instances
-    const puzzle = puzzleTitleForSync();
-    if (puzzle) {
-      const store = 'Usage-Milestone-' + _eventName;
-      const cached = getPuzzleStatus(puzzle, undefined, store) || '';
-      if (!cached || !(cached in ActivityRank) || (ActivityRank[cached] < ActivityRank[activity])) {
-        // We have gotten farther on this puzzle than we have in the past
-        updatePuzzleList(puzzle, activity, store);
-        const data = {
-          eventName: _eventName,
-          puzzle: puzzle,
-          activity: activity,
-        };
-        callSyncApi("Usage", data);  // don't await
-      }
+    const store = 'Usage-Milestone-' + _usageEventName;
+    const cached = getPuzzleStatus(puzzle, undefined, store)?.toLowerCase() || '';
+    if (!cached || !(cached in ActivityRank) || (ActivityRank[cached] < newProgress)) {
+      // We have gotten farther on this puzzle than we have in the past
+      const data = {
+        eventName: _usageEventName,
+        puzzle: puzzle,
+        activity: activity,
+      };
+      callSyncApi("Usage", data);  // don't await
+      updatePuzzleList(puzzle, activity, store);
     }
   }
 }
@@ -10391,7 +10404,7 @@ function boilerplate(bp: BoilerPlateData) {
     toggleClass(body, bp.orientation);
     toggleClass(body, '_' + bp.safari);  // So event fonts can trump defaults
 
-    setupEventSync(safariDetails.eventSync);
+    setupEventSync(safariDetails.eventSync, safariDetails.usageSync);
 
     const page: HTMLDivElement = createSimpleDiv({id:'page', cls:'printedPage'});
     const margins: HTMLDivElement = createSimpleDiv({cls:'pageWithinMargins'});

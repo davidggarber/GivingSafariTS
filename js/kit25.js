@@ -8109,6 +8109,7 @@ const safari22Details = {
     'backLinks': { 'gs25': { href: './Map25.xhtml' }, 'ps22': { href: './Map22.xhtml' } },
     'validation': true,
     // no eventSync == no login
+    usageSync: 'PuzzleSafari22',
     ratings: defaultRatingDetails,
 };
 const ps21Mini = {
@@ -8366,17 +8367,18 @@ var EventSyncActivity;
     EventSyncActivity["Solve"] = "Solve";
 })(EventSyncActivity || (exports.EventSyncActivity = EventSyncActivity = {}));
 // Convert either EventSyncActivity or PuzzleStatus to a relative order
+// All lower-case, to avoid ambiguity
 // TODO: merge the two systems
 let ActivityRank = {
     "hidden": -1,
     "locked": 0,
-    "Open": 1,
+    "open": 1,
     "loaded": 1,
-    "Edit": 2,
-    "Attempt": 3,
-    "Unlock": 4,
+    "edit": 2,
+    "attempt": 3,
+    "unlock": 4,
     "unlocked": 4,
-    "Solve": 5,
+    "solve": 5,
     "solved": 5,
 };
 // Support testing against a local Sync server.
@@ -8384,24 +8386,30 @@ let ActivityRank = {
 const localSync = (typeof window !== 'undefined') ? (window.location.href.substring(0, 5) == 'file:') : true;
 let canSyncEvents = false;
 let _eventName = undefined;
+let _usageEventName = undefined;
 let _playerName = undefined;
 let _teamName = undefined;
 let _emojiAvatar = undefined;
-let _mostProgress = EventSyncActivity.Open;
+let _mostProgress = -1; // ActivityRank[hidden]
 function puzzleTitleForSync() {
     return theBoiler().titleSync || theBoiler().title;
 }
-function setupEventSync(syncKey) {
+function setupEventSync(syncKey, usageKey) {
     canSyncEvents = !!syncKey // Don't sync if there's no event key
         && !theBoiler().noSync // Don't sync if boiler has an explicit noSync=true
         && !isPrint() && !isIcon() && (!isIFrame() || isModal()); // Don't sync when printing
     if (canSyncEvents) {
         _eventName = syncKey;
+        _usageEventName = usageKey || syncKey;
         document.addEventListener('visibilitychange', function (event) { autoLogin(); });
         var body = document.getElementsByTagName('body')[0];
         body?.addEventListener('focus', function (event) { autoLogin(); });
         // Run immediately
         autoLogin();
+    }
+    else if (!isPrint() && !isIcon() && !isIFrame()) {
+        // We can still ping usage, even if not syncing an active event
+        _usageEventName = usageKey || syncKey;
     }
 }
 exports.setupEventSync = setupEventSync;
@@ -8427,26 +8435,29 @@ exports.pingEventServer = pingEventServer;
  * @param activity
  */
 function trackPuzzleProgress(activity) {
-    let prev = ActivityRank[_mostProgress];
-    let next = ActivityRank[activity];
-    if (next > prev) {
+    if (!_usageEventName) {
+        return;
+    }
+    const puzzle = puzzleTitleForSync();
+    if (!puzzle) {
+        return;
+    }
+    let newProgress = ActivityRank[activity.toLowerCase()];
+    if (newProgress > _mostProgress) {
         // _mostProgress tracks the current in-browser instance
-        _mostProgress = activity;
+        _mostProgress = newProgress;
         // Look in local storage for earlier instances
-        const puzzle = puzzleTitleForSync();
-        if (puzzle) {
-            const store = 'Usage-Milestone-' + _eventName;
-            const cached = getPuzzleStatus(puzzle, undefined, store) || '';
-            if (!cached || !(cached in ActivityRank) || (ActivityRank[cached] < ActivityRank[activity])) {
-                // We have gotten farther on this puzzle than we have in the past
-                updatePuzzleList(puzzle, activity, store);
-                const data = {
-                    eventName: _eventName,
-                    puzzle: puzzle,
-                    activity: activity,
-                };
-                callSyncApi("Usage", data); // don't await
-            }
+        const store = 'Usage-Milestone-' + _usageEventName;
+        const cached = getPuzzleStatus(puzzle, undefined, store)?.toLowerCase() || '';
+        if (!cached || !(cached in ActivityRank) || (ActivityRank[cached] < newProgress)) {
+            // We have gotten farther on this puzzle than we have in the past
+            const data = {
+                eventName: _usageEventName,
+                puzzle: puzzle,
+                activity: activity,
+            };
+            callSyncApi("Usage", data); // don't await
+            updatePuzzleList(puzzle, activity, store);
         }
     }
 }
@@ -9301,7 +9312,7 @@ function boilerplate(bp) {
     toggleClass(body, bp.paperSize);
     toggleClass(body, bp.orientation);
     toggleClass(body, '_' + bp.safari); // So event fonts can trump defaults
-    setupEventSync(safariDetails.eventSync);
+    setupEventSync(safariDetails.eventSync, safariDetails.usageSync);
     const page = createSimpleDiv({ id: 'page', cls: 'printedPage' });
     const margins = createSimpleDiv({ cls: 'pageWithinMargins' });
     body.appendChild(page);

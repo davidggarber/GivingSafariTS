@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script src="sync.js" />
+    <link href="sync.css" rel="Stylesheet" type="text/css"></link>
+    <script>
+      //<![CDATA[
+      const boiler = {
+        safari: 'Admin',
+        orientation: 'landscape',
+        title: 'Answer Attempts',
+        postSetup: doRefresh,
+        reactiveBuilder: 'pageBody',
+        lookup: {},
+      };
+
+      var firstLoad = true;
+
+      var eventName = identifyEvent();
+      var puzzleName = identifyPuzzle('Puzzle Ratings: ', 'Ratings.xhtml');
+
+      function doRefresh() {
+        var data = {
+          eventName: eventName,
+          puzzle: puzzleName,
+          timeZone: 'Pacific Standard Time',  // TODO: get from javascript
+        }
+        queryServer('PuzzleRatings', data, refreshWithResponse);
+        data = {
+          eventName: eventName,
+        }
+        var select = document.getElementById('picker');
+        if (select.childElementCount < 2) {
+          data = {
+            eventName: eventName
+          }
+          queryServer('PuzzleList', data, refreshPicker);
+        }
+      }
+
+      var colKeys = ['Unknown', 'Opened', 'Edited', 'Attempted', 'Solved']
+
+      function refreshWithResponse(response) {
+        var list = JSON.parse(response);
+
+        // All cells should already exist
+        for (var row of list) {
+          var aspect = row['Aspect'];
+          var rating = row['Rating'][0];  // Trim the "/5" denominator
+          var tr = document.getElementById(`${aspect}-row-${rating}`);
+
+          var combined = 0;
+          for (var col of colKeys) {
+            var td = document.getElementById(`${aspect}-${col.toLowerCase()}-${rating}`);
+            td.innerText = row[col];
+            combined += parseInt(row[col]) || 0;
+          }
+          var tot = document.getElementById(`${aspect}-combined-${rating}`);
+          tot.innerText = combined;
+        }
+
+        firstLoad = false;
+      }
+
+      function refreshPicker(response) {
+        var list = JSON.parse(response);
+        var select = document.getElementById('picker');
+        for (var row of list) {
+          if (!row.PuzzleName || (row.PuzzleType != 'Puzzle' && row.PuzzleType != 'Meta')) {
+            continue;
+          }
+          var opt = document.getElementById(row.PuzzleName);
+          if (!opt) {
+            opt = document.createElement('option');
+            opt.id = row.PuzzleName;
+            opt.value = row.PuzzleName;
+            opt.innerText = row.PuzzleName;
+            opt.class = row.PuzzleType;
+            select.appendChild(opt);
+          }
+        }
+      }
+
+      function changePicker() {
+        var pick = document.getElementById('picker').value;
+        if (pick != puzzleName) {
+          window.location.href = 'PuzzleRatings.xhtml?z=' + encodeURIComponent(pick);
+        }
+      }
+
+      // ]]>
+    </script>
+    <style>
+      #picker {
+        font-size: 24pt;
+        font-weight: bold;
+      }
+      #picker * {
+        font-size: 12pt;
+      }
+      .correct td.Guess:after {
+        content: '✅';
+      }
+      tr:hover .Team {
+        font-weight: bold;
+      }
+      ._Admin th {
+        text-align: center;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      td {
+        text-align: center;
+      }
+      .rating-label {
+        position: relative;
+        top: -4px;
+      }
+      .star-img {
+        position: relative;
+        top: 4px;
+        height: 24px;
+      }
+    </style>
+  </head>
+  <body id="ListPuzzles">
+    <!--
+        A list of all submissions for this puzzle: both correct and incorrect.
+        Correct submissions are decorated with a checkmark.
+      -->
+    <div id="pageBody">
+      <p>
+        <select id="picker" value="{puzzleName}" onchange="changePicker()">
+          <option id="{puzzleName}" value="{puzzleName}">{puzzleName}</option>
+        </select>
+      </p>
+      <p>
+        <button onclick="doRefresh()">Refresh Puzzle List</button>
+        <a href="Puzzles.xhtml?e={eventName}">All puzzles</a>
+      </p>
+
+      <use template="RatTable" asp="Fun" img="star" />
+
+      <use template="RatTable" asp="Difficulty" img="diff" />
+
+    </div>
+
+    <template id="RatTable">
+      <table id="{asp}-table" style="margin-bottom:20px;">
+        <thead>
+          <tr>
+            <th style="font-size: 20pt; min-width: 2in;">{asp}</th>
+            <th colspan="5" style="text-align: center;">Progress, at time of rating</th>
+            <th>Combined</th>
+          </tr>
+          <tr id="{asp}-header-row" class="sortable">
+            <use template="SortColumn" title="Rating" />
+            <use template="SortColumn" title="Unknown" />
+            <use template="SortColumn" title="Opened" />
+            <use template="SortColumn" title="Edited" />
+            <use template="SortColumn" title="Attempted" />
+            <use template="SortColumn" title="Solved" />
+            <use template="SortColumn" title="sub-totals" />
+          </tr>
+        </thead>
+        <tbody id="{asp}-list-tbody" class="alternate">
+          <for int="rat" from="1" to="5">
+            <tr id="{asp}-row-{rat}">
+              <td>
+                <span class="rating-label">{rat}/5</span>
+                <img src="../Images/Stars/{img}-{rat}.png" alt="{rat} {asp} out of 5" class="star-img" />
+              </td>
+              <td class="rating-count" id="{asp}-unknown-{rat}">&nbsp;</td>
+              <td class="rating-count" id="{asp}-opened-{rat}">&nbsp;</td>
+              <td class="rating-count" id="{asp}-edited-{rat}">&nbsp;</td>
+              <td class="rating-count" id="{asp}-attempted-{rat}">&nbsp;</td>
+              <td class="rating-count" id="{asp}-solved-{rat}">&nbsp;</td>
+              <td class="rating-count" id="{asp}-combined-{rat}">&nbsp;</td>
+            </tr>
+          </for>
+        </tbody>
+      </table>
+    </template>
+
+    <template id="SortColumn">
+      <tth style="min-width:1in;" onclick="sortTable(this)" trim="all">
+        {title}
+        <span class="ascArrow">↓</span>
+        <span class="descArrow">↑</span>
+      </tth>
+    </template>
+
+  </body>
+</html>

@@ -501,7 +501,7 @@ function boilerplate(bp: BoilerPlateData) {
     toggleClass(body, bp.orientation);
     toggleClass(body, '_' + bp.safari);  // So event fonts can trump defaults
 
-    setupEventSync(safariDetails.eventSync);
+    setupEventSync(safariDetails.eventSync, safariDetails.usageSync);
 
     const page: HTMLDivElement = createSimpleDiv({id:'page', cls:'printedPage'});
     const margins: HTMLDivElement = createSimpleDiv({cls:'pageWithinMargins'});
