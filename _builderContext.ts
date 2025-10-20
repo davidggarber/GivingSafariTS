@@ -75,7 +75,7 @@ export function valueFromContext(key:string, maybe?:boolean):any {
  */
 export function valueFromGlobalContext(path:string, maybe?:boolean):any {
   if (path) {
-    return getKeyedChild(null, path, undefined, maybe);
+    return getKeyedChild(theBoilerContext(), path, undefined, maybe);
   }
   return undefined;
 }
