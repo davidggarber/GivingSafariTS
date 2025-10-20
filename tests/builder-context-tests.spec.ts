@@ -58,8 +58,8 @@ test('tokenizeText', () => {
   // nested braces
   testTokenizeText('{pt.{x}}', ['pt.{x}'], [true]);
 
-  // maybe?
-  testTokenizeText('{maybe?}', ['maybe?'], [true]);
+  // maybe ?operator
+  testTokenizeText('{?maybe}', ['?maybe'], [true]);
 
 });
 
@@ -365,9 +365,9 @@ test('evaluateFormulaAny', () => {
   // Implicit re-root variable
   testEvaluateFormulaAny("fonts.[zeroth]", 'bold');
 
-  // maybe?
-  testEvaluateFormulaAny("maybe?", '');
-  testEvaluateFormulaAny("num?", 1234);
+  // maybe ?operator
+  testEvaluateFormulaAny("?maybe", '');
+  testEvaluateFormulaAny("?num", 1234);
 });
 
 function testComplexAttribute(raw:string, obj:any) {
@@ -402,6 +402,6 @@ test('complexAttribute', () => {
   // Object by name. But don't cast object to string
   testComplexAttribute("pt: (x={pt.x},y={pt.y})", "pt: (x=3,y=5)");
 
-  // maybe?
-  testComplexAttribute("{num? ~ maybe?}", '1234');
+  // maybe ?operator
+  testComplexAttribute("{?num ~ ?maybe}", '1234');
 });

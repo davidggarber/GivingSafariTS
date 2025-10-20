@@ -2,7 +2,7 @@ import { isIcon, isIFrame, isModal, isPrint, theBoiler } from "./_boilerplate";
 import { consoleTrace } from "./_builder";
 import { hasClass, toggleClass } from "./_classUtil";
 import { showRatingUI } from "./_rating";
-import { cacheLogin, getLogin, TryParseJson } from "./_storage";
+import { cacheLogin, getLogin, getPuzzleStatus, TryParseJson, updatePuzzleList } from "./_storage";
 
 export enum EventSyncActivity {
   Open = "Open",
@@ -12,12 +12,20 @@ export enum EventSyncActivity {
   Solve = "Solve",
 }
 
-let ActivityRank = {
-  "Open": 1,
-  "Edit": 2,
-  "Attempt": 3,
-  "Unlock": 4,
-  "Solve": 5,
+// Convert either EventSyncActivity or PuzzleStatus to a relative order
+// All lower-case, to avoid ambiguity
+// TODO: merge the two systems
+let ActivityRank:{[key: string]: number} = {
+  "hidden": -1,
+  "locked": 0,
+  "open": 1,
+  "loaded": 1,
+  "edit": 2,
+  "attempt": 3,
+  "unlock": 4,
+  "unlocked": 4,
+  "solve": 5,
+  "solved": 5,
 }
 
 // Support testing against a local Sync server.
@@ -26,21 +34,23 @@ const localSync = (typeof window !== 'undefined') ? (window.location.href.substr
 let canSyncEvents = false;
 
 let _eventName:string|undefined = undefined;
+let _usageEventName:string|undefined = undefined;
 let _playerName:string|undefined = undefined;
 let _teamName:string|undefined = undefined;
 let _emojiAvatar:string|undefined = undefined;
-let _mostProgress:EventSyncActivity = EventSyncActivity.Open;
+let _mostProgress:number = -1;  // ActivityRank[hidden]
 
 function puzzleTitleForSync():string|undefined {
   return theBoiler().titleSync || theBoiler().title;
 }
 
-export function setupEventSync(syncKey?:string) {
+export function setupEventSync(syncKey?:string, usageKey?:string) {
   canSyncEvents = !!syncKey   // Don't sync if there's no event key
     && !theBoiler().noSync    // Don't sync if boiler has an explicit noSync=true
     && !isPrint() && !isIcon() && (!isIFrame() || isModal());  // Don't sync when printing
   if (canSyncEvents) {
     _eventName = syncKey;
+    _usageEventName = usageKey || syncKey;
 
     document.addEventListener('visibilitychange', function (event) { autoLogin(); });
     var body = document.getElementsByTagName('body')[0];
@@ -49,10 +59,14 @@ export function setupEventSync(syncKey?:string) {
     // Run immediately
     autoLogin();
   }
+  else if (!isPrint() && !isIcon() && !isIFrame()) {
+    // We can still ping usage, even if not syncing an active event
+    _usageEventName = usageKey || syncKey;
+  }
 }
 
 export async function pingEventServer(activity:EventSyncActivity, guess?:string) {
-  cacheProgress(activity);
+  trackPuzzleProgress(activity);
 
   if (!canSyncEvents || !_playerName) {
     return;
@@ -75,11 +89,33 @@ export async function pingEventServer(activity:EventSyncActivity, guess?:string)
  * Track the highest activity reached on the current puzzle.
  * @param activity 
  */
-function cacheProgress(activity:EventSyncActivity) {
-  let prev = ActivityRank[_mostProgress];
-  let next = ActivityRank[activity];
-  if (next > prev) {
-    _mostProgress = activity;
+export function trackPuzzleProgress(activity:EventSyncActivity) {
+  if (!_usageEventName){
+    return;
+  }
+  const puzzle = puzzleTitleForSync();
+  if (!puzzle) {
+    return;
+  }
+
+  let newProgress = ActivityRank[activity.toLowerCase()];
+  if (newProgress > _mostProgress) {
+    // _mostProgress tracks the current in-browser instance
+    _mostProgress = newProgress;
+
+    // Look in local storage for earlier instances
+    const store = 'Usage-Milestone-' + _usageEventName;
+    const cached = getPuzzleStatus(puzzle, undefined, store)?.toLowerCase() || '';
+    if (!cached || !(cached in ActivityRank) || (ActivityRank[cached] < newProgress)) {
+      // We have gotten farther on this puzzle than we have in the past
+      const data = {
+        eventName: _usageEventName,
+        puzzle: puzzle,
+        activity: activity,
+      };
+      callSyncApi("Usage", data);  // don't await
+      updatePuzzleList(puzzle, activity, store);
+    }
   }
 }
 

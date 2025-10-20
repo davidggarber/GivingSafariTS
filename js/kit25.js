@@ -5,9 +5,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveLetterLocally = exports.TryParseJson = exports.checkLocalStorage = exports.storageKey = exports.showDecoder = exports.toggleDecoder = exports.setupDecoderToggle = exports.toggleHighlight = exports.setupHighlights = exports.setupCrossOffs = exports.toggleNotes = exports.setupNotes = exports.constructSvgStampable = exports.constructSvgImageCell = exports.constructSvgTextCell = exports.svg_xmlns = exports.constructTable = exports.newTR = exports.moveChildOrder = exports.getChildOrder = exports.mutualAncestor = exports.matrixFromElement = exports.isArrowKeyElement = exports.isTextInputElement = exports.getElementsByClassOrId = exports.SortElements = exports.moveFocus = exports.getAllElementsWithAttribute = exports.getOptionalComplex = exports.getOptionalStyle = exports.siblingIndexOfClass = exports.findNthChildOfClass = exports.findFirstChildOfClass = exports.findParentOfTag = exports.isSelfOrParent = exports.findParentOfClass = exports.isTag = exports.isHTMLElement = exports.isElement = exports.findEndInContainer = exports.findInNextContainer = exports.childAtIndex = exports.indexInContainer = exports.findNextOfClass = exports.clearAllClasses = exports.getAllClasses = exports.applyAllClasses = exports.hasClass = exports.removeClassGlobally = exports.toggleClass = void 0;
 exports.hasInputGroup = exports.arrowFromInputGroup = exports.setCurrentInputGroup = exports.autoCompleteWord = exports.onWordChange = exports.onLetterChange = exports.extractWordIndex = exports.updateWordExtraction = exports.onWordKey = exports.onWordInput = exports.afterInputUpdate = exports.onLetterKey = exports.onLetterInput = exports.onLetterKeyUp = exports.onButtonKeyDown = exports.onLetterKeyDown = exports.onInputEvent = exports.cacheLogin = exports.getLogin = exports.forgetChildrenOf = exports.getCurFileName = exports.loadMetaPiece = exports.loadMetaMaterials = exports.resetPuzzleProgress = exports.resetAllPuzzleStatus = exports.listPuzzlesOfStatus = exports.getPuzzleStatus = exports.updatePuzzleList = exports.PuzzleStatus = exports.indexAllVertices = exports.indexAllHighlightableFields = exports.indexAllDrawableFields = exports.indexAllDragDropFields = exports.indexAllCheckFields = exports.indexAllNoteFields = exports.indexAllInputFields = exports.mapGlobalIndeces = exports.findGlobalIndex = exports.getGlobalIndex = exports.saveStates = exports.saveScratches = exports.saveGuessHistory = exports.saveStraightEdge = exports.saveHighlightLocally = exports.saveStampingLocally = exports.savePositionLocally = exports.saveContainerLocally = exports.saveCheckLocally = exports.saveNoteLocally = exports.saveWordLocally = void 0;
-exports.isRestart = exports.isModal = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.showRatingUI = exports.createRatingUI = exports.sendFeedback = exports.sendRating = exports.syncUnlockedFile = exports.urlSansArgs = exports.refreshTeamHomePage = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.lookupSafari = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.getAccumulatedTransformMatrix = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.getValueFromTextContainer = void 0;
-exports.FormulaNode = exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = void 0;
-exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.copyto_final_answer = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = void 0;
+exports.isModal = exports.isIcon = exports.isPrint = exports.isIFrame = exports.isBodyDebug = exports.isTrace = exports.isDebug = exports.urlArgExists = exports._rawHtmlSource = exports.showRatingUI = exports.createRatingUI = exports.sendFeedback = exports.sendRating = exports.syncUnlockedFile = exports.urlSansArgs = exports.refreshTeamHomePage = exports.trackPuzzleProgress = exports.pingEventServer = exports.setupEventSync = exports.EventSyncActivity = exports.lookupSafari = exports.enableValidation = exports.backlinkFromUrl = exports.getSafariDetails = exports.initSafariDetails = exports.clearAllStraightEdges = exports.createFromVertexList = exports.EdgeTypes = exports.getStraightEdgeType = exports.preprocessRulerFunctions = exports.distance2 = exports.distance2Mouse = exports.positionFromCenter = exports.doStamp = exports.getStampParent = exports.getCurrentStampToolId = exports.preprocessStampObjects = exports.getAccumulatedTransformMatrix = exports.preprocessSvgDragFunctions = exports.quickFreeMove = exports.quickMove = exports.initFreeDropZorder = exports.postprocessDragFunctions = exports.preprocessDragFunctions = exports.positionFromStyle = exports.setupSubways = exports.clicksFindInputs = exports.getLetterStyles = exports.textSetup = exports.getValueFromTextContainer = void 0;
+exports.tokenizeFormula = exports.complexAttribute = exports.cloneText = exports.cloneTextNode = exports.cloneSomeAttributes = exports.cloneAttributes = exports.valueFromGlobalContext = exports.valueFromContext = exports.popBuilderContext = exports.pushBuilderContext = exports.testBuilderContext = exports.getBuilderContext = exports.theBoilerContext = exports.consoleComment = exports.consoleTrace = exports.splitEmoji = exports.normalizeName = exports.expandContents = exports.appendRange = exports.pushRange = exports.expandControlTags = exports.inSvgNamespace = exports.getParentIf = exports.getBuilderParentIf = exports.shouldThrow = exports.getTrimMode = exports.TrimMode = exports.popBuilderElement = exports.pushBuilderElement = exports.initElementStack = exports.hasBuilderElements = exports.traceTagComment = exports.debugTagAttrs = exports.CodeError = exports.elementSourceOffseter = exports.elementSourceOffset = exports.nodeSourceOffset = exports.wrapContextError = exports.isContextError = exports.ContextError = exports.theValidation = exports.decodeAndValidate = exports.validateInputReady = exports.setupValidation = exports.testBoilerplate = exports.theBoiler = exports.linkCss = exports.addLink = exports.forceReload = exports.isRestart = void 0;
+exports.renderDiffs = exports.diffSummarys = exports.summarizePageLayout = exports.scanMetaMaterials = exports.setupMetaSync = exports.scratchCreate = exports.scratchClear = exports.textFromScratchDiv = exports.setupScratch = exports.copyto_final_answer = exports.builtInTemplate = exports.getTemplate = exports.appendFromTemplate = exports.refillFromTemplate = exports.useTemplate = exports.startInputArea = exports.inputAreaTagNames = exports.startIfBlock = exports.startForLoop = exports.textFromContext = exports.keyExistsInContext = exports.tokenizeText = exports.makeString = exports.makeInt = exports.makeFloat = exports.evaluateAttribute = exports.evaluateFormula = exports.treeifyFormula = exports.FormulaNode = void 0;
 /*-----------------------------------------------------------
  * _classUtil.ts
  *-----------------------------------------------------------*/
@@ -1153,6 +1153,7 @@ var localCache = {
     scratch: {},
     edges: [],
     guesses: [],
+    usage: undefined,
     // started: null, 
     // latest: null ,
     time: null,
@@ -1386,7 +1387,7 @@ function isEmptyCache() {
     if (Object.values(localCache.words).find(x => x != '') != null) {
         return false;
     }
-    if (Object.values(localCache.positions).find(x => x != '') != null) {
+    if (Object.values(localCache.positions).length > 0) {
         return false;
     }
     if (Object.keys(localCache.stamps).length > 0) {
@@ -1704,7 +1705,7 @@ function mapGlobalIndeces(cls, suffix) {
     for (let i = 0; i < elements.length; i++) {
         const index = getGlobalIndex(elements[i], suffix);
         if (index >= 0) {
-            map[index] = elements[String(i)];
+            map[index] = elements[i];
         }
     }
     return map;
@@ -1889,7 +1890,7 @@ function restoreContainers(containers) {
     // Each time an element is moved, the containers structure changes out from under us. So pre-fetch.
     const moving = [];
     for (let key in containers) {
-        moving[parseInt(key)] = parseInt(containers[key]);
+        moving[parseInt(key)] = containers[key];
     }
     for (let key in moving) {
         const mover = findGlobalIndex('moveable', parseInt(key));
@@ -8108,6 +8109,7 @@ const safari22Details = {
     'backLinks': { 'gs25': { href: './Map25.xhtml' }, 'ps22': { href: './Map22.xhtml' } },
     'validation': true,
     // no eventSync == no login
+    usageSync: 'PuzzleSafari22',
     ratings: defaultRatingDetails,
 };
 const ps21Mini = {
@@ -8364,41 +8366,55 @@ var EventSyncActivity;
     EventSyncActivity["Unlock"] = "Unlock";
     EventSyncActivity["Solve"] = "Solve";
 })(EventSyncActivity || (exports.EventSyncActivity = EventSyncActivity = {}));
+// Convert either EventSyncActivity or PuzzleStatus to a relative order
+// All lower-case, to avoid ambiguity
+// TODO: merge the two systems
 let ActivityRank = {
-    "Open": 1,
-    "Edit": 2,
-    "Attempt": 3,
-    "Unlock": 4,
-    "Solve": 5,
+    "hidden": -1,
+    "locked": 0,
+    "open": 1,
+    "loaded": 1,
+    "edit": 2,
+    "attempt": 3,
+    "unlock": 4,
+    "unlocked": 4,
+    "solve": 5,
+    "solved": 5,
 };
 // Support testing against a local Sync server.
 // Note: test environment does not define 'window'
 const localSync = (typeof window !== 'undefined') ? (window.location.href.substring(0, 5) == 'file:') : true;
 let canSyncEvents = false;
 let _eventName = undefined;
+let _usageEventName = undefined;
 let _playerName = undefined;
 let _teamName = undefined;
 let _emojiAvatar = undefined;
-let _mostProgress = EventSyncActivity.Open;
+let _mostProgress = -1; // ActivityRank[hidden]
 function puzzleTitleForSync() {
     return theBoiler().titleSync || theBoiler().title;
 }
-function setupEventSync(syncKey) {
+function setupEventSync(syncKey, usageKey) {
     canSyncEvents = !!syncKey // Don't sync if there's no event key
         && !theBoiler().noSync // Don't sync if boiler has an explicit noSync=true
         && !isPrint() && !isIcon() && (!isIFrame() || isModal()); // Don't sync when printing
     if (canSyncEvents) {
         _eventName = syncKey;
+        _usageEventName = usageKey || syncKey;
         document.addEventListener('visibilitychange', function (event) { autoLogin(); });
         var body = document.getElementsByTagName('body')[0];
         body?.addEventListener('focus', function (event) { autoLogin(); });
         // Run immediately
         autoLogin();
     }
+    else if (!isPrint() && !isIcon() && !isIFrame()) {
+        // We can still ping usage, even if not syncing an active event
+        _usageEventName = usageKey || syncKey;
+    }
 }
 exports.setupEventSync = setupEventSync;
 async function pingEventServer(activity, guess) {
-    cacheProgress(activity);
+    trackPuzzleProgress(activity);
     if (!canSyncEvents || !_playerName) {
         return;
     }
@@ -8418,13 +8434,34 @@ exports.pingEventServer = pingEventServer;
  * Track the highest activity reached on the current puzzle.
  * @param activity
  */
-function cacheProgress(activity) {
-    let prev = ActivityRank[_mostProgress];
-    let next = ActivityRank[activity];
-    if (next > prev) {
-        _mostProgress = activity;
+function trackPuzzleProgress(activity) {
+    if (!_usageEventName) {
+        return;
+    }
+    const puzzle = puzzleTitleForSync();
+    if (!puzzle) {
+        return;
+    }
+    let newProgress = ActivityRank[activity.toLowerCase()];
+    if (newProgress > _mostProgress) {
+        // _mostProgress tracks the current in-browser instance
+        _mostProgress = newProgress;
+        // Look in local storage for earlier instances
+        const store = 'Usage-Milestone-' + _usageEventName;
+        const cached = getPuzzleStatus(puzzle, undefined, store)?.toLowerCase() || '';
+        if (!cached || !(cached in ActivityRank) || (ActivityRank[cached] < newProgress)) {
+            // We have gotten farther on this puzzle than we have in the past
+            const data = {
+                eventName: _usageEventName,
+                puzzle: puzzle,
+                activity: activity,
+            };
+            callSyncApi("Usage", data); // don't await
+            updatePuzzleList(puzzle, activity, store);
+        }
     }
 }
+exports.trackPuzzleProgress = trackPuzzleProgress;
 /**
  * Log in to an event
  * @param player The name of the player (required)
@@ -9275,7 +9312,7 @@ function boilerplate(bp) {
     toggleClass(body, bp.paperSize);
     toggleClass(body, bp.orientation);
     toggleClass(body, '_' + bp.safari); // So event fonts can trump defaults
-    setupEventSync(safariDetails.eventSync);
+    setupEventSync(safariDetails.eventSync, safariDetails.usageSync);
     const page = createSimpleDiv({ id: 'page', cls: 'printedPage' });
     const margins = createSimpleDiv({ cls: 'pageWithinMargins' });
     body.appendChild(page);

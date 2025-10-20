@@ -24,6 +24,7 @@ export type PuzzleEventDetails = {
   backLinks?: object;  // key: URL trigger -> puzzleListBackLink
   validation?: boolean|string;  // whether to allow local validation
   eventSync?: string;  // When present, this identifies the database event group
+  usageSync?: string;  // When present, this identifies the database for usage stats. If absent, eventSync is used.
   ratings?: RatingDetails;  // When present, show the rating UI on every puzzle
 }
 
@@ -190,6 +191,7 @@ const safari22Details:PuzzleEventDetails = {
   'backLinks': { 'gs25': { href:'./Map25.xhtml'}, 'ps22': { href:'./Map22.xhtml'}},
   'validation': true,
   // no eventSync == no login
+  usageSync: 'PuzzleSafari22',
   ratings: defaultRatingDetails,
 }
 
