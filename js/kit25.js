@@ -11184,7 +11184,7 @@ exports.valueFromContext = valueFromContext;
  */
 function valueFromGlobalContext(path, maybe) {
     if (path) {
-        return getKeyedChild(null, path, undefined, maybe);
+        return getKeyedChild(theBoilerContext(), path, undefined, maybe);
     }
     return undefined;
 }
@@ -13514,8 +13514,12 @@ function extractedCopiablePatternTemplate() {
         tag: 'div',
         id: 'extracted',
     });
-    var inner = `<pattern id="{id}" pattern="{pattern}" data-show-ready="submit-extracted" />
-      <button id="submit-extracted" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
+    var inner = `<if exists="{?pattern}">
+      <pattern id="{id}" pattern="{pattern}" data-show-ready="submit-extracted" />
+    </if><elseif exists="{?numbered}">
+      <pattern id="{id}" extract-numbered="{numbered}" data-show-ready="submit-extracted" />
+    </elseif>
+    <button id="submit-extracted" class="copy-extracted btn-shift-up" data-extracted-id="{id}" onclick="copyto_final_answer('{id}')">OK</button>`;
     temp.innerHTML =
         `<if test="{tag}" eq="span">
       <span id="__extracted-span">` + inner + `</span></if>

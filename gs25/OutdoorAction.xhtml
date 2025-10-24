@@ -23,23 +23,32 @@
       };
     </script>
     <style>
-      table {
-        border-collapse: collapse;
-      }
-      td {
-        border: solid 1px black;
-        padding: 1px 8px 1px 8px;       
-      }
-      td.header {
-        font-weight: bold;
-        padding: 0px 12px;
-      }
-      td.clue {
-        width: 3.95in
+      #Local {
+        table {
+          border-collapse: collapse;
+        }
+        td {
+          border: solid 1px black;
+          padding: 1px 8px 1px 8px;       
+        }
+        td.header {
+          font-weight: bold;
+          padding: 0px 12px;
+        }
+        td.clue {
+          width: 3.95in
+        }
+        .under-number {
+          font-size: 6pt;
+          bottom: -8pt;
+        }
+        .movie {
+          line-height: 16pt;
+        }
       }
     </style>
   </head>
-  <body id="Outdoor">
+  <body id="Local">
     <div id="pageBody">
       <p class="flavor">
         The government has decided to subsidise movie production that emphasizes the beauty of nature. So we’ve decided to produce sequels to a classic outdoor movies. The problem is our marketing department says that outdoor movies are dull. So we’ve decided to mix a great action movie into each one to make that boring landscape more interesting. What are our new movies called?
@@ -107,8 +116,8 @@
         </tr>
       </table>
 
-      <p style="margin-top: 4px;">
-        <pattern id="extracted" extract-numbered="5 4 2 3 4" />
+      <p style="margin-top: 4px; width: 7.75in;">
+        <use template="extractedCopiablePattern" numbered="5 4 2 3 4" />
       </p>
 
       <use template='finalAnswer' left="2in" width="3in" />
