@@ -46,7 +46,7 @@ var puzzles = [
     { round: 2, title: 'Autumn', thumb: 'aut', author: 'Rorke Haining', type: types.search, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [{meta:'anthem',number:2}] },
     { round: 1, title: 'Biomes Of The World', thumb: 'bio', author: 'Zhenya Ross', type: types.search, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
     { round: 3, title: 'Cartography', thumb: 'car', author: 'Jake Lui', type: types.logic, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
-    { round: 2, title: 'Disney And The Great Outdoors', thumb: 'dis', author: 'Chris Jeuell', type: types.code, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
+    { round: 2, title: 'Disney and the Great Outdoors', file:'DisneyAndTheGreatOutdoors', thumb: 'dis', author: 'Chris Jeuell', type: types.code, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
     { round: 1, title: 'Down Under', thumb: 'dun', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
     { round: 3, title: 'Down, Across, And All Around', file: 'DownAcrossAndAllAround', thumb: 'dac', author: 'Wei-Hwa Huang', type: types.word, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [] },
     { round: 4, title: 'Fences', thumb: 'fen', author: 'Martyn Lovell', type: types.logic, group: group.puzzle, orientation: orient.portrait, cls:'', feeder: [{meta:'coastal',number:0}] },
