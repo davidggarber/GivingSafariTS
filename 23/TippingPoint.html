@@ -36,7 +36,7 @@
         var graph = document.getElementById('graph-paper');
         for (var y = 0; y <= 44; y++) {
           var path=document.createElementNS(xmlns, 'path');
-          var d = "M-375," + (y * 10) + " h1110";
+          var d = "M-420," + (y * 10) + " h1110";
           path.setAttributeNS(null, 'd', d);
           var cls = (y % 5 == 0) ? 'major' : 'minor';
           path.classList.add(cls);
@@ -44,7 +44,7 @@
         }
         for (var x = -37; x < 74; x++) {
           var path=document.createElementNS(xmlns, 'path');
-          var d = "M"+ (x * 10) + ",0 v440";
+          var d = "M"+ (x * 11) + ",0 v440";
           path.setAttributeNS(null, 'd', d);
           var cls = (x % 5 == 0) ? 'major' : 'minor';
           path.classList.add(cls);
@@ -179,8 +179,8 @@
           gPivot.classList.add('pivot');
           gDrop.appendChild(gPivot);
 
-          var xLeft = parseInt(node['left']['dist']) * -10;
-          var xRight = parseInt(node['right']['dist']) * 10;
+          var xLeft = parseInt(node['left']['dist']) * -11;
+          var xRight = parseInt(node['right']['dist']) * 11;
           var arm = document.createElementNS(xmlns, 'path');
           arm.classList.add('arms');
           arm.setAttributeNS('', 'd', 'M0,0 h' + xLeft + ' M0,0 h' + xRight);
@@ -543,11 +543,12 @@
         </div>
       </p>
       <svg id="graphPaper" width="960" height="440" viewBox="-365 -1 960 440" style="margin-top: 0.25in;">
+                <!--Origin of graph is now at x=-420. Total of 1110 virtual pixels, squeezed into 960 HTML pixels, which themselves aren't real pixels.-->
         <defs id="can-defs">
-          <g id="can-a" fill="#993366" stroke="#f07e2a" stroke-width="2">
+          <g id="can-a" fill="#993366" stroke="#eaa2c5" stroke-width="2">
             <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
             <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
-            <text x="0" y="25" fill="#f07e2a">A</text>
+            <text x="0" y="25" fill="#eaa2c5">A</text>
           </g>
           <g id="can-b" fill="#b35e25" stroke="#ffe08c" stroke-width="2">
             <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
@@ -559,10 +560,10 @@
             <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
             <text x="0" y="25" fill="#b35e25">C</text>
           </g>
-          <g id="can-d" fill="#00b050" stroke="#b3cdbc" stroke-width="2">
+          <g id="can-d" fill="#00b050" stroke="#93f2be" stroke-width="2">
             <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
             <ellipse cx="0" cy="0" rx="14" ry="7"></ellipse>
-            <text x="0" y="25" fill="#b3cdbc">D</text>
+            <text x="0" y="25" fill="#93f2be">D</text>
           </g>
           <g id="can-e" fill="#0070c0" stroke="#cddcea" stroke-width="2">
             <path d="M-14,0 v30 a14,7,0,0,0,28,0 v-30 Z"></path>
