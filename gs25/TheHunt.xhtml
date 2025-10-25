@@ -18,6 +18,7 @@
           textInput: 'nearest',
           wordSearch: true,
           scratchPad: true,
+          stamping: true,
         },
         reactiveBuilder: 'pageBody',
         lookup: {
@@ -33,7 +34,8 @@
             'AEQSNLRHWLNWMTHFQSDAUMZOM',
             'YTOSEERWOULDXSWHATDSOGFNB',
             'IRBRTSDAKVJPKBMMFVGYQJFSK'
-          ]
+          ],
+          question: 'What was leader hopeful we would get to see while on safari, besides elephants and giraffes?',
         },
       };
     </script>
@@ -60,6 +62,17 @@
         rect.vertex.building {
           stroke: none;
         }
+        .word.used {
+          background: 
+            linear-gradient(to bottom right, transparent 0%, transparent 45%, red 50%, transparent 55%, transparent 100%),
+            linear-gradient(to top right, transparent 0%, transparent 45%, red 50%, transparent 55%, transparent 100%);
+          background-position: 0 50%;
+          background-repeat: no-repeat;
+          background-size: 95% 16px; /* thickness of the line */
+        }
+        #stampPalette {
+          display: none;
+        }
       }
     </style>
   </head>
@@ -71,7 +84,9 @@
       </p>
 
       <p>
-        What was leader hopeful we would get to see while on safari, besides elephants and giraffes?
+        <for word="w" in="{question}">
+          <span class="stampable word">{w}</span>
+        </for>
       </p>
 
       <svg id="grid" class="word-select-area no-user-select" data-angle-constraints="45">
@@ -88,6 +103,11 @@
       </svg>
 
       <use template='finalAnswer' left="4in" width="3in" />
+
+      <div id="stampPalette" data-unstyle="used" data-tool-erase="clear">
+        <div class="stampTool" id="used" data-style="used" />
+        <div class="stampTool" id="clear" />
+      </div>
 
     </div>
   </body>
