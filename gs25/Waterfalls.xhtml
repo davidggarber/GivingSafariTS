@@ -16,6 +16,7 @@
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
+          stamping: true,
         },
         reactiveBuilder: 'pageBody',
         lookup: {
@@ -126,6 +127,23 @@
         .under td {
           font-size: 8pt;
         }
+        td.stampable {
+          user-select: none;
+          -moz-user-select: -moz-none;
+          -khtml-user-select: none;
+          -webkit-user-select: none;
+          -o-user-select: none;
+        }
+        td.used {
+          background: linear-gradient(to bottom right, transparent 0%, transparent 45%, red 50%, transparent 55%, transparent 100%);
+          background-position: 0 50%;
+          background-repeat: no-repeat;
+          background-size: 100% 12px; /* thickness of the line */
+          color: black; /* text color */
+        }
+        #stampPalette {
+          display: none;
+        }
       }
     </style>
   </head>
@@ -143,7 +161,12 @@
           <for each="row" in="{grid.letters}">
             <ttr class="letters">
               <for char="c" in="{row}">
-                <ttd>{c}</ttd>
+                <if test="{c}" ne=" ">
+                  <ttd class="stampable">{c}</ttd>
+                </if>
+                <else>
+                  <ttd>&nbsp;</ttd>
+                </else>
               </for>
             </ttr>
           </for>
@@ -203,6 +226,11 @@
       </table>
 
       <use template='finalAnswer' left="2.5in" width="3in" />
+
+      <div id="stampPalette" data-unstyle="used" data-tool-erase="clear">
+        <div class="stampTool" id="used" data-style="used" />
+        <div class="stampTool" id="clear" />
+      </div>
 
     </div>
   </body>

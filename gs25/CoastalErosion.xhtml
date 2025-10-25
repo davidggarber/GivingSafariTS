@@ -17,6 +17,7 @@
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
+          stamping: true,
         },
         reactiveBuilder: 'pageBody',
         lookup: {
@@ -59,13 +60,13 @@
               var index = Object.keys(clues)[k];
               var letters = clues[index].split('');
               var elmt = document.getElementById(`clue-${index}`);
-              elmt.innerText = '';
+              var ellip = elmt.getElementsByClassName('ellip')[0];
+              ellip.style.display = 'none';
+              var clueLetters = elmt.getElementsByClassName('clue-letters')[0];
+              clueLetters.style.display = 'block';
               for (var l = 0; l < letters.length; l++) {
-                var span = document.createElement('span');
+                var span = document.getElementById(`clue-${index}-${l}`);
                 span.innerText = letters[l];
-                span.classList.add('clue-letter');
-                span.classList.add('cross-off');
-                elmt.appendChild(span);
               }
             }
           }
@@ -131,6 +132,20 @@
             font-size: 16pt;
             font-family: 'Lucida Console', monospace;
             margin: 2px;
+            user-select: none;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+          }
+          .clue-letter.used {
+            background: linear-gradient(to bottom right, transparent 0%, transparent 45%, magenta 50%, transparent 55%, transparent 100%);
+            background-position: 0 50%;
+            background-repeat: no-repeat;
+            background-size: 100% 12px; /* thickness of the line */
+          }
+          #stampPalette {
+            display: none;
           }
           .col-clue .clue-letter {
             display: block;
@@ -195,13 +210,27 @@
         </ttr>
         <ttr>
           <for int="i" from="1" to="8">
-            <ttd class="col-clue" id="clue-{i}">&vellip;</ttd>
+            <ttd class="col-clue" id="clue-{i}">
+              <span class="ellip">&vellip;</span>
+              <div class="clue-letters" style="display: none;">
+                <for int="j" from="0" to="3">
+                  <span id="clue-{i}-{j}" class="clue-letter stampable" />
+                </for>
+              </div>
+            </ttd>
           </for>
         </ttr>
         <for int="y" from="1" to="8">
           <ttr>
             <tth>{y+8}</tth>
-            <ttd class="row-clue" id="clue-{y+8}">&hellip;</ttd>
+            <ttd class="row-clue" id="clue-{y+8}">
+              <span class="ellip">&hellip;</span>
+              <div class="clue-letters" style="display: none;">
+                <for int="j" from="0" to="3">
+                  <span id="clue-{y+8}-{j}" class="clue-letter stampable" />
+                </for>
+              </div>
+            </ttd>
             <for int="x" from="1" to="8">
               <ttd id="cell-{y}{x}" class="cell color-{colors.[y-1].[x-1]} border-{borders.[y-1].[x-1]}">
                 <letter data-input-groups="r:row{y#} d:col{x#}" />
@@ -263,6 +292,11 @@
             <div class="meta-clue"></div>
           </div>
         </for>
+      </div>
+
+      <div id="stampPalette" data-unstyle="used" data-tool-erase="clear">
+        <div class="stampTool" id="used" data-style="used" />
+        <div class="stampTool" id="clear" />
       </div>
 
     </div>
