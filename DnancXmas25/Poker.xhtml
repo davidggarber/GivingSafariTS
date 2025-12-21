@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas',
+        title: 'Poker',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          ranks: {
+            '2': 'Sheep',
+            '3': 'Tiger',
+            '4': 'Armadillo',
+            '5': 'Chicken',
+            '6': 'Kangaroo',
+            '7': 'Turtle',
+            '8': 'Hippo',
+            '9': 'Elephant',
+            'T': 'Duck',
+            'J': 'Eagle',
+            'Q': 'Crab',
+            'K': 'Koala',
+            'A': 'Shark'
+          },
+          suits: {
+            'C': 'Club',
+            'D': 'Diamond',
+            'H': 'Heart',
+            'S': 'Spade',
+            'c': 'Club',
+            'd': 'Diamond',
+            'h': 'Heart',
+            's': 'Spade'
+          },
+          rows: [
+            [  // straights
+              "TcAdKsJcQh",
+              "7c9d8hThJs",
+              "4s7s5c6d8d",
+              "2d3s6s5h4h",
+              "3d3c3hKcQd"
+            ],
+            [  // two-pairs
+              // "KdKcKsAcQd",
+              "6c6d2h2s8c",
+              "3d3h5s5c9d",
+              "4h3c4s3sTd",
+              "2s2d4d4cJh",
+            ],
+            [  // pairs
+              "9h9sJd2s3h",
+              "9c9dTc3s4h",
+              "8s8c7h4c5d",
+              "7d7c8d5c6d",
+            ],
+            [  // flushes
+              "8d8s8c7h7s",
+              "KcAc4c3c2c",
+              "AdQd6d4d3d",
+              "QsKsTs5s4s"
+            ]
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        .blank {
+          fill: white;
+        }
+        .border {
+          stroke: black;
+          stroke-width: 2;
+          fill: none;
+        }
+        .rank {
+          height: 160px;
+        }
+        .suit {
+          height: 80px;
+        }
+        .greater {
+          fill: #666;
+        }
+        #notes {
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
+      #
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        A group of elves have been playing poker, using a custom deck that 
+        substitutes animals for the usual rank symbols (2-10,J,Q,K,A).
+        At least they still use the regular suit symbols.
+      </p>
+      <p class="flavor">
+        Pictures below are the hands from 4 games (1 game per row).<br/>
+        On each row, the strongest hand is on the left, down to the weakest on the right.
+        You might notice that the lowest hand from the 1st game is 3-of-a-kind.
+        The highest hand from the last game is a full house.
+      </p>
+
+      <div style="position:relative">
+        <svg width="800" height="760">
+          <for each="row" in="rows">
+            <g transform="translate(0,{row#*190})">
+              <for each="hand" in="row">
+                <for int="c" from="0" to="9" step="2">
+                  <use template="card" x="{hand#}" y="{c/2}" r="{hand.[c]}" s="{hand.[c+1]}" />
+                </for>
+                <if test="{hand#}" ne="{0}">
+                  <use template="greater" x="{hand#}" />
+                </if>
+              </for>
+            </g>
+          </for>
+        </svg>
+
+        <div id="notes" data-letter-style="dotted">
+          <for each="row" in="rows">
+            <div style="position:absolute; top:{row#*190}px">
+              <for each="hand" in="row">
+                <for int="c" from="0" to="9" step="2">
+                  <div style="position:absolute; left:{70+hand#*150}px; top:{c#*30}px">
+                    <letter data-input-groups="d:r{row#}.h{hand#}"/>
+                  </div>
+                </for>
+              </for>
+            </div>
+          </for>
+        </div>
+      </div>
+      <p style="margin-top:-20px">What if we layed out 1 set of all the animals, from lowest to highest?</p>
+    </div>
+    
+    <template id="card">
+      <g transform="translate({x*150},{y*30}) scale(0.2)">
+        <path class="blank" d="M360,1 h-340 a19,19 0 0,0 -19,19 v150 h359 Z" />
+        <path class="border" d="M300,1 h-280 a19,19 0 0,0 -19,19 v150" />
+        <image class="suit" x="20" y="40" href="Poker/{suits.[s]}.png" />           
+        <image class="rank" x="120" y="20" href="Poker/{ranks.[r]}.png" /> 
+      </g>  
+    </template>
+    <template id="greater">
+      <g transform="translate({x*150-50},30) scale(0.4)">
+        <path class="greater" d="M0,20 h40 l60,100 l-60,100 h-40 l60,-100 Z" />
+      </g>  
+    </template>
+  </body>
+</html>
+
