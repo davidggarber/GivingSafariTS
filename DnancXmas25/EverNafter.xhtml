@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas25',
+        title: 'Ever-Nafter',
+        orientation: 'landscape',
+        googleFonts: 'Trade+Winds',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          dragDrop: 'canvas',
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          lefts: [
+            ['Quag', 'R'],
+            ['Hiny', 'E'],
+            ['Roffin', 'I'],
+            ["Urrow's", 'L'],
+            ['Silight', 'S'],
+            ['Hantasy', 'A'],
+            ['Arstruck', 'T'],
+          ],
+          rights: [
+            ['Twanctorum', 'N'],
+            ['Stodyssey', 'th'],
+            ['Dreens', 'V'],
+            ['Teist', 'A'],
+            ['Figh', 'ia'],
+            ['Bend', 'P'],
+            ['Cun', 'E'],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        .icos {
+          path {
+            fill: lightblue;
+            stroke: black;
+            stroke-width: 2;
+          }
+          text {
+            font-family: 'Trade Winds';
+            font-size: 60px;
+            text-anchor: middle;
+          }
+        }
+        .phrase {
+          font-family: serif;
+          font-size: 30pt;
+          user-select: none;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p>These phrases have bee chopped up and scattered about.
+        Please reassemble them into their original forms. Then sort them alphabetically.
+      </p>
+      <svg id="canvas free-drop" width="960" height="630">
+        <for each="ph" in="{lefts}">
+          <use template="phrase-left" x="{60+40*(ph#%2)}" y="{50+80*ph#}" let="{ph.1}" text="{ph.0}" />
+        </for>
+        <for each="ph" in="{rights}">
+          <use template="phrase-right" x="{900-40*(ph#%2)}" y="{50+80*ph#}" let="{ph.1}" text="{ph.0}" />
+        </for>
+      </svg>
+
+    </div>
+    <template id="phrase-left">
+      <g class="phrase moveable transform-copy" transform="translate({x},{y})">
+        <use template="icos.7" x="0" y="0" text="{let}" />
+        <text class="phrase" x="40" y="10">{text}</text>
+      </g>
+    </template>
+    <template id="phrase-right">
+      <g class="phrase moveable transform-copy" transform="translate({x},{y})">
+        <use template="icos.7" x="0" y="0" text="{let}" />
+        <text class="phrase" x="-40" y="10" text-anchor="end">{text}</text>
+      </g>
+    </template>
+    <template id="icos.7">
+      <g class="icos" transform="translate({x},{y}) scale(0.4)">
+        <path d="M0,-100 L86.6,-50 v100 L0,100 L-86.6,50 v-100 Z" />
+        <path d="M0,-70 L60.6,35 h-121.2 Z" />
+        <path d="M0,-70 L0,-100 M0,-70 L86.6,-50 M0,-70 L-86.6,-50" />
+        <path d="M60.6,35 L86.6,-50 M60.6,35 L86.6,50 M60.6,35 L0,100" />
+        <path d="M-60.6,35 L-86.6,-50 M-60.6,35 L-86.6,50 M-60.6,35 L0,100" />
+        <text x="0" y="20">{text}</text>
+      </g>
+    </template>
+  </body>
+</html>

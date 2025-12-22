@@ -1,73 +1,75 @@
-.title {
-  font-size: 32pt;
-  font-family: 'Lorean';
-  letter-spacing: -1.5px;
-  margin-top: -0.25in;
-}
+._xmas25 {
+  .title {
+    font-size: 32pt;
+    font-family: 'Lorean';
+    letter-spacing: -1.5px;
+    margin-top: -0.25in;
+  }
 
-.title-font {
-  font-family: 'Lorean';
-}
+  .title-font {
+    font-family: 'Lorean';
+  }
 
-.input-font {
-  font-family: 'Caveat';
-}
+  .input-font {
+    font-family: 'Caveat';
+  }
 
-._xmas .input-font .letter-literal {
-  font-family: 'Caveat';
-}
+  .input-font .letter-literal {
+    font-family: 'Caveat';
+  }
 
-._xmas .letter-cell {
-  font-family: 'Caveat';
-  font-size: 14pt;
-  width: 1.05em;
-}
+  .letter-cell {
+    font-family: 'Caveat';
+    font-size: 14pt;
+    width: 1.05em;
+  }
 
-.word-cell {
-  font-family: 'Caveat';
-  font-size: 14pt;
-}
+  .word-cell {
+    font-family: 'Caveat';
+    font-size: 14pt;
+  }
 
-#final .letter-cell {
-  font-family: 'Caveat';
-  font-size: 20pt;
-  color: #ff0099;
-}
+  #final .letter-cell {
+    font-family: 'Caveat';
+    font-size: 20pt;
+    color: #ff0099;
+  }
 
-._xmas #final-answer .letter-cell {
-  font-size: 32pt;
-}
+  #final-answer .letter-cell {
+    font-size: 32pt;
+  }
 
-#extracted {
-  font-family: 'Caveat';
-  font-size: 20pt;
-  color: #ff0099;
-}
+  #extracted {
+    font-family: 'Caveat';
+    font-size: 20pt;
+    color: #ff0099;
+  }
 
-.extracted {
-  font-family: 'Caveat';
-  font-size: 20pt;
-  color: #ff0099;
-}
+  .extracted {
+    font-family: 'Caveat';
+    font-size: 20pt;
+    color: #ff0099;
+  }
 
-#extracted .letter-cell {
-  font-family: 'Caveat';
-  font-size: 20pt;
-  color: #ff0099;
-}
+  #extracted .letter-cell {
+    font-family: 'Caveat';
+    font-size: 20pt;
+    color: #ff0099;
+  }
 
-#extracted .letter-input {
-  font-family: 'Caveat';
-  font-size: 20pt;
-  color: #ff0099;
-}
+  #extracted .letter-input {
+    font-family: 'Caveat';
+    font-size: 20pt;
+    color: #ff0099;
+  }
 
-.response.rt-correct {
-  white-space: pre;
-}
+  .response.rt-correct {
+    white-space: pre;
+  }
 
-@media print {
-  .screen-only {
-    display: none;
+  @media print {
+    .screen-only {
+      display: none;
+    }
   }
 }
