@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas25',
+        title: 'Trisection',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          pieces: [
+            ['Bishop', 'Eras'],
+            ['Zipper', 'Bingo'],
+            ['Hunan', 'Yarn'],
+            ['Origami', 'Eye'],
+            ['Gavel', 'Venice'],
+            ['Exodus', 'Inch'],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        #table {
+          margin-top: 24px;
+        }
+        #table img {
+          height: 1.2in;
+        }
+        .left {
+          text-align: right;
+          padding-right: 10px;
+        }
+        .right {
+          text-align: left;
+          padding-left: 10px;
+        }
+        .letter-cell {
+          font-size: 32pt;
+        }
+        .word-cell {
+          width: 1in;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        Six people from Hawkins, Indiana, have gone missing!<br/>
+      </p>
+      <p>A moment ago, they were there. But something unspeakable has split each of them into thirds.<br/>
+        The middles have been taken. 
+        Meanwhile, the left and right thirds have each been attached to new bodies.
+      </p>
+      <p>Can you identify who has been affected, and what parts of them have been abducted?</p>
+
+      <ttable id="table" data-word-style="dotted">
+        <for each="piece" in="{pieces}">
+          <ttr>
+            <ttd class="left"><img ssrc="Trisection/{piece.0}.png" /></ttd>
+            <ttd><word /></ttd>
+            <ttd><letter /></ttd>
+            <ttd><word /></ttd>
+            <ttd class="right"><img ssrc="Trisection/{piece.1}.png" /></ttd>
+          </ttr>
+        </for>
+      </ttable>
+
+
+    </div>
+  </body>
+</html>
