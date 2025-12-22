@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas25',
+        title: 'Snowflakes',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          images: [
+            ['Alpha', 360, 0],
+            ['Anise', 640, 0],
+            ['Apple', 500, 60],
+            ['Boots', 640, 120],
+            ['Flame', 520, 180],
+            ['Fondu', 640, 240],
+            ['Maple', 500, 300],
+            ['Panda', 640, 360],
+            ['Santa', 500, 420],
+            ['Scarf', 640, 480],
+            ['Skate', 520, 540],
+            ['Sniff', 640, 600],
+            ['Spice', 500, 660],
+            ['Storm', 360, 720],
+            ['Stove', 640, 720],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        abs {
+          position: absolute;
+        }
+        .ray {
+          fill: none;
+          stroke: black;
+          stroke-width: 2;
+        }
+        .hex {
+          fill: white;
+          stroke: black;
+          stroke-width: 2;
+        }
+        .snowflake text {
+          font-family: Arial, sans-serif;
+          font-size: 30px;
+          text-anchor: middle;
+        }
+        .letter-cell {
+          font-size: 24pt;
+        }
+        .clue {
+          position: absolute;
+          height: 1in;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <div style="position:relative" data-letter-style="hover">
+        <svg width="720" height="860">
+          <use template="flake" x="140" y="140" text="MAAEEA" />
+          <use template="flake" x="350" y="280" text="SSCLEF" />
+          <use template="flake" x="140" y="420" text="SFSESE" />
+          <use template="flake" x="350" y="560" text="PFSAAU" />
+          <use template="flake" x="140" y="700" text="SSBSEM" />
+        </svg>  
+        <div style="position:absolute; top:-20px; left:-17px;">
+          <use template="flake-letters" x="140" y="140" />
+          <use template="flake-letters" x="350" y="280" />
+          <use template="flake-letters" x="140" y="420" />
+          <use template="flake-letters" x="350" y="560" />
+          <use template="flake-letters" x="140" y="700" />
+        </div>
+        <for each="clue" in="images">
+          <div style="position:absolute;left:{clue.1}px;top:{clue.2}px;">
+            <img class="clue" src="Snowflakes/{clue.0}.png" style="position:relative; right:50%;" />
+          </div>
+        </for>
+      </div>
+
+    </div>
+
+    <template id="hex">
+      <g transform="translate({x},{y})">
+        <path class="hex" d="M0,{-r} L{r*866/1000},{-r/2} v{r} L0,{r} L{-r*866/1000},{r/2} v{-r} Z" />
+      </g>
+    </template>
+
+    <template id="flake">
+      <g class="snowflake" transform="translate({x},{y})">
+        <path class="ray" d="M-100,0 h200 M-50,-86.6 l100,173.2 M50,-86.6 l-100,173.2" />
+        <use template="hex" r="20" x="-100" y="0" />
+        <use template="hex" r="20" x="-50" y="0" />
+        <use template="hex" r="20" x="50" y="0" />
+        <use template="hex" r="20" x="100" y="0" />
+        <use template="hex" r="26" x="0" y="0" />
+        <use template="hex" r="20" x="-50" y="-86.6" />
+        <use template="hex" r="20" x="50" y="86.6" />
+        <use template="hex" r="20" x="50" y="-86.6" />
+        <use template="hex" r="20" x="-50" y="86.6" />
+        <use template="hex" r="20" x="-25" y="-43.3" />
+        <use template="hex" r="20" x="25" y="43.3" />
+        <use template="hex" r="20" x="25" y="-43.3" />
+        <use template="hex" r="20" x="-25" y="43.3" />
+        <text x="-50" y="-76.6">{text.0}</text>
+        <text x="50" y="-76.6">{text.1}</text>
+        <text x="-100" y="10">{text.2}</text>
+        <text x="100" y="10">{text.3}</text>
+        <text x="-50" y="96.6">{text.4}</text>
+        <text x="50" y="96.6">{text.5}</text>
+      </g>
+    </template>
+
+    <template id="flake-letters">
+      <div style="position:absolute; top:{x}px; left:{y}px;">
+        <div style="position:absolute; top:-43.3px; left:-25px"><letter /></div>
+        <div style="position:absolute; top:-43.3px; left:25px"><letter /></div>
+        <div style="position:absolute; top:0px; left:-50px"><letter /></div>
+        <div style="position:absolute; top:0px; left:0px"><letter /></div>
+        <div style="position:absolute; top:0px; left:50px"><letter /></div>
+        <div style="position:absolute; top:43.3px; left:-25px"><letter /></div>
+        <div style="position:absolute; top:43.3px; left:25px"><letter /></div>
+      </div>
+
+    </template>
+  </body>
+</html>
