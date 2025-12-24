@@ -8,7 +8,7 @@
     <script>
       const boiler = {
         safari: 'xmas25',
-        title: 'Ever-Nafter',
+        title: 'Ever Nafter',
         orientation: 'landscape',
         googleFonts: 'Trade+Winds',
         abilities: {
@@ -16,6 +16,7 @@
           scratchPad: true,
           dragDrop: 'canvas',
         },
+        validation:{"":{"CVENGRFYRIVNGUNA":"1","YVENGRFCRIVNGUNA":"3"}},
         reactiveBuilder: 'pageBody',
         lookup: {
           lefts: [
@@ -63,8 +64,8 @@
   </head>
   <body id="Local">
     <div id="pageBody">
-      <p>These phrases have bee chopped up and scattered about.
-        Please reassemble them into their original forms. Then sort them alphabetically.
+      <p>These phrases have been chopped up and scattered about.
+        Reassemble them into their original forms. Then sort them alphabetically.
       </p>
       <svg id="canvas free-drop" width="960" height="630">
         <for each="ph" in="{lefts}">
@@ -74,7 +75,7 @@
           <use template="phrase-right" x="{900-40*(ph#%2)}" y="{50+80*ph#}" let="{ph.1}" text="{ph.0}" />
         </for>
       </svg>
-
+      <use template='finalAnswer' left="2.5in" width="3in" />
     </div>
     <template id="phrase-left">
       <g class="phrase moveable transform-copy" transform="translate({x},{y})">

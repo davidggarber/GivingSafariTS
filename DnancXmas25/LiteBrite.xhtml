@@ -14,6 +14,7 @@
           scratchPad: true,
           stamping: true,
         },
+        validation:{"":{"SVNFPB":"1"}},
         reactiveBuilder: 'pageBody',
         lookup: {
           grid: [
@@ -33,7 +34,7 @@
             stroke-width: 1px;
           }
           rect.lite {
-            fill: yellow;
+            fill: red;
           }
           text {
             fill: black;
@@ -106,6 +107,7 @@
 
         </svg>
       </div>
+      <use template='finalAnswer' left="2.5in" width="2in" />
 
       <div id="stampPalette" data-unstyle="used" data-tool-erase="clear">
         <div class="stampTool" id="lite" data-style="lite" />

@@ -8814,6 +8814,11 @@ export type LinkDetails = {
   crossorigin?: string;  // if anything, ''
 }
 
+type BackLinkDetails = {
+  href: string;  // relative path
+  friendly?: string;
+}
+
 // Any relative paths should be relative to the calling puzzle page's folder
 export type PuzzleEventDetails = {
   title?: string;  // The event title (or sub-title, after "Safari ##")
@@ -8828,7 +8833,7 @@ export type PuzzleEventDetails = {
   links: LinkDetails[];  // A list of additional link tags to add to every puzzle
   qr_folders?: {};  // Folder for any QR codes
   solverSite?: string;  // URL to a separate solver website, where players can enter answers
-  backLinks?: object;  // key: URL trigger -> puzzleListBackLink
+  backLinks?: { [key: string]: BackLinkDetails };  // key: URL trigger -> puzzleListBackLink
   validation?: boolean|string;  // whether to allow local validation
   eventSync?: string;  // When present, this identifies the database event group
   usageSync?: string;  // When present, this identifies the database for usage stats. If absent, eventSync is used.
@@ -9108,7 +9113,21 @@ const dnancXmasDetails:PuzzleEventDetails = {
   'validation': true,
 }
 
-const pastSafaris = {
+const dnancXmas25Details:PuzzleEventDetails = {
+  'title': 'DNANC X-Mas',
+  'icon': './Images/favicon.png',
+  'iconRoot': './Icons/',
+  'cssRoot': '../Css/',
+  'fontCss': '../DnancXmas25/Css/Fonts.css',
+  'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat,Laki+Reddy,Twinkle+Star',  // no whitespace
+  'links': [],
+  'qr_folders': {'https://www.puzzyl.net/DnancXmas25/': './Qr/puzzyl/',
+                 'file:///D:/git/GivingSafariTS/DnancXmas25/': './Qr/puzzyl/'},
+  // 'backLinks': { '': { href:'./index.xhtml'}},
+  'validation': true,
+}
+
+const pastSafaris: { [key: string]: PuzzleEventDetails } = {
   'Docs': safariDocsDetails,
   'Admin': safariAdminDetails,
   'Sample': safariSampleDetails,
@@ -9132,6 +9151,7 @@ const pastSafaris = {
   'tm21': ps21Mini,
   'team': puzzylSafariTeamDetails,
   'xmas': dnancXmasDetails,
+  'xmas25': dnancXmas25Details,
 }
 
 const puzzleSafari19 = ['ps19'];  //,'gs22'
@@ -9171,7 +9191,7 @@ export function initSafariDetails(boiler?:BoilerPlateData): PuzzleEventDetails {
 
   // Mirror final safari name to lookup, as it is often used in link URLs
   if (boiler.lookup) {
-    boiler.lookup['_safari'] = boiler.safari;
+    (boiler.lookup as Record<string, any>)['_safari'] = boiler.safari;
   }
 
   safariDetails = pastSafaris[boiler.safari];

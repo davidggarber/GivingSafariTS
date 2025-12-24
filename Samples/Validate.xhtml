@@ -208,7 +208,7 @@
         if (Object.keys(obj).length > 0) {
           multi[dest] = obj;
         }
-        document.getElementById('containerHTML').innerText = '"validation":' + JSON.stringify(multi);
+        document.getElementById('containerHTML').innerText = 'validation:' + JSON.stringify(multi) + ',';
         document.getElementById('containerHTML2').innerText = 'validation=' + JSON.stringify(multi) + ';';
         theBoiler().validation = multi;
         document.getElementById('body').classList.remove('solved');

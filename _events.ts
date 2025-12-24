@@ -312,11 +312,11 @@ const dnancXmas25Details:PuzzleEventDetails = {
   'iconRoot': './Icons/',
   'cssRoot': '../Css/',
   'fontCss': '../DnancXmas25/Css/Fonts.css',
-  'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat',  // no whitespace
+  'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat,Twinkle+Star',  // no whitespace
   'links': [],
   'qr_folders': {'https://www.puzzyl.net/DnancXmas25/': './Qr/puzzyl/',
                  'file:///D:/git/GivingSafariTS/DnancXmas25/': './Qr/puzzyl/'},
-  'backLinks': { '': { href:'./index.xhtml'}},
+  // 'backLinks': { '': { href:'./index.xhtml'}},
   'validation': true,
 }
 

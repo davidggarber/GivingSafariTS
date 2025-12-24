@@ -8210,6 +8210,19 @@ const dnancXmasDetails = {
     'backLinks': { '': { href: './index.xhtml' } },
     'validation': true,
 };
+const dnancXmas25Details = {
+    'title': 'DNANC X-Mas',
+    'icon': './Images/favicon.png',
+    'iconRoot': './Icons/',
+    'cssRoot': '../Css/',
+    'fontCss': '../DnancXmas25/Css/Fonts.css',
+    'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat,Laki+Reddy,Twinkle+Star',
+    'links': [],
+    'qr_folders': { 'https://www.puzzyl.net/DnancXmas25/': './Qr/puzzyl/',
+        'file:///D:/git/GivingSafariTS/DnancXmas25/': './Qr/puzzyl/' },
+    // 'backLinks': { '': { href:'./index.xhtml'}},
+    'validation': true,
+};
 const pastSafaris = {
     'Docs': safariDocsDetails,
     'Admin': safariAdminDetails,
@@ -8234,6 +8247,7 @@ const pastSafaris = {
     'tm21': ps21Mini,
     'team': puzzylSafariTeamDetails,
     'xmas': dnancXmasDetails,
+    'xmas25': dnancXmas25Details,
 };
 const puzzleSafari19 = ['ps19']; //,'gs22'
 const givingSafari24 = ['gs24', '21', 'ps21'];
