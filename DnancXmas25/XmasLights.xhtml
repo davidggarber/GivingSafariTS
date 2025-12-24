@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas25',
+        title: 'Xmas Lights',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+          stamping: true,
+        },
+        validation:{"":{"EHAHCUVYYF":"1","EHAAVATHCGUNGUVYY":"3Trggvat nurnq bs bhefryirf?"}},
+        googleFonts: 'Chewy',
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          columns: [
+            ' L O R M B N E I O D E M I O R G N',
+            'B O D U P I A R C T C O R G T R O ',
+            ' E C P B K C P O N S I I A E P O E',
+            'P A H S Y A R O H O C A R L R U S ',
+            ' A L Y C M X T G S U L M Z M A Y T',
+            'C N R B A Y Y E L A P O I Y L R D ',
+            ' H A S L R V H A W P H N N F I I S',
+            'E E E K O A W Y F H N I E D C Q U ',
+            ' M R L Y N D E A F O K R Y A M O N',
+            'A U A D H R R S M R G N E L E E R ',
+            ' Z I Q C A T E V E L U M I N V G O',
+            'P R W F K E M U W P N E L U D I X ',
+            ' E J I N L G A S E I Z F O R E S T',
+          ],
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        .light {
+          text {
+            fill: black;
+            font-size: 20px;
+            font-family: Chewy;
+            text-anchor: middle;
+            user-select: none;
+            cursor: pointer;
+          }
+        }
+        .stampTool {
+          text {
+            font-family: sans-serif;
+            font-size: 16px;
+            text-anchor: middle;
+          }
+        }
+        .stampTool.selected {
+          ellipse {
+            stroke-width: 3px;
+          }
+          text {
+            font-weight: bold;
+          }
+        }
+        ellipse {
+          fill: none;
+          stroke: black;
+          stroke-width: 2px;
+          cursor: pointer;
+        }
+        ellipse.red {
+          fill: #e34;
+        }
+        ellipse.orange {
+          fill: #e94;
+        }
+        ellipse.yellow {
+          fill: #ee4;
+        }
+        ellipse.green {
+          fill: #4d4;
+        }
+        ellipse.blue {
+          fill: #46f;
+        }
+        ellipse.purple {
+          fill: #a4e;
+        }
+        ellipse.clear {
+          fill: white;
+        }
+
+        #side .letter-cell {
+          height: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+      <p class="flavor">
+        Kids trapped in the upside down sure do love messing with our Christmas lights.
+        <br/>They clearly have their favorites. Robin is always flashing the red lights. Billy on blue.
+        <br/>Other kids stick to orange, yellow, green, and purple.
+      </p>
+      <p>Separately, their texts are frustratingly single-minded. But when they flash together, pay attention.</p>
+
+      <div style="position:relative">
+        <svg width="720" height="800">
+          <for int="x" from="0" until="13">
+            <for int="y" from="0" until="34">
+              <if test="{(x+y)%2}" eq="{1}">
+                <g class="light" transform="translate({50+x*35},{25+y*20})">
+                  <ellipse cx="0" cy="0" rx="20" ry="20" class="stampable" />
+                  <text x="0" y="8">{columns.[x].[y]}</text>
+                </g>
+              </if>
+            </for>
+          </for>
+
+          <g id="stampPalette" transform="translate(0, 760)" data-tool-erase="clear">
+            <use template='stamp' x="50" y="0" text="Red" sid="red" dstyle="red" />
+            <use template='stamp' x="140" y="0" text="Orange" sid="orange" dstyle="orange" />
+            <use template='stamp' x="230" y="0" text="Yellow" sid="yellow" dstyle="yellow" />
+            <use template='stamp' x="320" y="0" text="Green" sid="green" dstyle="green" />
+            <use template='stamp' x="410" y="0" text="Blue" sid="blue" dstyle="blue" />
+            <use template='stamp' x="500" y="0" text="Purple" sid="purple" dstyle="purple" />
+            <use template='stamp' x="590" y="0" text="Clear" sid="clear" dstyle="clear" />
+          </g>
+        </svg>
+
+        <div id="side" data-letter-style="dotted">
+          <for int="y" from="0" to="33">
+            <div style="position:absolute; left: 5.5in; top:{5+y*20}px">
+              <letters />
+            </div>
+          </for>
+        </div>
+      </div>
+      
+      <use template='finalAnswer' left="2.5in" width="3in" />
+    </div>
+
+    <template id="stamp">
+      <g class="stampTool" id="{sid}" data-style="{dstyle}" transform="translate({x},{y})">
+        <ellipse cx="0" cy="0" rx="40" ry="20" class="{dstyle}"/>
+        <text x="0" y="5">{text}</text>
+      </g>
+    </template>
+  </body>
+</html>
