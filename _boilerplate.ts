@@ -316,7 +316,12 @@ const iconTypeAltText = {
 function createPrintQrBase64(data:string):HTMLImageElement {
     const qr = document.createElement('img');
     qr.id = 'qr';
-    qr.src = 'data:image/png;base64,' + data;
+    if (data.endsWith('.png')) {
+        
+    }
+    else {
+        qr.src = 'data:image/png;base64,' + data;
+    }
     qr.alt = 'QR code to online page';
     return qr;
 }
@@ -327,10 +332,16 @@ function getQrPath():string|undefined {
         const url = window.location.href;
         for (const key of Object.keys(safariDetails.qr_folders)) {
             if (url.indexOf(key) == 0) {
-                const folder = safariDetails.qr_folders[key];
+                let folder = safariDetails.qr_folders[key];
                 const names = window.location.pathname.split('/');  // trim off path before last slash
                 const name = names[names.length - 1].split('.')[0];  // trim off extension
-                return folder + '/' + name + '.png';
+                if (folder.includes('{}')) {
+                    return folder.replace('{}', name);
+                }
+                if (!folder.endsWith('/')) {
+                    folder +='/';
+                }
+                return folder + name + '.png';
             }
         }
     }

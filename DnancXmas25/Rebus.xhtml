@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas25',
+        title: 'Puzzle Occasion!',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        print_qr: true,
+        validation:{"":{"BHEPBYYRTRBSSFCEVATNERUBZRSBEUBYVQNLF":"1"}},
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          rows: [
+            [
+              'Hour',
+              'Cow',
+              'Ledge',
+            ],
+            [
+              'Off',
+              'Spring',
+              'Car',
+            ],
+            [
+              'Hoe',
+              'Fork',
+            ],
+            [
+              'Ho',
+              'Lid',
+              'As'
+            ]
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Local {
+        .row {
+          text-align: center;
+        }
+        .pic {
+          height: 2in;
+          margin: 0.1in;
+        }
+      }
+    </style>
+  </head>
+  <body id="Local">
+    <div id="pageBody">
+
+      <for each="row" in="{rows}">
+        <p class="row">
+          <for each="pic" in="{row}">
+            <img class="pic" ssrc="Rebus/{pic}.png"/>
+          </for>  
+        </p>
+      </for>
+
+      <use template='finalAnswer' left="0px" width="6in" />
+    </div>
+  </body>
+</html>

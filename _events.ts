@@ -24,7 +24,7 @@ export type PuzzleEventDetails = {
   fontCss?: string;  // Specific font stylesheet for this event
   googleFonts?: string;  // comma-delimeted list of font names to load with Google APIs
   links: LinkDetails[];  // A list of additional link tags to add to every puzzle
-  qr_folders?: {};  // Folder for any QR codes
+  qr_folders?: { [key: string]: string};  // Folder for any QR codes
   solverSite?: string;  // URL to a separate solver website, where players can enter answers
   backLinks?: { [key: string]: BackLinkDetails };  // key: URL trigger -> puzzleListBackLink
   validation?: boolean|string;  // whether to allow local validation
@@ -314,8 +314,8 @@ const dnancXmas25Details:PuzzleEventDetails = {
   'fontCss': '../DnancXmas25/Css/Fonts.css',
   'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat,Twinkle+Star',  // no whitespace
   'links': [],
-  'qr_folders': {'https://www.puzzyl.net/DnancXmas25/': './Qr/puzzyl/',
-                 'file:///D:/git/GivingSafariTS/DnancXmas25/': './Qr/puzzyl/'},
+  'qr_folders': {'https://www.puzzyl.net/DnancXmas25/': './QRs/{}.svg',
+                 'file:///D:/git/GivingSafariTS/DnancXmas25/': './QRs/{}.svg'},
   // 'backLinks': { '': { href:'./index.xhtml'}},
   'validation': true,
 }

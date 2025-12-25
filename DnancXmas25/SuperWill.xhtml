@@ -8,12 +8,13 @@
     <script>
       const boiler = {
         safari: 'xmas25',
-        title: '___',
+        title: 'Message To Super Will',
         print_qr: true,
         abilities: {
           textInput: 'nearest',
           scratchPad: true,
         },
+        validation:{"":{"SVAQZNK":"1"}},
         reactiveBuilder: 'pageBody',
         lookup: {
         },
@@ -21,16 +22,24 @@
     </script>
     <style>
       #Local {
-        
+        #content {
+          text-align: center;
+        }
+        #crossword {
+          height: 9in;
+        }
       }
     </style>
   </head>
   <body id="Local">
     <div id="pageBody">
       <p class="flavor">
-        Hello!
+        Will's friends and family are both awed by his new powers and a little concerned about the connection he seems to
+        have to Vecna. So they've hidden a message for him below. Can you find it?
       </p>
-
+      <div id="content">
+        <img id="crossword" src="SuperWill/Crossword.png"/>
+      </div>
 
       <use template='finalAnswer' left="2.5in" width="3in" />
     </div>

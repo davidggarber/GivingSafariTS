@@ -8831,7 +8831,7 @@ export type PuzzleEventDetails = {
   fontCss?: string;  // Specific font stylesheet for this event
   googleFonts?: string;  // comma-delimeted list of font names to load with Google APIs
   links: LinkDetails[];  // A list of additional link tags to add to every puzzle
-  qr_folders?: {};  // Folder for any QR codes
+  qr_folders?: { [key: string]: string};  // Folder for any QR codes
   solverSite?: string;  // URL to a separate solver website, where players can enter answers
   backLinks?: { [key: string]: BackLinkDetails };  // key: URL trigger -> puzzleListBackLink
   validation?: boolean|string;  // whether to allow local validation
@@ -9121,8 +9121,8 @@ const dnancXmas25Details:PuzzleEventDetails = {
   'fontCss': '../DnancXmas25/Css/Fonts.css',
   'googleFonts': 'DM+Serif+Display,Abril+Fatface,Caveat,Twinkle+Star',  // no whitespace
   'links': [],
-  'qr_folders': {'https://www.puzzyl.net/DnancXmas25/': './Qr/puzzyl/',
-                 'file:///D:/git/GivingSafariTS/DnancXmas25/': './Qr/puzzyl/'},
+  'qr_folders': {'https://www.puzzyl.net/DnancXmas25/': './QRs/{}.svg',
+                 'file:///D:/git/GivingSafariTS/DnancXmas25/': './QRs/{}.svg'},
   // 'backLinks': { '': { href:'./index.xhtml'}},
   'validation': true,
 }
@@ -10239,7 +10239,12 @@ const iconTypeAltText = {
 function createPrintQrBase64(data:string):HTMLImageElement {
     const qr = document.createElement('img');
     qr.id = 'qr';
-    qr.src = 'data:image/png;base64,' + data;
+    if (data.endsWith('.png')) {
+        
+    }
+    else {
+        qr.src = 'data:image/png;base64,' + data;
+    }
     qr.alt = 'QR code to online page';
     return qr;
 }
@@ -10250,10 +10255,16 @@ function getQrPath():string|undefined {
         const url = window.location.href;
         for (const key of Object.keys(safariDetails.qr_folders)) {
             if (url.indexOf(key) == 0) {
-                const folder = safariDetails.qr_folders[key];
+                let folder = safariDetails.qr_folders[key];
                 const names = window.location.pathname.split('/');  // trim off path before last slash
                 const name = names[names.length - 1].split('.')[0];  // trim off extension
-                return folder + '/' + name + '.png';
+                if (folder.includes('{}')) {
+                    return folder.replace('{}', name);
+                }
+                if (!folder.endsWith('/')) {
+                    folder +='/';
+                }
+                return folder + name + '.png';
             }
         }
     }
