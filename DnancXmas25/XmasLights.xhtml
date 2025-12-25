@@ -15,7 +15,7 @@
           scratchPad: true,
           stamping: true,
         },
-        validation:{"":{"EHAHCUVYYF":"1","EHAAVATHCGUNGUVYY":"3Trggvat nurnq bs bhefryirf?"}},
+        validation:{"":{"EHAHCUVYYF":"1|4$333 sbe grnz NAP","EHAAVATHCGUNGUVYY":"3Trggvat nurnq bs bhefryirf?"}},
         googleFonts: 'Chewy',
         reactiveBuilder: 'pageBody',
         lookup: {
@@ -92,6 +92,25 @@
           fill: white;
         }
 
+        #e0-1,#e1-0,#e2-1,#e3-0,#e4-1 {
+          fill: #e34;
+        }
+        #e0-3 {
+          fill: #e94;
+        }
+        #e0-5 {
+          fill: #ee4;
+        }
+        #e0-7 {
+          fill: #4d4;
+        }
+        #e0-9 {
+          fill: #46f;
+        }
+        #e0-11 {
+          fill: #a4e;
+        }
+
         #side .letter-cell {
           height: 18px;
         }
@@ -101,9 +120,12 @@
   <body id="Local">
     <div id="pageBody">
       <p class="flavor">
-        Kids trapped in the upside down sure do love messing with our Christmas lights.
-        <br/>They clearly have their favorites. Robin is always flashing the red lights. Billy on blue.
-        <br/>Other kids stick to orange, yellow, green, and purple.
+        We hung our colored Christmas lights in nice neet columns. Then some kids,
+        <br />trapped in the Upside Down, started messing with them. Now they're all tangled together!
+      </p>
+      <p class="flavor">
+        Each kid clearly has their favorite. One sticks to red. Another is fixated on orange.
+        <br/>Other kids stick to yellow, green, blue, and purple.
       </p>
       <p>Separately, their texts are oddly single-minded. But when they flash together, pay attention.</p>
 
@@ -113,7 +135,7 @@
             <for int="y" from="0" until="34">
               <if test="{(x+y)%2}" eq="{1}">
                 <g class="light" transform="translate({50+x*35},{25+y*20})">
-                  <ellipse cx="0" cy="0" rx="20" ry="20" class="stampable" />
+                  <ellipse id="e{y}-{x}" cx="0" cy="0" rx="20" ry="20" class="stampable" />
                   <text x="0" y="8">{columns.[x].[y]}</text>
                 </g>
               </if>
