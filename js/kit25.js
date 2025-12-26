@@ -5929,12 +5929,13 @@ function preprocessSvgDragFunctions(svgId) {
             svg.addEventListener('pointerdown', clickSvgDragCanvas);
         }
     }
+    const freeDrop = hasClass(svg, 'free-drop');
     const movers = document.getElementsByClassName('moveable');
     for (let i = 0; i < movers.length; i++) {
         const moveable = movers[i];
         // Every moveable MUST have a transform-copy. If not on itself, in a parent
         let tc = findParentOfClass(moveable, 'transform-copy');
-        if (tc == moveable) {
+        if (tc == moveable && !freeDrop) {
             console.warn("Usually, the transform-copy node is a parent of the moveable node: " + debugTagAttrs(moveable));
         }
         if (tc) {
@@ -5942,7 +5943,7 @@ function preprocessSvgDragFunctions(svgId) {
             const tSrc = document.getElementById(tcid || '');
             CopyTransformation(tc, tSrc);
         }
-        else {
+        else if (!freeDrop) {
             console.error('Missing transform-copy on ' + debugTagAttrs(moveable));
         }
     }
@@ -6026,6 +6027,7 @@ function startSvgDrag(evt) {
     let hover = firstSvgDropTarget(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
     assertPlacementByTransform(handle);
     const tc = findParentOfClass(mover, 'transform-copy');
+    const freeDrop = findParentOfClass(mover, 'free-drop');
     _svgDragInfo = {
         id: mover.id,
         mover: mover,
@@ -6033,18 +6035,19 @@ function startSvgDrag(evt) {
         transformer: tc,
         bounds: bounds,
         undo: {
-            transformer: getTransformMatrix(tc),
+            transformer: tc ? getTransformMatrix(tc) : undefined,
             mover: getTransformMatrix(mover),
-            zOrder: getChildOrder(tc)
+            zOrder: getChildOrder(tc ? tc : mover)
         },
         hover: hover,
         client: new DOMPoint(evt.clientX, evt.clientY),
         offset: relPoint,
         translation: translation,
-        click: true, // this might just be a click, not a drag
+        click: true,
+        freeDrop: freeDrop,
     };
     // Move to top-most. Must do this immediately, as it interferes with dragging and clicking if later.
-    moveChildOrder(_svgDragInfo.transformer, -1);
+    moveChildOrder(_svgDragInfo.transformer ? _svgDragInfo.transformer : _svgDragInfo.mover, -1);
     toggleClass(mover, 'dragging', true);
     toggleClass(mover, 'selected', true);
     // not yet droppable
@@ -6071,7 +6074,9 @@ function midSvgDrag(evt) {
             }
             _svgDragInfo.hover = info.target;
             toggleClass(_svgDragInfo.hover, 'hover', true);
-            CopyTransformation(_svgDragInfo.transformer, info.target);
+            if (_svgDragInfo.transformer) {
+                CopyTransformation(_svgDragInfo.transformer, info.target);
+            }
         }
         // Add a translation to the mover, so that it's offset (where we clicked)
         // lands at the current pointer position, accounting for new transforms.
@@ -6143,7 +6148,7 @@ function firstSvgDropTarget(clientX, clientY) {
  */
 function calcSvgDropInfo(clientX, clientY) {
     if (_svgDragInfo) {
-        let target = firstSvgDropTarget(clientX, clientY);
+        let target = _svgDragInfo.freeDrop ? _svgDragInfo.freeDrop : firstSvgDropTarget(clientX, clientY);
         let handle = _svgDragInfo.handle;
         if (!target) {
             // See if any other handles hit targets?
@@ -6160,7 +6165,7 @@ function calcSvgDropInfo(clientX, clientY) {
                 }
             }
         }
-        let dragging = !_svgDragInfo.click || (target != _svgDragInfo.hover);
+        let dragging = !_svgDragInfo.click || (target != _svgDragInfo.hover) || _svgDragInfo.freeDrop != null;
         if (!dragging) {
             // We have yet to drag beyond the bounds of the moveable element
             if (clientX < _svgDragInfo.bounds.left || clientX > _svgDragInfo.bounds.right ||
@@ -6267,7 +6272,9 @@ function cancelSvgDrag(evt) {
             toggleClass(_svgDragInfo.hover, 'hover', false);
         }
         const tc = findParentOfClass(_svgDragInfo.mover, 'transform-copy');
-        setTransformMatrix(tc, _svgDragInfo.undo.transformer);
+        if (_svgDragInfo.undo.transformer) {
+            setTransformMatrix(tc, _svgDragInfo.undo.transformer);
+        }
         setTransformMatrix(_svgDragInfo.mover, _svgDragInfo.undo.mover);
         // Revert to original translation
         if (_svgDragInfo.translation.x || _svgDragInfo.translation.y) {

@@ -68,7 +68,7 @@
       <p>These phrases have been chopped up and scattered about.
         Reassemble them into their original forms. Then sort them alphabetically.
       </p>
-      <svg id="canvas free-drop" width="960" height="630">
+      <svg id="canvas" class="free-drop" width="960" height="630">
         <for each="ph" in="{lefts}">
           <use template="phrase-left" x="{60+40*(ph#%2)}" y="{50+80*ph#}" let="{ph.1}" text="{ph.0}" />
         </for>
@@ -79,13 +79,13 @@
       <use template='finalAnswer' left="2.5in" width="3in" />
     </div>
     <template id="phrase-left">
-      <g class="phrase moveable transform-copy" transform="translate({x},{y})">
+      <g class="phrase moveable" transform="translate({x},{y})">
         <use template="icos.7" x="0" y="0" text="{let}" />
         <text class="phrase" x="40" y="10">{text}</text>
       </g>
     </template>
     <template id="phrase-right">
-      <g class="phrase moveable transform-copy" transform="translate({x},{y})">
+      <g class="phrase moveable" transform="translate({x},{y})">
         <use template="icos.7" x="0" y="0" text="{let}" />
         <text class="phrase" x="-40" y="10" text-anchor="end">{text}</text>
       </g>

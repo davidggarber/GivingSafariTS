@@ -214,17 +214,17 @@
     <use x="16" y="3" href="#dot" />
     <use x="15" y="3" href="#dot" />
     <use x="16" y="2" href="#dot" />
-    <use x="15" y="2" href="#dot" />
     <use x="15" y="1" href="#dot" />
     <use x="15" y="0" href="#dot" />
     <use x="14" y="0" href="#dot" />
+    <use x="13" y="0" href="#dot" />
     <use x="14" y="1" href="#dot" />
-    <use x="13" y="1" href="#dot" />
     <use x="14" y="3" href="#dot" />
     <use x="14" y="4" href="#dot" />
+    <use x="13" y="4" href="#dot" />
+    <use x="14" y="7" href="#dot" />
     <use x="13" y="7" href="#dot" />
     <use x="13" y="8" href="#dot" />
-    <use x="14" y="9" href="#dot" />
     <use x="13" y="9" href="#dot" />
     <use x="14" y="11" href="#dot" />
     <use x="13" y="11" href="#dot" />
@@ -233,7 +233,6 @@
     <use x="13" y="13" href="#dot" />
     <use x="14" y="14" href="#dot" />
     <use x="13" y="14" href="#dot" />
-    <use x="14" y="15" href="#dot" />
     <use x="13" y="15" href="#dot" />
     <use x="14" y="16" href="#dot" />
     <use x="13" y="16" href="#dot" />
@@ -292,62 +291,67 @@
     <use x="10" y="8" href="#dot" />
     <use x="10" y="9" href="#dot" />
     <use x="9" y="10" href="#dot" />
-    <use x="9" y="13" href="#dot" />
-    <use x="10" y="15" href="#dot" />
+    <use x="9" y="14" href="#dot" />
     <use x="10" y="16" href="#dot" />
-    <use x="9" y="16" href="#dot" />
-    <use x="10" y="17" href="#dot" />
     <use x="10" y="18" href="#dot" />
     <use x="9" y="18" href="#dot" />
     <use x="10" y="19" href="#dot" />
+    <use x="9" y="19" href="#dot" />
+    <use x="10" y="20" href="#dot" />
     <use x="9" y="20" href="#dot" />
     <use x="9" y="21" href="#dot" />
-    <use x="10" y="22" href="#dot" />
+    <use x="10" y="23" href="#dot" />
+    <use x="10" y="24" href="#dot" />
     <use x="9" y="24" href="#dot" />
-    <use x="10" y="25" href="#dot" />
     <use x="9" y="25" href="#dot" />
-    <use x="10" y="26" href="#dot" />
-    <use x="9" y="26" href="#dot" />
-    <use x="9" y="27" href="#dot" />
+    <use x="10" y="27" href="#dot" />
     <use x="10" y="28" href="#dot" />
-    <use x="9" y="28" href="#dot" />
-    <use x="8" y="19" href="#dot" />
-    <use x="8" y="18" href="#dot" />
+    <use x="7" y="20" href="#dot" />
+    <use x="7" y="19" href="#dot" />
     <use x="7" y="18" href="#dot" />
     <use x="8" y="17" href="#dot" />
-    <use x="7" y="17" href="#dot" />
-    <use x="7" y="14" href="#dot" />
+    <use x="8" y="16" href="#dot" />
+    <use x="7" y="16" href="#dot" />
+    <use x="8" y="15" href="#dot" />
+    <use x="7" y="15" href="#dot" />
+    <use x="8" y="13" href="#dot" />
+    <use x="7" y="13" href="#dot" />
+    <use x="8" y="12" href="#dot" />
+    <use x="8" y="11" href="#dot" />
+    <use x="8" y="10" href="#dot" />
     <use x="7" y="10" href="#dot" />
-    <use x="4" y="9" href="#dot" />
-    <use x="4" y="10" href="#dot" />
-    <use x="5" y="12" href="#dot" />
-    <use x="4" y="13" href="#dot" />
-    <use x="5" y="14" href="#dot" />
-    <use x="4" y="14" href="#dot" />
-    <use x="5" y="15" href="#dot" />
-    <use x="4" y="15" href="#dot" />
-    <use x="5" y="16" href="#dot" />
+    <use x="7" y="9" href="#dot" />
+    <use x="5" y="9" href="#dot" />
+    <use x="4" y="12" href="#dot" />
+    <use x="5" y="13" href="#dot" />
+    <use x="4" y="16" href="#dot" />
     <use x="5" y="17" href="#dot" />
-    <use x="4" y="17" href="#dot" />
+    <use x="5" y="18" href="#dot" />
+    <use x="5" y="20" href="#dot" />
     <use x="4" y="20" href="#dot" />
-    <use x="3" y="20" href="#dot" />
     <use x="3" y="19" href="#dot" />
     <use x="3" y="18" href="#dot" />
+    <use x="2" y="18" href="#dot" />
     <use x="3" y="17" href="#dot" />
-    <use x="3" y="16" href="#dot" />
+    <use x="2" y="17" href="#dot" />
     <use x="2" y="16" href="#dot" />
+    <use x="3" y="15" href="#dot" />
+    <use x="2" y="15" href="#dot" />
     <use x="3" y="14" href="#dot" />
-    <use x="2" y="14" href="#dot" />
     <use x="3" y="13" href="#dot" />
-    <use x="2" y="13" href="#dot" />
-    <use x="3" y="12" href="#dot" />
     <use x="3" y="11" href="#dot" />
+    <use x="2" y="11" href="#dot" />
+    <use x="3" y="10" href="#dot" />
     <use x="2" y="10" href="#dot" />
+    <use x="2" y="9" href="#dot" />
+    <use x="1" y="9" href="#dot" />
     <use x="0" y="9" href="#dot" />
-    <use x="1" y="10" href="#dot" />
     <use x="0" y="10" href="#dot" />
-    <use x="0" y="12" href="#dot" />
+    <use x="1" y="13" href="#dot" />
+    <use x="1" y="14" href="#dot" />
     <use x="0" y="14" href="#dot" />
+    <use x="1" y="15" href="#dot" />
+    <use x="0" y="16" href="#dot" />
     <use x="1" y="17" href="#dot" />
     <use x="0" y="18" href="#dot" />
     <use x="1" y="19" href="#dot" />

@@ -26,6 +26,9 @@
           color: red;
           font-weight: bold;
         }
+        table.readable {
+          border-spacing: 8px;
+        }
       }
     </style>
   </head>
@@ -33,13 +36,50 @@
     <div id="pageBody">
 
       <p>Constructing pages</p>
+      <table class="readable">
+        <tr>
+          <td><code>abilities: { dragDrop: '<i>id</i>' }</code></td>
+          <td> where <i>id</i> is the ID of the &lt;svg&gt; that parents all drag/drop elements</td>
+        </tr>
+        <tr>
+          <td>&lt;g class='moveable'&gt;</td>
+          <td>The container of 1 or more elements that move together</td>
+        </tr>
+        <tr>
+          <td>&lt;g class='transform-copy'
+            <br/>&nbsp;&nbsp;&nbsp;&nbsp;transform-copy='[id of a source or target]'&gt;</td>
+          <td>Identifies that this element's transformation is a copy of another element's
+            <br/>At construction, the transform-copy attribute is followed to fetch the desired transform.
+            <br/>When moved, it is updated.
+            <br/>Note: the copied element isn't a parent. They usually live on separate layers.
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;g class='drag-handle'&gt;</td>
+          <td>Tag elements within the moveable collection which are capable of sticking to drop targets.
+            <br/>When present, the relative translation from handle to main moveable is maintained when a handle lands somewhere.
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;g class='drop-target'&gt;</td>
+          <td>The container of elements that define a dropable region.<br />
+            The transformation applied to this target will get applied to the moveable or a drag-handle.
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;g class='drag-source'&gt;</td>
+          <td>Similar to a drop-target, but defines a valid starting point.
+            <br/>If one moveable is dropped on another, the underneath one will be evicted.
+            <br/>It can return to its original drag source, or go to an arbitrary unoccupied one.
+          </td>
+        </tr>
+      </table>
+
+      <p>Free-drop</p>
       <ol>
-        <li><code>abilities: { dragDrop: '<i>id</i>' }</code> where <i>id</i> is the ID of the &lt;svg&gt; that parents all drag/drop elements</li>
-        <li>&lt;g class='moveable'&gt;</li>
-        <li>&lt;g class='drag-handle'&gt;</li>
-        <li>&lt;g class='drop-target'&gt;</li>
-        <li>&lt;g class='drag-source' id='<i>mover</i>-source' &gt; where ID should correlate to the ID of the mover it initially holds</li>
-        <li>&lt;g class='free-drop'&gt; (untested)</li>
+        <li>Elements within an &lt;svg class='free-drop'&gt; can be dropped anywhere within that SVG</li>
+        <li>Still label moveable elements as &lt;g class='moveable'&gt;</li>        
+        <li>Don't need explicit drag-handle, drag-source, or drop-target elements</li>
       </ol>
 
       <p>Optional styles, for drag effects</p>

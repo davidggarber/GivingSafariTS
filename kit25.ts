@@ -6416,7 +6416,7 @@ export function quickFreeMove(moveable:HTMLElement, position:Position) {
 
 
 type TransformCache = {
-  transformer: DOMMatrix,  // The matrix of the element we pretend contains us
+  transformer?: DOMMatrix, // The matrix of the element we pretend contains us
   mover: DOMMatrix,        // An offset to the container's matrix
   zOrder: number,          // A desired z-order
 };
@@ -6425,7 +6425,7 @@ type SvgDragInfo = {
   id: string,  // ID of the element being dragged
   mover: SVGGraphicsElement,  // The element being dragged
   handle: SVGGraphicsElement,  // The sub-element being dragged (or just the main element)
-  transformer: SVGGraphicsElement,  // The transform-copy parent of the mover
+  transformer?: SVGGraphicsElement,  // The transform-copy parent of the mover
   bounds: DOMRect,  // The bounds of the inntermost handle
   undo: TransformCache,  // Initial state, so we can undo
   hover: SVGGraphicsElement|null,  // The prospective drop-target we're currently over
@@ -6433,10 +6433,11 @@ type SvgDragInfo = {
   offset: DOMPoint,  // Where within the mover the mouse was clicked, in initial parent coordinates
   translation: DOMPoint,  // Is the mover already translated within its parent?
   click: boolean,  // this might just be a click, not a drag
+  freeDrop: SVGSVGElement | null,  // If container is class 'free-drop', many rules are loosened
 };
 
 type SvgDropInfo = {
-  target: SVGGraphicsElement|null,  // Its current parent, if a drop-target
+  target: SVGGraphicsElement | SVGSVGElement | null,  // Its current parent, if a drop-target
   origin: DOMPoint,  // Origin of target, in client coordinates
   handle: SVGGraphicsElement,  // Which moving handle hit this target?
   client: DOMPoint,  // Latest client point of drag
@@ -6485,12 +6486,14 @@ export function preprocessSvgDragFunctions(svgId:string) {
       }
     }
 
+    const freeDrop = hasClass(svg, 'free-drop');
+
     const movers = document.getElementsByClassName('moveable');
     for (let i = 0; i < movers.length; i++) {
       const moveable = movers[i] as SVGElement;
       // Every moveable MUST have a transform-copy. If not on itself, in a parent
       let tc = findParentOfClass(moveable, 'transform-copy');
-      if (tc == moveable) {
+      if (tc == moveable && !freeDrop) {
         console.warn("Usually, the transform-copy node is a parent of the moveable node: " + debugTagAttrs(moveable));
       }
       if (tc) {
@@ -6498,7 +6501,7 @@ export function preprocessSvgDragFunctions(svgId:string) {
         const tSrc = document.getElementById(tcid || '');
         CopyTransformation(tc as SVGElement, tSrc as Element);
       }
-      else {
+      else if (!freeDrop) {
         console.error('Missing transform-copy on ' + debugTagAttrs(moveable));
       }
     }
@@ -6593,6 +6596,7 @@ function startSvgDrag(evt:PointerEvent) {
   assertPlacementByTransform(handle);
 
   const tc = findParentOfClass(mover, 'transform-copy') as SVGGraphicsElement;
+  const freeDrop = findParentOfClass(mover, 'free-drop');
 
   _svgDragInfo = {
     id: mover.id,
@@ -6601,19 +6605,20 @@ function startSvgDrag(evt:PointerEvent) {
     transformer: tc,
     bounds: bounds,
     undo: {
-      transformer: getTransformMatrix(tc),
+      transformer: tc ? getTransformMatrix(tc) : undefined,
       mover: getTransformMatrix(mover),     // An offset to the container's matrix
-      zOrder: getChildOrder(tc)
+      zOrder: getChildOrder(tc ? tc : mover)
     },
     hover: hover,
     client: new DOMPoint(evt.clientX, evt.clientY),
     offset: relPoint,
     translation: translation,
     click: true,  // this might just be a click, not a drag
+    freeDrop: freeDrop as SVGSVGElement | null,
   };
 
   // Move to top-most. Must do this immediately, as it interferes with dragging and clicking if later.
-  moveChildOrder(_svgDragInfo.transformer, -1);
+  moveChildOrder(_svgDragInfo.transformer ? _svgDragInfo.transformer : _svgDragInfo.mover, -1);
   toggleClass(mover, 'dragging', true);
   toggleClass(mover, 'selected', true);
   // not yet droppable
@@ -6644,7 +6649,9 @@ function midSvgDrag(evt:PointerEvent) {
       _svgDragInfo.hover = info.target;
       toggleClass(_svgDragInfo.hover, 'hover', true);
 
-      CopyTransformation(_svgDragInfo.transformer, info.target);
+      if (_svgDragInfo.transformer) {
+        CopyTransformation(_svgDragInfo.transformer, info.target);
+      }
     }
 
     // Add a translation to the mover, so that it's offset (where we clicked)
@@ -6723,7 +6730,7 @@ function firstSvgDropTarget(clientX:number, clientY:number): SVGGraphicsElement|
  */
 function calcSvgDropInfo(clientX:number, clientY:number): SvgDropInfo|null {
   if (_svgDragInfo) {
-    let target = firstSvgDropTarget(clientX, clientY);
+    let target = _svgDragInfo.freeDrop ? _svgDragInfo.freeDrop : firstSvgDropTarget(clientX, clientY);
     let handle = _svgDragInfo.handle;
     if (!target) {
       // See if any other handles hit targets?
@@ -6741,14 +6748,14 @@ function calcSvgDropInfo(clientX:number, clientY:number): SvgDropInfo|null {
       }
     }
 
-    let dragging = !_svgDragInfo.click || (target != _svgDragInfo.hover);
+    let dragging = !_svgDragInfo.click || (target != _svgDragInfo.hover) || _svgDragInfo.freeDrop != null;
     if (!dragging) {
       // We have yet to drag beyond the bounds of the moveable element
       if (clientX < _svgDragInfo.bounds.left || clientX > _svgDragInfo.bounds.right ||
           clientY < _svgDragInfo.bounds.top || clientY > _svgDragInfo.bounds.bottom) {
         // We've dragged outside the bounds
         dragging = true;
-      } 
+      }
     }
 
     const origin = target == null ? new DOMPoint(NaN, NaN) : localToClientPoint(target, 0, 0);
@@ -6861,7 +6868,9 @@ function cancelSvgDrag(evt:PointerEvent|null) {
     }
     
     const tc = findParentOfClass(_svgDragInfo.mover, 'transform-copy') as SVGElement;
-    setTransformMatrix(tc, _svgDragInfo.undo.transformer);
+    if (_svgDragInfo.undo.transformer) {
+      setTransformMatrix(tc, _svgDragInfo.undo.transformer);
+    }
     setTransformMatrix(_svgDragInfo.mover, _svgDragInfo.undo.mover);
 
     // Revert to original translation
