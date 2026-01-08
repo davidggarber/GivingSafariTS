@@ -58,7 +58,7 @@
         }
         .stampTool.selected {
           ellipse {
-            stroke-width: 3px;
+            stroke-width: 5px;
           }
           text {
             font-weight: bold;
@@ -122,6 +122,7 @@
       <p class="flavor">
         We hung our colored Christmas lights in nice neet columns. Then some kids,
         <br />trapped in the Upside Down, started messing with them. Now they're all tangled together!
+        <br />Each strand travels from top to bottom, weaving left and right, but never going back up.
       </p>
       <p class="flavor">
         Each kid clearly has their favorite. One sticks to red. Another is fixated on orange.
@@ -130,7 +131,7 @@
       <p>Separately, their texts are oddly single-minded. But when they flash together, pay attention.</p>
 
       <div style="position:relative">
-        <svg width="720" height="800">
+        <svg width="720" height="770">
           <for int="x" from="0" until="13">
             <for int="y" from="0" until="34">
               <if test="{(x+y)%2}" eq="{1}">
@@ -142,7 +143,7 @@
             </for>
           </for>
 
-          <g id="stampPalette" transform="translate(0, 760)" data-tool-erase="clear">
+          <g id="stampPalette" transform="translate(0, 740)" data-tool-erase="clear">
             <use template='stamp' x="50" y="0" text="Red" sid="red" dstyle="red" />
             <use template='stamp' x="140" y="0" text="Orange" sid="orange" dstyle="orange" />
             <use template='stamp' x="230" y="0" text="Yellow" sid="yellow" dstyle="yellow" />

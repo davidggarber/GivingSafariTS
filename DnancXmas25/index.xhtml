@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <script> var exports = {}; </script>
+    <script src="../js/kit25.js" />
+    <script>
+      const boiler = {
+        safari: 'xmas25',
+        title: 'DNANC Christmas 2025',
+        abilities: {
+          textInput: 'nearest',
+          scratchPad: true,
+        },
+        reactiveBuilder: 'pageBody',
+        lookup: {
+          puzzles: [
+            ['EverNafter', 'Ever Nafter'],
+            ['LiteBrite', 'Lite Brite'],
+            ['Poker', 'Poker'],
+            ['Rebus', 'Puzzle Occasion'],
+            ['Snowflakes', 'Snowflakes'],
+            ['SuperWill', 'Super Will'],
+            ['Trisection', 'Trisection'],
+            ['XmasLights', 'Xmas Lights'],
+          ]
+        },
+      };
+    </script>
+    <style>
+      #Index p {
+        font-size: 20pt;
+      }
+    </style>
+  </head>
+  <body id="Index">
+    <div id="pageBody">
+      <for each="puz" in="puzzles">
+        <p><img src="Images/favicon.png" style="height: 20pt" />
+          <a href="{puz.0}.xhtml">{puz.1}</a></p>
+        
+      </for>
+
+    </div>
+  </body>
+</html>
